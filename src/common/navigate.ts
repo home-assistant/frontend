@@ -12,12 +12,16 @@ declare global {
 export const navigate = (_node: any, path: string, replace = false) => {
   if (__DEMO__) {
     if (replace) {
-      history.replaceState(null, "", `${location.pathname}#${path}`);
+      history.replaceState(
+        history.state?.root ? { root: true } : null,
+        "",
+        `${location.pathname}#${path}`
+      );
     } else {
       window.location.hash = path;
     }
   } else if (replace) {
-    history.replaceState(null, "", path);
+    history.replaceState(history.state?.root ? { root: true } : null, "", path);
   } else {
     history.pushState(null, "", path);
   }

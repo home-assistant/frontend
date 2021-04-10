@@ -37,6 +37,10 @@ class ZWaveJSConfigRouter extends HassRouterPage {
         tag: "zwave_js-config-dashboard",
         load: () => import("./zwave_js-config-dashboard"),
       },
+      node_config: {
+        tag: "zwave_js-node-config",
+        load: () => import("./zwave_js-node-config"),
+      },
     },
   };
 
@@ -46,9 +50,6 @@ class ZWaveJSConfigRouter extends HassRouterPage {
     el.isWide = this.isWide;
     el.narrow = this.narrow;
     el.configEntryId = this._configEntry;
-    if (this._currentPage === "node") {
-      el.nodeId = this.routeTail.path.substr(1);
-    }
 
     const searchParams = new URLSearchParams(window.location.search);
     if (this._configEntry && !searchParams.has("config_entry")) {

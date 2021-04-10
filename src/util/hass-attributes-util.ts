@@ -40,6 +40,8 @@ const hassAttributeUtil = {
     humidifier: ["dehumidifier", "humidifier"],
     sensor: [
       "battery",
+      "carbon_dioxide",
+      "carbon_monoxide",
       "current",
       "energy",
       "humidity",

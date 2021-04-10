@@ -1,13 +1,15 @@
 import { html, internalProperty, LitElement, property } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
+import { LocalizeFunc } from "../common/translations/localize";
+import { domainToName } from "../data/integration";
 import { HomeAssistant } from "../types";
 import "./ha-combo-box";
 
 const rowRenderer = (
   root: HTMLElement,
   _owner,
-  model: { item: { service: string; description: string } }
+  model: { item: { service: string; name: string } }
 ) => {
   if (!root.firstElementChild) {
     root.innerHTML = `
@@ -19,15 +21,16 @@ const rowRenderer = (
     </style>
     <paper-item>
       <paper-item-body two-line="">
-        <div class='name'>[[item.description]]</div>
+        <div class='name'>[[item.name]]</div>
         <div secondary>[[item.service]]</div>
       </paper-item-body>
     </paper-item>
     `;
   }
 
-  root.querySelector(".name")!.textContent = model.item.description;
-  root.querySelector("[secondary]")!.textContent = model.item.service;
+  root.querySelector(".name")!.textContent = model.item.name;
+  root.querySelector("[secondary]")!.textContent =
+    model.item.name === model.item.service ? "" : model.item.service;
 };
 
 class HaServicePicker extends LitElement {
@@ -43,13 +46,14 @@ class HaServicePicker extends LitElement {
         .hass=${this.hass}
         .label=${this.hass.localize("ui.components.service-picker.service")}
         .filteredItems=${this._filteredServices(
+          this.hass.localize,
           this.hass.services,
           this._filter
         )}
         .value=${this.value}
         .renderer=${rowRenderer}
         item-value-path="service"
-        item-label-path="description"
+        item-label-path="name"
         allow-custom-value
         @filter-changed=${this._filterChanged}
         @value-changed=${this._valueChanged}
@@ -57,38 +61,48 @@ class HaServicePicker extends LitElement {
     `;
   }
 
-  private _services = memoizeOne((services: HomeAssistant["services"]): {
-    service: string;
-    description: string;
-  }[] => {
-    if (!services) {
-      return [];
-    }
-    const result: { service: string; description: string }[] = [];
-
-    Object.keys(services)
-      .sort()
-      .forEach((domain) => {
-        const services_keys = Object.keys(services[domain]).sort();
-
-        for (const service of services_keys) {
-          result.push({
-            service: `${domain}.${service}`,
-            description:
-              services[domain][service].description || `${domain}.${service}`,
-          });
-        }
-      });
-
-    return result;
-  });
-
-  private _filteredServices = memoizeOne(
-    (services: HomeAssistant["services"], filter?: string) => {
+  private _services = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"]
+    ): {
+      service: string;
+      name: string;
+    }[] => {
       if (!services) {
         return [];
       }
-      const processedServices = this._services(services);
+      const result: { service: string; name: string }[] = [];
+
+      Object.keys(services)
+        .sort()
+        .forEach((domain) => {
+          const services_keys = Object.keys(services[domain]).sort();
+
+          for (const service of services_keys) {
+            result.push({
+              service: `${domain}.${service}`,
+              name: `${domainToName(localize, domain)}: ${
+                services[domain][service].name || service
+              }`,
+            });
+          }
+        });
+
+      return result;
+    }
+  );
+
+  private _filteredServices = memoizeOne(
+    (
+      localize: LocalizeFunc,
+      services: HomeAssistant["services"],
+      filter?: string
+    ) => {
+      if (!services) {
+        return [];
+      }
+      const processedServices = this._services(localize, services);
 
       if (!filter) {
         return processedServices;
@@ -96,7 +110,7 @@ class HaServicePicker extends LitElement {
       return processedServices.filter(
         (service) =>
           service.service.toLowerCase().includes(filter) ||
-          service.description.toLowerCase().includes(filter)
+          service.name?.toLowerCase().includes(filter)
       );
     }
   );

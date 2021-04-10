@@ -23,7 +23,7 @@ class HassioRouter extends HassRouterPage {
   protected routerOptions: RouterOptions = {
     // Hass.io has a page with tabs, so we route all non-matching routes to it.
     defaultPage: "dashboard",
-    initialLoad: () => this._fetchData(),
+    initialLoad: () => this._redirectIngress(),
     showLoading: true,
     routes: {
       dashboard: {
@@ -50,26 +50,32 @@ class HassioRouter extends HassRouterPage {
 
   protected updatePageEl(el) {
     // the tabs page does its own routing so needs full route.
-    const route = el.nodeName === "HASSIO-PANEL" ? this.route : this.routeTail;
+    const hassioPanel = el.nodeName === "HASSIO-PANEL";
+    const route = hassioPanel ? this.route : this.routeTail;
+
+    if (hassioPanel && this.panel.config?.ingress) {
+      this._redirectIngress();
+      return;
+    }
 
     el.hass = this.hass;
-    el.supervisor = this.supervisor;
     el.narrow = this.narrow;
     el.route = route;
 
     if (el.localName === "hassio-ingress-view") {
       el.ingressPanel = this.panel.config && this.panel.config.ingress;
+    } else {
+      el.supervisor = this.supervisor;
     }
   }
 
-  private async _fetchData() {
+  private async _redirectIngress() {
     if (this.panel.config && this.panel.config.ingress) {
-      this._redirectIngress(this.panel.config.ingress);
+      this.route = {
+        prefix: "/hassio",
+        path: `/ingress/${this.panel.config.ingress}`,
+      };
     }
-  }
-
-  private _redirectIngress(addonSlug: string) {
-    this.route = { prefix: "/hassio", path: `/ingress/${addonSlug}` };
   }
 }
 

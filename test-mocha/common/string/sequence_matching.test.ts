@@ -20,25 +20,25 @@ describe("fuzzySequentialMatch", () => {
   });
 
   const shouldMatchEntity = [
-    createExpectation("automation.ticker", 138),
-    createExpectation("automation.ticke", 129),
-    createExpectation("automation.", 89),
-    createExpectation("au", 17),
-    createExpectation("automationticker", 107),
-    createExpectation("tion.tick", 18),
-    createExpectation("ticker", 1),
-    createExpectation("automation.r", 89),
-    createExpectation("tick", 1),
-    createExpectation("aumatick", 15),
-    createExpectation("aion.tck", 14),
-    createExpectation("ioticker", 19),
-    createExpectation("atmto.ikr", 1),
-    createExpectation("uoaintce", 1),
-    createExpectation("au.tce", 17),
-    createExpectation("tomaontkr", 9),
-    createExpectation("s", 7),
-    createExpectation("stocks", 48),
-    createExpectation("sks", 7),
+    createExpectation("automation.ticker", 131),
+    createExpectation("automation.ticke", 121),
+    createExpectation("automation.", 82),
+    createExpectation("au", 10),
+    createExpectation("automationticker", 85),
+    createExpectation("tion.tick", 8),
+    createExpectation("ticker", -4),
+    createExpectation("automation.r", 73),
+    createExpectation("tick", -8),
+    createExpectation("aumatick", 9),
+    createExpectation("aion.tck", 4),
+    createExpectation("ioticker", -4),
+    createExpectation("atmto.ikr", -34),
+    createExpectation("uoaintce", -39),
+    createExpectation("au.tce", -3),
+    createExpectation("tomaontkr", -19),
+    createExpectation("s", 1),
+    createExpectation("stocks", 42),
+    createExpectation("sks", -5),
   ];
 
   const shouldNotMatchEntity = [
@@ -72,7 +72,7 @@ describe("fuzzySequentialMatch", () => {
           entity.entity_id,
           entity.friendly_name
         );
-        assert.equal(res, 0);
+        assert.equal(res, undefined);
       });
     }
   });
@@ -80,20 +80,45 @@ describe("fuzzySequentialMatch", () => {
 
 describe("fuzzyFilterSort", () => {
   const filter = "ticker";
-  const item1 = { text: "automation.ticker", altText: "Stocks", score: 0 };
-  const item2 = { text: "sensor.ticker", altText: "Stocks up", score: 0 };
-  const item3 = {
-    text: "automation.check_router",
+  const automationTicker = {
+    filterText: "automation.ticker",
+    altText: "Stocks",
+    score: 0,
+  };
+  const ticker = {
+    filterText: "ticker",
+    altText: "Just ticker",
+    score: 0,
+  };
+  const sensorTicker = {
+    filterText: "sensor.ticker",
+    altText: "Stocks up",
+    score: 0,
+  };
+  const timerCheckRouter = {
+    filterText: "automation.check_router",
     altText: "Timer Check Router",
     score: 0,
   };
-  const itemsBeforeFilter = [item1, item2, item3];
+  const badMatch = {
+    filterText: "light.chandelier",
+    altText: "Chandelier",
+    score: 0,
+  };
+  const itemsBeforeFilter = [
+    automationTicker,
+    sensorTicker,
+    timerCheckRouter,
+    ticker,
+    badMatch,
+  ];
 
-  it(`sorts correctly`, () => {
+  it(`filters and sorts correctly`, () => {
     const expectedItemsAfterFilter = [
-      { ...item2, score: 23 },
-      { ...item3, score: 12 },
-      { ...item1, score: 1 },
+      { ...ticker, score: 44 },
+      { ...sensorTicker, score: 1 },
+      { ...automationTicker, score: -4 },
+      { ...timerCheckRouter, score: -8 },
     ];
 
     const res = fuzzyFilterSort(filter, itemsBeforeFilter);

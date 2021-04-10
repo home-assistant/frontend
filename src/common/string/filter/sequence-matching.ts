@@ -11,7 +11,7 @@ import { fuzzyScore } from "./filter";
  */
 
 export const fuzzySequentialMatch = (filter: string, ...words: string[]) => {
-  let topScore = 0;
+  let topScore = Number.NEGATIVE_INFINITY;
 
   for (const word of words) {
     const scores = fuzzyScore(
@@ -28,21 +28,30 @@ export const fuzzySequentialMatch = (filter: string, ...words: string[]) => {
       continue;
     }
 
-    // The VS Code implementation of filter treats a score of "0" as just barely a match
-    // But we will typically use this matcher in a .filter(), which interprets 0 as a failure.
-    // By shifting all scores up by 1, we allow "0" matches, while retaining score precedence
-    const score = scores[0] + 1;
+    // The VS Code implementation of filter returns a:
+    //    - Negative score for a good match that starts in the middle of the string
+    //    - Positive score if the match starts at the beginning of the string
+    //    - 0 if the filter string is just barely a match
+    //    - undefined for no match
+    // The "0" return is problematic since .filter() will remove that match, even though a 0 == good match.
+    // So, if we encounter a 0 return, set it to 1 so the match will be included, and still respect ordering.
+    const score = scores[0] === 0 ? 1 : scores[0];
 
     if (score > topScore) {
       topScore = score;
     }
   }
+
+  if (topScore === Number.NEGATIVE_INFINITY) {
+    return undefined;
+  }
+
   return topScore;
 };
 
 export interface ScorableTextItem {
   score?: number;
-  text: string;
+  filterText: string;
   altText?: string;
 }
 
@@ -55,11 +64,11 @@ export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
   return items
     .map((item) => {
       item.score = item.altText
-        ? fuzzySequentialMatch(filter, item.text, item.altText)
-        : fuzzySequentialMatch(filter, item.text);
+        ? fuzzySequentialMatch(filter, item.filterText, item.altText)
+        : fuzzySequentialMatch(filter, item.filterText);
       return item;
     })
-    .filter((item) => item.score !== undefined && item.score > 0)
+    .filter((item) => item.score !== undefined)
     .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
       scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
     );

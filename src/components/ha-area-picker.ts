@@ -117,6 +117,8 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   @property() public entityFilter?: (entity: EntityRegistryEntry) => boolean;
 
+  @property({ type: Boolean }) public disabled?: boolean;
+
   @internalProperty() private _areas?: AreaRegistryEntry[];
 
   @internalProperty() private _devices?: DeviceRegistryEntry[];
@@ -125,7 +127,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _opened?: boolean;
 
-  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+  @query("vaadin-combo-box-light", true) public comboBox!: HTMLElement;
 
   private _init = false;
 
@@ -192,10 +194,13 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         }
         inputDevices = devices;
         inputEntities = entities.filter((entity) => entity.area_id);
-      } else if (deviceFilter) {
-        inputDevices = devices;
-      } else if (entityFilter) {
-        inputEntities = entities.filter((entity) => entity.area_id);
+      } else {
+        if (deviceFilter) {
+          inputDevices = devices;
+        }
+        if (entityFilter) {
+          inputEntities = entities.filter((entity) => entity.area_id);
+        }
       }
 
       if (includeDomains) {
@@ -314,7 +319,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
       (changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      (this._comboBox as any).items = this._getAreas(
+      (this.comboBox as any).items = this._getAreas(
         this._areas!,
         this._devices!,
         this._entities!,
@@ -339,6 +344,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         item-label-path="name"
         .value=${this._value}
         .renderer=${rowRenderer}
+        .disabled=${this.disabled}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._areaChanged}
       >
@@ -349,6 +355,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           .placeholder=${this.placeholder
             ? this._area(this.placeholder)?.name
             : undefined}
+          .disabled=${this.disabled}
           class="input"
           autocapitalize="none"
           autocomplete="off"

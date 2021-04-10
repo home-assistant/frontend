@@ -95,7 +95,7 @@ class HassioSnapshotDialog extends LitElement {
 
   @internalProperty() private _snapshotPassword!: string;
 
-  @internalProperty() private _restoreHass: boolean | null | undefined = true;
+  @internalProperty() private _restoreHass = true;
 
   public async showDialog(params: HassioSnapshotDialogParams) {
     this._snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
@@ -109,6 +109,9 @@ class HassioSnapshotDialog extends LitElement {
     this._dialogParams = params;
     this._onboarding = params.onboarding ?? false;
     this.supervisor = params.supervisor;
+    if (!this._snapshot.homeassistant) {
+      this._restoreHass = false;
+    }
   }
 
   protected render(): TemplateResult {
@@ -134,15 +137,17 @@ class HassioSnapshotDialog extends LitElement {
           (${this._computeSize})<br />
           ${this._formatDatetime(this._snapshot.date)}
         </div>
-        <div>Home Assistant:</div>
-        <paper-checkbox
-          .checked=${this._restoreHass}
-          @change="${(ev: Event) => {
-            this._restoreHass = (ev.target as PaperCheckboxElement).checked;
-          }}"
-        >
-          Home Assistant ${this._snapshot.homeassistant}
-        </paper-checkbox>
+        ${this._snapshot.homeassistant
+          ? html`<div>Home Assistant:</div>
+              <paper-checkbox
+                .checked=${this._restoreHass}
+                @change="${(ev: Event) => {
+                  this._restoreHass = (ev.target as PaperCheckboxElement).checked!;
+                }}"
+              >
+                Home Assistant ${this._snapshot.homeassistant}
+              </paper-checkbox>`
+          : ""}
         ${this._folders.length
           ? html`
               <div>Folders:</div>
@@ -334,7 +339,7 @@ class HassioSnapshotDialog extends LitElement {
       .map((folder) => folder.slug);
 
     const data: {
-      homeassistant: boolean | null | undefined;
+      homeassistant: boolean;
       addons: any;
       folders: any;
       password?: string;

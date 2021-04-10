@@ -32,13 +32,16 @@ class HassioSystem extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
-        hassio
-        main-page
         .route=${this.route}
         .tabs=${supervisorTabs}
+        main-page
+        supervisor
       >
-        <span slot="header">System</span>
+        <span slot="header">
+          ${this.supervisor.localize("panel.system")}
+        </span>
         <div class="content">
           <div class="card-group">
             <hassio-core-info
@@ -54,7 +57,10 @@ class HassioSystem extends LitElement {
               .supervisor=${this.supervisor}
             ></hassio-host-info>
           </div>
-          <hassio-supervisor-log .hass=${this.hass}></hassio-supervisor-log>
+          <hassio-supervisor-log
+            .hass=${this.hass}
+            .supervisor=${this.supervisor}
+          ></hassio-supervisor-log>
         </div>
       </hass-tabs-subpage>
     `;

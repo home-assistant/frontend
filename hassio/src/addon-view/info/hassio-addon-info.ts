@@ -25,6 +25,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
@@ -43,10 +44,13 @@ import {
   HassioAddonSetOptionParams,
   HassioAddonSetSecurityParams,
   installHassioAddon,
+  restartHassioAddon,
   setHassioAddonOption,
   setHassioAddonSecurity,
   startHassioAddon,
+  stopHassioAddon,
   uninstallHassioAddon,
+  updateHassioAddon,
   validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import {
@@ -54,6 +58,7 @@ import {
   fetchHassioStats,
   HassioStats,
 } from "../../../../src/data/hassio/common";
+import { StoreAddon } from "../../../../src/data/supervisor/store";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
@@ -65,6 +70,7 @@ import { bytesToString } from "../../../../src/util/bytes-to-string";
 import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
+import { showDialogSupervisorUpdate } from "../../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../../resources/hassio-style";
 import { addonArchIsSupported } from "../../util/addon";
 
@@ -72,63 +78,6 @@ const STAGE_ICON = {
   stable: mdiCheckCircle,
   experimental: mdiFlask,
   deprecated: mdiExclamationThick,
-};
-
-const PERMIS_DESC = {
-  stage: {
-    title: "Add-on Stage",
-    description: `Add-ons can have one of three stages:\n\n<ha-svg-icon path="${STAGE_ICON.stable}"></ha-svg-icon> **Stable**: These are add-ons ready to be used in production.\n\n<ha-svg-icon path="${STAGE_ICON.experimental}"></ha-svg-icon> **Experimental**: These may contain bugs, and may be unfinished.\n\n<ha-svg-icon path="${STAGE_ICON.deprecated}"></ha-svg-icon> **Deprecated**: These add-ons will no longer receive any updates.`,
-  },
-  rating: {
-    title: "Add-on Security Rating",
-    description:
-      "Home Assistant provides a security rating to each of the add-ons, which indicates the risks involved when using this add-on. The more access an add-on requires on your system, the lower the score, thus raising the possible security risks.\n\nA score is on a scale from 1 to 6. Where 1 is the lowest score (considered the most insecure and highest risk) and a score of 6 is the highest score (considered the most secure and lowest risk).",
-  },
-  host_network: {
-    title: "Host Network",
-    description:
-      "Add-ons usually run in their own isolated network layer, which prevents them from accessing the network of the host operating system. In some cases, this network isolation can limit add-ons in providing their services and therefore, the isolation can be lifted by the add-on author, giving the add-on full access to the network capabilities of the host machine. This gives the add-on more networking capabilities but lowers the security, hence, the security rating of the add-on will be lowered when this option is used by the add-on.",
-  },
-  homeassistant_api: {
-    title: "Home Assistant API Access",
-    description:
-      "This add-on is allowed to access your running Home Assistant instance directly via the Home Assistant API. This mode handles authentication for the add-on as well, which enables an add-on to interact with Home Assistant without the need for additional authentication tokens.",
-  },
-  full_access: {
-    title: "Full Hardware Access",
-    description:
-      "This add-on is given full access to the hardware of your system, by request of the add-on author. Access is comparable to the privileged mode in Docker. Since this opens up possible security risks, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
-  },
-  hassio_api: {
-    title: "Supervisor API Access",
-    description:
-      "The add-on was given access to the Supervisor API, by request of the add-on author. By default, the add-on can access general version information of your system. When the add-on requests 'manager' or 'admin' level access to the API, it will gain access to control multiple parts of your Home Assistant system. This permission is indicated by this badge and will impact the security score of the addon negatively.",
-  },
-  docker_api: {
-    title: "Full Docker Access",
-    description:
-      "The add-on author has requested the add-on to have management access to the Docker instance running on your system. This mode gives the add-on full access and control to your entire Home Assistant system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
-  },
-  host_pid: {
-    title: "Host Processes Namespace",
-    description:
-      "Usually, the processes the add-on runs, are isolated from all other system processes. The add-on author has requested the add-on to have access to the system processes running on the host system instance, and allow the add-on to spawn processes on the host system as well. This mode gives the add-on full access and control to your entire Home Assistant system, which adds security risks, and could damage your system when misused. Therefore, this feature impacts the add-on security score negatively.\n\nThis level of access is not granted automatically and needs to be confirmed by you. To do this, you need to disable the protection mode on the add-on manually. Only disable the protection mode if you know, need AND trust the source of this add-on.",
-  },
-  apparmor: {
-    title: "AppArmor",
-    description:
-      "AppArmor ('Application Armor') is a Linux kernel security module that restricts add-ons capabilities like network access, raw socket access, and permission to read, write, or execute specific files.\n\nAdd-on authors can provide their security profiles, optimized for the add-on, or request it to be disabled. If AppArmor is disabled, it will raise security risks and therefore, has a negative impact on the security score of the add-on.",
-  },
-  auth_api: {
-    title: "Home Assistant Authentication",
-    description:
-      "An add-on can authenticate users against Home Assistant, allowing add-ons to give users the possibility to log into applications running inside add-ons, using their Home Assistant username/password. This badge indicates if the add-on author requests this capability.",
-  },
-  ingress: {
-    title: "Ingress",
-    description:
-      "This add-on is using Ingress to embed its interface securely into Home Assistant.",
-  },
 };
 
 @customElement("hassio-addon-info")
@@ -145,14 +94,23 @@ class HassioAddonInfo extends LitElement {
 
   @internalProperty() private _error?: string;
 
+  private _addonStoreInfo = memoizeOne(
+    (slug: string, storeAddons: StoreAddon[]) =>
+      storeAddons.find((addon) => addon.slug === slug)
+  );
+
   protected render(): TemplateResult {
+    const addonStoreInfo =
+      !this.addon.detached && !this.addon.available
+        ? this._addonStoreInfo(this.addon.slug, this.supervisor.store.addons)
+        : undefined;
     const metrics = [
       {
-        description: "Add-on CPU Usage",
+        description: this.supervisor.localize("addon.dashboard.cpu_usage"),
         value: this._metrics?.cpu_percent,
       },
       {
-        description: "Add-on RAM Usage",
+        description: this.supervisor.localize("addon.dashboard.ram_usage"),
         value: this._metrics?.memory_percent,
         tooltip: `${bytesToString(this._metrics?.memory_usage)}/${bytesToString(
           this._metrics?.memory_limit
@@ -162,51 +120,64 @@ class HassioAddonInfo extends LitElement {
     return html`
       ${this.addon.update_available
         ? html`
-            <ha-card header="Update available! 🎉">
+            <ha-card
+              .header="${this.supervisor.localize(
+                "common.update_available",
+                "count",
+                1
+              )}🎉"
+            >
               <div class="card-content">
                 <hassio-card-content
                   .hass=${this.hass}
-                  .title="${this.addon.name} ${this.addon
-                    .version_latest} is available"
-                  .description="You are currently running version ${this.addon
-                    .version}"
+                  .title="${this.supervisor.localize(
+                    "addon.dashboard.new_update_available",
+                    "name",
+                    this.addon.name,
+                    "version",
+                    this.addon.version_latest
+                  )}"
+                  .description="${this.supervisor.localize(
+                    "common.running_version",
+                    "version",
+                    this.addon.version
+                  )}"
                   icon=${mdiArrowUpBoldCircle}
                   iconClass="update"
                 ></hassio-card-content>
-                ${!this.addon.available
+                ${!this.addon.available && addonStoreInfo
                   ? !addonArchIsSupported(
                       this.supervisor.info.supported_arch,
                       this.addon.arch
                     )
                     ? html`
-                        <p>
-                          This add-on is not compatible with the processor of
-                          your device or the operating system you have installed
-                          on your device.
+                        <p class="warning">
+                          ${this.supervisor.localize(
+                            "addon.dashboard.not_available_arch"
+                          )}
                         </p>
                       `
                     : html`
-                        <p>
-                          You are running Home Assistant
-                          ${this.supervisor.core.version}, to update to this
-                          version of the add-on you need at least version
-                          ${this.addon.homeassistant} of Home Assistant
+                        <p class="warning">
+                          ${this.supervisor.localize(
+                            "addon.dashboard.not_available_arch",
+                            "core_version_installed",
+                            this.supervisor.core.version,
+                            "core_version_needed",
+                            addonStoreInfo.homeassistant
+                          )}
                         </p>
                       `
                   : ""}
               </div>
               <div class="card-actions">
-                <ha-call-api-button
-                  .hass=${this.hass}
-                  .disabled=${!this.addon.available}
-                  path="hassio/addons/${this.addon.slug}/update"
-                >
-                  Update
-                </ha-call-api-button>
+                <mwc-button @click=${this._updateClicked}>
+                  ${this.supervisor.localize("common.update")}
+                </mwc-button>
                 ${this.addon.changelog
                   ? html`
                       <mwc-button @click=${this._openChangelog}>
-                        Changelog
+                        ${this.supervisor.localize("addon.dashboard.changelog")}
                       </mwc-button>
                     `
                   : ""}
@@ -217,12 +188,19 @@ class HassioAddonInfo extends LitElement {
       ${!this.addon.protected
         ? html`
         <ha-card class="warning">
-          <h1 class="card-header">Warning: Protection mode is disabled!</h1>
+          <h1 class="card-header">${this.supervisor.localize(
+            "addon.dashboard.protection_mode.title"
+          )}
+          </h1>
           <div class="card-content">
-            Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.
+          ${this.supervisor.localize("addon.dashboard.protection_mode.content")}
           </div>
           <div class="card-actions protection-enable">
-              <mwc-button @click=${this._protectionToggled}>Enable Protection mode</mwc-button>
+              <mwc-button @click=${this._protectionToggled}>
+              ${this.supervisor.localize(
+                "addon.dashboard.protection_mode.enable"
+              )}
+              </mwc-button>
             </div>
           </div>
         </ha-card>
@@ -239,14 +217,18 @@ class HassioAddonInfo extends LitElement {
                     ${this._computeIsRunning
                       ? html`
                           <ha-svg-icon
-                            title="Add-on is running"
+                            .title=${this.supervisor.localize(
+                              "dashboard.addon_running"
+                            )}
                             class="running"
                             .path=${mdiCircle}
                           ></ha-svg-icon>
                         `
                       : html`
                           <ha-svg-icon
-                            title="Add-on is stopped"
+                            .title=${this.supervisor.localize(
+                              "dashboard.addon_stopped"
+                            )}
                             class="stopped"
                             .path=${mdiCircle}
                           ></ha-svg-icon>
@@ -260,21 +242,33 @@ class HassioAddonInfo extends LitElement {
               ? html`
                   Current version: ${this.addon.version}
                   <div class="changelog" @click=${this._openChangelog}>
-                    (<span class="changelog-link">changelog</span>)
+                    (<span class="changelog-link"
+                      >${this.supervisor.localize(
+                        "addon.dashboard.changelog"
+                      )}</span
+                    >)
                   </div>
                 `
               : html`<span class="changelog-link" @click=${this._openChangelog}
-                  >Changelog</span
+                  >${this.supervisor.localize(
+                    "addon.dashboard.changelog"
+                  )}</span
                 >`}
           </div>
 
           <div class="description light-color">
             ${this.addon.description}.<br />
-            Visit
-            <a href="${this.addon.url!}" target="_blank" rel="noreferrer">
-              ${this.addon.name} page</a
-            >
-            for details.
+            ${this.supervisor.localize(
+              "addon.dashboard.visit_addon_page",
+              "name",
+              html`<a
+                href="${this.addon.url!}"
+                target="_blank"
+                rel="noreferrer"
+              >
+                ${this.addon.name}
+              </a>`
+            )}
           </div>
           <div class="addon-container">
             <div>
@@ -295,7 +289,9 @@ class HassioAddonInfo extends LitElement {
                       })}
                       @click=${this._showMoreInfo}
                       id="stage"
-                      label="stage"
+                      .label=${this.supervisor.localize(
+                        "addon.dashboard.capability.label.stage"
+                      )}
                       description=""
                     >
                       <ha-svg-icon
@@ -321,7 +317,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="host_network"
-                        label="host"
+                        .label=${this.supervisor.localize(
+                          "addon.dashboard.capability.label.host"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiNetwork}></ha-svg-icon>
@@ -333,7 +331,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="full_access"
-                        label="hardware"
+                        .label=${this.supervisor.localize(
+                          "addon.dashboard.capability.label.hardware"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiChip}></ha-svg-icon>
@@ -345,7 +345,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="homeassistant_api"
-                        label="hass"
+                        .label=${this.supervisor.localize(
+                          "addon.dashboard.capability.label.hass"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
@@ -357,8 +359,12 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="hassio_api"
-                        label="hassio"
-                        .description=${this.addon.hassio_role}
+                        .label=${this.supervisor.localize(
+                          "addon.dashboard.capability.label.hassio"
+                        )}
+                        .description=${this.supervisor.localize(
+                          `addon.dashboard.capability.role.${this.addon.hassio_role}`
+                        ) || this.addon.hassio_role}
                       >
                         <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
                       </ha-label-badge>
@@ -369,7 +375,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="docker_api"
-                        label="docker"
+                        .label=".${this.supervisor.localize(
+                          "addon.dashboard.capability.label.docker"
+                        )}"
                         description=""
                       >
                         <ha-svg-icon .path=${mdiDocker}></ha-svg-icon>
@@ -381,7 +389,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="host_pid"
-                        label="host pid"
+                        .label=${this.supervisor.localize(
+                          "addon.dashboard.capability.label.host_pid"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiPound}></ha-svg-icon>
@@ -394,7 +404,9 @@ class HassioAddonInfo extends LitElement {
                         @click=${this._showMoreInfo}
                         class=${this._computeApparmorClassName}
                         id="apparmor"
-                        label="apparmor"
+                        .label=${this.supervisor.localize(
+                          "addon.dashboard.capability.label.apparmor"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiShield}></ha-svg-icon>
@@ -406,7 +418,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="auth_api"
-                        label="auth"
+                        .label=${this.supervisor.localize(
+                          "addon.dashboard.capability.label.auth"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiKey}></ha-svg-icon>
@@ -418,7 +432,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="ingress"
-                        label="ingress"
+                        .label=${this.supervisor.localize(
+                          "addon.dashboard.capability.label.ingress"
+                        )}
                         description=""
                       >
                         <ha-svg-icon
@@ -439,10 +455,14 @@ class HassioAddonInfo extends LitElement {
                     >
                       <ha-settings-row ?three-line=${this.narrow}>
                         <span slot="heading">
-                          Start on boot
+                          ${this.supervisor.localize(
+                            "addon.dashboard.option.boot.title"
+                          )}
                         </span>
                         <span slot="description">
-                          Make the add-on start during a system boot
+                          ${this.supervisor.localize(
+                            "addon.dashboard.option.boot.description"
+                          )}
                         </span>
                         <ha-switch
                           @change=${this._startOnBootToggled}
@@ -455,10 +475,14 @@ class HassioAddonInfo extends LitElement {
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
                               <span slot="heading">
-                                Watchdog
+                                ${this.supervisor.localize(
+                                  "addon.dashboard.option.watchdog.title"
+                                )}
                               </span>
                               <span slot="description">
-                                This will start the add-on if it crashes
+                                ${this.supervisor.localize(
+                                  "addon.dashboard.option.watchdog.description"
+                                )}
                               </span>
                               <ha-switch
                                 @change=${this._watchdogToggled}
@@ -473,11 +497,14 @@ class HassioAddonInfo extends LitElement {
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
                               <span slot="heading">
-                                Auto update
+                                ${this.supervisor.localize(
+                                  "addon.dashboard.option.auto_update.title"
+                                )}
                               </span>
                               <span slot="description">
-                                Auto update the add-on when there is a new
-                                version available
+                                ${this.supervisor.localize(
+                                  "addon.dashboard.option.auto_update.description"
+                                )}
                               </span>
                               <ha-switch
                                 @change=${this._autoUpdateToggled}
@@ -487,21 +514,22 @@ class HassioAddonInfo extends LitElement {
                             </ha-settings-row>
                           `
                         : ""}
-                      ${this.addon.ingress
+                      ${!this._computeCannotIngressSidebar && this.addon.ingress
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
                               <span slot="heading">
-                                Show in sidebar
+                                ${this.supervisor.localize(
+                                  "addon.dashboard.option.ingress_panel.title"
+                                )}
                               </span>
                               <span slot="description">
-                                ${this._computeCannotIngressSidebar
-                                  ? "This option requires Home Assistant 0.92 or later."
-                                  : "Add this add-on to your sidebar"}
+                                ${this.supervisor.localize(
+                                  "addon.dashboard.option.ingress_panel.description"
+                                )}
                               </span>
                               <ha-switch
                                 @change=${this._panelToggled}
                                 .checked=${this.addon.ingress_panel}
-                                .disabled=${this._computeCannotIngressSidebar}
                                 haptic
                               ></ha-switch>
                             </ha-settings-row>
@@ -511,10 +539,14 @@ class HassioAddonInfo extends LitElement {
                         ? html`
                             <ha-settings-row ?three-line=${this.narrow}>
                               <span slot="heading">
-                                Protection mode
+                                ${this.supervisor.localize(
+                                  "addon.dashboard.option.protected.title"
+                                )}
                               </span>
                               <span slot="description">
-                                Blocks elevated system access from the add-on
+                                ${this.supervisor.localize(
+                                  "addon.dashboard.option.protected.description"
+                                )}
                               </span>
                               <ha-switch
                                 @change=${this._protectionToggled}
@@ -532,7 +564,7 @@ class HassioAddonInfo extends LitElement {
               ${this.addon.state === "started"
                 ? html`<ha-settings-row ?three-line=${this.narrow}>
                       <span slot="heading">
-                        Hostname
+                        ${this.supervisor.localize("addon.dashboard.hostname")}
                       </span>
                       <code slot="description">
                         ${this.addon.hostname}
@@ -552,24 +584,27 @@ class HassioAddonInfo extends LitElement {
             </div>
           </div>
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
-          ${!this.addon.available
+          ${!this.addon.version && addonStoreInfo && !this.addon.available
             ? !addonArchIsSupported(
                 this.supervisor.info.supported_arch,
                 this.addon.arch
               )
               ? html`
                   <p class="warning">
-                    This add-on is not compatible with the processor of your
-                    device or the operating system you have installed on your
-                    device.
+                    ${this.supervisor.localize(
+                      "addon.dashboard.not_available_arch"
+                    )}
                   </p>
                 `
               : html`
                   <p class="warning">
-                    You are running Home Assistant
-                    ${this.supervisor.core.version}, to install this add-on you
-                    need at least version ${this.addon.homeassistant} of Home
-                    Assistant
+                    ${this.supervisor.localize(
+                      "addon.dashboard.not_available_version",
+                      "core_version_installed",
+                      this.supervisor.core.version,
+                      "core_version_needed",
+                      addonStoreInfo!.homeassistant
+                    )}
                   </p>
                 `
             : ""}
@@ -579,24 +614,22 @@ class HassioAddonInfo extends LitElement {
             ${this.addon.version
               ? this._computeIsRunning
                 ? html`
-                    <ha-call-api-button
+                    <ha-progress-button
                       class="warning"
-                      .hass=${this.hass}
-                      .path="hassio/addons/${this.addon.slug}/stop"
+                      @click=${this._stopClicked}
                     >
-                      Stop
-                    </ha-call-api-button>
-                    <ha-call-api-button
+                      ${this.supervisor.localize("addon.dashboard.stop")}
+                    </ha-progress-button>
+                    <ha-progress-button
                       class="warning"
-                      .hass=${this.hass}
-                      .path="hassio/addons/${this.addon.slug}/restart"
+                      @click=${this._restartClicked}
                     >
-                      Restart
-                    </ha-call-api-button>
+                      ${this.supervisor.localize("addon.dashboard.restart")}
+                    </ha-progress-button>
                   `
                 : html`
                     <ha-progress-button @click=${this._startClicked}>
-                      Start
+                      ${this.supervisor.localize("addon.dashboard.start")}
                     </ha-progress-button>
                   `
               : html`
@@ -604,7 +637,7 @@ class HassioAddonInfo extends LitElement {
                     .disabled=${!this.addon.available}
                     @click=${this._installClicked}
                   >
-                    Install
+                    ${this.supervisor.localize("addon.dashboard.install")}
                   </ha-progress-button>
                 `}
           </div>
@@ -619,7 +652,9 @@ class HassioAddonInfo extends LitElement {
                           rel="noopener"
                         >
                           <mwc-button>
-                            Open web UI
+                            ${this.supervisor.localize(
+                              "addon.dashboard.open_web_ui"
+                            )}
                           </mwc-button>
                         </a>
                       `
@@ -627,7 +662,9 @@ class HassioAddonInfo extends LitElement {
                   ${this._computeShowIngressUI
                     ? html`
                         <mwc-button @click=${this._openIngress}>
-                          Open web UI
+                          ${this.supervisor.localize(
+                            "addon.dashboard.open_web_ui"
+                          )}
                         </mwc-button>
                       `
                     : ""}
@@ -635,7 +672,7 @@ class HassioAddonInfo extends LitElement {
                     class="warning"
                     @click=${this._uninstallClicked}
                   >
-                    Uninstall
+                    ${this.supervisor.localize("addon.dashboard.uninstall")}
                   </ha-progress-button>
                   ${this.addon.build
                     ? html`
@@ -644,7 +681,7 @@ class HassioAddonInfo extends LitElement {
                           .hass=${this.hass}
                           .path="hassio/addons/${this.addon.slug}/rebuild"
                         >
-                          Rebuild
+                          ${this.supervisor.localize("addon.dashboard.rebuild")}
                         </ha-call-api-button>
                       `
                     : ""}`
@@ -704,8 +741,21 @@ class HassioAddonInfo extends LitElement {
   private _showMoreInfo(ev): void {
     const id = ev.currentTarget.id;
     showHassioMarkdownDialog(this, {
-      title: PERMIS_DESC[id].title,
-      content: PERMIS_DESC[id].description,
+      title: this.supervisor.localize(`addon.dashboard.capability.${id}.title`),
+      content:
+        id === "stage"
+          ? this.supervisor.localize(
+              `addon.dashboard.capability.${id}.description`,
+              "icon_stable",
+              `<ha-svg-icon path="${STAGE_ICON.stable}"></ha-svg-icon>`,
+              "icon_experimental",
+              `<ha-svg-icon path="${STAGE_ICON.experimental}"></ha-svg-icon>`,
+              "icon_deprecated",
+              `<ha-svg-icon path="${STAGE_ICON.deprecated}"></ha-svg-icon>`
+            )
+          : this.supervisor.localize(
+              `addon.dashboard.capability.${id}.description`
+            ),
     });
   }
 
@@ -758,9 +808,11 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon option, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "addon.failed_to_save",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
   }
 
@@ -778,9 +830,11 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon option, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "addon.failed_to_save",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
   }
 
@@ -798,9 +852,11 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon option, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "addon.failed_to_save",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
   }
 
@@ -818,9 +874,11 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon security option, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "addon.failed_to_save",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
   }
 
@@ -838,9 +896,11 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this._error = `Failed to set addon option, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "addon.failed_to_save",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
   }
 
@@ -851,12 +911,14 @@ class HassioAddonInfo extends LitElement {
         this.addon.slug
       );
       showHassioMarkdownDialog(this, {
-        title: "Changelog",
+        title: this.supervisor.localize("addon.dashboard.changelog"),
         content,
       });
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to get addon changelog",
+        title: this.supervisor.localize(
+          "addon.dashboard.action_error.get_changelog"
+        ),
         text: extractApiErrorMessage(err),
       });
     }
@@ -876,11 +938,80 @@ class HassioAddonInfo extends LitElement {
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to install addon",
+        title: this.supervisor.localize("addon.dashboard.action_error.install"),
         text: extractApiErrorMessage(err),
       });
     }
     button.progress = false;
+  }
+
+  private async _stopClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+
+    try {
+      await stopHassioAddon(this.hass, this.addon.slug);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "stop",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this.supervisor.localize("addon.dashboard.action_error.stop"),
+        text: extractApiErrorMessage(err),
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _restartClicked(ev: CustomEvent): Promise<void> {
+    const button = ev.currentTarget as any;
+    button.progress = true;
+
+    try {
+      await restartHassioAddon(this.hass, this.addon.slug);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "stop",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this.supervisor.localize("addon.dashboard.action_error.restart"),
+        text: extractApiErrorMessage(err),
+      });
+    }
+    button.progress = false;
+  }
+
+  private async _updateClicked(): Promise<void> {
+    showDialogSupervisorUpdate(this, {
+      supervisor: this.supervisor,
+      name: this.addon.name,
+      version: this.addon.version_latest,
+      snapshotParams: {
+        name: `addon_${this.addon.slug}_${this.addon.version}`,
+        addons: [this.addon.slug],
+        homeassistant: false,
+      },
+      updateHandler: async () => await this._updateAddon(),
+    });
+  }
+
+  private async _updateAddon(): Promise<void> {
+    await updateHassioAddon(this.hass, this.addon.slug);
+    fireEvent(this, "supervisor-collection-refresh", {
+      collection: "addon",
+    });
+    const eventdata = {
+      success: true,
+      response: undefined,
+      path: "update",
+    };
+    fireEvent(this, "hass-api-called", eventdata);
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {
@@ -891,13 +1022,17 @@ class HassioAddonInfo extends LitElement {
         this.hass,
         this.addon.slug
       );
-      if (!validate.data.valid) {
+      if (!validate.valid) {
         await showConfirmationDialog(this, {
-          title: "Failed to start addon - configuration validation failed!",
-          text: validate.data.message.split(" Got ")[0],
+          title: this.supervisor.localize(
+            "addon.dashboard.action_error.start_invalid_config"
+          ),
+          text: validate.message.split(" Got ")[0],
           confirm: () => this._openConfiguration(),
-          confirmText: "Go to configuration",
-          dismissText: "Cancel",
+          confirmText: this.supervisor.localize(
+            "addon.dashboard.action_error.go_to_config"
+          ),
+          dismissText: this.supervisor.localize("common.cancel"),
         });
         button.progress = false;
         return;
@@ -922,7 +1057,7 @@ class HassioAddonInfo extends LitElement {
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to start addon",
+        title: this.supervisor.localize("addon.dashboard.action_error.start"),
         text: extractApiErrorMessage(err),
       });
     }
@@ -960,7 +1095,9 @@ class HassioAddonInfo extends LitElement {
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to uninstall addon",
+        title: this.supervisor.localize(
+          "addon.dashboard.action_error.uninstall"
+        ),
         text: extractApiErrorMessage(err),
       });
     }

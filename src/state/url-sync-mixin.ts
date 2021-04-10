@@ -25,6 +25,9 @@ export const urlSyncMixin = <
 
         public connectedCallback(): void {
           super.connectedCallback();
+          if (history.length === 1) {
+            history.replaceState({ ...history.state, root: true }, "");
+          }
           window.addEventListener("popstate", this._popstateChangeListener);
           this.addEventListener("dialog-closed", this._dialogClosedListener);
         }
@@ -40,6 +43,12 @@ export const urlSyncMixin = <
         ) => {
           if (DEBUG) {
             console.log("dialog closed", ev.detail.dialog);
+            console.log(
+              "open",
+              history.state?.open,
+              "dialog",
+              history.state?.dialog
+            );
           }
           // If not closed by navigating back, and not a new dialog is open, remove the open state from history
           if (
@@ -56,8 +65,11 @@ export const urlSyncMixin = <
 
         private _popstateChangeListener = (ev: PopStateEvent) => {
           if (this._ignoreNextPopState) {
-            if (ev.state?.oldState?.replaced) {
-              // if the previous dialog was replaced, and the current dialog is closed, we should also remove the replaced dialog from history
+            if (
+              ev.state?.oldState?.replaced ||
+              ev.state?.oldState?.dialogParams === null
+            ) {
+              // if the previous dialog was replaced, or we could not copy the params, and the current dialog is closed, we should also remove the previous dialog from history
               if (DEBUG) {
                 console.log("remove old state", ev.state.oldState);
               }

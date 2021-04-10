@@ -40,6 +40,12 @@ import { fireEvent } from "../../common/dom/fire_event";
 import scrollToTarget from "../../common/dom/scroll-to-target";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
+import {
+  addSearchParam,
+  extractSearchParam,
+  removeSearchParam,
+} from "../../common/url/search-params";
+import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
@@ -530,6 +536,13 @@ class HUIRoot extends LitElement {
           view.visible.some((show) => show.user === this.hass!.user?.id))
     );
 
+  protected firstUpdated() {
+    // Check for requested edit mode
+    if (extractSearchParam("edit") === "1") {
+      this._enableEditMode();
+    }
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
@@ -554,11 +567,7 @@ class HUIRoot extends LitElement {
 
       if (!viewPath && views.length) {
         newSelectView = views.findIndex(this._isVisible);
-        navigate(
-          this,
-          `${this.route!.prefix}/${views[newSelectView].path || newSelectView}`,
-          true
-        );
+        this._navigateToView(views[newSelectView].path || newSelectView, true);
       } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
       } else if (viewPath) {
@@ -596,11 +605,8 @@ class HUIRoot extends LitElement {
           viewPath === "hass-unused-entities"
         ) {
           newSelectView = views.findIndex(this._isVisible);
-          navigate(
-            this,
-            `${this.route!.prefix}/${
-              views[newSelectView].path || newSelectView
-            }`,
+          this._navigateToView(
+            views[newSelectView].path || newSelectView,
             true
           );
         }
@@ -714,14 +720,36 @@ class HUIRoot extends LitElement {
 
   private _enableEditMode(): void {
     this.lovelace!.setEditMode(true);
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentPath(addSearchParam({ edit: "1" }))
+    );
   }
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
+    window.history.replaceState(
+      null,
+      "",
+      constructUrlCurrentPath(removeSearchParam("edit"))
+    );
   }
 
   private _editLovelace() {
     showEditLovelaceDialog(this, this.lovelace!);
+  }
+
+  private _navigateToView(path: string | number, replace?: boolean) {
+    if (!this.lovelace!.editMode) {
+      navigate(this, `${this.route!.prefix}/${path}`, replace);
+      return;
+    }
+    navigate(
+      this,
+      `${this.route!.prefix}/${path}?${addSearchParam({ edit: "1" })}`,
+      replace
+    );
   }
 
   private _editView() {
@@ -758,7 +786,7 @@ class HUIRoot extends LitElement {
       lovelace: this.lovelace!,
       saveCallback: (viewIndex: number, viewConfig: LovelaceViewConfig) => {
         const path = viewConfig.path || viewIndex;
-        navigate(this, `${this.route?.prefix}/${path}`);
+        this._navigateToView(path);
       },
     });
   }
@@ -768,7 +796,7 @@ class HUIRoot extends LitElement {
 
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
-      navigate(this, `${this.route?.prefix}/${path}`);
+      this._navigateToView(path);
     }
     scrollToTarget(this, this._layout.header.scrollTarget);
   }

@@ -21,12 +21,11 @@ import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-circular-progress";
 import {
   fetchHassioAddonInfo,
+  fetchHassioAddonsInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
-import { fetchHassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
-import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-error-screen";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-tabs-subpage";
@@ -81,7 +80,7 @@ class HassioAddonDashboard extends LitElement {
 
     const addonTabs: PageNavigation[] = [
       {
-        name: "Info",
+        translationKey: "addon.panel.info",
         path: `/hassio/addon/${this.addon.slug}/info`,
         iconPath: mdiInformationVariant,
       },
@@ -89,7 +88,7 @@ class HassioAddonDashboard extends LitElement {
 
     if (this.addon.documentation) {
       addonTabs.push({
-        name: "Documentation",
+        translationKey: "addon.panel.documentation",
         path: `/hassio/addon/${this.addon.slug}/documentation`,
         iconPath: mdiFileDocument,
       });
@@ -98,12 +97,12 @@ class HassioAddonDashboard extends LitElement {
     if (this.addon.version) {
       addonTabs.push(
         {
-          name: "Configuration",
+          translationKey: "addon.panel.configuration",
           path: `/hassio/addon/${this.addon.slug}/config`,
           iconPath: mdiCogs,
         },
         {
-          name: "Log",
+          translationKey: "addon.panel.log",
           path: `/hassio/addon/${this.addon.slug}/logs`,
           iconPath: mdiMathLog,
         }
@@ -115,11 +114,12 @@ class HassioAddonDashboard extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
         .backPath=${this.addon.version ? "/hassio/dashboard" : "/hassio/store"}
         .route=${route}
-        hassio
         .tabs=${addonTabs}
+        supervisor
       >
         <span slot="header">${this.addon.name}</span>
         <hassio-addon-router
@@ -174,9 +174,17 @@ class HassioAddonDashboard extends LitElement {
 
   protected async firstUpdated(): Promise<void> {
     if (this.route.path === "") {
-      const addon = extractSearchParam("addon");
-      if (addon) {
-        navigate(this, `/hassio/addon/${addon}`, true);
+      const requestedAddon = extractSearchParam("addon");
+      if (requestedAddon) {
+        const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+        const validAddon = addonsInfo.addons.some(
+          (addon) => addon.slug === requestedAddon
+        );
+        if (!validAddon) {
+          this._error = this.supervisor.localize("my.error_addon_not_found");
+        } else {
+          navigate(this, `/hassio/addon/${requestedAddon}`, true);
+        }
       }
     }
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
@@ -192,7 +200,9 @@ class HassioAddonDashboard extends LitElement {
     const path: string = pathSplit[pathSplit.length - 1];
 
     if (["uninstall", "install", "update", "start", "stop"].includes(path)) {
-      await this._updateSupervisor();
+      fireEvent(this, "supervisor-collection-refresh", {
+        collection: "supervisor",
+      });
     }
 
     if (path === "uninstall") {
@@ -219,18 +229,6 @@ class HassioAddonDashboard extends LitElement {
     } catch (err) {
       this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
       this.addon = undefined;
-    }
-  }
-
-  private async _updateSupervisor(): Promise<void> {
-    try {
-      const supervisor = await fetchHassioSupervisorInfo(this.hass);
-      fireEvent(this, "supervisor-update", { supervisor });
-    } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to fetch supervisor information",
-        text: extractApiErrorMessage(err),
-      });
     }
   }
 }

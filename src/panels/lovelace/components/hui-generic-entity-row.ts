@@ -129,7 +129,8 @@ class HuiGenericEntityRow extends LitElement {
                     stateObj.attributes.brightness
                   ? html`${Math.round(
                       (stateObj.attributes.brightness / 255) * 100
-                    )}%`
+                    )}
+                    %`
                   : "")}
               </div>
             `
@@ -165,7 +166,7 @@ class HuiGenericEntityRow extends LitElement {
       .info {
         margin-left: 16px;
         margin-right: 8px;
-        flex: 1 0 30%;
+        flex: 1 1 30%;
       }
       .info,
       .info > * {

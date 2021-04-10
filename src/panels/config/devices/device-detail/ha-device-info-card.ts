@@ -111,6 +111,7 @@ export class HaDeviceCard extends LitElement {
       }
       .extra-info {
         margin-top: 8px;
+        word-wrap: break-word;
       }
       .manuf,
       .entity-id,

@@ -113,7 +113,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     if (
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.language !== this.hass!.language
+      oldHass.locale !== this.hass!.locale
     ) {
       return true;
     }
@@ -196,7 +196,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
               ${computeStateDisplay(
                 this.hass.localize,
                 stateObj,
-                this.hass.language
+                this.hass.locale
               )}
             </span>`
           : ""}
@@ -272,7 +272,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
         height: auto;
         color: var(--paper-item-icon-color, #44739e);
         --mdc-icon-size: 100%;
-        margin-bottom: 8px;
+      }
+
+      ha-icon + span {
+        margin-top: 8px;
       }
 
       ha-icon,

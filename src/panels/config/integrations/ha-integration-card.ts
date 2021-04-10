@@ -1,5 +1,6 @@
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
+import "@polymer/paper-tooltip/paper-tooltip";
+import { mdiAlertCircle, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -9,12 +10,16 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-svg-icon";
 import {
   ConfigEntry,
   deleteConfigEntry,
+  disableConfigEntry,
+  enableConfigEntry,
   reloadConfigEntry,
   updateConfigEntry,
 } from "../../../data/config_entries";
@@ -50,6 +55,10 @@ declare global {
 }
 
 const integrationsWithPanel = {
+  hassio: {
+    buttonLocalizeKey: "ui.panel.config.hassio.button",
+    path: "/hassio/dashboard",
+  },
   mqtt: {
     buttonLocalizeKey: "ui.panel.config.mqtt.button",
     path: "/config/mqtt",
@@ -88,6 +97,8 @@ export class HaIntegrationCard extends LitElement {
 
   @property() public selectedConfigEntryId?: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
   }
@@ -109,7 +120,14 @@ export class HaIntegrationCard extends LitElement {
 
   private _renderGroupedIntegration(): TemplateResult {
     return html`
-      <ha-card outlined class="group">
+      <ha-card outlined class="group ${classMap({ disabled: this.disabled })}">
+        ${this.disabled
+          ? html`<div class="header">
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.disable.disabled"
+              )}
+            </div>`
+          : ""}
         <div class="group-header">
           <img
             src=${brandsUrl(this.domain, "icon")}
@@ -132,8 +150,26 @@ export class HaIntegrationCard extends LitElement {
                   this.hass.localize(
                     "ui.panel.config.integrations.config_entry.unnamed_entry"
                   )}</paper-item-body
-                ><ha-icon-next></ha-icon-next
-              ></paper-item>`
+                >
+                ${item.state === "not_loaded"
+                  ? html`<span>
+                      <ha-svg-icon
+                        class="error"
+                        .path=${mdiAlertCircle}
+                      ></ha-svg-icon
+                      ><paper-tooltip animation-delay="0" position="left">
+                        ${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.not_loaded",
+                          "logs_link",
+                          this.hass.localize(
+                            "ui.panel.config.integrations.config_entry.logs"
+                          )
+                        )}
+                      </paper-tooltip>
+                    </span>`
+                  : ""}
+                <ha-icon-next></ha-icon-next>
+              </paper-item>`
           )}
         </paper-listbox>
       </ha-card>
@@ -148,7 +184,10 @@ export class HaIntegrationCard extends LitElement {
     return html`
       <ha-card
         outlined
-        class="single integration"
+        class="single integration ${classMap({
+          disabled: Boolean(item.disabled_by),
+          "not-loaded": !item.disabled_by && item.state === "not_loaded",
+        })}"
         .configEntry=${item}
         .id=${item.entry_id}
       >
@@ -158,6 +197,29 @@ export class HaIntegrationCard extends LitElement {
               icon="hass:chevron-left"
               @click=${this._back}
             ></ha-icon-button>`
+          : ""}
+        ${item.disabled_by
+          ? html`<div class="header">
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.disable.disabled_cause",
+                "cause",
+                this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.disable.disabled_by.${item.disabled_by}`
+                ) || item.disabled_by
+              )}
+            </div>`
+          : item.state === "not_loaded"
+          ? html`<div class="header">
+              ${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.not_loaded",
+                "logs_link",
+                html`<a href="/config/logs"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.logs"
+                  )}</a
+                >`
+              )}
+            </div>`
           : ""}
         <div class="card-content">
           <div class="image">
@@ -222,11 +284,16 @@ export class HaIntegrationCard extends LitElement {
         </div>
         <div class="card-actions">
           <div>
-            <mwc-button @click=${this._editEntryName}
-              >${this.hass.localize(
+            ${item.disabled_by === "user"
+              ? html`<mwc-button unelevated @click=${this._handleEnable}>
+                  ${this.hass.localize("ui.common.enable")}
+                </mwc-button>`
+              : ""}
+            <mwc-button @click=${this._editEntryName}>
+              ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.rename"
-              )}</mwc-button
-            >
+              )}
+            </mwc-button>
             ${item.domain in integrationsWithPanel
               ? html`<a
                   href=${`${
@@ -279,21 +346,38 @@ export class HaIntegrationCard extends LitElement {
                     </mwc-list-item>
                   </a>
                 `}
-            ${item.state === "loaded" && item.supports_unload
+            ${!item.disabled_by &&
+            item.state === "loaded" &&
+            item.supports_unload &&
+            item.source !== "system"
               ? html`<mwc-list-item @request-selected="${this._handleReload}">
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.reload"
                   )}
                 </mwc-list-item>`
               : ""}
-            <mwc-list-item
-              class="warning"
-              @request-selected="${this._handleDelete}"
-            >
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.delete"
-              )}
-            </mwc-list-item>
+            ${item.disabled_by === "user"
+              ? html`<mwc-list-item @request-selected="${this._handleEnable}">
+                  ${this.hass.localize("ui.common.enable")}
+                </mwc-list-item>`
+              : item.source !== "system"
+              ? html`<mwc-list-item
+                  class="warning"
+                  @request-selected="${this._handleDisable}"
+                >
+                  ${this.hass.localize("ui.common.disable")}
+                </mwc-list-item>`
+              : ""}
+            ${item.source !== "system"
+              ? html`<mwc-list-item
+                  class="warning"
+                  @request-selected="${this._handleDelete}"
+                >
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.delete"
+                  )}
+                </mwc-list-item>`
+              : ""}
           </ha-button-menu>
         </div>
       </ha-card>
@@ -370,6 +454,24 @@ export class HaIntegrationCard extends LitElement {
     );
   }
 
+  private _handleDisable(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._disableIntegration(
+      ((ev.target as HTMLElement).closest("ha-card") as any).configEntry
+    );
+  }
+
+  private _handleEnable(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (ev.detail.source && !shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._enableIntegration(
+      ((ev.target as HTMLElement).closest("ha-card") as any).configEntry
+    );
+  }
+
   private _handleSystemOptions(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
@@ -385,6 +487,48 @@ export class HaIntegrationCard extends LitElement {
     });
   }
 
+  private async _disableIntegration(configEntry: ConfigEntry) {
+    const entryId = configEntry.entry_id;
+
+    const confirmed = await showConfirmationDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.disable.disable_confirm"
+      ),
+    });
+
+    if (!confirmed) {
+      return;
+    }
+    const result = await disableConfigEntry(this.hass, entryId);
+    if (result.require_restart) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.disable_restart_confirm"
+        ),
+      });
+    }
+    fireEvent(this, "entry-updated", {
+      entry: { ...configEntry, disabled_by: "user" },
+    });
+  }
+
+  private async _enableIntegration(configEntry: ConfigEntry) {
+    const entryId = configEntry.entry_id;
+
+    const result = await enableConfigEntry(this.hass, entryId);
+
+    if (result.require_restart) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.enable_restart_confirm"
+        ),
+      });
+    }
+    fireEvent(this, "entry-updated", {
+      entry: { ...configEntry, disabled_by: null },
+    });
+  }
+
   private async _removeIntegration(configEntry: ConfigEntry) {
     const entryId = configEntry.entry_id;
 
@@ -397,31 +541,29 @@ export class HaIntegrationCard extends LitElement {
     if (!confirmed) {
       return;
     }
-    deleteConfigEntry(this.hass, entryId).then((result) => {
-      fireEvent(this, "entry-removed", { entryId });
+    const result = await deleteConfigEntry(this.hass, entryId);
+    fireEvent(this, "entry-removed", { entryId });
 
-      if (result.require_restart) {
-        showAlertDialog(this, {
-          text: this.hass.localize(
-            "ui.panel.config.integrations.config_entry.restart_confirm"
-          ),
-        });
-      }
-    });
+    if (result.require_restart) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.restart_confirm"
+        ),
+      });
+    }
   }
 
   private async _reloadIntegration(configEntry: ConfigEntry) {
     const entryId = configEntry.entry_id;
 
-    reloadConfigEntry(this.hass, entryId).then((result) => {
-      const locale_key = result.require_restart
-        ? "reload_restart_confirm"
-        : "reload_confirm";
-      showAlertDialog(this, {
-        text: this.hass.localize(
-          `ui.panel.config.integrations.config_entry.${locale_key}`
-        ),
-      });
+    const result = await reloadConfigEntry(this.hass, entryId);
+    const locale_key = result.require_restart
+      ? "reload_restart_confirm"
+      : "reload_confirm";
+    showAlertDialog(this, {
+      text: this.hass.localize(
+        `ui.panel.config.integrations.config_entry.${locale_key}`
+      ),
     });
   }
 
@@ -460,6 +602,27 @@ export class HaIntegrationCard extends LitElement {
         }
         :host(.highlight) ha-card {
           border: 1px solid var(--accent-color);
+        }
+        .disabled {
+          --ha-card-border-color: var(--warning-color);
+        }
+        .not-loaded {
+          --ha-card-border-color: var(--error-color);
+        }
+        .header {
+          padding: 8px;
+          text-align: center;
+        }
+        .disabled .header {
+          background: var(--warning-color);
+          color: var(--text-primary-color);
+        }
+        .not-loaded .header {
+          background: var(--error-color);
+          color: var(--text-primary-color);
+        }
+        .not-loaded .header a {
+          color: var(--text-primary-color);
         }
         .card-content {
           padding: 16px;

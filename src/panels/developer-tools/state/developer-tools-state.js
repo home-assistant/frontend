@@ -1,5 +1,8 @@
 import "@material/mwc-button";
-import { mdiInformationOutline } from "@mdi/js";
+import {
+  mdiInformationOutline,
+  mdiClipboardTextMultipleOutline,
+} from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -15,6 +18,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 
 const ERROR_SENTINEL = {};
 /*
@@ -165,7 +169,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <th>[[localize('ui.panel.developer-tools.tabs.states.state')]]</th>
             <th hidden$="[[narrow]]">
               [[localize('ui.panel.developer-tools.tabs.states.attributes')]]
-              <paper-checkbox checked="{{_showAttributes}}"></paper-checkbox>
+              <paper-checkbox
+                checked="{{_showAttributes}}"
+                on-change="saveAttributeCheckboxState"
+              ></paper-checkbox>
             </th>
           </tr>
           <tr>
@@ -204,6 +211,12 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                   alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                   title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                   path="[[informationOutlineIcon()]]"
+                ></ha-svg-icon>
+                <ha-svg-icon
+                  on-click="copyEntity"
+                  alt="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                  title="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                  path="[[clipboardOutlineIcon()]]"
                 ></ha-svg-icon>
                 <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
               </td>
@@ -275,7 +288,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
       _showAttributes: {
         type: Boolean,
-        value: true,
+        value: JSON.parse(
+          localStorage.getItem("devToolsShowAttributes") || true
+        ),
       },
 
       _entities: {
@@ -294,6 +309,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         computed: "_computeRTL(hass)",
       },
     };
+  }
+
+  copyEntity(ev) {
+    ev.preventDefault();
+    copyToClipboard(ev.model.entity.entity_id);
   }
 
   entitySelected(ev) {
@@ -345,6 +365,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return mdiInformationOutline;
   }
 
+  clipboardOutlineIcon() {
+    return mdiClipboardTextMultipleOutline;
+  }
+
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
     return Object.keys(hass.states)
       .map(function (key) {
@@ -355,7 +379,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           return false;
         }
 
-        if (!value.state.includes(_stateFilter.toLowerCase())) {
+        if (!value.state.toLowerCase().includes(_stateFilter.toLowerCase())) {
           return false;
         }
 
@@ -438,14 +462,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   lastChangedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_changed),
-      this.hass.language
+      this.hass.locale
     );
   }
 
   lastUpdatedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_updated),
-      this.hass.language
+      this.hass.locale
     );
   }
 
@@ -457,6 +481,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       return `\n${safeDump(value)}`;
     }
     return Array.isArray(value) ? value.join(", ") : value;
+  }
+
+  saveAttributeCheckboxState(ev) {
+    try {
+      localStorage.setItem("devToolsShowAttributes", ev.target.checked);
+    } catch (e) {
+      // Catch for Safari private mode
+    }
   }
 
   _computeParsedStateAttributes(stateAttributes) {

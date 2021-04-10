@@ -95,252 +95,400 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Ingeschakeld",
-            "armed_away": "Ingeschakeld afwezig",
-            "armed_custom_bypass": "Ingeschakeld met overbrugging(en)",
-            "armed_home": "Ingeschakeld thuis",
-            "armed_night": "Ingeschakeld nacht",
-            "arming": "Schakelt in",
-            "disarmed": "Uitgeschakeld",
-            "disarming": "Schakelt uit",
-            "pending": "In wacht",
-            "triggered": "Geactiveerd"
-        },
-        "automation": {
-            "off": "Uit",
-            "on": "Aan"
-        },
-        "binary_sensor": {
-            "battery": {
-                "off": "Normaal",
-                "on": "Laag"
-            },
-            "cold": {
-                "off": "Normaal",
-                "on": "Koud"
-            },
-            "connectivity": {
-                "off": "Verbroken",
-                "on": "Verbonden"
-            },
-            "default": {
-                "off": "Uit",
-                "on": "Aan"
-            },
-            "door": {
-                "off": "Dicht",
-                "on": "Open"
-            },
-            "garage_door": {
-                "off": "Dicht",
-                "on": "Open"
-            },
-            "gas": {
-                "off": "Niet gedetecteerd",
-                "on": "Gedetecteerd"
-            },
-            "heat": {
-                "off": "Normaal",
-                "on": "Heet"
-            },
-            "lock": {
-                "off": "Vergrendeld",
-                "on": "Ontgrendeld"
-            },
-            "moisture": {
-                "off": "Droog",
-                "on": "Vochtig"
-            },
-            "motion": {
-                "off": "Niet gedetecteerd",
-                "on": "Gedetecteerd"
-            },
-            "occupancy": {
-                "off": "Niet gedetecteerd",
-                "on": "Gedetecteerd"
-            },
-            "opening": {
-                "off": "Gesloten",
-                "on": "Open"
-            },
-            "presence": {
-                "off": "Afwezig",
-                "on": "Thuis"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "Probleem"
-            },
-            "safety": {
-                "off": "Veilig",
-                "on": "Onveilig"
-            },
-            "smoke": {
-                "off": "Niet gedetecteerd",
-                "on": "Gedetecteerd"
-            },
-            "sound": {
-                "off": "Niet gedetecteerd",
-                "on": "Gedetecteerd"
-            },
-            "vibration": {
-                "off": "Niet gedetecteerd",
-                "on": "Gedetecteerd"
-            },
-            "window": {
-                "off": "Dicht",
-                "on": "Open"
-            }
-        },
-        "calendar": {
-            "off": "Uit",
-            "on": "Aan"
-        },
-        "camera": {
-            "idle": "Inactief",
-            "recording": "Opnemen",
-            "streaming": "Streamen"
-        },
-        "climate": {
-            "cool": "Koelen",
-            "dry": "Droog",
-            "fan_only": "Alleen ventilatie",
-            "heat": "Verwarmen",
-            "heat_cool": "Verwarmen/Koelen",
-            "off": "Uit"
-        },
-        "configurator": {
-            "configure": "Configureer",
-            "configured": "Geconfigureerd"
-        },
-        "cover": {
-            "closed": "Gesloten",
-            "closing": "Sluit",
-            "open": "Open",
-            "opening": "Opent",
-            "stopped": "Gestopt"
-        },
         "default": {
             "off": "Uit",
             "on": "Aan",
             "unavailable": "Niet beschikbaar",
             "unknown": "Onbekend"
-        },
-        "device_tracker": {
-            "not_home": "Afwezig"
-        },
-        "fan": {
-            "off": "Uit",
-            "on": "Aan"
-        },
-        "group": {
-            "closed": "Gesloten",
-            "closing": "Sluiten",
-            "home": "Thuis",
-            "locked": "Vergrendeld",
-            "not_home": "Afwezig",
-            "off": "Uit",
-            "ok": "OK",
-            "on": "Aan",
-            "open": "Open",
-            "opening": "Openen",
-            "problem": "Probleem",
-            "stopped": "Gestopt",
-            "unlocked": "Ontgrendeld"
-        },
-        "input_boolean": {
-            "off": "Uit",
-            "on": "Aan"
-        },
-        "light": {
-            "off": "Uit",
-            "on": "Aan"
-        },
-        "lock": {
-            "locked": "Vergrendeld",
-            "unlocked": "Ontgrendeld"
-        },
-        "media_player": {
-            "idle": "Inactief",
-            "off": "Uit",
-            "on": "Aan",
-            "paused": "Gepauzeerd",
-            "playing": "Afspelen",
-            "standby": "Standby"
-        },
-        "person": {
-            "home": "Thuis"
-        },
-        "plant": {
-            "ok": "OK",
-            "problem": "Probleem"
-        },
-        "remote": {
-            "off": "Uit",
-            "on": "Aan"
-        },
-        "scene": {
-            "scening": "Scènes"
-        },
-        "script": {
-            "off": "Uit",
-            "on": "Aan"
-        },
-        "sensor": {
-            "off": "Uit",
-            "on": "Aan"
-        },
-        "sun": {
-            "above_horizon": "Boven de horizon",
-            "below_horizon": "Onder de horizon"
-        },
-        "switch": {
-            "off": "Uit",
-            "on": "Aan"
-        },
-        "timer": {
-            "active": "actief",
-            "idle": "inactief",
-            "paused": "gepauzeerd"
-        },
-        "vacuum": {
-            "cleaning": "Reinigen",
-            "docked": "Gedockt",
-            "error": "Fout",
-            "idle": "Inactief",
-            "off": "Uit",
-            "on": "Aan",
-            "paused": "Gepauseerd",
-            "returning": "Terugkeren naar dock"
-        },
-        "weather": {
-            "clear-night": "Helder, nacht",
-            "cloudy": "Bewolkt",
-            "exceptional": "Uitzonderlijk",
-            "fog": "Mist",
-            "hail": "Hagel",
-            "lightning": "Bliksem",
-            "lightning-rainy": "Bliksem, regenachtig",
-            "partlycloudy": "Gedeeltelijk bewolkt",
-            "pouring": "Regen",
-            "rainy": "Regenachtig",
-            "snowy": "Sneeuwachtig",
-            "snowy-rainy": "Sneeuw-, regenachtig",
-            "sunny": "Zonnig",
-            "windy": "Winderig",
-            "windy-variant": "Winderig"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Onbereikbaar",
-                "initializing": "Initialiseren",
-                "ready": "Gereed",
-                "sleeping": "Slaapt"
+        }
+    },
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Standaard",
+                    "header": "Audio",
+                    "input": "Invoer",
+                    "output": "Uitvoer"
+                },
+                "network": {
+                    "container": "Container",
+                    "disabled": "Uitgeschakeld",
+                    "header": "Netwerk",
+                    "host": "Host"
+                },
+                "no_configuration": "Deze add-on laat geen configuratie zien waar je mee kunt spelen..",
+                "options": {
+                    "edit_in_ui": "Bewerken in UI",
+                    "edit_in_yaml": "Bewerken in YAML",
+                    "header": "Opties",
+                    "invalid_yaml": "Ongeldige YAML",
+                    "show_unused_optional": "Ongebruikte optionele configuratieopties tonen"
+                }
             },
-            "query_stage": {
-                "dead": "Onbereikbaar ({query_stage})",
-                "initializing": "Initialiseren ( {query_stage} )"
+            "dashboard": {
+                "action_error": {
+                    "get_changelog": "Ophalen logboek van de invoegtoepassing is mislukt",
+                    "go_to_config": "Starten van de invoegtoepassing is mislukt - configuratie validatie mislukt!",
+                    "install": "De installatie van de invoegtoepassing is mislukt",
+                    "restart": "Herstarten van de invoegtoepassing is mislukt",
+                    "start": "Starten van de invoegtoepassing is mislukt",
+                    "start_invalid_config": "Ga naar configuratie",
+                    "stop": "Stoppen van de invoegtoepassing is mislukt",
+                    "uninstall": "De de-installatie van de invoegtoepassing is mislukt",
+                    "validate_config": "De configuratie van de invoegtoepassing kon niet worden gevalideerd"
+                },
+                "capability": {
+                    "apparmor": {
+                        "description": "AppArmor ('Application Armor') is een beveiligingsmodule voor de Linux-kernel die de mogelijkheden van invoegtoepassingen beperkt, zoals netwerktoegang, toegang tot raw socket, en toestemming om specifieke bestanden te lezen, te schrijven of uit te voeren.\n\nAuteurs van invoegtoepassingen kunnen hun beveiligings-profielen opgeven, geoptimaliseerd voor de invoegtoepassing, of vragen om AppArmor uit te schakelen. Als deze is uitgeschakeld, verhoogt dit de beveiligingsrisico's en heeft het een negatieve invloed op de beveiligingsscore van de invoegtoepassing.",
+                        "title": "AppArmor"
+                    },
+                    "auth_api": {
+                        "description": "Een invoegtoepassing kan gebruikers authenticeren bij Home Assistant met hun Home Assistant gebruikersnaam/wachtwoord. Hierdoor hebben invoegtoepassingen de mogelijkheid om gebruikers in te loggen bij applicaties die draaien in invoegtoepassingen. Deze badge geeft aan of de auteur van de invoegtoepassing deze mogelijkheid heeft aangevraagd.",
+                        "title": "Home Assistant Authenticatie"
+                    },
+                    "docker_api": {
+                        "description": "De auteur van deze invoegtoepassing heeft gevraagd of deze beheertoegang mag tot de Docker-instantie die op uw systeem draait. Deze modus geeft de invoegtoepassing volledige toegang en controle tot uw gehele Home Assistant-systeem, wat veiligheidsrisico's met zich mee brengt en bij misbruik uw systeem kan beschadigen. Daarom heeft deze functie een negatieve invloed op de beveiligingsscore van de invoegtoepassing.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen moet u de beschermingsmodus op de invoegtoepassing handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze invoegtoepassing kent, nodig hebt EN vertrouwt.",
+                        "title": "Volledige Docker toegang"
+                    },
+                    "full_access": {
+                        "description": "Op verzoek van de auteur van deze invoegtoepassing, heeft deze invoegtoepassing volledige toegang tot de hardware van uw systeem. De toegang is vergelijkbaar met de bevoorrechte modus in Docker. Omdat dit mogelijke veiligheidsrisico's met zich meebrengt, heeft deze eigenschap een negatieve invloed op de veiligheidsscore van de invoegtoepassing.\n\nDit toegangsniveau wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen, moet u de beveiligingsmodus van de invoegtoepassing handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze invoegtoepassing kent, nodig hebt EN vertrouwt.",
+                        "title": "Volledige hardware toegang"
+                    },
+                    "hassio_api": {
+                        "description": "Op verzoek van de auteur van de invoegtoepassing, heeft de invoegtoepassing toegang gekregen tot de Supervisor API. Standaard heeft deze toegang tot algemene versie-informatie van uw systeem. Wanneer de invoegtoepassing het toegangsniveau 'manager' of 'admin' tot de API aanvraagt, zal het toegang krijgen om meerdere delen van uw Home Assistant systeem te controleren. Deze toestemming wordt aangegeven met deze badge en zal de beveiligingsscore van de invoegtoepassing negatief beïnvloeden.",
+                        "title": "Supervisor API Toegang"
+                    },
+                    "homeassistant_api": {
+                        "description": "Deze invoegtoepassing heeft rechtstreeks toegang tot uw actieve Home Assistant-instantie via de Home Assistant API. Deze modus handelt ook de authenticatie voor de invoegtoepassing af, waardoor een invoegtoepassing kan communiceren met Home Assistant zonder de noodzaak van extra authenticatietokens.",
+                        "title": "Home Assistant API Toegang"
+                    },
+                    "host_network": {
+                        "description": "Invoegtoepassingen draaien gewoonlijk in hun eigen geïsoleerde netwerklaag waardoor ze geen toegang hebben tot het netwerk van het host-besturingssysteem. In sommige gevallen kan deze netwerkisolatie invoegtoepassingen beperken in het leveren van hun diensten en daarom kan de isolatie worden opgeheven door de auteur van deze invoegtoepassingen. Hierdoor heeft de invoegtoepassing volledige toegang tot de netwerk mogelijkheden van de host-machine. De invoegtoepassing heeft dan meer netwerkmogelijkheden maar verlaagt de beveiliging. Vandaar dat de beveiligingsscore van de invoegtoepassing zal worden verlaagd als deze optie door de invoegtoepassing wordt gebruikt.",
+                        "title": "Hostnetwerk"
+                    },
+                    "host_pid": {
+                        "description": "Gewoonlijk zijn de processen die de invoegtoepassing uitvoert, geïsoleerd van alle andere systeemprocessen. De auteur van de invoegtoepassing heeft toegang gevraagd  tot de systeemprocessen die op het host-systeem draaien en om toe te staan dat de invoegtoepassing ook processen op het host-systeem start. Deze modus geeft de invoegtoepassing volledige toegang tot en controle over uw gehele Home Assistant-systeem, wat veiligheidsrisico's toevoegt. Bij misbruik kan uw systeem beschadigd worden. Daarom heeft deze functie een negatieve invloed op de beveiligingsscore van de invoegtoepassing.\n\nDit niveau van toegang wordt niet automatisch verleend en moet door u worden bevestigd. Om dit te doen moet u de beschermingsmodus op de invoegtoepassing handmatig uitschakelen. Schakel de beveiligingsmodus alleen uit als u de bron van deze invoegtoepassing kent, nodig hebt EN vertrouwt.",
+                        "title": "Host Processes Namespace"
+                    },
+                    "ingress": {
+                        "description": "Deze invoegtoepassing maakt gebruik van Ingress om zijn gebruikersinterface veilig te integreren in Home Assistant.",
+                        "title": "Ingress"
+                    },
+                    "label": {
+                        "apparmor": "apparmor",
+                        "auth": "auth",
+                        "docker": "docker",
+                        "hardware": "hardware",
+                        "hass": "hass",
+                        "hassio": "hassio",
+                        "host": "host",
+                        "host_pid": "host pid",
+                        "ingress": "ingress",
+                        "rating": "beoordeling",
+                        "stage": "stadium"
+                    },
+                    "rating": {
+                        "description": "Home Assistant geeft een veiligheidsscore aan elke add-on, die aangeeft welke risico's het gebruik van deze add-on met zich meebrengt. Hoe meer toegang een add-on tot je systeem vereist, hoe lager de score, waardoor de mogelijke veiligheidsrisico's toenemen.\n\nEen score is op een schaal van 1 tot 6. Waarbij 1 de laagste score is (beschouwd als het meest onveilige en het grootste risico) en een score van 6 de hoogste score is (beschouwd als het meest veilige en het minste risico).",
+                        "title": "Beveilingsscore Invoegtoepassing"
+                    },
+                    "role": {
+                        "admin": "admin",
+                        "backup": "back-up",
+                        "default": "standaard",
+                        "homeassistant": "homeassistant",
+                        "manager": "manager"
+                    },
+                    "stage": {
+                        "description": "Invoegtoepassingen kunnen een van de drie stadia hebben:\n\n{icon_stable} **Stabiel**: Dit zijn add-ons die klaar zijn om in productie gebruikt te worden.\n\n{icon_experimental} **Experimenteel**: Deze kunnen fouten bevatten en kunnen onvoltooid zijn.\n\n{icon_deprecated} **Vervallen**: Deze add-ons zullen niet langer updates ontvangen.",
+                        "title": "Add-on stadium"
+                    }
+                },
+                "changelog": "Wijzigingsoverzicht",
+                "cpu_usage": "Add-on CPU-gebruik",
+                "hostname": "Hostnaam",
+                "install": "installeren",
+                "new_update_available": "{name} {version} is beschikbaar",
+                "not_available_arch": "Deze add-on is niet compatibel met de processor van je apparaat of het besturingssysteem dat je op je apparaat hebt geïnstalleerd.",
+                "not_available_version": "Je draait Home Assistant {core_version_installed}. Om de add-on naar deze versie bij te werken moet je minimaal Home Assistant {core_version_needed} hebben.",
+                "open_web_ui": "Open web UI",
+                "option": {
+                    "auto_update": {
+                        "description": "Update automatisch de invoegtoepassing wanneer er een nieuwe versie beschikbaar is",
+                        "title": "Automatisch bijwerken"
+                    },
+                    "boot": {
+                        "description": "Start de invoegtoepassing tijdens het opstarten van het systeem",
+                        "title": "Start bij opstarten"
+                    },
+                    "ingress_panel": {
+                        "description": "Deze invoegtoepassing toevoegen aan je zijbalk",
+                        "title": "Weergeven in zijbalk"
+                    },
+                    "protected": {
+                        "description": "Blokkeert systeemtoegang met extra rechten voor de invoegtoepassing",
+                        "title": "Beschermingsmodus"
+                    },
+                    "watchdog": {
+                        "description": "Dit zal de invoegtoepassing starten als deze vastloopt",
+                        "title": "Watchdog"
+                    }
+                },
+                "protection_mode": {
+                    "content": "Beschermingsmodus op deze add-on is uitgeschakeld! Dit geeft de add-on volledige toegang tot het hele systeem, wat veiligheidsrisico's toevoegt, en uw systeem kan beschadigen bij onjuist gebruik. Schakel de beveiligingsmodus alleen uit als u de bron van deze add-on kent, nodig hebt EN vertrouwt.",
+                    "enable": "Beveiligingsmodus inschakelen",
+                    "title": "Waarschuwing: Beschermingsmodus is uitgeschakeld!"
+                },
+                "ram_usage": "Add-on RAM-gebruik",
+                "rebuild": "Herbouw",
+                "restart": "herstart",
+                "start": "start",
+                "stop": "stop",
+                "uninstall": "verwijderen",
+                "visit_addon_page": "Bezoek de {name} pagina voor meer details"
+            },
+            "documentation": {
+                "get_documentation": "Ophalen documentatie van de invoegtoepassing is mislukt, {error}"
+            },
+            "failed_to_reset": "Kan configuratie van add-on niet resetten, {error}",
+            "failed_to_save": "Mislukt om add-on configuratie op te slaan, {error}",
+            "logs": {
+                "get_logs": "Ophalen van het logboek van de invoegtoepassing is mislukt, {error}"
+            },
+            "panel": {
+                "configuration": "Configuratie",
+                "documentation": "Documentatie",
+                "info": "Informatie",
+                "log": "Logboek"
+            },
+            "state": {
+                "installed": "Add-on is geïnstalleerd",
+                "not_available": "Add-on is niet beschikbaar op uw systeem",
+                "not_installed": "Add-on is niet geïnstalleerd"
+            }
+        },
+        "common": {
+            "cancel": "Annuleren",
+            "close": "Sluiten",
+            "description": "Omschrijving",
+            "error": {
+                "unknown": "Onbekende fout",
+                "update_failed": "Update mislukt"
+            },
+            "failed_to_restart_name": "Herstarten {name} is mislukt",
+            "failed_to_update_name": "Bijwerken {name} is mislukt",
+            "learn_more": "Meer informatie",
+            "new_version_available": "Nieuwe versie beschikbaar",
+            "newest_version": "Nieuwste versie",
+            "no": "Nee",
+            "refresh": "Vernieuwen",
+            "release_notes": "Release-notities",
+            "reload": "Herlaad",
+            "reset_defaults": "Standaardinstellingen terugzetten",
+            "reset_options": "Reset opties",
+            "restart": "Herstart",
+            "restart_name": "Herstart {name}",
+            "running_version": "Je gebruikt momenteel versie {version}",
+            "save": "Opslaan",
+            "show_more": "Toon meer informatie hierover",
+            "update": "Update",
+            "update_available": "Er {count, plural, one {staat een update} other {{count} staan updates}} klaar",
+            "version": "Versie",
+            "yes": "Ja"
+        },
+        "confirm": {
+            "reset_options": {
+                "text": "Weet u zeker dat u al uw opties opnieuw wilt instellen?",
+                "title": "Reset opties"
+            },
+            "restart": {
+                "text": "Weet u zeker dat u {name} opnieuw wilt starten?",
+                "title": "Herstart {name}"
+            },
+            "update": {
+                "text": "Weet u zeker dat u {name} wilt updaten naar versie {version}?",
+                "title": "Update {name}"
+            }
+        },
+        "dashboard": {
+            "addon_new_version": "Nieuwe versie beschikbaar",
+            "addon_running": "Add-on wordt uitgevoerd",
+            "addon_stopped": "Add-on is gestopt",
+            "addons": "Add-ons",
+            "no_addons": "Je hebt nog geen add-ons geïnstalleerd. Ga naar de add-on store om te beginnen!"
+        },
+        "dialog": {
+            "network": {
+                "connected_to": "Verbonden met {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "Uitgeschakeld",
+                "dns_servers": "DNS-servers",
+                "failed_to_change": "Wijzigen netwerkinstellingen mislukt",
+                "gateway": "Gateway-adres",
+                "ip_netmask": "IP-adres/Netmask",
+                "open": "Open",
+                "scan_ap": "Scan voor toegangspunten",
+                "static": "Statisch",
+                "title": "Netwerkinstellingen",
+                "unsaved": "U heeft niet-opgeslagen wijzigingen, deze gaan verloren als u van tabblad verandert, wilt u doorgaan?",
+                "warning": "Als u het Wi-Fi-, IP- of gateway-adres verandert, kunt u de verbinding verliezen!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
+            "registries": {
+                "add_new_registry": "Nieuw register toevoegen",
+                "add_registry": "Register toevoegen",
+                "failed_to_add": "Register toevoegen mislukt",
+                "failed_to_remove": "Register verwijderen mislukt",
+                "no_registries": "Geen registers geconfigureerd",
+                "password": "Wachtwoord",
+                "registry": "Register",
+                "remove": "Verwijderen",
+                "title_add": "Nieuwe container registratie toevoegen",
+                "title_manage": "Beheer containerregisters",
+                "username": "Gebruikersnaam"
+            },
+            "repositories": {
+                "add": "Toevoegen",
+                "remove": "Verwijderen",
+                "title": "Beheer de invoegtoepassing repositories"
+            },
+            "restart_addon": {
+                "confirm_text": "Herstart de invoegtoepassing",
+                "text": "Wilt u de invoegtoepassing opnieuw starten met uw wijzigingen?"
+            },
+            "update": {
+                "create_snapshot": "Maak een snapshot van {name} voordat u gaat bijwerken",
+                "snapshot": "Snapshot",
+                "snapshotting": "Een snapshot van {name} aan het maken",
+                "updating": "Bijwerken van {name} naar versie {version}"
+            }
+        },
+        "my": {
+            "error": "Er is een onbekende fout opgetreden",
+            "error_addon_not_found": "Invoegtoepassing niet gevonden",
+            "faq_link": "My Home Assistant FAQ",
+            "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
+        },
+        "panel": {
+            "dashboard": "Dashboard",
+            "snapshots": "Snapshots",
+            "store": "Add-on Store",
+            "system": "Systeem"
+        },
+        "snapshot": {
+            "addons": "Invoegtoepassingen",
+            "available_snapshots": "Beschikbare snapshots",
+            "could_not_create": "Kon geen snapshot maken",
+            "create": "Maak",
+            "create_blocked_not_running": "Het maken van een snapshot is nu niet mogelijk omdat het systeem in {state} staat.",
+            "create_snapshot": "Maak snapshot",
+            "description": "Met snapshots kunt u gemakkelijk een back-up maken van alle gegevens van uw Home Assistant en ze herstellen.",
+            "enter_password": "Voer een wachtwoord in.",
+            "folder": {
+                "addons/local": "Lokale invoegtoepassingen",
+                "homeassistant": "Home Assistant configuratie",
+                "media": "Media",
+                "share": "Deel",
+                "ssl": "SSL"
+            },
+            "folders": "Mappen",
+            "full_snapshot": "Volledige snapshot",
+            "name": "Naam",
+            "no_snapshots": "Je hebt nog geen snapshots.",
+            "partial_snapshot": "Gedeeltelijke snapshot",
+            "password": "Wachtwoord",
+            "password_protected": "beveiligd met wachtwoord",
+            "password_protection": "Wachtwoord bescherming",
+            "security": "Beveiliging",
+            "type": "Type",
+            "upload_snapshot": "Upload snapshot"
+        },
+        "store": {
+            "missing_addons": "Mis je de invoegtoepassingen? Schakel de geavanceerde modus in op uw gebruikersprofiel pagina",
+            "no_results_found": "Geen resultaten gevonden in {repository}.",
+            "registries": "Registers",
+            "repositories": "Repositories"
+        },
+        "system": {
+            "core": {
+                "cpu_usage": "Core CPU-gebruik",
+                "ram_usage": "Core RAM-gebruik"
+            },
+            "host": {
+                "change": "Wijzig",
+                "change_hostname": "Hostnaam wijzigen",
+                "confirm_reboot": "Weet u zeker dat u de host wilt herstarten?",
+                "confirm_shutdown": "Weet je zeker dat je de host wilt afsluiten?",
+                "deployment": "Uitrol",
+                "docker_version": "Docker versie",
+                "emmc_lifetime_used": "eMMC Levensduur Gebruikt",
+                "failed_to_get_hardware_list": "Kan geen hardware lijst krijgen",
+                "failed_to_import_from_usb": "Importeren vanaf USB mislukt",
+                "failed_to_reboot": "Herstarten host mislukt",
+                "failed_to_set_hostname": "Instellen hostnaam mislukt",
+                "failed_to_shutdown": "Afsluiten host mislukt",
+                "hardware": "Hardware",
+                "hostname": "Hostnaam",
+                "import_from_usb": "Importeren van USB",
+                "ip_address": "IP-adres",
+                "new_hostname": "Voer een nieuwe hostnaam in:",
+                "operating_system": "Besturingssysteem",
+                "reboot_host": "Host herstarten",
+                "shutdown_host": "Host afsluiten",
+                "used_space": "Gebruikte ruimte"
+            },
+            "log": {
+                "get_logs": "Ophalen {provider} logs mislukt, {error}",
+                "log_provider": "Logboekprovider"
+            },
+            "supervisor": {
+                "beta_backup": "Zorg ervoor dat je back-ups van je gegevens hebt voordat je deze functie activeert.",
+                "beta_join_confirm": "Wil je meedoen met de bèta releases?",
+                "beta_release_items": "Dit omvat bèta releases voor:",
+                "beta_warning": "Bèta-releases zijn voor testers en early adopters en kunnen onstabiele codewijzigingen bevatten",
+                "channel": "Kanaal",
+                "cpu_usage": "Supervisor CPU-gebruik",
+                "failed_to_reload": "Herladen van de Supervisor is mislukt",
+                "failed_to_set_option": "Instellen van Supervisor-optie is mislukt",
+                "failed_to_update": "Bijwerken van de Supervisor is mislukt",
+                "join_beta_action": "Word lid van het bèta-kanaal",
+                "join_beta_description": "Ontvang bèta-updates voor Home Assistant (RC's), Supervisor en host",
+                "leave_beta_action": "Verlaat bèta-kanaal",
+                "leave_beta_description": "Krijg stabiele updates voor Home Assistant, Supervisor en host",
+                "ram_usage": "Supervisor RAM-gebruik",
+                "reload_supervisor": "Herlaad de Supervisor",
+                "share_diagnostics": "Diagnostische gegevens delen",
+                "share_diagnostics_description": "Deel crash rapporten en diagnostische informatie.",
+                "share_diagonstics_description": "Zou je automatisch crash rapporten en diagnostische informatie willen delen wanneer de Supervisor onverwachte fouten tegenkomt? {line_break} Dit stelt ons in staat om de problemen op te lossen, de informatie is alleen toegankelijk voor het Home Assistant Core team en zal niet met anderen gedeeld worden.{line_break} De gegevens bevatten geen privé/gevoelige informatie en u kunt dit in de instellingen op elk gewenst moment uitschakelen.",
+                "share_diagonstics_title": "Help Home Assistant te verbeteren",
+                "unhealthy_description": "Het draaien van een onvolledige installatie zal problemen veroorzaken. Hieronder vindt u een lijst met problemen die gevonden zijn met uw installatie, klik op de links om te leren hoe u de problemen kunt oplossen.",
+                "unhealthy_reason": {
+                    "docker": "De Docker omgeving werkt niet goed",
+                    "privileged": "Supervisor heeft onvoldoende toegangsrechten",
+                    "setup": "Setup van de Supervisor mislukt",
+                    "supervisor": "Supervisor kon niet worden bijgewerkt",
+                    "untrusted": "Niet-vertrouwde inhoud gedetecteerd"
+                },
+                "unhealthy_title": "Er is iets mis met je installatie",
+                "unsupported_description": "Hieronder vindt je een lijst met problemen die bij je installatie zijn aangetroffen. Klik op de links om te zien hoe je de problemen kunt oplossen.",
+                "unsupported_reason": {
+                    "apparmor": "AppArmor is niet ingeschakeld op de host",
+                    "container": "Containers waarvan bekend is dat ze problemen veroorzaken",
+                    "content-trust": "Validatie van content-trust is uitgeschakeld",
+                    "dbus": "DBUS",
+                    "docker_configuration": "Docker Configuratie",
+                    "docker_version": "Docker versie",
+                    "job_conditions": "Genegeerde taakvoorwaarden",
+                    "lxc": "LXC",
+                    "network_manager": "Netwerkmanager",
+                    "os": "Besturingssysteem",
+                    "privileged": "Supervisor heeft onvoldoende toegangsrechten",
+                    "systemd": "Systemd"
+                },
+                "unsupported_title": "Je gebruikt een niet-ondersteunde installatie",
+                "update_supervisor": "Supervisor bijwerken",
+                "warning": "WAARSCHUWING"
             }
         }
     },
@@ -443,7 +591,7 @@
             "script": {
                 "cancel": "Annuleer",
                 "cancel_multiple": "Annuleer {number}",
-                "execute": "Uitvoeren"
+                "run": "Uitvoeren"
             },
             "service": {
                 "run": "Uitvoeren"
@@ -538,6 +686,19 @@
             "yes": "Ja"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Add-on",
+                "error": {
+                    "fetch_addons": {
+                        "description": "Het ophalen van add-ons leverde een fout op.",
+                        "title": "Fout bij ophalen add-ons"
+                    },
+                    "no_supervisor": {
+                        "description": "Geen Supervisor gevonden, dus add-ons konden niet worden geladen.",
+                        "title": "Geen Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Toevoegen",
@@ -556,13 +717,16 @@
             "blueprint-picker": {
                 "add_user": "Gebruiker toevoegen",
                 "remove_user": "Gebruiker verwijderen",
-                "select_blueprint": "Selecteer een blauwdruk"
+                "select_blueprint": "Selecteer een Blueprint"
             },
             "calendar": {
                 "my_calendars": "Mijn agenda's",
                 "today": "Vandaag"
             },
             "data-table": {
+                "clear": "Wis",
+                "filtering_by": "Filteren op",
+                "hidden": "{number} verborgen",
                 "no-data": "Geen gegevens",
                 "search": "Zoek"
             },
@@ -606,6 +770,8 @@
                     "changed_to_state": "gewijzigd in {state}",
                     "cleared_device_class": "niets gedetecteerd (geen {device_class} gedetecteerd)",
                     "detected_device_class": "{device_class} gedetecteerd",
+                    "is_closing": "aan het sluiten",
+                    "is_opening": "Aan het openen",
                     "rose": "opkomst",
                     "set": "ondergang",
                     "turned_off": "is uitgeschakeld",
@@ -625,12 +791,12 @@
                     "was_unlocked": "ontgrendeld",
                     "was_unplugged": "is niet aangesloten",
                     "was_unsafe": "was onveilig"
-                }
+                },
+                "show_trace": "Tracering weergeven"
             },
             "media-browser": {
                 "audio_not_supported": "Uw browser ondersteunt het audio-element niet.",
                 "choose_player": "Kies speler",
-                "choose-source": "Kies bron",
                 "class": {
                     "album": "Album",
                     "app": "App",
@@ -652,13 +818,6 @@
                     "tv_show": "TV-programma",
                     "url": "URL",
                     "video": "Video"
-                },
-                "content-type": {
-                    "album": "Album",
-                    "artist": "Artiest",
-                    "library": "Bibliotheek",
-                    "playlist": "Afspeellijst",
-                    "server": "Server"
                 },
                 "documentation": "documentatie",
                 "learn_adding_local_media": "Leer meer over media toevoegen in de {documentation}.",
@@ -682,6 +841,14 @@
                 "label": "Afbeelding",
                 "unsupported_format": "Niet-ondersteund formaat. Kies een JPEG-, PNG- of GIF-afbeelding."
             },
+            "related-filter-menu": {
+                "filter_by_area": "Filter op gebied",
+                "filter_by_device": "Filter op apparaat",
+                "filter_by_entity": "Filter op entiteit",
+                "filtered_by_area": "gebied: {area_name}",
+                "filtered_by_device": "apparaat: {device_name}",
+                "filtered_by_entity": "entiteit: {entity_name}"
+            },
             "related-items": {
                 "area": "Gebied",
                 "automation": "Onderdeel van de volgende automatiseringen",
@@ -701,7 +868,6 @@
                     "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}",
                     "week": "{count} {count, plural,\none {week}\nother {weken}\n}"
                 },
-                "future": "Over {time}",
                 "future_duration": {
                     "day": "Binnen {count} {count, plural,\n  one {dag}\n  other {dagen}\n}",
                     "hour": "Binnen {count} {count, plural,\n  one {uur}\n  other {uren}\n}",
@@ -711,7 +877,6 @@
                 },
                 "just_now": "Zojuist",
                 "never": "Nooit",
-                "past": "{time} geleden",
                 "past_duration": {
                     "day": "{count} {count, plural,\n  one {dag}\n  other {dagen}\n} geleden",
                     "hour": "{count} {count, plural,\n  one {uur}\n  other {uren}\n} geleden",
@@ -719,6 +884,12 @@
                     "second": "{count} {count, plural,\n  one {seconde}\n  other {seconden}\n} geleden",
                     "week": "{count} {count, plural,\n  one {week}\n  other {weken}\n} geleden"
                 }
+            },
+            "service-control": {
+                "required": "Dit veld is verplicht",
+                "service_data": "Service data",
+                "target": "Doelen",
+                "target_description": "Wat moet deze dienst gebruiken als doelgebieden, apparaten of entiteiten."
             },
             "service-picker": {
                 "service": "Service"
@@ -841,7 +1012,6 @@
                 "crop": "Snijd bij"
             },
             "more_info_control": {
-                "controls": "Besturing",
                 "cover": {
                     "close_cover": "Sluit zonnewering",
                     "close_tile_cover": "Sluit klep",
@@ -858,6 +1028,9 @@
                 "person": {
                     "create_zone": "Creëer zone van huidige locatie"
                 },
+                "remote": {
+                    "activity": "Huidige activiteit"
+                },
                 "restored": {
                     "confirm_remove_text": "Weet je zeker dat je dit item wilt verwijderen?",
                     "confirm_remove_title": "Entiteit verwijderen?",
@@ -867,7 +1040,7 @@
                 },
                 "script": {
                     "last_action": "Laatste actie",
-                    "last_triggered": "Voor het laatst uitgevoerd"
+                    "last_triggered": "Laatst geactiveerd"
                 },
                 "settings": "Entiteit instellingen",
                 "sun": {
@@ -926,52 +1099,56 @@
                         "logs": "Logs",
                         "lovelace": "Lovelace Dashboards",
                         "navigate_to": "Navigeer naar {panel}",
-                        "navigate_to_config": "Navigeer naar {panel} configuratie",
                         "person": "Personen",
                         "scene": "Scènes",
                         "script": "Scripts",
                         "server_control": "Server Controls",
-                        "tags": "Tags",
+                        "tag": "Tags",
                         "users": "Gebruikers",
                         "zone": "Zones"
                     },
                     "reload": {
-                        "automation": "Herlaad automatiseringen",
-                        "command_line": "Herlaad commandline entiteiten",
-                        "core": "Herlaad locatie & aanpassingen",
-                        "filesize": "Herlaad bestandsgroote entiteiten",
-                        "filter": "Herlaad filter entiteiten",
-                        "generic": "Herlaad",
-                        "generic_thermostat": "Herlaad",
-                        "group": "Herlaad groepen, groepsentiteiten en notificatieservices",
-                        "history_stats": "Herlaad historische statistieken entiteiten",
-                        "homekit": "Herlaad HomeKit",
-                        "input_boolean": "Herlaad input booleans",
-                        "input_datetime": "Herlaad input datatijd",
-                        "input_number": "Herlaad input nummers",
-                        "input_select": "Herlaad input selecties",
-                        "input_text": "Herlaad input teksten",
+                        "automation": "Automatiseringen",
+                        "command_line": "Opdrachtregel-entiteiten",
+                        "core": "Locatie en aanpassingen",
+                        "filesize": "Bestandsgrootte entiteiten",
+                        "filter": "Filter-entiteiten",
+                        "generic": "Generieke IP camera entiteiten",
+                        "generic_thermostat": "Generieke thermostaat entiteiten",
+                        "group": "Groepen, groepsentiteiten en notify services",
+                        "history_stats": "Historische statistieken entiteiten",
+                        "homekit": "HomeKit",
+                        "input_boolean": "Input booleans",
+                        "input_datetime": "Input date times",
+                        "input_number": "Input numbers",
+                        "input_select": "Input selects",
+                        "input_text": "Input texts",
                         "min_max": "Laad min/max entiteiten opnieuw",
-                        "mqtt": "Herlaad mqtt entiteiten",
-                        "person": "Herlaad personen",
-                        "ping": "Herlaad binaire ping-sensorentiteiten",
-                        "reload": "Herlaad {domain}",
-                        "rest": "Herlaad rest entiteiten en notificatieservices",
-                        "rpi_gpio": "Herlaad Raspberry PI GPIO entiteiten",
-                        "scene": "Herlaad scenes",
-                        "script": "Herlaad scripts",
-                        "smtp": "Herlaad smtp notificatie services",
-                        "statistics": "Herlaad statistieken entiteiten",
-                        "telegram": "Herlaad telegram notificatie services",
-                        "template": "Herlaad template entiteiten",
-                        "trend": "Herlaad trend entiteiten",
-                        "universal": "Herlaad universele mediaplayer entiteiten",
-                        "zone": "Herlaad zones"
+                        "mqtt": "Handmatig geconfigureerde MQTT-entiteiten",
+                        "person": "Personen",
+                        "ping": "Ping binaire sensor entiteiten",
+                        "reload": "{domain}",
+                        "rest": "Rest-entiteiten en notify-services",
+                        "rpi_gpio": "Raspberry Pi GPIO-entiteiten",
+                        "scene": "Scenes",
+                        "script": "Scripts",
+                        "smtp": "SMTP notify services",
+                        "statistics": "Statistische entiteiten",
+                        "telegram": "Telegram notify services",
+                        "template": "Template entiteiten",
+                        "trend": "Trend-entiteiten",
+                        "universal": "Universele mediaspeler entiteiten",
+                        "zone": "Zones"
                     },
                     "server_control": {
                         "perform_action": "{action} Server",
                         "restart": "Herstarten",
                         "stop": "Stop"
+                    },
+                    "types": {
+                        "navigation": "Navigeer",
+                        "reload": "Herlaad",
+                        "server_control": "Server"
                     }
                 },
                 "filter_placeholder": "Entiteitsfilter"
@@ -988,13 +1165,16 @@
                 "buttons": {
                     "add": "Apparaten toevoegen via dit apparaat",
                     "clusters": "Clusters beheren",
+                    "device_children": "Bekijk onderliggende apparaten",
                     "reconfigure": "Apparaat opnieuw configureren",
                     "remove": "Verwijder apparaat",
+                    "view_in_visualization": "Bekijk in Visualisatie",
                     "zigbee_information": "Zigbee-apparaathandtekening"
                 },
                 "confirmations": {
                     "remove": "Weet je zeker dat je het apparaat wilt verwijderen?"
                 },
+                "device_children": "Kinderen van Zigbee-apparaat",
                 "device_signature": "Handtekening van het Zigbee-apparaat",
                 "last_seen": "Laatst gezien",
                 "manuf": "door {manufacturer}",
@@ -1009,10 +1189,11 @@
                 },
                 "unknown": "Onbekend",
                 "zha_device_card": {
-                    "area_picker_label": "Gebied",
-                    "device_name_placeholder": "Wijzig apparaatnaam",
-                    "update_name_button": "Naam bijwerken"
+                    "device_name_placeholder": "Wijzig apparaatnaam"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Apparaat opnieuw configureren"
             }
         },
         "duration": {
@@ -1029,9 +1210,18 @@
                 "editor_not_supported": "Visuele editor wordt niet ondersteund voor deze configuratie",
                 "error_detected": "Configuratiefouten ontdekt",
                 "key_missing": "Verplichte sleutel \"{key}\" ontbreekt.",
-                "key_not_expected": "Sleutel \" {key} \" wordt niet verwacht of wordt niet ondersteund door de visuele editor.",
+                "key_not_expected": "Sleutel \"{key}\" wordt niet verwacht of ondersteund door de visuele editor.",
                 "key_wrong_type": "De opgegeven waarde voor \" {key} \" wordt niet ondersteund door de visuele editor. We ondersteunen ( {type_correct} ) maar hebben ( {type_wrong} ) ontvangen.",
+                "no_template_editor_support": "Sjablonen worden niet ondersteund in de visuele editor",
                 "no_type_provided": "Geen type opgegeven."
+            },
+            "supervisor": {
+                "ask": "Vraag om hulp",
+                "observer": "Controleer de Observer",
+                "reboot": "Probeer een herstart van de host",
+                "system_health": "Controleer de systeemstatus",
+                "title": "Kan het supervisorpaneel niet laden!",
+                "wait": "Als Home Assistant net is gestart, zorg ervoor dat de supervisor genoeg tijd heeft gehad om op te starten."
             }
         },
         "login-form": {
@@ -1055,10 +1245,6 @@
             "triggered": "Geactiveerd {name}"
         },
         "panel": {
-            "calendar": {
-                "my_calendars": "Mijn agenda's",
-                "today": "Vandaag"
-            },
             "config": {
                 "advanced_mode": {
                     "hint_enable": "Ontbrekende configuratie-opties? Schakel geavanceerde modus in",
@@ -1142,10 +1328,15 @@
                                 "device_id": {
                                     "action": "Actie",
                                     "extra_fields": {
+                                        "brightness_pct": "Helderheid",
                                         "code": "Code",
+                                        "flash": "Flash",
+                                        "humidity": "Vochtigheid",
                                         "message": "Bericht",
+                                        "mode": "Modus",
                                         "position": "Positie",
-                                        "title": "Titel"
+                                        "title": "Titel",
+                                        "value": "Waarde"
                                     },
                                     "label": "Apparaat"
                                 },
@@ -1176,8 +1367,7 @@
                                     "label": "Activeer scène"
                                 },
                                 "service": {
-                                    "label": "Service aanroepen",
-                                    "service_data": "Service data"
+                                    "label": "Service aanroepen"
                                 },
                                 "wait_for_trigger": {
                                     "continue_timeout": "Ga verder op time-out",
@@ -1197,8 +1387,6 @@
                         "blueprint": {
                             "blueprint_to_use": "Blueprint om te gebruiken",
                             "header": "Blueprint",
-                            "inputs": "Inputs",
-                            "manage_blueprints": "Beheer Blueprints",
                             "no_blueprints": "Je hebt geen Blueprints",
                             "no_inputs": "Deze Blueprint heeft geen inputs."
                         },
@@ -1221,7 +1409,9 @@
                                     "extra_fields": {
                                         "above": "Boven",
                                         "below": "Onder",
-                                        "for": "Duur"
+                                        "for": "Duur",
+                                        "hvac_mode": "HVAC-modus",
+                                        "preset_mode": "Vooraf ingestelde modus"
                                     },
                                     "label": "Apparaat"
                                 },
@@ -1243,9 +1433,9 @@
                                 },
                                 "sun": {
                                     "after": "Na:",
-                                    "after_offset": "Na offset (optioneel)",
+                                    "after_offset": "Afwijking na (optioneel)",
                                     "before": "Voor:",
-                                    "before_offset": "Voor offset (optioneel)",
+                                    "before_offset": "Afwijking voor (optioneel)",
                                     "label": "Zon",
                                     "sunrise": "Zonsopkomst",
                                     "sunset": "Zonsondergang"
@@ -1306,6 +1496,7 @@
                         "move_down": "Verplaats omlaag",
                         "move_up": "Verplaats omhoog",
                         "save": "Opslaan",
+                        "show_trace": "Tracering weergeven",
                         "triggers": {
                             "add": "Trigger toevoegen",
                             "delete": "Verwijderen",
@@ -1370,7 +1561,7 @@
                                 "sun": {
                                     "event": "Gebeurtenis:",
                                     "label": "Zon",
-                                    "offset": "Offset (optioneel)",
+                                    "offset": "Afwijking (optioneel)",
                                     "sunrise": "Zonsopkomst",
                                     "sunset": "Zonsondergang"
                                 },
@@ -1414,6 +1605,8 @@
                         "add_automation": "Automatisering toevoegen",
                         "delete_automation": "Verwijder automatisering",
                         "delete_confirm": "Weet je zeker dat je deze automatisering wilt verwijderen?",
+                        "dev_automation": "Debug automatisering",
+                        "dev_only_editable": "Alleen automatiseringen in automations.yaml kunnen worden gedebugd.",
                         "duplicate": "Dupliceren",
                         "duplicate_automation": "Dupliceer automatisering",
                         "edit_automation": "Bewerk automatisering",
@@ -1423,7 +1616,7 @@
                         },
                         "introduction": "Met de automatiseringseditor editor kun je automatiseringen maken en bewerken. Volg de link hieronder om er zeker van te zijn dat je Home Assistant juist hebt geconfigureerd.",
                         "learn_more": "Meer informatie over automatiseringen",
-                        "no_automations": "We konden geen bewerkbare automatiseringen vinden",
+                        "no_automations": "We konden geen automatiseringen vinden",
                         "only_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
                         "pick_automation": "Kies te bewerken automatisering",
                         "show_info_automation": "Informatie weergeven over automatisering"
@@ -1453,7 +1646,6 @@
                         "header": "Voeg een nieuwe Blueprint toe",
                         "import_btn": "Bekijk een Blueprint",
                         "import_header": "Blueprint \"{name}\"",
-                        "import_introduction": "U kunt Blueprints van andere gebruikers importeren vanuit Github en de communityforums. Voer de URL van de Blueprint hieronder in.",
                         "import_introduction_link": "U kunt Blueprints van andere gebruikers importeren vanuit Github en de {community_link} . Voer de URL van de Blueprint hieronder in.",
                         "importing": "Blueprint importeren ...",
                         "raw_blueprint": "Blueprint inhoud",
@@ -1467,7 +1659,7 @@
                     "overview": {
                         "add_blueprint": "Blueprint importeren",
                         "confirm_delete_header": "Deze Blueprint verwijderen?",
-                        "confirm_delete_text": "Weet je zeker dat je deze blauwdruk wilt verwijderen?",
+                        "confirm_delete_text": "Weet je zeker dat je deze Blueprint wilt verwijderen?",
                         "delete_blueprint": "Verwijder Blueprint",
                         "discover_more": "Ontdek meer Blueprints",
                         "header": "Blueprinteditor",
@@ -1478,6 +1670,8 @@
                         },
                         "introduction": "Met de Blueprinteditor kunt je Blueprints maken en bewerken.",
                         "learn_more": "Meer informatie over Blueprints",
+                        "share_blueprint": "Deel Blueprint",
+                        "share_blueprint_no_url": "Kan Blueprint niet delen: geen bron-URL",
                         "use_blueprint": "Automatisering maken"
                     }
                 },
@@ -1502,7 +1696,7 @@
                         "fetching_subscription": "Abonnement ophalen...",
                         "google": {
                             "config_documentation": "Configuratie documentatie",
-                            "devices_pin": "Pin Beveiligingsapparaten",
+                            "devices_pin": "Pincode van beveiligingsapparaten",
                             "enable_ha_skill": "Activeer Home Assistant voor Google Assistant",
                             "enable_state_reporting": "Statusrapportage inschakelen",
                             "enter_pin_error": "Kan pincode niet opslaan:",
@@ -1511,6 +1705,8 @@
                             "info": "Met de Google Assistant integratie voor Home Assistant Cloud kun je al je Home Assistant apparaten bedienen via elk apparaat waarop Google Assistant is ingeschakeld.",
                             "info_state_reporting": "Als u statusrapportage inschakelt, stuurt Home Assistant alle statuswijzigingen van blootgestelde entiteiten naar Google. Hierdoor kunt u altijd de meest actuele statussen in de Google-app zien.",
                             "manage_entities": "Entiteiten beheren",
+                            "not_configured_text": "Voordat u Google Assistant kunt gebruiken, moet u de Home Assistant Cloud-skill voor Google Assistant activeren in de Google Home-app.",
+                            "not_configured_title": "Google Assistant is niet geactiveerd",
                             "security_devices": "Beveiligingsapparaten",
                             "sync_entities": "Synchroniseer entiteiten met Google",
                             "sync_entities_404_message": "Kan uw entiteiten niet synchroniseren met Google, vraag Google 'Hey Google, synchroniseer mijn apparaten' om uw entiteiten te synchroniseren.",
@@ -1537,7 +1733,7 @@
                         "tts": {
                             "default_language": "Standaardtaal om te gebruiken",
                             "dialog": {
-                                "example_message": "Hallo {naam}, je kunt elke tekst afspelen op elke ondersteunde mediaspeler!",
+                                "example_message": "Hallo {name}, je kunt elke tekst afspelen op elke ondersteunde mediaspeler!",
                                 "header": "Probeer Tekst naar Spraak",
                                 "play": "Speel",
                                 "target": "Doel",
@@ -1575,7 +1771,6 @@
                         "not_exposed_entities": "Niet blootgestelde entiteiten",
                         "title": "Alexa"
                     },
-                    "caption": "Home Assistent Cloud",
                     "description_features": "Bedien uw huis wanneer u weg bent en integreer met Alexa en Google Assistant",
                     "description_login": "Ingelogd als {email}",
                     "description_not_login": "Niet ingelogd",
@@ -1674,6 +1869,36 @@
                     "description": "Eenheidssysteem, locatie, tijdzone en andere algemene parameters",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Voordat u dit inschakelt, moet u de analytics documentatie pagina {link} bezoeken om te begrijpen wat u verstuurt en hoe het wordt opgeslagen.",
+                                "header": "Analytics",
+                                "instance_id": "Instantie-ID: {huuid}",
+                                "introduction": "Deel uw installatie-informatie om Home Assistant te helpen verbeteren en ons te helpen fabrikanten te overtuigen om lokale controle en privacygerichte functies toe te voegen.",
+                                "learn_more": "Hoe wij uw gegevens verwerken",
+                                "needs_base": "U moet basisanalyses inschakelen om deze optie beschikbaar te maken",
+                                "preference": {
+                                    "base": {
+                                        "description": "Instantie-ID, versie en installatietype.",
+                                        "title": "Basisanalyses"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Deel crashrapporten wanneer onverwachte fouten optreden.",
+                                        "title": "Diagnostiek"
+                                    },
+                                    "statistics": {
+                                        "description": "Totaal gebruikte entiteiten, gebruikers en andere elementen.",
+                                        "title": "Gebruiksstatistieken"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Namen, versies en mogelijkheden.",
+                                        "title": "Gebruikte integraties en add-ons"
+                                    },
+                                    "usage": {
+                                        "description": "Namen en versie-informatie.",
+                                        "title": "Gebruikte integraties"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Editor uitgeschakeld omdat de configuratie is opgeslagen in configuration.yaml",
                                 "elevation": "Hoogte",
@@ -1708,7 +1933,6 @@
                     "pick_attribute": "Kies een attribuut om te overschrijven",
                     "picker": {
                         "documentation": "Documentatie aanpassen",
-                        "entity": "Entiteit",
                         "header": "Aanpassingen",
                         "introduction": "Pas attributen per entiteit aan. Toegevoegde/gewijzigde aanpassingen worden onmiddellijk van kracht. Verwijderde aanpassingen worden van kracht wanneer de entiteit wordt bijgewerkt."
                     },
@@ -1746,6 +1970,7 @@
                     "cant_edit": "Je kunt alleen items bewerken die in de gebruikersinterface zijn gemaakt.",
                     "caption": "Apparaten",
                     "confirm_delete": "Weet je zeker dat je dit apparaat wilt verwijderen?",
+                    "confirm_disable_config_entry": "Er zijn geen apparaten meer voor deze configuratie {entry_name}, wil je in plaats daarvan deze configuratie uitschakelen?",
                     "confirm_rename_entity_ids": "Wil je ook de entiteits-ID's van je entiteiten hernoemen?",
                     "confirm_rename_entity_ids_warning": "Dit zal geen enkele configuratie wijzigen (zoals automatiseringen, scripts, scènes, dashboards) die momenteel deze entiteiten gebruikt! U moet ze zelf bijwerken om de nieuwe entiteits-ID's te gebruiken!",
                     "data_table": {
@@ -1755,7 +1980,6 @@
                         "integration": "Integratie",
                         "manufacturer": "Fabrikant",
                         "model": "Model",
-                        "no_area": "Geen gebied",
                         "no_devices": "Geen apparaten"
                     },
                     "delete": "Verwijderen",
@@ -1764,7 +1988,7 @@
                     "device_not_found": "Apparaat niet gevonden.",
                     "disabled": "Uitgeschakeld",
                     "disabled_by": {
-                        "config_entry": "Configuratie-invoer",
+                        "config_entry": "Configuratie-item",
                         "integration": "Integratie",
                         "user": "Gebruiker"
                     },
@@ -1859,7 +2083,11 @@
                 },
                 "filtering": {
                     "clear": "Wis",
-                    "filtering_by": "Filteren op"
+                    "filtering_by": "Filteren op",
+                    "show": "Toon"
+                },
+                "hassio": {
+                    "button": "Configureer"
                 },
                 "header": "Configureer Home Assistant",
                 "helpers": {
@@ -1911,42 +2139,9 @@
                     "source": "Bron:",
                     "system_health_error": "De systeemstatus component is niet geladen. Voeg ' system_health: ' toe aan het configuratiebestand.",
                     "system_health": {
-                        "checks": {
-                            "cloud": {
-                                "alexa_enabled": "Alexa ingeschakeld",
-                                "can_reach_cert_server": "Bereik de certificaat server",
-                                "can_reach_cloud": "Bereik Home Assistant Cloud",
-                                "can_reach_cloud_auth": "Bereik authenticatieserver",
-                                "google_enabled": "Google ingeschakeld",
-                                "logged_in": "Ingelogd",
-                                "relayer_connected": "Relayer verbonden",
-                                "remote_connected": "Op afstand verbonden",
-                                "remote_enabled": "Op afstand ingeschakeld",
-                                "subscription_expiration": "Abonnement vervalt"
-                            },
-                            "homeassistant": {
-                                "arch": "CPU-architectuur",
-                                "dev": "Ontwikkeling",
-                                "docker": "Docker",
-                                "hassio": "HassOS",
-                                "installation_type": "Type installatie",
-                                "os_name": "Naam besturingssysteem",
-                                "os_version": "Versie van het besturingssysteem",
-                                "python_version": "Python-versie",
-                                "timezone": "Tijdzone",
-                                "version": "Versie",
-                                "virtualenv": "Virtuele omgeving"
-                            },
-                            "lovelace": {
-                                "dashboards": "Dashboards",
-                                "mode": "Mode",
-                                "resources": "Bronnen"
-                            }
-                        },
                         "manage": "Beheer",
                         "more_info": "meer informatie"
-                    },
-                    "title": "Info"
+                    }
                 },
                 "integration_panel_move": {
                     "link_integration_page": "integraties pagina",
@@ -1960,19 +2155,30 @@
                     "config_entry": {
                         "area": "In {area}",
                         "delete": "Verwijder",
-                        "delete_button": "Verwijder {integration}.",
                         "delete_confirm": "Weet je zeker dat je deze integratie wilt verwijderen?",
                         "device_unavailable": "Apparaat niet beschikbaar",
                         "devices": "{count} {count, plural,\n  one {apparaat}\n  other {apparaten}\n}",
+                        "disable_restart_confirm": "Start Home Assistant opnieuw op om het uitzetten van deze integratie te voltooien",
+                        "disable": {
+                            "disable_confirm": "Weet je zeker dat je deze configuratie wilt uitschakelen? Al diens apparaten en entiteiten zullen worden uitgeschakeld.",
+                            "disabled": "Uitgeschakeld",
+                            "disabled_by": {
+                                "device": "apparaat",
+                                "integration": "integratie",
+                                "user": "gebruiker"
+                            },
+                            "disabled_cause": "Uitgeschakeld door {cause}"
+                        },
                         "documentation": "Documentatie",
+                        "enable_restart_confirm": "Start Home Assistant opnieuw op om het opzetten van deze integratie te voltooien",
                         "entities": "{count} {count, plural,\n  one {entiteit}\n  other {entiteiten}\n}",
                         "entity_unavailable": "Entiteit niet beschikbaar",
                         "firmware": "Firmware: {version}",
                         "hub": "Verbonden via",
+                        "logs": "logs",
                         "manuf": "door {manufacturer}",
                         "no_area": "Geen Gebied",
-                        "no_device": "Entiteiten zonder apparaten",
-                        "no_devices": "Deze integratie heeft geen apparaten.",
+                        "not_loaded": "Niet geladen, controleer de {logs_link}",
                         "options": "Opties",
                         "reload": "Herlaad",
                         "reload_confirm": "De integratie is opnieuw geladen",
@@ -1980,16 +2186,16 @@
                         "rename": "Naam wijzigen",
                         "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
                         "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
-                        "settings_button": "Instellingen bewerken voor {integration}",
                         "system_options": "Systeeminstellingen",
-                        "system_options_button": "Systeeminstellingen voor {integration}",
                         "unnamed_entry": "Naamloze invoer"
                     },
                     "config_flow": {
                         "aborted": "Afgebroken",
                         "close": "Sluiten",
+                        "could_not_load": "Config flow kon niet geladen worden",
                         "created_config": "Configuratie gemaakt voor {name}.",
                         "dismiss": "Dialoogvenster sluiten",
+                        "error": "Fout",
                         "error_saving_area": "Fout bij het opslaan van gebied: {error}",
                         "external_step": {
                             "description": "Deze stap vereist dat je een externe website bezoekt om dit te voltooien.",
@@ -1998,13 +2204,24 @@
                         "finish": "Voltooien",
                         "loading_first_time": "Even geduld a.u.b. terwijl de integratie wordt geïnstalleerd",
                         "not_all_required_fields": "Niet alle verplichte velden zijn ingevuld.",
+                        "not_loaded": "De integratie kan niet worden geladen, probeer Home Assistant opnieuw te starten.",
+                        "pick_flow_step": {
+                            "new_flow": "Nee, zet een andere instantie van {integration} op",
+                            "title": "We hebben deze ontdekt. Wil je ze instellen?"
+                        },
                         "submit": "Opslaan"
                     },
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
-                    "confirm_new": "Wil je {integratie} instellen?",
+                    "confirm_new": "Wil je {integration} instellen?",
                     "description": "Beheer integraties met services, apparaten, ...",
                     "details": "Integratiedetails",
+                    "disable": {
+                        "disabled_integrations": "{number} uitgeschakeld",
+                        "hide_disabled": "Verberg uitgeschakelde integraties",
+                        "show": "Toon",
+                        "show_disabled": "Toon uitgeschakelde integraties"
+                    },
                     "discovered": "Ontdekt",
                     "home_assistant_website": "Home Assistant-website",
                     "ignore": {
@@ -2038,13 +2255,19 @@
                     "clear": "Wis",
                     "description": "Home Assistant logboek bekijken",
                     "details": "Logboekdetails ({level})",
+                    "level": {
+                        "critical": "KRITISCH",
+                        "debug": "DEBUG",
+                        "error": "FOUT",
+                        "info": "INFO",
+                        "warning": "WAARSCHUWING"
+                    },
                     "load_full_log": "Laad volledige Home Assistant logboek",
                     "loading_log": "Foutenlogboek laden ...",
                     "multiple_messages": "bericht kwam voor het eerst om {time} en verschijnt {counter} keer",
-                    "no_errors": "Er zijn geen fouten gerapporteerd.",
+                    "no_errors": "Er zijn geen fouten gemeld",
                     "no_issues": "Er zijn geen problemen!",
-                    "refresh": "Vernieuwen",
-                    "title": "Logboek"
+                    "refresh": "Vernieuwen"
                 },
                 "lovelace": {
                     "caption": "Lovelace-dashboards",
@@ -2214,7 +2437,7 @@
                         "session": "Het verkrijgen van zelden veranderende waarden uit het knooppunt",
                         "static": "Statische waarden ophalen van het apparaat",
                         "versions": "Het verkrijgen van informatie over firmware en commandoklasseversies",
-                        "wakeup": "Ondersteuning instellen voor waakwachtrijen en berichten"
+                        "wakeup": "Ondersteuning instellen voor wek-wachtrijen en berichten"
                     },
                     "node": {
                         "button": "Node details",
@@ -2323,7 +2546,7 @@
                         },
                         "introduction": "Met de scene editor kun je scenes maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat je Home Assistant correct hebt geconfigureerd.",
                         "learn_more": "Meer informatie over scènes",
-                        "no_scenes": "We konden geen bewerkbare scènes vinden.",
+                        "no_scenes": "We konden geen scènes vinden",
                         "only_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
                         "pick_scene": "Kies een scène om te bewerken",
                         "show_info_scene": "Informatie weergeven over scène"
@@ -2373,10 +2596,9 @@
                         },
                         "introduction": "Met de editor kunt u scripts maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat u Home Assistant correct hebt geconfigureerd.",
                         "learn_more": "Meer informatie over scripts",
-                        "no_scripts": "We hebben geen bewerkbare scrips gevonden",
+                        "no_scripts": "We hebben geen scripts gevonden",
                         "run_script": "Script uitvoeren",
-                        "show_info": "Toon info over script",
-                        "trigger_script": "Trigger script"
+                        "show_info": "Toon info over script"
                     }
                 },
                 "server_control": {
@@ -2384,39 +2606,39 @@
                     "description": "De Home Assistant-server opnieuw opstarten en stoppen",
                     "section": {
                         "reloading": {
-                            "automation": "Herlaad automatiseringen",
-                            "command_line": "Herlaad opdrachtregel-entiteiten",
-                            "core": "Herlaad locatie en aanpassingen",
-                            "filesize": "Herlaad bestandsgrootte entiteiten",
-                            "filter": "Herlaad filter-entiteiten",
-                            "generic": "Herlaad generieke IP camera entiteiten",
-                            "generic_thermostat": "Herlaad generieke thermostaat entiteiten",
-                            "group": "Herlaad groepen, groepsentiteiten en notify services",
+                            "automation": "Automatiseringen",
+                            "command_line": "Opdrachtregel-entiteiten",
+                            "core": "Locatie en aanpassingen",
+                            "filesize": "Bestandsgrootte entiteiten",
+                            "filter": "Filter-entiteiten",
+                            "generic": "Generieke IP camera entiteiten",
+                            "generic_thermostat": "Generieke thermostaat entiteiten",
+                            "group": "Groepen, groepsentiteiten en notify services",
                             "heading": "Configuratie herladen",
-                            "history_stats": "Herlaad historische statistieken entiteiten",
-                            "homekit": "Herlaad HomeKit",
-                            "input_boolean": "Herlaad input booleans",
-                            "input_datetime": "Herlaad input date times",
-                            "input_number": "Herlaad input numbers",
-                            "input_select": "Herlaad input selects",
-                            "input_text": "Herlaad input texts",
+                            "history_stats": "Historische statistieken entiteiten",
+                            "homekit": "HomeKit",
+                            "input_boolean": "Input booleans",
+                            "input_datetime": "Input date times",
+                            "input_number": "Input numbers",
+                            "input_select": "Input selects",
+                            "input_text": "Input texts",
                             "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als je herladen gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
-                            "min_max": "Herlaad min/max entiteiten",
-                            "mqtt": "Herlaad handmatig geconfigureerde MQTT-entiteiten",
-                            "person": "Herlaad personen",
-                            "ping": "Herlaad ping binaire sensor entiteiten",
-                            "reload": "Herlaad {domain}",
-                            "rest": "Herlaad rest-entiteiten en notify-services",
-                            "rpi_gpio": "Herlaad Raspberry Pi GPIO-entiteiten",
-                            "scene": "Herlaad scenes",
-                            "script": "Herlaad scripts",
-                            "smtp": "Herlaad de SMTP notify services",
-                            "statistics": "Herlaad statistische entiteiten",
-                            "telegram": "Herlaad telegram notify services",
-                            "template": "Herlaad template entiteiten",
-                            "trend": "Herlaad trend-entiteiten",
-                            "universal": "Herlaad universele mediaspeler entiteiten",
-                            "zone": "Herlaad zones"
+                            "min_max": "Min/max entiteiten",
+                            "mqtt": "Handmatig geconfigureerde MQTT-entiteiten",
+                            "person": "Personen",
+                            "ping": "Ping binaire sensor entiteiten",
+                            "reload": "{domain}",
+                            "rest": "Rest-entiteiten en notify-services",
+                            "rpi_gpio": "Raspberry Pi GPIO-entiteiten",
+                            "scene": "Scenes",
+                            "script": "Scripts",
+                            "smtp": "SMTP notify services",
+                            "statistics": "Statistische entiteiten",
+                            "telegram": "Telegram notify services",
+                            "template": "Template entiteiten",
+                            "trend": "Trend-entiteiten",
+                            "universal": "Universele mediaspeler entiteiten",
+                            "zone": "Zones"
                         },
                         "server_management": {
                             "confirm_restart": "Weet je zeker dat je Home Assistant opnieuw wilt starten?",
@@ -2428,14 +2650,14 @@
                         },
                         "validation": {
                             "check_config": "Controleer configuratie",
-                            "heading": "Valideer configuratie",
+                            "heading": "Configuratie validatie",
                             "introduction": "Controleer je configuratie als je onlangs wijzigingen hebt aangebracht en zeker wilt weten dat ze geldig zijn",
                             "invalid": "Ongeldige configuratie",
                             "valid": "Geldige configuratie!"
                         }
                     }
                 },
-                "tags": {
+                "tag": {
                     "add_tag": "Tag toevoegen",
                     "automation_title": "Tag {name} is gescand",
                     "caption": "Tags",
@@ -2470,11 +2692,9 @@
                     "add_user": {
                         "caption": "Gebruiker toevoegen",
                         "create": "Maken",
-                        "name": "Naam",
                         "password": "Wachtwoord",
                         "password_confirm": "Bevestig wachtwoord",
-                        "password_not_match": "Wachtwoorden komen niet overeen",
-                        "username": "Gebruikersnaam"
+                        "password_not_match": "Wachtwoorden komen niet overeen"
                     },
                     "caption": "Gebruikers",
                     "description": "Gebruikers van Home Assistant beheren",
@@ -2518,19 +2738,12 @@
                     "add_device": "Apparaat toevoegen",
                     "add_device_page": {
                         "discovered_text": "Apparaten zullen hier verschijnen zodra ze zijn ontdekt.",
-                        "discovery_text": "Gevonden apparaten worden hier weergegeven. Volg de instructies voor je apparaat of apparaten en plaats het apparaat of de apparaten in de koppelingsmodus.",
-                        "header": "Zigbee Home Automation - Apparaten toevoegen",
-                        "no_devices_found": "Geen apparaten gevonden, zorg ervoor dat ze in de koppelingsmodus staan en dat de apparaten activiteit blijven maken gedurende het koppelen.",
+                        "no_devices_found": "Geen apparaten gevonden, zorg ervoor dat ze in de koppelingsmodus staan en dat de apparaten actief blijven gedurende het koppelen.",
                         "pairing_mode": "Zorg ervoor dat de apparaten in de koppelingsmodus staan. Kijk in de instructies van het apparaat hoe dit moet.",
                         "search_again": "Opnieuw zoeken",
                         "spinner": "Zoeken naar ZHA Zigbee-apparaten ..."
                     },
-                    "add": {
-                        "caption": "Apparaten toevoegen",
-                        "description": "Voeg apparaten toe aan het Zigbee netwerk"
-                    },
                     "button": "Configureer",
-                    "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributen van het geselecteerde cluster",
                         "get_zigbee_attribute": "Haal Zigbee attribuut op",
@@ -2554,13 +2767,10 @@
                         "introduction": "Clusters zijn de bouwstenen voor Zigbee-functionaliteit. Ze scheiden functionaliteit in logische eenheden. Er zijn client- en servertypen en deze bestaan uit attributen en opdrachten."
                     },
                     "common": {
-                        "add_devices": "Apparaten toevoegen",
                         "clusters": "Clusters",
-                        "devices": "Apparaten",
                         "manufacturer_code_override": "Fabrikant Code Override",
                         "value": "Waarde"
                     },
-                    "description": "Zigbee Home Automation netwerkbeheer",
                     "device_pairing_card": {
                         "CONFIGURED": "Configuratie voltooid",
                         "CONFIGURED_status_text": "Initialiseren",
@@ -2570,9 +2780,6 @@
                         "INTERVIEW_COMPLETE_status_text": "Configureren",
                         "PAIRED": "Apparaat gevonden",
                         "PAIRED_status_text": "Start interview"
-                    },
-                    "devices": {
-                        "header": "Zigbee Home Automation - Apparaat"
                     },
                     "group_binding": {
                         "bind_button_help": "Koppel de geselecteerde groep van de geselecteerde apparaatclusters.",
@@ -2588,52 +2795,30 @@
                     "groups": {
                         "add_group": "Groep toevoegen",
                         "add_members": "Leden toevoegen",
-                        "adding_members": "Leden toevoegen",
                         "caption": "Groepen",
                         "create": "Groep maken",
                         "create_group": "Zigbee Home Automation - Aanmaken groep",
                         "create_group_details": "Voer de vereiste gegevens in om een nieuwe Zigbee groep te maken",
                         "creating_group": "Groep aanmaken",
-                        "description": "Maak en wijzig Zigbee groepen",
                         "group_details": "Hier zijn alle details voor de geselecteerde Zigbee groep.",
                         "group_id": "Groep",
                         "group_info": "Groepsinformatie",
                         "group_name_placeholder": "Groepsnaam",
                         "group_not_found": "Groep niet gevonden!",
-                        "group-header": "Zigbee Home Automation - Groepsdetails",
                         "groups": "groepen",
-                        "groups-header": "Zigbee Home Automation - Groepsbeheer",
-                        "header": "Zigbee Home Automation - Groepsbeheer",
-                        "introduction": "Maak en verwijder Zigbee groepen",
-                        "manage_groups": "Beheer Zigbee Groepen",
                         "members": "Leden",
-                        "remove_groups": "verwijder groepen",
                         "remove_members": "Leden verwijderen",
-                        "removing_groups": "groepen verwijderen",
-                        "removing_members": "Leden verwijderen",
-                        "zha_zigbee_groups": "ZHA Zigbee Groepen"
-                    },
-                    "header": "Configureer Zigbee Home Automation",
-                    "introduction": "Hier kun je het ZHA component configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
-                    "network_management": {
-                        "header": "Netwerkbeheer",
-                        "introduction": "Commando's die het hele netwerk beïnvloeden"
+                        "removing_members": "Leden verwijderen"
                     },
                     "network": {
                         "caption": "Netwerk"
                     },
-                    "node_management": {
-                        "header": "Apparaatbeheer",
-                        "help_node_dropdown": "Selecteer een apparaat om de opties per apparaat te bekijken.",
-                        "hint_battery_devices": "Opmerking: Slappende (op batterij werkende) apparaten moeten wakker zijn wanneer deze apparaten opdrachten moeten uitvoeren. Over het algemeen kunnen slapende apparaten wakker worden gemaakt door deze te activeren.",
-                        "hint_wakeup": "Sommige apparaten, zoals Xiaomi-sensoren hebben een wekknop die je met tussenpozen van 5 seconden kunt indrukken om het apparaat wakker te houden terwijl je ermee communiceert",
-                        "introduction": "Voer ZHA-commando's uit die van invloed zijn op een enkel apparaat. Kies een apparaat om een lijst met beschikbare commando's te zien."
-                    },
-                    "title": "Zigbee Home Automation",
                     "visualization": {
+                        "auto_zoom": "Automatische zoom",
                         "caption": "Visualisatie",
                         "header": "Netwerkvisualisatie",
                         "highlight_label": "Markeer Apparaten",
+                        "refresh_topology": "Topologie vernieuwen",
                         "zoom_label": "Zoom naar apparaat"
                     }
                 },
@@ -2668,11 +2853,17 @@
                 },
                 "zwave_js": {
                     "add_node": {
+                        "cancel_inclusion": "Opname annuleren",
+                        "controller_in_inclusion_mode": "Uw Z-Wave controller bevindt zich nu in de opnamemodus.",
                         "follow_device_instructions": "Volg de aanwijzingen die bij het apparaat zijn geleverd om de koppeling van het apparaat te activeren.",
                         "inclusion_failed": "Het knooppunt kon niet worden toegevoegd. Controleer de logs voor meer informatie.",
                         "inclusion_finished": "Het knooppunt is toegevoegd. Het kan een paar minuten duren voordat alle entiteiten zichtbaar zijn, omdat we het opzetten van het knooppunt op de achtergrond afwerken.",
                         "introduction": "Deze wizard begeleidt u bij het toevoegen van een knooppunt aan uw Z-Wave netwerk.",
+                        "secure_inclusion_warning": "Beveiligde apparaten vereisen extra bandbreedte; te veel beveiligde apparaten kunnen uw Z-Wave-netwerk vertragen. We raden aan om alleen veilige opname te gebruiken voor apparaten die dat vereisen, zoals sloten of garagedeuropeners.",
+                        "start_inclusion": "Start Opname",
+                        "start_secure_inclusion": "Start Veilige Opname",
                         "title": "Voeg een Z-Wave knooppunt toe",
+                        "use_secure_inclusion": "Gebruik veilige opname",
                         "view_device": "Bekijk apparaat"
                     },
                     "button": "Configureer",
@@ -2695,11 +2886,11 @@
                         "header": "Beheer je Z-Wave netwerk",
                         "home_id": "Home ID",
                         "introduction": "Beheer uw Z-Wave netwerk en Z-Wave knooppunten",
-                        "node_count": "Aantal knooppunten",
                         "nodes_ready": "Knooppunten gereed",
                         "server_version": "Server Versie"
                     },
                     "device_info": {
+                        "device_config": "Configureer Apparaat",
                         "node_ready": "Knooppunt gereed",
                         "node_status": "Knooppuntstatus",
                         "zwave_info": "Z-Wave info"
@@ -2712,6 +2903,15 @@
                         "connecting": "Verbinden",
                         "unknown": "Onbekend"
                     },
+                    "node_config": {
+                        "attribution": "Apparaat configuratie parameters en beschrijvingen worden geleverd door de {device_database}",
+                        "battery_device_notice": "Batterij-apparaten moeten wakker zijn om hun configuratie bij te werken. Raadpleeg de handleiding van uw toestel voor instructies over hoe u het toestel kunt wekken.",
+                        "error_device_not_found": "Apparaat niet gevonden",
+                        "header": "Z-Wave apparaatconfiguratie",
+                        "introduction": "Beheren en aanpassen van apparaat (node) specifieke configuratieparameters voor het geselecteerde apparaat",
+                        "parameter_is_read_only": "Deze parameter is alleen-lezen.",
+                        "zwave_js_device_database": "Z-Wave JS Apparaat Database"
+                    },
                     "node_status": {
                         "alive": "Levend",
                         "asleep": "In slaap",
@@ -2721,8 +2921,10 @@
                     },
                     "remove_node": {
                         "cancel_exclusion": "Uitsluiting annuleren",
+                        "controller_in_exclusion_mode": "Uw Z-Wave controller bevindt zich nu in de uitsluitingsmodus.",
                         "exclusion_failed": "Het knooppunt kon niet worden verwijderd. Controleer de logboeken voor meer informatie.",
                         "exclusion_finished": "Knooppunt {id} is verwijderd uit het Z-Wave-netwerk.",
+                        "follow_device_instructions": "Volg de instructies die bij uw apparaat zijn geleverd om uitsluiting op het apparaat te activeren.",
                         "introduction": "Verwijder een knooppunt uit uw Z-Wave-netwerk en verwijder het gekoppelde apparaat met bijbehorende entiteiten uit Home Assistant.",
                         "start_exclusion": "Start uitsluiting",
                         "title": "Een Z-Wave Node verwijderen"
@@ -2730,20 +2932,19 @@
                 },
                 "zwave": {
                     "button": "Configureer",
-                    "caption": "Z-Wave",
                     "common": {
                         "index": "Index",
                         "instance": "Exemplaar",
                         "unknown": "onbekend",
                         "value": "Waarde",
-                        "wakeup_interval": "Activeringsinterval"
+                        "wakeup_interval": "Wek-interval"
                     },
                     "description": "Beheer je Z-Wave-netwerk",
                     "learn_more": "Meer informatie over Z-Wave",
                     "migration": {
                         "ozw": {
                             "header": "Migreren naar OpenZWave",
-                            "introduction": "Deze wizard helpt u te migreren van de oude Z-Wave integratie naar de OpenZWave integratie die momenteel in beta is."
+                            "introduction": "Deze wizard helpt u te migreren van de oude Z-Wave integratie naar de OpenZWave integratie die momenteel in bèta is."
                         }
                     },
                     "network_management": {
@@ -2765,7 +2966,7 @@
                         "header": "Knooppunt Configuratie Opties",
                         "seconds": "Seconden",
                         "set_config_parameter": "Stel de configuratieparameter in",
-                        "set_wakeup": "Activeringsinterval instellen",
+                        "set_wakeup": "Wek-interval instellen",
                         "true": "Waar"
                     },
                     "node_management": {
@@ -2837,7 +3038,7 @@
                         "data": "Gebeurtenis data (YAML, optioneel)",
                         "description": "Start een evenement op de Home Assistant-gebeurtenisbus",
                         "documentation": "Gebeurtenissen documentatie.",
-                        "event_fired": "Gebeurtenis {name} afgevuurd",
+                        "event_fired": "Gebeurtenis {name} uitgevoerd",
                         "fire_event": "Gebeurtenis uitvoeren",
                         "listen_to_events": "Luisteren naar gebeurtenissen",
                         "listening_to": "Luisteren naar",
@@ -2849,22 +3050,24 @@
                         "type": "Type gebeurtenis"
                     },
                     "services": {
-                        "alert_parsing_yaml": "Fout bij het parseren van YAML: {data}",
+                        "accepts_target": "Deze service accepteert een doel, bijvoorbeeld: `entity_id: light.bed_light`",
+                        "all_parameters": "Alle beschikbare parameters",
                         "call_service": "Aanroepen service",
                         "column_description": "Beschrijving",
                         "column_example": "Voorbeeld",
                         "column_parameter": "Parameter",
-                        "data": "Service data (YAML, optioneel)",
                         "description": "Met het service ontwikkelhulpmiddel kunt je elke beschikbare service in Home Assistant aanroepen.",
                         "fill_example_data": "Voorbeeldgegeven invullen",
-                        "no_description": "Er is geen beschrijving beschikbaar",
-                        "no_parameters": "Deze service heeft geen parameters nodig.",
-                        "select_service": "Selecteer een service om de beschrijving te bekijken",
-                        "title": "Services"
+                        "no_template_ui_support": "De UI ondersteunt geen sjablonen, u kunt nog steeds de YAML editor gebruiken.",
+                        "title": "Services",
+                        "ui_mode": "Ga naar UI modus",
+                        "yaml_mode": "Ga naar YAML mode",
+                        "yaml_parameters": "Parameters alleen beschikbaar in YAML mode"
                     },
                     "states": {
                         "alert_entity_field": "Entiteit is een verplicht veld",
                         "attributes": "Attributen",
+                        "copy_id": "Kopieer ID naar klembord",
                         "current_entities": "Huidige entiteiten",
                         "description1": "Stelt de weergave van een apparaat in Home Assistant in.",
                         "description2": "Er vindt geen communicatie met het daadwerkelijke apparaat plaats.",
@@ -2899,26 +3102,32 @@
                     }
                 }
             },
+            "error": {
+                "go_back": "Ga terug",
+                "supervisor": {
+                    "ask": "Vraag om hulp",
+                    "observer": "Controleer de Observer",
+                    "reboot": "Probeer de host opnieuw op te starten",
+                    "system_health": "Controleer de systeemstatus",
+                    "title": "Kan het supervisor scherm niet laden!",
+                    "wait": "Als Home Assistant net is gestart, zorg ervoor dat de supervisor genoeg tijd heeft gehad om op te starten."
+                }
+            },
             "history": {
-                "period": "Periode",
                 "ranges": {
                     "last_week": "Vorige week",
                     "this_week": "Deze week",
                     "today": "Vandaag",
                     "yesterday": "Gisteren"
-                },
-                "showing_entries": "Toon items voor"
+                }
             },
             "logbook": {
-                "entries_not_found": "Geen logboekvermeldingen gevonden.",
-                "period": "Periode",
                 "ranges": {
                     "last_week": "Vorige week",
                     "this_week": "Deze week",
                     "today": "Vandaag",
                     "yesterday": "Gisteren"
-                },
-                "showing_entries": "Toont gegevens van"
+                }
             },
             "lovelace": {
                 "add_entities": {
@@ -2927,13 +3136,12 @@
                     "yaml_unsupported": "Je kunt deze functie niet gebruiken wanneer je de Lovelace gebruikersinterface gebruikt in YAML modus."
                 },
                 "cards": {
-                    "action_confirmation": "Weet u zeker dat u actie \" {action} \" wilt uitvoeren?",
                     "actions": {
                         "action_confirmation": "Weet je zeker dat je actie \"{action}\" wilt uitvoeren?",
                         "no_entity_more_info": "Geen entiteit voorzien voor meer info dialoog",
                         "no_entity_toggle": "Geen entiteit opgegeven om te schakelen",
                         "no_navigation_path": "Geen navigatiepad opgegeven",
-                        "no_service": "Geen service voor uitvoering opgegeven",
+                        "no_service": "Geen service geselecteerd",
                         "no_url": "Geen URL om te openen opgegeven"
                     },
                     "confirm_delete": "Weet je zeker dat je deze kaart wilt verwijderen?",
@@ -2966,13 +3174,11 @@
                         "reorder_items": "Artikelen opnieuw ordenen"
                     },
                     "starting": {
-                        "description": "Home Assistant is aan het opstarten, even geduld...",
-                        "header": "Home Assistant is aan het opstarten..."
+                        "description": "Home Assistant is aan het opstarten, even geduld..."
                     }
                 },
                 "changed_toast": {
-                    "message": "De Lovelace UI-configuratie voor dit dashboard is bijgewerkt. Vernieuwen om wijzigingen te zien?",
-                    "refresh": "Vernieuwen"
+                    "message": "De Lovelace UI-configuratie voor dit dashboard is bijgewerkt. Vernieuwen om wijzigingen te zien?"
                 },
                 "components": {
                     "timestamp-display": {
@@ -2991,7 +3197,6 @@
                             "toggle": "Schakelaar",
                             "url": "URL"
                         },
-                        "editor_service_data": "Servicegegevens kunnen alleen worden ingevoerd in de code-editor",
                         "navigation_path": "Navigatiepad",
                         "url_path": "URL-pad"
                     },
@@ -3110,7 +3315,7 @@
                             "tap_action": "Tik Actie",
                             "theme": "Thema",
                             "title": "Titel",
-                            "unit": "Maat",
+                            "unit": "Eenheid",
                             "url": "URL"
                         },
                         "glance": {
@@ -3189,7 +3394,6 @@
                         },
                         "sensor": {
                             "description": "De Sensor-kaart geeft u een snel overzicht van de status van uw sensoren met een optionele grafiek om veranderingen in de tijd te visualiseren.",
-                            "graph_detail": "Grafiek Detail",
                             "graph_type": "Grafiektype",
                             "name": "Sensor",
                             "show_more_detail": "Laat meer details zien"
@@ -3314,6 +3518,8 @@
                         "error_remove": "Kan configuratie niet verwijderen: {error}",
                         "error_save_yaml": "Kan YAML niet opslaan: {error}",
                         "header": "Configuratie bewerken",
+                        "lovelace_changed": "De Lovelace configuratie is bijgewerkt, wil je de bijgewerkte configuratie in de editor laden en je huidige wijzigingen verliezen?",
+                        "reload": "Herlaad",
                         "resources_moved": "Bronnen moeten niet langer worden toegevoegd aan de Lovelace-configuratie, maar kunnen worden toegevoegd in het Lovelace-configuratiepaneel.",
                         "save": "Opslaan",
                         "saved": "Opgeslagen",
@@ -3360,7 +3566,6 @@
                     "configure_ui": "Configureer UI",
                     "exit_edit_mode": "UI-bewerkingsmodus afsluiten",
                     "help": "Help",
-                    "refresh": "Vernieuwen",
                     "reload_resources": "Herlaad bronnen",
                     "start_conversation": "Gesprek starten"
                 },
@@ -3401,7 +3606,11 @@
                 "playback_title": "Bericht afspelen"
             },
             "my": {
+                "component_not_loaded": "Deze omleiding wordt niet ondersteund door uw Home Assistant-instantie. U heeft de integratie {integration} nodig om deze omleiding te gebruiken.",
+                "documentation": "documentatie",
                 "error": "Er is een onbekende fout opgetreden",
+                "faq_link": "My Home Assistant FAQ",
+                "no_supervisor": "Deze omleiding wordt niet ondersteund door uw Home Assistant-installatie. Het vereist ofwel het Home Assistant besturingssysteem of de Home Assistant gecontroleerde installatiemethode. Voor meer informatie, zie de {docs_link}.",
                 "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
             },
             "page-authorize": {
@@ -3483,8 +3692,7 @@
                         },
                         "trusted_networks": {
                             "abort": {
-                                "not_allowed": "Uw computer is niet toegestaan.",
-                                "not_whitelisted": "Je computer staat niet op de whitelist."
+                                "not_allowed": "Uw computer is niet toegestaan."
                             },
                             "step": {
                                 "init": {
@@ -3550,6 +3758,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Volgende",
+                    "intro": "Deel de analyses van uw instantie. Deze gegevens zullen publiekelijk beschikbaar zijn op {link}"
+                },
                 "core-config": {
                     "button_detect": "Detecteren",
                     "finish": "Volgende",
@@ -3559,12 +3771,14 @@
                     "location_name": "Naam van de Home Assistant installatie",
                     "location_name_default": "Huis"
                 },
+                "finish": "Voltooien",
                 "integration": {
                     "finish": "Voltooien",
                     "intro": "Apparaten en services worden in Home Assistant weergegeven als integraties. U kunt ze nu instellen of later via het configuratiescherm.",
                     "more_integrations": "Meer"
                 },
                 "intro": "Ben je klaar om je huis wakker te maken, je privacy terug te winnen en deel te nemen aan een wereldwijde gemeenschap van knutselaars?",
+                "next": "Volgende",
                 "restore": {
                     "description": "Je kunt ook herstellen vanaf een eerdere snapshot.",
                     "hide_log": "Verberg volledig logboek",
@@ -3637,15 +3851,12 @@
                     "create": "Token aanmaken",
                     "create_failed": "De toegangstoken kon niet worden aangemaakt.",
                     "created": "Gemaakt op {date}",
-                    "created_at": "Gemaakt op {date}",
                     "delete_failed": "Verwijderen van de toegangstoken is mislukt.",
                     "description": "Maak toegangstokens met een lange levensduur zodat je scripts kunnen communiceren met je Home Assistant-instantie. Elk token is tien jaar geldig vanaf de aanmaakdatum. De volgende langlevende toegangstokens zijn momenteel actief.",
                     "empty_state": "Je hebt nog geen langdurige toegangstokens.",
                     "header": "Toegangtokens met lange levensduur",
-                    "last_used": "Laatst gebruikt op {date} vanaf {location}",
                     "learn_auth_requests": "Kom te weten hoe je geverifieerde verzoeken kunt maken",
                     "name": "Naam",
-                    "not_used": "Is nog nooit gebruikt",
                     "prompt_copy_token": "Kopieer je toegangstoken. Het wordt niet meer getoond.",
                     "prompt_name": "Geef het token een naam"
                 },
@@ -3661,6 +3872,19 @@
                     "disable": "Uitschakelen",
                     "enable": "Inschakelen",
                     "header": "Twee-factor-authenticatie modules"
+                },
+                "number_format": {
+                    "description": "Kies hoe getallen worden opgemaakt.",
+                    "dropdown_label": "Getalnotatie",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Automatisch (taalinstelling gebruiken)",
+                        "none": "Geen",
+                        "space_comma": "1 234 567,89",
+                        "system": "Systeemlokalen gebruiken"
+                    },
+                    "header": "Getalnotatie"
                 },
                 "push_notifications": {
                     "add_device_prompt": {
@@ -3710,11 +3934,6 @@
             },
             "shopping_list": {
                 "start_conversation": "Gesprek starten"
-            },
-            "shopping-list": {
-                "add_item": "Item toevoegen",
-                "clear_completed": "Wissen voltooid",
-                "microphone_tip": "Tik op de microfoon rechtsboven en zeg \"Add candy to my shopping list\""
             }
         },
         "sidebar": {

@@ -10,6 +10,7 @@ import {
   html,
   LitElement,
   property,
+  PropertyValues,
   queryAssignedNodes,
   TemplateResult,
 } from "lit-element";
@@ -39,9 +40,19 @@ export class HuiCardOptions extends LitElement {
     return this._assignedNodes ? computeCardSize(this._assignedNodes[0]) : 1;
   }
 
+  protected updated(changedProps: PropertyValues) {
+    if (!changedProps.has("path") || !this.path) {
+      return;
+    }
+    this.classList.toggle(
+      "panel",
+      this.lovelace!.config.views[this.path![0]].panel
+    );
+  }
+
   protected render(): TemplateResult {
     return html`
-      <slot></slot>
+      <div class="card"><slot></slot></div>
       <ha-card>
         <div class="card-actions">
           <mwc-button @click=${this._editCard}
@@ -108,8 +119,12 @@ export class HuiCardOptions extends LitElement {
         outline: 2px solid var(--primary-color);
       }
 
-      ::slotted(*) {
+      :host:not(.panel) ::slotted(*) {
         display: block;
+      }
+
+      :host(.panel) .card {
+        height: calc(100% - 59px);
       }
 
       ha-card {

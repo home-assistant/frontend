@@ -3,6 +3,7 @@ import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { Selector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
 import "./ha-selector-action";
+import "./ha-selector-addon";
 import "./ha-selector-area";
 import "./ha-selector-boolean";
 import "./ha-selector-device";
@@ -24,6 +25,10 @@ export class HaSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public placeholder?: any;
+
+  @property({ type: Boolean }) public disabled = false;
+
   public focus() {
     const input = this.shadowRoot!.getElementById("selector");
     if (!input) {
@@ -43,6 +48,8 @@ export class HaSelector extends LitElement {
         selector: this.selector,
         value: this.value,
         label: this.label,
+        placeholder: this.placeholder,
+        disabled: this.disabled,
         id: "selector",
       })}
     `;

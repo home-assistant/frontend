@@ -11,6 +11,7 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
 import { formatNumber } from "../common/string/format_number";
 import { afterNextRender } from "../common/util/render-status";
+import { FrontendTranslationData } from "../data/translation";
 import { getValueInPercentage, normalize } from "../util/calculate";
 
 const getAngle = (value: number, min: number, max: number) => {
@@ -29,7 +30,7 @@ export class Gauge extends LitElement {
 
   @property({ type: Number }) public value = 0;
 
-  @property({ type: String }) public language = "";
+  @property() public locale!: FrontendTranslationData;
 
   @property() public label = "";
 
@@ -90,7 +91,7 @@ export class Gauge extends LitElement {
       </svg>
       <svg class="text">
         <text class="value-text">
-          ${formatNumber(this.value, this.language)} ${this.label}
+          ${formatNumber(this.value, this.locale)} ${this.label}
         </text>
       </svg>`;
   }

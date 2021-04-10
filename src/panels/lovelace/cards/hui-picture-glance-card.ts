@@ -118,7 +118,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     if (
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.language !== this.hass!.language
+      oldHass.locale !== this.hass!.locale
     ) {
       return true;
     }
@@ -255,13 +255,11 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             "state-on": !STATES_OFF.has(stateObj.state),
           })}
           .icon=${entityConf.icon || stateIcon(stateObj)}
-          title=${`
-            ${computeStateName(stateObj)} : ${computeStateDisplay(
+          title=${`${computeStateName(stateObj)} : ${computeStateDisplay(
             this.hass!.localize,
             stateObj,
-            this.hass!.language
-          )}
-          `}
+            this.hass!.locale
+          )}`}
         ></ha-icon-button>
         ${this._config!.show_state !== true && entityConf.show_state !== true
           ? html`<div class="state"></div>`
@@ -276,7 +274,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                   : computeStateDisplay(
                       this.hass!.localize,
                       stateObj,
-                      this.hass!.language
+                      this.hass!.locale
                     )}
               </div>
             `}
@@ -314,11 +312,14 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: var(
+          --ha-picture-card-background-color,
+          rgba(0, 0, 0, 0.3)
+        );
         padding: 4px 8px;
         font-size: 16px;
         line-height: 40px;
-        color: white;
+        color: var(--ha-picture-card-text-color, white);
         display: flex;
         justify-content: space-between;
         flex-direction: row;
@@ -332,11 +333,11 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       ha-icon-button {
         --mdc-icon-button-size: 40px;
         --disabled-text-color: currentColor;
-        color: #a9a9a9;
+        color: var(--ha-picture-icon-button-color, #a9a9a9);
       }
 
       ha-icon-button.state-on {
-        color: white;
+        color: var(--ha-picture-icon-button-on-color, white);
       }
       .state {
         display: block;

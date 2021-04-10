@@ -30,135 +30,34 @@
         }
     },
     "state": {
-        "alarm_control_panel": {
-            "armed": "Ynskeakele",
-            "armed_away": "Ynskeakele ôfwêzich",
-            "armed_home": "Ynskeakele thús",
-            "armed_night": "Ynskeakele nacht",
-            "triggered": "Aktivearre"
-        },
-        "automation": {
-            "off": "Út",
-            "on": "Oan"
-        },
-        "binary_sensor": {
-            "cold": {
-                "on": "Kâld"
-            },
-            "connectivity": {
-                "on": "Ferbûn"
-            },
-            "default": {
-                "off": "Út",
-                "on": "Oan"
-            },
-            "door": {
-                "off": "Ticht",
-                "on": "Iepen"
-            },
-            "garage_door": {
-                "off": "Ticht",
-                "on": "Iepen"
-            },
-            "gas": {
-                "off": "Net detektearre"
-            },
-            "moisture": {
-                "off": "Droech"
-            },
-            "motion": {
-                "on": "Detekteare"
-            },
-            "opening": {
-                "off": "Ticht"
-            },
-            "presence": {
-                "on": "Thús"
-            },
-            "vibration": {
-                "on": "Detekteare"
-            },
-            "window": {
-                "off": "Ticht"
-            }
-        },
-        "calendar": {
-            "on": "Oan"
-        },
-        "camera": {
-            "recording": "Opnimme"
-        },
-        "climate": {
-            "cool": "Kuolje",
-            "dry": "Droech",
-            "heat": "Ferwaarmje"
-        },
-        "cover": {
-            "closing": "Slút",
-            "open": "Iepen",
-            "opening": "Iepent"
-        },
         "default": {
             "off": "Út",
             "on": "Oan",
             "unavailable": "Net beskikber",
             "unknown": "Ûnbekend"
+        }
+    },
+    "supervisor": {
+        "common": {
+            "close": "Slute"
         },
-        "device_tracker": {
-            "not_home": "Fuort"
-        },
-        "fan": {
-            "on": "Oan"
-        },
-        "group": {
-            "home": "Thús",
-            "locked": "Beskoattele",
-            "not_home": "Oan",
-            "off": "Út",
-            "on": "Oan",
-            "open": "Iepen",
-            "stopped": "Stoppe"
-        },
-        "light": {
-            "off": "Út",
-            "on": "Oan"
-        },
-        "lock": {
-            "locked": "Beskoattele"
-        },
-        "media_player": {
-            "on": "Oan",
-            "playing": "Ôfspylje"
-        },
-        "remote": {
-            "on": "Oan"
-        },
-        "script": {
-            "off": "Út",
-            "on": "Oan"
-        },
-        "sensor": {
-            "off": "Út",
-            "on": "Oan"
-        },
-        "switch": {
-            "on": "Oan"
-        },
-        "vacuum": {
-            "on": "Oan"
-        },
-        "weather": {
-            "sunny": "Sinnich"
-        },
-        "zwave": {
-            "default": {
-                "dead": "Net berikber",
-                "initializing": "Inisjalisearje",
-                "sleeping": "Sliept"
+        "dialog": {
+            "repositories": {
+                "add": "Tafoegje"
             },
-            "query_stage": {
-                "dead": "Net berikber ({query_stage})"
+            "restart_addon": {
+                "confirm_text": "Start add-on opnij op",
+                "text": "Wolle jo de add-on opnij starte mei jo feroaringen?"
+            },
+            "update": {
+                "create_snapshot": "Meitsje in momintopname fan {name} foardat jo bywurkje",
+                "snapshot": "Momintopname",
+                "snapshotting": "Momintopname oanmeitsjen fan {name}",
+                "updating": "{name} bywurkje nei ferzje {version}"
             }
+        },
+        "my": {
+            "error_addon_not_found": "Add-on net fûn"
         }
     },
     "ui": {
@@ -294,6 +193,11 @@
                         }
                     }
                 },
+                "blueprint": {
+                    "overview": {
+                        "share_blueprint": "Diel blaudruk"
+                    }
+                },
                 "cloud": {
                     "alexa": {
                         "title": "Alexa"
@@ -363,9 +267,6 @@
                 "zha": {
                     "clusters": {
                         "introduction": "Clusters binne de boustiennen foar Zigbee-funksjonaliteit. Se skiede funksjonaliteit yn logyske ienheden. D'r binne client- en serversoarten en disse besteane út attributen en kommando's."
-                    },
-                    "groups": {
-                        "description": "Meitsje en bewurkje Zigbee groepen"
                     }
                 },
                 "zwave": {
@@ -379,6 +280,13 @@
                     "services": {
                         "cancel_command": "Opdracht annulearje"
                     }
+                }
+            },
+            "error": {
+                "supervisor": {
+                    "ask": "Om help freegje",
+                    "system_health": "Kontrolearje systeem sûnens",
+                    "title": "Koe it paniel Supervisor net lade!"
                 }
             },
             "lovelace": {

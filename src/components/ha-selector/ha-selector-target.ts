@@ -42,6 +42,8 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _configEntries?: ConfigEntry[];
 
+  @property({ type: Boolean }) public disabled = false;
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeEntityRegistry(this.hass.connection!, (entities) => {
@@ -84,6 +86,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
       .includeDomains=${this.selector.target.entity?.domain
         ? [this.selector.target.entity.domain]
         : undefined}
+      .disabled=${this.disabled}
     ></ha-target-picker>`;
   }
 

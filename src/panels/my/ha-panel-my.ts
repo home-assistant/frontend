@@ -15,28 +15,138 @@ import {
 import "../../layouts/hass-error-screen";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { domainToName } from "../../data/integration";
+import { documentationUrl } from "../../util/documentation-url";
 
 const REDIRECTS: Redirects = {
-  info: {
-    redirect: "/config/info",
+  developer_states: {
+    redirect: "/developer-tools/state",
   },
-  logs: {
-    redirect: "/config/logs",
+  developer_services: {
+    redirect: "/developer-tools/service",
   },
-  profile: {
-    redirect: "/profile/dashboard",
-  },
-  blueprint_import: {
-    redirect: "/config/blueprint/dashboard/import",
+  developer_call_service: {
+    redirect: "/developer-tools/service",
     params: {
-      blueprint_url: "url",
+      service: "string",
     },
+  },
+  developer_template: {
+    redirect: "/developer-tools/template",
+  },
+  developer_events: {
+    redirect: "/developer-tools/event",
+  },
+  config: {
+    redirect: "/config",
+  },
+  cloud: {
+    component: "cloud",
+    redirect: "/config/cloud",
+  },
+  integrations: {
+    redirect: "/config/integrations",
   },
   config_flow_start: {
     redirect: "/config/integrations/add",
     params: {
       domain: "string",
     },
+  },
+  config_mqtt: {
+    component: "mqtt",
+    redirect: "/config/mqtt",
+  },
+  config_zha: {
+    component: "zha",
+    redirect: "/config/zha/dashboard",
+  },
+  config_zwave_js: {
+    component: "zwave_js",
+    redirect: "/config/zwave_js/dashboard",
+  },
+  devices: {
+    redirect: "/config/devices/dashboard",
+  },
+  entities: {
+    redirect: "/config/entities",
+  },
+  areas: {
+    redirect: "/config/areas/dashboard",
+  },
+  blueprints: {
+    component: "blueprint",
+    redirect: "/config/blueprint/dashboard",
+  },
+  blueprint_import: {
+    component: "blueprint",
+    redirect: "/config/blueprint/dashboard/import",
+    params: {
+      blueprint_url: "url",
+    },
+  },
+  automations: {
+    component: "automation",
+    redirect: "/config/automation/dashboard",
+  },
+  scenes: {
+    component: "scene",
+    redirect: "/config/scene/dashboard",
+  },
+  scripts: {
+    component: "script",
+    redirect: "/config/script/dashboard",
+  },
+  helpers: {
+    redirect: "/config/helpers",
+  },
+  tags: {
+    component: "tag",
+    redirect: "/config/tags",
+  },
+  lovelace_dashboards: {
+    component: "lovelace",
+    redirect: "/config/lovelace/dashboards",
+  },
+  lovelace_resources: {
+    component: "lovelace",
+    redirect: "/config/lovelace/resources",
+  },
+  people: {
+    component: "person",
+    redirect: "/config/person",
+  },
+  zones: {
+    component: "zone",
+    redirect: "/config/zone",
+  },
+  users: {
+    redirect: "/config/users",
+  },
+  general: {
+    redirect: "/config/core",
+  },
+  server_controls: {
+    redirect: "/config/server_control",
+  },
+  logs: {
+    redirect: "/config/logs",
+  },
+  info: {
+    redirect: "/config/info",
+  },
+  customize: {
+    redirect: "/config/customize",
+  },
+  profile: {
+    redirect: "/profile/dashboard",
+  },
+  logbook: {
+    component: "logbook",
+    redirect: "/logbook",
+  },
+  history: {
+    component: "history",
+    redirect: "/history",
   },
 };
 
@@ -57,7 +167,7 @@ class HaPanelMy extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() public _error = "";
+  @internalProperty() public _error?: string;
 
   connectedCallback() {
     super.connectedCallback();
@@ -65,11 +175,7 @@ class HaPanelMy extends LitElement {
 
     if (path.startsWith("supervisor")) {
       if (!isComponentLoaded(this.hass, "hassio")) {
-        this._error = this.hass.localize(
-          "ui.panel.my.component_not_loaded",
-          "integration",
-          domainToName(this.hass.localize, "hassio")
-        );
+        this._error = "no_supervisor";
         return;
       }
       navigate(
@@ -83,16 +189,7 @@ class HaPanelMy extends LitElement {
     const redirect = REDIRECTS[path];
 
     if (!redirect) {
-      this._error = this.hass.localize(
-        "ui.panel.my.not_supported",
-        "link",
-        html`<a
-          target="_blank"
-          rel="noreferrer noopener"
-          href="https://my.home-assistant.io/faq.html#supported-pages"
-          >${this.hass.localize("ui.panel.my.faq_link")}</a
-        >`
-      );
+      this._error = "not_supported";
       return;
     }
 
@@ -100,11 +197,7 @@ class HaPanelMy extends LitElement {
       redirect.component &&
       !isComponentLoaded(this.hass, redirect.component)
     ) {
-      this._error = this.hass.localize(
-        "ui.panel.my.component_not_loaded",
-        "integration",
-        domainToName(this.hass.localize, redirect.component)
-      );
+      this._error = "no_component";
       return;
     }
 
@@ -112,7 +205,7 @@ class HaPanelMy extends LitElement {
     try {
       url = this._createRedirectUrl(redirect);
     } catch (err) {
-      this._error = this.hass.localize("ui.panel.my.error");
+      this._error = "url_error";
       return;
     }
 
@@ -121,9 +214,48 @@ class HaPanelMy extends LitElement {
 
   protected render() {
     if (this._error) {
-      return html`<hass-error-screen
-        .error=${this._error}
-      ></hass-error-screen>`;
+      let error = "Unknown error";
+      switch (this._error) {
+        case "not_supported":
+          error =
+            this.hass.localize(
+              "ui.panel.my.not_supported",
+              "link",
+              html`<a
+                target="_blank"
+                rel="noreferrer noopener"
+                href="https://my.home-assistant.io/faq.html#supported-pages"
+                >${this.hass.localize("ui.panel.my.faq_link")}</a
+              >`
+            ) || "This redirect is not supported.";
+          break;
+        case "no_component":
+          error =
+            this.hass.localize(
+              "ui.panel.my.component_not_loaded",
+              "integration",
+              domainToName(
+                this.hass.localize,
+                REDIRECTS[this.route.path.substr(1)].component!
+              )
+            ) || "This redirect is not supported.";
+          break;
+        case "no_supervisor":
+          error = this.hass.localize(
+            "ui.panel.my.no_supervisor",
+            "docs_link",
+            html`<a
+              target="_blank"
+              rel="noreferrer noopener"
+              href="${documentationUrl(this.hass, "/installation")}"
+              >${this.hass.localize("ui.panel.my.documentation")}</a
+            >`
+          );
+          break;
+        default:
+          error = this.hass.localize("ui.panel.my.error") || "Unknown error";
+      }
+      return html`<hass-error-screen .error=${error}></hass-error-screen>`;
     }
     return html``;
   }

@@ -129,11 +129,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
               ? stateObj.attributes[this._config.attribute!] ??
                 this.hass.localize("state.default.unknown")
               : stateObj.attributes.unit_of_measurement
-              ? formatNumber(stateObj.state, this.hass!.language)
+              ? formatNumber(stateObj.state, this.hass.locale)
               : computeStateDisplay(
                   this.hass.localize,
                   stateObj,
-                  this.hass.language
+                  this.hass.locale
                 )}</span
           >${showUnit
             ? html`

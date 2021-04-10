@@ -76,7 +76,7 @@ class HuiTextEntityRow extends LitElement implements LovelaceRow {
           ${computeStateDisplay(
             this.hass!.localize,
             stateObj,
-            this.hass.language
+            this.hass.locale
           )}
         </div>
       </hui-generic-entity-row>
