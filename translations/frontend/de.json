@@ -1239,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Verbindung getrennt. Verbinde erneut...",
             "dismiss": "Ausblenden",
+            "intergration_starting": "Starte {integration}. Währenddessen ist noch nicht alles verfügbar.",
             "service_call_failed": "Fehler beim Aufrufen des Diensts {service}.",
             "started": "Home Assistant wurde vollständig gestartet!",
-            "starting": "Home Assistant startet. Währenddessen kann es sein, dass nicht alles verfügbar ist.",
-            "triggered": "{name} ausgelöst"
+            "starting": "Home Assistant startet. Währenddessen ist noch nicht alles verfügbar.",
+            "triggered": "{name} ausgelöst",
+            "wrapping_up_startup": "Startvorgang fast fertig. Währenddessen ist noch nicht alles verfügbar."
         },
         "panel": {
             "config": {
@@ -1606,7 +1608,7 @@
                         "delete_automation": "Automatisierung löschen",
                         "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen möchtest?",
                         "dev_automation": "Automatisierung debuggen",
-                        "dev_only_editable": "Nur Automatisierungen in automations.yaml können debuggt werden.",
+                        "dev_only_editable": "Nur Automatisierungen, die eine eindeutige ID haben, können debuggt werden.",
                         "duplicate": "Duplizieren",
                         "duplicate_automation": "Automatisierung duplizieren",
                         "edit_automation": "Automatisierung bearbeiten",

@@ -1213,6 +1213,11 @@
                 "key_wrong_type": "La valeur fournie pour \"{key}\" n'est pas prise en charge par l'éditeur visuel. Nous supportons ({type_correct}) mais avons reçu ({type_wrong}).",
                 "no_template_editor_support": "Modèles non pris en charge dans l'éditeur visuel",
                 "no_type_provided": "Aucun type fourni."
+            },
+            "supervisor": {
+                "ask": "Demandez de l’aide",
+                "reboot": "Essayez un redémarrage de l’hôte",
+                "wait": "Si vous venez de commencer, assurez-vous d’avoir donné au Superviseur suffisamment de temps pour démarrer."
             }
         },
         "login-form": {
@@ -2156,6 +2161,7 @@
                         "logs": "journaux",
                         "manuf": "par {manufacturer}",
                         "no_area": "Pas de zone",
+                        "not_loaded": "Non chargé, vérifiez le {logs_link}",
                         "options": "Options",
                         "reload": "Recharger",
                         "reload_confirm": "L'intégration a été rechargée",
@@ -2234,6 +2240,7 @@
                     "details": "Détails du journal ( {level} )",
                     "level": {
                         "critical": "CRITIQUE",
+                        "debug": "DEBUG",
                         "error": "ERREUR",
                         "info": "INFO",
                         "warning": "ATTENTION"
@@ -3034,6 +3041,7 @@
                         "column_parameter": "Paramètre",
                         "description": "L'outil de développement 'services' vous permet d'appeler n'importe quel service disponible dans Home Assistant.",
                         "fill_example_data": "Remplir des exemples de données",
+                        "no_template_ui_support": "L'interface utilisateur ne prend pas en charge les modèles, vous pouvez toujours utiliser l'éditeur YAML.",
                         "title": "Services",
                         "ui_mode": "Passer en mode UI",
                         "yaml_mode": "Passez en mode YAML",
@@ -3849,9 +3857,16 @@
                 },
                 "number_format": {
                     "description": "Définir le formatage des nombres",
+                    "dropdown_label": "Format de nombre",
                     "formats": {
-                        "none": "Aucun"
-                    }
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Auto (utiliser le paramètre de langue)",
+                        "none": "Aucun",
+                        "space_comma": "1 234 567,89",
+                        "system": "Utiliser les paramètres régionaux du système"
+                    },
+                    "header": "Format de nombre"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

@@ -307,7 +307,7 @@
             },
             "update": {
                 "text": "Opravdu chcete aktualizovat {name} na verzi {version}?",
-                "title": "Aktualizovat {název}"
+                "title": "Aktualizovat {name}"
             }
         },
         "dashboard": {
@@ -1239,6 +1239,7 @@
         "notification_toast": {
             "connection_lost": "Připojení bylo ztraceno. Připojuji se znovu...",
             "dismiss": "Zavřít",
+            "intergration_starting": "Integrace {integration} se spouští - dokud nebude spuštění dokončeno, nemusí být vše k dispozici.",
             "service_call_failed": "Službu {service} se nepodařilo zavolat.",
             "started": "Home Assistant je spuštěn!",
             "starting": "Home Assistant se spouští, ne všechno bude k dispozici, dokud nebude spuštění dokončeno.",
@@ -1606,7 +1607,7 @@
                         "delete_automation": "Odstranit automatizaci",
                         "delete_confirm": "Opravdu chcete odstranit tuto automatizaci?",
                         "dev_automation": "Debugování automatizace",
-                        "dev_only_editable": "Pouze automatizace definované v automations.yaml jsou debugovatelné",
+                        "dev_only_editable": "Pouze automatizace s unikátní ID jsou debugovatelné.",
                         "duplicate": "Duplikát",
                         "duplicate_automation": "Duplikovat automatizaci",
                         "edit_automation": "Upravit automatizaci",

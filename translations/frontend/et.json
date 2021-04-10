@@ -1239,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Ühendus kadunud. Taasühendamine...",
             "dismiss": "Loobu",
+            "intergration_starting": "Sidumine {integration} käivitub, kõik elemendid pole veel saadaval.",
             "service_call_failed": "Teenuse {service} väljakutsumine ebaõnnestus.",
             "started": "Home Assistant on käivitunud!",
             "starting": "Home Assistant  käivitub, kõik elemendid ei pruugi veel saadaval olla",
-            "triggered": "Käivitati {name}"
+            "triggered": "Käivitati {name}",
+            "wrapping_up_startup": "Lõpetan käivitumist, kõik elemendid pole veel saadaval."
         },
         "panel": {
             "config": {
@@ -1606,7 +1608,7 @@
                         "delete_automation": "Kustuta automatiseering",
                         "delete_confirm": "Oled kindel, et soovid selle automatiseeringu kustutada?",
                         "dev_automation": "Automatiseeringu silumine",
-                        "dev_only_editable": "Siluda saab ainult kirjes automations.yaml olevaid automatiseeringuid.",
+                        "dev_only_editable": "Siluda saab ainult kordumatu ID-ga automatiseeringuid.",
                         "duplicate": "Paljunda",
                         "duplicate_automation": "Paljunda automatiseering",
                         "edit_automation": "Muuda automatiseeringut",

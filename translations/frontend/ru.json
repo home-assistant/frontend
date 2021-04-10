@@ -1239,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Соединение потеряно. Повторное подключение ...",
             "dismiss": "Закрыть",
+            "intergration_starting": "Запуск {integration}, пока что не всё может быть доступно.",
             "service_call_failed": "Не удалось вызвать службу {service}.",
             "started": "Home Assistant работает!",
             "starting": "Home Assistant запускается, пока что не всё может быть доступно.",
-            "triggered": "Сработало от {name}"
+            "triggered": "Сработало от {name}",
+            "wrapping_up_startup": "Завершение запуска, пока что не всё может быть доступно."
         },
         "panel": {
             "config": {
@@ -1606,7 +1608,7 @@
                         "delete_automation": "Удалить автоматизацию",
                         "delete_confirm": "Вы уверены, что хотите удалить эту автоматизацию?",
                         "dev_automation": "Отладка автоматизации",
-                        "dev_only_editable": "Процесс отладки доступен только для автоматизаций, созданных в automations.yaml",
+                        "dev_only_editable": "Процесс отладки доступен только для автоматизаций с уникальным идентификатором.",
                         "duplicate": "Дублировать",
                         "duplicate_automation": "Дублировать",
                         "edit_automation": "Редактировать автоматизацию",
