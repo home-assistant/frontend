@@ -46,7 +46,9 @@ class DatetimeInput extends LitElement {
                     "ui.dialogs.helper_settings.input_datetime.date"
                   )}"
                   .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
-                  .value=${`${this.stateObj.attributes.year}-${this.stateObj.attributes.month}-${this.stateObj.attributes.day}`}
+                  .value=${UNAVAILABLE_STATES.includes(this.stateObj.state)
+                    ? ""
+                    : `${this.stateObj.attributes.year}-${this.stateObj.attributes.month}-${this.stateObj.attributes.day}`}
                   @change=${this._selectedValueChanged}
                   @click=${this._stopEventPropagation}
                 ></ha-date-input>
@@ -55,16 +57,16 @@ class DatetimeInput extends LitElement {
           : ""}
         ${this.stateObj.attributes.has_time
           ? html`
-              <div class="single-row">
+              <div>
                 <paper-time-input
                   .label="${this.hass.localize(
                     "ui.dialogs.helper_settings.input_datetime.time"
                   )}"
                   .disabled=${UNAVAILABLE_STATES.includes(this.stateObj.state)}
-                  .hour=${this.stateObj.state === UNKNOWN
+                  .hour=${UNAVAILABLE_STATES.includes(this.stateObj.state)
                     ? ""
                     : this.stateObj.attributes.hour.toString().padStart(2, "0")}
-                  .min=${this.stateObj.state === UNKNOWN
+                  .min=${UNAVAILABLE_STATES.includes(this.stateObj.state)
                     ? ""
                     : this.stateObj.attributes.minute
                         .toString()
@@ -100,13 +102,6 @@ class DatetimeInput extends LitElement {
     }
 
     ev.target.blur();
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      .single-row {
-      }
-    `;
   }
 }
 
