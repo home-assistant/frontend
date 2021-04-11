@@ -1239,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Verbinding verbroken. Opnieuw verbinden...",
             "dismiss": "Afwijzen",
+            "intergration_starting": "Start {integration}, niet alles is beschikbaar totdat het voltooid is.",
             "service_call_failed": "Kan service {service} niet aanroepen",
             "started": "Home Assistant is gestart!",
-            "starting": "Home Assistant is aan het opstarten. Gedurende het opstarten is niet alles beschikbaar.",
-            "triggered": "Geactiveerd {name}"
+            "starting": "Home Assistant is aan het opstarten. Tijdens het opstarten is niet alles beschikbaar.",
+            "triggered": "Geactiveerd {name}",
+            "wrapping_up_startup": "Opstarten aan het afronden, niet alles is beschikbaar totdat het voltooid is."
         },
         "panel": {
             "config": {
@@ -3596,7 +3598,7 @@
                     "entity_non_numeric": "Entiteit is niet-numeriek: {entity}",
                     "entity_not_found": "Entiteit niet beschikbaar: {entity}",
                     "entity_unavailable": "Entiteit is momenteel niet beschikbaar: {entity}",
-                    "starting": "Home Assistant is aan het opstarten, wellicht is nog niet alles beschikbaar"
+                    "starting": "Home Assistant is aan het opstarten, nog niet alles is beschikbaar"
                 }
             },
             "mailbox": {

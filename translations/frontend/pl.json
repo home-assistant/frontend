@@ -1239,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Utracono połączenie. Łączę ponownie...",
             "dismiss": "Ukryj",
+            "intergration_starting": "{integration} uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
             "service_call_failed": "Nie udało się wywołać usługi {service}.",
             "started": "Home Assistant uruchomił się!",
             "starting": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
-            "triggered": "Wyzwolenie {name}"
+            "triggered": "Wyzwolenie {name}",
+            "wrapping_up_startup": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy."
         },
         "panel": {
             "config": {
@@ -1606,7 +1608,7 @@
                         "delete_automation": "Usuń automatyzację",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę automatyzację?",
                         "dev_automation": "Debuguj automatyzację",
-                        "dev_only_editable": "Można debugować tylko automatyzacje zdefiniowane w pliku automations.yaml.",
+                        "dev_only_editable": "Można debugować tylko automatyzacje mające unikalne identyfikatory.",
                         "duplicate": "Duplikuj",
                         "duplicate_automation": "Duplikuj automatyzację",
                         "edit_automation": "Edytuj automatyzację",
