@@ -1,7 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
-  css,
-  CSSResult,
   customElement,
   html,
   LitElement,
@@ -12,7 +10,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import type { HaDateInput } from "../../../components/ha-date-input";
 import type { PaperTimeInput } from "../../../components/paper-time-input";
-import { UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
+import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { setInputDateTimeValue } from "../../../data/input_datetime";
 import type { HomeAssistant } from "../../../types";
 
