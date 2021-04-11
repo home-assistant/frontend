@@ -181,7 +181,8 @@ export const computeCards = (
         titlePrefix &&
         stateObj &&
         // eslint-disable-next-line no-cond-assign
-        (name = computeStateName(stateObj)).startsWith(titlePrefix)
+        (name = computeStateName(stateObj)).startsWith(titlePrefix) &&
+        name !== titlePrefix
           ? {
               entity: entityId,
               name: adjustName(name.substr(titlePrefix.length)),
