@@ -724,7 +724,7 @@
                 "today": "Heute"
             },
             "data-table": {
-                "clear": "Leeren",
+                "clear": "Löschen",
                 "filtering_by": "Filtern nach",
                 "hidden": "{number} ausgeblendet",
                 "no-data": "Keine Daten",
@@ -2084,7 +2084,7 @@
                     }
                 },
                 "filtering": {
-                    "clear": "Leeren",
+                    "clear": "Löschen",
                     "filtering_by": "Filtern nach",
                     "show": "Anzeigen"
                 },
@@ -2254,7 +2254,7 @@
                 "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
                 "logs": {
                     "caption": "Logs",
-                    "clear": "Leeren",
+                    "clear": "Löschen",
                     "description": "Home Assistant Logs einsehen",
                     "details": "Protokolldetails ({level})",
                     "level": {
