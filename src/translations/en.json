@@ -2103,7 +2103,7 @@
         },
         "integrations": {
           "caption": "Integrations",
-          "description": "Manage integrations that interact with services or devices",
+          "description": "Manage integrations with services and/or devices",
           "integration": "integration",
           "discovered": "Discovered",
           "attention": "Attention required",
