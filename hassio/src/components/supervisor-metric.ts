@@ -73,7 +73,7 @@ class SupervisorMetric extends LitElement {
         );
       }
       .value {
-        width: 42px;
+        width: 48px;
         padding-right: 4px;
       }
     `;
