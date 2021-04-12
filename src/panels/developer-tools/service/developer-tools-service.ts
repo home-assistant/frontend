@@ -280,7 +280,7 @@ class HaPanelDevService extends LitElement {
           this.hass.localize(
             "ui.notification_toast.service_call_failed",
             "service",
-            `${this._serviceData.service}`
+            this._serviceData.service
           ) + ` ${err.message}`,
       });
     }
