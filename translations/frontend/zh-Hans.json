@@ -950,7 +950,7 @@
                 },
                 "faq": "文档",
                 "info_customize": "您可以在{customize_link}部分中覆盖一些属性。",
-                "no_unique_id": "该实体 (\"{entity_id}\") 没有唯一的 ID，因此无法由 UI 管理其设置。请参阅 {faq_link} 以详细了解。",
+                "no_unique_id": "该实体 (\"{entity_id}\") 没有 unique ID，因此无法由 UI 管理其设置。请参阅 {faq_link} 以详细了解。",
                 "related": "关联",
                 "settings": "设置"
             },
@@ -1608,7 +1608,7 @@
                         "delete_automation": "删除自动化",
                         "delete_confirm": "您确定要删除此自动化吗？",
                         "dev_automation": "调试自动化",
-                        "dev_only_editable": "只能调试 automations.yaml 中的自动化。",
+                        "dev_only_editable": "只能调试具有 unique ID 的自动化。",
                         "duplicate": "制作副本",
                         "duplicate_automation": "复制自动化",
                         "edit_automation": "编辑自动化",
