@@ -114,15 +114,15 @@ class ZHAConfigDashboard extends LitElement {
               </div>`
             : ""}
         </ha-card>
-        <ha-card
-          header=${this.hass.localize(
-            "ui.panel.config.zha.configuration_page.configuration_options_title"
-          )}
-        >
-          <div class="card-content">
-            ${this._configuration
-              ? Object.entries(this._configuration.schemas).map(
-                  ([section, schema]) => html`<ha-form
+        ${this._configuration
+          ? Object.entries(this._configuration.schemas).map(
+              ([section, schema]) => html` <ha-card
+                header=${this.hass.localize(
+                  `ui.panel.config.zha.configuration_page.${section}.title`
+                )}
+              >
+                <div class="card-content">
+                  <ha-form
                     .schema=${schema}
                     .data=${this._configuration
                       ? this._configuration.data[section]
@@ -132,10 +132,12 @@ class ZHAConfigDashboard extends LitElement {
                       this.hass.localize,
                       section
                     )}
-                  ></ha-form>`
-                )
-              : ""}
-          </div>
+                  ></ha-form>
+                </div>
+              </ha-card>`
+            )
+          : ""}
+        <ha-card>
           <div class="card-actions">
             <mwc-button @click=${this._updateConfiguration}
               >${this.hass.localize(
@@ -144,6 +146,7 @@ class ZHAConfigDashboard extends LitElement {
             >
           </div>
         </ha-card>
+
         <a href="/config/zha/add" slot="fab">
           <ha-fab
             .label=${this.hass.localize("ui.panel.config.zha.add_device")}

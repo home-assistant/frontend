@@ -2382,9 +2382,9 @@
           },
           "configuration_page": {
             "shortcuts_title": "Shortcuts",
-            "configuration_options_title": "Configuration Options",
             "update_button": "Update Configuration",
             "zha_options": {
+              "title": "Global Options",
               "enable_identify_on_join": "Enable identify effect when devices join the network",
               "default_light_transition": "Default light transition time (seconds)"
             }
