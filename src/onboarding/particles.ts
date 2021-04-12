@@ -111,13 +111,6 @@ export function drawConfiguredParticles(domains: string[]) {
         limit: 0,
         value: domains.length,
       },
-      opacity: {
-        random: {
-          enable: true,
-          minimumValue: 0.5,
-        },
-        value: 0.7,
-      },
       size: {
         value: 25 - domains.length * 0.25,
       },
