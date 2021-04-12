@@ -60,21 +60,11 @@ class ZHAConfigDashboard extends LitElement {
 
   @property() private _configuration?: ZHAConfiguration;
 
-  private _firstUpdatedCalled = false;
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.hass && this._firstUpdatedCalled) {
-      this._fetchConfiguration();
-    }
-  }
-
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     if (this.hass) {
       this._fetchConfiguration();
     }
-    this._firstUpdatedCalled = true;
   }
 
   protected render(): TemplateResult {
@@ -184,7 +174,7 @@ class ZHAConfigDashboard extends LitElement {
           data[section][field.name] = sectionData[field.name];
         }
       }
-      if (data[section] === {}) {
+      if (!Object.keys(data[section]).length) {
         delete data[section];
       }
     }
