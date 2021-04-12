@@ -1,82 +1,140 @@
 import { tsParticles } from "tsparticles";
+import { featuredDomains } from "./featured-domains";
 
-tsParticles.load("particles", {
-  // autoPlay: true,
-  fullScreen: {
-    enable: true,
-    zIndex: -1,
-  },
-  detectRetina: true,
-  fpsLimit: 60,
-  motion: {
-    disable: false,
-    reduce: {
-      factor: 4,
-      value: true,
-    },
-  },
-  particles: {
-    color: {
-      value: "#fff",
-      animation: {
-        enable: true,
-        speed: 50,
-        sync: false,
-      },
-    },
-    links: {
-      color: {
-        value: "random",
-      },
-      distance: 100,
+function icons(domains: string[]): { src: string }[] {
+  return domains.map((domain) => ({
+    src: "https://brands.home-assistant.io/" + domain + "/icon.png",
+  }));
+}
+
+export function drawFeaturedParticles() {
+  tsParticles.load("particles", {
+    fullScreen: {
       enable: true,
-      frequency: 1,
-      opacity: 0.7,
-      width: 1,
+      zIndex: -1,
     },
-    move: {
+    detectRetina: true,
+    fpsLimit: 60,
+    motion: {
+      disable: false,
+      reduce: {
+        factor: 4,
+        value: true,
+      },
+    },
+    particles: {
+      shape: {
+        image: icons(featuredDomains),
+        type: "image",
+      },
+      move: {
+        enable: true,
+        speed: 0.4,
+      },
+      number: {
+        density: {
+          enable: true,
+          area: 800,
+          factor: 1000,
+        },
+        limit: 0,
+        value: featuredDomains.length,
+      },
+      opacity: {
+        random: {
+          enable: true,
+          minimumValue: 0.3,
+        },
+        value: 0.5,
+      },
+      size: {
+        random: {
+          enable: true,
+          minimumValue: 5,
+        },
+        value: 20,
+        animation: {
+          destroy: "none",
+          enable: true,
+          minimumValue: 5,
+          speed: 2,
+          startValue: "random",
+          sync: false,
+        },
+      },
+    },
+    pauseOnBlur: true,
+  });
+}
+
+export function drawConfiguredParticles(domains: string[]) {
+  tsParticles.load("particles", {
+    fullScreen: {
       enable: true,
-      speed: 0.5,
+      zIndex: -1,
     },
-    number: {
-      density: {
-        enable: true,
-        area: 800,
-        factor: 1000,
+    detectRetina: true,
+    fpsLimit: 60,
+    motion: {
+      disable: false,
+      reduce: {
+        factor: 4,
+        value: true,
       },
-      limit: 0,
-      value: 50,
     },
-    opacity: {
-      random: {
-        enable: true,
-        minimumValue: 0.3,
+    particles: {
+      shape: {
+        image: icons(domains),
+        type: "image",
       },
-      value: 0.5,
-      animation: {
-        destroy: "none",
+      links: {
+        color: {
+          value: "random",
+        },
+        distance: 400 - domains.length * 10,
+        enable: domains.length > 1,
+        frequency: 1,
+        opacity: 0.7,
+        width: 1,
+      },
+      move: {
         enable: true,
-        minimumValue: 0.3,
         speed: 0.5,
-        startValue: "random",
-        sync: false,
+        outMode: "bounce",
+      },
+      number: {
+        density: {
+          enable: true,
+          area: 800,
+          factor: 1000,
+        },
+        limit: 0,
+        value: domains.length,
+      },
+      opacity: {
+        random: {
+          enable: true,
+          minimumValue: 0.5,
+        },
+        value: 0.7,
+      },
+      size: {
+        value: 25 - domains.length * 0.25,
+      },
+      collisions: {
+        enable: true,
+        mode: "bounce",
       },
     },
-    size: {
-      random: {
-        enable: true,
-        minimumValue: 1,
-      },
-      value: 3,
-      animation: {
-        destroy: "none",
-        enable: true,
-        minimumValue: 1,
-        speed: 3,
-        startValue: "random",
-        sync: false,
+    interactivity: {
+      events: {
+        onDiv: {
+          selectors: ".content",
+          enable: true,
+          mode: "bounce",
+        },
       },
     },
-  },
-  pauseOnBlur: true,
-});
+    pauseOnBlur: true,
+  });
+}

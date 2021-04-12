@@ -28,6 +28,7 @@ import {
 import { HomeAssistant } from "../types";
 import "./action-badge";
 import "./integration-badge";
+import { drawConfiguredParticles } from "./particles";
 
 const HIDDEN_DOMAINS = new Set(["met", "rpi_power"]);
 
@@ -40,6 +41,8 @@ class OnboardingIntegrations extends LitElement {
   @internalProperty() private _entries?: ConfigEntry[];
 
   @internalProperty() private _discovered?: DataEntryFlowProgress[];
+
+  @internalProperty() private _domains: string[] = [];
 
   private _unsubEvents?: () => void;
 
@@ -138,6 +141,33 @@ class OnboardingIntegrations extends LitElement {
     this._loadConfigEntries();
     /* polyfill for paper-dropdown */
     import("web-animations-js/web-animations-next-lite.min");
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (!this._entries || !this._discovered) {
+      drawConfiguredParticles(["homeassistant"]);
+      return;
+    }
+    const domains = [
+      ...this._entries.map((entry) => entry.domain),
+      ...this._discovered.map((flow) => flow.handler),
+      "homeassistant",
+    ];
+    if (this._domainsChanged(domains)) {
+      drawConfiguredParticles(domains);
+      this._domains = domains;
+    }
+  }
+
+  private _domainsChanged(domains: string[]): boolean {
+    if (domains.length !== this._domains.length) return true;
+    for (let i = 0; i < domains.length; i++) {
+      if (!this._domains.includes(domains[i])) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private _createFlow() {

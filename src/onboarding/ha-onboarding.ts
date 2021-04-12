@@ -32,6 +32,7 @@ import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-create-user";
 import "./onboarding-loading";
 import "./onboarding-analytics";
+import { drawFeaturedParticles } from "./particles";
 
 type OnboardingEvent =
   | {
@@ -135,7 +136,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     registerServiceWorker(this, false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
     if (window.innerWidth > 450) {
-      import("./particles");
+      drawFeaturedParticles();
     }
   }
 
