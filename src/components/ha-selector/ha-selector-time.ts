@@ -25,14 +25,15 @@ export class HaTimeSelector extends LitElement {
     const useAMPM = this._useAmPm(this.hass.locale.language);
 
     const parts = this.value?.split(":") || [];
-    const hours = useAMPM ? parts[0] ?? "12" : parts[0] ?? "0";
+    const hours = useAMPM ? parts[0] : parts[0];
 
     return html`
       <paper-time-input
         .label=${this.label}
-        .hour=${useAMPM && Number(hours) > 12 ? Number(hours) - 12 : hours}
-        .min=${parts[1] ?? "00"}
-        .sec=${parts[2] ?? "00"}
+        .hour=${hours &&
+        (useAMPM && Number(hours) > 12 ? Number(hours) - 12 : hours)}
+        .min=${parts[1]}
+        .sec=${parts[2]}
         .format=${useAMPM ? 12 : 24}
         .amPm=${useAMPM && (Number(hours) > 12 ? "PM" : "AM")}
         .disabled=${this.disabled}
@@ -46,21 +47,16 @@ export class HaTimeSelector extends LitElement {
 
   private _timeChanged(ev) {
     let value = ev.target.value;
+    if (value === this.value) {
+      return;
+    }
     const useAMPM = this._useAmPm(this.hass.locale.language);
+    let hours = Number(ev.target.hour || 0);
     if (useAMPM) {
-      let hours = Number(ev.target.hour);
       if (ev.target.amPm === "PM") {
         hours += 12;
       }
-      value = `${hours}:${ev.target.min}:${ev.target.sec}`;
-    }
-    if (
-      (!this.value &&
-        ((!useAMPM && value === "0:00:00") ||
-          (useAMPM && value === "12:00:00"))) ||
-      value === this.value
-    ) {
-      return;
+      value = `${hours}:${ev.target.min || "00"}:${ev.target.sec || "00"}`;
     }
     fireEvent(this, "value-changed", {
       value,
