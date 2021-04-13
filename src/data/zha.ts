@@ -54,6 +54,21 @@ export interface Cluster {
   type: string;
 }
 
+export interface AttributeConfigurationStatus {
+  id: number;
+  name: string;
+  success: boolean | undefined;
+  min: number;
+  max: number;
+  change: number;
+}
+
+export interface ClusterConfigurationStatus {
+  cluster: Cluster;
+  bindSuccess: boolean | undefined;
+  attributes: Map<number, AttributeConfigurationStatus>;
+}
+
 export interface Command {
   name: string;
   id: number;
@@ -301,3 +316,13 @@ export const DEVICE_MESSAGE_TYPES = [
   DEVICE_FULLY_INITIALIZED,
 ];
 export const LOG_OUTPUT = "log_output";
+export const ZHA_CHANNEL_MSG = "zha_channel_message";
+export const ZHA_CHANNEL_MSG_BIND = "zha_channel_bind";
+export const ZHA_CHANNEL_MSG_CFG_RPT = "zha_channel_configure_reporting";
+export const ZHA_CHANNEL_MSG_DATA = "zha_channel_msg_data";
+export const ZHA_CHANNEL_CFG_DONE = "zha_channel_cfg_done";
+export const CHANNEL_MESSAGE_TYPES = [
+  ZHA_CHANNEL_MSG_BIND,
+  ZHA_CHANNEL_MSG_CFG_RPT,
+  ZHA_CHANNEL_CFG_DONE,
+];

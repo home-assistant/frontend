@@ -8,15 +8,25 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { mdiCheckCircle, mdiClose, mdiExclamationThick } from "@mdi/js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZHAReconfigureDeviceDialogParams } from "./show-dialog-zha-reconfigure-device";
-import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
 import "@polymer/paper-input/paper-textarea";
 import "../../../../../components/ha-circular-progress";
-import { LOG_OUTPUT, reconfigureNode } from "../../../../../data/zha";
+import {
+  AttributeConfigurationStatus,
+  CHANNEL_MESSAGE_TYPES,
+  Cluster,
+  ClusterConfigurationStatus,
+  fetchClustersForZhaNode,
+  reconfigureNode,
+  ZHA_CHANNEL_CFG_DONE,
+  ZHA_CHANNEL_MSG_BIND,
+  ZHA_CHANNEL_MSG_CFG_RPT,
+} from "../../../../../data/zha";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 
 @customElement("dialog-zha-reconfigure-device")
 class DialogZHAReconfigureDevice extends LitElement {
@@ -24,26 +34,39 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   @internalProperty() private _active = false;
 
-  @internalProperty() private _formattedEvents = "";
+  @internalProperty() private _clusterConfigurationStatuses: Map<
+    number,
+    ClusterConfigurationStatus
+  > = new Map();
 
   @internalProperty()
   private _params: ZHAReconfigureDeviceDialogParams | undefined = undefined;
 
   private _subscribed?: Promise<() => Promise<void>>;
 
-  private _reconfigureDeviceTimeoutHandle: any = undefined;
-
   public async showDialog(
     params: ZHAReconfigureDeviceDialogParams
   ): Promise<void> {
     this._params = params;
+    this._clusterConfigurationStatuses = new Map(
+      (await fetchClustersForZhaNode(this.hass, params.device.ieee)).map(
+        (cluster: Cluster) => [
+          cluster.id,
+          {
+            cluster: cluster,
+            bindSuccess: undefined,
+            attributes: new Map<number, AttributeConfigurationStatus>(),
+          },
+        ]
+      )
+    );
     this._subscribe(params);
   }
 
   public closeDialog(): void {
     this._unsubscribe();
-    this._formattedEvents = "";
     this._params = undefined;
+    this._clusterConfigurationStatuses = new Map();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -56,53 +79,96 @@ class DialogZHAReconfigureDevice extends LitElement {
         open
         hideActions
         @closing="${this.closeDialog}"
-        .heading=${createCloseHeading(
-          this.hass,
-          this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`)
-        )}
+        .heading=${html`
+          <span class="header_title"
+            >${this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`)}:
+            ${this._params?.device.user_given_name ||
+            this._params?.device.name}</span
+          >
+          <mwc-icon-button
+            aria-label=${this.hass.localize("ui.dialogs.generic.close")}
+            dialogAction="close"
+            class="header_button"
+            dir=${computeRTLDirection(this.hass)}
+          >
+            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+          </mwc-icon-button>
+        `}
       >
         <div class="searching">
           ${this._active
             ? html`
-                <h1>
-                  ${this._params?.device.user_given_name ||
-                  this._params?.device.name}
-                </h1>
                 <ha-circular-progress
                   active
-                  alt="Searching"
+                  alt="Configuring"
                 ></ha-circular-progress>
               `
             : ""}
         </div>
-        <paper-textarea
-          readonly
-          max-rows="10"
-          class="log"
-          value="${this._formattedEvents}"
-        >
-        </paper-textarea>
+        ${this._clusterConfigurationStatuses.size > 0
+          ? html`${Array.from(this._clusterConfigurationStatuses.values()).map(
+              (clusterStatus) => html`<paper-item>
+                <paper-item-body three-line>
+                  <div>${clusterStatus.cluster.name}</div>
+                  <div secondary>
+                    Bind Successful:
+                    ${clusterStatus.bindSuccess !== undefined
+                      ? clusterStatus.bindSuccess
+                        ? html`<ha-svg-icon
+                            .path=${mdiCheckCircle}
+                          ></ha-svg-icon>`
+                        : html`<ha-svg-icon
+                            .path=${mdiExclamationThick}
+                          ></ha-svg-icon>`
+                      : ""}
+                  </div>
+                  <div secondary>
+                    Configure Reporting Successful:
+                    ${clusterStatus.bindSuccess !== undefined
+                      ? clusterStatus.bindSuccess
+                        ? html`<ha-svg-icon
+                            .path=${mdiCheckCircle}
+                          ></ha-svg-icon>`
+                        : html`<ha-svg-icon
+                            .path=${mdiExclamationThick}
+                          ></ha-svg-icon>`
+                      : ""}
+                  </div>
+                </paper-item-body>
+              </paper-item>`
+            )}`
+          : ""}
       </ha-dialog>
     `;
   }
 
   private _handleMessage(message: any): void {
-    if (message.type === LOG_OUTPUT) {
-      this._formattedEvents += message.log_entry.message + "\n";
-      const paperTextArea = this.shadowRoot!.querySelector("paper-textarea");
-      if (paperTextArea) {
-        const textArea = (paperTextArea.inputElement as IronAutogrowTextareaElement)
-          .textarea;
-        textArea.scrollTop = textArea.scrollHeight;
+    if (CHANNEL_MESSAGE_TYPES.includes(message.type)) {
+      if (message.type === ZHA_CHANNEL_CFG_DONE) {
+        this._unsubscribe();
+      } else {
+        const clusterConfigurationStatus = this._clusterConfigurationStatuses.get(
+          message.zha_channel_msg_data.cluster_id
+        );
+        if (message.type === ZHA_CHANNEL_MSG_BIND) {
+          clusterConfigurationStatus!.bindSuccess =
+            message.zha_channel_msg_data.success;
+        }
+        if (message.type === ZHA_CHANNEL_MSG_CFG_RPT) {
+          const attributes = message.zha_channel_msg_data.attributes;
+          Object.keys(attributes).forEach((name) =>
+            clusterConfigurationStatus!.attributes.set(
+              attributes[name].id,
+              attributes[name]
+            )
+          );
+        }
       }
     }
   }
 
   private _unsubscribe(): void {
     this._active = false;
-    if (this._reconfigureDeviceTimeoutHandle) {
-      clearTimeout(this._reconfigureDeviceTimeoutHandle);
-    }
     if (this._subscribed) {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
@@ -118,10 +184,6 @@ class DialogZHAReconfigureDevice extends LitElement {
       this.hass,
       params.device.ieee,
       this._handleMessage.bind(this)
-    );
-    this._reconfigureDeviceTimeoutHandle = setTimeout(
-      () => this._unsubscribe(),
-      60000
     );
   }
 
