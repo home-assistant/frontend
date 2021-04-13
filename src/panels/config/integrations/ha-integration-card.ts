@@ -1,6 +1,12 @@
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { mdiAlertCircle, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
+import {
+  mdiAlertCircle,
+  mdiCloud,
+  mdiDotsVertical,
+  mdiOpenInNew,
+  mdiPackageVariant,
+} from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -37,7 +43,6 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { ConfigEntryExtended } from "./ha-config-integrations";
-import { nothing } from "lit-html";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -128,7 +133,7 @@ export class HaIntegrationCard extends LitElement {
                 "ui.panel.config.integrations.config_entry.disable.disabled"
               )}
             </div>`
-          : nothing}
+          : ""}
         <div class="group-header">
           <img
             src=${brandsUrl(this.domain, "icon")}
@@ -168,7 +173,7 @@ export class HaIntegrationCard extends LitElement {
                         )}
                       </paper-tooltip>
                     </span>`
-                  : nothing}
+                  : ""}
                 <ha-icon-next></ha-icon-next>
               </paper-item>`
           )}
@@ -181,6 +186,35 @@ export class HaIntegrationCard extends LitElement {
     const devices = this._getDevices(item);
     const services = this._getServices(item);
     const entities = this._getEntities(item);
+
+    const icons: TemplateResult[] = [];
+
+    if (this.manifest && !this.manifest.is_built_in) {
+      icons.push(html`
+        <span>
+          <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
+          <paper-tooltip animation-delay="0"
+            >${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.provided_by_custom_component"
+            )}</paper-tooltip
+          >
+        </span>
+      `);
+    }
+    if (item.connection_class.substring(0, 6) === "cloud_") {
+      icons.push(
+        html`
+          <span>
+            <ha-svg-icon .path=${mdiCloud}></ha-svg-icon>
+            <paper-tooltip animation-delay="0"
+              >${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.depends_on_cloud"
+              )}</paper-tooltip
+            >
+          </span>
+        `
+      );
+    }
 
     return html`
       <ha-card
@@ -198,7 +232,7 @@ export class HaIntegrationCard extends LitElement {
               icon="hass:chevron-left"
               @click=${this._back}
             ></ha-icon-button>`
-          : nothing}
+          : ""}
         ${item.disabled_by
           ? html`<div class="header">
               ${this.hass.localize(
@@ -221,8 +255,9 @@ export class HaIntegrationCard extends LitElement {
                 >`
               )}
             </div>`
-          : nothing}
+          : ""}
         <div class="card-content">
+          ${icons.length === 0 ? "" : html`<div class="icons">${icons}</div>`}
           <div class="image">
             <img
               src=${brandsUrl(item.domain, "logo")}
@@ -235,7 +270,7 @@ export class HaIntegrationCard extends LitElement {
             ${item.localized_domain_name}
           </h2>
           <h3>
-            ${item.localized_domain_name === item.title ? nothing : item.title}
+            ${item.localized_domain_name === item.title ? "" : item.title}
           </h3>
           ${devices.length || services.length || entities.length
             ? html`
@@ -249,9 +284,9 @@ export class HaIntegrationCard extends LitElement {
                             "count",
                             devices.length
                           )}</a
-                        >${services.length ? "," : nothing}
+                        >${services.length ? "," : ""}
                       `
-                    : nothing}
+                    : ""}
                   ${services.length
                     ? html`
                         <a
@@ -263,10 +298,10 @@ export class HaIntegrationCard extends LitElement {
                           )}</a
                         >
                       `
-                    : nothing}
+                    : ""}
                   ${(devices.length || services.length) && entities.length
                     ? this.hass.localize("ui.common.and")
-                    : nothing}
+                    : ""}
                   ${entities.length
                     ? html`
                         <a
@@ -278,10 +313,10 @@ export class HaIntegrationCard extends LitElement {
                           )}</a
                         >
                       `
-                    : nothing}
+                    : ""}
                 </div>
               `
-            : nothing}
+            : ""}
         </div>
         <div class="card-actions">
           <div>
@@ -289,7 +324,7 @@ export class HaIntegrationCard extends LitElement {
               ? html`<mwc-button unelevated @click=${this._handleEnable}>
                   ${this.hass.localize("ui.common.enable")}
                 </mwc-button>`
-              : nothing}
+              : ""}
             <mwc-button @click=${this._editEntryName}>
               ${this.hass.localize(
                 "ui.panel.config.integrations.config_entry.rename"
@@ -314,10 +349,10 @@ export class HaIntegrationCard extends LitElement {
                     )}
                   </mwc-button>
                 `
-              : nothing}
+              : ""}
           </div>
           ${!this.manifest
-            ? nothing
+            ? ""
             : html`
                 <ha-button-menu corner="BOTTOM_START">
                   <mwc-icon-button
@@ -360,7 +395,7 @@ export class HaIntegrationCard extends LitElement {
                           "ui.panel.config.integrations.config_entry.reload"
                         )}
                       </mwc-list-item>`
-                    : nothing}
+                    : ""}
                   ${item.disabled_by === "user"
                     ? html`<mwc-list-item
                         @request-selected="${this._handleEnable}"
@@ -374,7 +409,7 @@ export class HaIntegrationCard extends LitElement {
                       >
                         ${this.hass.localize("ui.common.disable")}
                       </mwc-list-item>`
-                    : nothing}
+                    : ""}
                   ${item.source !== "system"
                     ? html`<mwc-list-item
                         class="warning"
@@ -384,7 +419,7 @@ export class HaIntegrationCard extends LitElement {
                           "ui.panel.config.integrations.config_entry.delete"
                         )}
                       </mwc-list-item>`
-                    : nothing}
+                    : ""}
                 </ha-button-menu>
               `}
         </div>
@@ -635,6 +670,16 @@ export class HaIntegrationCard extends LitElement {
         .card-content {
           padding: 16px;
           text-align: center;
+          position: relative;
+        }
+        .icons {
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          color: var(--secondary-text-color);
+        }
+        .icons ha-svg-icon {
+          width: 20px;
         }
         ha-card.integration .card-content {
           padding-bottom: 3px;
@@ -714,6 +759,9 @@ export class HaIntegrationCard extends LitElement {
           position: absolute;
           background: rgba(var(--rgb-card-background-color), 0.6);
           border-radius: 50%;
+        }
+        paper-tooltip {
+          white-space: nowrap;
         }
       `,
     ];
