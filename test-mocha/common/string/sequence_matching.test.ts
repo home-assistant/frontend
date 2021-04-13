@@ -8,7 +8,7 @@ import {
 
 describe("fuzzySequentialMatch", () => {
   const item: ScorableTextItem = {
-    words: ["automation.ticker", "Stocks"],
+    strings: ["automation.ticker", "Stocks"],
   };
 
   const createExpectation: (
@@ -56,7 +56,7 @@ describe("fuzzySequentialMatch", () => {
     "stox",
   ];
 
-  describe(`Entity '${item.words[0]}'`, () => {
+  describe(`Entity '${item.strings[0]}'`, () => {
     for (const expectation of shouldMatchEntity) {
       it(`matches '${expectation.pattern}' with return of '${expectation.expected}'`, () => {
         const res = fuzzySequentialMatch(expectation.pattern, item);
@@ -76,23 +76,23 @@ describe("fuzzySequentialMatch", () => {
 describe("fuzzyFilterSort", () => {
   const filter = "ticker";
   const automationTicker = {
-    words: ["automation.ticker", "Stocks"],
+    strings: ["automation.ticker", "Stocks"],
     score: 0,
   };
   const ticker = {
-    words: ["ticker", "Just ticker"],
+    strings: ["ticker", "Just ticker"],
     score: 0,
   };
   const sensorTicker = {
-    words: ["sensor.ticker", "Stocks up"],
+    strings: ["sensor.ticker", "Stocks up"],
     score: 0,
   };
   const timerCheckRouter = {
-    words: ["automation.check_router", "Timer Check Router"],
+    strings: ["automation.check_router", "Timer Check Router"],
     score: 0,
   };
   const badMatch = {
-    words: ["light.chandelier", "Chandelier"],
+    strings: ["light.chandelier", "Chandelier"],
     score: 0,
   };
   const itemsBeforeFilter = [

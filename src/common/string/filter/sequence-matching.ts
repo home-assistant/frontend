@@ -16,7 +16,7 @@ export const fuzzySequentialMatch = (
 ) => {
   let topScore = Number.NEGATIVE_INFINITY;
 
-  for (const word of item.words) {
+  for (const word of item.strings) {
     const scores = fuzzyScore(
       filter,
       filter.toLowerCase(),
@@ -31,13 +31,9 @@ export const fuzzySequentialMatch = (
       continue;
     }
 
-    // The VS Code implementation of filter returns a:
-    //    - Negative score for a good match that starts in the middle of the string
-    //    - Positive score if the match starts at the beginning of the string
-    //    - 0 if the filter string is just barely a match
-    //    - undefined for no match
-    // The "0" return is problematic since .filter() will remove that match, even though a 0 == good match.
-    // So, if we encounter a 0 return, set it to 1 so the match will be included, and still respect ordering.
+    // The VS Code implementation of filter returns a 0 for a weak match.
+    // But if .filter() sees a "0", it considers that a failed match and will remove it.
+    // So, we set score to 1 in these cases so the match will be included, and mostly respect correct ordering.
     const score = scores[0] === 0 ? 1 : scores[0];
 
     if (score > topScore) {
@@ -52,9 +48,22 @@ export const fuzzySequentialMatch = (
   return topScore;
 };
 
+/**
+ * An interface that objects must extend in order to use the fuzzy sequence matcher
+ *
+ * @param {number} score - A number representing the existence and strength of a match.
+ *    - `< 0` means a good match that starts in the middle of the string
+ *    - `> 0` means a good match that starts at the beginning of the string
+ *    - `0` means just barely a match
+ *    - `undefined` means not a match
+ *
+ * @param {string} strings - Array of strings (aliases) representing the item. The filter string will be compared against each of these for a match.
+ *
+ */
+
 export interface ScorableTextItem {
   score?: number;
-  words: string[];
+  strings: string[];
 }
 
 type FuzzyFilterSort = <T extends ScorableTextItem>(

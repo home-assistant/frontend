@@ -405,7 +405,7 @@ export class QuickBar extends LitElement {
 
         return {
           ...entityItem,
-          words: [entityItem.primaryText, entityItem.altText],
+          strings: [entityItem.primaryText, entityItem.altText],
         };
       })
       .sort((a, b) =>
@@ -419,7 +419,10 @@ export class QuickBar extends LitElement {
       ...this._generateServerControlCommands(),
       ...this._generateNavigationCommands(),
     ].sort((a, b) =>
-      compare(a.words.join(" ").toLowerCase(), b.words.join(" ").toLowerCase())
+      compare(
+        a.strings.join(" ").toLowerCase(),
+        b.strings.join(" ").toLowerCase()
+      )
     );
   }
 
@@ -447,7 +450,7 @@ export class QuickBar extends LitElement {
       return {
         ...commandItem,
         categoryKey: "reload",
-        words: [`${commandItem.categoryText} ${commandItem.primaryText}`],
+        strings: [`${commandItem.categoryText} ${commandItem.primaryText}`],
       };
     });
   }
@@ -477,7 +480,7 @@ export class QuickBar extends LitElement {
       return this._generateConfirmationCommand(
         {
           ...item,
-          words: [`${item.categoryText} ${item.primaryText}`],
+          strings: [`${item.categoryText} ${item.primaryText}`],
         },
         this.hass.localize("ui.dialogs.generic.ok")
       );
@@ -575,7 +578,7 @@ export class QuickBar extends LitElement {
 
       return {
         ...navItem,
-        words: [`${navItem.categoryText} ${navItem.primaryText}`],
+        strings: [`${navItem.categoryText} ${navItem.primaryText}`],
         categoryKey,
       };
     });
