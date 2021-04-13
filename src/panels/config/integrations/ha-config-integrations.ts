@@ -119,9 +119,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   @internalProperty()
   private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
-  @internalProperty() private _manifests!: {
-    [domain: string]: IntegrationManifest;
-  };
+  @internalProperty()
+  private _manifests: Record<string, IntegrationManifest> = {};
 
   @internalProperty() private _showIgnored = false;
 
