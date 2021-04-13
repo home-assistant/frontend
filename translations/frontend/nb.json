@@ -1118,7 +1118,7 @@
                         "group": "Grupper, gruppeenheter og varsler tjenester",
                         "history_stats": "Historikkstatistiske enheter",
                         "homekit": "HomeKit",
-                        "input_boolean": "Inngang booleans",
+                        "input_boolean": "Boolske innganger",
                         "input_datetime": "Inngangsdato ganger",
                         "input_number": "Inndatanumre",
                         "input_select": "Inngang velges",
@@ -1221,7 +1221,7 @@
                 "reboot": "Prøv en omstart av verten",
                 "system_health": "Sjekk systemtilstand",
                 "title": "Kunne ikke laste Supervisor-panelet!",
-                "wait": "Hvis du nettopp startet, må du sørge for at du har gitt veilederen nok tid til å starte."
+                "wait": "Hvis du nettopp startet, må du sørge for at du har gitt Supervisor nok tid til å starte."
             }
         },
         "login-form": {
@@ -1239,12 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt...",
             "dismiss": "Avvis",
-            "intergration_starting": "Fra og med {integration} vil ikke alt være tilgjengelig før den er ferdig.",
+            "intergration_starting": "Starter {integration}. Ikke alt er tilgjengelig før lasting er ferdig.",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
             "started": "Home Assistant har startet!",
             "starting": "Home Assistant starter, alt er ikke tilgjengelig før starten er fullført.",
             "triggered": "Utløst {name}",
-            "wrapping_up_startup": "Ved oppstart, vil ikke alt være tilgjengelig før den er ferdig."
+            "wrapping_up_startup": "Oppstart pågår, ikke alt er tilgjengelig før den er ferdig."
         },
         "panel": {
             "config": {
@@ -1872,8 +1872,8 @@
                     "section": {
                         "core": {
                             "analytics": {
-                                "documentation": "Før du aktiverer dette, må du gå til analysedokumentasjonssiden {link} å forstå hva du sender og hvordan den er lagret.",
-                                "header": "Analytics",
+                                "documentation": "Før du aktiverer dette, må du gå til analysedokumentasjonssiden {link} for å forstå hva du sender og hvordan den er lagret.",
+                                "header": "Analyser",
                                 "instance_id": "Forekomst-ID: {huuid}",
                                 "introduction": "Del installasjonsinformasjonen din for å gjøre Home Assistant bedre og hjelpe oss med å overbevise produsenter om å legge til lokal kontroll og personvernfokuserte funksjoner.",
                                 "learn_more": "Hvordan vi behandler dataene dine",
@@ -2619,7 +2619,7 @@
                             "heading": "YAML konfigurasjon lastes på nytt",
                             "history_stats": "Historikkstatistiske enheter",
                             "homekit": "HomeKit",
-                            "input_boolean": "Inngang booleans",
+                            "input_boolean": "Boolske innganger",
                             "input_datetime": "Inngangsdato ganger",
                             "input_number": "Inndatanumre",
                             "input_select": "Inngang velges",
@@ -3884,7 +3884,7 @@
                         "language": "Automatisk (bruk språkinnstilling)",
                         "none": "Ingen",
                         "space_comma": "1 234 567,89",
-                        "system": "Bruk systemområdet"
+                        "system": "Bruk systemets lokasjonsinnstilling."
                     },
                     "header": "Tallformat"
                 },

@@ -383,7 +383,7 @@
             "create": "Vytvořit",
             "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
             "create_snapshot": "Vytvořit zálohu",
-            "description": "Snímky umožňují snadno zálohovat a obnovovat všechna data instance Home Assistant.",
+            "description": "Zálohy umožňují snadno zálohovat a obnovovat všechna data vaší instance Home Assistant.",
             "enter_password": "Prosím zadejte heslo.",
             "folder": {
                 "addons/local": "Místní doplňky",

@@ -1876,11 +1876,11 @@
                                 "header": "分析",
                                 "instance_id": "实例ID: {huuid}",
                                 "introduction": "分享您的安装信息，让 Home Assistant 变得更好，并帮助我们与厂商沟通，增加本地控制和注重隐私的功能。",
-                                "learn_more": "详细了解您的数据将被如何处理",
+                                "learn_more": "我们如何处理您的数据",
                                 "needs_base": "需要启用基础分析才能启用此选项",
                                 "preference": {
                                     "base": {
-                                        "description": "包括实例 ID，版本号和安装类型",
+                                        "description": "实例 ID、版本号和安装类型。",
                                         "title": "基础分析"
                                     },
                                     "diagnostics": {
@@ -1888,11 +1888,11 @@
                                         "title": "诊断"
                                     },
                                     "statistics": {
-                                        "description": "包括安装的元素数量，完整列表请参阅文档",
+                                        "description": "已使用的实体、用户和其他元素数量。",
                                         "title": "使用情况统计"
                                     },
                                     "usage_supervisor": {
-                                        "description": "名称，版本和功能。",
+                                        "description": "名称、版本和功能。",
                                         "title": "使用的集成和加载项"
                                     },
                                     "usage": {
