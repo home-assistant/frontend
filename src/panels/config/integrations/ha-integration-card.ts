@@ -60,6 +60,13 @@ declare global {
   }
 }
 
+const ERROR_STATES: ConfigEntry["state"][] = [
+  "failed_unload",
+  "migration_error",
+  "setup_error",
+  "setup_retry",
+];
+
 const integrationsWithPanel = {
   hassio: {
     buttonLocalizeKey: "ui.panel.config.hassio.button",
@@ -182,10 +189,53 @@ export class HaIntegrationCard extends LitElement {
     `;
   }
 
+  private _logsLink() {
+    return html`<a href="/config/logs"
+      >${this.hass.localize(
+        "ui.panel.config.integrations.config_entry.logs"
+      )}</a
+    >`;
+  }
+
   private _renderSingleEntry(item: ConfigEntryExtended): TemplateResult {
     const devices = this._getDevices(item);
     const services = this._getServices(item);
     const entities = this._getEntities(item);
+
+    let header: [string, ...unknown[]] | undefined;
+
+    if (item.disabled_by) {
+      header = [
+        "ui.panel.config.integrations.config_entry.disable.disabled_cause",
+        "cause",
+        this.hass.localize(
+          `ui.panel.config.integrations.config_entry.disable.disabled_by.${item.disabled_by}`
+        ) || item.disabled_by,
+      ];
+    } else if (item.state === "not_loaded") {
+      header = ["ui.panel.config.integrations.config_entry.not_loaded"];
+    } else if (item.state === "setup_retry") {
+      header = [
+        "ui.panel.config.integrations.config_entry.is_setup_retry",
+        "logs_link",
+        this._logsLink(),
+      ];
+    } else if (
+      item.state === "setup_error" ||
+      item.state === "migration_error"
+    ) {
+      header = [
+        "ui.panel.config.integrations.config_entry.is_setup_error",
+        "logs_link",
+        this._logsLink(),
+      ];
+    } else if (item.state === "failed_unload") {
+      header = [
+        "ui.panel.config.integrations.config_entry.is_failed_unload",
+        "logs_link",
+        this._logsLink(),
+      ];
+    }
 
     const icons: TemplateResult[] = [];
 
@@ -220,8 +270,8 @@ export class HaIntegrationCard extends LitElement {
       <ha-card
         outlined
         class="single integration ${classMap({
-          disabled: Boolean(item.disabled_by),
-          "not-loaded": !item.disabled_by && item.state === "not_loaded",
+          "state-not-loaded": item.state === "not_loaded",
+          "state-error": ERROR_STATES.includes(item.state),
         })}"
         .configEntry=${item}
         .id=${item.entry_id}
@@ -233,28 +283,8 @@ export class HaIntegrationCard extends LitElement {
               @click=${this._back}
             ></ha-icon-button>`
           : ""}
-        ${item.disabled_by
-          ? html`<div class="header">
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.disable.disabled_cause",
-                "cause",
-                this.hass.localize(
-                  `ui.panel.config.integrations.config_entry.disable.disabled_by.${item.disabled_by}`
-                ) || item.disabled_by
-              )}
-            </div>`
-          : item.state === "not_loaded"
-          ? html`<div class="header">
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.not_loaded",
-                "logs_link",
-                html`<a href="/config/logs"
-                  >${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.logs"
-                  )}</a
-                >`
-              )}
-            </div>`
+        ${header
+          ? html`<div class="header">${this.hass.localize(...header)}</div>`
           : ""}
         <div class="card-content">
           ${icons.length === 0 ? "" : html`<div class="icons">${icons}</div>`}
@@ -639,6 +669,7 @@ export class HaIntegrationCard extends LitElement {
           display: flex;
           flex-direction: column;
           height: 100%;
+          --ha-card-border-color: var(--integration-bg-color);
         }
         ha-card.single {
           justify-content: space-between;
@@ -646,40 +677,38 @@ export class HaIntegrationCard extends LitElement {
         :host(.highlight) ha-card {
           border: 1px solid var(--accent-color);
         }
-        .disabled {
-          --ha-card-border-color: var(--warning-color);
+        .state-not-loaded {
+          --integration-color: var(--primary-text-color);
+          --integration-bg-color: var(--disabled-text-color);
         }
-        .not-loaded {
-          --ha-card-border-color: var(--error-color);
+        .state-error {
+          --integration-color: var(--text-primary-color);
+          --integration-bg-color: var(--error-color);
         }
         .header {
           padding: 8px;
           text-align: center;
+          background: var(--integration-bg-color);
+          color: var(--integration-color);
         }
-        .disabled .header {
-          background: var(--warning-color);
-          color: var(--text-primary-color);
-        }
-        .not-loaded .header {
-          background: var(--error-color);
-          color: var(--text-primary-color);
-        }
-        .not-loaded .header a {
-          color: var(--text-primary-color);
+        .header a {
+          color: var(--integration-color);
         }
         .card-content {
           padding: 16px;
           text-align: center;
           position: relative;
+          margin-top: 0px;
         }
         .icons {
           position: absolute;
           top: 2px;
-          right: 2px;
+          right: 4px;
           color: var(--secondary-text-color);
         }
         .icons ha-svg-icon {
           width: 20px;
+          height: 20px;
         }
         ha-card.integration .card-content {
           padding-bottom: 3px;

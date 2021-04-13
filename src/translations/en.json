@@ -2161,7 +2161,7 @@
             "entity_unavailable": "Entity unavailable",
             "area": "In {area}",
             "no_area": "No Area",
-            "not_loaded": "Not loaded, check the {logs_link}",
+            "not_loaded": "Not loaded",
             "logs": "logs",
             "disable": {
               "disabled": "Disabled",
@@ -2174,7 +2174,10 @@
               "disable_confirm": "Are you sure you want to disable this config entry? Its devices and entities will be disabled."
             },
             "provided_by_custom_component": "Provided by a custom component",
-            "depends_on_cloud": "Depends on the cloud"
+            "depends_on_cloud": "Depends on the cloud",
+            "is_setup_retry": "Retrying to set up, check the {logs_link}",
+            "is_setup_error": "Failed to set up, check the {logs_link}",
+            "is_failed_unload": "Failed to unload, check the {logs_link}"
           },
           "config_flow": {
             "aborted": "Aborted",
