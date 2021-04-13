@@ -15,7 +15,7 @@
     },
     "panel": {
         "calendar": "캘린더",
-        "config": "구성",
+        "config": "구성하기",
         "developer_tools": "개발자 도구",
         "history": "기록 그래프",
         "logbook": "로그북",
@@ -1242,7 +1242,7 @@
             "intergration_starting": "{integration} 시작 중. 완료되기 전 일부 기능은 작동하지 않을 수 있습니다.",
             "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
             "started": "Home Assistant가 시작되었습니다!",
-            "starting": "Home Assistant가 시작됩니다. 완료될 때까지 모든 기능을 사용할 수 있는 것은 아닙니다.",
+            "starting": "Home Assistant가 시작됩니다. 완료될 때까지 일부 기능은 작동하지 않을 수 있습니다.",
             "triggered": "{name}이(가) 트리거됨",
             "wrapping_up_startup": "시작되기를 기다립니다. 완료되기 전 일부 기능은 작동하지 않을 수 있습니다."
         },
@@ -3762,7 +3762,7 @@
             "page-onboarding": {
                 "analytics": {
                     "finish": "다음",
-                    "intro": "시스템 분석 내용을 공유합니다. 이 데이터는 {link}에서 공개적으로 사용될 수 있습니다"
+                    "intro": "인스턴스의 분석 내용을 공유합니다. 이 데이터는 {link}에서 공개적으로 사용될 수 있습니다"
                 },
                 "core-config": {
                     "button_detect": "탐색",
@@ -3876,7 +3876,7 @@
                     "header": "다단계 인증 모듈"
                 },
                 "number_format": {
-                    "description": "숫자 형식을 선택해주세요.",
+                    "description": "숫자 형식을 선택합니다.",
                     "dropdown_label": "숫자 형식",
                     "formats": {
                         "comma_decimal": "1,234,567.89",
