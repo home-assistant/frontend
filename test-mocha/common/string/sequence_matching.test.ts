@@ -6,21 +6,34 @@ import {
   ScorableTextItem,
 } from "../../../src/common/string/filter/sequence-matching";
 
+type CreateExpectation = (
+  pattern: string,
+  score: ScorableTextItem["score"],
+  strings?: ScorableTextItem["strings"],
+  decoratedStrings?: ScorableTextItem["decoratedStrings"]
+) => {
+  pattern: string;
+  expected: ScorableTextItem;
+};
+
+const createExpectation: CreateExpectation = (
+  pattern,
+  score,
+  strings = [],
+  decoratedStrings = []
+) => ({
+  pattern,
+  expected: {
+    score,
+    strings,
+    decoratedStrings,
+  },
+});
+
 describe("fuzzySequentialMatch", () => {
   const item: ScorableTextItem = {
     strings: ["automation.ticker", "Stocks"],
   };
-
-  const createExpectation: (
-    pattern,
-    expected
-  ) => {
-    pattern: string;
-    expected: string | number | undefined;
-  } = (pattern, expected) => ({
-    pattern,
-    expected,
-  });
 
   const shouldMatchEntity = [
     createExpectation("automation.ticker", 131),

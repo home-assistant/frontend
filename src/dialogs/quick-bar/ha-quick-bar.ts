@@ -258,7 +258,7 @@ export class QuickBar extends LitElement {
               class="entity"
               slot="graphic"
             ></ha-icon>`}
-        <span
+        <span class="item-text primary"
           >${item.decoratedWords
             ? item.decoratedWords[0]
             : item.primaryText}</span
@@ -689,7 +689,9 @@ export class QuickBar extends LitElement {
           color: #0051ff;
         }
 
-        span.command-text span.highlight-letter {
+        span.command-text span.highlight-letter,
+        span.item-text.secondary span.highlight-letter,
+        span.item-text.primary span.highlight-letter {
           font-weight: bold;
           color: #0098ff;
         }

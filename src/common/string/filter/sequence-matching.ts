@@ -12,12 +12,14 @@ import { unsafeHTML } from "lit-html/directives/unsafe-html";
  * @return {number} Score representing how well the word matches the filter. Return of 0 means no match.
  */
 
-export const fuzzySequentialMatch = (
+type FuzzySequentialMatcher = (
   filter: string,
   item: ScorableTextItem
-) => {
+) => ScorableTextItem | undefined;
+
+export const fuzzySequentialMatch: FuzzySequentialMatcher = (filter, item) => {
   let topScore = Number.NEGATIVE_INFINITY;
-  const decoratedWords: TemplateResult[][] = [];
+  const decoratedStrings: TemplateResult[][] = [];
 
   for (const word of item.strings) {
     const scores = fuzzyScore(
@@ -30,7 +32,7 @@ export const fuzzySequentialMatch = (
       true
     );
 
-    decoratedWords.push(decorateMatch(word, scores));
+    decoratedStrings.push(decorateMatch(word, scores));
 
     if (!scores) {
       continue;
@@ -53,7 +55,7 @@ export const fuzzySequentialMatch = (
   return {
     score: topScore,
     strings: item.strings,
-    decoratedWords,
+    decoratedStrings,
   };
 };
 
@@ -73,7 +75,7 @@ export const fuzzySequentialMatch = (
 export interface ScorableTextItem {
   score?: number;
   strings: string[];
-  decoratedWords?: TemplateResult[][];
+  decoratedStrings?: TemplateResult[][];
 }
 
 type FuzzyFilterSort = <T extends ScorableTextItem>(
@@ -87,7 +89,7 @@ export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
       const match = fuzzySequentialMatch(filter, item);
 
       item.score = match?.score;
-      item.decoratedWords = match?.decoratedWords;
+      item.decoratedStrings = match?.decoratedStrings;
 
       return item;
     })
