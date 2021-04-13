@@ -645,6 +645,7 @@ export class HaIntegrationCard extends LitElement {
           justify-content: space-between;
           align-items: center;
           padding-right: 5px;
+          height: 48px;
         }
         .group-header {
           display: flex;
