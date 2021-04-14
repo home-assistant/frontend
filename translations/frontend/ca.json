@@ -2216,7 +2216,7 @@
                     "configure": "Configurar",
                     "configured": "Configurades",
                     "confirm_new": "Vols configurar {integration}?",
-                    "description": "Gestiona les integracions amb serveis, dispositius, ...",
+                    "description": "Gestiona les integracions amb serveis o dispositius",
                     "details": "Detalls de la integració",
                     "disable": {
                         "disabled_integrations": "{number} desactivada/es",

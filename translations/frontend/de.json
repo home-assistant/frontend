@@ -144,7 +144,7 @@
                         "title": "AppArmor"
                     },
                     "auth_api": {
-                        "description": "Ein Add-on kann Benutzer gegen Home Assistant authentifizieren, sodass Add-ons Benutzern die Möglichkeit bieten, sich mit ihrem Home Assistant-Benutzernamen/-Kennwort bei Anwendungen anzumelden, die in Add-ons ausgeführt werden. Dieses Abzeichen zeigt an, ob der Add-on-Autor diese Berechtigung anfordert.",
+                        "description": "Ein Add-on kann Benutzer gegen Home Assistant authentifizieren, so dass Add-ons Benutzern die Möglichkeit bieten, sich mit ihrem Home Assistant-Benutzernamen/-Kennwort bei Anwendungen anzumelden, die in Add-ons ausgeführt werden. Dieses Abzeichen zeigt an, ob der Add-on-Autor diese Berechtigung anfordert.",
                         "title": "Home Assistant-Authentifizierung"
                     },
                     "docker_api": {
@@ -156,7 +156,7 @@
                         "title": "Voller Hardware-Zugriff"
                     },
                     "hassio_api": {
-                        "description": "Dem Add-on wurde Zugriff auf die Supervisor-API gewährt, wie es der Add-on-Autors angefordert hat. Standardmäßig kann das Add-on auf allgemeine Versionsinformationen von deinem System zugreifen. Wenn das Add-on Zugriff auf die API mit \"Manager\"- oder \"Admin\"-Rechten anfordert, erhält es Zugriff auf mehrere Teile deines Home Assistant-Systems. Diese Berechtigung wird durch dieses Badge angezeigt und wirkt sich negativ auf die Sicherheitsbewertung des Add-ons aus.",
+                        "description": "Dem Add-on wurde Zugriff auf die Supervisor-API gewährt, wie es der Add-on-Autors angefordert hat. Standardmäßig kann das Add-on auf allgemeine Versionsinformationen von deinem System zugreifen. Wenn das Add-on Zugriff auf die API mit \"Manager\"- oder \"Admin\"-Rechten anfordert, erhält es Zugriff auf mehrere Teile deines Home Assistant-Systems. Diese Berechtigung wird durch dieses Abzeichen angezeigt und wirkt sich negativ auf die Sicherheitsbewertung des Add-ons aus.",
                         "title": "Supervisor-API-Zugriff"
                     },
                     "homeassistant_api": {
@@ -200,7 +200,7 @@
                         "manager": "Manager"
                     },
                     "stage": {
-                        "description": "Add-ons können sich in einer von drei Phasen befinden:\n\n{icon_stable} **Stable**: Dies sind Add-ons, die bereits vollstandig sind und Updates erhalten.\n\n{icon_experimental} **Experimentell**: Diese können Fehler enthalten und unvollendet sein.\n\n{icon_deprecated} **Veraltet**: Diese Add-ons erhalten keine Updates mehr.",
+                        "description": "Add-ons können sich in einer von drei Phasen befinden:\n\n{icon_stable} **Stable**: Dies sind Add-ons, die bereits vollständig sind und Updates erhalten.\n\n{icon_experimental} **Experimentell**: Diese können Fehler enthalten und unvollendet sein.\n\n{icon_deprecated} **Veraltet**: Diese Add-ons erhalten keine Updates mehr.",
                         "title": "Add-on Phase"
                     }
                 },
@@ -412,7 +412,7 @@
         },
         "system": {
             "core": {
-                "cpu_usage": "Core-CPU Auslastung",
+                "cpu_usage": "Core CPU Nutzung",
                 "ram_usage": "Core Arbeitsspeicherbedarf"
             },
             "host": {
@@ -1218,7 +1218,7 @@
             "supervisor": {
                 "ask": "Um Hilfe bitten",
                 "observer": "Überprüfe den Observer",
-                "reboot": "Versuche den Host neuzustarten",
+                "reboot": "Versuche den Host neu zu starten",
                 "system_health": "Überprüfe Systemzustand",
                 "title": "Supervisor-Bedienfeld konnte nicht geladen werden!",
                 "wait": "Wenn du gerade erst hochgefahren hast, dann stelle sicher dass du dem Supervisor genug Zeit zum Starten gegeben hast."
@@ -1872,7 +1872,7 @@
                     "section": {
                         "core": {
                             "analytics": {
-                                "documentation": "Bevor du dies aktivierst, stelle sicher, dass du die Statistikdokumentationsseite {link} besuchst, um zu verstehen, was gesendet und gespeichert wird.",
+                                "documentation": "Bevor du dies aktivierst, stelle sicher, dass du die Statistik Dokumentationsseite {link} besuchst, um zu verstehen, was gesendet und gespeichert wird.",
                                 "header": "Statistiken",
                                 "instance_id": "Instanz-ID: {huuid}",
                                 "introduction": "Teile deine Installationsinformationen, um Home Assistant zu verbessern und Hersteller davon zu überzeugen, lokale Steuerungs- und Datenschutzfunktionen hinzuzufügen.",
@@ -1945,7 +1945,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Mit diesem Gerät wurden noch keine {name} hinzugefügt. Du kannst eins hinzufügen, indem du auf den + Knopf drückst.",
+                    "add_prompt": "Es existiert noch kein(e) {name} mit diesem Gerät. Füge ein(e) hinzu, indem du auf den + Knopf drückst.",
                     "automation": {
                         "actions": {
                             "caption": "Wenn etwas ausgelöst wird ...",
@@ -2180,7 +2180,7 @@
                         "logs": "Logs",
                         "manuf": "von {manufacturer}",
                         "no_area": "Kein Bereich",
-                        "not_loaded": "Nicht geladen, prüfe den {logs_link}",
+                        "not_loaded": "Nicht geladen, prüfe die {logs_link}",
                         "options": "Optionen",
                         "reload": "Neu laden",
                         "reload_confirm": "Die Integration wurde neu geladen",
@@ -2875,7 +2875,7 @@
                         "home_id": "Heim-ID",
                         "network": "Netzwerk",
                         "node_id": "Knoten-ID",
-                        "remove_node": "Node entfernen"
+                        "remove_node": "Knoten entfernen"
                     },
                     "dashboard": {
                         "driver_version": "Treiberversion",
@@ -3109,7 +3109,7 @@
                 "supervisor": {
                     "ask": "Um Hilfe bitten",
                     "observer": "Überprüfe den Observer",
-                    "reboot": "Versuche den Host neuzustarten",
+                    "reboot": "Versuche den Host neu zu starten",
                     "system_health": "Überprüfe Systemzustand",
                     "title": "Supervisor-Bedienfeld konnte nicht geladen werden!",
                     "wait": "Wenn du gerade erst hochgefahren hast, dann stelle sicher dass du den Supervisor genug Zeit zum Starten gegeben hast."
@@ -3434,7 +3434,7 @@
                         "none": "Keine"
                     },
                     "edit_badges": {
-                        "panel_mode": "Diese Badges werden nicht angezeigt, da sich diese Ansicht im \"Panel-Modus\" befindet."
+                        "panel_mode": "Diese Abzeichen werden nicht angezeigt, da sich diese Ansicht im \"Panel-Modus\" befindet."
                     },
                     "edit_card": {
                         "add": "Karte hinzufügen",
@@ -3762,7 +3762,7 @@
             "page-onboarding": {
                 "analytics": {
                     "finish": "Weiter",
-                    "intro": "Teile Statistiken aus deiner Instanz. Diese Daten werden unter {link}"
+                    "intro": "Teile Statistiken aus deiner Instanz. Diese Daten werden unter {link} verfügbar sein."
                 },
                 "core-config": {
                     "button_detect": "Erkennen",

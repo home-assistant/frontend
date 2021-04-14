@@ -3528,7 +3528,7 @@
                         "unsaved_changes": "Modifications non enregistrées"
                     },
                     "save_config": {
-                        "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
+                        "cancel": "Annuler",
                         "close": "Fermer",
                         "empty_config": "Commencer par un tableau de bord vide",
                         "header": "Prenez le contrôle de votre Interface Lovelace",

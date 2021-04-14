@@ -1146,7 +1146,7 @@
                         "stop": "중지하기"
                     },
                     "types": {
-                        "navigation": "탐색하기",
+                        "navigation": "이동하기",
                         "reload": "다시 읽어오기",
                         "server_control": "서버 제어하기"
                     }
