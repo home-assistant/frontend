@@ -16,8 +16,8 @@ export class HaTimeSelector extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  private _useAmPm = memoizeOne((langauge: string) => {
-    const test = new Date().toLocaleString(langauge);
+  private _useAmPm = memoizeOne((language: string) => {
+    const test = new Date().toLocaleString(language);
     return test.includes("AM") || test.includes("PM");
   });
 
