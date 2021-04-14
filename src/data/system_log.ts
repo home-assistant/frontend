@@ -37,6 +37,6 @@ export const getLoggedErrorIntegration = (item: LoggedError) => {
   return undefined;
 };
 
-export const isCustomComponentError = (item: LoggedError) =>
+export const isCustomIntegrationError = (item: LoggedError) =>
   item.name.startsWith("custom_components.") ||
   item.source[0].startsWith("custom_components/");

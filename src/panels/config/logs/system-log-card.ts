@@ -19,7 +19,7 @@ import { domainToName } from "../../../data/integration";
 import {
   fetchSystemLog,
   getLoggedErrorIntegration,
-  isCustomComponentError,
+  isCustomIntegrationError,
   LoggedError,
 } from "../../../data/system_log";
 import { HomeAssistant } from "../../../types";
@@ -83,7 +83,7 @@ export class SystemLogCard extends LitElement {
                                     this.hass!.localize,
                                     integrations[idx]!
                                   )}${
-                                    isCustomComponentError(item)
+                                    isCustomIntegrationError(item)
                                       ? ` (${this.hass.localize(
                                           "ui.panel.config.logs.custom_integration"
                                         )})`

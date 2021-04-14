@@ -1,5 +1,5 @@
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiClose, mdiContentCopy } from "@mdi/js";
+import { mdiClose, mdiContentCopy, mdiPackageVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -23,7 +23,7 @@ import {
 } from "../../../data/integration";
 import {
   getLoggedErrorIntegration,
-  isCustomComponentError,
+  isCustomIntegrationError,
 } from "../../../data/system_log";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
@@ -95,15 +95,16 @@ class DialogSystemLogDetail extends LitElement {
             <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
           </mwc-icon-button>
         </ha-header-bar>
+        ${isCustomIntegrationError(item)
+          ? html`<div class="custom">
+              <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.logs.error_from_custom_integration"
+              )}
+            </div>`
+          : ""}
         <div class="contents">
           <p>
-            ${isCustomComponentError(item)
-              ? html`<p>
-                  ${this.hass.localize(
-                    "ui.panel.config.logs.error_from_custom_integration"
-                  )}
-                </p>`
-              : ""}
             Logger: ${item.name}<br />
             Source: ${item.source.join(":")}
             ${integration
@@ -183,6 +184,10 @@ class DialogSystemLogDetail extends LitElement {
     return [
       haStyleDialog,
       css`
+        ha-dialog {
+          --dialog-content-padding: 0px;
+        }
+
         a {
           color: var(--primary-color);
         }
@@ -192,6 +197,13 @@ class DialogSystemLogDetail extends LitElement {
         pre {
           margin-bottom: 0;
           font-family: var(--code-font-family, monospace);
+        }
+        .custom {
+          padding: 8px 16px;
+          background-color: var(--warning-color);
+        }
+        .contents {
+          padding: 16px;
         }
         .error {
           color: var(--error-color);
