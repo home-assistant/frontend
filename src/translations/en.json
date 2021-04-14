@@ -2823,7 +2823,6 @@
             "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
             "yaml_config": "To help you start here is the current config of this dashboard:",
             "empty_config": "Start with an empty dashboard",
-            "cancel": "Never mind",
             "close": "Close",
             "save": "Take control"
           },
