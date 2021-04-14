@@ -159,7 +159,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
       }
 
       if (!newName && !newEntityId) {
-        return new Promise((resolve) => resolve());
+        return undefined;
       }
 
       return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
