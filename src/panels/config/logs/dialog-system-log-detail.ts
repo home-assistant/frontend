@@ -21,7 +21,10 @@ import {
   integrationIssuesUrl,
   IntegrationManifest,
 } from "../../../data/integration";
-import { getLoggedErrorIntegration } from "../../../data/system_log";
+import {
+  getLoggedErrorIntegration,
+  isCustomComponentError,
+} from "../../../data/system_log";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
@@ -65,6 +68,12 @@ class DialogSystemLogDetail extends LitElement {
 
     const integration = getLoggedErrorIntegration(item);
 
+    const showDocumentation =
+      this._manifest &&
+      (this._manifest.is_built_in ||
+        // Custom components with our offical docs should not link to our docs
+        !this._manifest.documentation.includes("www.home-assistant.io"));
+
     return html`
       <ha-dialog open @closed=${this.closeDialog} hideActions heading=${true}>
         <ha-header-bar slot="heading">
@@ -88,6 +97,13 @@ class DialogSystemLogDetail extends LitElement {
         </ha-header-bar>
         <div class="contents">
           <p>
+            ${isCustomComponentError(item)
+              ? html`<p>
+                  ${this.hass.localize(
+                    "ui.panel.config.logs.error_from_custom_component"
+                  )}
+                </p>`
+              : ""}
             Logger: ${item.name}<br />
             Source: ${item.source.join(":")}
             ${integration
@@ -96,7 +112,7 @@ class DialogSystemLogDetail extends LitElement {
                   Integration: ${domainToName(this.hass.localize, integration)}
                   ${!this._manifest ||
                   // Can happen with custom integrations
-                  !this._manifest.documentation
+                  !showDocumentation
                     ? ""
                     : html`
                         (<a

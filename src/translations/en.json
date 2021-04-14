@@ -1067,7 +1067,9 @@
             "warning": "WARNING",
             "info": "INFO",
             "debug": "DEBUG"
-          }
+          },
+          "custom_component": "custom component",
+          "error_from_custom_component": "This error originated from a custom component."
         },
         "lovelace": {
           "caption": "Lovelace Dashboards",
