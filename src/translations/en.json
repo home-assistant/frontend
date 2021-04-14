@@ -2142,7 +2142,7 @@
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
             "rename": "Rename",
-            "options": "Options",
+            "configure": "Configure",
             "system_options": "System options",
             "documentation": "Documentation",
             "delete": "Delete",
@@ -2162,6 +2162,7 @@
             "area": "In {area}",
             "no_area": "No Area",
             "not_loaded": "Not loaded",
+            "check_the_logs": "Check the {logs_link}",
             "logs": "logs",
             "disable": {
               "disabled": "Disabled",
@@ -2175,9 +2176,14 @@
             },
             "provided_by_custom_component": "Provided by a custom component",
             "depends_on_cloud": "Depends on the cloud",
-            "is_setup_retry": "Retrying to set up, check the {logs_link}",
-            "is_setup_error": "Failed to set up, check the {logs_link}",
-            "is_failed_unload": "Failed to unload, check the {logs_link}"
+            "state": {
+              "loaded": "Not loaded",
+              "setup_error": "Failed to set up",
+              "migration_error": "Migration error",
+              "setup_retry": "Retrying to set up",
+              "not_loaded": "Not loaded",
+              "failed_unload": "Failed to unload"
+            }
           },
           "config_flow": {
             "aborted": "Aborted",
@@ -2248,11 +2254,7 @@
             "create": "Create"
           }
         },
-        "hassio": {
-          "button": "Configure"
-        },
         "mqtt": {
-          "button": "Configure",
           "title": "MQTT",
           "description_publish": "Publish a packet",
           "topic": "topic",
@@ -2266,7 +2268,6 @@
           "message_received": "Message {id} received on {topic} at {time}:"
         },
         "ozw": {
-          "button": "Configure",
           "common": {
             "zwave": "Z-Wave",
             "node_id": "Node ID",
@@ -2381,7 +2382,6 @@
           }
         },
         "zha": {
-          "button": "Configure",
           "common": {
             "clusters": "Clusters",
             "manufacturer_code_override": "Manufacturer Code Override",
@@ -2469,7 +2469,6 @@
           }
         },
         "zwave": {
-          "button": "Configure",
           "description": "Manage your Z-Wave network",
           "learn_more": "Learn more about Z-Wave",
           "common": {
@@ -2560,7 +2559,6 @@
           }
         },
         "zwave_js": {
-          "button": "Configure",
           "navigation": {
             "network": "Network"
           },
