@@ -10,6 +10,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         dialogShowEvent: "hass-notification",
         dialogTag: "notification-manager",
         dialogImport: () => import("../managers/notification-manager"),
+        addHistory: false,
       });
     }
   };
