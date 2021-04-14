@@ -2216,7 +2216,7 @@
                     "configure": "設定",
                     "configured": "已設定整合",
                     "confirm_new": "是否要設定 {integration}？",
-                    "description": "管理服務、裝置整合等",
+                    "description": "管理整合服務或裝置",
                     "details": "整合詳細資訊",
                     "disable": {
                         "disabled_integrations": "{number} 個已關閉",

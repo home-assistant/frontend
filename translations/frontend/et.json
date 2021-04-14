@@ -2216,7 +2216,7 @@
                     "configure": "Seadista",
                     "configured": "Seadistatud",
                     "confirm_new": "Kas soovid seadistada sidumist {integration}?",
-                    "description": "Halda teenuste, seadmete jne. sidumisi",
+                    "description": "Halda teenuste või  seadmete sidumisi",
                     "details": "Sidumise üksikasjad",
                     "disable": {
                         "disabled_integrations": "{number} keelatut",

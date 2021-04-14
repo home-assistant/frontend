@@ -3461,7 +3461,7 @@
                         "unsaved_changes": "Ikke-gemte ændringer"
                     },
                     "save_config": {
-                        "cancel": "Glem det",
+                        "cancel": "Fortryd",
                         "close": "Luk",
                         "empty_config": "Start med et tomt betjeningspanel",
                         "header": "Tag kontrol over din 'Lovelace'-brugerflade",

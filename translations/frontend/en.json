@@ -2216,7 +2216,7 @@
                     "configure": "Configure",
                     "configured": "Configured",
                     "confirm_new": "Do you want to set up {integration}?",
-                    "description": "Manage integrations with services, devices, ...",
+                    "description": "Manage integrations with services or devices",
                     "details": "Integration details",
                     "disable": {
                         "disabled_integrations": "{number} disabled",
