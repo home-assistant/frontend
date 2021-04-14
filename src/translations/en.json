@@ -1067,7 +1067,9 @@
             "warning": "WARNING",
             "info": "INFO",
             "debug": "DEBUG"
-          }
+          },
+          "custom_integration": "custom integration",
+          "error_from_custom_integration": "This error originated from a custom integration."
         },
         "lovelace": {
           "caption": "Lovelace Dashboards",
