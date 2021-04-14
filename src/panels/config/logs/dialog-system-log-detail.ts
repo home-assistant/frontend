@@ -95,7 +95,7 @@ class DialogSystemLogDetail extends LitElement {
             <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
           </mwc-icon-button>
         </ha-header-bar>
-        ${isCustomIntegrationError(item)
+        ${this.isCustomIntegration
           ? html`<div class="custom">
               <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
               ${this.hass.localize(
@@ -161,6 +161,12 @@ class DialogSystemLogDetail extends LitElement {
     `;
   }
 
+  private get isCustomIntegration(): boolean {
+    return this._manifest
+      ? !this._manifest.is_built_in
+      : isCustomIntegrationError(this._params!.item);
+  }
+
   private async _fetchManifest(integration: string) {
     try {
       this._manifest = await fetchIntegrationManifest(this.hass, integration);
@@ -174,7 +180,18 @@ class DialogSystemLogDetail extends LitElement {
       ".contents"
     ) as HTMLElement;
 
-    await copyToClipboard(copyElement.innerText);
+    let text = copyElement.innerText;
+
+    if (this.isCustomIntegration) {
+      text =
+        this.hass.localize(
+          "ui.panel.config.logs.error_from_custom_integration"
+        ) +
+        "\n\n" +
+        text;
+    }
+
+    await copyToClipboard(text);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
