@@ -114,9 +114,7 @@ class ZHAConfigDashboard extends LitElement {
                 <div class="card-content">
                   <ha-form
                     .schema=${schema}
-                    .data=${this._configuration
-                      ? this._configuration.data[section]
-                      : {}}
+                    .data=${this._configuration!.data[section]}
                     @value-changed=${this._dataChangedCallback(section)}
                     .computeLabel=${this._computeLabelCallback(
                       this.hass.localize,
@@ -129,11 +127,11 @@ class ZHAConfigDashboard extends LitElement {
           : ""}
         <ha-card>
           <div class="card-actions">
-            <mwc-button @click=${this._updateConfiguration}
-              >${this.hass.localize(
+            <mwc-button @click=${this._updateConfiguration}>
+              ${this.hass.localize(
                 "ui.panel.config.zha.configuration_page.update_button"
-              )}</mwc-button
-            >
+              )}
+            </mwc-button>
           </div>
         </ha-card>
 
