@@ -127,7 +127,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
           ? html`
               <mwc-button slot="primaryAction" @click=${this.closeDialog}
                 >${this.hass!.localize(
-                  "ui.panel.lovelace.editor.save_config.cancel"
+                  "ui.common.cancel"
                 )}
               </mwc-button>
               <mwc-button
