@@ -163,14 +163,8 @@ class ZHAConfigDashboard extends LitElement {
     for (const section of Object.keys(this._configuration!.schemas)) {
       data[section] = {};
       const sectionData = this._configuration!.data[section];
-      const sectionSchema = this._configuration!.schemas[section];
-      for (const field of sectionSchema) {
-        if (
-          field.name in sectionData &&
-          sectionData[field.name] !== field.default
-        ) {
-          data[section][field.name] = sectionData[field.name];
-        }
+      for (const field of Object.keys(sectionData)) {
+        data[section][field] = sectionData[field];
       }
       if (!Object.keys(data[section]).length) {
         delete data[section];
