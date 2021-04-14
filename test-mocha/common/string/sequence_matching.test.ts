@@ -8,25 +8,24 @@ import {
 
 type CreateExpectation = (
   pattern: string,
-  score: ScorableTextItem["score"],
-  strings?: ScorableTextItem["strings"],
-  decoratedStrings?: ScorableTextItem["decoratedStrings"]
+  expScore: number,
+  expDecorated: string
 ) => {
   pattern: string;
-  expected: ScorableTextItem;
+  expected: {
+    score: number;
+    decoratedString: string;
+  };
 };
-
 const createExpectation: CreateExpectation = (
   pattern,
-  score,
-  strings = [],
-  decoratedStrings = []
+  expScore,
+  expDecorated
 ) => ({
   pattern,
   expected: {
-    score,
-    strings,
-    decoratedStrings,
+    score: expScore,
+    decoratedString: expDecorated,
   },
 });
 
@@ -36,25 +35,25 @@ describe("fuzzySequentialMatch", () => {
   };
 
   const shouldMatchEntity = [
-    createExpectation("automation.ticker", 131),
-    createExpectation("automation.ticke", 121),
-    createExpectation("automation.", 82),
-    createExpectation("au", 10),
-    createExpectation("automationticker", 85),
-    createExpectation("tion.tick", 8),
-    createExpectation("ticker", -4),
-    createExpectation("automation.r", 73),
-    createExpectation("tick", -8),
-    createExpectation("aumatick", 9),
-    createExpectation("aion.tck", 4),
-    createExpectation("ioticker", -4),
-    createExpectation("atmto.ikr", -34),
-    createExpectation("uoaintce", -39),
-    createExpectation("au.tce", -3),
-    createExpectation("tomaontkr", -19),
-    createExpectation("s", 1),
-    createExpectation("stocks", 42),
-    createExpectation("sks", -5),
+    createExpectation("automation.ticker", 131, "[automation.ticker]"),
+    createExpectation("automation.ticke", 121, "[automation.ticke]r"),
+    createExpectation("automation.", 82, "[automation.]ticker"),
+    createExpectation("au", 10, "[au]tomation.ticker"),
+    createExpectation("automationticker", 85, "[automation].[ticker]"),
+    createExpectation("tion.tick", 8, "automa[tion.tick]er"),
+    createExpectation("ticker", -4, "automation.[ticker]"),
+    createExpectation("automation.r", 73, "[automation.]ticke[r]"),
+    createExpectation("tick", -8, "automation.[tick]er"),
+    createExpectation("aumatick", 9, "[au]to[ma]tion.[tick]er"),
+    createExpectation("aion.tck", 4, "[a]utomat[ion.t]i[ck]er"),
+    createExpectation("ioticker", -4, "automat[io]n.[ticker]"),
+    createExpectation("atmto.ikr", -34, "[a]u[t]o[m]a[t]i[o]n[.]t[i]c[k]e[r]"),
+    createExpectation("uoaintce", -39, "a[u]t[o]m[a]t[i]o[n].[t]i[c]k[e]r"),
+    createExpectation("au.tce", -3, "[au]tomation[.t]i[c]k[e]r"),
+    createExpectation("tomaontkr", -19, "au[toma]ti[on].[t]ic[k]e[r]"),
+    createExpectation("s", 1, "[S]tocks"),
+    createExpectation("stocks", 42, "[Stocks]"),
+    createExpectation("sks", -5, "[S]toc[ks]"),
   ];
 
   const shouldNotMatchEntity = [
@@ -71,9 +70,16 @@ describe("fuzzySequentialMatch", () => {
 
   describe(`Entity '${item.strings[0]}'`, () => {
     for (const expectation of shouldMatchEntity) {
-      it(`matches '${expectation.pattern}' with return of '${expectation.expected}'`, () => {
+      it(`matches '${expectation.pattern}' with score of '${expectation.expected?.score}'`, () => {
         const res = fuzzySequentialMatch(expectation.pattern, item);
-        assert.equal(res, expectation.expected);
+        assert.equal(res?.score, expectation.expected?.score);
+      });
+
+      it(`decorates '${expectation.pattern}' as '${expectation.expected?.decoratedString}'`, () => {
+        const res = fuzzySequentialMatch(expectation.pattern, item);
+        assert.includeDeepMembers(res!.decoratedStrings!, [
+          [expectation.expected!.decoratedString!],
+        ]);
       });
     }
 
@@ -118,10 +124,29 @@ describe("fuzzyFilterSort", () => {
 
   it(`filters and sorts correctly`, () => {
     const expectedItemsAfterFilter = [
-      { ...ticker, score: 44 },
-      { ...sensorTicker, score: 1 },
-      { ...automationTicker, score: -4 },
-      { ...timerCheckRouter, score: -8 },
+      {
+        ...ticker,
+        score: 44,
+        decoratedStrings: [["[ticker]"], ["Just [ticker]"]],
+      },
+      {
+        ...sensorTicker,
+        score: 1,
+        decoratedStrings: [["sensor.[ticker]"], ["Stocks up"]],
+      },
+      {
+        ...automationTicker,
+        score: -4,
+        decoratedStrings: [["automation.[ticker]"], ["Stocks"]],
+      },
+      {
+        ...timerCheckRouter,
+        score: -8,
+        decoratedStrings: [
+          ["automa[ti]on.[c]hec[k]_rout[er]"],
+          ["[Ti]mer [C]hec[k] Rout[er]"],
+        ],
+      },
     ];
 
     const res = fuzzyFilterSort(filter, itemsBeforeFilter);

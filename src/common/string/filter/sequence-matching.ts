@@ -1,6 +1,4 @@
-import { html, TemplateResult } from "lit-html";
 import { createMatches, FuzzyScore, fuzzyScore } from "./filter";
-import { unsafeHTML } from "lit-html/directives/unsafe-html";
 
 /**
  * Determine whether a sequence of letters exists in another string,
@@ -14,12 +12,17 @@ import { unsafeHTML } from "lit-html/directives/unsafe-html";
 
 type FuzzySequentialMatcher = (
   filter: string,
-  item: ScorableTextItem
+  item: ScorableTextItem,
+  decorate?: MatchDecorator
 ) => ScorableTextItem | undefined;
 
-export const fuzzySequentialMatch: FuzzySequentialMatcher = (filter, item) => {
+export const fuzzySequentialMatch: FuzzySequentialMatcher = (
+  filter,
+  item,
+  decorate = createMatchDecorator("[", "]")
+) => {
   let topScore = Number.NEGATIVE_INFINITY;
-  const decoratedStrings: TemplateResult[][] = [];
+  const decoratedStrings: string[][] = [];
 
   for (const word of item.strings) {
     const scores = fuzzyScore(
@@ -32,7 +35,9 @@ export const fuzzySequentialMatch: FuzzySequentialMatcher = (filter, item) => {
       true
     );
 
-    decoratedStrings.push(decorateMatch(word, scores));
+    if (decorate) {
+      decoratedStrings.push(decorate(word, scores));
+    }
 
     if (!scores) {
       continue;
@@ -75,18 +80,23 @@ export const fuzzySequentialMatch: FuzzySequentialMatcher = (filter, item) => {
 export interface ScorableTextItem {
   score?: number;
   strings: string[];
-  decoratedStrings?: TemplateResult[][];
+  decoratedStrings?: string[][];
 }
 
 type FuzzyFilterSort = <T extends ScorableTextItem>(
   filter: string,
-  items: T[]
+  items: T[],
+  decorate?: MatchDecorator
 ) => T[];
 
-export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
+export const fuzzyFilterSort: FuzzyFilterSort = (
+  filter,
+  items,
+  decorate = createMatchDecorator("[", "]")
+) => {
   return items
     .map((item) => {
-      const match = fuzzySequentialMatch(filter, item);
+      const match = fuzzySequentialMatch(filter, item, decorate);
 
       item.score = match?.score;
       item.decoratedStrings = match?.decoratedStrings;
@@ -99,32 +109,39 @@ export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
     );
 };
 
-type MatchDecorator = (word: string, scores?: FuzzyScore) => TemplateResult[];
-export const decorateMatch: MatchDecorator = (word, scores) => {
+type MatchDecorator = (word: string, scores?: FuzzyScore) => string[];
+export const createMatchDecorator: (
+  left: string,
+  right: string
+) => MatchDecorator = (left, right) => (word, scores) =>
+  _decorateMatch(word, [left, right], scores);
+
+const _decorateMatch: (
+  word: string,
+  surroundWith: [string, string],
+  scores?: FuzzyScore
+) => string[] = (word, surroundWith, scores) => {
   if (!scores) {
-    return [html`${word}`];
+    return [word];
   }
 
-  const decoratedText: TemplateResult[] = [];
+  const decoratedText: string[] = [];
   const matches = createMatches(scores);
+  const [left, right] = surroundWith;
   let pos = 0;
 
   let actualWord = "";
   for (const match of matches) {
     actualWord += word.substring(pos, match.start);
-    actualWord += `<span class="highlight-letter">${word.substring(
-      match.start,
-      match.end
-    )}</span>`;
+    actualWord += `${left}${word.substring(match.start, match.end)}${right}`;
     pos = match.end;
   }
   actualWord += word.substring(pos);
 
   const fragments = actualWord.split("::");
 
-  for (let i = 0; i < fragments.length; i++) {
-    const fragment = fragments[i];
-    decoratedText.push(html`${unsafeHTML(fragment)}`);
+  for (const fragment of fragments) {
+    decoratedText.push(fragment);
   }
 
   return decoratedText;

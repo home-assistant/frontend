@@ -34,6 +34,7 @@ import { navigate } from "../../common/navigate";
 import "../../common/search/search-input";
 import { compare } from "../../common/string/compare";
 import {
+  createMatchDecorator,
   fuzzyFilterSort,
   ScorableTextItem,
 } from "../../common/string/filter/sequence-matching";
@@ -54,6 +55,7 @@ import {
 import { QuickBarParams } from "./show-dialog-quick-bar";
 import "../../components/ha-chip";
 import { toTitleCase } from "../../common/string/casing";
+import { unsafeHTML } from "lit-html/directives/unsafe-html";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -73,10 +75,6 @@ interface EntityItem extends QuickBarItem {
 
 const isCommandItem = (item: QuickBarItem): item is CommandItem => {
   return (item as CommandItem).categoryKey !== undefined;
-};
-
-const isEntityItem = (item: QuickBarItem): item is EntityItem => {
-  return !isCommandItem(item);
 };
 
 interface QuickBarNavigationItem extends CommandItem {
@@ -259,16 +257,16 @@ export class QuickBar extends LitElement {
               slot="graphic"
             ></ha-icon>`}
         <span class="item-text primary"
-          >${item.decoratedWords
-            ? item.decoratedWords[0]
+          >${item.decoratedStrings
+            ? unsafeHTML(item.decoratedStrings[0])
             : item.primaryText}</span
         >
         ${item.altText
           ? html`
               <span slot="secondary" class="item-text secondary">
                 <span
-                  >${item.decoratedWords
-                    ? item.decoratedWords[1]
+                  >${item.decoratedStrings
+                    ? unsafeHTML(item.decoratedStrings[1])
                     : item.altText}</span
                 ></span
               >
@@ -279,7 +277,7 @@ export class QuickBar extends LitElement {
   }
 
   private _renderCommandItem(item: CommandItem, index?: number) {
-    const decoratedItem = item.decoratedWords && item.decoratedWords[0];
+    const decoratedItem = item.decoratedStrings && item.decoratedStrings[0];
 
     return html`
       <mwc-list-item
@@ -300,12 +298,16 @@ export class QuickBar extends LitElement {
                   slot="icon"
                 ></ha-svg-icon>`
               : ""}
-            ${decoratedItem ? decoratedItem[0] : item.categoryText}</ha-chip
+            ${decoratedItem
+              ? unsafeHTML(decoratedItem[0])
+              : item.categoryText}</ha-chip
           >
         </span>
 
         <span class="command-text"
-          >${decoratedItem ? decoratedItem[1] : item.primaryText}</span
+          >${decoratedItem
+            ? unsafeHTML(decoratedItem[1])
+            : item.primaryText}</span
         >
       </mwc-list-item>
     `;
@@ -384,11 +386,11 @@ export class QuickBar extends LitElement {
   private _resetDecorations() {
     this._entityItems = this._entityItems?.map((item) => ({
       ...item,
-      decoratedWords: undefined,
+      decoratedStrings: undefined,
     }));
     this._commandItems = this._commandItems?.map((item) => ({
       ...item,
-      decoratedWords: undefined,
+      decoratedStrings: undefined,
     }));
   }
 
@@ -474,7 +476,7 @@ export class QuickBar extends LitElement {
       return {
         ...commandItem,
         categoryKey: "reload",
-        strings: [`${commandItem.categoryText} ${commandItem.primaryText}`],
+        strings: [`${commandItem.categoryText}::${commandItem.primaryText}`],
       };
     });
   }
@@ -508,7 +510,7 @@ export class QuickBar extends LitElement {
       return this._generateConfirmationCommand(
         {
           ...item,
-          strings: [`${item.categoryText} ${item.primaryText}`],
+          strings: [`${item.categoryText}::${item.primaryText}`],
         },
         this.hass.localize("ui.dialogs.generic.ok")
       );
@@ -609,7 +611,7 @@ export class QuickBar extends LitElement {
 
       return {
         ...navItem,
-        strings: [`${navItem.categoryText} ${navItem.primaryText}`],
+        strings: [`${navItem.categoryText}::${navItem.primaryText}`],
         categoryKey,
       };
     });
@@ -621,7 +623,11 @@ export class QuickBar extends LitElement {
 
   private _filterItems = memoizeOne(
     (items: QuickBarItem[], filter: string): QuickBarItem[] => {
-      return fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items);
+      return fuzzyFilterSort<QuickBarItem>(
+        filter.trimLeft(),
+        items,
+        createMatchDecorator("<span class='highlight-letter'>", "</span>")
+      );
     }
   );
 
