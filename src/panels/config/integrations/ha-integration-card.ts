@@ -237,33 +237,23 @@ export class HaIntegrationCard extends LitElement {
       ];
     }
 
-    const icons: TemplateResult[] = [];
+    const icons: [string, string][] = [];
 
     if (this.manifest && !this.manifest.is_built_in) {
-      icons.push(html`
-        <span>
-          <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
-          <paper-tooltip animation-delay="0"
-            >${this.hass.localize(
-              "ui.panel.config.integrations.config_entry.provided_by_custom_component"
-            )}</paper-tooltip
-          >
-        </span>
-      `);
+      icons.push([
+        mdiPackageVariant,
+        this.hass.localize(
+          "ui.panel.config.integrations.config_entry.provided_by_custom_component"
+        ),
+      ]);
     }
     if (item.connection_class.substring(0, 6) === "cloud_") {
-      icons.push(
-        html`
-          <span>
-            <ha-svg-icon .path=${mdiCloud}></ha-svg-icon>
-            <paper-tooltip animation-delay="0"
-              >${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.depends_on_cloud"
-              )}</paper-tooltip
-            >
-          </span>
-        `
-      );
+      icons.push([
+        mdiCloud,
+        this.hass.localize(
+          "ui.panel.config.integrations.config_entry.depends_on_cloud"
+        ),
+      ]);
     }
 
     return html`
@@ -287,7 +277,22 @@ export class HaIntegrationCard extends LitElement {
           ? html`<div class="header">${this.hass.localize(...header)}</div>`
           : ""}
         <div class="card-content">
-          ${icons.length === 0 ? "" : html`<div class="icons">${icons}</div>`}
+          ${icons.length === 0
+            ? ""
+            : html`
+                <div class="icons">
+                  ${icons.map(
+                    ([icon, description]) => html`
+                      <span>
+                        <ha-svg-icon .path=${icon}></ha-svg-icon>
+                        <paper-tooltip animation-delay="0"
+                          >${description}</paper-tooltip
+                        >
+                      </span>
+                    `
+                  )}
+                </div>
+              `}
           <div class="image">
             <img
               src=${brandsUrl(item.domain, "logo")}
