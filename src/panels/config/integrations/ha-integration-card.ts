@@ -247,7 +247,7 @@ export class HaIntegrationCard extends LitElement {
         ),
       ]);
     }
-    if (item.connection_class.substring(0, 6) === "cloud_") {
+    if (item.connection_class.startsWith("cloud_")) {
       icons.push([
         mdiCloud,
         this.hass.localize(
