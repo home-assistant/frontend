@@ -74,10 +74,6 @@ const isCommandItem = (item: QuickBarItem): item is CommandItem => {
   return (item as CommandItem).categoryKey !== undefined;
 };
 
-const isEntityItem = (item: QuickBarItem): item is EntityItem => {
-  return !isCommandItem(item);
-};
-
 interface QuickBarNavigationItem extends CommandItem {
   path: string;
 }
@@ -233,15 +229,9 @@ export class QuickBar extends LitElement {
   }
 
   private _renderItem(item: QuickBarItem, index?: number) {
-    if (isCommandItem(item)) {
-      return this._renderCommandItem(item, index);
-    }
-
-    if (isEntityItem(item)) {
-      return this._renderEntityItem(item, index);
-    }
-
-    return html``;
+    return isCommandItem(item)
+      ? this._renderCommandItem(item, index)
+      : this._renderEntityItem(item as EntityItem, index);
   }
 
   private _renderEntityItem(item: EntityItem, index?: number) {
