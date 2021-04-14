@@ -68,30 +68,12 @@ const ERROR_STATES: ConfigEntry["state"][] = [
 ];
 
 const integrationsWithPanel = {
-  hassio: {
-    buttonLocalizeKey: "ui.panel.config.hassio.button",
-    path: "/hassio/dashboard",
-  },
-  mqtt: {
-    buttonLocalizeKey: "ui.panel.config.mqtt.button",
-    path: "/config/mqtt",
-  },
-  zha: {
-    buttonLocalizeKey: "ui.panel.config.zha.button",
-    path: "/config/zha/dashboard",
-  },
-  ozw: {
-    buttonLocalizeKey: "ui.panel.config.ozw.button",
-    path: "/config/ozw/dashboard",
-  },
-  zwave: {
-    buttonLocalizeKey: "ui.panel.config.zwave.button",
-    path: "/config/zwave",
-  },
-  zwave_js: {
-    buttonLocalizeKey: "ui.panel.config.zwave_js.button",
-    path: "/config/zwave_js/dashboard",
-  },
+  hassio: "/hassio/dashboard",
+  mqtt: "/config/mqtt",
+  zha: "/config/zha/dashboard",
+  ozw: "/config/ozw/dashboard",
+  zwave: "/config/zwave",
+  zwave_js: "/config/zwave_js/dashboard",
 };
 
 @customElement("ha-integration-card")
@@ -151,6 +133,7 @@ export class HaIntegrationCard extends LitElement {
           <h2>
             ${domainToName(this.hass.localize, this.domain)}
           </h2>
+          ${this._renderIcons()}
         </div>
         <paper-listbox>
           ${this.items.map(
@@ -164,7 +147,7 @@ export class HaIntegrationCard extends LitElement {
                     "ui.panel.config.integrations.config_entry.unnamed_entry"
                   )}</paper-item-body
                 >
-                ${item.state === "not_loaded"
+                ${ERROR_STATES.includes(item.state)
                   ? html`<span>
                       <ha-svg-icon
                         class="error"
@@ -172,11 +155,7 @@ export class HaIntegrationCard extends LitElement {
                       ></ha-svg-icon
                       ><paper-tooltip animation-delay="0" position="left">
                         ${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.not_loaded",
-                          "logs_link",
-                          this.hass.localize(
-                            "ui.panel.config.integrations.config_entry.logs"
-                          )
+                          `ui.panel.config.integrations.config_entry.state.${item.state}`
                         )}
                       </paper-tooltip>
                     </span>`
@@ -189,20 +168,13 @@ export class HaIntegrationCard extends LitElement {
     `;
   }
 
-  private _logsLink() {
-    return html`<a href="/config/logs"
-      >${this.hass.localize(
-        "ui.panel.config.integrations.config_entry.logs"
-      )}</a
-    >`;
-  }
-
   private _renderSingleEntry(item: ConfigEntryExtended): TemplateResult {
     const devices = this._getDevices(item);
     const services = this._getServices(item);
     const entities = this._getEntities(item);
 
     let header: [string, ...unknown[]] | undefined;
+    let headerLinkLogs = false;
 
     if (item.disabled_by) {
       header = [
@@ -214,46 +186,11 @@ export class HaIntegrationCard extends LitElement {
       ];
     } else if (item.state === "not_loaded") {
       header = ["ui.panel.config.integrations.config_entry.not_loaded"];
-    } else if (item.state === "setup_retry") {
+    } else if (ERROR_STATES.includes(item.state)) {
       header = [
-        "ui.panel.config.integrations.config_entry.is_setup_retry",
-        "logs_link",
-        this._logsLink(),
+        `ui.panel.config.integrations.config_entry.state.${item.state}`,
       ];
-    } else if (
-      item.state === "setup_error" ||
-      item.state === "migration_error"
-    ) {
-      header = [
-        "ui.panel.config.integrations.config_entry.is_setup_error",
-        "logs_link",
-        this._logsLink(),
-      ];
-    } else if (item.state === "failed_unload") {
-      header = [
-        "ui.panel.config.integrations.config_entry.is_failed_unload",
-        "logs_link",
-        this._logsLink(),
-      ];
-    }
-
-    const icons: [string, string][] = [];
-
-    if (this.manifest && !this.manifest.is_built_in) {
-      icons.push([
-        mdiPackageVariant,
-        this.hass.localize(
-          "ui.panel.config.integrations.config_entry.provided_by_custom_component"
-        ),
-      ]);
-    }
-    if (item.connection_class.startsWith("cloud_")) {
-      icons.push([
-        mdiCloud,
-        this.hass.localize(
-          "ui.panel.config.integrations.config_entry.depends_on_cloud"
-        ),
-      ]);
+      headerLinkLogs = true;
     }
 
     return html`
@@ -274,25 +211,24 @@ export class HaIntegrationCard extends LitElement {
             ></ha-icon-button>`
           : ""}
         ${header
-          ? html`<div class="header">${this.hass.localize(...header)}</div>`
+          ? html`
+              <div class="header">
+                ${this.hass.localize(...header)}${!headerLinkLogs
+                  ? ""
+                  : `. ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.check_the_logs",
+                      "logs_link",
+                      html`<a href="/config/logs"
+                        >${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.logs"
+                        )}</a
+                      >`
+                    )}`}
+              </div>
+            `
           : ""}
         <div class="card-content">
-          ${icons.length === 0
-            ? ""
-            : html`
-                <div class="icons">
-                  ${icons.map(
-                    ([icon, description]) => html`
-                      <span>
-                        <ha-svg-icon .path=${icon}></ha-svg-icon>
-                        <paper-tooltip animation-delay="0"
-                          >${description}</paper-tooltip
-                        >
-                      </span>
-                    `
-                  )}
-                </div>
-              `}
+          ${this._renderIcons()}
           <div class="image">
             <img
               src=${brandsUrl(item.domain, "logo")}
@@ -360,11 +296,6 @@ export class HaIntegrationCard extends LitElement {
                   ${this.hass.localize("ui.common.enable")}
                 </mwc-button>`
               : ""}
-            <mwc-button @click=${this._editEntryName}>
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.rename"
-              )}
-            </mwc-button>
             ${item.domain in integrationsWithPanel
               ? html`<a
                   href=${`${
@@ -372,7 +303,7 @@ export class HaIntegrationCard extends LitElement {
                   }?config_entry=${item.entry_id}`}
                   ><mwc-button>
                     ${this.hass.localize(
-                      integrationsWithPanel[item.domain].buttonLocalizeKey
+                      "ui.panel.config.integrations.config_entry.configure"
                     )}
                   </mwc-button></a
                 >`
@@ -380,10 +311,29 @@ export class HaIntegrationCard extends LitElement {
               ? html`
                   <mwc-button @click=${this._showOptions}>
                     ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.options"
+                      "ui.panel.config.integrations.config_entry.configure"
                     )}
                   </mwc-button>
                 `
+              : this.manifest
+              ? // Filler to show at least 1 button on the left.
+                // Pending redesign
+                html`<a
+                  href=${this.manifest.documentation}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <mwc-button
+                    .label=${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.documentation"
+                    )}
+                  >
+                    <ha-svg-icon
+                      slot="trailingIcon"
+                      .path=${mdiOpenInNew}
+                    ></ha-svg-icon>
+                  </mwc-button>
+                </a>`
               : ""}
           </div>
           ${!this.manifest
@@ -397,6 +347,11 @@ export class HaIntegrationCard extends LitElement {
                   >
                     <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
                   </mwc-icon-button>
+                  <mwc-list-item @request-selected="${this._editEntryName}">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.rename"
+                    )}
+                  </mwc-list-item>
                   <mwc-list-item
                     @request-selected="${this._handleSystemOptions}"
                   >
@@ -460,6 +415,49 @@ export class HaIntegrationCard extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  private _renderIcons() {
+    const icons: [string, string][] = [];
+
+    if (!this.manifest) {
+      return "";
+    }
+
+    if (!this.manifest.is_built_in) {
+      icons.push([
+        mdiPackageVariant,
+        this.hass.localize(
+          "ui.panel.config.integrations.config_entry.provided_by_custom_component"
+        ),
+      ]);
+    }
+
+    if (this.manifest.iot_class.startsWith("cloud_")) {
+      icons.push([
+        mdiCloud,
+        this.hass.localize(
+          "ui.panel.config.integrations.config_entry.depends_on_cloud"
+        ),
+      ]);
+    }
+
+    return icons.length === 0
+      ? ""
+      : html`
+          <div class="icons">
+            ${icons.map(
+              ([icon, description]) => html`
+                <span>
+                  <ha-svg-icon .path=${icon}></ha-svg-icon>
+                  <paper-tooltip animation-delay="0"
+                    >${description}</paper-tooltip
+                  >
+                </span>
+              `
+            )}
+          </div>
+        `;
   }
 
   private _selectConfigEntry(ev: Event) {
@@ -715,6 +713,9 @@ export class HaIntegrationCard extends LitElement {
           width: 20px;
           height: 20px;
         }
+        ha-card {
+          position: relative;
+        }
         ha-card.integration .card-content {
           padding-bottom: 3px;
         }
@@ -727,6 +728,7 @@ export class HaIntegrationCard extends LitElement {
           height: 48px;
         }
         .group-header {
+          position: relative;
           display: flex;
           align-items: center;
           height: 40px;
@@ -778,7 +780,11 @@ export class HaIntegrationCard extends LitElement {
         }
         @media (min-width: 563px) {
           paper-listbox {
-            max-height: 150px;
+            position: absolute;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
             overflow: auto;
           }
         }
@@ -793,6 +799,7 @@ export class HaIntegrationCard extends LitElement {
           position: absolute;
           background: rgba(var(--rgb-card-background-color), 0.6);
           border-radius: 50%;
+          z-index: 1;
         }
         paper-tooltip {
           white-space: nowrap;

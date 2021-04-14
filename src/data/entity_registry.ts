@@ -5,12 +5,12 @@ import { HomeAssistant } from "../types";
 
 export interface EntityRegistryEntry {
   entity_id: string;
-  name: string;
-  icon?: string;
+  name: string | null;
+  icon: string | null;
   platform: string;
-  config_entry_id?: string;
-  device_id?: string;
-  area_id?: string;
+  config_entry_id: string | null;
+  device_id: string | null;
+  area_id: string | null;
   disabled_by: string | null;
 }
 

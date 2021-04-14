@@ -15,7 +15,7 @@ export interface ConfigEntry {
   connection_class: string;
   supports_options: boolean;
   supports_unload: boolean;
-  disabled_by: string | null;
+  disabled_by: "user" | null;
 }
 
 export interface ConfigEntryMutableParams {

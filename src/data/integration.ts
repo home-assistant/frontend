@@ -15,7 +15,13 @@ export interface IntegrationManifest {
   ssdp?: Array<{ manufacturer?: string; modelName?: string; st?: string }>;
   zeroconf?: string[];
   homekit?: { models: string[] };
-  quality_scale?: string;
+  quality_scale?: "gold" | "internal" | "platinum" | "silver";
+  iot_class:
+    | "assumed_state"
+    | "cloud_polling"
+    | "cloud_push"
+    | "local_polling"
+    | "local_push";
 }
 
 export const integrationIssuesUrl = (
