@@ -85,7 +85,7 @@ export class SystemLogCard extends LitElement {
                                   )}${
                                     isCustomComponentError(item)
                                       ? ` (${this.hass.localize(
-                                          "ui.panel.config.logs.custom_component"
+                                          "ui.panel.config.logs.custom_integration"
                                         )})`
                                       : ""
                                   }`

@@ -100,7 +100,7 @@ class DialogSystemLogDetail extends LitElement {
             ${isCustomComponentError(item)
               ? html`<p>
                   ${this.hass.localize(
-                    "ui.panel.config.logs.error_from_custom_component"
+                    "ui.panel.config.logs.error_from_custom_integration"
                   )}
                 </p>`
               : ""}
