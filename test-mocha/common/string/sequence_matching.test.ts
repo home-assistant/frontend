@@ -3,10 +3,13 @@ import { assert } from "chai";
 import {
   fuzzyFilterSort,
   fuzzySequentialMatch,
+  ScorableTextItem,
 } from "../../../src/common/string/filter/sequence-matching";
 
 describe("fuzzySequentialMatch", () => {
-  const entity = { entity_id: "automation.ticker", friendly_name: "Stocks" };
+  const item: ScorableTextItem = {
+    strings: ["automation.ticker", "Stocks"],
+  };
 
   const createExpectation: (
     pattern,
@@ -53,25 +56,17 @@ describe("fuzzySequentialMatch", () => {
     "stox",
   ];
 
-  describe(`Entity '${entity.entity_id}'`, () => {
+  describe(`Entity '${item.strings[0]}'`, () => {
     for (const expectation of shouldMatchEntity) {
       it(`matches '${expectation.pattern}' with return of '${expectation.expected}'`, () => {
-        const res = fuzzySequentialMatch(
-          expectation.pattern,
-          entity.entity_id,
-          entity.friendly_name
-        );
+        const res = fuzzySequentialMatch(expectation.pattern, item);
         assert.equal(res, expectation.expected);
       });
     }
 
     for (const badFilter of shouldNotMatchEntity) {
       it(`fails to match with '${badFilter}'`, () => {
-        const res = fuzzySequentialMatch(
-          badFilter,
-          entity.entity_id,
-          entity.friendly_name
-        );
+        const res = fuzzySequentialMatch(badFilter, item);
         assert.equal(res, undefined);
       });
     }
@@ -81,28 +76,23 @@ describe("fuzzySequentialMatch", () => {
 describe("fuzzyFilterSort", () => {
   const filter = "ticker";
   const automationTicker = {
-    filterText: "automation.ticker",
-    altText: "Stocks",
+    strings: ["automation.ticker", "Stocks"],
     score: 0,
   };
   const ticker = {
-    filterText: "ticker",
-    altText: "Just ticker",
+    strings: ["ticker", "Just ticker"],
     score: 0,
   };
   const sensorTicker = {
-    filterText: "sensor.ticker",
-    altText: "Stocks up",
+    strings: ["sensor.ticker", "Stocks up"],
     score: 0,
   };
   const timerCheckRouter = {
-    filterText: "automation.check_router",
-    altText: "Timer Check Router",
+    strings: ["automation.check_router", "Timer Check Router"],
     score: 0,
   };
   const badMatch = {
-    filterText: "light.chandelier",
-    altText: "Chandelier",
+    strings: ["light.chandelier", "Chandelier"],
     score: 0,
   };
   const itemsBeforeFilter = [
