@@ -3,6 +3,8 @@ import {
   HassEntity,
   STATE_NOT_RUNNING,
 } from "home-assistant-js-websocket";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { DEFAULT_VIEW_ENTITY_ID } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -13,7 +15,6 @@ import { splitByGroups } from "../../../common/entity/split_by_groups";
 import { compare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { subscribeOne } from "../../../common/util/subscribe-one";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -45,7 +46,6 @@ import {
 } from "../cards/types";
 import { LovelaceRowConfig } from "../entity-rows/types";
 
-const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const HIDE_DOMAIN = new Set([
   "automation",
   "configurator",
@@ -181,7 +181,8 @@ export const computeCards = (
         titlePrefix &&
         stateObj &&
         // eslint-disable-next-line no-cond-assign
-        (name = computeStateName(stateObj)) !== titlePrefix && name.startsWith(titlePrefix)
+        (name = computeStateName(stateObj)) !== titlePrefix &&
+        name.startsWith(titlePrefix)
           ? {
               entity: entityId,
               name: adjustName(name.substr(titlePrefix.length)),
