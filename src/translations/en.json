@@ -756,7 +756,18 @@
         "update": "Update"
       },
       "zha_reconfigure_device": {
-        "heading": "Reconfiguring device"
+        "heading": "Reconfiguring device",
+        "configuring_alt": "Configuring",
+        "attempting": "Attempting to reconfigure the device...",
+        "succeeded": "Reconfiguring the device succeeded",
+        "failed": "Reconfiguring the device failed",
+        "button_show": "Show Details",
+        "button_hide": "Hide Details",
+        "cluster_header": "Cluster",
+        "bind_header": "Binding",
+        "reporting_header": "Reporting",
+        "attribute": "Attribute",
+        "configuration": "Configuration"
       },
       "zha_device_info": {
         "manuf": "by {manufacturer}",

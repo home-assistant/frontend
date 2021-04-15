@@ -39,8 +39,15 @@ class DialogZHAReconfigureDevice extends LitElement {
     ClusterConfigurationStatus
   > = new Map();
 
-  @internalProperty()
-  private _params: ZHAReconfigureDeviceDialogParams | undefined = undefined;
+  @internalProperty() private _params:
+    | ZHAReconfigureDeviceDialogParams
+    | undefined = undefined;
+
+  @internalProperty() private _eventCount = 0;
+
+  @internalProperty() private _allSuccessful = true;
+
+  @internalProperty() private _showDetails = false;
 
   private _subscribed?: Promise<() => Promise<void>>;
 
@@ -67,6 +74,7 @@ class DialogZHAReconfigureDevice extends LitElement {
     this._unsubscribe();
     this._params = undefined;
     this._clusterConfigurationStatuses = new Map();
+    this._eventCount = 0;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -80,11 +88,10 @@ class DialogZHAReconfigureDevice extends LitElement {
         hideActions
         @closing="${this.closeDialog}"
         .heading=${html`
-          <span class="header_title"
-            >${this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`)}:
-            ${this._params?.device.user_given_name ||
-            this._params?.device.name}</span
-          >
+          <span class="header_title">
+            ${this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`)}:
+            ${this._params?.device.user_given_name || this._params?.device.name}
+          </span>
           <mwc-icon-button
             aria-label=${this.hass.localize("ui.dialogs.generic.close")}
             dialogAction="close"
@@ -95,48 +102,139 @@ class DialogZHAReconfigureDevice extends LitElement {
           </mwc-icon-button>
         `}
       >
-        <div class="searching">
+        <div class="configuring">
           ${this._active
             ? html`
                 <ha-circular-progress
                   active
-                  alt="Configuring"
+                  alt=${this.hass.localize(
+                    `ui.dialogs.zha_reconfigure_device.configuring_alt`
+                  )}
                 ></ha-circular-progress>
+                <h3>
+                  ${this.hass.localize(
+                    `ui.dialogs.zha_reconfigure_device.attempting`
+                  )}
+                </h3>
               `
-            : ""}
+            : this._allSuccessful
+            ? html`
+                <ha-svg-icon .path=${mdiCheckCircle}></ha-svg-icon>
+                <h3>
+                  ${this.hass.localize(
+                    `ui.dialogs.zha_reconfigure_device.suceeded`
+                  )}
+                </h3>
+              `
+            : html`
+                <ha-svg-icon .path=${mdiExclamationThick}></ha-svg-icon>
+                <h3>
+                  ${this.hass.localize(
+                    `ui.dialogs.zha_reconfigure_device.failed`
+                  )}
+                </h3>
+              `}
+          <mwc-button @click=${this._toggleDetails}>
+            ${this._showDetails
+              ? this.hass.localize(
+                  `ui.dialogs.zha_reconfigure_device.button_hide`
+                )
+              : this.hass.localize(
+                  `ui.dialogs.zha_reconfigure_device.button_show`
+                )}
+          </mwc-button>
         </div>
-        ${this._clusterConfigurationStatuses.size > 0
-          ? html`${Array.from(this._clusterConfigurationStatuses.values()).map(
-              (clusterStatus) => html`<paper-item>
-                <paper-item-body three-line>
-                  <div>${clusterStatus.cluster.name}</div>
-                  <div secondary>
-                    Bind Successful:
-                    ${clusterStatus.bindSuccess !== undefined
-                      ? clusterStatus.bindSuccess
-                        ? html`<ha-svg-icon
-                            .path=${mdiCheckCircle}
-                          ></ha-svg-icon>`
-                        : html`<ha-svg-icon
-                            .path=${mdiExclamationThick}
-                          ></ha-svg-icon>`
-                      : ""}
-                  </div>
-                  <div secondary>
-                    Configure Reporting Successful:
-                    ${clusterStatus.bindSuccess !== undefined
-                      ? clusterStatus.bindSuccess
-                        ? html`<ha-svg-icon
-                            .path=${mdiCheckCircle}
-                          ></ha-svg-icon>`
-                        : html`<ha-svg-icon
-                            .path=${mdiExclamationThick}
-                          ></ha-svg-icon>`
-                      : ""}
-                  </div>
-                </paper-item-body>
-              </paper-item>`
-            )}`
+
+        ${this._showDetails
+          ? html`
+              <div class="wrapper">
+                <h2 class="grid-item">
+                  ${this.hass.localize(
+                    `ui.dialogs.zha_reconfigure_device.cluster_header`
+                  )}
+                </h2>
+                <h2 class="grid-item">
+                  ${this.hass.localize(
+                    `ui.dialogs.zha_reconfigure_device.bind_header`
+                  )}
+                </h2>
+                <h2 class="grid-item">
+                  ${this.hass.localize(
+                    `ui.dialogs.zha_reconfigure_device.reporting_header`
+                  )}
+                </h2>
+
+                ${this._clusterConfigurationStatuses.size > 0
+                  ? html`
+                      ${Array.from(
+                        this._clusterConfigurationStatuses.values()
+                      ).map(
+                        (clusterStatus) => html`
+                          <div class="grid-item">
+                            ${clusterStatus.cluster.name}
+                          </div>
+                          <div class="grid-item">
+                            ${clusterStatus.bindSuccess !== undefined
+                              ? clusterStatus.bindSuccess
+                                ? html`
+                                    <ha-svg-icon
+                                      .path=${mdiCheckCircle}
+                                    ></ha-svg-icon>
+                                  `
+                                : html`
+                                    <ha-svg-icon
+                                      .path=${mdiExclamationThick}
+                                    ></ha-svg-icon>
+                                  `
+                              : ""}
+                          </div>
+                          <div class="grid-item">
+                            ${clusterStatus.attributes.size > 0
+                              ? html`
+                                  <div class="attributes">
+                                    <div class="grid-item">
+                                      ${this.hass.localize(
+                                        `ui.dialogs.zha_reconfigure_device.attribute`
+                                      )}
+                                    </div>
+                                    <div class="grid-item">
+                                      ${this.hass.localize(
+                                        `ui.dialogs.zha_reconfigure_device.configuration`
+                                      )}
+                                    </div>
+                                    ${Array.from(
+                                      clusterStatus.attributes.values()
+                                    ).map(
+                                      (attribute) => html`
+                                        <span class="grid-item">
+                                          ${attribute.name}:
+                                          ${attribute.success
+                                            ? html`
+                                                <ha-svg-icon
+                                                  .path=${mdiCheckCircle}
+                                                ></ha-svg-icon>
+                                              `
+                                            : html`
+                                                <ha-svg-icon
+                                                  .path=${mdiExclamationThick}
+                                                ></ha-svg-icon>
+                                              `}
+                                        </span>
+                                        <div class="grid-item">
+                                          min:${attribute.min}/max:${attribute.max}/change:${attribute.change}
+                                        </div>
+                                      `
+                                    )}
+                                  </div>
+                                `
+                              : ""}
+                          </div>
+                        `
+                      )}
+                    `
+                  : ""}
+              </div>
+            `
           : ""}
       </ha-dialog>
     `;
@@ -144,6 +242,9 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   private _handleMessage(message: any): void {
     if (CHANNEL_MESSAGE_TYPES.includes(message.type)) {
+      // this is currently here to hack rerendering because map updates aren't triggering rendering?
+      this._eventCount += 1;
+
       if (message.type === ZHA_CHANNEL_CFG_DONE) {
         this._unsubscribe();
       } else {
@@ -151,17 +252,17 @@ class DialogZHAReconfigureDevice extends LitElement {
           message.zha_channel_msg_data.cluster_id
         );
         if (message.type === ZHA_CHANNEL_MSG_BIND) {
-          clusterConfigurationStatus!.bindSuccess =
-            message.zha_channel_msg_data.success;
+          const success = message.zha_channel_msg_data.success;
+          clusterConfigurationStatus!.bindSuccess = success;
+          this._allSuccessful = this._allSuccessful && success;
         }
         if (message.type === ZHA_CHANNEL_MSG_CFG_RPT) {
           const attributes = message.zha_channel_msg_data.attributes;
-          Object.keys(attributes).forEach((name) =>
-            clusterConfigurationStatus!.attributes.set(
-              attributes[name].id,
-              attributes[name]
-            )
-          );
+          Object.keys(attributes).forEach((name) => {
+            const attribute = attributes[name];
+            clusterConfigurationStatus!.attributes.set(attribute.id, attribute);
+            this._allSuccessful = this._allSuccessful && attribute.success;
+          });
         }
       }
     }
@@ -187,6 +288,10 @@ class DialogZHAReconfigureDevice extends LitElement {
     );
   }
 
+  private _toggleDetails() {
+    this._showDetails = !this._showDetails;
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyleDialog,
@@ -194,7 +299,7 @@ class DialogZHAReconfigureDevice extends LitElement {
         ha-circular-progress {
           padding: 20px;
         }
-        .searching {
+        .configuring {
           margin-top: 20px;
           display: flex;
           flex-direction: column;
@@ -202,6 +307,18 @@ class DialogZHAReconfigureDevice extends LitElement {
         }
         .log {
           padding: 16px;
+        }
+        .wrapper {
+          display: grid;
+          grid-template-columns: 2fr 1fr 1fr;
+        }
+        .attributes {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+        }
+        .grid-item {
+          border: 1px solid;
+          padding: 20px;
         }
       `,
     ];
