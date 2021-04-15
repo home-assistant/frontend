@@ -767,7 +767,8 @@
         "bind_header": "Binding",
         "reporting_header": "Reporting",
         "attribute": "Attribute",
-        "configuration": "Configuration"
+        "configuration": "Configuration",
+        "min_max_change": "min / max / change"
       },
       "zha_device_info": {
         "manuf": "by {manufacturer}",

@@ -9,11 +9,13 @@ import {
   TemplateResult,
 } from "lit-element";
 import { mdiCheckCircle, mdiClose, mdiExclamationThick } from "@mdi/js";
+import "@material/mwc-icon-button/mwc-icon-button";
+import "@material/mwc-button/mwc-button";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZHAReconfigureDeviceDialogParams } from "./show-dialog-zha-reconfigure-device";
-import "@polymer/paper-input/paper-textarea";
 import "../../../../../components/ha-circular-progress";
+import "../../../../../components/ha-svg-icon";
 import {
   AttributeConfigurationStatus,
   CHANNEL_MESSAGE_TYPES,
@@ -119,15 +121,21 @@ class DialogZHAReconfigureDevice extends LitElement {
               `
             : this._allSuccessful
             ? html`
-                <ha-svg-icon .path=${mdiCheckCircle}></ha-svg-icon>
+                <ha-svg-icon
+                  class="success-fail"
+                  .path=${mdiCheckCircle}
+                ></ha-svg-icon>
                 <h3>
                   ${this.hass.localize(
-                    `ui.dialogs.zha_reconfigure_device.suceeded`
+                    `ui.dialogs.zha_reconfigure_device.succeeded`
                   )}
                 </h3>
               `
             : html`
-                <ha-svg-icon .path=${mdiExclamationThick}></ha-svg-icon>
+                <ha-svg-icon
+                  class="success-fail"
+                  .path=${mdiExclamationThick}
+                ></ha-svg-icon>
                 <h3>
                   ${this.hass.localize(
                     `ui.dialogs.zha_reconfigure_device.failed`
@@ -198,9 +206,18 @@ class DialogZHAReconfigureDevice extends LitElement {
                                       )}
                                     </div>
                                     <div class="grid-item">
-                                      ${this.hass.localize(
-                                        `ui.dialogs.zha_reconfigure_device.configuration`
-                                      )}
+                                      <span>
+                                        <div>
+                                          ${this.hass.localize(
+                                            `ui.dialogs.zha_reconfigure_device.configuration`
+                                          )}
+                                        </div>
+                                        <div>
+                                          ${this.hass.localize(
+                                            `ui.dialogs.zha_reconfigure_device.min_max_change`
+                                          )}
+                                        </div>
+                                      </span>
                                     </div>
                                     ${Array.from(
                                       clusterStatus.attributes.values()
@@ -221,7 +238,7 @@ class DialogZHAReconfigureDevice extends LitElement {
                                               `}
                                         </span>
                                         <div class="grid-item">
-                                          min:${attribute.min}/max:${attribute.max}/change:${attribute.change}
+                                          ${attribute.min}/${attribute.max}/${attribute.change}
                                         </div>
                                       `
                                     )}
@@ -305,9 +322,6 @@ class DialogZHAReconfigureDevice extends LitElement {
           flex-direction: column;
           align-items: center;
         }
-        .log {
-          padding: 16px;
-        }
         .wrapper {
           display: grid;
           grid-template-columns: 2fr 1fr 1fr;
@@ -318,7 +332,11 @@ class DialogZHAReconfigureDevice extends LitElement {
         }
         .grid-item {
           border: 1px solid;
-          padding: 20px;
+          padding: 8px;
+        }
+        .success-fail {
+          width: 48px;
+          height: 48px;
         }
       `,
     ];
