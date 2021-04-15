@@ -133,7 +133,10 @@ export class HaIntegrationCard extends LitElement {
         ]);
       }
 
-      if (this.manifest.iot_class.startsWith("cloud_")) {
+      if (
+        this.manifest.iot_class &&
+        this.manifest.iot_class.startsWith("cloud_")
+      ) {
         icons.push([
           mdiCloud,
           this.hass.localize(
