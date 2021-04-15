@@ -18,8 +18,8 @@ import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-svg-icon";
 import {
   AttributeConfigurationStatus,
-  CHANNEL_MESSAGE_TYPES,
   Cluster,
+  ClusterConfigurationEvent,
   ClusterConfigurationStatus,
   fetchClustersForZhaNode,
   reconfigureNode,
@@ -206,18 +206,11 @@ class DialogZHAReconfigureDevice extends LitElement {
                                       )}
                                     </div>
                                     <div class="grid-item">
-                                      <span>
-                                        <div>
-                                          ${this.hass.localize(
-                                            `ui.dialogs.zha_reconfigure_device.configuration`
-                                          )}
-                                        </div>
-                                        <div>
-                                          ${this.hass.localize(
-                                            `ui.dialogs.zha_reconfigure_device.min_max_change`
-                                          )}
-                                        </div>
-                                      </span>
+                                      <div>
+                                        ${this.hass.localize(
+                                          `ui.dialogs.zha_reconfigure_device.min_max_change`
+                                        )}
+                                      </div>
                                     </div>
                                     ${Array.from(
                                       clusterStatus.attributes.values()
@@ -257,30 +250,27 @@ class DialogZHAReconfigureDevice extends LitElement {
     `;
   }
 
-  private _handleMessage(message: any): void {
-    if (CHANNEL_MESSAGE_TYPES.includes(message.type)) {
-      // this is currently here to hack rerendering because map updates aren't triggering rendering?
-      this._eventCount += 1;
-
-      if (message.type === ZHA_CHANNEL_CFG_DONE) {
-        this._unsubscribe();
-      } else {
-        const clusterConfigurationStatus = this._clusterConfigurationStatuses.get(
-          message.zha_channel_msg_data.cluster_id
-        );
-        if (message.type === ZHA_CHANNEL_MSG_BIND) {
-          const success = message.zha_channel_msg_data.success;
-          clusterConfigurationStatus!.bindSuccess = success;
-          this._allSuccessful = this._allSuccessful && success;
-        }
-        if (message.type === ZHA_CHANNEL_MSG_CFG_RPT) {
-          const attributes = message.zha_channel_msg_data.attributes;
-          Object.keys(attributes).forEach((name) => {
-            const attribute = attributes[name];
-            clusterConfigurationStatus!.attributes.set(attribute.id, attribute);
-            this._allSuccessful = this._allSuccessful && attribute.success;
-          });
-        }
+  private _handleMessage(message: ClusterConfigurationEvent): void {
+    // this is currently here to hack rerendering because map updates aren't triggering rendering?
+    this._eventCount += 1;
+    if (message.type === ZHA_CHANNEL_CFG_DONE) {
+      this._unsubscribe();
+    } else {
+      const clusterConfigurationStatus = this._clusterConfigurationStatuses.get(
+        message.zha_channel_msg_data.cluster_id
+      );
+      if (message.type === ZHA_CHANNEL_MSG_BIND) {
+        const success = message.zha_channel_msg_data.success;
+        clusterConfigurationStatus!.bindSuccess = success;
+        this._allSuccessful = this._allSuccessful && success;
+      }
+      if (message.type === ZHA_CHANNEL_MSG_CFG_RPT) {
+        const attributes = message.zha_channel_msg_data.attributes;
+        Object.keys(attributes).forEach((name) => {
+          const attribute = attributes[name];
+          clusterConfigurationStatus!.attributes.set(attribute.id, attribute);
+          this._allSuccessful = this._allSuccessful && attribute.success;
+        });
       }
     }
   }
@@ -324,7 +314,7 @@ class DialogZHAReconfigureDevice extends LitElement {
         }
         .wrapper {
           display: grid;
-          grid-template-columns: 2fr 1fr 1fr;
+          grid-template-columns: 3fr 1fr 2fr;
         }
         .attributes {
           display: grid;
@@ -332,7 +322,7 @@ class DialogZHAReconfigureDevice extends LitElement {
         }
         .grid-item {
           border: 1px solid;
-          padding: 8px;
+          padding: 7px;
         }
         .success-fail {
           width: 48px;

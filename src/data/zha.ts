@@ -54,6 +54,18 @@ export interface Cluster {
   type: string;
 }
 
+export interface ClusterConfigurationData {
+  cluster_name: string;
+  cluster_id: number;
+  success: boolean;
+}
+
+export interface ClusterAttributeData {
+  cluster_name: string;
+  cluster_id: number;
+  attributes: AttributeConfigurationStatus[];
+}
+
 export interface AttributeConfigurationStatus {
   id: number;
   name: string;
@@ -68,6 +80,25 @@ export interface ClusterConfigurationStatus {
   bindSuccess: boolean | undefined;
   attributes: Map<number, AttributeConfigurationStatus>;
 }
+
+interface ClusterConfigurationBindEvent {
+  type: "zha_channel_bind";
+  zha_channel_msg_data: ClusterConfigurationData;
+}
+
+interface ClusterConfigurationReportConfigurationEvent {
+  type: "zha_channel_configure_reporting";
+  zha_channel_msg_data: ClusterAttributeData;
+}
+
+interface ClusterConfigurationEventFinish {
+  type: "zha_channel_cfg_done";
+}
+
+export type ClusterConfigurationEvent =
+  | ClusterConfigurationReportConfigurationEvent
+  | ClusterConfigurationBindEvent
+  | ClusterConfigurationEventFinish;
 
 export interface Command {
   name: string;
@@ -98,10 +129,10 @@ export interface ZHAGroupMember {
 export const reconfigureNode = (
   hass: HomeAssistant,
   ieeeAddress: string,
-  callbackFunction: any
+  callbackFunction: (message: ClusterConfigurationEvent) => void
 ) => {
   return hass.connection.subscribeMessage(
-    (message) => callbackFunction(message),
+    (message: ClusterConfigurationEvent) => callbackFunction(message),
     {
       type: "zha/devices/reconfigure",
       ieee: ieeeAddress,
@@ -319,10 +350,4 @@ export const LOG_OUTPUT = "log_output";
 export const ZHA_CHANNEL_MSG = "zha_channel_message";
 export const ZHA_CHANNEL_MSG_BIND = "zha_channel_bind";
 export const ZHA_CHANNEL_MSG_CFG_RPT = "zha_channel_configure_reporting";
-export const ZHA_CHANNEL_MSG_DATA = "zha_channel_msg_data";
 export const ZHA_CHANNEL_CFG_DONE = "zha_channel_cfg_done";
-export const CHANNEL_MESSAGE_TYPES = [
-  ZHA_CHANNEL_MSG_BIND,
-  ZHA_CHANNEL_MSG_CFG_RPT,
-  ZHA_CHANNEL_CFG_DONE,
-];
