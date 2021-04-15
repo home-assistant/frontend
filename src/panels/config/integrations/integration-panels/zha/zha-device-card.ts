@@ -177,7 +177,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _computeEntityName(entity: EntityRegistryEntry): string {
+  private _computeEntityName(entity: EntityRegistryEntry): string | null {
     if (this.hass.states[entity.entity_id]) {
       return computeStateName(this.hass.states[entity.entity_id]);
     }
