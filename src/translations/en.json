@@ -2162,7 +2162,7 @@
             "area": "In {area}",
             "no_area": "No Area",
             "not_loaded": "Not loaded",
-            "check_the_logs": "Check the {logs_link}",
+            "check_the_logs": "Check the logs",
             "logs": "logs",
             "disable": {
               "disabled": "Disabled",

@@ -215,15 +215,11 @@ export class HaIntegrationCard extends LitElement {
               <div class="header">
                 ${this.hass.localize(...header)}${!headerLinkLogs
                   ? ""
-                  : `. ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.check_the_logs",
-                      "logs_link",
-                      html`<a href="/config/logs"
-                        >${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.logs"
-                        )}</a
-                      >`
-                    )}`}
+                  : html`<a href="/config/logs"
+                      >${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.check_the_logs"
+                      )}</a
+                    >`}
               </div>
             `
           : ""}
