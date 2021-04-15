@@ -99,72 +99,150 @@ export class HaIntegrationCard extends LitElement {
   }
 
   protected render(): TemplateResult {
+    let item = this._selectededConfigEntry;
+
     if (this.items.length === 1) {
-      return this._renderSingleEntry(this.items[0]);
-    }
-    if (this.selectedConfigEntryId) {
-      const configEntry = this.items.find(
+      item = this.items[0];
+    } else if (this.selectedConfigEntryId) {
+      item = this.items.find(
         (entry) => entry.entry_id === this.selectedConfigEntryId
       );
-      if (configEntry) {
-        return this._renderSingleEntry(configEntry);
+    }
+
+    let primary: string;
+    let secondary: string | undefined;
+
+    if (item) {
+      primary = item.title || item.localized_domain_name || this.domain;
+      if (primary !== item.localized_domain_name) {
+        secondary = item.localized_domain_name;
+      }
+    } else {
+      primary = domainToName(this.hass.localize, this.domain, this.manifest);
+    }
+
+    const icons: [string, string][] = [];
+
+    if (this.manifest) {
+      if (!this.manifest.is_built_in) {
+        icons.push([
+          mdiPackageVariant,
+          this.hass.localize(
+            "ui.panel.config.integrations.config_entry.provided_by_custom_component"
+          ),
+        ]);
+      }
+
+      if (this.manifest.iot_class.startsWith("cloud_")) {
+        icons.push([
+          mdiCloud,
+          this.hass.localize(
+            "ui.panel.config.integrations.config_entry.depends_on_cloud"
+          ),
+        ]);
       }
     }
-    return this._renderGroupedIntegration();
-  }
 
-  private _renderGroupedIntegration(): TemplateResult {
+    const hasItem = item !== undefined;
+
     return html`
-      <ha-card outlined class="group ${classMap({ disabled: this.disabled })}">
+      <ha-card
+        outlined
+        class="${classMap({
+          single: hasItem,
+          group: !hasItem,
+          hasMultiple: this.items.length > 1,
+          disabled: this.disabled,
+          "state-not-loaded": hasItem && item!.state === "not_loaded",
+          "state-error": hasItem && ERROR_STATES.includes(item!.state),
+        })}"
+        .configEntry=${item}
+      >
         ${this.disabled
-          ? html`<div class="header">
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.disable.disabled"
-              )}
-            </div>`
+          ? html`
+              <div class="banner">
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.disable.disabled"
+                )}
+              </div>
+            `
           : ""}
-        <div class="group-header">
+        ${this.items.length > 1
+          ? html`
+              <div class="back-btn">
+                <ha-icon-button
+                  icon="hass:chevron-left"
+                  @click=${this._back}
+                ></ha-icon-button>
+              </div>
+            `
+          : ""}
+        <div class="header">
           <img
             src=${brandsUrl(this.domain, "icon")}
             referrerpolicy="no-referrer"
             @error=${this._onImageError}
             @load=${this._onImageLoad}
           />
-          <h2>
-            ${domainToName(this.hass.localize, this.domain)}
-          </h2>
-          ${this._renderIcons()}
+          <div class="info">
+            <div class="primary">${primary}</div>
+            ${secondary ? html`<div class="secondary">${secondary}</div>` : ""}
+          </div>
+          ${icons.length === 0
+            ? ""
+            : html`
+                <div class="icons">
+                  ${icons.map(
+                    ([icon, description]) => html`
+                      <span>
+                        <ha-svg-icon .path=${icon}></ha-svg-icon>
+                        <paper-tooltip animation-delay="0"
+                          >${description}</paper-tooltip
+                        >
+                      </span>
+                    `
+                  )}
+                </div>
+              `}
         </div>
-        <paper-listbox>
-          ${this.items.map(
-            (item) =>
-              html`<paper-item
-                .entryId=${item.entry_id}
-                @click=${this._selectConfigEntry}
-                ><paper-item-body
-                  >${item.title ||
-                  this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.unnamed_entry"
-                  )}</paper-item-body
-                >
-                ${ERROR_STATES.includes(item.state)
-                  ? html`<span>
-                      <ha-svg-icon
-                        class="error"
-                        .path=${mdiAlertCircle}
-                      ></ha-svg-icon
-                      ><paper-tooltip animation-delay="0" position="left">
-                        ${this.hass.localize(
-                          `ui.panel.config.integrations.config_entry.state.${item.state}`
-                        )}
-                      </paper-tooltip>
-                    </span>`
-                  : ""}
-                <ha-icon-next></ha-icon-next>
-              </paper-item>`
-          )}
-        </paper-listbox>
+        ${item
+          ? this._renderSingleEntry(item)
+          : this._renderGroupedIntegration()}
       </ha-card>
+    `;
+  }
+
+  private _renderGroupedIntegration(): TemplateResult {
+    return html`
+      <paper-listbox>
+        ${this.items.map(
+          (item) =>
+            html`<paper-item
+              .entryId=${item.entry_id}
+              @click=${this._selectConfigEntry}
+              ><paper-item-body
+                >${item.title ||
+                this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.unnamed_entry"
+                )}</paper-item-body
+              >
+              ${ERROR_STATES.includes(item.state)
+                ? html`<span>
+                    <ha-svg-icon
+                      class="error"
+                      .path=${mdiAlertCircle}
+                    ></ha-svg-icon
+                    ><paper-tooltip animation-delay="0" position="left">
+                      ${this.hass.localize(
+                        `ui.panel.config.integrations.config_entry.state.${item.state}`
+                      )}
+                    </paper-tooltip>
+                  </span>`
+                : ""}
+              <ha-icon-next></ha-icon-next>
+            </paper-item>`
+        )}
+      </paper-listbox>
     `;
   }
 
@@ -173,11 +251,11 @@ export class HaIntegrationCard extends LitElement {
     const services = this._getServices(item);
     const entities = this._getEntities(item);
 
-    let header: [string, ...unknown[]] | undefined;
-    let headerLinkLogs = false;
+    let stateText: [string, ...unknown[]] | undefined;
+    let stateTextLinkLogs = false;
 
     if (item.disabled_by) {
-      header = [
+      stateText = [
         "ui.panel.config.integrations.config_entry.disable.disabled_cause",
         "cause",
         this.hass.localize(
@@ -185,275 +263,191 @@ export class HaIntegrationCard extends LitElement {
         ) || item.disabled_by,
       ];
     } else if (item.state === "not_loaded") {
-      header = ["ui.panel.config.integrations.config_entry.not_loaded"];
+      stateText = ["ui.panel.config.integrations.config_entry.not_loaded"];
     } else if (ERROR_STATES.includes(item.state)) {
-      header = [
+      stateText = [
         `ui.panel.config.integrations.config_entry.state.${item.state}`,
       ];
-      headerLinkLogs = true;
+      stateTextLinkLogs = true;
     }
 
     return html`
-      <ha-card
-        outlined
-        class="single integration ${classMap({
-          "state-not-loaded": item.state === "not_loaded",
-          "state-error": ERROR_STATES.includes(item.state),
-        })}"
-        .configEntry=${item}
-        .id=${item.entry_id}
-      >
-        ${this.items.length > 1
-          ? html`<ha-icon-button
-              class="back-btn"
-              icon="hass:chevron-left"
-              @click=${this._back}
-            ></ha-icon-button>`
-          : ""}
-        ${header
+      <div class="content">
+        ${stateText
           ? html`
-              <div class="header">
-                ${this.hass.localize(...header)}${!headerLinkLogs
+              <div class="message">
+                ${this.hass.localize(...stateText)}${!stateTextLinkLogs
                   ? ""
-                  : html`.
+                  : html`
+                      <br />
                       <a href="/config/logs"
                         >${this.hass.localize(
                           "ui.panel.config.integrations.config_entry.check_the_logs"
                         )}</a
-                      >`}
+                      >
+                    `}
               </div>
             `
           : ""}
-        <div class="card-content">
-          ${this._renderIcons()}
-          <div class="image">
-            <img
-              src=${brandsUrl(item.domain, "logo")}
-              referrerpolicy="no-referrer"
-              @error=${this._onImageError}
-              @load=${this._onImageLoad}
-            />
-          </div>
-          <h2>
-            ${item.localized_domain_name}
-          </h2>
-          <h3>
-            ${item.localized_domain_name === item.title ? "" : item.title}
-          </h3>
-          ${devices.length || services.length || entities.length
+        ${devices.length || services.length || entities.length
+          ? html`
+              <div>
+                ${devices.length
+                  ? html`
+                      <a
+                        href=${`/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
+                        >${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.devices",
+                          "count",
+                          devices.length
+                        )}</a
+                      >${services.length ? "," : ""}
+                    `
+                  : ""}
+                ${services.length
+                  ? html`
+                      <a
+                        href=${`/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
+                        >${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.services",
+                          "count",
+                          services.length
+                        )}</a
+                      >
+                    `
+                  : ""}
+                ${(devices.length || services.length) && entities.length
+                  ? this.hass.localize("ui.common.and")
+                  : ""}
+                ${entities.length
+                  ? html`
+                      <a
+                        href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
+                        >${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.entities",
+                          "count",
+                          entities.length
+                        )}</a
+                      >
+                    `
+                  : ""}
+              </div>
+            `
+          : ""}
+      </div>
+      <div class="card-actions">
+        <div>
+          ${item.disabled_by === "user"
+            ? html`<mwc-button unelevated @click=${this._handleEnable}>
+                ${this.hass.localize("ui.common.enable")}
+              </mwc-button>`
+            : item.domain in integrationsWithPanel
+            ? html`<a
+                href=${`${
+                  integrationsWithPanel[item.domain].path
+                }?config_entry=${item.entry_id}`}
+                ><mwc-button>
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.configure"
+                  )}
+                </mwc-button></a
+              >`
+            : item.supports_options
             ? html`
-                <div>
-                  ${devices.length
-                    ? html`
-                        <a
-                          href=${`/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
-                          >${this.hass.localize(
-                            "ui.panel.config.integrations.config_entry.devices",
-                            "count",
-                            devices.length
-                          )}</a
-                        >${services.length ? "," : ""}
-                      `
-                    : ""}
-                  ${services.length
-                    ? html`
-                        <a
-                          href=${`/config/devices/dashboard?historyBack=1&config_entry=${item.entry_id}`}
-                          >${this.hass.localize(
-                            "ui.panel.config.integrations.config_entry.services",
-                            "count",
-                            services.length
-                          )}</a
-                        >
-                      `
-                    : ""}
-                  ${(devices.length || services.length) && entities.length
-                    ? this.hass.localize("ui.common.and")
-                    : ""}
-                  ${entities.length
-                    ? html`
-                        <a
-                          href=${`/config/entities?historyBack=1&config_entry=${item.entry_id}`}
-                          >${this.hass.localize(
-                            "ui.panel.config.integrations.config_entry.entities",
-                            "count",
-                            entities.length
-                          )}</a
-                        >
-                      `
-                    : ""}
-                </div>
+                <mwc-button @click=${this._showOptions}>
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.configure"
+                  )}
+                </mwc-button>
               `
             : ""}
         </div>
-        <div class="card-actions">
-          <div>
-            ${item.disabled_by === "user"
-              ? html`<mwc-button unelevated @click=${this._handleEnable}>
-                  ${this.hass.localize("ui.common.enable")}
-                </mwc-button>`
-              : item.domain in integrationsWithPanel
-              ? html`<a
-                  href=${`${
-                    integrationsWithPanel[item.domain].path
-                  }?config_entry=${item.entry_id}`}
-                  ><mwc-button>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.configure"
-                    )}
-                  </mwc-button></a
-                >`
-              : item.supports_options
-              ? html`
-                  <mwc-button @click=${this._showOptions}>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.configure"
-                    )}
-                  </mwc-button>
-                `
-              : this.manifest
-              ? // Filler to show at least 1 button on the left.
-                // Pending redesign
-                html`<a
+        ${!this.manifest
+          ? ""
+          : html`
+              <ha-button-menu corner="BOTTOM_START">
+                <mwc-icon-button
+                  .title=${this.hass.localize("ui.common.menu")}
+                  .label=${this.hass.localize("ui.common.overflow_menu")}
+                  slot="trigger"
+                >
+                  <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+                </mwc-icon-button>
+                <mwc-list-item @request-selected="${this._editEntryName}">
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.rename"
+                  )}
+                </mwc-list-item>
+                <mwc-list-item @request-selected="${this._handleSystemOptions}">
+                  ${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.system_options"
+                  )}
+                </mwc-list-item>
+
+                <a
                   href=${this.manifest.documentation}
                   rel="noreferrer"
                   target="_blank"
                 >
-                  <mwc-button
-                    .label=${this.hass.localize(
+                  <mwc-list-item hasMeta>
+                    ${this.hass.localize(
                       "ui.panel.config.integrations.config_entry.documentation"
-                    )}
-                  >
-                    <ha-svg-icon
-                      slot="trailingIcon"
+                    )}<ha-svg-icon
+                      slot="meta"
                       .path=${mdiOpenInNew}
                     ></ha-svg-icon>
-                  </mwc-button>
-                </a>`
-              : ""}
-          </div>
-          ${!this.manifest
-            ? ""
-            : html`
-                <ha-button-menu corner="BOTTOM_START">
-                  <mwc-icon-button
-                    .title=${this.hass.localize("ui.common.menu")}
-                    .label=${this.hass.localize("ui.common.overflow_menu")}
-                    slot="trigger"
-                  >
-                    <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-                  </mwc-icon-button>
-                  <mwc-list-item @request-selected="${this._editEntryName}">
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.rename"
-                    )}
                   </mwc-list-item>
-                  <mwc-list-item
-                    @request-selected="${this._handleSystemOptions}"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.system_options"
-                    )}
-                  </mwc-list-item>
-
-                  <a
-                    href=${this.manifest.documentation}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    <mwc-list-item hasMeta>
+                </a>
+                ${!item.disabled_by &&
+                item.state === "loaded" &&
+                item.supports_unload &&
+                item.source !== "system"
+                  ? html`<mwc-list-item
+                      @request-selected="${this._handleReload}"
+                    >
                       ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.documentation"
-                      )}<ha-svg-icon
-                        slot="meta"
-                        .path=${mdiOpenInNew}
-                      ></ha-svg-icon>
-                    </mwc-list-item>
-                  </a>
-                  ${!item.disabled_by &&
-                  item.state === "loaded" &&
-                  item.supports_unload &&
-                  item.source !== "system"
-                    ? html`<mwc-list-item
-                        @request-selected="${this._handleReload}"
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.reload"
-                        )}
-                      </mwc-list-item>`
-                    : ""}
-                  ${item.disabled_by === "user"
-                    ? html`<mwc-list-item
-                        @request-selected="${this._handleEnable}"
-                      >
-                        ${this.hass.localize("ui.common.enable")}
-                      </mwc-list-item>`
-                    : item.source !== "system"
-                    ? html`<mwc-list-item
-                        class="warning"
-                        @request-selected="${this._handleDisable}"
-                      >
-                        ${this.hass.localize("ui.common.disable")}
-                      </mwc-list-item>`
-                    : ""}
-                  ${item.source !== "system"
-                    ? html`<mwc-list-item
-                        class="warning"
-                        @request-selected="${this._handleDelete}"
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.delete"
-                        )}
-                      </mwc-list-item>`
-                    : ""}
-                </ha-button-menu>
-              `}
-        </div>
-      </ha-card>
+                        "ui.panel.config.integrations.config_entry.reload"
+                      )}
+                    </mwc-list-item>`
+                  : ""}
+                ${item.disabled_by === "user"
+                  ? html`<mwc-list-item
+                      @request-selected="${this._handleEnable}"
+                    >
+                      ${this.hass.localize("ui.common.enable")}
+                    </mwc-list-item>`
+                  : item.source !== "system"
+                  ? html`<mwc-list-item
+                      class="warning"
+                      @request-selected="${this._handleDisable}"
+                    >
+                      ${this.hass.localize("ui.common.disable")}
+                    </mwc-list-item>`
+                  : ""}
+                ${item.source !== "system"
+                  ? html`<mwc-list-item
+                      class="warning"
+                      @request-selected="${this._handleDelete}"
+                    >
+                      ${this.hass.localize(
+                        "ui.panel.config.integrations.config_entry.delete"
+                      )}
+                    </mwc-list-item>`
+                  : ""}
+              </ha-button-menu>
+            `}
+      </div>
     `;
   }
 
-  private _renderIcons() {
-    const icons: [string, string][] = [];
-
-    if (!this.manifest) {
-      return "";
-    }
-
-    if (!this.manifest.is_built_in) {
-      icons.push([
-        mdiPackageVariant,
-        this.hass.localize(
-          "ui.panel.config.integrations.config_entry.provided_by_custom_component"
-        ),
-      ]);
-    }
-
-    if (this.manifest.iot_class.startsWith("cloud_")) {
-      icons.push([
-        mdiCloud,
-        this.hass.localize(
-          "ui.panel.config.integrations.config_entry.depends_on_cloud"
-        ),
-      ]);
-    }
-
-    return icons.length === 0
-      ? ""
-      : html`
-          <div class="icons">
-            ${icons.map(
-              ([icon, description]) => html`
-                <span>
-                  <ha-svg-icon .path=${icon}></ha-svg-icon>
-                  <paper-tooltip animation-delay="0"
-                    >${description}</paper-tooltip
-                  >
-                </span>
-              `
-            )}
-          </div>
-        `;
+  private get _selectededConfigEntry(): ConfigEntryExtended | undefined {
+    return this.items.length === 1
+      ? this.items[0]
+      : this.selectedConfigEntryId
+      ? this.items.find(
+          (entry) => entry.entry_id === this.selectedConfigEntryId
+        )
+      : undefined;
   }
 
   private _selectConfigEntry(ev: Event) {
@@ -668,107 +662,116 @@ export class HaIntegrationCard extends LitElement {
           display: flex;
           flex-direction: column;
           height: 100%;
-          --ha-card-border-color: var(--integration-bg-color);
-        }
-        ha-card.single {
-          justify-content: space-between;
-        }
-        :host(.highlight) ha-card {
-          border: 1px solid var(--accent-color);
-        }
-        .state-not-loaded {
-          --integration-color: var(--primary-text-color);
-          --integration-bg-color: var(--disabled-text-color);
+          --state-color: var(--divider-color, #e0e0e0);
+          --ha-card-border-color: var(--state-color);
+          --state-message-color: var(--state-color);
         }
         .state-error {
-          --integration-color: var(--text-primary-color);
-          --integration-bg-color: var(--error-color);
+          --state-color: var(--error-color);
+          --text-on-state-color: var(--text-primary-color);
         }
-        .header {
+        .state-not-loaded {
+          --state-message-color: var(--primary-text-color);
+        }
+        :host(.highlight) ha-card {
+          --state-color: var(--accent-color);
+          --text-on-state-color: var(--text-primary-color);
+        }
+        ha-card.group {
+          max-height: 200px;
+        }
+
+        .banner {
+          background-color: var(--state-color);
+          text-align: center;
           padding: 8px;
-          text-align: center;
-          background: var(--integration-bg-color);
-          color: var(--integration-color);
         }
-        .header a {
-          color: var(--integration-color);
+        .back-btn {
+          background-color: var(--state-color);
+          color: var(--text-on-state-color);
+          --mdc-icon-button-size: 32px;
+          transition: height 0.1s;
+          overflow: hidden;
         }
-        .card-content {
-          padding: 16px;
-          text-align: center;
+        .hasMultiple.single .back-btn {
+          height: 32px;
+        }
+        .hasMultiple.group .back-btn {
+          height: 0px;
+        }
+
+        .header {
+          display: flex;
           position: relative;
-          margin-top: 0px;
+          align-items: center;
+          padding: 16px 8px 8px 16px;
+        }
+        .group.disabled .header {
+          padding-top: 8px;
+        }
+        .header img {
+          margin-right: 16px;
+          width: 40px;
+          height: 40px;
+        }
+        .header .info div,
+        paper-item-body {
+          word-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .primary {
+          font-size: 16px;
+          font-weight: 400;
+          color: var(--primary-text-color);
+        }
+        .secondary {
+          font-size: 14px;
+          color: var(--secondary-text-color);
         }
         .icons {
           position: absolute;
-          top: 2px;
-          right: 4px;
-          color: var(--secondary-text-color);
+          top: 0px;
+          right: 16px;
+          color: var(--text-on-state-color, var(--secondary-text-color));
+          background-color: var(--state-color, #e0e0e0);
+          border-bottom-left-radius: 4px;
+          border-bottom-right-radius: 4px;
+          padding: 1px 4px 2px;
         }
         .icons ha-svg-icon {
           width: 20px;
           height: 20px;
         }
-        ha-card {
-          position: relative;
+
+        .message {
+          font-weight: bold;
+          padding-bottom: 16px;
+          color: var(--state-message-color);
         }
-        ha-card.integration .card-content {
+
+        .content {
+          flex: 1;
+          padding: 0px 16px 16px 72px;
+        }
+        ha-card.single .content {
           padding-bottom: 3px;
         }
+
         .card-actions {
           border-top: none;
           display: flex;
           justify-content: space-between;
           align-items: center;
           padding-right: 5px;
+          padding-bottom: 0;
           height: 48px;
-        }
-        .group-header {
-          position: relative;
-          display: flex;
-          align-items: center;
-          height: 40px;
-          padding: 16px 16px 8px 16px;
-          justify-content: center;
-        }
-        .group-header h1 {
-          margin: 0;
-        }
-        .group-header img {
-          margin-right: 8px;
-        }
-        .image {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 60px;
-          margin-bottom: 16px;
-          vertical-align: middle;
-        }
-        img {
-          max-height: 100%;
-          max-width: 90%;
-        }
-        .none-found {
-          margin: auto;
-          text-align: center;
         }
         a {
           color: var(--primary-color);
-        }
-        h1 {
-          margin-bottom: 0;
-        }
-        h2 {
-          min-height: 24px;
-        }
-        h3 {
-          word-wrap: break-word;
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 3;
-          overflow: hidden;
-          text-overflow: ellipsis;
         }
         ha-button-menu {
           color: var(--secondary-text-color);
@@ -776,11 +779,7 @@ export class HaIntegrationCard extends LitElement {
         }
         @media (min-width: 563px) {
           paper-listbox {
-            position: absolute;
-            top: 64px;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            flex: 1;
             overflow: auto;
           }
         }
@@ -790,12 +789,6 @@ export class HaIntegrationCard extends LitElement {
         }
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);
-        }
-        .back-btn {
-          position: absolute;
-          background: rgba(var(--rgb-card-background-color), 0.6);
-          border-radius: 50%;
-          z-index: 1;
         }
         paper-tooltip {
           white-space: nowrap;

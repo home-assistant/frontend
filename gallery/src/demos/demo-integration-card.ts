@@ -18,6 +18,7 @@ import "../../../src/panels/config/integrations/ha-config-integrations";
 import type { ConfigEntryExtended } from "../../../src/panels/config/integrations/ha-config-integrations";
 import { DeviceRegistryEntry } from "../../../src/data/device_registry";
 import { EntityRegistryEntry } from "../../../src/data/entity_registry";
+import { classMap } from "lit-html/directives/class-map";
 
 const createConfigEntry = (
   title: string,
@@ -48,28 +49,32 @@ const createManifest = (
   iot_class: isCloud ? "cloud_polling" : "local_polling",
 });
 
-const loadedEntry = createConfigEntry("loaded");
-const configPanelEntry = createConfigEntry("config panel", {
+const loadedEntry = createConfigEntry("Loaded");
+const nameAsDomainEntry = createConfigEntry("ESPHome");
+const longNameEntry = createConfigEntry(
+  "Entry with a super long name that is going to the next line"
+);
+const configPanelEntry = createConfigEntry("Config Panel", {
   domain: "mqtt",
   localized_domain_name: "MQTT",
 });
-const optionsFlowEntry = createConfigEntry("options flow", {
+const optionsFlowEntry = createConfigEntry("Options Flow", {
   supports_options: true,
 });
-const setupErrorEntry = createConfigEntry("setup-error", {
+const setupErrorEntry = createConfigEntry("Setup Error", {
   state: "setup_error",
 });
-const migrationErrorEntry = createConfigEntry("migration-error", {
+const migrationErrorEntry = createConfigEntry("Migration Error", {
   state: "migration_error",
 });
-const setupRetryEntry = createConfigEntry("setup_retry", {
+const setupRetryEntry = createConfigEntry("Setup Retry", {
   state: "setup_retry",
 });
-const failedUnloadEntry = createConfigEntry("failed_unload", {
+const failedUnloadEntry = createConfigEntry("Failed Unload", {
   state: "failed_unload",
 });
-const notLoadedEntry = createConfigEntry("not_loaded", { state: "not_loaded" });
-const disabledEntry = createConfigEntry("disabled", {
+const notLoadedEntry = createConfigEntry("Not Loaded", { state: "not_loaded" });
+const disabledEntry = createConfigEntry("Disabled", {
   state: "not_loaded",
   disabled_by: "user",
 });
@@ -77,10 +82,14 @@ const disabledEntry = createConfigEntry("disabled", {
 const infos: Array<{
   items: ConfigEntryExtended[];
   is_custom?: boolean;
+  disabled?: boolean;
+  highlight?: string;
 }> = [
   { items: [loadedEntry] },
   { items: [configPanelEntry] },
   { items: [optionsFlowEntry] },
+  { items: [nameAsDomainEntry] },
+  { items: [longNameEntry] },
   { items: [setupErrorEntry] },
   { items: [migrationErrorEntry] },
   { items: [setupRetryEntry] },
@@ -90,15 +99,31 @@ const infos: Array<{
   {
     items: [
       loadedEntry,
+      longNameEntry,
       setupErrorEntry,
       migrationErrorEntry,
       setupRetryEntry,
       failedUnloadEntry,
       notLoadedEntry,
       disabledEntry,
+      nameAsDomainEntry,
       configPanelEntry,
       optionsFlowEntry,
     ],
+  },
+  {
+    disabled: true,
+    items: [
+      disabledEntry,
+      loadedEntry,
+      configPanelEntry,
+      optionsFlowEntry,
+      notLoadedEntry,
+    ],
+  },
+  {
+    items: [loadedEntry, configPanelEntry],
+    highlight: "Loaded",
   },
 ];
 
@@ -162,12 +187,17 @@ export class DemoIntegrationCard extends LitElement {
       ${infos.map(
         (info) => html`
           <ha-integration-card
+            class=${classMap({
+              highlight: info.highlight !== undefined,
+            })}
             .hass=${this.hass}
             domain="esphome"
             .items=${info.items}
             .manifest=${createManifest(this.isCustomIntegration, this.isCloud)}
             .entityRegistryEntries=${createEntityRegistryEntries(info.items[0])}
             .deviceRegistryEntries=${createDeviceRegistryEntries(info.items[0])}
+            ?disabled=${info.disabled}
+            .selectedConfigEntryId=${info.highlight}
           ></ha-integration-card>
         `
       )}
