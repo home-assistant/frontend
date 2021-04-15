@@ -3279,7 +3279,7 @@
                         "unsaved_changes": "Osparade ändringar"
                     },
                     "save_config": {
-                        "cancel": "Glöm det",
+                        "cancel": "Avbryt",
                         "close": "Stäng",
                         "empty_config": "Börja med en tom instrumentpanel",
                         "header": "Ta kontroll över Lovelace UI",

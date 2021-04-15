@@ -2216,7 +2216,7 @@
                     "configure": "Configurar",
                     "configured": "Configurado",
                     "confirm_new": "¿Quieres configurar {integration}?",
-                    "description": "Gestiona integraciones con servicios, dispositivos, ...",
+                    "description": "Gestiona integraciones con servicios o dispositivos.",
                     "details": "Detalles de la integración",
                     "disable": {
                         "disabled_integrations": "{number} deshabilitadas",
@@ -2255,8 +2255,10 @@
                 "logs": {
                     "caption": "Registros",
                     "clear": "Limpiar",
+                    "custom_integration": "integración personalizada",
                     "description": "Ve los registros de Home Assistant",
                     "details": "Detalles de registro ({level})",
+                    "error_from_custom_integration": "Este error se originó a partir de una integración personalizada.",
                     "level": {
                         "critical": "CRÍTICO",
                         "debug": "DEPURACIÓN",
@@ -3528,7 +3530,7 @@
                         "unsaved_changes": "Cambios no guardados"
                     },
                     "save_config": {
-                        "cancel": "Mejor no",
+                        "cancel": "No importa",
                         "close": "Cerrar",
                         "empty_config": "Empezar con un panel de control vacío",
                         "header": "Tomar el control de la interfaz de usuario Lovelace",

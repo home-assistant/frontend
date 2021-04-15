@@ -923,7 +923,7 @@
             },
             "entity_registry": {
                 "control": "Juhtimine",
-                "customize_link": "olemite kohandused",
+                "customize_link": "olemite kohandamised",
                 "dismiss": "Loobu",
                 "editor": {
                     "advanced": "Täpsemad sätted",
@@ -1936,7 +1936,7 @@
                     "picker": {
                         "documentation": "Kohandamiste dokumentatsioon",
                         "header": "Kohandamine",
-                        "introduction": "Kohanda olemi atribuute. Lisatud või muudetud kohandused rakenduvad kohe. Eemaldatud kohandused rakenduvad olemi värskendamisel."
+                        "introduction": "Kohanda olemi atribuute. Lisatud või muudetud kohandamised rakenduvad kohe. Eemaldatud kohandamised rakenduvad olemi värskendamisel."
                     },
                     "warning": {
                         "include_link": "kaasa customize.yaml",
@@ -2255,8 +2255,10 @@
                 "logs": {
                     "caption": "Logid",
                     "clear": "Puhasta",
+                    "custom_integration": "kohandatud sidumine",
                     "description": "Home Assistanti logid",
                     "details": "Logi üksikasjad ({level})",
+                    "error_from_custom_integration": "Selle tõrke põhjustas kohandatud sidumine.",
                     "level": {
                         "critical": "OLULINE",
                         "debug": "SILUMINE",

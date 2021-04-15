@@ -2216,7 +2216,7 @@
                     "configure": "Konfigurer",
                     "configured": "Konfigurert",
                     "confirm_new": "Vil du sette opp {integration}?",
-                    "description": "Administrer integrasjoner med tjenester, enheter, ...",
+                    "description": "Administrer integrasjoner med tjenester eller enheter",
                     "details": "Integrasjonsdetaljer",
                     "disable": {
                         "disabled_integrations": "{number} deaktivert",

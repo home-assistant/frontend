@@ -473,7 +473,7 @@
                 "unhealthy_title": "系统状态不佳",
                 "unsupported_description": "以下是系统存在的问题的列表，请点击链接以了解如何解决问题。",
                 "unsupported_reason": {
-                    "apparmor": "主机上未启用AppArmor",
+                    "apparmor": "未在主机上启用 AppArmor",
                     "container": "已知会导致问题的容器",
                     "content-trust": "内容信任验证已禁用",
                     "dbus": "DBUS",
@@ -1219,7 +1219,7 @@
                 "ask": "寻求帮助",
                 "observer": "检查 Observer",
                 "reboot": "请尝试重启主机",
-                "system_health": "检查系统健康状况",
+                "system_health": "检查系统状态",
                 "title": "无法加载 Supervisor 面板！",
                 "wait": "如果系统刚刚启动，请确保已等候足够的时间以便 Supervisor 启动完成。"
             }
