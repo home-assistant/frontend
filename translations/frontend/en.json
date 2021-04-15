@@ -2255,8 +2255,10 @@
                 "logs": {
                     "caption": "Logs",
                     "clear": "Clear",
+                    "custom_integration": "custom integration",
                     "description": "View the Home Assistant logs",
                     "details": "Log Details ({level})",
+                    "error_from_custom_integration": "This error originated from a custom integration.",
                     "level": {
                         "critical": "CRITICAL",
                         "debug": "DEBUG",

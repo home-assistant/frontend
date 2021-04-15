@@ -240,7 +240,7 @@
                     "title": "Waarschuwing: Beschermingsmodus is uitgeschakeld!"
                 },
                 "ram_usage": "Add-on RAM-gebruik",
-                "rebuild": "Herbouw",
+                "rebuild": "herbouw",
                 "restart": "herstart",
                 "start": "start",
                 "stop": "stop",
@@ -1123,7 +1123,7 @@
                         "input_number": "Input numbers",
                         "input_select": "Input selects",
                         "input_text": "Input texts",
-                        "min_max": "Laad min/max entiteiten opnieuw",
+                        "min_max": "Min/max entiteiten",
                         "mqtt": "Handmatig geconfigureerde MQTT-entiteiten",
                         "person": "Personen",
                         "ping": "Ping binaire sensor entiteiten",
@@ -2216,7 +2216,7 @@
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
                     "confirm_new": "Wil je {integration} instellen?",
-                    "description": "Beheer integraties met services, apparaten, ...",
+                    "description": "Beheer integraties met services of apparaten",
                     "details": "Integratiedetails",
                     "disable": {
                         "disabled_integrations": "{number} uitgeschakeld",

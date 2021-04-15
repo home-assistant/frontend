@@ -119,8 +119,34 @@
             }
         },
         "dialog": {
+            "network": {
+                "connected_to": "מחובר אל {ssid}",
+                "dhcp": "DHCP",
+                "disabled": "מושבת",
+                "dns_servers": "שרתי DNS",
+                "failed_to_change": "שינוי הגדרות הרשת נכשל",
+                "gateway": "כתובת Gateway",
+                "ip_netmask": "כתובת IP/Netmask",
+                "open": "פתוח",
+                "scan_ap": "חפש נקודות גישה",
+                "static": "סטטי",
+                "title": "הגדרות רשת",
+                "unsaved": "יש לך שינויים שלא נשמרו ויאבדו אם תעבור כרטיסיות, האם אתה רוצה להמשיך?",
+                "warning": "אם אתה משנה את כתובות ה- Wi-Fi, ה- IP או ה Gateway, אתה עלול לאבד את החיבור!",
+                "wep": "WEP",
+                "wpa": "wpa-psk"
+            },
             "registries": {
+                "add_new_registry": "הוסף מאגר חדש",
+                "add_registry": "הוסף מאגר",
+                "failed_to_add": "הוספת המאגר נכשלה",
+                "failed_to_remove": "הסרת המאגר נכשלה",
+                "no_registries": "לא הוגדרו מאגרים",
                 "password": "סיסמה",
+                "registry": "מאגר",
+                "remove": "הסר",
+                "title_add": "הוסף מאגר Container",
+                "title_manage": "ניהול מאגרי Container",
                 "username": "שם משתמש"
             },
             "repositories": {
@@ -141,6 +167,36 @@
         },
         "my": {
             "error_addon_not_found": "התוסף לא נמצא"
+        },
+        "snapshot": {
+            "folder": {
+                "addons/local": "תוספות מקומיות",
+                "media": "תוכן",
+                "share": "שיתוף",
+                "ssl": "SSL"
+            }
+        },
+        "system": {
+            "supervisor": {
+                "beta_backup": "ודא שיש לך גיבויים של הנתונים לפני הפעלת תכונה זו.",
+                "beta_join_confirm": "האם אתה רוצה להצטרף לערוץ הבטא?",
+                "beta_release_items": "זה כולל גרסאות בטא עבור:",
+                "beta_warning": "גרסאות בטא מיועדות לבודקים ומאמצים מוקדמים ויכולות להכיל שינויי קוד לא יציבים",
+                "reload_supervisor": "טען מחדש את ה Supervisor",
+                "share_diagonstics_description": "האם ברצונך לשתף באופן אוטומטי דוחות קריסה ומידע אבחון כאשר ה Supervisor נתקל בשגיאות בלתי צפויות? {line_break} זה יאפשר לנו לתקן את הבעיות, המידע נגיש רק לצוות הליבה של Home Assistant ולא ישותף עם אחרים. {line_break} הנתונים אינם כוללים מידע פרטי/רגיש ובאפשרותך להפוך מידע זה ללא זמין בהגדרות בכל עת שתרצה.",
+                "share_diagonstics_title": "עזור לשפר את Home Assistant",
+                "unhealthy_reason": {
+                    "untrusted": "זוהה תוכן לא מהימן"
+                },
+                "unsupported_reason": {
+                    "apparmor": "AppArmor אינו זמין במחשב המארח",
+                    "container": "ה Container ידוע כבעייתי",
+                    "content-trust": "אימות אמון תוכן מושבת",
+                    "dbus": "DBUS",
+                    "docker_configuration": "תצורת Docker"
+                },
+                "warning": "אזהרה"
+            }
         }
     },
     "ui": {
@@ -398,7 +454,8 @@
                     "was_unlocked": "לא היה נעול",
                     "was_unplugged": "היה מנותק",
                     "was_unsafe": "היה לא בטוח"
-                }
+                },
+                "show_trace": "הצג מעקב"
             },
             "media-browser": {
                 "class": {
@@ -415,8 +472,10 @@
             "related-filter-menu": {
                 "filter_by_area": "סנן לפי אזור",
                 "filter_by_device": "סנן לפי מכשיר",
+                "filter_by_entity": "סנן לפי ישות",
                 "filtered_by_area": "אזור: {area_name}",
-                "filtered_by_device": "מכשיר: {device_name}"
+                "filtered_by_device": "מכשיר: {device_name}",
+                "filtered_by_entity": "ישות: {entity_name}"
             },
             "related-items": {
                 "area": "אֵזוֹר",
@@ -642,6 +701,7 @@
                 "buttons": {
                     "add": "הוסף מכשירים",
                     "clusters": "ניהול אשכולות",
+                    "device_children": "צפה בילדים",
                     "reconfigure": "הגדר מחדש את המכשיר",
                     "remove": "הסר מכשיר",
                     "zigbee_information": "מידע על Zigbee"
@@ -649,6 +709,7 @@
                 "confirmations": {
                     "remove": "האם אתה בטוח שברצונך למחוק מכשיר זה?"
                 },
+                "device_children": "ילדי מכשיר זיגבי",
                 "device_signature": "חתימת התקן Zigbee",
                 "last_seen": "נראה לאחרונה",
                 "manuf": "לפי {manufacturer}",
@@ -665,6 +726,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "שנה שם התקן"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "מגדיר תצורה מחדש של המכשיר"
             }
         },
         "duration": {
@@ -676,7 +740,16 @@
         },
         "errors": {
             "config": {
-                "key_wrong_type": "הערך שסופק עבור \"{key}\" אינו נתמך על-ידי העורך החזותי. אנו תומכים ({type_correct}) אך קיבלנו ({type_wrong})."
+                "key_wrong_type": "הערך שסופק עבור \"{key}\" אינו נתמך על-ידי העורך החזותי. אנו תומכים ({type_correct}) אך קיבלנו ({type_wrong}).",
+                "no_template_editor_support": "תבניות אינן נתמכות בעורך החזותי"
+            },
+            "supervisor": {
+                "ask": "בקש עזרה",
+                "observer": "בדוק את המשקיף",
+                "reboot": "נסה אתחול מחדש של המחשב המארח",
+                "system_health": "בדוק את בריאות המערכת",
+                "title": "לא היתה אפשרות לטעון את לוח ה Supervisor!",
+                "wait": "אם רק התחלת, ודא שנתת ל Supervisor מספיק זמן להתחיל."
             }
         },
         "login-form": {
@@ -693,10 +766,12 @@
         "notification_toast": {
             "connection_lost": "החיבור אבד. מתחבר מחדש...",
             "dismiss": "בטל",
+            "intergration_starting": "מפעיל את {integration} , לא הכל יהיה זמין עד לסיום.",
             "service_call_failed": "נכשלה הקריאה לשירות {service} .",
             "started": "Home Assistant עלה!",
             "starting": "Home Assistant בעלייה, ייתכן שלא הכל יהיה זמין עד שהעליה תסתיים",
-            "triggered": "הופעל {שם}"
+            "triggered": "הופעל {שם}",
+            "wrapping_up_startup": "סיום העליה, לא הכל יהיה זמין עד לסיום."
         },
         "panel": {
             "config": {
@@ -768,7 +843,12 @@
                                 "device_id": {
                                     "action": "פעולה",
                                     "extra_fields": {
-                                        "code": "קוד"
+                                        "brightness_pct": "בהירות",
+                                        "code": "קוד",
+                                        "flash": "הבהוב",
+                                        "humidity": "לחות",
+                                        "mode": "מצב",
+                                        "value": "ערך"
                                     },
                                     "label": "מכשיר"
                                 },
@@ -829,7 +909,9 @@
                                     "extra_fields": {
                                         "above": "מעל",
                                         "below": "מתחת",
-                                        "for": "משך הזמן"
+                                        "for": "משך הזמן",
+                                        "hvac_mode": "מצב HVAC",
+                                        "preset_mode": "מצב מוגדר מראש"
                                     },
                                     "label": "מכשיר"
                                 },
@@ -912,6 +994,7 @@
                         "move_down": "הזז למטה",
                         "move_up": "הזז למעלה",
                         "save": "שמור",
+                        "show_trace": "הצג מעקב",
                         "triggers": {
                             "add": "הוספת טריגר",
                             "delete": "מחק",
@@ -1014,6 +1097,8 @@
                         "add_automation": "הוסף אוטומציה",
                         "delete_automation": "מחק אוטומציה",
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אוטומציה זו?",
+                        "dev_automation": "דבג אוטומציה",
+                        "dev_only_editable": "רק אוטומציות שהוקצה להן מזהה ייחודי ניתנות לדיבוג.",
                         "edit_automation": "ערוך אוטומציה",
                         "header": "עורך אוטומציה",
                         "headers": {
@@ -1062,6 +1147,8 @@
                             "file_name": "שם קובץ"
                         },
                         "learn_more": "למד עוד אודות שימוש בשרטוטים",
+                        "share_blueprint": "שתף שרטוט",
+                        "share_blueprint_no_url": "אין אפשרות לשתף שרטוט: אין כתובת URL",
                         "use_blueprint": "צור אוטומציה"
                     }
                 },
@@ -1244,7 +1331,34 @@
                     "section": {
                         "core": {
                             "analytics": {
-                                "learn_more": "למד עוד על אופן עיבוד הנתונים שלך."
+                                "documentation": "לפני שתאפשר זאת וודא שאתה מבקר בדף תיעוד המידע {link} כדי להבין מה אתה שולח ואיך זה נשמר.",
+                                "header": "ניתוח",
+                                "instance_id": "מזהה מופע: {huuid}",
+                                "introduction": "שתף את פרטי ההתקנה שלך כדי לעזור לשפר את Home Assistant ולעזור לנו לשכנע יצרנים להוסיף שליטה מקומית ותכונות ממוקדות לפרטיות.",
+                                "learn_more": "למד עוד על אופן עיבוד הנתונים שלך.",
+                                "needs_base": "עליך לאפשר ניתוח בסיס כדי שאפשרות זו תהיה זמינה",
+                                "preference": {
+                                    "base": {
+                                        "description": "מזהה מופע, גרסה וסוג התקנה.",
+                                        "title": "ניתוח בסיסי"
+                                    },
+                                    "diagnostics": {
+                                        "description": "שתף דוחות קריסה כאשר מתרחשות שגיאות בלתי צפויות.",
+                                        "title": "אבחון"
+                                    },
+                                    "statistics": {
+                                        "description": "סה\"כ ישויות בשימוש, משתמשים ואלמנטים אחרים.",
+                                        "title": "סטטיסטיקות שימוש"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "שמות, גרסאות ויכולות.",
+                                        "title": "שילובים ותוספות שבשימוש"
+                                    },
+                                    "usage": {
+                                        "description": "מידע אודות שמות וגרסאות",
+                                        "title": "אינטגרציות שבשימוש"
+                                    }
+                                }
                             },
                             "core_config": {
                                 "edit_requires_storage": "העורך מושבת משום שהתצורה מאוחסנת ב- configuration.yaml.",
@@ -2019,6 +2133,7 @@
                         "caption": "רשת"
                     },
                     "visualization": {
+                        "auto_zoom": "זום אוטומטי",
                         "caption": "ויזואליזציה",
                         "header": "הדמית רשת",
                         "highlight_label": "הדגש התקנים",
@@ -2063,6 +2178,17 @@
                         "dump_not_ready_text": "אם אתה יוצר ייצוא בזמן שלא כל הצמתים מוכנים, אתה עלול לפספס את הנתונים הדרושים. תן לרשת שלך זמן לשאילת כל הצמתים. האם אתה רוצה להמשיך?",
                         "dump_not_ready_title": "עדיין לא כל הצמתים מוכנים",
                         "nodes_ready": "צמתים מוכנים"
+                    },
+                    "device_info": {
+                        "device_config": "הגדר את המכשיר"
+                    },
+                    "node_config": {
+                        "attribution": "פרמטרים ותיאורי תצורת המכשיר מסופקים על ידי {device_database}",
+                        "battery_device_notice": "התקני סוללה חייבים להיות ערים כדי לעדכן את תצורתם. נא עיין במדריך למשתמש לקבלת הוראות כיצד להעיר את ההתקן.",
+                        "header": "תצורת מכשיר Z-Wave",
+                        "introduction": "נהל והתאם פרמטרי תצורה ספציפיים למכשיר (צומת) עבור ההתקן שנבחר",
+                        "parameter_is_read_only": "פרמטר זה מוגדר לקריאה בלבד.",
+                        "zwave_js_device_database": "מאגר התקני Z-Wave JS"
                     }
                 },
                 "zwave": {
@@ -2212,6 +2338,17 @@
                         "title": "תבניות",
                         "unknown_error_template": "Unknown error rendering template"
                     }
+                }
+            },
+            "error": {
+                "go_back": "חזור",
+                "supervisor": {
+                    "ask": "בקש עזרה",
+                    "observer": "בדוק את הצופה",
+                    "reboot": "נסה אתחול מחדש של המחשב המארח",
+                    "system_health": "בדוק את בריאות המערכת",
+                    "title": "לא היתה אפשרות לטעון את לוח ה Supervisor!",
+                    "wait": "אם רק התחלת, ודא שנתת ל Supervisor מספיק זמן להתחיל."
                 }
             },
             "history": {
@@ -2897,6 +3034,15 @@
                     "disable": "השבת",
                     "enable": "הפעל",
                     "header": "מודלי אימות מרובה גורמים"
+                },
+                "number_format": {
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "none": "לא נבחר",
+                        "space_comma": "1 234 567,89",
+                        "system": "השתמש ב System Locale"
+                    }
                 },
                 "push_notifications": {
                     "add_device_prompt": {
