@@ -270,6 +270,7 @@ export class DialogAddUser extends LitElement {
       css`
         ha-dialog {
           --mdc-dialog-max-width: 500px;
+          --dialog-z-index: 10;
         }
         ha-switch {
           margin-top: 8px;
