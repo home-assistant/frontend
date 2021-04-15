@@ -273,9 +273,9 @@ class HassioSupervisorInfo extends LitElement {
           <li>Home Assistant Supervisor</li>
           <li>Home Assistant Operating System</li>
           <br />
-          ${this.supervisor.localize("system.supervisor.join_beta_action")}`,
+          ${this.supervisor.localize("system.supervisor.beta_join_confirm")}`,
         confirmText: this.supervisor.localize(
-          "system.supervisor.beta_join_confirm"
+          "system.supervisor.join_beta_action"
         ),
         dismissText: this.supervisor.localize("common.cancel"),
       });
