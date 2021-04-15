@@ -629,7 +629,12 @@ export class HaSceneEditor extends SubscribeMixin(
     if ((this._config![name] || "") === newVal) {
       return;
     }
-    this._config = { ...this._config!, [name]: newVal };
+    if (!newVal) {
+      delete this._config![name];
+      this._config = { ...this._config! };
+    } else {
+      this._config = { ...this._config!, [name]: newVal };
+    }
     this._dirty = true;
   }
 
