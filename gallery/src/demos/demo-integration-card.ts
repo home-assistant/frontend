@@ -49,7 +49,10 @@ const createManifest = (
 });
 
 const loadedEntry = createConfigEntry("loaded");
-const configPanelEntry = createConfigEntry("config panel", { domain: "mqtt" });
+const configPanelEntry = createConfigEntry("config panel", {
+  domain: "mqtt",
+  localized_domain_name: "MQTT",
+});
 const optionsFlowEntry = createConfigEntry("options flow", {
   supports_options: true,
 });

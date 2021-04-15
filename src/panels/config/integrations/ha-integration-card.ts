@@ -215,11 +215,12 @@ export class HaIntegrationCard extends LitElement {
               <div class="header">
                 ${this.hass.localize(...header)}${!headerLinkLogs
                   ? ""
-                  : html`<a href="/config/logs"
-                      >${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.check_the_logs"
-                      )}</a
-                    >`}
+                  : html`.
+                      <a href="/config/logs"
+                        >${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.check_the_logs"
+                        )}</a
+                      >`}
               </div>
             `
           : ""}
@@ -291,8 +292,7 @@ export class HaIntegrationCard extends LitElement {
               ? html`<mwc-button unelevated @click=${this._handleEnable}>
                   ${this.hass.localize("ui.common.enable")}
                 </mwc-button>`
-              : ""}
-            ${item.domain in integrationsWithPanel
+              : item.domain in integrationsWithPanel
               ? html`<a
                   href=${`${
                     integrationsWithPanel[item.domain].path
