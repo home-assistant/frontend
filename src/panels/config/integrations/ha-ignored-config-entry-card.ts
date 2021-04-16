@@ -80,7 +80,6 @@ export class HaIgnoredConfigEntryCard extends LitElement {
   static styles = css`
     :host {
       --state-color: var(--divider-color, #e0e0e0);
-      --text-on-state-color: var(--primary-text-color);
     }
 
     mwc-button {

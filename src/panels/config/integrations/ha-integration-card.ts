@@ -199,7 +199,7 @@ export class HaIntegrationCard extends LitElement {
     const entities = this._getEntities(item);
 
     let stateText: [string, ...unknown[]] | undefined;
-    let stateTextLinkLogs = false;
+    let stateTextExtra: TemplateResult | string | undefined;
 
     if (item.disabled_by) {
       stateText = [
@@ -209,13 +209,26 @@ export class HaIntegrationCard extends LitElement {
           `ui.panel.config.integrations.config_entry.disable.disabled_by.${item.disabled_by}`
         ) || item.disabled_by,
       ];
+      if (item.state === "failed_unload") {
+        stateTextExtra = html`.
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.disable_restart_confirm"
+        )}.`;
+      }
     } else if (item.state === "not_loaded") {
       stateText = ["ui.panel.config.integrations.config_entry.not_loaded"];
     } else if (ERROR_STATES.includes(item.state)) {
       stateText = [
         `ui.panel.config.integrations.config_entry.state.${item.state}`,
       ];
-      stateTextLinkLogs = true;
+      stateTextExtra = html`
+        <br />
+        <a href="/config/logs"
+          >${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.check_the_logs"
+          )}</a
+        >
+      `;
     }
 
     return html`
@@ -223,16 +236,7 @@ export class HaIntegrationCard extends LitElement {
         ${stateText
           ? html`
               <div class="message">
-                ${this.hass.localize(...stateText)}${!stateTextLinkLogs
-                  ? ""
-                  : html`
-                      <br />
-                      <a href="/config/logs"
-                        >${this.hass.localize(
-                          "ui.panel.config.integrations.config_entry.check_the_logs"
-                        )}</a
-                      >
-                    `}
+                ${this.hass.localize(...stateText)}${stateTextExtra}
               </div>
             `
           : ""}

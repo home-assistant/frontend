@@ -99,7 +99,7 @@ export class HaIntegrationActionCard extends LitElement {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 8px 16px 0 8px;
+          padding: 8px 6px 0;
           height: 48px;
         }
       `,

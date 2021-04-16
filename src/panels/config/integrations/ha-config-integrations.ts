@@ -54,7 +54,6 @@ import type { HaIntegrationCard } from "./ha-integration-card";
 
 import "../../../common/search/search-input";
 import "../../../components/ha-button-menu";
-import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-svg-icon";
@@ -416,27 +415,28 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     .deviceRegistryEntries=${this._deviceRegistryEntries}
                   ></ha-integration-card>`
               )
-            : !this._configEntries.length
+            : // If we're showing 0 cards, show empty state text
+            (!this._showIgnored || ignoredConfigEntries.length === 0) &&
+              (!this._showDisabled || disabledConfigEntries.size === 0) &&
+              groupedConfigEntries.size === 0
             ? html`
-                <ha-card outlined>
-                  <div class="card-content">
-                    <h1>
-                      ${this.hass.localize("ui.panel.config.integrations.none")}
-                    </h1>
-                    <p>
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.no_integrations"
-                      )}
-                    </p>
-                    <mwc-button
-                      @click=${this._createFlow}
-                      unelevated
-                      .label=${this.hass.localize(
-                        "ui.panel.config.integrations.add_integration"
-                      )}
-                    ></mwc-button>
-                  </div>
-                </ha-card>
+                <div class="empty-message">
+                  <h1>
+                    ${this.hass.localize("ui.panel.config.integrations.none")}
+                  </h1>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.no_integrations"
+                    )}
+                  </p>
+                  <mwc-button
+                    @click=${this._createFlow}
+                    unelevated
+                    .label=${this.hass.localize(
+                      "ui.panel.config.integrations.add_integration"
+                    )}
+                  ></mwc-button>
+                </div>
               `
             : ""}
           ${this._filter &&
@@ -444,7 +444,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           !groupedConfigEntries.size &&
           this._configEntries.length
             ? html`
-                <div class="none-found">
+                <div class="empty-message">
                   <h1>
                     ${this.hass.localize(
                       "ui.panel.config.integrations.none_found"
@@ -617,44 +617,15 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         .container > * {
           max-width: 500px;
         }
-        ha-card {
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-        }
-        .ignored {
-          --ha-card-border-color: var(--light-theme-disabled-color);
-        }
-        .ignored img {
-          filter: grayscale(1);
-        }
-        .ignored .header {
-          background: var(--light-theme-disabled-color);
-          color: var(--text-primary-color);
-          padding: 8px;
-          text-align: center;
-        }
-        .card-content {
-          display: flex;
-          height: 100%;
-          margin-top: 0;
-          padding: 16px;
-          text-align: center;
-          flex-direction: column;
-          justify-content: space-between;
-        }
-        .image {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 60px;
-          margin-bottom: 16px;
-          vertical-align: middle;
-        }
-        .none-found {
+
+        .empty-message {
           margin: auto;
           text-align: center;
         }
+        .empty-message h1 {
+          margin-bottom: 0;
+        }
+
         search-input.header {
           display: block;
           position: relative;
@@ -674,27 +645,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           position: relative;
           top: 2px;
         }
-        img {
-          max-height: 100%;
-          max-width: 90%;
-        }
-        .none-found {
-          margin: auto;
-          text-align: center;
-        }
-        h1 {
-          margin-bottom: 0;
-        }
-        h2 {
-          margin-top: 0;
-          word-wrap: break-word;
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 3;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: normal;
-        }
+
         .active-filters {
           color: var(--primary-text-color);
           position: relative;
