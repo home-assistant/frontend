@@ -44,9 +44,10 @@ const createConfigEntry = (
 
 const createManifest = (
   isCustom: boolean,
-  isCloud: boolean
+  isCloud: boolean,
+  name = "ESPHome"
 ): IntegrationManifest => ({
-  name: "ESPHome",
+  name,
   domain: "esphome",
   is_built_in: !isCustom,
   config_flow: false,
@@ -103,7 +104,7 @@ const configFlows: DataEntryFlowProgressExtended[] = [
       },
     },
     step_id: "discovery_confirm",
-    localized_title: "Roku: Living room Roku",
+    localized_title: "Living room Roku",
   },
   {
     flow_id: "adbb401329d8439ebb78ef29837826a8",
@@ -234,7 +235,8 @@ export class DemoIntegrationCard extends LitElement {
               .flow=${flow}
               .manifest=${createManifest(
                 this.isCustomIntegration,
-                this.isCloud
+                this.isCloud,
+                flow.handler === "roku" ? "Roku" : "Philips Hue"
               )}
             ></ha-config-flow-card>
           `
