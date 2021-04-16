@@ -1934,7 +1934,7 @@
                     "different_include": "Mogelijk via een domein, een glob of een andere include.",
                     "pick_attribute": "Kies een attribuut om te overschrijven",
                     "picker": {
-                        "documentation": "Documentatie aanpassen",
+                        "documentation": "Documentatie van aanpassingen",
                         "header": "Aanpassingen",
                         "introduction": "Pas attributen per entiteit aan. Toegevoegde/gewijzigde aanpassingen worden onmiddellijk van kracht. Verwijderde aanpassingen worden van kracht wanneer de entiteit wordt bijgewerkt."
                     },
@@ -2255,8 +2255,10 @@
                 "logs": {
                     "caption": "Logboek",
                     "clear": "Wis",
+                    "custom_integration": "aangepaste integratie",
                     "description": "Home Assistant logboek bekijken",
                     "details": "Logboekdetails ({level})",
+                    "error_from_custom_integration": "Deze fout is ontstaan door een aangepaste integratie.",
                     "level": {
                         "critical": "KRITISCH",
                         "debug": "DEBUG",

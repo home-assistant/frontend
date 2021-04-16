@@ -2255,8 +2255,10 @@
                 "logs": {
                     "caption": "Registres",
                     "clear": "Esborra",
+                    "custom_integration": "integració personalitzada",
                     "description": "Consulta els registres de Home Assistant",
                     "details": "Detalls del registre ({level})",
+                    "error_from_custom_integration": "Aquest error té origen en una integració personalitzada.",
                     "level": {
                         "critical": "CRÍTIC",
                         "debug": "DEPURACIÓ",

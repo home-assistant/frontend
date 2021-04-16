@@ -1220,7 +1220,7 @@
                 "observer": "Observer 확인하기",
                 "reboot": "호스트 재부팅 시도하기",
                 "system_health": "시스템 상태 확인하기",
-                "title": "Supervisor 화면을 불러올 수 없습니다.",
+                "title": "Supervisor 패널을 불러올 수 없습니다!",
                 "wait": "방금 시작한 경우 Supervisor가 완전히 시작되기까지 잠시 기다려주세요."
             }
         },
@@ -1239,12 +1239,12 @@
         "notification_toast": {
             "connection_lost": "서버와 연결이 끊어졌습니다. 다시 연결하는 중...",
             "dismiss": "해제하기",
-            "intergration_starting": "{integration} 시작 중. 완료되기 전 일부 기능은 작동하지 않을 수 있습니다.",
+            "intergration_starting": "{integration}을(를) 시작하는 중입니다. 완료될 때까지 일부 기능은 작동하지 않을 수 있습니다.",
             "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
             "started": "Home Assistant가 시작되었습니다!",
             "starting": "Home Assistant가 시작됩니다. 완료될 때까지 일부 기능은 작동하지 않을 수 있습니다.",
             "triggered": "{name}이(가) 트리거됨",
-            "wrapping_up_startup": "시작되기를 기다립니다. 완료되기 전 일부 기능은 작동하지 않을 수 있습니다."
+            "wrapping_up_startup": "시작을 마무리하는 중입니다. 완료될 때까지 일부 기능은 작동하지 않을 수 있습니다."
         },
         "panel": {
             "config": {
@@ -1872,7 +1872,7 @@
                     "section": {
                         "core": {
                             "analytics": {
-                                "documentation": "이 옵션을 활성화하기 전에 분석 관련 문서 페이지 {link}을(를) 방문하여 어떤 데이터가 공유되는지, 어떻게 저장되는지 알아보세요.",
+                                "documentation": "이 옵션을 활성화하기 전에 분석 관련 문서 페이지 {link}을(를) 방문하여 어떤 데이터를 보내고 어떻게 저장되는지 알아보세요.",
                                 "header": "분석",
                                 "instance_id": "인스턴스 ID: {huuid}",
                                 "introduction": "설치 정보를 공유하여 Home Assistant를 개선하고 제조업체가 로컬 제어 및 개인 정보 보호 기능을 추가하도록 설득하는 데 도움이됩니다.",
@@ -1884,7 +1884,7 @@
                                         "title": "기본 분석"
                                     },
                                     "diagnostics": {
-                                        "description": "충돌 보고서 및 진단 정보를 공유합니다",
+                                        "description": "예기치 않은 오류가 발생할 경우 충돌 보고서를 공유합니다.",
                                         "title": "진단"
                                     },
                                     "statistics": {
@@ -2216,7 +2216,7 @@
                     "configure": "구성하기",
                     "configured": "구성된 통합 구성요소",
                     "confirm_new": "{integration}을(를) 설정하시겠습니까?",
-                    "description": "통합 구성요소를 관리합니다",
+                    "description": "서비스 또는 기기의 통합 구성요소를 관리합니다",
                     "details": "통합 구성요소 상세정보",
                     "disable": {
                         "disabled_integrations": "{number}개의 비활성화된 통합 구성요소",
@@ -2255,8 +2255,10 @@
                 "logs": {
                     "caption": "로그",
                     "clear": "지우기",
+                    "custom_integration": "사용자 통합 구성요소",
                     "description": "Home Assistant 로그 내역을 봅니다",
                     "details": "로그 상세정보 ({level})",
+                    "error_from_custom_integration": "이 오류는 사용자 통합 구성요소에서 발생했습니다.",
                     "level": {
                         "critical": "치명적오류",
                         "debug": "디버그",
@@ -3111,7 +3113,7 @@
                     "observer": "Observer 확인하기",
                     "reboot": "호스트 재부팅 시도하기",
                     "system_health": "시스템 상태 확인하기",
-                    "title": "Supervisor 화면을 불러올 수 없습니다!",
+                    "title": "Supervisor 패널을 불러올 수 없습니다!",
                     "wait": "방금 시작한 경우 Supervisor가 완전히 시작되기까지 잠시 기다려주세요."
                 }
             },

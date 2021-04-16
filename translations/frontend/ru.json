@@ -2255,8 +2255,10 @@
                 "logs": {
                     "caption": "Журнал сервера",
                     "clear": "Очистить",
+                    "custom_integration": "кастомная интеграция",
                     "description": "Журналы работы сервера",
                     "details": "Уровень: {level}",
+                    "error_from_custom_integration": "Эта ошибка возникла в кастомной интеграции.",
                     "level": {
                         "critical": "КРИТИЧЕСКАЯ ОШИБКА",
                         "debug": "ОТЛАДКА",
