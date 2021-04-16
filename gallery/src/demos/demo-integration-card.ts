@@ -14,8 +14,13 @@ import { IntegrationManifest } from "../../../src/data/integration";
 
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import { HomeAssistant } from "../../../src/types";
-import "../../../src/panels/config/integrations/ha-config-integrations";
-import type { ConfigEntryExtended } from "../../../src/panels/config/integrations/ha-config-integrations";
+import "../../../src/panels/config/integrations/ha-integration-card";
+import "../../../src/panels/config/integrations/ha-ignored-config-entry-card";
+import "../../../src/panels/config/integrations/ha-config-flow-card";
+import type {
+  ConfigEntryExtended,
+  DataEntryFlowProgressExtended,
+} from "../../../src/panels/config/integrations/ha-config-integrations";
 import { DeviceRegistryEntry } from "../../../src/data/device_registry";
 import { EntityRegistryEntry } from "../../../src/data/entity_registry";
 import { classMap } from "lit-html/directives/class-map";
@@ -78,8 +83,44 @@ const disabledEntry = createConfigEntry("Disabled", {
   state: "not_loaded",
   disabled_by: "user",
 });
+const disabledFailedUnloadEntry = createConfigEntry(
+  "Disabled - Failed Unload",
+  {
+    state: "failed_unload",
+    disabled_by: "user",
+  }
+);
 
-const infos: Array<{
+const configFlows: DataEntryFlowProgressExtended[] = [
+  {
+    flow_id: "adbb401329d8439ebb78ef29837826a8",
+    handler: "roku",
+    context: {
+      source: "ssdp",
+      unique_id: "YF008D862864",
+      title_placeholders: {
+        name: "Living room Roku",
+      },
+    },
+    step_id: "discovery_confirm",
+    localized_title: "Roku: Living room Roku",
+  },
+  {
+    flow_id: "adbb401329d8439ebb78ef29837826a8",
+    handler: "hue",
+    context: {
+      source: "reauth",
+      unique_id: "YF008D862864",
+      title_placeholders: {
+        name: "Living room Roku",
+      },
+    },
+    step_id: "discovery_confirm",
+    localized_title: "Philips Hue",
+  },
+];
+
+const configEntries: Array<{
   items: ConfigEntryExtended[];
   is_custom?: boolean;
   disabled?: boolean;
@@ -95,7 +136,6 @@ const infos: Array<{
   { items: [setupRetryEntry] },
   { items: [failedUnloadEntry] },
   { items: [notLoadedEntry] },
-  { items: [disabledEntry] },
   {
     items: [
       loadedEntry,
@@ -111,15 +151,11 @@ const infos: Array<{
       optionsFlowEntry,
     ],
   },
+  { disabled: true, items: [disabledEntry] },
+  { disabled: true, items: [disabledFailedUnloadEntry] },
   {
     disabled: true,
-    items: [
-      disabledEntry,
-      loadedEntry,
-      configPanelEntry,
-      optionsFlowEntry,
-      notLoadedEntry,
-    ],
+    items: [disabledEntry, disabledFailedUnloadEntry],
   },
   {
     items: [loadedEntry, configPanelEntry],
@@ -184,7 +220,22 @@ export class DemoIntegrationCard extends LitElement {
         </ha-formfield>
       </div>
 
-      ${infos.map(
+      <ha-ignored-config-entry-card
+        .hass=${this.hass}
+        .entry=${createConfigEntry("Ignored Entry")}
+        .manifest=${createManifest(this.isCustomIntegration, this.isCloud)}
+      ></ha-ignored-config-entry-card>
+
+      ${configFlows.map(
+        (flow) => html`
+          <ha-config-flow-card
+            .hass=${this.hass}
+            .flow=${flow}
+            .manifest=${createManifest(this.isCustomIntegration, this.isCloud)}
+          ></ha-config-flow-card>
+        `
+      )}
+      ${configEntries.map(
         (info) => html`
           <ha-integration-card
             class=${classMap({
@@ -227,6 +278,10 @@ export class DemoIntegrationCard extends LitElement {
         grid-gap: 16px 16px;
         padding: 8px 16px 16px;
         margin-bottom: 64px;
+      }
+
+      :host > * {
+        max-width: 500px;
       }
 
       ha-formfield {

@@ -1,12 +1,10 @@
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import "@material/mwc-list/mwc-list-item";
+import "@polymer/paper-listbox";
+import "@material/mwc-button";
+import "@polymer/paper-item";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  mdiAlertCircle,
-  mdiCloud,
-  mdiDotsVertical,
-  mdiOpenInNew,
-  mdiPackageVariant,
-} from "@mdi/js";
+import { mdiAlertCircle, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -20,7 +18,9 @@ import { classMap } from "lit-html/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-button-menu";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-card";
 import {
   ConfigEntry,
   deleteConfigEntry,
@@ -29,8 +29,8 @@ import {
   reloadConfigEntry,
   updateConfigEntry,
 } from "../../../data/config_entries";
-import { DeviceRegistryEntry } from "../../../data/device_registry";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
@@ -43,22 +43,10 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
 import { ConfigEntryExtended } from "./ha-config-integrations";
-
-export interface ConfigEntryUpdatedEvent {
-  entry: ConfigEntry;
-}
-
-export interface ConfigEntryRemovedEvent {
-  entryId: string;
-}
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "entry-updated": ConfigEntryUpdatedEvent;
-    "entry-removed": ConfigEntryRemovedEvent;
-  }
-}
+import {
+  haConfigIntegrationRenderIcons,
+  haConfigIntegrationsStyles,
+} from "./ha-config-integrations-common";
 
 const ERROR_STATES: ConfigEntry["state"][] = [
   "failed_unload",
@@ -94,10 +82,6 @@ export class HaIntegrationCard extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-  }
-
   protected render(): TemplateResult {
     let item = this._selectededConfigEntry;
 
@@ -119,31 +103,6 @@ export class HaIntegrationCard extends LitElement {
       }
     } else {
       primary = domainToName(this.hass.localize, this.domain, this.manifest);
-    }
-
-    const icons: [string, string][] = [];
-
-    if (this.manifest) {
-      if (!this.manifest.is_built_in) {
-        icons.push([
-          mdiPackageVariant,
-          this.hass.localize(
-            "ui.panel.config.integrations.config_entry.provided_by_custom_component"
-          ),
-        ]);
-      }
-
-      if (
-        this.manifest.iot_class &&
-        this.manifest.iot_class.startsWith("cloud_")
-      ) {
-        icons.push([
-          mdiCloud,
-          this.hass.localize(
-            "ui.panel.config.integrations.config_entry.depends_on_cloud"
-          ),
-        ]);
-      }
     }
 
     const hasItem = item !== undefined;
@@ -191,22 +150,7 @@ export class HaIntegrationCard extends LitElement {
             <div class="primary">${primary}</div>
             ${secondary ? html`<div class="secondary">${secondary}</div>` : ""}
           </div>
-          ${icons.length === 0
-            ? ""
-            : html`
-                <div class="icons">
-                  ${icons.map(
-                    ([icon, description]) => html`
-                      <span>
-                        <ha-svg-icon .path=${icon}></ha-svg-icon>
-                        <paper-tooltip animation-delay="0"
-                          >${description}</paper-tooltip
-                        >
-                      </span>
-                    `
-                  )}
-                </div>
-              `}
+          ${haConfigIntegrationRenderIcons(this.hass, this.manifest)}
         </div>
         ${item
           ? this._renderSingleEntry(item)
@@ -338,7 +282,7 @@ export class HaIntegrationCard extends LitElement {
             `
           : ""}
       </div>
-      <div class="card-actions">
+      <div class="actions">
         <div>
           ${item.disabled_by === "user"
             ? html`<mwc-button unelevated @click=${this._handleEnable}>
@@ -657,10 +601,8 @@ export class HaIntegrationCard extends LitElement {
   static get styles(): CSSResult[] {
     return [
       haStyle,
+      haConfigIntegrationsStyles,
       css`
-        :host {
-          max-width: 500px;
-        }
         ha-card {
           display: flex;
           flex-direction: column;
@@ -684,11 +626,6 @@ export class HaIntegrationCard extends LitElement {
           max-height: 200px;
         }
 
-        .banner {
-          background-color: var(--state-color);
-          text-align: center;
-          padding: 8px;
-        }
         .back-btn {
           background-color: var(--state-color);
           color: var(--text-on-state-color);
@@ -735,20 +672,6 @@ export class HaIntegrationCard extends LitElement {
           font-size: 14px;
           color: var(--secondary-text-color);
         }
-        .icons {
-          position: absolute;
-          top: 0px;
-          right: 16px;
-          color: var(--text-on-state-color, var(--secondary-text-color));
-          background-color: var(--state-color, #e0e0e0);
-          border-bottom-left-radius: 4px;
-          border-bottom-right-radius: 4px;
-          padding: 1px 4px 2px;
-        }
-        .icons ha-svg-icon {
-          width: 20px;
-          height: 20px;
-        }
 
         .message {
           font-weight: bold;
@@ -758,20 +681,18 @@ export class HaIntegrationCard extends LitElement {
 
         .content {
           flex: 1;
-          padding: 0px 16px 16px 72px;
-        }
-        ha-card.single .content {
-          padding-bottom: 3px;
+          padding: 0px 16px 0 72px;
         }
 
-        .card-actions {
-          border-top: none;
+        .actions {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding-right: 5px;
-          padding-bottom: 0;
+          padding: 8px 0 0 8px;
           height: 48px;
+        }
+        .actions a {
+          text-decoration: none;
         }
         a {
           color: var(--primary-color);
@@ -792,9 +713,6 @@ export class HaIntegrationCard extends LitElement {
         }
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);
-        }
-        paper-tooltip {
-          white-space: nowrap;
         }
       `,
     ];
