@@ -139,9 +139,9 @@ const configEntries: Array<{
   {
     items: [
       loadedEntry,
-      longNameEntry,
       setupErrorEntry,
       migrationErrorEntry,
+      longNameEntry,
       setupRetryEntry,
       failedUnloadEntry,
       notLoadedEntry,
@@ -211,47 +211,77 @@ export class DemoIntegrationCard extends LitElement {
       return html``;
     }
     return html`
-      <div class="filters">
-        <ha-formfield label="Custom Integration">
-          <ha-switch @change=${this._toggleCustomIntegration}></ha-switch>
-        </ha-formfield>
-        <ha-formfield label="Relies on cloud">
-          <ha-switch @change=${this._toggleCloud}></ha-switch>
-        </ha-formfield>
+      <div class="container">
+        <div class="filters">
+          <ha-formfield label="Custom Integration">
+            <ha-switch @change=${this._toggleCustomIntegration}></ha-switch>
+          </ha-formfield>
+          <ha-formfield label="Relies on cloud">
+            <ha-switch @change=${this._toggleCloud}></ha-switch>
+          </ha-formfield>
+        </div>
+
+        <ha-ignored-config-entry-card
+          .hass=${this.hass}
+          .entry=${createConfigEntry("Ignored Entry")}
+          .manifest=${createManifest(this.isCustomIntegration, this.isCloud)}
+        ></ha-ignored-config-entry-card>
+
+        ${configFlows.map(
+          (flow) => html`
+            <ha-config-flow-card
+              .hass=${this.hass}
+              .flow=${flow}
+              .manifest=${createManifest(
+                this.isCustomIntegration,
+                this.isCloud
+              )}
+            ></ha-config-flow-card>
+          `
+        )}
+        ${configEntries.map(
+          (info) => html`
+            <ha-integration-card
+              class=${classMap({
+                highlight: info.highlight !== undefined,
+              })}
+              .hass=${this.hass}
+              domain="esphome"
+              .items=${info.items}
+              .manifest=${createManifest(
+                this.isCustomIntegration,
+                this.isCloud
+              )}
+              .entityRegistryEntries=${createEntityRegistryEntries(
+                info.items[0]
+              )}
+              .deviceRegistryEntries=${createDeviceRegistryEntries(
+                info.items[0]
+              )}
+              ?disabled=${info.disabled}
+              .selectedConfigEntryId=${info.highlight}
+            ></ha-integration-card>
+          `
+        )}
       </div>
-
-      <ha-ignored-config-entry-card
-        .hass=${this.hass}
-        .entry=${createConfigEntry("Ignored Entry")}
-        .manifest=${createManifest(this.isCustomIntegration, this.isCloud)}
-      ></ha-ignored-config-entry-card>
-
-      ${configFlows.map(
-        (flow) => html`
-          <ha-config-flow-card
-            .hass=${this.hass}
-            .flow=${flow}
-            .manifest=${createManifest(this.isCustomIntegration, this.isCloud)}
-          ></ha-config-flow-card>
-        `
-      )}
-      ${configEntries.map(
-        (info) => html`
-          <ha-integration-card
-            class=${classMap({
-              highlight: info.highlight !== undefined,
-            })}
-            .hass=${this.hass}
-            domain="esphome"
-            .items=${info.items}
-            .manifest=${createManifest(this.isCustomIntegration, this.isCloud)}
-            .entityRegistryEntries=${createEntityRegistryEntries(info.items[0])}
-            .deviceRegistryEntries=${createDeviceRegistryEntries(info.items[0])}
-            ?disabled=${info.disabled}
-            .selectedConfigEntryId=${info.highlight}
-          ></ha-integration-card>
-        `
-      )}
+      <div class="container">
+        <!-- One that is standalone to see how it increases height if height
+           not defined by other cards. -->
+        <ha-integration-card
+          .hass=${this.hass}
+          domain="esphome"
+          .items=${[
+            loadedEntry,
+            setupErrorEntry,
+            migrationErrorEntry,
+            setupRetryEntry,
+            failedUnloadEntry,
+          ]}
+          .manifest=${createManifest(this.isCustomIntegration, this.isCloud)}
+          .entityRegistryEntries=${createEntityRegistryEntries(loadedEntry)}
+          .deviceRegistryEntries=${createDeviceRegistryEntries(loadedEntry)}
+        ></ha-integration-card>
+      </div>
     `;
   }
 
@@ -272,7 +302,7 @@ export class DemoIntegrationCard extends LitElement {
 
   static get styles() {
     return css`
-      :host {
+      .container {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         grid-gap: 16px 16px;
@@ -280,7 +310,7 @@ export class DemoIntegrationCard extends LitElement {
         margin-bottom: 64px;
       }
 
-      :host > * {
+      .container > * {
         max-width: 500px;
       }
 

@@ -49,7 +49,6 @@ import {
 } from "./ha-config-integrations-common";
 
 const ERROR_STATES: ConfigEntry["state"][] = [
-  "failed_unload",
   "migration_error",
   "setup_error",
   "setup_retry",
@@ -116,6 +115,7 @@ export class HaIntegrationCard extends LitElement {
           hasMultiple: this.items.length > 1,
           disabled: this.disabled,
           "state-not-loaded": hasItem && item!.state === "not_loaded",
+          "state-failed-unload": hasItem && item!.state === "failed_unload",
           "state-error": hasItem && ERROR_STATES.includes(item!.state),
         })}"
         .configEntry=${item}
@@ -619,15 +619,16 @@ export class HaIntegrationCard extends LitElement {
           --state-color: var(--error-color);
           --text-on-state-color: var(--text-primary-color);
         }
+        .state-failed-unload {
+          --state-color: var(--warning-color);
+          --text-on-state-color: var(--primary-text-color);
+        }
         .state-not-loaded {
           --state-message-color: var(--primary-text-color);
         }
         :host(.highlight) ha-card {
           --state-color: var(--accent-color);
           --text-on-state-color: var(--text-primary-color);
-        }
-        ha-card.group {
-          max-height: 200px;
         }
 
         .back-btn {
@@ -649,9 +650,6 @@ export class HaIntegrationCard extends LitElement {
           position: relative;
           align-items: center;
           padding: 16px 8px 8px 16px;
-        }
-        .group.disabled .header {
-          padding-top: 8px;
         }
         .header img {
           margin-right: 16px;
@@ -706,9 +704,20 @@ export class HaIntegrationCard extends LitElement {
           --mdc-menu-min-width: 200px;
         }
         @media (min-width: 563px) {
+          ha-card.group {
+            position: relative;
+            min-height: 164px;
+          }
           paper-listbox {
-            flex: 1;
+            position: absolute;
+            top: 64px;
+            left: 0;
+            right: 0;
+            bottom: 0;
             overflow: auto;
+          }
+          .disabled paper-listbox {
+            top: 100px;
           }
         }
         paper-item {
