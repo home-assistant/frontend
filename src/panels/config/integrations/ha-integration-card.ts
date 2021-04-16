@@ -651,9 +651,6 @@ export class HaIntegrationCard extends LitElement {
           align-items: center;
           padding: 16px 8px 8px 16px;
         }
-        .group.disabled .header {
-          padding-top: 8px;
-        }
         .header img {
           margin-right: 16px;
           width: 40px;
@@ -720,7 +717,7 @@ export class HaIntegrationCard extends LitElement {
             overflow: auto;
           }
           .disabled paper-listbox {
-            top: 92px;
+            top: 100px;
           }
         }
         paper-item {
