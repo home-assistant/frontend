@@ -31,6 +31,7 @@ export class HaIgnoredConfigEntryCard extends LitElement {
           "ui.panel.config.integrations.ignore.ignored"
         )}
         .domain=${this.entry.domain}
+        .localizedDomainName=${this.entry.localized_domain_name}
         .label=${this.entry.title === "Ignored"
           ? // In 2020.2 we added support for entry.title. All ignored entries before
             // that have title "Ignored" so we fallback to localized domain name.
@@ -38,7 +39,6 @@ export class HaIgnoredConfigEntryCard extends LitElement {
           : this.entry.title}
       >
         <mwc-button
-          unelevated
           @click=${this._removeIgnoredIntegration}
           .label=${this.hass.localize(
             "ui.panel.config.integrations.ignore.stop_ignore"

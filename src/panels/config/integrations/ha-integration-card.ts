@@ -31,7 +31,7 @@ import {
 } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
-import { domainToName, IntegrationManifest } from "../../../data/integration";
+import type { IntegrationManifest } from "../../../data/integration";
 import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 import {
@@ -40,13 +40,9 @@ import {
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
-import { brandsUrl } from "../../../util/brands-url";
-import { ConfigEntryExtended } from "./ha-config-integrations";
-import {
-  haConfigIntegrationRenderIcons,
-  haConfigIntegrationsStyles,
-} from "./ha-config-integrations-common";
+import type { HomeAssistant } from "../../../types";
+import type { ConfigEntryExtended } from "./ha-config-integrations";
+import "./ha-integration-header";
 
 const ERROR_STATES: ConfigEntry["state"][] = [
   "migration_error",
@@ -92,18 +88,6 @@ export class HaIntegrationCard extends LitElement {
       );
     }
 
-    let primary: string;
-    let secondary: string | undefined;
-
-    if (item) {
-      primary = item.title || item.localized_domain_name || this.domain;
-      if (primary !== item.localized_domain_name) {
-        secondary = item.localized_domain_name;
-      }
-    } else {
-      primary = domainToName(this.hass.localize, this.domain, this.manifest);
-    }
-
     const hasItem = item !== undefined;
 
     return html`
@@ -120,38 +104,32 @@ export class HaIntegrationCard extends LitElement {
         })}"
         .configEntry=${item}
       >
-        ${this.disabled
-          ? html`
-              <div class="banner">
-                ${this.hass.localize(
-                  "ui.panel.config.integrations.config_entry.disable.disabled"
-                )}
-              </div>
-            `
-          : ""}
-        ${this.items.length > 1
-          ? html`
-              <div class="back-btn">
-                <ha-icon-button
-                  icon="hass:chevron-left"
-                  @click=${this._back}
-                ></ha-icon-button>
-              </div>
-            `
-          : ""}
-        <div class="header">
-          <img
-            src=${brandsUrl(this.domain, "icon")}
-            referrerpolicy="no-referrer"
-            @error=${this._onImageError}
-            @load=${this._onImageLoad}
-          />
-          <div class="info">
-            <div class="primary">${primary}</div>
-            ${secondary ? html`<div class="secondary">${secondary}</div>` : ""}
-          </div>
-          ${haConfigIntegrationRenderIcons(this.hass, this.manifest)}
-        </div>
+        <ha-integration-header
+          .hass=${this.hass}
+          .banner=${this.disabled
+            ? this.hass.localize(
+                "ui.panel.config.integrations.config_entry.disable.disabled"
+              )
+            : undefined}
+          .domain=${this.domain}
+          .label=${item
+            ? item.title || item.localized_domain_name || this.domain
+            : undefined}
+          .localizedDomainName=${item ? item.localized_domain_name : undefined}
+          .manifest=${this.manifest}
+        >
+          ${this.items.length > 1
+            ? html`
+                <div class="back-btn" slot="above-header">
+                  <ha-icon-button
+                    icon="hass:chevron-left"
+                    @click=${this._back}
+                  ></ha-icon-button>
+                </div>
+              `
+            : ""}
+        </ha-integration-header>
+
         ${item
           ? this._renderSingleEntry(item)
           : this._renderGroupedIntegration()}
@@ -441,14 +419,6 @@ export class HaIntegrationCard extends LitElement {
     );
   }
 
-  private _onImageLoad(ev) {
-    ev.target.style.visibility = "initial";
-  }
-
-  private _onImageError(ev) {
-    ev.target.style.visibility = "hidden";
-  }
-
   private _showOptions(ev) {
     showOptionsFlowDialog(this, ev.target.closest("ha-card").configEntry);
   }
@@ -605,7 +575,6 @@ export class HaIntegrationCard extends LitElement {
   static get styles(): CSSResult[] {
     return [
       haStyle,
-      haConfigIntegrationsStyles,
       css`
         ha-card {
           display: flex;
@@ -627,7 +596,7 @@ export class HaIntegrationCard extends LitElement {
           --state-message-color: var(--primary-text-color);
         }
         :host(.highlight) ha-card {
-          --state-color: var(--accent-color);
+          --state-color: var(--primary-color);
           --text-on-state-color: var(--text-primary-color);
         }
 
@@ -643,36 +612,6 @@ export class HaIntegrationCard extends LitElement {
         }
         .hasMultiple.group .back-btn {
           height: 0px;
-        }
-
-        .header {
-          display: flex;
-          position: relative;
-          align-items: center;
-          padding: 16px 8px 8px 16px;
-        }
-        .header img {
-          margin-right: 16px;
-          width: 40px;
-          height: 40px;
-        }
-        .header .info div,
-        paper-item-body {
-          word-wrap: break-word;
-          display: -webkit-box;
-          -webkit-box-orient: vertical;
-          -webkit-line-clamp: 2;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-        .primary {
-          font-size: 16px;
-          font-weight: 400;
-          color: var(--primary-text-color);
-        }
-        .secondary {
-          font-size: 14px;
-          color: var(--secondary-text-color);
         }
 
         .message {
@@ -723,6 +662,14 @@ export class HaIntegrationCard extends LitElement {
         paper-item {
           cursor: pointer;
           min-height: 35px;
+        }
+        paper-item-body {
+          word-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         mwc-list-item ha-svg-icon {
           color: var(--secondary-text-color);
