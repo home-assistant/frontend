@@ -598,6 +598,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   private _handleFlowUpdated() {
     this._loadConfigEntries();
     getConfigFlowInProgressCollection(this.hass.connection).refresh();
+    this._fetchManifests();
   }
 
   private _createFlow() {
@@ -607,7 +608,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       },
       showAdvanced: this.showAdvanced,
     });
-    // For config entries. Also loading config flow ones for add integration
+    // For config entries. Also loading config flow ones for added integration
     this.hass.loadBackendTranslation("title", undefined, true);
   }
 
