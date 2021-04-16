@@ -2255,8 +2255,10 @@
                 "logs": {
                     "caption": "Logger",
                     "clear": "Tøm",
+                    "custom_integration": "tilpasset integrasjon",
                     "description": "Vis Home Assistant loggene",
                     "details": "Loggdetaljer ({level})",
+                    "error_from_custom_integration": "Denne feilen stammer fra en tilpasset integrasjon.",
                     "level": {
                         "critical": "KRITISK",
                         "debug": "DEBUG",

@@ -2255,8 +2255,10 @@
                 "logs": {
                     "caption": "Logi",
                     "clear": "Wyczyść",
+                    "custom_integration": "niestandardowa integracja",
                     "description": "Wyświetlanie logów Home Assistanta",
                     "details": "Szczegóły loga ({level})",
+                    "error_from_custom_integration": "Ten błąd pochodzi z niestandardowej integracji.",
                     "level": {
                         "critical": "KRYTYCZNE",
                         "debug": "DEBUG",
