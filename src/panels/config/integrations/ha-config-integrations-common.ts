@@ -41,7 +41,7 @@ export const haConfigIntegrationRenderIcons = (
       icons.push([
         mdiPackageVariant,
         hass.localize(
-          "ui.panel.config.integrations.config_entry.provided_by_custom_component"
+          "ui.panel.config.integrations.config_entry.provided_by_custom_integration"
         ),
       ]);
     }
