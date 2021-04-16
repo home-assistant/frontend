@@ -39,7 +39,6 @@ export class HaIgnoredConfigEntryCard extends LitElement {
           : this.entry.title}
       >
         <mwc-button
-          unelevated
           @click=${this._removeIgnoredIntegration}
           .label=${this.hass.localize(
             "ui.panel.config.integrations.ignore.stop_ignore"
