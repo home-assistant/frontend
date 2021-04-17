@@ -608,7 +608,9 @@ export class HaIntegrationCard extends LitElement {
           overflow: hidden;
         }
         .hasMultiple.single .back-btn {
-          height: 32px;
+          height: 24px;
+          display: flex;
+          align-items: center;
         }
         .hasMultiple.group .back-btn {
           height: 0px;
@@ -656,7 +658,7 @@ export class HaIntegrationCard extends LitElement {
             overflow: auto;
           }
           .disabled paper-listbox {
-            top: 100px;
+            top: 88px;
           }
         }
         paper-item {
