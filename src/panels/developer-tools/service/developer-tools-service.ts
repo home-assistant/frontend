@@ -1,3 +1,4 @@
+import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { safeLoad } from "js-yaml";
 import {
   css,
@@ -23,7 +24,11 @@ import "../../../components/ha-service-picker";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import { ServiceAction } from "../../../data/script";
-import { callExecuteScript } from "../../../data/service";
+import { forwardHaptic } from "../../../data/haptics";
+import {
+  callExecuteScript,
+  serviceCallWillDisconnect,
+} from "../../../data/service";
 import { haStyle } from "../../../resources/styles";
 import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
@@ -275,6 +280,14 @@ class HaPanelDevService extends LitElement {
     try {
       await callExecuteScript(this.hass, [this._serviceData]);
     } catch (err) {
+      const [domain, service] = this._serviceData.service.split(".", 2);
+      if (
+        err.error.code === ERR_CONNECTION_LOST &&
+        serviceCallWillDisconnect(domain, service)
+      ) {
+        return;
+      }
+      forwardHaptic("failure");
       showToast(this, {
         message:
           this.hass.localize(
