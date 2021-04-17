@@ -272,9 +272,9 @@ export class HaIntegrationCard extends LitElement {
               </mwc-button>`
             : item.domain in integrationsWithPanel
             ? html`<a
-                href=${`${
-                  integrationsWithPanel[item.domain].path
-                }?config_entry=${item.entry_id}`}
+                href=${`${integrationsWithPanel[item.domain]}?config_entry=${
+                  item.entry_id
+                }`}
                 ><mwc-button>
                   ${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.configure"
