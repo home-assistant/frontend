@@ -2216,7 +2216,7 @@
                     "configure": "Konfigurieren",
                     "configured": "Konfiguriert",
                     "confirm_new": "Möchtest du {integration} einrichten?",
-                    "description": "Integrationen zu Diensten, Geräten, usw. verwalten",
+                    "description": "Verwalte verbundene Geräte und Dienste",
                     "details": "Details zur Integration",
                     "disable": {
                         "disabled_integrations": "{number} deaktiviert",
@@ -2255,8 +2255,10 @@
                 "logs": {
                     "caption": "Logs",
                     "clear": "Löschen",
+                    "custom_integration": "benutzerdefiniert integration",
                     "description": "Home Assistant Logs einsehen",
                     "details": "Protokolldetails ({level})",
+                    "error_from_custom_integration": "benutzerdefinierte",
                     "level": {
                         "critical": "KRITISCH",
                         "debug": "DEBUG",

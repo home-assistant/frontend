@@ -452,6 +452,7 @@
                     "privileged": "Supervisor не е привилегирован",
                     "systemd": "Systemd"
                 },
+                "unsupported_title": "Използвате неподдържана инсталация",
                 "update_supervisor": "Актуализиране на Supervisor",
                 "warning": "ВНИМАНИЕ"
             }
@@ -652,7 +653,13 @@
         },
         "components": {
             "addon-picker": {
-                "addon": "Добавка"
+                "addon": "Добавка",
+                "error": {
+                    "no_supervisor": {
+                        "description": "Не е намерен Supervisor, така че добавките не могат да бъдат заредени.",
+                        "title": "Няма Supervisor"
+                    }
+                }
             },
             "area-picker": {
                 "add_dialog": {
@@ -1109,9 +1116,11 @@
         "errors": {
             "config": {
                 "edit_in_yaml_supported": "Все още можете да редактирате вашата конфигурация в YAML.",
+                "editor_not_supported": "Визуалния редактор не се поддържа за тази конфигурация",
                 "error_detected": "Открити са грешки в конфигурацията",
                 "key_missing": "Липсва задължителният ключ \"{key}\".",
-                "no_template_editor_support": "Шаблоните не се поддържат във визуалния редактор"
+                "no_template_editor_support": "Шаблоните не се поддържат във визуалния редактор",
+                "no_type_provided": "Не е указан тип."
             },
             "supervisor": {
                 "ask": "Помолете за помощ",
@@ -1509,6 +1518,7 @@
                     "thingtalk": {
                         "create": "Създайте автоматизация",
                         "task_selection": {
+                            "error_empty": "Въведете команда или натиснете Пропускане",
                             "for_example": "Например:",
                             "header": "Създайте нова автоматизация",
                             "introduction": "Въведете по-долу какво трябва да направи тази автоматизация и ние ще се опитаме да я преобразуваме в автоматизация на Home Assistant.",
@@ -1575,9 +1585,12 @@
                             "config_documentation": "Документация за конфигурацията",
                             "devices_pin": "ПИН код за Устройства за защита",
                             "enter_pin_hint": "Въведете ПИН за използване на устройства за защита",
+                            "manage_entities": "Управление на обекти",
                             "not_configured_text": "Преди да можете да използвате Google Assistant, трябва да активирате умението Home Assistant Cloud за Google Assistant в приложението Google Home.",
                             "not_configured_title": "Google Assistant не е активиран",
                             "security_devices": "Устройства за защита",
+                            "sync_entities": "Синхронизиране на обекти с Google",
+                            "sync_entities_404_message": "Неуспешно синхронизиране на вашите обекти с Google, помолете Google „Hey Google, sync my devices“, за да синхронизира вашите обекти.",
                             "title": "Google Assistant"
                         },
                         "integrations": "Интеграции",
@@ -1624,6 +1637,7 @@
                         "expose": "Откриване към Alexa",
                         "expose_entity": "Изложи обекта",
                         "exposed": "{selected} изложен",
+                        "exposed_entities": "Изложени обекти",
                         "follow_domain": "Следван домейн",
                         "manage_domains": "Управление на домейни",
                         "not_exposed": "{selected} неизложен",
@@ -1637,7 +1651,7 @@
                         "certificate_expiration_date": "Дата на изтичане на сертификата:",
                         "certificate_information": "Информация за сертификата",
                         "close": "Затвори",
-                        "will_be_auto_renewed": "ще бъде автоматично подновено"
+                        "will_be_auto_renewed": "ще бъде автоматично подновен"
                     },
                     "dialog_cloudhook": {
                         "close": "Затвори",
@@ -1659,9 +1673,11 @@
                         "expose": "Откриване към Google Assistant",
                         "expose_entity": "Изложи обекта",
                         "exposed": "{selected} изложен",
+                        "exposed_entities": "Изложени обекти",
                         "follow_domain": "следван домейн",
                         "manage_domains": "Управление на домейни",
                         "not_exposed": "{selected} неизложен",
+                        "not_exposed_entities": "Не изложени обекти",
                         "title": "Google Assistant"
                     },
                     "login": {
@@ -1835,7 +1851,8 @@
                         "add_entities_lovelace": "Добавете към Lovelace",
                         "disabled_entities": "+{count} {count, plural,\n  one {деактивиран обект}\n  other {деактивирани обекта}\n}",
                         "entities": "Обекти",
-                        "hide_disabled": "Скриване на деактивираните"
+                        "hide_disabled": "Скриване на деактивираните",
+                        "none": "Това устройство няма обекти"
                     },
                     "name": "Име",
                     "no_devices": "Няма устройства",
@@ -1871,10 +1888,13 @@
                     "description": "Управление на известните обекти",
                     "picker": {
                         "disable_selected": {
+                            "button": "Деактивиране на избраните",
+                            "confirm_text": "Деактивираните обекти няма да бъдат добавени в Home Assistant.",
                             "confirm_title": "Искате ли да забраните {number} {number, plural,\n  one {обект}\n  other {обекта}\n}?"
                         },
                         "enable_selected": {
                             "button": "Активиране на избраните",
+                            "confirm_text": "Това ще ги направи отново достъпни в Home Assistant, ако сега са деактивирани.",
                             "confirm_title": "Искате ли да разрешите {number} {number, plural,\n  one {обект}\n  other {обекта}\n}?"
                         },
                         "filter": {
@@ -1896,14 +1916,17 @@
                         "introduction": "Home Assistant поддържа регистър на всички обекти, които някога е виждал, които могат да бъдат идентифицирани уникално. Всеки от тези обекти ще има  идентификатор на обект, който ще бъде резервиран само за този обект.",
                         "introduction2": "Използвайте регистъра на обектите, за да промените името, идентификатора на обекта или да премахнете записа от Home Assistant. Моля имайте на предвид, че премахването на записа от регистъра на обектите няма да премахне обекта. За да направите това, следвайте препратката по-долу и я премахнете от страницата за интеграции.",
                         "remove_selected": {
+                            "button": "Премахване на избраните",
                             "confirm_partly_title": "Само {number} {number, plural,\n  one {избран обект}\n  other {избрани обекта}\n} могат да бъдат премахнати.",
                             "confirm_title": "Искате ли да премахнете {number} {number, plural,\n  one {обект}\n  other {обекта}\n}?"
                         },
                         "search": "Търсене на обекти",
                         "selected": "{number} избрани",
                         "status": {
+                            "disabled": "Деактивиран",
                             "ok": "ДА",
                             "readonly": "Само за четене",
+                            "restored": "Възстановен",
                             "unavailable": "Недостъпен"
                         }
                     }
@@ -2041,6 +2064,8 @@
                 "logs": {
                     "caption": "Журнали",
                     "clear": "Изчистване",
+                    "custom_integration": "персонализирана интеграция",
+                    "error_from_custom_integration": "Тази грешка произтича от персонализирана интеграция.",
                     "level": {
                         "critical": "КРИТИЧНО",
                         "debug": "ДЕБЪГ",
@@ -2494,7 +2519,8 @@
                     },
                     "network_status": {
                         "connected": "Свързан",
-                        "connecting": "Свързване"
+                        "connecting": "Свързване",
+                        "unknown": "Неизвестен"
                     },
                     "node_config": {
                         "attribution": "Параметрите и описанията на конфигурацията на устройството се предоставят от {device_database}",
@@ -2504,6 +2530,9 @@
                         "introduction": "Управление и настройване на специфични конфигурационни параметри на подбраноto устройството (възел, node)",
                         "parameter_is_read_only": "Този параметър е само за четене.",
                         "zwave_js_device_database": "Z-Wave JS база данни с устройства"
+                    },
+                    "node_status": {
+                        "unknown": "Неизвестен"
                     }
                 },
                 "zwave": {
@@ -2581,6 +2610,8 @@
                         "column_parameter": "Параметър",
                         "no_template_ui_support": "Потребителският интерфейс не поддържа шаблони, все още можете да използвате YAML редактора.",
                         "title": "Услуги",
+                        "ui_mode": "Отидете в режим Потребителски интерфейс",
+                        "yaml_mode": "Отидете в YAML режим",
                         "yaml_parameters": "Параметрите са налични само в YAML режим"
                     },
                     "states": {
@@ -2588,11 +2619,14 @@
                         "current_entities": "Настоящи обекти",
                         "description1": "Задайте представянето на устройство или обект в Home Assistant.",
                         "description2": "Промяната е фиктивна, до следваща актуализация на устройството или обекта.",
+                        "entity": "Обект",
                         "filter_attributes": "Филтриране на атрибути",
                         "last_changed": "Последна промяна",
                         "last_updated": "Последна актуализация",
                         "more_info": "Повече информация",
+                        "no_entities": "Няма обекти",
                         "set_state": "Задаване на състояние",
+                        "state": "Състояние",
                         "state_attributes": "Атрибути на състоянието (YAML, по избор)",
                         "title": "Състояния"
                     },
@@ -2662,6 +2696,9 @@
                         "tap": "Натиснете:",
                         "toggle": "Превключване на {name}",
                         "url": "Отваряне на прозорец към {url_path}"
+                    },
+                    "safe-mode": {
+                        "header": "Активиран е безопасен режим"
                     },
                     "shopping-list": {
                         "add_item": "Добави артикул",
@@ -2791,6 +2828,7 @@
                             "show_icon": "Показване на иконата?",
                             "show_name": "Показване на името?",
                             "show_state": "Показване на състоянието?",
+                            "state": "Състояние",
                             "state_color": "Да се оцветят ли иконите спрямо състоянието?",
                             "tap_action": "Действие Докосване",
                             "theme": "Тема",
@@ -3004,6 +3042,8 @@
                 },
                 "unused_entities": {
                     "available_entities": "Това са обектите, които имате на разположение, но все още не са във вашия потребителски интерфейс на Lovelace.",
+                    "domain": "Домейн",
+                    "entity": "Обект",
                     "entity_id": "ID на обекта",
                     "last_changed": "Последна промяна",
                     "no_data": "Не са намерени неизползвани обекти",

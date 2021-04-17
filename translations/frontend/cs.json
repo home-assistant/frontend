@@ -2215,7 +2215,7 @@
                     "configure": "Nastavit",
                     "configured": "Nastaveno",
                     "confirm_new": "Chcete nastavit {integration}?",
-                    "description": "Správa integrací a jejich služeb, zařízení, ...",
+                    "description": "Správa integrací a jejich služeb či zařízení",
                     "details": "Podrobnosti o integraci",
                     "disable": {
                         "disabled_integrations": "{number} zakázáno",
@@ -2254,8 +2254,10 @@
                 "logs": {
                     "caption": "Logy",
                     "clear": "Zrušit",
+                    "custom_integration": "vlastní integrace",
                     "description": "Zobrazení logů Home Assistant",
                     "details": "Detaily protokolu ({level})",
+                    "error_from_custom_integration": "Tato chyba pochází z vlastní integrace.",
                     "level": {
                         "critical": "KRITICKÉ",
                         "debug": "LADĚNÍ",
