@@ -8,4 +8,4 @@ export const callExecuteScript = (hass: HomeAssistant, sequence: Action[]) =>
   });
 
 export const serviceCallWillDisconnect = (domain: string, service: string) =>
-  domain == "homeassistant" && ["restart", "stop"].includes(service);
+  domain === "homeassistant" && ["restart", "stop"].includes(service);
