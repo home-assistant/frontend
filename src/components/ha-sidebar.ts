@@ -980,7 +980,7 @@ class HaSidebar extends LitElement {
           line-height: 20px;
           text-align: center;
           padding: 0px 6px;
-          color: var(--text-accent-color, var(--text-primary-color));
+          color: var(--text-accent-color, var(--sidebar-background-color));
         }
         ha-svg-icon + .notification-badge {
           position: absolute;
