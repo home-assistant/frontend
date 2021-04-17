@@ -122,13 +122,15 @@ export class HaIntegrationHeader extends LitElement {
     .header {
       display: flex;
       position: relative;
-      align-items: center;
       padding: 16px 8px 8px 16px;
     }
     .header img {
       margin-right: 16px;
       width: 40px;
       height: 40px;
+    }
+    .header .info {
+      align-self: center;
     }
     .header .info div {
       word-wrap: break-word;
