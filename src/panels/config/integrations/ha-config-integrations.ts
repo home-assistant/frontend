@@ -381,6 +381,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                 (flow: DataEntryFlowProgressExtended) => html`
                   <ha-config-flow-card
                     .hass=${this.hass}
+                    .manifest=${this._manifests[flow.handler]}
                     .flow=${flow}
                     @change=${this._handleFlowUpdated}
                   ></ha-config-flow-card>
