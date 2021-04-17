@@ -117,7 +117,7 @@ export class HaIntegrationHeader extends LitElement {
       background-color: var(--state-color);
       color: var(--text-on-state-color);
       text-align: center;
-      padding: 8px;
+      padding: 2px;
     }
     .header {
       display: flex;
