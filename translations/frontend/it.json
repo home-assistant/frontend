@@ -2156,8 +2156,11 @@
                     "caption": "Integrazioni",
                     "config_entry": {
                         "area": "In {area}",
+                        "check_the_logs": "Controlla i registri",
+                        "configure": "Configura",
                         "delete": "Elimina",
                         "delete_confirm": "Sei sicuro di voler eliminare questa integrazione?",
+                        "depends_on_cloud": "Dipende dal cloud",
                         "device_unavailable": "Dispositivo non disponibile",
                         "devices": "{count} {count, plural, \none {dispositivo}\nother {dispositivi}\n}",
                         "disable_restart_confirm": "Riavvia Home Assistant per terminare la disabilitazione di questa integrazione",
@@ -2180,14 +2183,24 @@
                         "logs": "registri",
                         "manuf": "da {manufacturer}",
                         "no_area": "Nessuna area",
-                        "not_loaded": "Non caricato, controlla il {logs_link}",
+                        "not_loaded": "Non caricato",
                         "options": "Opzioni",
+                        "provided_by_custom_component": "Fornito da un componente personalizzato",
+                        "provided_by_custom_integration": "Fornito da un'integrazione personalizzata",
                         "reload": "Ricarica",
                         "reload_confirm": "L'integrazione è stata ricaricata",
                         "reload_restart_confirm": "Riavvia Home Assistant per completare il ricaricamento di questa integrazione",
                         "rename": "Rinomina",
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
                         "services": "{count} {count, plural,\n  one {servizio}\n  other {servizi}\n}",
+                        "state": {
+                            "failed_unload": "Impossibile scaricare",
+                            "loaded": "Caricato",
+                            "migration_error": "Errore di migrazione",
+                            "not_loaded": "Non caricato",
+                            "setup_error": "Configurazione non riuscita",
+                            "setup_retry": "Nuovo tentativo di configurazione"
+                        },
                         "system_options": "Opzioni di sistema",
                         "unnamed_entry": "Voce senza nome"
                     },
@@ -2216,7 +2229,7 @@
                     "configure": "Configura",
                     "configured": "Configurato",
                     "confirm_new": "Vuoi configurare {integration}?",
-                    "description": "Gestisci le integrazioni con servizi, dispositivi, ...",
+                    "description": "Gestisci le integrazioni con servizi o dispositivi",
                     "details": "Dettagli dell'integrazione",
                     "disable": {
                         "disabled_integrations": "{number} disabilitate",
@@ -2255,8 +2268,10 @@
                 "logs": {
                     "caption": "Registri",
                     "clear": "Pulisci",
+                    "custom_integration": "integrazione personalizzata",
                     "description": "Vedi i registri di Home Assistant",
                     "details": "Dettagli registro ({level})",
+                    "error_from_custom_integration": "Questo errore ha avuto origine da un'integrazione personalizzata.",
                     "level": {
                         "critical": "CRITICO",
                         "debug": "DEBUG",

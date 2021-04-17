@@ -2156,6 +2156,8 @@
                     "caption": "통합 구성요소",
                     "config_entry": {
                         "area": "{area}에 위치",
+                        "check_the_logs": "로그 확인",
+                        "configure": "구성",
                         "delete": "삭제하기",
                         "delete_confirm": "이 통합 구성요소를 제거하시겠습니까?",
                         "device_unavailable": "기기 사용불가",
@@ -2180,7 +2182,7 @@
                         "logs": "로그",
                         "manuf": "{manufacturer} 제조",
                         "no_area": "영역 없음",
-                        "not_loaded": "불러오지 못했습니다. {logs_link}을(를) 확인해주세요.",
+                        "not_loaded": "로드되지 않음",
                         "options": "옵션",
                         "reload": "다시 읽어오기",
                         "reload_confirm": "통합 구성요소를 다시 읽어 들였습니다",
@@ -2188,6 +2190,14 @@
                         "rename": "이름 변경하기",
                         "restart_confirm": "이 통합 구성요소를 제거하려면 Home Assistant를 다시 시작해주세요",
                         "services": "{count} {count, plural,\n  one{개의 서비스}\n  other{개의 서비스}\n}",
+                        "state": {
+                            "failed_unload": "언로드 실패",
+                            "loaded": "로드 됨",
+                            "migration_error": "마이그레이션 오류",
+                            "not_loaded": "로드되지 않음",
+                            "setup_error": "설정 실패",
+                            "setup_retry": "설정 재시도"
+                        },
                         "system_options": "시스템 옵션",
                         "unnamed_entry": "이름이 없는 항목"
                     },
