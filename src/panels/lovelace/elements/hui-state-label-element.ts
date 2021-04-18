@@ -57,7 +57,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
 
     if (
       this._config.attribute &&
-      !stateObj.attributes[this._config.attribute]
+      stateObj.attributes[this._config.attribute] === undefined
     ) {
       return html`
         <hui-warning-element
