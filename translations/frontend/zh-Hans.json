@@ -2156,8 +2156,11 @@
                     "caption": "集成",
                     "config_entry": {
                         "area": "位于：{area}",
+                        "check_the_logs": "检查日志",
+                        "configure": "配置",
                         "delete": "删除",
                         "delete_confirm": "您确定要删除此集成吗？",
+                        "depends_on_cloud": "取决于云端",
                         "device_unavailable": "设备不可用",
                         "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
                         "disable_restart_confirm": "重启 Home Assistant 以完成此集成的禁用",
@@ -2180,14 +2183,24 @@
                         "logs": "日志",
                         "manuf": "by {manufacturer}",
                         "no_area": "没有区域",
-                        "not_loaded": "未加载，请检查{logs_link}",
+                        "not_loaded": "未加载",
                         "options": "选项",
+                        "provided_by_custom_component": "由自定义组件提供",
+                        "provided_by_custom_integration": "由自定义集成提供",
                         "reload": "重载",
                         "reload_confirm": "集成已重新加载",
                         "reload_restart_confirm": "重启 Home Assistant 以完成此集成的重载",
                         "rename": "重命名",
                         "restart_confirm": "重启 Home Assistant 以完成此集成的删除",
                         "services": "{count} {count, plural,\n  one {个服务}\n  other {个服务}\n}",
+                        "state": {
+                            "failed_unload": "卸载失败",
+                            "loaded": "已加载",
+                            "migration_error": "迁移错误",
+                            "not_loaded": "未加载",
+                            "setup_error": "设置失败",
+                            "setup_retry": "正在重试设置"
+                        },
                         "system_options": "系统选项",
                         "unnamed_entry": "未命名条目"
                     },
@@ -2255,8 +2268,10 @@
                 "logs": {
                     "caption": "日志",
                     "clear": "清除",
+                    "custom_integration": "自定义集成",
                     "description": "查看 Home Assistant 日志",
                     "details": "日志详细信息（ {level} ）",
+                    "error_from_custom_integration": "此错误来自自定义集成。",
                     "level": {
                         "critical": "CRITICAL",
                         "debug": "DEBUG",
