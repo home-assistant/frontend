@@ -14,24 +14,48 @@
             "fan_mode": {
                 "off": "बंद",
                 "on": "चालू"
+            },
+            "hvac_action": {
+                "cooling": "थन्दा",
+                "drying": "सुखाना",
+                "fan": "पंखा",
+                "heating": "गरमाना",
+                "idle": "खाली",
+                "off": "बंद"
+            },
+            "preset_mode": {
+                "away": "बाहर",
+                "comfort": "पर्याप्त",
+                "eco": "किफ़ायत",
+                "home": "घर",
+                "none": "कुच भि नहि",
+                "sleep": "निद्रा"
+            }
+        },
+        "humidifier": {
+            "mode": {
+                "normal": "सामान्य"
             }
         }
     },
     "state_badge": {
         "alarm_control_panel": {
+            "armed_custom_bypass": "सशस्त्र",
             "pending": "अपूर्ण"
         },
         "default": {
             "entity_not_found": "Entità non trovata",
-            "error": "Errore",
+            "error": "ग़लती",
             "unavailable": "अनुपलब्ध",
             "unknown": "अज्ञात"
         },
         "device_tracker": {
-            "home": "घर"
+            "home": "घर",
+            "not_home": "बाहर"
         },
         "person": {
-            "home": "घर"
+            "home": "घर",
+            "not_home": "बाहर"
         }
     },
     "state": {
@@ -57,6 +81,11 @@
             "previous": "पिछला",
             "undo": "पूर्ववत करें"
         },
+        "components": {
+            "history_charts": {
+                "no_history_found": "स्थिति के कोइ भि पहले रिकार्ड नहि मिले"
+            }
+        },
         "dialogs": {
             "mqtt_device_debug_info": {
                 "entities": "संस्थाएं",
@@ -74,6 +103,11 @@
         "duration": {
             "day": "{count} {count, plural,\n  one {दिन}\n  other {दिन}\n}",
             "week": "{count} {count, plural,\n  one {हफ़्ता}\n  other {हफ़्ते}\n}"
+        },
+        "errors": {
+            "supervisor": {
+                "system_health": "उप्करन के स्वस्थ्य कि जाँच करे"
+            }
         },
         "notification_drawer": {
             "empty": "सूचनाएँ नहीं हैं",
@@ -163,6 +197,19 @@
                         "password": "पासवर्ड"
                     }
                 },
+                "core": {
+                    "section": {
+                        "core": {
+                            "analytics": {
+                                "preference": {
+                                    "usage": {
+                                        "title": "उप्योग किये एकीकरण"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
                 "filtering": {
                     "clear": "विशद",
                     "filtering_by": "द्वारा छान रहे हैं"
@@ -170,8 +217,17 @@
                 "integrations": {
                     "add_integration": "एकीकरण जोड़ें",
                     "config_entry": {
+                        "check_the_logs": "अभिलेख जाँच करें",
                         "delete": "हटाएं",
+                        "not_loaded": "तैयार नहीं हैं",
+                        "provided_by_custom_integration": "विशेष एकीकरण से उप्लब्ध",
                         "rename": "नाम बदलें",
+                        "state": {
+                            "failed_unload": "खाली करने मे असफल",
+                            "loaded": "तैयार",
+                            "migration_error": "प्रवसन दोष",
+                            "not_loaded": "तैयार नहीं हैं"
+                        },
                         "system_options": "सिस्टम विकल्प"
                     },
                     "integration": "एकीकरण",
@@ -180,6 +236,10 @@
                     "rename_input_label": "प्रवेश का नाम"
                 },
                 "introduction": "In questa schermata è possibile configurare Home Assistant e i suoi componenti. Non è ancora possibile configurare tutto tramite l'interfaccia, ma ci stiamo lavorando.",
+                "logs": {
+                    "custom_integration": "िशेष एकीकरण",
+                    "error_from_custom_integration": "ये दोश िशेष एकीकरण की वजह से है"
+                },
                 "mqtt": {
                     "title": "MQTT"
                 },
@@ -229,6 +289,11 @@
                     "services": {
                         "title": "सेवाएं"
                     },
+                    "states": {
+                        "filter_states": "स्थिति छन्नी",
+                        "set_state": "स्थिति निर्धारित करे",
+                        "state": "स्थिति"
+                    },
                     "templates": {
                         "title": "टेम्पलेट्स"
                     }
@@ -236,6 +301,9 @@
             },
             "lovelace": {
                 "cards": {
+                    "empty_state": {
+                        "title": "स्वागत है घर मै"
+                    },
                     "starting": {
                         "description": "होम असिस्टेंट शुरू हो रहा है, कृपया प्रतीक्षा करें ..."
                     }
@@ -245,11 +313,21 @@
                 },
                 "editor": {
                     "card": {
+                        "alarm-panel": {
+                            "available_states": "उप्लब्दह स्थिति"
+                        },
+                        "conditional": {
+                            "current_state": "वरतमान",
+                            "state_equal": "स्थिति इस के बराबर है",
+                            "state_not_equal": "स्थिति इस के बराबर नहि है"
+                        },
                         "entity": {
-                            "description": "एंटिटी कार्ड आपको अपनी इकाई की स्थिति का त्वरित अवलोकन देता है।"
+                            "description": "स्थिति कार्ड आपको अपनी इकाई की स्थिति का संक्षेप देता है।"
                         },
                         "generic": {
-                            "double_tap_action": "डबल टैप एक्शन"
+                            "double_tap_action": "डबल टैप एक्शन",
+                            "show_state": "स्थिति दिखाएं?",
+                            "state": "स्थिति"
                         },
                         "map": {
                             "hours_to_show": "hours to show"
