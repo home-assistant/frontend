@@ -25,6 +25,7 @@ import {
 import { haStyle } from "../../resources/styles";
 import "../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../types";
+import { showLongLivedAccessTokenDialog } from "./show-long-lived-access-token-dialog";
 
 @customElement("ha-long-lived-access-tokens-card")
 class HaLongLivedTokens extends LitElement {
@@ -125,13 +126,7 @@ class HaLongLivedTokens extends LitElement {
         client_name: name,
       });
 
-      showPromptDialog(this, {
-        title: name,
-        text: this.hass.localize(
-          "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
-        ),
-        defaultValue: token,
-      });
+      showLongLivedAccessTokenDialog(this, { token, name });
 
       fireEvent(this, "hass-refresh-tokens");
     } catch (err) {
