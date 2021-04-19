@@ -42,7 +42,7 @@ class HaHLSPlayer extends LitElement {
 
   @internalProperty() private _attached = false;
 
-  private _hlsPolyfillInstance?: Hls;
+  private _hlsPolyfillInstance?: HlsType;
 
   private _useExoPlayer = false;
 
