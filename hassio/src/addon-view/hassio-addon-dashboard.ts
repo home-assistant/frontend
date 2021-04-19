@@ -177,8 +177,9 @@ class HassioAddonDashboard extends LitElement {
       const requestedAddon = extractSearchParam("addon");
       if (requestedAddon) {
         const addonsInfo = await fetchHassioAddonsInfo(this.hass);
-        const validAddon = addonsInfo.addons
-          .some((addon) => addon.slug === requestedAddon);
+        const validAddon = addonsInfo.addons.some(
+          (addon) => addon.slug === requestedAddon
+        );
         if (!validAddon) {
           this._error = this.supervisor.localize("my.error_addon_not_found");
         } else {
@@ -190,6 +191,10 @@ class HassioAddonDashboard extends LitElement {
   }
 
   private async _apiCalled(ev): Promise<void> {
+    if (!ev.detail.success) {
+      return;
+    }
+
     const pathSplit: string[] = ev.detail.path?.split("/");
 
     if (!pathSplit || pathSplit.length === 0) {
