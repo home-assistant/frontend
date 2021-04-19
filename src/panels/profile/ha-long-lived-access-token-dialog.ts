@@ -50,14 +50,12 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
         @closed=${this.closeDialog}
       >
         <div>
-          <p class="no-bottom-padding">
-            ${this.hass.localize(
-              "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
-            )}
-          </p>
           <paper-input
             dialogInitialFocus
             .value=${this._params.token}
+            .label=${this.hass.localize(
+              "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
+            )}
             type="text"
           ></paper-input>
           <div id="qr">
@@ -102,26 +100,6 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
     return [
       haStyleDialog,
       css`
-        :host([inert]) {
-          pointer-events: initial !important;
-          cursor: initial !important;
-        }
-        a {
-          color: var(--primary-color);
-        }
-        p {
-          margin: 0;
-          padding-top: 6px;
-          padding-bottom: 24px;
-          color: var(--primary-text-color);
-        }
-        .no-bottom-padding {
-          padding-bottom: 0;
-        }
-        ha-dialog {
-          /* Place above other dialogs */
-          --dialog-z-index: 104;
-        }
         #qr {
           text-align: center;
         }
