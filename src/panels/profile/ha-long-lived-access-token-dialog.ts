@@ -58,14 +58,14 @@ export class HaLongLivedAccessTokenDialog extends LitElement {
           <paper-input
             dialogInitialFocus
             .value=${this._params.token}
-            .type=${"text"}
+            type="text"
           ></paper-input>
           <div id="qr">
             ${this._qrCode
               ? this._qrCode
               : html`
-                  <mwc-button @click=${this._generateQR}
-                    >Generate QR code
+                  <mwc-button @click=${this._generateQR}>
+                    Generate QR code
                   </mwc-button>
                 `}
           </div>
