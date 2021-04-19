@@ -271,17 +271,17 @@ class HassioAddonConfig extends LitElement {
     this._error = undefined;
 
     try {
-      await setHassioAddonOption(this.hass, this.addon.slug, {
+      const response = await setHassioAddonOption(this.hass, this.addon.slug, {
         options: this._yamlMode ? this._editor?.value : this._options,
       });
 
+      if (response.result === "error") {
+        this._error = extractApiErrorMessage(response);
+        button.progress = false;
+        return;
+      }
+
       this._configHasChanged = false;
-      const eventdata = {
-        success: true,
-        response: undefined,
-        path: "options",
-      };
-      fireEvent(this, "hass-api-called", eventdata);
       if (this.addon?.state === "started") {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
@@ -293,6 +293,12 @@ class HassioAddonConfig extends LitElement {
       );
     }
     button.progress = false;
+    const eventdata = {
+      success: true,
+      response: undefined,
+      path: "options",
+    };
+    fireEvent(this, "hass-api-called", eventdata);
   }
 
   static get styles(): CSSResult[] {

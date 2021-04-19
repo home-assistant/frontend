@@ -194,16 +194,15 @@ export const setHassioAddonOption = async (
   data: HassioAddonSetOptionParams
 ) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
+    return await hass.callWS<HassioResponse<any>>({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/options`,
       method: "post",
       data,
     });
-    return;
   }
 
-  await hass.callApi<HassioResponse<void>>(
+  return await hass.callApi<HassioResponse<any>>(
     "POST",
     `hassio/addons/${slug}/options`,
     data
