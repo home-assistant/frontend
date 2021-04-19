@@ -33,6 +33,7 @@ export interface ZWaveJSNodeConfigParams {
   value: any;
   configuration_value_type: string;
   metadata: ZWaveJSNodeConfigParamMetadata;
+  result?: string;
 }
 
 export interface ZWaveJSNodeConfigParamMetadata {
@@ -56,9 +57,15 @@ export interface ZWaveJSSetConfigParamData {
   value: string | number;
 }
 
+<<<<<<< HEAD
 export interface ZWaveJSDataCollectionStatus {
   enabled: boolean;
   opted_in: boolean;
+=======
+export interface ZWaveJSSetConfigParamResult {
+  value_id: string;
+  status: string;
+>>>>>>> add basic feedback for set config param
 }
 
 export enum NodeStatus {
@@ -129,7 +136,7 @@ export const setNodeConfigParameter = (
   property: number,
   value: number,
   property_key?: number
-): Promise<unknown> => {
+): Promise<ZWaveJSSetConfigParamResult> => {
   const data: ZWaveJSSetConfigParamData = {
     type: "zwave_js/set_config_parameter",
     entry_id,
