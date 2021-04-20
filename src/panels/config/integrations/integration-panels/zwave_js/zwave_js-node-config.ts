@@ -1,4 +1,9 @@
-import { mdiCheckCircle, mdiCircle, mdiProgressClock } from "@mdi/js";
+import {
+  mdiCheckCircle,
+  mdiCircle,
+  mdiProgressClock,
+  mdiCloseCircle,
+} from "@mdi/js";
 import "../../../../../components/ha-settings-row";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -79,7 +84,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   @property({ type: Array })
   private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
-  @internalProperty() private _config?: ZWaveJSNodeConfigParams[];
+  @internalProperty() private _config?: ZWaveJSNodeConfigParams;
 
   @internalProperty() private _error?: string;
 
@@ -180,7 +185,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   private _generateConfigBox(id, item): TemplateResult {
-    const icons = { accepted: mdiCheckCircle, queued: mdiProgressClock };
+    const icons = {
+      accepted: mdiCheckCircle,
+      queued: mdiProgressClock,
+      error: mdiCloseCircle,
+    };
     const labelAndDescription = html`
       <span slot="heading">${item.metadata.label}</span>
       <span slot="description">
@@ -209,6 +218,9 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               ${this.hass.localize(
                 "ui.panel.config.zwave_js.node_config.set_param_" + item.result
               )}
+              ${item.result === "error" && item.error
+                ? html` <br /><em>${item.error}</em> `
+                : ""}
             </p>`
           : ""}
       </span>
@@ -312,7 +324,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   private _switchToggled(ev) {
-    this._config![ev.target.key].result = undefined;
+    this.setResult(ev.target.key, undefined);
     this._updateConfigParameter(ev.target, ev.target.checked ? 1 : 0);
   }
 
@@ -323,7 +335,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     if (this._config![ev.target.key].value === ev.target.selected) {
       return;
     }
-    this._config![ev.target.key].result = undefined;
+    this.setResult(ev.target.key, undefined);
 
     this._updateConfigParameter(ev.target, Number(ev.target.selected));
   }
@@ -338,26 +350,38 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     if (ev.target === undefined || this._config![ev.target.key] === undefined) {
       return;
     }
-    this._config![ev.target.key].result = undefined;
     const value = Number(ev.target.value);
     if (Number(this._config![ev.target.key].value) === value) {
       return;
     }
+    this.setResult(ev.target.key, undefined);
     this.debouncedUpdate(ev.target, value);
   }
 
   private async _updateConfigParameter(target, value) {
     const nodeId = getNodeId(this._device!);
-    const result = await setNodeConfigParameter(
-      this.hass,
-      this.configEntryId!,
-      nodeId!,
-      target.property,
-      value,
-      target.propertyKey ? target.propertyKey : undefined
-    );
-    this._config![target.key].value = value;
-    this._config![target.key].result = result.status;
+    try {
+      const result = await setNodeConfigParameter(
+        this.hass,
+        this.configEntryId!,
+        nodeId!,
+        target.property,
+        value,
+        target.propertyKey ? target.propertyKey : undefined
+      );
+      this._config![target.key].value = value;
+
+      this.setResult(target.key, result.status);
+    } catch (error) {
+      this._config![target.key].error = error.message;
+      this.setResult(target.key, "error");
+    }
+  }
+
+  private setResult(key: string, value: string | undefined) {
+    const paramValue = this._config![key];
+    paramValue.result = value;
+    this._config = { ...this._config, [key]: paramValue };
   }
 
   private get _device(): DeviceRegistryEntry | undefined {
@@ -398,6 +422,10 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
         .queued {
           color: #fca503;
+        }
+
+        .error {
+          color: red;
         }
 
         .secondary {

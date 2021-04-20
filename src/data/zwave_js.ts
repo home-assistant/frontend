@@ -29,11 +29,15 @@ export interface ZWaveJSNode {
 }
 
 export interface ZWaveJSNodeConfigParams {
+  [key: string]: ZWaveJSNodeConfigParam;
+}
+export interface ZWaveJSNodeConfigParam {
   property: number;
   value: any;
   configuration_value_type: string;
   metadata: ZWaveJSNodeConfigParamMetadata;
   result?: string;
+  error?: string;
 }
 
 export interface ZWaveJSNodeConfigParamMetadata {
@@ -122,7 +126,7 @@ export const fetchNodeConfigParameters = (
   hass: HomeAssistant,
   entry_id: string,
   node_id: number
-): Promise<ZWaveJSNodeConfigParams[]> =>
+): Promise<ZWaveJSNodeConfigParams> =>
   hass.callWS({
     type: "zwave_js/get_config_parameters",
     entry_id,
