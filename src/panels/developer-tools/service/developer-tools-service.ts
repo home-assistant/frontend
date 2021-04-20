@@ -282,7 +282,7 @@ class HaPanelDevService extends LitElement {
     } catch (err) {
       const [domain, service] = this._serviceData.service.split(".", 2);
       if (
-        err.error.code === ERR_CONNECTION_LOST &&
+        err.error?.code === ERR_CONNECTION_LOST &&
         serviceCallWillDisconnect(domain, service)
       ) {
         return;
