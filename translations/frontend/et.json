@@ -2185,7 +2185,6 @@
                         "no_area": "Ala puudub",
                         "not_loaded": "Pole laaditud",
                         "options": "Valikud",
-                        "provided_by_custom_component": "Saadaval välise osise abil",
                         "provided_by_custom_integration": "Saadaval välise sidumise kaudu",
                         "reload": "Taaslae",
                         "reload_confirm": "Sidumine on taaslaetud",

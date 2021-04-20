@@ -2185,7 +2185,6 @@
                         "no_area": "没有区域",
                         "not_loaded": "未加载",
                         "options": "选项",
-                        "provided_by_custom_component": "由自定义组件提供",
                         "provided_by_custom_integration": "由自定义集成提供",
                         "reload": "重载",
                         "reload_confirm": "集成已重新加载",

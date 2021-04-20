@@ -2185,7 +2185,6 @@
                         "no_area": "無分區",
                         "not_loaded": "未載入",
                         "options": "選項",
-                        "provided_by_custom_component": "由自訂元件提供",
                         "provided_by_custom_integration": "由自訂整合提供",
                         "reload": "重新載入",
                         "reload_confirm": "整合已重新載入",

@@ -2185,7 +2185,6 @@
                         "no_area": "Ningún área",
                         "not_loaded": "No se ha cargado",
                         "options": "Opciones",
-                        "provided_by_custom_component": "Proporcionada por un componente personalizado",
                         "provided_by_custom_integration": "Proporcionada por una integración personalizada",
                         "reload": "Recargar",
                         "reload_confirm": "La integración se ha recargado",

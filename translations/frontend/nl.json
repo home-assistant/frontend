@@ -2185,7 +2185,6 @@
                         "no_area": "Geen Gebied",
                         "not_loaded": "Niet geladen, controleer de {logs_link}",
                         "options": "Opties",
-                        "provided_by_custom_component": "Geleverd door een aangepaste component",
                         "provided_by_custom_integration": "Geleverd door een aangepaste integratie",
                         "reload": "Herlaad",
                         "reload_confirm": "De integratie is opnieuw geladen",
