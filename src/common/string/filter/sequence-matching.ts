@@ -132,8 +132,11 @@ const _decorateMatch: (
 
   let actualWord = "";
   for (const match of matches) {
-    actualWord += word.substring(pos, match.start);
-    actualWord += `${left}${word.substring(match.start, match.end)}${right}`;
+    actualWord +=
+      word.substring(pos, match.start) +
+      left +
+      word.substring(match.start, match.end) +
+      right;
     pos = match.end;
   }
   actualWord += word.substring(pos);
