@@ -2185,7 +2185,6 @@
                         "no_area": "Sense àrea",
                         "not_loaded": "No carregada",
                         "options": "Opcions",
-                        "provided_by_custom_component": "Proporcionada per un component personalitzat",
                         "provided_by_custom_integration": "Proporcionada per una integració personalitzada",
                         "reload": "Torna a carregar",
                         "reload_confirm": "La integració s'ha tornat a carregar",

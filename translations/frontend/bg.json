@@ -1678,6 +1678,7 @@
                         "manage_domains": "Управление на домейни",
                         "not_exposed": "{selected} неизложен",
                         "not_exposed_entities": "Не изложени обекти",
+                        "sync_to_google": "Синхронизиране на промените с Google.",
                         "title": "Google Assistant"
                     },
                     "login": {
@@ -2434,6 +2435,9 @@
                         "spinner": "Търсене на ZHA Zigbee устройства..."
                     },
                     "button": "Конфигуриране",
+                    "cluster_attributes": {
+                        "attributes_of_cluster": "Атрибути на избрания клъстер"
+                    },
                     "clusters": {
                         "header": "Клъстери",
                         "introduction": "Клъстерите са градивните елементи за функционалността на Zigbee. Те разделят функционалността на логически единици. Има типове клиенти и сървъри, състоящи се от атрибути и команди."

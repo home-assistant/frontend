@@ -2185,7 +2185,6 @@
                         "no_area": "Не указано",
                         "not_loaded": "Не загружено",
                         "options": "Настройки",
-                        "provided_by_custom_component": "Предоставляется кастомным компонентом",
                         "provided_by_custom_integration": "Предоставляется кастомной интеграцией",
                         "reload": "Перезагрузить",
                         "reload_confirm": "Перезагрузка интеграции выполнена",

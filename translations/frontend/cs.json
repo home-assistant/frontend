@@ -2184,7 +2184,6 @@
                         "no_area": "Žádná oblast",
                         "not_loaded": "Nenačteno",
                         "options": "Možnosti",
-                        "provided_by_custom_component": "Poskytováno vlastní komponentou",
                         "provided_by_custom_integration": "Poskytováno vlastní integrací",
                         "reload": "Nově načíst",
                         "reload_confirm": "Integrace byla nově načtena",
