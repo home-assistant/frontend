@@ -21,6 +21,7 @@
         "logbook": "יומן אירועים",
         "mailbox": "תיבת דואר",
         "map": "מפה",
+        "media_browser": "סייר המדיה",
         "profile": "פרופיל",
         "shopping_list": "רשימת קניות",
         "states": "ראשי"
@@ -505,11 +506,11 @@
                 },
                 "never": "אף פעם לא",
                 "past_duration": {
-                    "day": "לפני {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "day": "לפני {count} {count, plural,\n  one {יום}\n  other {ימים}\n}",
                     "hour": "לפני {count} {count, plural,\n  one {שעה}\n  other {שעות}\n}",
-                    "minute": "לפני {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-                    "second": "לפני {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-                    "week": "לפני {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                    "minute": "לפני {count} {count, plural,\n  one {דקה}\n  other {דקות}\n}",
+                    "second": "לפני {count} {count, plural,\n  one {שניה}\n  other {שניות}\n}",
+                    "week": "לפני {count} {count, plural,\n  one {שבוע}\n  other {שבועות}\n}"
                 }
             },
             "service-control": {
@@ -1137,6 +1138,8 @@
                         "unsupported_blueprint": "שרטוט זה לא נתמך",
                         "url": "כתובת URL של השרטוט"
                     },
+                    "caption": "שרטוטים",
+                    "description": "ניהול שרטוטים",
                     "overview": {
                         "add_blueprint": "יבוא שרטוט",
                         "confirm_delete_text": "האם אתה בטוח שברצונך למחוק שרטוט זה?",
@@ -1600,6 +1603,13 @@
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אינטגרציה זו?",
                         "device_unavailable": "מכשיר אינו זמין",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+                        "disable": {
+                            "disabled_by": {
+                                "device": "מכשיר",
+                                "integration": "אינטגרציה",
+                                "user": "משתמש"
+                            }
+                        },
                         "documentation": "תיעוד",
                         "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "ישות לא זמינה",
@@ -2673,7 +2683,7 @@
                         "delete": "מחק תצוגה",
                         "edit": "ערוך תצוגה",
                         "header": "הצג הגדרות",
-                        "header_name": "{name} הצג את תצורת",
+                        "header_name": "הצג את תצורת {name}",
                         "move_left": "הזז את התצוגה שמאלה",
                         "move_right": "הזז את התצוגה ימינה",
                         "tab_badges": "תגים",
@@ -3036,9 +3046,11 @@
                     "header": "מודלי אימות מרובה גורמים"
                 },
                 "number_format": {
+                    "description": "בחר כיצד מוצגים מספרים.",
                     "formats": {
                         "comma_decimal": "1,234,567.89",
                         "decimal_comma": "1.234.567,89",
+                        "language": "אוטומטי (השתמש בהגדרות השפה)",
                         "none": "לא נבחר",
                         "space_comma": "1 234 567,89",
                         "system": "השתמש ב System Locale"
