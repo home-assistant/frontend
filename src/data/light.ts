@@ -23,6 +23,12 @@ const modesSupportingColor = [
   LightColorModes.RGBWW,
 ];
 
+const modesSupportingDimming = [
+  ...modesSupportingColor,
+  LightColorModes.COLOR_TEMP,
+  LightColorModes.BRIGHTNESS,
+];
+
 export const SUPPORT_EFFECT = 4;
 export const SUPPORT_FLASH = 8;
 export const SUPPORT_TRANSITION = 32;
@@ -41,9 +47,8 @@ export const lightSupportsColor = (entity: LightEntity) => {
 };
 
 export const lightSupportsDimming = (entity: LightEntity) => {
-  return (
-    lightSupportsColorMode(entity, LightColorModes.BRIGHTNESS) ||
-    lightSupportsColor(entity)
+  return entity.attributes.supported_color_modes.some((mode) =>
+    modesSupportingDimming.includes(mode)
   );
 };
 
