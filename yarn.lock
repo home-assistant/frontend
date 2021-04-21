@@ -1918,9 +1918,9 @@
     lezer-tree "^0.13.0"
 
 "@codemirror/gutter@^0.18.0":
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/@codemirror/gutter/-/gutter-0.18.0.tgz#b6fb340f7cc7b4ed1a67687e145489b3ed93098d"
-  integrity sha512-9hcKzBM5EjhWwrau5Xiv0ll/yOvkgiyLnH7DTsjFCUvuyfbS45WVEMhQ6C+HfsoRVR4TJqRVLJjaIktZqaAqnw==
+  version "0.18.1"
+  resolved "https://registry.yarnpkg.com/@codemirror/gutter/-/gutter-0.18.1.tgz#65657be98d8c7183d23c03038a32df22dd631cc2"
+  integrity sha512-OJXT3giUPtMOLKmr3hHoLekEUHjLoGFA+1fIQUw7/39t4UZJr3S/1EQGI3NEPhyCg4+NCEHZJWS33x6dz5oOiA==
   dependencies:
     "@codemirror/rangeset" "^0.18.0"
     "@codemirror/state" "^0.18.0"
@@ -2011,16 +2011,16 @@
     crelt "^1.0.5"
 
 "@codemirror/state@^0.18.0", "@codemirror/state@^0.18.3":
-  version "0.18.5"
-  resolved "https://registry.yarnpkg.com/@codemirror/state/-/state-0.18.5.tgz#db936f80c40f329fb803bd284cbb5aa556dafb88"
-  integrity sha512-lHR+yE08jEz7MqA5hgNvK4/ksF2mQsJJ/pedKKfB94CUobMX20tsFQ27lZbXCxZDQcz5lO0AZuFuRqrbDlRtKA==
+  version "0.18.6"
+  resolved "https://registry.yarnpkg.com/@codemirror/state/-/state-0.18.6.tgz#46f4cabd7e635dd0f229d0ff1136d79b071354f8"
+  integrity sha512-jBY4KFY6RGPkuRUFXSZtgxpKebju8CJq7SkKYf+NsD8OZzDSauxPPYAL7V2z8ubvw74qLPIKIX2hERvY6WBdbg==
   dependencies:
     "@codemirror/text" "^0.18.0"
 
 "@codemirror/stream-parser@^0.18.0":
-  version "0.18.1"
-  resolved "https://registry.yarnpkg.com/@codemirror/stream-parser/-/stream-parser-0.18.1.tgz#20248b79d0fb9243a1431437dba79112c025058e"
-  integrity sha512-Q7HXbZRbAg5SboM0/3Hw9bKX7UxRWVsrtFjeQXzti2be/VHfMUAykidqWwWHe1SSn3Me3izpw9vLNEoGCm7tBw==
+  version "0.18.2"
+  resolved "https://registry.yarnpkg.com/@codemirror/stream-parser/-/stream-parser-0.18.2.tgz#d96ac5724650719c4a7784f2b94449366b22130e"
+  integrity sha512-3RTRmhIixcC2ps/G8So+BL0qJkwaspjyYt4smVYlSn4eNbxGK9K2RCnSmOPRv0SkuQMu3oUFbprFI/SbtZrPKg==
   dependencies:
     "@codemirror/highlight" "^0.18.0"
     "@codemirror/language" "^0.18.0"
@@ -2035,9 +2035,9 @@
   integrity sha512-HMzHNIAbjCiCf3tEJMRg6ul01KPuXxQGNiHlHgAnqPguq/CX+L4Nvj5JlWQAI91Pupk18zhmM1c6eaazX4YeTg==
 
 "@codemirror/view@^0.18.0":
-  version "0.18.6"
-  resolved "https://registry.yarnpkg.com/@codemirror/view/-/view-0.18.6.tgz#3598e72658e37b30e3260e4e623a81599b67a9a0"
-  integrity sha512-j0TtJbV+41g/0eGH7Pgx9wtO7Y3Rg0s9shLFGvUtJ4jMIimkCelQsEBtUmfEbNxAVXOsN+CbmsKg8M9p0ISeCA==
+  version "0.18.8"
+  resolved "https://registry.yarnpkg.com/@codemirror/view/-/view-0.18.8.tgz#e8e6b26adf427ce65356b9f1020876d7947d7953"
+  integrity sha512-vzP8oUBiLMbl5OCWUMGQdYtonk0tt9eUzi/xEDpYmo8Ao48/49fxPQUqBpUwy5Rcce9kUnkTi6r44iJKsEHpmg==
   dependencies:
     "@codemirror/rangeset" "^0.18.0"
     "@codemirror/state" "^0.18.0"
@@ -9425,14 +9425,7 @@ lezer-tree@^0.13.0, lezer-tree@^0.13.2:
   resolved "https://registry.yarnpkg.com/lezer-tree/-/lezer-tree-0.13.2.tgz#00f4671309b15c27b131f637e430ce2d4d5f7065"
   integrity sha512-15ZxW8TxVNAOkHIo43Iouv4zbSkQQ5chQHBpwXcD2bBFz46RB4jYLEEww5l1V0xyIx9U2clSyyrLes+hAUFrGQ==
 
-lezer@^0.13.0:
-  version "0.13.3"
-  resolved "https://registry.yarnpkg.com/lezer/-/lezer-0.13.3.tgz#520033a8f8be32872af1030e99ede6d9d3c6c023"
-  integrity sha512-DKYaqt52qx9wjxk+q+CqMMn5InqdwLrSCMqtNs+zYkl/VoTUgU8/BdmB6w/b/u7L5FCwdNybVvDS5t+1AvsD5g==
-  dependencies:
-    lezer-tree "^0.13.2"
-
-lezer@^0.13.4:
+lezer@^0.13.0, lezer@^0.13.4:
   version "0.13.4"
   resolved "https://registry.yarnpkg.com/lezer/-/lezer-0.13.4.tgz#f0396a3447c7a8f40391623f3f47a4d95559c42f"
   integrity sha512-cLQxUVY28VBBqKBt/R8CYeH57KQnIvscAnoahzvhlZTK8qxMkIyGExR6ecEpYYDX06ZhROZrEm1IiPvjLAsTig==
