@@ -6,37 +6,34 @@ import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
   LovelaceConfig,
   LovelaceDashboardStrategy,
-  LovelaceViewConfig,
   LovelaceViewStrategy,
 } from "../../../data/lovelace";
-import { HomeAssistant } from "../../../types";
 import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
 
 let subscribedRegistries = false;
 
-export class DefaultStrategy extends HTMLElement
-  implements LovelaceDashboardStrategy, LovelaceViewStrategy {
-  async generateView(info: {
-    view: LovelaceViewConfig;
-    lovelace: LovelaceConfig;
-    hass: HomeAssistant;
-  }): Promise<Partial<LovelaceViewConfig>> {
+export class DefaultStrategy extends HTMLElement {
+  static async generateView(
+    info: Parameters<LovelaceViewStrategy["generateView"]>[0]
+  ): ReturnType<LovelaceViewStrategy["generateView"]> {
+    const hass = info.hass;
+
     if (!subscribedRegistries) {
       subscribedRegistries = true;
-      subscribeAreaRegistry(info.hass.connection, () => undefined);
-      subscribeDeviceRegistry(info.hass.connection, () => undefined);
-      subscribeEntityRegistry(info.hass.connection, () => undefined);
+      subscribeAreaRegistry(hass.connection, () => undefined);
+      subscribeDeviceRegistry(hass.connection, () => undefined);
+      subscribeEntityRegistry(hass.connection, () => undefined);
     }
 
     const [areaEntries, deviceEntries, entityEntries] = await Promise.all([
-      subscribeOne(info.hass.connection, subscribeAreaRegistry),
-      subscribeOne(info.hass.connection, subscribeDeviceRegistry),
-      subscribeOne(info.hass.connection, subscribeEntityRegistry),
+      subscribeOne(hass.connection, subscribeAreaRegistry),
+      subscribeOne(hass.connection, subscribeDeviceRegistry),
+      subscribeOne(hass.connection, subscribeEntityRegistry),
     ]);
 
-    const entities = info.hass.states;
-    const config = info.hass.config;
-    const localize = info.hass.localize;
+    const entities = hass.states;
+    const config = hass.config;
+    const localize = hass.localize;
 
     // User can override default view. If they didn't, we will add one
     // that contains all entities.
@@ -68,13 +65,14 @@ export class DefaultStrategy extends HTMLElement
     return view;
   }
 
-  async generateDashboard(info: {
-    lovelace: LovelaceConfig;
-    hass: HomeAssistant;
-  }): Promise<Partial<LovelaceConfig>> {
-    if (info.hass.config.state === STATE_NOT_RUNNING) {
+  static async generateDashboard(
+    info: Parameters<LovelaceDashboardStrategy["generateDashboard"]>[0]
+  ): ReturnType<LovelaceDashboardStrategy["generateDashboard"]> {
+    const hass = info.hass;
+
+    if (hass.config.state === STATE_NOT_RUNNING) {
       return {
-        title: info.hass.config.location_name,
+        title: hass.config.location_name,
         views: [
           {
             cards: [{ type: "starting" }],
@@ -83,9 +81,9 @@ export class DefaultStrategy extends HTMLElement
       };
     }
 
-    if (info.hass.config.safe_mode) {
+    if (hass.config.safe_mode) {
       return {
-        title: info.hass.config.location_name,
+        title: hass.config.location_name,
         views: [
           {
             cards: [{ type: "safe-mode" }],
@@ -94,13 +92,28 @@ export class DefaultStrategy extends HTMLElement
       };
     }
 
-    return {
-      views: [
-        {
-          strategy: { name: "default" },
-          title: "default",
-        },
-      ],
+    const config: LovelaceConfig = {
+      views: [],
     };
+
+    config.views.push(
+      await this.generateView({
+        view: {},
+        lovelace: config,
+        hass,
+      })
+    );
+
+    return config;
+
+    // Once we implement view strategies, we can return this:
+    // return {
+    //   views: [
+    //     {
+    //       strategy: { name: "default" },
+    //       title: "default",
+    //     },
+    //   ],
+    // };
   }
 }

@@ -22,7 +22,7 @@ export interface LovelaceConfig {
   // When specified, we execute strategy and merge into config on top level (no deep merge)
   strategy?: {
     name: string;
-    options?: { [key: string]: unknown };
+    options?: Record<string, unknown>;
   };
   views: LovelaceViewConfig[];
   background?: string;
@@ -85,7 +85,7 @@ export interface LovelaceViewConfig {
   // When specified, we execute strategy and merge into view config on top level (no deep merge)
   strategy?: {
     name: string;
-    options?: { [key: string]: unknown };
+    options?: Record<string, unknown>;
   };
   badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];
@@ -191,9 +191,9 @@ type LovelaceUpdatedEvent = HassEventBase & {
 
 export interface LovelaceDashboardStrategy {
   generateDashboard(info: {
-    lovelace: LovelaceConfig;
+    lovelace?: LovelaceConfig;
     hass: HomeAssistant;
-  }): Promise<Partial<LovelaceConfig>>;
+  }): Promise<LovelaceConfig>;
 }
 
 export interface LovelaceViewStrategy {
@@ -201,7 +201,7 @@ export interface LovelaceViewStrategy {
     view: LovelaceViewConfig;
     lovelace: LovelaceConfig;
     hass: HomeAssistant;
-  }): Promise<Partial<LovelaceViewConfig>>;
+  }): Promise<LovelaceViewConfig>;
 }
 
 export const fetchResources = (conn: Connection): Promise<LovelaceResource[]> =>

@@ -1,16 +1,17 @@
 import { LovelaceDashboardStrategy } from "../../../data/lovelace";
+import { DefaultStrategy } from "./default-strategy";
 
 const CUSTOM_PREFIX = "custom:";
 
-const strategies = {
-  default: import("./default-strategy"),
+const strategies: Record<string, LovelaceDashboardStrategy> = {
+  default: DefaultStrategy,
 };
 
-export const getLovelaceDashboardStrategy = (
+export const getLovelaceDashboardStrategy = async (
   name: string
 ): Promise<LovelaceDashboardStrategy> => {
   if (name in strategies) {
-    return strategies[name].generateDashboard();
+    return strategies[name];
   }
 
   if (!name.startsWith(CUSTOM_PREFIX)) {
@@ -22,27 +23,3 @@ export const getLovelaceDashboardStrategy = (
 
   return customElements.whenDefined(tag).then(() => customElements.get(tag));
 };
-
-// To define a custom strategy
-// customElements.define(
-//   "ll-strategy-paulus",
-//   class extends HTMLElement {
-//     static async generateDashboard(info) {
-//       return {
-//         views: [
-//           {
-//             strategy: {
-//               name: "custom:paulus",
-//             },
-//           },
-//         ],
-//       };
-//     }
-
-//     static async generateView(info) {
-//       return {
-//         cards: [],
-//       };
-//     }
-//   }
-// );

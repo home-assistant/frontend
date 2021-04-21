@@ -25,6 +25,7 @@ import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-confi
 import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
+import { getLovelaceDashboardStrategy } from "./strategies/get-strategy";
 import { Lovelace } from "./types";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
@@ -153,7 +154,10 @@ class LovelacePanel extends LitElement {
   }
 
   private async _regenerateConfig() {
-    const conf = await generateLovelaceConfigFromHass(this.hass!);
+    const strategy = await getLovelaceDashboardStrategy("default");
+    const conf = await strategy.generateDashboard({
+      hass: this.hass!,
+    });
     this._setLovelaceConfig(conf, "generated");
     this._state = "loaded";
   }
@@ -237,6 +241,15 @@ class LovelacePanel extends LitElement {
 
     try {
       conf = await confProm!;
+
+      // If strategy defined, apply it here.
+      if (conf.strategy) {
+        const strategy = await getLovelaceDashboardStrategy(conf.strategy.name);
+        conf = await strategy.generateDashboard({
+          lovelace: conf,
+          hass: this.hass!,
+        });
+      }
     } catch (err) {
       if (err.code !== "config_not_found") {
         // eslint-disable-next-line
@@ -245,8 +258,13 @@ class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
-      const localize = await this.hass!.loadBackendTranslation("title");
-      conf = await generateLovelaceConfigFromHass(this.hass!, localize);
+      // We need the latest localize here or the card headers won't work.
+      // Ugly hack.
+      this.hass!.localize = await this.hass!.loadBackendTranslation("title");
+      const strategy = await getLovelaceDashboardStrategy("default");
+      conf = await strategy.generateDashboard({
+        hass: this.hass!,
+      });
       confMode = "generated";
     } finally {
       // Ignore updates for another 2 seconds.
