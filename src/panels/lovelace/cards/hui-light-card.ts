@@ -26,6 +26,7 @@ import {
   LightColorModes,
   LightEntity,
   lightSupportsColorMode,
+  lightSupportsDimming,
 } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -125,20 +126,14 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 @value-changing=${this._dragEvent}
                 @value-changed=${this._setBrightness}
                 style=${styleMap({
-                  visibility: lightSupportsColorMode(
-                    stateObj,
-                    LightColorModes.BRIGHTNESS
-                  )
+                  visibility: lightSupportsDimming(stateObj)
                     ? "visible"
                     : "hidden",
                 })}
               ></round-slider>
               <ha-icon-button
                 class="light-button ${classMap({
-                  "slider-center": lightSupportsColorMode(
-                    stateObj,
-                    LightColorModes.BRIGHTNESS
-                  ),
+                  "slider-center": lightSupportsDimming(stateObj),
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"

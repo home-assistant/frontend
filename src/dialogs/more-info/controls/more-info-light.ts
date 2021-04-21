@@ -23,6 +23,7 @@ import {
   LightEntity,
   lightSupportsColor,
   lightSupportsColorMode,
+  lightSupportsDimming,
   SUPPORT_EFFECT,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
@@ -61,7 +62,7 @@ class MoreInfoLight extends LitElement {
           "is-on": this.stateObj.state === "on",
         })}"
       >
-        ${lightSupportsColorMode(this.stateObj, LightColorModes.BRIGHTNESS)
+        ${lightSupportsDimming(this.stateObj)
           ? html`
               <ha-labeled-slider
                 caption=${this.hass.localize("ui.card.light.brightness")}

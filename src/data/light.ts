@@ -40,6 +40,13 @@ export const lightSupportsColor = (entity: LightEntity) => {
   );
 };
 
+export const lightSupportsDimming = (entity: LightEntity) => {
+  return (
+    lightSupportsColorMode(entity, LightColorModes.BRIGHTNESS) ||
+    lightSupportsColor(entity)
+  );
+};
+
 interface LightEntityAttributes extends HassEntityAttributeBase {
   min_mireds: number;
   max_mireds: number;
