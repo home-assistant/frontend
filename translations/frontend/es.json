@@ -287,7 +287,7 @@
             "reset_defaults": "Restablecer los valores predeterminados",
             "reset_options": "Restablecer opciones",
             "restart": "Reiniciar",
-            "restart_name": "Reiniciar {name}",
+            "restart_name": "Reiniciar el {name}",
             "running_version": "Actualmente estás ejecutando la versión {version}",
             "save": "Guardar",
             "show_more": "Mostrar más información sobre esto",
@@ -303,7 +303,7 @@
             },
             "restart": {
                 "text": "¿Estás seguro de que deseas reiniciar {name}?",
-                "title": "Reiniciar {name}"
+                "title": "Reiniciar el {name}"
             },
             "update": {
                 "text": "¿Estás seguro de que deseas actualizar {name} a la versión {version}?",
@@ -412,8 +412,8 @@
         },
         "system": {
             "core": {
-                "cpu_usage": "Uso de CPU principal",
-                "ram_usage": "Uso de RAM principal"
+                "cpu_usage": "Uso de CPU del core",
+                "ram_usage": "Uso de RAM del core"
             },
             "host": {
                 "change": "Cambiar",
@@ -731,7 +731,7 @@
                 "search": "Buscar"
             },
             "date-range-picker": {
-                "end_date": "Fecha de finalización",
+                "end_date": "Fecha de fin",
                 "select": "Seleccionar",
                 "start_date": "Fecha de inicio"
             },
@@ -2630,7 +2630,7 @@
                             "generic": "Entidades de cámara IP genéricas",
                             "generic_thermostat": "Entidades de termostato genéricas",
                             "group": "Grupos, entidades de grupo, y notificar servicios",
-                            "heading": "Recargando la configuración YAML",
+                            "heading": "Recarga de la configuración YAML",
                             "history_stats": "Entidades de estadísticas del historial",
                             "homekit": "HomeKit",
                             "input_boolean": "Campos booleanos",

@@ -2157,7 +2157,7 @@
                     "config_entry": {
                         "area": "位于：{area}",
                         "check_the_logs": "检查日志",
-                        "configure": "配置",
+                        "configure": "选项",
                         "delete": "删除",
                         "delete_confirm": "您确定要删除此集成吗？",
                         "depends_on_cloud": "取决于云端",
