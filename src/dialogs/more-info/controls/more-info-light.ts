@@ -19,12 +19,11 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import {
+  ColorModes,
   LightEntity,
-  SUPPORT_BRIGHTNESS,
-  SUPPORT_COLOR,
-  SUPPORT_COLOR_TEMP,
+  supportsColor,
+  supportsLightMode,
   SUPPORT_EFFECT,
-  SUPPORT_WHITE_VALUE,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 
@@ -62,7 +61,7 @@ class MoreInfoLight extends LitElement {
           "is-on": this.stateObj.state === "on",
         })}"
       >
-        ${supportsFeature(this.stateObj!, SUPPORT_BRIGHTNESS)
+        ${supportsLightMode(this.stateObj, ColorModes.BRIGHTNESS)
           ? html`
               <ha-labeled-slider
                 caption=${this.hass.localize("ui.card.light.brightness")}
@@ -77,7 +76,7 @@ class MoreInfoLight extends LitElement {
           : ""}
         ${this.stateObj.state === "on"
           ? html`
-              ${supportsFeature(this.stateObj, SUPPORT_COLOR_TEMP)
+              ${supportsLightMode(this.stateObj, ColorModes.COLOR_TEMP)
                 ? html`
                     <ha-labeled-slider
                       class="color_temp"
@@ -93,7 +92,8 @@ class MoreInfoLight extends LitElement {
                     ></ha-labeled-slider>
                   `
                 : ""}
-              ${supportsFeature(this.stateObj, SUPPORT_WHITE_VALUE)
+              ${supportsLightMode(this.stateObj, ColorModes.RGBW) ||
+              supportsLightMode(this.stateObj, ColorModes.RGBWW)
                 ? html`
                     <ha-labeled-slider
                       caption=${this.hass.localize("ui.card.light.white_value")}
@@ -105,7 +105,7 @@ class MoreInfoLight extends LitElement {
                     ></ha-labeled-slider>
                   `
                 : ""}
-              ${supportsFeature(this.stateObj, SUPPORT_COLOR)
+              ${supportsColor(this.stateObj)
                 ? html`
                     <div class="segmentationContainer">
                       <ha-color-picker
@@ -151,7 +151,7 @@ class MoreInfoLight extends LitElement {
           : ""}
         <ha-attributes
           .stateObj=${this.stateObj}
-          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds,entity_id,supported_color_modes,color_mode"
+          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,entity_id,supported_color_modes,color_mode"
         ></ha-attributes>
       </div>
     `;
