@@ -21,7 +21,6 @@ import "../../layouts/hass-error-screen";
 import "../../layouts/hass-loading-screen";
 import { HomeAssistant, PanelInfo, Route } from "../../types";
 import { showToast } from "../../util/toast";
-import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-config";
 import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
@@ -157,6 +156,7 @@ class LovelacePanel extends LitElement {
     const strategy = await getLovelaceDashboardStrategy("default");
     const conf = await strategy.generateDashboard({
       hass: this.hass!,
+      narrow: this.narrow,
     });
     this._setLovelaceConfig(conf, "generated");
     this._state = "loaded";
@@ -248,6 +248,7 @@ class LovelacePanel extends LitElement {
         conf = await strategy.generateDashboard({
           lovelace: conf,
           hass: this.hass!,
+          narrow: this.narrow,
         });
       }
     } catch (err) {
@@ -258,12 +259,12 @@ class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
-      // We need the latest localize here or the card headers won't work.
-      // Ugly hack.
+      // This localize override needs to go into the strategy
       this.hass!.localize = await this.hass!.loadBackendTranslation("title");
       const strategy = await getLovelaceDashboardStrategy("default");
       conf = await strategy.generateDashboard({
         hass: this.hass!,
+        narrow: this.narrow,
       });
       confMode = "generated";
     } finally {
@@ -347,9 +348,16 @@ class LovelacePanel extends LitElement {
         const { config: previousConfig, mode: previousMode } = this.lovelace!;
         try {
           // Optimistic update
-          const localize = await this.hass!.loadBackendTranslation("title");
+          this.hass!.localize = await this.hass!.loadBackendTranslation(
+            "title"
+          );
+          const strategy = await getLovelaceDashboardStrategy("default");
+          const generatedConf = await strategy.generateDashboard({
+            hass: this.hass!,
+            narrow: this.narrow,
+          });
           this._updateLovelace({
-            config: await generateLovelaceConfigFromHass(this.hass!, localize),
+            config: generatedConf,
             mode: "generated",
             editMode: false,
           });
