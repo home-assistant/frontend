@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 import "../../../src/components/ha-card";
 import {
-  ColorModes,
+  LightColorModes,
   SUPPORT_EFFECT,
   SUPPORT_FLASH,
   SUPPORT_TRANSITION,
@@ -29,8 +29,8 @@ const ENTITIES = [
   getEntity("light", "kitchen_light", "on", {
     friendly_name: "Brightness Light",
     brightness: 200,
-    supported_color_modes: [ColorModes.BRIGHTNESS],
-    color_mode: ColorModes.BRIGHTNESS,
+    supported_color_modes: [LightColorModes.BRIGHTNESS],
+    color_mode: LightColorModes.BRIGHTNESS,
   }),
   getEntity("light", "color_temperature_light", "on", {
     friendly_name: "White Color Temperature Light",
@@ -38,8 +38,11 @@ const ENTITIES = [
     color_temp: 75,
     min_mireds: 30,
     max_mireds: 150,
-    supported_color_modes: [ColorModes.BRIGHTNESS, ColorModes.COLOR_TEMP],
-    color_mode: ColorModes.COLOR_TEMP,
+    supported_color_modes: [
+      LightColorModes.BRIGHTNESS,
+      LightColorModes.COLOR_TEMP,
+    ],
+    color_mode: LightColorModes.COLOR_TEMP,
   }),
   getEntity("light", "color_effectslight", "on", {
     friendly_name: "Color Effets Light",
@@ -48,13 +51,13 @@ const ENTITIES = [
     white_value: 36,
     supported_features: SUPPORT_EFFECT + SUPPORT_FLASH + SUPPORT_TRANSITION,
     supported_color_modes: [
-      ColorModes.BRIGHTNESS,
-      ColorModes.COLOR_TEMP,
-      ColorModes.HS,
-      ColorModes.RGB,
-      ColorModes.XY,
+      LightColorModes.BRIGHTNESS,
+      LightColorModes.COLOR_TEMP,
+      LightColorModes.HS,
+      LightColorModes.RGB,
+      LightColorModes.XY,
     ],
-    color_mode: ColorModes.RGBW,
+    color_mode: LightColorModes.RGBW,
     effect_list: ["random", "colorloop"],
   }),
 ];

@@ -19,10 +19,10 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import {
-  ColorModes,
+  LightColorModes,
   LightEntity,
-  supportsColor,
-  supportsLightMode,
+  lightSupportsColor,
+  lightSupportsColorMode,
   SUPPORT_EFFECT,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
@@ -61,7 +61,7 @@ class MoreInfoLight extends LitElement {
           "is-on": this.stateObj.state === "on",
         })}"
       >
-        ${supportsLightMode(this.stateObj, ColorModes.BRIGHTNESS)
+        ${lightSupportsColorMode(this.stateObj, LightColorModes.BRIGHTNESS)
           ? html`
               <ha-labeled-slider
                 caption=${this.hass.localize("ui.card.light.brightness")}
@@ -76,7 +76,10 @@ class MoreInfoLight extends LitElement {
           : ""}
         ${this.stateObj.state === "on"
           ? html`
-              ${supportsLightMode(this.stateObj, ColorModes.COLOR_TEMP)
+              ${lightSupportsColorMode(
+                this.stateObj,
+                LightColorModes.COLOR_TEMP
+              )
                 ? html`
                     <ha-labeled-slider
                       class="color_temp"
@@ -92,8 +95,8 @@ class MoreInfoLight extends LitElement {
                     ></ha-labeled-slider>
                   `
                 : ""}
-              ${supportsLightMode(this.stateObj, ColorModes.RGBW) ||
-              supportsLightMode(this.stateObj, ColorModes.RGBWW)
+              ${lightSupportsColorMode(this.stateObj, LightColorModes.RGBW) ||
+              lightSupportsColorMode(this.stateObj, LightColorModes.RGBWW)
                 ? html`
                     <ha-labeled-slider
                       caption=${this.hass.localize("ui.card.light.white_value")}
@@ -105,7 +108,7 @@ class MoreInfoLight extends LitElement {
                     ></ha-labeled-slider>
                   `
                 : ""}
-              ${supportsColor(this.stateObj)
+              ${lightSupportsColor(this.stateObj)
                 ? html`
                     <div class="segmentationContainer">
                       <ha-color-picker

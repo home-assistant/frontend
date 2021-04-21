@@ -3,7 +3,7 @@ import {
   HassEntityBase,
 } from "home-assistant-js-websocket";
 
-export enum ColorModes {
+export enum LightColorModes {
   UNKNOWN = "unknown",
   ONOFF = "onoff",
   BRIGHTNESS = "brightness",
@@ -16,22 +16,25 @@ export enum ColorModes {
 }
 
 const modesSupportingColor = [
-  ColorModes.HS,
-  ColorModes.XY,
-  ColorModes.RGB,
-  ColorModes.RGBW,
-  ColorModes.RGBWW,
+  LightColorModes.HS,
+  LightColorModes.XY,
+  LightColorModes.RGB,
+  LightColorModes.RGBW,
+  LightColorModes.RGBWW,
 ];
 
 export const SUPPORT_EFFECT = 4;
 export const SUPPORT_FLASH = 8;
 export const SUPPORT_TRANSITION = 32;
 
-export const supportsLightMode = (entity: LightEntity, mode: ColorModes) => {
+export const lightSupportsColorMode = (
+  entity: LightEntity,
+  mode: LightColorModes
+) => {
   return entity.attributes.supported_color_modes.includes(mode);
 };
 
-export const supportsColor = (entity: LightEntity) => {
+export const lightSupportsColor = (entity: LightEntity) => {
   return entity.attributes.supported_color_modes.some((mode) =>
     modesSupportingColor.includes(mode)
   );
@@ -47,8 +50,8 @@ interface LightEntityAttributes extends HassEntityAttributeBase {
   white_value: number;
   effect?: string;
   effect_list: string[] | null;
-  supported_color_modes: ColorModes[];
-  color_mode: ColorModes;
+  supported_color_modes: LightColorModes[];
+  color_mode: LightColorModes;
 }
 
 export interface LightEntity extends HassEntityBase {
