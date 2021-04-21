@@ -2653,9 +2653,9 @@
             "battery_device_warning": "You will need to wake battery powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
             "start_reinterview": "Start Re-interview",
             "in_progress": "The device is being interviewed. This may take some time.",
-            "in_progress_close_note": "You can close this dialog and the interview will complete in the background.",
             "interview_failed": "The device interview failed. Additional information may be available in the logs.",
-            "interview_complete": "Device interview complete."
+            "interview_complete": "Device interview complete.",
+            "interview_stage": "Interview stage: {stage}"
           }
         }
       },

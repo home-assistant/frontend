@@ -16,7 +16,6 @@ import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSReinterviewNodeDialogParams } from "./show-dialog-zwave_js-reinterview-node";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { reinterviewNode } from "../../../../../data/zwave_js";
 
 @customElement("dialog-zwave_js-reinterview-node")
 class DialogZWaveJSReinterviewNode extends LitElement {
@@ -27,6 +26,8 @@ class DialogZWaveJSReinterviewNode extends LitElement {
   @internalProperty() private node_id?: number;
 
   @internalProperty() private _status = "";
+
+  @internalProperty() private _stage?: string;
 
   private _subscribed?: Promise<() => Promise<void>>;
 
@@ -89,11 +90,17 @@ class DialogZWaveJSReinterviewNode extends LitElement {
                       )}
                     </b>
                   </p>
-                  <p>
-                    ${this.hass.localize(
-                      "ui.panel.config.zwave_js.reinterview_node.in_progress_close_note"
-                    )}
-                  </p>
+                  ${this._stage
+                    ? html`
+                        <p>
+                          ${this.hass.localize(
+                            "ui.panel.config.zwave_js.reinterview_node.interview_stage",
+                            "stage",
+                            this._stage
+                          )}
+                        </p>
+                      `
+                    : ""}
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
@@ -105,8 +112,8 @@ class DialogZWaveJSReinterviewNode extends LitElement {
           ? html`
               <div class="flex-container">
                 <ha-svg-icon
-                  .path=${mdiCheckCircle}
-                  class="success"
+                  .path=${mdiCloseCircle}
+                  class="failed"
                 ></ha-svg-icon>
                 <div class="status">
                   <p>
@@ -163,6 +170,9 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     if (message.event === "interview started") {
       this._status = "started";
     }
+    if (message.event === "interview stage completed") {
+      this._stage = message.stage;
+    }
     if (message.event === "interview failed") {
       this._unsubscribe();
       this._status = "failed";
@@ -178,6 +188,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
+    this._stage = undefined;
   }
 
   public closeDialog(): void {
