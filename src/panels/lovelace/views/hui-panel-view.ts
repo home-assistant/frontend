@@ -101,6 +101,11 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   }
 
   private _createCard(): void {
+    if (this.cards.length === 0) {
+      this._card = undefined;
+      return;
+    }
+
     const card: LovelaceCard = this.cards[0];
     card.isPanel = true;
 
