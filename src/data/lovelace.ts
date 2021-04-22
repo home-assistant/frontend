@@ -19,7 +19,6 @@ export interface LovelacePanelConfig {
 
 export interface LovelaceConfig {
   title?: string;
-  // When specified, we execute strategy and merge into config on top level (no deep merge)
   strategy?: {
     name: string;
     options?: Record<string, unknown>;
@@ -82,7 +81,6 @@ export interface LovelaceViewConfig {
   index?: number;
   title?: string;
   type?: string;
-  // When specified, we execute strategy and merge into view config on top level (no deep merge)
   strategy?: {
     name: string;
     options?: Record<string, unknown>;
