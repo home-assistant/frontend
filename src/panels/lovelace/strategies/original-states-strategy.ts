@@ -11,7 +11,7 @@ import {
 
 let subscribedRegistries = false;
 
-export class OriginalStatesStrategy extends HTMLElement {
+export class OriginalStatesStrategy {
   static async generateView(
     info: Parameters<LovelaceViewStrategy["generateView"]>[0]
   ): ReturnType<LovelaceViewStrategy["generateView"]> {
