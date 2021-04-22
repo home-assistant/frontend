@@ -104,6 +104,7 @@ export interface LovelaceViewElement extends HTMLElement {
   index?: number;
   cards?: Array<LovelaceCard | HuiErrorCard>;
   badges?: LovelaceBadge[];
+  isStrategy: boolean;
   setConfig(config: LovelaceViewConfig): void;
 }
 
@@ -188,23 +189,6 @@ type LovelaceUpdatedEvent = HassEventBase & {
     mode: "yaml" | "storage";
   };
 };
-
-export interface LovelaceDashboardStrategy {
-  generateDashboard(info: {
-    lovelace?: LovelaceConfig;
-    hass: HomeAssistant;
-    narrow: boolean | undefined;
-  }): Promise<LovelaceConfig>;
-}
-
-export interface LovelaceViewStrategy {
-  generateView(info: {
-    view: LovelaceViewConfig;
-    lovelace: LovelaceConfig;
-    hass: HomeAssistant;
-    narrow: boolean | undefined;
-  }): Promise<LovelaceViewConfig>;
-}
 
 export const fetchResources = (conn: Connection): Promise<LovelaceResource[]> =>
   conn.sendMessagePromise({

@@ -24,10 +24,12 @@ import { showToast } from "../../util/toast";
 import { loadLovelaceResources } from "./common/load-resources";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import "./hui-root";
-import { getLovelaceDashboardStrategy } from "./strategies/get-strategy";
+import { generateLovelaceDashboardStrategy } from "./strategies/get-strategy";
 import { Lovelace } from "./types";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
+
+const DEFAULT_STRATEGY = "original-states";
 
 interface LovelacePanelConfig {
   mode: "yaml" | "storage";
@@ -153,11 +155,13 @@ class LovelacePanel extends LitElement {
   }
 
   private async _regenerateConfig() {
-    const strategy = await getLovelaceDashboardStrategy("default");
-    const conf = await strategy.generateDashboard({
-      hass: this.hass!,
-      narrow: this.narrow,
-    });
+    const conf = await generateLovelaceDashboardStrategy(
+      {
+        hass: this.hass!,
+        narrow: this.narrow,
+      },
+      DEFAULT_STRATEGY
+    );
     this._setLovelaceConfig(conf, "generated");
     this._state = "loaded";
   }
@@ -244,9 +248,8 @@ class LovelacePanel extends LitElement {
 
       // If strategy defined, apply it here.
       if (conf.strategy) {
-        const strategy = await getLovelaceDashboardStrategy(conf.strategy.name);
-        conf = await strategy.generateDashboard({
-          lovelace: conf,
+        conf = await generateLovelaceDashboardStrategy({
+          config: conf,
           hass: this.hass!,
           narrow: this.narrow,
         });
@@ -259,13 +262,13 @@ class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
-      // This localize override needs to go into the strategy
-      this.hass!.localize = await this.hass!.loadBackendTranslation("title");
-      const strategy = await getLovelaceDashboardStrategy("default");
-      conf = await strategy.generateDashboard({
-        hass: this.hass!,
-        narrow: this.narrow,
-      });
+      conf = await generateLovelaceDashboardStrategy(
+        {
+          hass: this.hass!,
+          narrow: this.narrow,
+        },
+        DEFAULT_STRATEGY
+      );
       confMode = "generated";
     } finally {
       // Ignore updates for another 2 seconds.
@@ -348,14 +351,13 @@ class LovelacePanel extends LitElement {
         const { config: previousConfig, mode: previousMode } = this.lovelace!;
         try {
           // Optimistic update
-          this.hass!.localize = await this.hass!.loadBackendTranslation(
-            "title"
+          const generatedConf = await generateLovelaceDashboardStrategy(
+            {
+              hass: this.hass!,
+              narrow: this.narrow,
+            },
+            DEFAULT_STRATEGY
           );
-          const strategy = await getLovelaceDashboardStrategy("default");
-          const generatedConf = await strategy.generateDashboard({
-            hass: this.hass!,
-            narrow: this.narrow,
-          });
           this._updateLovelace({
             config: generatedConf,
             mode: "generated",
