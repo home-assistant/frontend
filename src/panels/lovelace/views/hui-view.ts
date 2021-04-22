@@ -157,16 +157,17 @@ export class HUIView extends UpdatingElement {
 
         this._layoutElement!.hass = this.hass;
       }
-
-      for (const [fromProp, toProp] of Object.entries({
-        narrow: "narrow",
-        lovelace: "lovelace",
-        _cards: "cards",
-        _badges: "badges",
-      })) {
-        if (changedProperties.has(fromProp)) {
-          this._layoutElement![toProp] = this[fromProp];
-        }
+      if (changedProperties.has("narrow")) {
+        this._layoutElement!.narrow = this.narrow;
+      }
+      if (changedProperties.has("lovelace")) {
+        this._layoutElement!.lovelace = this.lovelace;
+      }
+      if (changedProperties.has("_cards")) {
+        this._layoutElement!.cards = this._cards;
+      }
+      if (changedProperties.has("_badges")) {
+        this._layoutElement!.badges = this._badges;
       }
     }
 
