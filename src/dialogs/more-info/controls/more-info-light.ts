@@ -29,7 +29,6 @@ import {
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-button-toggle-group";
-import { FAILSAFE_SCHEMA } from "js-yaml";
 
 interface HueSatColor {
   h: number;
