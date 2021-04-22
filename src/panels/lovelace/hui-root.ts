@@ -613,7 +613,7 @@ class HUIRoot extends LitElement {
       }
 
       if (!force && huiView) {
-        huiView.lovelace = this.lovelace;
+        huiView.lovelace = this.lovelace!;
       }
     }
 
