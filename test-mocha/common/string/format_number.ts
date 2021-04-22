@@ -15,13 +15,13 @@ describe("formatNumber", () => {
     );
   });
 
-  it("Test format 'none' (keep comma despite language 'en')", () => {
+  it("Test format 'none' (keep dot despite language 'de')", () => {
     assert.strictEqual(
-      formatNumber("1,23", {
-        language: "en",
+      formatNumber(1.23, {
+        language: "de",
         number_format: NumberFormat.none,
       }),
-      "1,23"
+      "1.23"
     );
   });
 
