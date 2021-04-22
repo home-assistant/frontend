@@ -39,13 +39,13 @@ declare global {
 
 @customElement("hui-view")
 export class HUIView extends UpdatingElement {
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public lovelace?: Lovelace;
+  @property({ attribute: false }) public lovelace!: Lovelace;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @property({ type: Number }) public index?: number;
+  @property({ type: Number }) public index!: number;
 
   @internalProperty() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
@@ -89,127 +89,122 @@ export class HUIView extends UpdatingElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    const hass = this.hass!;
-    const lovelace = this.lovelace!;
+    /*
+      We need to handle the following use cases:
+       - initialization: create layout element, populate
+       - config changed to view with same layout element
+       - config changed to view with different layout element
+       - forwarded properties hass/narrow/lovelace/cards/badges change
+          - cards/badges change if one is rebuild when it was loaded later
+          - lovelace changes if edit mode is enabled or config has changed
+    */
 
-    const hassChanged = changedProperties.has("hass");
-    const oldLovelace = changedProperties.get("lovelace") as Lovelace;
+    const oldLovelace = changedProperties.get("lovelace") as this["lovelace"];
 
-    let editModeChanged = false;
-    let configChanged = false;
-
-    if (changedProperties.has("index")) {
-      configChanged = true;
-    } else if (changedProperties.has("lovelace")) {
-      editModeChanged =
-        oldLovelace && lovelace.editMode !== oldLovelace.editMode;
-      configChanged = !oldLovelace || lovelace.config !== oldLovelace.config;
-    }
-
-    let viewConfig: LovelaceViewConfig | undefined;
-
-    if (configChanged) {
-      viewConfig = lovelace.config.views[this.index!];
+    // If config has changed, create element if necessary and set all values.
+    if (
+      changedProperties.has("index") ||
+      (changedProperties.has("lovelace") &&
+        (!oldLovelace ||
+          this.lovelace.config.views[this.index] !==
+            oldLovelace.config.views[this.index]))
+    ) {
+      let viewConfig = this.lovelace.config.views[this.index];
       viewConfig = {
         ...viewConfig,
         type: viewConfig.panel
           ? PANEL_VIEW_LAYOUT
           : viewConfig.type || DEFAULT_VIEW_LAYOUT,
       };
-    }
 
-    let replace = false;
-
-    if (
-      configChanged &&
-      (!this._layoutElement || this._layoutElementType !== viewConfig!.type)
-    ) {
-      replace = true;
-      this._layoutElement = createViewElement(viewConfig!);
-      this._layoutElementType = viewConfig!.type;
-      this._layoutElement.addEventListener("ll-create-card", () => {
-        showCreateCardDialog(this, {
-          lovelaceConfig: this.lovelace!.config,
-          saveConfig: this.lovelace!.saveConfig,
-          path: [this.index!],
-        });
-      });
-      this._layoutElement.addEventListener("ll-edit-card", (ev) => {
-        showEditCardDialog(this, {
-          lovelaceConfig: this.lovelace!.config,
-          saveConfig: this.lovelace!.saveConfig,
-          path: ev.detail.path,
-        });
-      });
-      this._layoutElement.addEventListener("ll-delete-card", (ev) => {
-        confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
-      });
-    }
-
-    if (configChanged) {
       this._createBadges(viewConfig!);
       this._createCards(viewConfig!);
 
+      // Create a new layout element if necessary.
+      let addLayoutElement = false;
+
+      if (
+        !this._layoutElement ||
+        this._layoutElementType !== viewConfig!.type
+      ) {
+        addLayoutElement = true;
+        this._createLayoutElement(viewConfig!);
+      }
+
       this._layoutElement!.hass = this.hass;
       this._layoutElement!.narrow = this.narrow;
-      this._layoutElement!.lovelace = lovelace;
+      this._layoutElement!.lovelace = this.lovelace;
       this._layoutElement!.index = this.index;
-    }
-
-    if (hassChanged) {
-      this._badges.forEach((badge) => {
-        badge.hass = hass;
-      });
-
-      this._cards.forEach((element) => {
-        element.hass = hass;
-      });
-
-      this._layoutElement!.hass = this.hass;
-    }
-
-    if (changedProperties.has("narrow")) {
-      this._layoutElement!.narrow = this.narrow;
-    }
-
-    if (editModeChanged) {
-      this._layoutElement!.lovelace = lovelace;
-    }
-
-    if (
-      configChanged ||
-      hassChanged ||
-      editModeChanged ||
-      changedProperties.has("_cards") ||
-      changedProperties.has("_badges")
-    ) {
       this._layoutElement!.cards = this._cards;
       this._layoutElement!.badges = this._badges;
+
+      if (addLayoutElement) {
+        while (this.lastChild) {
+          this.removeChild(this.lastChild);
+        }
+        this.appendChild(this._layoutElement!);
+      }
+    } else {
+      // Config has not changed. Just props
+      if (changedProperties.has("hass")) {
+        this._badges.forEach((badge) => {
+          badge.hass = this.hass;
+        });
+
+        this._cards.forEach((element) => {
+          element.hass = this.hass;
+        });
+
+        this._layoutElement!.hass = this.hass;
+      }
+
+      for (const [fromProp, toProp] of Object.entries({
+        narrow: "narrow",
+        lovelace: "lovelace",
+        _cards: "cards",
+        _badges: "badges",
+      })) {
+        if (changedProperties.has(fromProp)) {
+          this._layoutElement![toProp] = this[fromProp];
+        }
+      }
     }
 
     const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
 
     if (
-      configChanged ||
-      editModeChanged ||
-      (hassChanged &&
-        oldHass &&
-        (hass.themes !== oldHass.themes ||
-          hass.selectedTheme !== oldHass.selectedTheme))
+      !oldHass ||
+      this.hass.themes !== oldHass.themes ||
+      this.hass.selectedTheme !== oldHass.selectedTheme
     ) {
       applyThemesOnElement(
         this,
-        hass.themes,
-        lovelace.config.views[this.index!].theme
+        this.hass.themes,
+        this.lovelace.config.views[this.index].theme
       );
     }
+  }
 
-    if (this._layoutElement && replace) {
-      while (this.lastChild) {
-        this.removeChild(this.lastChild);
-      }
-      this.appendChild(this._layoutElement);
-    }
+  private _createLayoutElement(config: LovelaceViewConfig): void {
+    this._layoutElement = createViewElement(config);
+    this._layoutElementType = config.type;
+    this._layoutElement.addEventListener("ll-create-card", () => {
+      showCreateCardDialog(this, {
+        lovelaceConfig: this.lovelace!.config,
+        saveConfig: this.lovelace!.saveConfig,
+        path: [this.index],
+      });
+    });
+    this._layoutElement.addEventListener("ll-edit-card", (ev) => {
+      showEditCardDialog(this, {
+        lovelaceConfig: this.lovelace!.config,
+        saveConfig: this.lovelace!.saveConfig,
+        path: ev.detail.path,
+      });
+    });
+    this._layoutElement.addEventListener("ll-delete-card", (ev) => {
+      confDeleteCard(this, this.hass!, this.lovelace!, ev.detail.path);
+    });
   }
 
   private _createBadges(config: LovelaceViewConfig): void {
