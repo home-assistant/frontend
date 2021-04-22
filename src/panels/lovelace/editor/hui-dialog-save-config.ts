@@ -135,6 +135,9 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
               <mwc-button
                 slot="primaryAction"
                 ?disabled=${this._saving}
+                aria-label=${this.hass!.localize(
+                  "ui.panel.lovelace.editor.save_config.save"
+                )}
                 @click=${this._saveConfig}
               >
                 ${this._saving
