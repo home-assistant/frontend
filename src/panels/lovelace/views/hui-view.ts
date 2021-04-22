@@ -173,9 +173,10 @@ export class HUIView extends UpdatingElement {
     const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
 
     if (
-      !oldHass ||
-      this.hass.themes !== oldHass.themes ||
-      this.hass.selectedTheme !== oldHass.selectedTheme
+      changedProperties.has("hass") &&
+      (!oldHass ||
+        this.hass.themes !== oldHass.themes ||
+        this.hass.selectedTheme !== oldHass.selectedTheme)
     ) {
       applyThemesOnElement(
         this,
