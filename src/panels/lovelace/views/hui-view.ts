@@ -172,6 +172,9 @@ export class HUIView extends UpdatingElement {
 
     const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
 
+    // Update theme if necessary:
+    // - If config changed, the theme could have changed
+    // - if hass themes preferences have changed
     if (
       configChanged ||
       (changedProperties.has("hass") &&
