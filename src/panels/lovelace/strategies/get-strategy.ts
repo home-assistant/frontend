@@ -85,7 +85,7 @@ const generateStrategy = async <T extends keyof GenerateMethods>(
 export const generateLovelaceDashboardStrategy = async (
   info: Parameters<LovelaceDashboardStrategy["generateDashboard"]>[0],
   name?: string
-): Promise<ReturnType<LovelaceDashboardStrategy["generateDashboard"]>> =>
+): ReturnType<LovelaceDashboardStrategy["generateDashboard"]> =>
   generateStrategy(
     "generateDashboard",
     (err) => ({
@@ -108,7 +108,7 @@ export const generateLovelaceDashboardStrategy = async (
 export const generateLovelaceViewStrategy = async (
   info: Parameters<LovelaceViewStrategy["generateView"]>[0],
   name?: string
-): Promise<ReturnType<LovelaceViewStrategy["generateView"]>> =>
+): ReturnType<LovelaceViewStrategy["generateView"]> =>
   generateStrategy(
     "generateView",
     (err) => ({
@@ -122,3 +122,31 @@ export const generateLovelaceViewStrategy = async (
     info,
     name || info.view?.strategy?.name
   );
+
+/**
+ * Find all references to strategies and replaces them with the generated output
+ */
+export const expandLovelaceConfigStrategies = async (
+  info: Parameters<LovelaceDashboardStrategy["generateDashboard"]>[0] & {
+    config: LovelaceConfig;
+  }
+): Promise<LovelaceConfig> => {
+  const config = info.config.strategy
+    ? await generateLovelaceDashboardStrategy(info)
+    : { ...info.config };
+
+  config.views = await Promise.all(
+    config.views.map((view) =>
+      view.strategy
+        ? generateLovelaceViewStrategy({
+            hass: info.hass,
+            narrow: info.narrow,
+            config,
+            view,
+          })
+        : view
+    )
+  );
+
+  return config;
+};

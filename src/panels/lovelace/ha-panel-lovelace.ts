@@ -141,7 +141,9 @@ class LovelacePanel extends LitElement {
     `;
   }
 
-  protected firstUpdated() {
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+
     this._fetchConfig(false);
     if (!this._unsubUpdates) {
       this._subscribeUpdates();
@@ -323,6 +325,7 @@ class LovelacePanel extends LitElement {
         showSaveDialog(this, {
           lovelace: this.lovelace!,
           mode: this.panel!.config.mode,
+          narrow: this.narrow!,
         });
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {

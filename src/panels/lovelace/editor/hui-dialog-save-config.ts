@@ -19,13 +19,15 @@ import "../../../components/ha-formfield";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import "../../../components/ha-yaml-editor";
+import type { LovelaceConfig } from "../../../data/lovelace";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { expandLovelaceConfigStrategies } from "../strategies/get-strategy";
 import type { SaveDialogParams } from "./show-save-config-dialog";
 
-const EMPTY_CONFIG = { views: [] };
+const EMPTY_CONFIG: LovelaceConfig = { views: [{ title: "Home" }] };
 
 @customElement("hui-dialog-save-config")
 export class HuiSaveConfig extends LitElement implements HassDialog {
@@ -126,9 +128,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
         ${this._params.mode === "storage"
           ? html`
               <mwc-button slot="primaryAction" @click=${this.closeDialog}
-                >${this.hass!.localize(
-                  "ui.common.cancel"
-                )}
+                >${this.hass!.localize("ui.common.cancel")}
               </mwc-button>
               <mwc-button
                 slot="primaryAction"
@@ -177,7 +177,13 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
     try {
       const lovelace = this._params!.lovelace;
       await lovelace.saveConfig(
-        this._emptyConfig ? EMPTY_CONFIG : lovelace.config
+        this._emptyConfig
+          ? EMPTY_CONFIG
+          : await expandLovelaceConfigStrategies({
+              config: lovelace.config,
+              hass: this.hass!,
+              narrow: this._params!.narrow,
+            })
       );
       lovelace.setEditMode(true);
       this._saving = false;
