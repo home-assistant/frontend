@@ -100,15 +100,15 @@ export class HUIView extends UpdatingElement {
     */
 
     const oldLovelace = changedProperties.get("lovelace") as this["lovelace"];
-
-    // If config has changed, create element if necessary and set all values.
-    if (
+    const configChanged =
       changedProperties.has("index") ||
       (changedProperties.has("lovelace") &&
         (!oldLovelace ||
           this.lovelace.config.views[this.index] !==
-            oldLovelace.config.views[this.index]))
-    ) {
+            oldLovelace.config.views[this.index]));
+
+    // If config has changed, create element if necessary and set all values.
+    if (configChanged) {
       let viewConfig = this.lovelace.config.views[this.index];
       viewConfig = {
         ...viewConfig,
@@ -173,10 +173,11 @@ export class HUIView extends UpdatingElement {
     const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
 
     if (
-      changedProperties.has("hass") &&
-      (!oldHass ||
-        this.hass.themes !== oldHass.themes ||
-        this.hass.selectedTheme !== oldHass.selectedTheme)
+      configChanged ||
+      (changedProperties.has("hass") &&
+        (!oldHass ||
+          this.hass.themes !== oldHass.themes ||
+          this.hass.selectedTheme !== oldHass.selectedTheme))
     ) {
       applyThemesOnElement(
         this,
