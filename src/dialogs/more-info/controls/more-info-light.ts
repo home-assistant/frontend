@@ -268,9 +268,10 @@ class MoreInfoLight extends LitElement {
     if (stateObj.state === "on") {
       let brightnessAdjust = 100;
       if (stateObj.attributes.color_mode === LightColorModes.RGB) {
-        const maxVal = Math.max(...stateObj.attributes.rgbww_color.slice(0, 3));
+        const maxVal = Math.max(...stateObj.attributes.rgb_color);
         if (maxVal < 255) {
-          this._brightnessAdjusted = brightnessAdjust = (maxVal / 255) * 100;
+          this._brightnessAdjusted = maxVal;
+          brightnessAdjust = (this._brightnessAdjusted / 255) * 100;
         }
       } else {
         this._brightnessAdjusted = undefined;
@@ -330,6 +331,23 @@ class MoreInfoLight extends LitElement {
     const bri = parseInt((ev.target as any).value, 10);
 
     if (isNaN(bri)) {
+      return;
+    }
+
+    if (this._brightnessAdjusted) {
+      const rgb =
+        this.stateObj!.attributes.rgb_color ||
+        ([0, 0, 0] as [number, number, number]);
+
+      this.hass.callService("light", "turn_on", {
+        entity_id: this.stateObj!.entity_id,
+        brightness_pct: bri,
+        rgb_color: this._adjustColorBrightness(
+          rgb,
+          this._brightnessAdjusted,
+          true
+        ),
+      });
       return;
     }
 
