@@ -40,6 +40,10 @@ export const lightSupportsColorMode = (
   return entity.attributes.supported_color_modes.includes(mode);
 };
 
+export const isColorMode = (entity: LightEntity) => {
+  return modesSupportingColor.includes(entity.attributes.color_mode);
+};
+
 export const lightSupportsColor = (entity: LightEntity) => {
   return entity.attributes.supported_color_modes.some((mode) =>
     modesSupportingColor.includes(mode)
@@ -57,9 +61,11 @@ interface LightEntityAttributes extends HassEntityAttributeBase {
   max_mireds: number;
   friendly_name: string;
   brightness: number;
-  hs_color: number[];
+  hs_color: [number, number];
+  rgb_color: [number, number, number];
+  rgbw_color: [number, number, number, number];
+  rgbww_color: [number, number, number, number, number];
   color_temp: number;
-  white_value: number;
   effect?: string;
   effect_list: string[] | null;
   supported_color_modes: LightColorModes[];
