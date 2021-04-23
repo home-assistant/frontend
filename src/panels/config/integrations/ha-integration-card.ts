@@ -212,14 +212,17 @@ export class HaIntegrationCard extends LitElement {
     }
 
     return html`
-      <div class="content">
-        ${stateText
-          ? html`
-              <div class="message">
+      ${stateText
+        ? html`
+            <div class="message">
+              <ha-svg-icon .path=${mdiAlertCircle}></ha-svg-icon>
+              <div>
                 ${this.hass.localize(...stateText)}${stateTextExtra}
               </div>
-            `
-          : ""}
+            </div>
+          `
+        : ""}
+      <div class="content">
         ${devices.length || services.length || entities.length
           ? html`
               <div>
@@ -621,7 +624,16 @@ export class HaIntegrationCard extends LitElement {
         .message {
           font-weight: bold;
           padding-bottom: 16px;
+          display: flex;
+          margin-left: 40px;
+        }
+        .message ha-svg-icon {
           color: var(--state-message-color);
+        }
+        .message div {
+          flex: 1;
+          margin-left: 8px;
+          padding-top: 2px;
         }
 
         .content {
