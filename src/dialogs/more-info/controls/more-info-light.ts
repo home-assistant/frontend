@@ -90,11 +90,7 @@ class MoreInfoLight extends LitElement {
       supportsRgbww || supportsRgbw || lightSupportsColor(this.stateObj);
 
     return html`
-      <div
-        class="content ${classMap({
-          "is-on": this.stateObj.state === "on",
-        })}"
-      >
+      <div class="content">
         ${lightSupportsDimming(this.stateObj)
           ? html`
               <ha-labeled-slider
@@ -109,16 +105,16 @@ class MoreInfoLight extends LitElement {
               <hr></hr>
             `
           : ""}
-        ${supportsTemp && supportsColor
-          ? html`<ha-button-toggle-group
-              fullWidth
-              .buttons=${toggleButtons}
-              .active=${this._mode}
-              @value-changed=${this._modeChanged}
-            ></ha-button-toggle-group>`
-          : ""}
         ${this.stateObj.state === "on"
           ? html`
+              ${supportsTemp && supportsColor
+                ? html`<ha-button-toggle-group
+                    fullWidth
+                    .buttons=${toggleButtons}
+                    .active=${this._mode}
+                    @value-changed=${this._modeChanged}
+                  ></ha-button-toggle-group>`
+                : ""}
               ${supportsTemp &&
               (!supportsColor || this._mode === LightColorModes.COLOR_TEMP)
                 ? html`
