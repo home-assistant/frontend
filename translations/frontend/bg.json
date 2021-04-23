@@ -180,6 +180,7 @@
                 "new_update_available": "{name} {version} е налично",
                 "not_available_arch": "Тази добавка не е съвместима с процесора на вашето устройство или операционната система, която сте инсталирали на вашето устройство.",
                 "not_available_version": "Изпълнявате Home Assistant {core_version_installed}, за да актуализирате до тази версия на добавката ви е необходима поне версия {core_version_needed} на Home Assistant",
+                "open_web_ui": "Отваряне на потребителския WEB интерфейс",
                 "option": {
                     "auto_update": {
                         "description": "Автоматично актуализиране на добавката, когато има налична нова версия",
@@ -1967,6 +1968,8 @@
                     "copy_github": "За GitHub",
                     "description": "Версия, състояние на системата и връзки към документация",
                     "documentation": "Документация",
+                    "frontend": "Интерфейс",
+                    "frontend_version": "Версия на интерфейса: {version} - {type}",
                     "home_assistant_logo": "Лого на Home Assistant",
                     "icons_by": "Икони от",
                     "integrations": "Интеграции",
@@ -2017,6 +2020,9 @@
                         "rename": "Преименуване",
                         "restart_confirm": "Рестартирайте Home Assistant за да завършите премахването на интеграцията",
                         "services": "{count} {count, plural,\n  one {услуга}\n  other {услуги}\n}",
+                        "state": {
+                            "migration_error": "Грешка при миграцията"
+                        },
                         "system_options": "Системни настройки",
                         "unnamed_entry": "Запис без име"
                     },
@@ -2077,6 +2083,7 @@
                     "load_full_log": "Зареждане на пълния журнал на Home Assistant",
                     "loading_log": "Зарежда се журнала за грешки...",
                     "multiple_messages": "съобщението е възникнало за първи път в {time} и се показва {counter} пъти",
+                    "no_issues": "Няма нови проблеми!",
                     "refresh": "Опресняване"
                 },
                 "lovelace": {
@@ -2507,8 +2514,10 @@
                 "zwave_js": {
                     "button": "Конфигуриране",
                     "common": {
+                        "add_node": "Добавяне на възел",
                         "close": "Затвори",
-                        "network": "Мрежа"
+                        "network": "Мрежа",
+                        "remove_node": "Премахване на възел"
                     },
                     "dashboard": {
                         "driver_version": "Версия на драйвера",
