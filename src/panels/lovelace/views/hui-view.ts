@@ -56,6 +56,8 @@ export class HUIView extends UpdatingElement {
 
   private _layoutElement?: LovelaceViewElement;
 
+  private _viewConfigTheme?: string;
+
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
     const element = createCardElement(cardConfig) as LovelaceCard;
@@ -150,17 +152,14 @@ export class HUIView extends UpdatingElement {
         this.hass.themes !== oldHass.themes ||
         this.hass.selectedTheme !== oldHass.selectedTheme)
     ) {
-      applyThemesOnElement(
-        this,
-        this.hass.themes,
-        this.lovelace.config.views[this.index].theme
-      );
+      applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
     }
   }
 
   private async _initializeConfig() {
     let viewConfig = this.lovelace.config.views[this.index];
     let isStrategy = false;
+
     if (viewConfig.strategy) {
       isStrategy = true;
       viewConfig = await generateLovelaceViewStrategy({
@@ -170,6 +169,7 @@ export class HUIView extends UpdatingElement {
         view: viewConfig,
       });
     }
+
     viewConfig = {
       ...viewConfig,
       type: viewConfig.panel
@@ -194,6 +194,9 @@ export class HUIView extends UpdatingElement {
     this._layoutElement!.index = this.index;
     this._layoutElement!.cards = this._cards;
     this._layoutElement!.badges = this._badges;
+
+    applyThemesOnElement(this, this.hass.themes, viewConfig.theme);
+    this._viewConfigTheme = viewConfig.theme;
 
     if (addLayoutElement) {
       while (this.lastChild) {
