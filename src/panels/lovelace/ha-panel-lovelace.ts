@@ -7,6 +7,11 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { constructUrlCurrentPath } from "../../common/url/construct-url";
+import {
+  addSearchParam,
+  removeSearchParam,
+} from "../../common/url/search-params";
 import { domainToName } from "../../data/integration";
 import {
   deleteConfig,
@@ -73,7 +78,11 @@ class LovelacePanel extends LitElement {
       this.lovelace.locale !== this.hass.locale
     ) {
       // language has been changed, rebuild UI
-      this._setLovelaceConfig(this.lovelace.config, this.lovelace.mode);
+      this._setLovelaceConfig(
+        this.lovelace.config,
+        this.lovelace.rawConfig,
+        this.lovelace.mode
+      );
     } else if (this.lovelace && this.lovelace.mode === "generated") {
       // When lovelace is generated, we re-generate each time a user goes
       // to the states panel to make sure new entities are shown.
@@ -164,7 +173,7 @@ class LovelacePanel extends LitElement {
       },
       DEFAULT_STRATEGY
     );
-    this._setLovelaceConfig(conf, "generated");
+    this._setLovelaceConfig(conf, undefined, "generated");
     this._state = "loaded";
   }
 
@@ -212,6 +221,7 @@ class LovelacePanel extends LitElement {
 
   private async _fetchConfig(forceDiskRefresh: boolean) {
     let conf: LovelaceConfig;
+    let rawConf: LovelaceConfig | undefined;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
     let confProm: Promise<LovelaceConfig> | undefined;
     const llWindow = window as WindowWithLovelaceProm;
@@ -246,15 +256,17 @@ class LovelacePanel extends LitElement {
     }
 
     try {
-      conf = await confProm!;
+      rawConf = await confProm!;
 
       // If strategy defined, apply it here.
-      if (conf.strategy) {
+      if (rawConf.strategy) {
         conf = await generateLovelaceDashboardStrategy({
-          config: conf,
+          config: rawConf,
           hass: this.hass!,
           narrow: this.narrow,
         });
+      } else {
+        conf = rawConf;
       }
     } catch (err) {
       if (err.code !== "config_not_found") {
@@ -282,7 +294,7 @@ class LovelacePanel extends LitElement {
     }
 
     this._state = this._state === "yaml-editor" ? this._state : "loaded";
-    this._setLovelaceConfig(conf, confMode);
+    this._setLovelaceConfig(conf, rawConf, confMode);
   }
 
   private _checkLovelaceConfig(config: LovelaceConfig) {
@@ -301,11 +313,16 @@ class LovelacePanel extends LitElement {
     return checkedConfig ? deepFreeze(checkedConfig) : config;
   }
 
-  private _setLovelaceConfig(config: LovelaceConfig, mode: Lovelace["mode"]) {
+  private _setLovelaceConfig(
+    config: LovelaceConfig,
+    rawConfig: LovelaceConfig | undefined,
+    mode: Lovelace["mode"]
+  ) {
     config = this._checkLovelaceConfig(config);
     const urlPath = this.urlPath;
     this.lovelace = {
       config,
+      rawConfig,
       mode,
       urlPath: this.urlPath,
       editMode: this.lovelace ? this.lovelace.editMode : false,
@@ -318,10 +335,21 @@ class LovelacePanel extends LitElement {
         this._state = "yaml-editor";
       },
       setEditMode: (editMode: boolean) => {
+        // If we use a strategy for dashboard, we cannot show the edit UI
+        // So go straight to the YAML editor
+        if (
+          this.lovelace!.rawConfig &&
+          this.lovelace!.rawConfig !== this.lovelace!.config
+        ) {
+          this.lovelace!.enableFullEditMode();
+          return;
+        }
+
         if (!editMode || this.lovelace!.mode !== "generated") {
           this._updateLovelace({ editMode });
           return;
         }
+
         showSaveDialog(this, {
           lovelace: this.lovelace!,
           mode: this.panel!.config.mode,
@@ -329,12 +357,17 @@ class LovelacePanel extends LitElement {
         });
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
-        const { config: previousConfig, mode: previousMode } = this.lovelace!;
+        const {
+          config: previousConfig,
+          rawConfig: previousRawConfig,
+          mode: previousMode,
+        } = this.lovelace!;
         newConfig = this._checkLovelaceConfig(newConfig);
         try {
           // Optimistic update
           this._updateLovelace({
             config: newConfig,
+            rawConfig: undefined,
             mode: "storage",
           });
           this._ignoreNextUpdateEvent = true;
@@ -345,13 +378,18 @@ class LovelacePanel extends LitElement {
           // Rollback the optimistic update
           this._updateLovelace({
             config: previousConfig,
+            rawConfig: previousRawConfig,
             mode: previousMode,
           });
           throw err;
         }
       },
       deleteConfig: async (): Promise<void> => {
-        const { config: previousConfig, mode: previousMode } = this.lovelace!;
+        const {
+          config: previousConfig,
+          rawConfig: previousRawConfig,
+          mode: previousMode,
+        } = this.lovelace!;
         try {
           // Optimistic update
           const generatedConf = await generateLovelaceDashboardStrategy(
@@ -363,6 +401,7 @@ class LovelacePanel extends LitElement {
           );
           this._updateLovelace({
             config: generatedConf,
+            rawConfig: undefined,
             mode: "generated",
             editMode: false,
           });
@@ -374,6 +413,7 @@ class LovelacePanel extends LitElement {
           // Rollback the optimistic update
           this._updateLovelace({
             config: previousConfig,
+            rawConfig: previousRawConfig,
             mode: previousMode,
           });
           throw err;
@@ -387,6 +427,18 @@ class LovelacePanel extends LitElement {
       ...this.lovelace!,
       ...props,
     };
+
+    if ("editMode" in props) {
+      window.history.replaceState(
+        null,
+        "",
+        constructUrlCurrentPath(
+          props.editMode
+            ? addSearchParam({ edit: "1" })
+            : removeSearchParam("edit")
+        )
+      );
+    }
   }
 }
 

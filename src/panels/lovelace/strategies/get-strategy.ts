@@ -44,12 +44,18 @@ const getLovelaceStrategy = async <
 
   const tag = `ll-strategy-${name.substr(CUSTOM_PREFIX.length)}`;
 
-  await Promise.race([
-    customElements.whenDefined(tag),
-    new Promise((_, reject) =>
-      setTimeout(() => reject("timeout"), MAX_WAIT_STRATEGY_LOAD)
-    ),
-  ]);
+  if (
+    (await Promise.race([
+      customElements.whenDefined(tag),
+      new Promise((resolve) =>
+        setTimeout(() => resolve(true), MAX_WAIT_STRATEGY_LOAD)
+      ),
+    ])) === true
+  ) {
+    throw new Error(
+      `Timeout waiting for strategy element ${tag} to be registered`
+    );
+  }
 
   return customElements.get(tag);
 };
