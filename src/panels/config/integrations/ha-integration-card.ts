@@ -199,14 +199,16 @@ export class HaIntegrationCard extends LitElement {
       stateText = [
         `ui.panel.config.integrations.config_entry.state.${item.state}`,
       ];
-      stateTextExtra = html`
-        <br />
-        <a href="/config/logs"
-          >${this.hass.localize(
-            "ui.panel.config.integrations.config_entry.check_the_logs"
-          )}</a
-        >
-      `;
+      stateTextExtra = item.reason
+        ? html`: ${item.reason}`
+        : html`
+            <br />
+            <a href="/config/logs"
+              >${this.hass.localize(
+                "ui.panel.config.integrations.config_entry.check_the_logs"
+              )}</a
+            >
+          `;
     }
 
     return html`
