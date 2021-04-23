@@ -39,6 +39,7 @@ const createConfigEntry = (
   supports_options: false,
   supports_unload: true,
   disabled_by: null,
+  reason: null,
   ...override,
 });
 
@@ -75,6 +76,10 @@ const migrationErrorEntry = createConfigEntry("Migration Error", {
 });
 const setupRetryEntry = createConfigEntry("Setup Retry", {
   state: "setup_retry",
+});
+const setupRetryReasonEntry = createConfigEntry("Setup Retry", {
+  state: "setup_retry",
+  reason: "Unable to connect",
 });
 const failedUnloadEntry = createConfigEntry("Failed Unload", {
   state: "failed_unload",
@@ -135,6 +140,7 @@ const configEntries: Array<{
   { items: [setupErrorEntry] },
   { items: [migrationErrorEntry] },
   { items: [setupRetryEntry] },
+  { items: [setupRetryReasonEntry] },
   { items: [failedUnloadEntry] },
   { items: [notLoadedEntry] },
   {
