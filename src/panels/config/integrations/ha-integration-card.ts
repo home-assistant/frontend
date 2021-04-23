@@ -631,7 +631,7 @@ export class HaIntegrationCard extends LitElement {
         .message div {
           flex: 1;
           margin-left: 8px;
-          align-self: center;
+          padding-top: 2px;
         }
 
         .content {
