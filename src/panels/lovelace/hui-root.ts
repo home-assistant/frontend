@@ -43,9 +43,7 @@ import { navigate } from "../../common/navigate";
 import {
   addSearchParam,
   extractSearchParam,
-  removeSearchParam,
 } from "../../common/url/search-params";
-import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
@@ -539,7 +537,7 @@ class HUIRoot extends LitElement {
   protected firstUpdated() {
     // Check for requested edit mode
     if (extractSearchParam("edit") === "1") {
-      this._enableEditMode();
+      this.lovelace!.setEditMode(true);
     }
   }
 
@@ -715,25 +713,11 @@ class HUIRoot extends LitElement {
       });
       return;
     }
-    this._enableEditMode();
-  }
-
-  private _enableEditMode(): void {
     this.lovelace!.setEditMode(true);
-    window.history.replaceState(
-      null,
-      "",
-      constructUrlCurrentPath(addSearchParam({ edit: "1" }))
-    );
   }
 
   private _editModeDisable(): void {
     this.lovelace!.setEditMode(false);
-    window.history.replaceState(
-      null,
-      "",
-      constructUrlCurrentPath(removeSearchParam("edit"))
-    );
   }
 
   private _editLovelace() {
@@ -837,7 +821,7 @@ class HUIRoot extends LitElement {
     const viewConfig = this.config.views[viewIndex];
 
     if (!viewConfig) {
-      this._enableEditMode();
+      this.lovelace!.setEditMode(true);
       return;
     }
 
