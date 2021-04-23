@@ -115,7 +115,8 @@ class ZHAConfigDashboard extends LitElement {
                   <ha-form
                     .schema=${schema}
                     .data=${this._configuration!.data[section]}
-                    @value-changed=${this._dataChangedCallback(section)}
+                    @value-changed=${this._dataChanged}
+                    .section=${section}
                     .computeLabel=${this._computeLabelCallback(
                       this.hass.localize,
                       section
@@ -152,28 +153,15 @@ class ZHAConfigDashboard extends LitElement {
     this._configuration = await fetchZHAConfiguration(this.hass!);
   }
 
-  private _dataChangedCallback(section: string) {
-    return (ev: CustomEvent) => {
-      this._configuration!.data[section] = ev.detail.value;
-    };
+  private _dataChanged(ev: CustomEvent) {
+    this._configuration!.data[ev.currentTarget!.section] = ev.detail.value;
   }
 
   private async _updateConfiguration(): Promise<any> {
-    const data = {};
-    for (const section of Object.keys(this._configuration!.schemas)) {
-      data[section] = {};
-      const sectionData = this._configuration!.data[section];
-      for (const field of Object.keys(sectionData)) {
-        data[section][field] = sectionData[field];
-      }
-      if (!Object.keys(data[section]).length) {
-        delete data[section];
-      }
-    }
-    await updateZHAConfiguration(this.hass!, data);
+    await updateZHAConfiguration(this.hass!, this._configuration!.data);
   }
 
-  private _computeLabelCallback(localize, section) {
+  private _computeLabelCallback(localize, section: string) {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
       localize(
