@@ -2,6 +2,7 @@ import {
   LovelaceViewConfig,
   LovelaceViewElement,
 } from "../../../data/lovelace";
+import { HuiErrorCard } from "../cards/hui-error-card";
 import "../views/hui-masonry-view";
 import { createLovelaceElement } from "./create-element-base";
 
@@ -13,7 +14,7 @@ const LAZY_LOAD_LAYOUTS = {
 
 export const createViewElement = (
   config: LovelaceViewConfig
-): LovelaceViewElement => {
+): LovelaceViewElement | HuiErrorCard => {
   return createLovelaceElement(
     "view",
     config,

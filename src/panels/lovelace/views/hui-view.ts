@@ -23,6 +23,7 @@ import { createViewElement } from "../create-element/create-view-element";
 import { showCreateCardDialog } from "../editor/card-editor/show-create-card-dialog";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { confDeleteCard } from "../editor/delete-card";
+import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
 const DEFAULT_VIEW_LAYOUT = "masonry";
@@ -54,6 +55,8 @@ export class HUIView extends UpdatingElement {
   private _layoutElementType?: string;
 
   private _layoutElement?: LovelaceViewElement;
+
+  private _viewConfigTheme?: string;
 
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
@@ -100,51 +103,21 @@ export class HUIView extends UpdatingElement {
     */
 
     const oldLovelace = changedProperties.get("lovelace") as this["lovelace"];
-    const configChanged =
+
+    // If config has changed, create element if necessary and set all values.
+    if (
       changedProperties.has("index") ||
       (changedProperties.has("lovelace") &&
         (!oldLovelace ||
           this.lovelace.config.views[this.index] !==
-            oldLovelace.config.views[this.index]));
+            oldLovelace.config.views[this.index]))
+    ) {
+      this._initializeConfig();
+      return;
+    }
 
-    // If config has changed, create element if necessary and set all values.
-    if (configChanged) {
-      let viewConfig = this.lovelace.config.views[this.index];
-      viewConfig = {
-        ...viewConfig,
-        type: viewConfig.panel
-          ? PANEL_VIEW_LAYOUT
-          : viewConfig.type || DEFAULT_VIEW_LAYOUT,
-      };
-
-      this._createBadges(viewConfig!);
-      this._createCards(viewConfig!);
-
-      // Create a new layout element if necessary.
-      let addLayoutElement = false;
-
-      if (
-        !this._layoutElement ||
-        this._layoutElementType !== viewConfig!.type
-      ) {
-        addLayoutElement = true;
-        this._createLayoutElement(viewConfig!);
-      }
-
-      this._layoutElement!.hass = this.hass;
-      this._layoutElement!.narrow = this.narrow;
-      this._layoutElement!.lovelace = this.lovelace;
-      this._layoutElement!.index = this.index;
-      this._layoutElement!.cards = this._cards;
-      this._layoutElement!.badges = this._badges;
-
-      if (addLayoutElement) {
-        while (this.lastChild) {
-          this.removeChild(this.lastChild);
-        }
-        this.appendChild(this._layoutElement!);
-      }
-    } else {
+    // If no layout element, we're still creating one
+    if (this._layoutElement) {
       // Config has not changed. Just props
       if (changedProperties.has("hass")) {
         this._badges.forEach((badge) => {
@@ -155,56 +128,98 @@ export class HUIView extends UpdatingElement {
           element.hass = this.hass;
         });
 
-        this._layoutElement!.hass = this.hass;
+        this._layoutElement.hass = this.hass;
       }
       if (changedProperties.has("narrow")) {
-        this._layoutElement!.narrow = this.narrow;
+        this._layoutElement.narrow = this.narrow;
       }
       if (changedProperties.has("lovelace")) {
-        this._layoutElement!.lovelace = this.lovelace;
+        this._layoutElement.lovelace = this.lovelace;
       }
       if (changedProperties.has("_cards")) {
-        this._layoutElement!.cards = this._cards;
+        this._layoutElement.cards = this._cards;
       }
       if (changedProperties.has("_badges")) {
-        this._layoutElement!.badges = this._badges;
+        this._layoutElement.badges = this._badges;
       }
     }
 
     const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
 
-    // Update theme if necessary:
-    // - If config changed, the theme could have changed
-    // - if hass themes preferences have changed
     if (
-      configChanged ||
-      (changedProperties.has("hass") &&
-        (!oldHass ||
-          this.hass.themes !== oldHass.themes ||
-          this.hass.selectedTheme !== oldHass.selectedTheme))
+      changedProperties.has("hass") &&
+      (!oldHass ||
+        this.hass.themes !== oldHass.themes ||
+        this.hass.selectedTheme !== oldHass.selectedTheme)
     ) {
-      applyThemesOnElement(
-        this,
-        this.hass.themes,
-        this.lovelace.config.views[this.index].theme
-      );
+      applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
+    }
+  }
+
+  private async _initializeConfig() {
+    let viewConfig = this.lovelace.config.views[this.index];
+    let isStrategy = false;
+
+    if (viewConfig.strategy) {
+      isStrategy = true;
+      viewConfig = await generateLovelaceViewStrategy({
+        hass: this.hass,
+        config: this.lovelace.config,
+        narrow: this.narrow,
+        view: viewConfig,
+      });
+    }
+
+    viewConfig = {
+      ...viewConfig,
+      type: viewConfig.panel
+        ? PANEL_VIEW_LAYOUT
+        : viewConfig.type || DEFAULT_VIEW_LAYOUT,
+    };
+
+    // Create a new layout element if necessary.
+    let addLayoutElement = false;
+
+    if (!this._layoutElement || this._layoutElementType !== viewConfig.type) {
+      addLayoutElement = true;
+      this._createLayoutElement(viewConfig);
+    }
+
+    this._createBadges(viewConfig);
+    this._createCards(viewConfig);
+    this._layoutElement!.isStrategy = isStrategy;
+    this._layoutElement!.hass = this.hass;
+    this._layoutElement!.narrow = this.narrow;
+    this._layoutElement!.lovelace = this.lovelace;
+    this._layoutElement!.index = this.index;
+    this._layoutElement!.cards = this._cards;
+    this._layoutElement!.badges = this._badges;
+
+    applyThemesOnElement(this, this.hass.themes, viewConfig.theme);
+    this._viewConfigTheme = viewConfig.theme;
+
+    if (addLayoutElement) {
+      while (this.lastChild) {
+        this.removeChild(this.lastChild);
+      }
+      this.appendChild(this._layoutElement!);
     }
   }
 
   private _createLayoutElement(config: LovelaceViewConfig): void {
-    this._layoutElement = createViewElement(config);
+    this._layoutElement = createViewElement(config) as LovelaceViewElement;
     this._layoutElementType = config.type;
     this._layoutElement.addEventListener("ll-create-card", () => {
       showCreateCardDialog(this, {
-        lovelaceConfig: this.lovelace!.config,
-        saveConfig: this.lovelace!.saveConfig,
+        lovelaceConfig: this.lovelace.config,
+        saveConfig: this.lovelace.saveConfig,
         path: [this.index],
       });
     });
     this._layoutElement.addEventListener("ll-edit-card", (ev) => {
       showEditCardDialog(this, {
-        lovelaceConfig: this.lovelace!.config,
-        saveConfig: this.lovelace!.saveConfig,
+        lovelaceConfig: this.lovelace.config,
+        saveConfig: this.lovelace.saveConfig,
         path: ev.detail.path,
       });
     });

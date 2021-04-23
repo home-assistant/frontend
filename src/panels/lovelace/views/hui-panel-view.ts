@@ -31,6 +31,8 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
+  @property({ type: Boolean }) public isStrategy = false;
+
   @property({ attribute: false }) public cards: Array<
     LovelaceCard | HuiErrorCard
   > = [];
@@ -109,7 +111,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     const card: LovelaceCard = this.cards[0];
     card.isPanel = true;
 
-    if (!this.lovelace?.editMode) {
+    if (this.isStrategy || !this.lovelace?.editMode) {
       card.editMode = false;
       this._card = card;
       return;
