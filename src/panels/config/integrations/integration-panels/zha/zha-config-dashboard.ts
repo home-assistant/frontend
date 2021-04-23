@@ -153,7 +153,7 @@ class ZHAConfigDashboard extends LitElement {
     this._configuration = await fetchZHAConfiguration(this.hass!);
   }
 
-  private _dataChanged(ev: CustomEvent) {
+  private _dataChanged(ev) {
     this._configuration!.data[ev.currentTarget!.section] = ev.detail.value;
   }
 
