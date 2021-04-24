@@ -123,6 +123,9 @@
             "cancel": "בטל",
             "close": "סגור",
             "description": "תיאור",
+            "error": {
+                "unknown": "בעיה לא ידועה"
+            },
             "failed_to_restart_name": "אתחול {name} נכשל.",
             "failed_to_update_name": "עדכון {name} נכשל.",
             "learn_more": "למד עוד",
@@ -219,14 +222,22 @@
         "system": {
             "host": {
                 "change_hostname": "שנה שם מכונה",
+                "confirm_reboot": "האם אתה בטוח שאתה מעוניין לאתחל שרת מארח?",
+                "confirm_shutdown": "האם אתה בטוח שאתה מעוניין לכבות שרת מארח?",
+                "docker_version": "גרסת Docker",
                 "failed_to_get_hardware_list": "קבלת רשימת החומרה נכשלה",
                 "failed_to_import_from_usb": "ייבוא מ- USB נכשל",
                 "failed_to_reboot": "אתחול המכונה נכשל",
                 "failed_to_set_hostname": "הגדרת שם המכונה נכשלה",
                 "failed_to_shutdown": "כיבוי המכונה נכשל",
+                "hardware": "חומרה",
                 "hostname": "שם מכונה",
+                "import_from_usb": "יבא מרכיב USB",
                 "ip_address": "כתובת IP",
                 "new_hostname": "אנא הזן שם מכונה חדש:",
+                "operating_system": "מערכת הפעלה",
+                "reboot_host": "אתחל שרת",
+                "shutdown_host": "כבה שרת מארח",
                 "used_space": "שטח בשימוש"
             },
             "supervisor": {
@@ -252,6 +263,8 @@
                     "supervisor": "עדכון ה Supervisor לא הצליח",
                     "untrusted": "זוהה תוכן לא מהימן"
                 },
+                "unhealthy_title": "ההתקנה שלך אינה תקינה",
+                "unsupported_description": "למטה רשימת נושאים שנימצאו במהלך ההתקנה, לחץ על קישור על מנת ללמוד איך לפתור את הנושא",
                 "unsupported_reason": {
                     "apparmor": "AppArmor אינו זמין במחשב המארח",
                     "container": "ה Container ידוע כבעייתי",
