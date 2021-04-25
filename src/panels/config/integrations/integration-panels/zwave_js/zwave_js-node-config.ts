@@ -30,6 +30,7 @@ import {
   fetchNodeConfigParameters,
   setNodeConfigParameter,
   ZWaveJSNodeConfigParams,
+  ZWaveJSSetConfigParamResult,
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
@@ -85,6 +86,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
   @internalProperty() private _config?: ZWaveJSNodeConfigParams;
+
+  @internalProperty() private _results: ZWaveJSSetConfigParamResult[] = [];
 
   @internalProperty() private _error?: string;
 
@@ -190,6 +193,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       queued: mdiProgressClock,
       error: mdiCloseCircle,
     };
+    const result = this._results[id];
     const labelAndDescription = html`
       <span slot="heading">${item.metadata.label}</span>
       <span slot="description">
@@ -204,22 +208,23 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               )}
             </em>`
           : ""}
-        ${item.result
+        ${result
           ? html` <p
               class="result ${classMap({
-                [item.result]: true,
+                [result.status]: true,
               })}"
             >
               <ha-svg-icon
-                .path=${icons[item.result] ? icons[item.result] : mdiCircle}
+                .path=${icons[result.status] ? icons[result.status] : mdiCircle}
                 class="result-icon"
                 slot="item-icon"
               ></ha-svg-icon>
               ${this.hass.localize(
-                "ui.panel.config.zwave_js.node_config.set_param_" + item.result
+                "ui.panel.config.zwave_js.node_config.set_param_" +
+                  result.status
               )}
-              ${item.result === "error" && item.error
-                ? html` <br /><em>${item.error}</em> `
+              ${result.status === "error" && result.error
+                ? html` <br /><em>${result.error}</em> `
                 : ""}
             </p>`
           : ""}
@@ -373,15 +378,21 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
       this.setResult(target.key, result.status);
     } catch (error) {
-      this._config![target.key].error = error.message;
-      this.setResult(target.key, "error");
+      this.setError(target.key, error.message);
     }
   }
 
   private setResult(key: string, value: string | undefined) {
-    const paramValue = this._config![key];
-    paramValue.result = value;
-    this._config = { ...this._config, [key]: paramValue };
+    if (value === undefined) {
+      this._results = { ...this._results, [key]: undefined };
+    } else {
+      this._results = { ...this._results, [key]: { status: value } };
+    }
+  }
+
+  private setError(key: string, message: string) {
+    const errorParam = { status: "error", error: message };
+    this._results = { ...this._results, [key]: errorParam };
   }
 
   private get _device(): DeviceRegistryEntry | undefined {
