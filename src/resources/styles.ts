@@ -1,8 +1,6 @@
 import { css } from "lit-element";
 
 export const darkStyles = {
-  "primary-color": "#03a9f4",
-  "accent-color": "#ff9800",
   "primary-background-color": "#111111",
   "card-background-color": "#1c1c1c",
   "secondary-background-color": "#202020",

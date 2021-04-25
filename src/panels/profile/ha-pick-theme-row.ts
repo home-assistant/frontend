@@ -19,6 +19,10 @@ import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
 import "../../components/ha-settings-row";
 import { Theme } from "../../data/ws-themes";
+import {
+  DEFAULT_PRIMARY_COLOR,
+  DEFAULT_ACCENT_COLOR,
+} from "../../resources/ha-style";
 import { HomeAssistant } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
@@ -119,18 +123,11 @@ export class HaPickThemeRow extends LitElement {
               >
               </ha-radio>
             </ha-formfield>
-            ${curTheme === "default" ||
-            (this._selectedTheme &&
-              this._supportsColorSelection(this._selectedTheme))
+            ${curTheme === "default"
               ? html` <div class="color-pickers">
                   <paper-input
                     .value=${themeSettings?.primaryColor ||
-                    (themeSettings?.dark
-                      ? this._selectedTheme?.defaults?.dark?.["primary-color"]
-                      : this._selectedTheme?.defaults?.light?.[
-                          "primary-color"
-                        ]) ||
-                    "#03a9f4"}
+                    DEFAULT_PRIMARY_COLOR}
                     type="color"
                     .label=${this.hass.localize(
                       "ui.panel.profile.themes.primary_color"
@@ -139,13 +136,7 @@ export class HaPickThemeRow extends LitElement {
                     @change=${this._handleColorChange}
                   ></paper-input>
                   <paper-input
-                    .value=${themeSettings?.accentColor ||
-                    (themeSettings?.dark
-                      ? this._selectedTheme?.defaults?.dark?.["accent-color"]
-                      : this._selectedTheme?.defaults?.light?.[
-                          "accent-color"
-                        ]) ||
-                    "#ff9800"}
+                    .value=${themeSettings?.accentColor || DEFAULT_ACCENT_COLOR}
                     type="color"
                     .label=${this.hass.localize(
                       "ui.panel.profile.themes.accent_color"
@@ -214,12 +205,6 @@ export class HaPickThemeRow extends LitElement {
     return (
       theme.styles?.light !== undefined && theme.styles?.dark !== undefined
     );
-  }
-
-  private _supportsColorSelection(theme: Theme): boolean {
-    return this.hass.themes.darkMode
-      ? theme.defaults?.dark !== undefined
-      : theme.defaults?.light !== undefined;
   }
 
   private _handleDarkMode(ev: CustomEvent) {

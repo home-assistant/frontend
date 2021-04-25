@@ -1,4 +1,8 @@
 import { ThemeVars } from "../../data/ws-themes";
+import {
+  DEFAULT_PRIMARY_COLOR,
+  DEFAULT_ACCENT_COLOR,
+} from "../../resources/ha-style";
 import { darkStyles, derivedStyles } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import {
@@ -43,47 +47,29 @@ export const applyThemesOnElement = (
     let accentColor;
     if (selectedTheme === "default") {
       // User selected colors
-      primaryColor = themeSettings.primaryColor;
-      accentColor = themeSettings.accentColor;
+      primaryColor = themeSettings.primaryColor || DEFAULT_PRIMARY_COLOR;
+      accentColor = themeSettings.accentColor || DEFAULT_ACCENT_COLOR;
     } else if (selectedTheme && themes.themes[selectedTheme]) {
       // Try in that order:
-      // 1. User selected colors (if supported by theme = "defaults" key provided)
-      // 2. Theme defaults
-      // 3. Fixed values from theme styles
-      // 4. HA default colors
+      // 1. Fixed values from theme styles
+      // 2. HA default colors
       if (themeSettings.dark) {
-        if (themes.themes[selectedTheme].defaults?.dark) {
-          primaryColor =
-            themeSettings.primaryColor ||
-            themes.themes[selectedTheme].defaults?.dark!["primary-color"];
-          accentColor =
-            themeSettings.accentColor ||
-            themes.themes[selectedTheme].defaults?.dark!["accent-color"];
-        } else {
-          primaryColor =
-            themes.themes[selectedTheme].styles?.dark!["primary-color"] ||
-            darkStyles["primary-color"];
-          accentColor =
-            themes.themes[selectedTheme].styles?.dark!["accent-color"] ||
-            darkStyles["accent-color"];
-        }
+        primaryColor =
+          themes.themes[selectedTheme].styles?.dark!["primary-color"] ||
+          darkStyles["primary-color"] ||
+          DEFAULT_PRIMARY_COLOR;
+        accentColor =
+          themes.themes[selectedTheme].styles?.dark!["accent-color"] ||
+          darkStyles["accent-color"] ||
+          DEFAULT_ACCENT_COLOR;
       } else {
         // eslint-disable-next-line no-lonely-if
-        if (themes.themes[selectedTheme].defaults?.light) {
-          primaryColor =
-            themeSettings.primaryColor ||
-            themes.themes[selectedTheme].defaults?.light!["primary-color"];
-          accentColor =
-            themeSettings.accentColor ||
-            themes.themes[selectedTheme].defaults?.light!["accent-color"];
-        } else {
-          primaryColor =
-            themes.themes[selectedTheme].styles?.light!["primary-color"] ||
-            "#03a9f4";
-          accentColor =
-            themes.themes[selectedTheme].styles?.light!["accent-color"] ||
-            "#ff9800";
-        }
+        primaryColor =
+          themes.themes[selectedTheme].styles?.light!["primary-color"] ||
+          DEFAULT_PRIMARY_COLOR;
+        accentColor =
+          themes.themes[selectedTheme].styles?.light!["accent-color"] ||
+          DEFAULT_ACCENT_COLOR;
       }
     }
 
@@ -109,7 +95,7 @@ export const applyThemesOnElement = (
       themeRules["text-primary-color"] =
         rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 7 ? "#fff" : "#212121";
       themeRules["text-light-primary-color"] =
-        rgbContrast(rgbLightPrimaryColor, [33, 33, 33]) < 7
+        rgbContrast(rgbLightPrimaryColor, [33, 33, 33]) < 6
           ? "#fff"
           : "#212121";
       themeRules["state-icon-color"] = themeRules["dark-primary-color"];

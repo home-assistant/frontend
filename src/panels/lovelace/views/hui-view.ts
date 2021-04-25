@@ -150,7 +150,7 @@ export class HUIView extends UpdatingElement {
       changedProperties.has("hass") &&
       (!oldHass ||
         this.hass.themes !== oldHass.themes ||
-        this.hass.selectedTheme !== oldHass.selectedTheme)
+        this.hass.selectedThemeSettings !== oldHass.selectedThemeSettings)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
     }
