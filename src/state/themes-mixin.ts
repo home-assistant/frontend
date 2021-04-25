@@ -57,15 +57,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           ? this.hass.themes.default_dark_theme!
           : this.hass.themes.default_theme);
 
-      let settings: Partial<HomeAssistant["selectedThemeSettings"]> = this.hass!
-        .selectedThemeSettings;
+      let themeSettings: Partial<HomeAssistant["selectedThemeSettings"]> = this
+        .hass!.selectedThemeSettings;
 
       let darkMode =
-        settings?.dark === undefined ? darkPreferred : settings?.dark;
+        themeSettings?.dark === undefined ? darkPreferred : themeSettings?.dark;
 
       const selectedTheme =
-        settings?.theme !== undefined
-          ? this.hass.themes.themes[settings.theme]
+        themeSettings?.theme !== undefined
+          ? this.hass.themes.themes[themeSettings.theme]
           : undefined;
 
       if (selectedTheme) {
@@ -82,13 +82,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         }
       }
 
-      settings = { ...this.hass.selectedThemeSettings, dark: darkMode };
+      themeSettings = { ...this.hass.selectedThemeSettings, dark: darkMode };
 
       applyThemesOnElement(
         document.documentElement,
         this.hass.themes,
         themeName,
-        settings
+        themeSettings
       );
 
       // Now determine value that should be stored in the local storage settings
