@@ -105,7 +105,7 @@ export const applyThemesOnElement = (
       themeRules["accent-color"] = accentColor;
       const rgbAccentColor = hex2rgb(accentColor);
       themeRules["text-accent-color"] =
-        rgbContrast(rgbAccentColor, [33, 33, 33]) < 7 ? "#fff" : "#212121";
+        rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
     }
   }
 
