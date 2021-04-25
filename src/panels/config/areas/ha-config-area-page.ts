@@ -64,7 +64,7 @@ class HaConfigAreaPage extends LitElement {
     | AreaRegistryEntry
     | undefined => areas.find((area) => area.area_id === areaId));
 
-  private _memerships = memoizeOne(
+  private _memberships = memoizeOne(
     (
       areaId: string,
       registryDevices: DeviceRegistryEntry[],
@@ -123,7 +123,7 @@ class HaConfigAreaPage extends LitElement {
       `;
     }
 
-    const { devices, entities } = this._memerships(
+    const { devices, entities } = this._memberships(
       this.areaId,
       this.devices,
       this.entities
