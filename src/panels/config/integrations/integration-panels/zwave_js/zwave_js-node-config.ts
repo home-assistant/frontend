@@ -428,15 +428,15 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       haStyle,
       css`
         .accepted {
-          color: green;
+          color: var(--success-color);
         }
 
         .queued {
-          color: #fca503;
+          color: var(--warning-color);
         }
 
         .error {
-          color: red;
+          color: var(--error-color);
         }
 
         .secondary {
