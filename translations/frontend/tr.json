@@ -1594,7 +1594,7 @@
                         "dev_automation": "Hata ayıklama otomasyonu",
                         "dev_only_editable": "Yalnızca automations.yaml'de tanımlanan otomasyonlarda hata ayıklama yapılabilir.",
                         "duplicate": "Çiftleme",
-                        "duplicate_automation": "Yinelenen otomasyon",
+                        "duplicate_automation": "Otomasyonu çiftleme",
                         "edit_automation": "Otomasyonu düzenle",
                         "header": "Otomasyon Düzenleyici",
                         "headers": {
@@ -2136,6 +2136,7 @@
                     "caption": "Entegrasyonlar",
                     "config_entry": {
                         "area": "{area} içinde",
+                        "check_the_logs": "Günlükleri kontrol edin",
                         "delete": "Sil",
                         "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
                         "device_unavailable": "Cihaz kullanılamıyor",
@@ -2168,6 +2169,13 @@
                         "rename": "Yeniden adlandır",
                         "restart_confirm": "Bu entegrasyonu kaldırmaya devam etmek için Home Assistant'ı yeniden başlatın",
                         "services": "{count} {count, plural,\n  one {hizmet}\n  other {hizmetler}\n}",
+                        "state": {
+                            "failed_unload": "Kaldırılamadı",
+                            "loaded": "Yüklendi",
+                            "migration_error": "Taşıma hatası",
+                            "not_loaded": "Yüklenmedi",
+                            "setup_error": "Kurulum başarısız oldu"
+                        },
                         "system_options": "Sistem seçenekleri",
                         "unnamed_entry": "Adsız giriş"
                     },
