@@ -28,7 +28,7 @@ class HassErrorScreen extends LitElement {
     return html`
       ${this.toolbar
         ? html`<div class="toolbar">
-            ${this.rootnav
+            ${this.rootnav || history.state?.root
               ? html`
                   <ha-menu-button
                     .hass=${this.hass}
@@ -46,7 +46,9 @@ class HassErrorScreen extends LitElement {
       <div class="content">
         <h3>${this.error}</h3>
         <slot>
-          <mwc-button @click=${this._handleBack}>go back</mwc-button>
+          <mwc-button @click=${this._handleBack}>
+            ${this.hass?.localize("ui.panel.error.go_back") || "go back"}
+          </mwc-button>
         </slot>
       </div>
     `;

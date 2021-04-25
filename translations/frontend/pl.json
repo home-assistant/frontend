@@ -457,7 +457,7 @@
                 "leave_beta_action": "Opuść kanał beta",
                 "leave_beta_description": "Pobieraj stabilne aktualizacje dla Home Assistanta, Supervisora i hosta",
                 "ram_usage": "Zużycie pamięci przez Supervisora",
-                "reload_supervisor": "Wczytaj ponownie Supervisora",
+                "reload_supervisor": "Wczytaj ponownie Supervisor",
                 "share_diagnostics": "Udostępnij dane diagnostyczne",
                 "share_diagnostics_description": "Udostępniaj raporty o awariach i informacje diagnostyczne.",
                 "share_diagonstics_description": "Czy chcesz automatycznie udostępniać raporty o awariach i informacje diagnostyczne, gdy Supervisor napotka nieoczekiwane błędy? {line_break} Pozwoli nam to rozwiązać problemy, informacje są dostępne tylko dla głównego zespołu Home Assistant Core i nie będą udostępniane innym. {line_break} Dane nie zawierają żadnych prywatnych/wrażliwych informacji i możesz to wyłączyć w ustawieniach w dowolnym momencie.",
@@ -467,12 +467,15 @@
                     "docker": "Środowisko dockera nie działa poprawnie",
                     "privileged": "Supervisor nie jest uprzywilejowany",
                     "setup": "Konfiguracja Supervisora nie powiodła się",
-                    "supervisor": "Supervisor nie mógł się zaktualizować"
+                    "supervisor": "Supervisor nie mógł się zaktualizować",
+                    "untrusted": "Wykryto niezaufaną zawartość"
                 },
                 "unhealthy_title": "Twoja instalacja jest \"niezdrowa\"",
                 "unsupported_description": "Poniżej znajduje się lista problemów z Twoją instalacją. Kliknij łącza, aby dowiedzieć się, jak możesz je rozwiązać.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor nie jest włączony na hoście",
                     "container": "Kontenery, o których wiadomo, że powodują problemy",
+                    "content-trust": "Weryfikacja zaufania zawartości jest wyłączona",
                     "dbus": "DBUS",
                     "docker_configuration": "Konfiguracja dockera",
                     "docker_version": "Wersja dockera",
@@ -664,7 +667,7 @@
             "enable": "Włącz",
             "error_required": "To pole jest wymagane",
             "leave": "Wyjdź",
-            "loading": "Ładowanie",
+            "loading": "Wczytywanie",
             "menu": "Menu",
             "next": "Dalej",
             "no": "Nie",
@@ -691,7 +694,7 @@
                         "title": "Błąd podczas pobierania dodatków"
                     },
                     "no_supervisor": {
-                        "description": "Nie znaleziono Supervisora, więc nie można załadować dodatków.",
+                        "description": "Nie znaleziono Supervisora, więc nie można wczytać dodatków.",
                         "title": "Brak Supervisora"
                     }
                 }
@@ -721,6 +724,9 @@
                 "today": "Dzisiaj"
             },
             "data-table": {
+                "clear": "Wyczyść",
+                "filtering_by": "Filtrowanie przez",
+                "hidden": "{numer} ukryte(-ych)",
                 "no-data": "Brak danych",
                 "search": "Szukaj"
             },
@@ -752,7 +758,7 @@
             },
             "history_charts": {
                 "history_disabled": "Integracja historia wyłączona",
-                "loading_history": "Ładowanie historii...",
+                "loading_history": "Wczytywanie historii...",
                 "no_history_found": "Nie znaleziono historii."
             },
             "logbook": {
@@ -785,7 +791,8 @@
                     "was_unlocked": "nastąpiło otwarcie",
                     "was_unplugged": "nastąpiło odłączenie",
                     "was_unsafe": "wykryto zagrożenie"
-                }
+                },
+                "show_trace": "Pokaż ślad"
             },
             "media-browser": {
                 "audio_not_supported": "Twoja przeglądarka nie obsługuje elementu audio.",
@@ -833,6 +840,14 @@
             "picture-upload": {
                 "label": "Obraz",
                 "unsupported_format": "Nieobsługiwany format, wybierz obraz JPEG, PNG lub GIF."
+            },
+            "related-filter-menu": {
+                "filter_by_area": "Filtruj według obszaru",
+                "filter_by_device": "Filtruj według urządzenia",
+                "filter_by_entity": "Filtruj według encji",
+                "filtered_by_area": "obszar: {area_name}",
+                "filtered_by_device": "urządzenie: {device_name}",
+                "filtered_by_entity": "encja: {entity_name}"
             },
             "related-items": {
                 "area": "Obszar",
@@ -986,7 +1001,7 @@
                     "pattern": "Wyrażenie regularne do sprawdzania poprawności po stronie klienta",
                     "text": "Pole tekstowe"
                 },
-                "platform_not_loaded": "Komponent {platform} nie jest załadowany, dodaj go do swojej konfiguracji dodając 'default_config:' lub ''{platform}:''.",
+                "platform_not_loaded": "Komponent {platform} nie jest wczytany, dodaj go do swojej konfiguracji dodając 'default_config:' lub ''{platform}:''.",
                 "required_error_msg": "To pole jest wymagane",
                 "timer": {
                     "duration": "Czas"
@@ -1093,42 +1108,47 @@
                         "zone": "Strefy"
                     },
                     "reload": {
-                        "automation": "Wczytaj ponownie automatyzacje",
-                        "command_line": "Wczytaj ponownie encje komponentu linia komend",
-                        "core": "Wczytaj ponownie lokalizację i dostosowywanie",
-                        "filesize": "Wczytaj ponownie encje komponentu wielkość pliku",
-                        "filter": "Wczytaj ponownie encje komponentu filtr",
-                        "generic": "Wczytaj ponownie encje komponentu kamera IP generic",
-                        "generic_thermostat": "Wczytaj ponownie encje komponentu termostatu generic",
-                        "group": "Wczytaj ponownie grupy, ich encje oraz ich usługi powiadomień",
-                        "history_stats": "Wczytaj ponownie encje komponentu historia stanów",
-                        "homekit": "Wczytaj ponownie HomeKit",
-                        "input_boolean": "Wczytaj ponownie pomocników typu przełącznik",
-                        "input_datetime": "Wczytaj ponownie pomocników typu data i czas",
-                        "input_number": "Wczytaj ponownie pomocników typu numer",
-                        "input_select": "Wczytaj ponownie pomocników typu pole wyboru",
-                        "input_text": "Wczytaj ponownie pomocników typu tekst",
-                        "min_max": "Wczytaj ponownie encje komponentu min/max",
-                        "mqtt": "Wczytaj ponownie encje komponentu MQTT",
-                        "person": "Wczytaj ponownie osoby",
-                        "ping": "Wczytaj ponownie encje komponentu ping",
-                        "reload": "Wczytaj ponownie domenę {domain}",
-                        "rest": "Wczytaj ponownie encje komponentu rest i ich usługi powiadomień",
-                        "rpi_gpio": "Wczytaj ponownie encje komponentu Raspberry Pi GPIO",
-                        "scene": "Wczytaj ponownie sceny",
-                        "script": "Wczytaj ponownie skrypty",
-                        "smtp": "Wczytaj ponownie usługi powiadomień komponentu SMTP",
-                        "statistics": "Wczytaj ponownie encje komponentu statystyka",
-                        "telegram": "Wczytaj ponownie usługi powiadomień komponentu Telegram",
-                        "template": "Wczytaj ponownie encje zdefiniowane szablonami",
-                        "trend": "Wczytaj ponownie encje komponentu trend",
-                        "universal": "Wczytaj ponownie encje komponentu uniwersalny odtwarzacz mediów",
-                        "zone": "Wczytaj ponownie strefy"
+                        "automation": "Automatyzacje",
+                        "command_line": "Encje komponentu linia komend",
+                        "core": "Lokalizacja i dostosowywanie",
+                        "filesize": "Encje komponentu wielkość pliku",
+                        "filter": "Encje komponentu filtr",
+                        "generic": "Encje komponentu kamera IP generic",
+                        "generic_thermostat": "Encje komponentu termostatu generic",
+                        "group": "Grupy, ich encje oraz usługi powiadomień",
+                        "history_stats": "Encje komponentu historia stanów",
+                        "homekit": "HomeKit",
+                        "input_boolean": "Pomocnicy typu przełącznik",
+                        "input_datetime": "Pomocnicy typu data i czas",
+                        "input_number": "Pomocnicy typu numer",
+                        "input_select": "Pomocnicy typu pole wyboru",
+                        "input_text": "Pomocnicy typu tekst",
+                        "min_max": "Encje komponentu min/max",
+                        "mqtt": "Encje komponentu MQTT",
+                        "person": "Osoby",
+                        "ping": "Encje komponentu ping",
+                        "reload": "Domenę {domain}",
+                        "rest": "Encje komponentu rest i usługi powiadomień",
+                        "rpi_gpio": "Encje komponentu Raspberry Pi GPIO",
+                        "scene": "Sceny",
+                        "script": "Skrypty",
+                        "smtp": "Usługi powiadomień komponentu SMTP",
+                        "statistics": "Encje komponentu statystyka",
+                        "telegram": "Usługi powiadomień komponentu Telegram",
+                        "template": "Encje zdefiniowane szablonami",
+                        "trend": "Encje komponentu trend",
+                        "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
+                        "zone": "Strefy"
                     },
                     "server_control": {
                         "perform_action": "{action} serwer",
                         "restart": "Uruchom ponownie",
                         "stop": "Zatrzymaj"
+                    },
+                    "types": {
+                        "navigation": "Przejdź",
+                        "reload": "Wczytaj ponownie",
+                        "server_control": "Serwer"
                     }
                 },
                 "filter_placeholder": "Filtr encji"
@@ -1145,6 +1165,7 @@
                 "buttons": {
                     "add": "Dodaj urządzenia za pomocą tego urządzenia",
                     "clusters": "Zarządzaj klastrami",
+                    "device_children": "Wyświetl urządzenia-dzieci",
                     "reconfigure": "Rekonfiguracja urządzenia",
                     "remove": "Usuń urządzenie",
                     "view_in_visualization": "Wyświetl w wizualizacji",
@@ -1153,6 +1174,7 @@
                 "confirmations": {
                     "remove": "Czy na pewno chcesz usunąć urządzenie?"
                 },
+                "device_children": "Urządzenia-dzieci Zigbee",
                 "device_signature": "Sygnatura urządzenia Zigbee",
                 "last_seen": "Ostatnio widziane",
                 "manuf": "Producent: {manufacturer}",
@@ -1169,6 +1191,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Zmień nazwę urządzenia"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Ponowne konfigurowanie urządzenia"
             }
         },
         "duration": {
@@ -1187,7 +1212,16 @@
                 "key_missing": "Brak wymaganego klucza \"{key}\".",
                 "key_not_expected": "Klucz \"{key}\" nie jest oczekiwany lub nie jest obsługiwany przez edytor wizualny.",
                 "key_wrong_type": "Wprowadzona wartość dla \"{key}\" nie jest obsługiwana przez edytor wizualny. Obsługujemy ({type_correct}), a otrzymaliśmy ({type_wrong}).",
+                "no_template_editor_support": "Szablony nie są obsługiwane w edytorze wizualnym",
                 "no_type_provided": "Nie wprowadzono typu."
+            },
+            "supervisor": {
+                "ask": "Poproś o pomoc",
+                "observer": "Sprawdź obserwatora",
+                "reboot": "Spróbuj ponownie uruchomić hosta",
+                "system_health": "Sprawdź kondycję systemu",
+                "title": "Nie można wczytać panelu Supervisora!",
+                "wait": "Jeśli właśnie uruchomiłeś system, upewnij się, że dałeś Supervisorowi wystarczająco dużo czasu na start."
             }
         },
         "login-form": {
@@ -1205,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Utracono połączenie. Łączę ponownie...",
             "dismiss": "Ukryj",
+            "intergration_starting": "{integration} uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
             "service_call_failed": "Nie udało się wywołać usługi {service}.",
             "started": "Home Assistant uruchomił się!",
             "starting": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
-            "triggered": "Wyzwolenie {name}"
+            "triggered": "Wyzwolenie {name}",
+            "wrapping_up_startup": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy."
         },
         "panel": {
             "config": {
@@ -1294,10 +1330,15 @@
                                 "device_id": {
                                     "action": "Akcja",
                                     "extra_fields": {
+                                        "brightness_pct": "Jasność",
                                         "code": "Kod",
+                                        "flash": "Flash",
+                                        "humidity": "Wilgotność",
                                         "message": "Wiadomość",
+                                        "mode": "Tryb",
                                         "position": "Pozycja",
-                                        "title": "Tytuł"
+                                        "title": "Tytuł",
+                                        "value": "Wartość"
                                     },
                                     "label": "Urządzenie"
                                 },
@@ -1342,7 +1383,7 @@
                                     "wait_template": "Szablon czekania"
                                 }
                             },
-                            "unsupported_action": "Brak w interfejsie użytkownika wsparcia dla akcji: {action}"
+                            "unsupported_action": "Brak wsparcia edytora wizualnego dla akcji: {action}"
                         },
                         "alias": "Nazwa",
                         "blueprint": {
@@ -1370,7 +1411,9 @@
                                     "extra_fields": {
                                         "above": "Powyżej",
                                         "below": "Poniżej",
-                                        "for": "Czas trwania"
+                                        "for": "Czas trwania",
+                                        "hvac_mode": "Tryb pracy HVAC",
+                                        "preset_mode": "Ustawienie predefiniowane"
                                     },
                                     "label": "Urządzenie"
                                 },
@@ -1425,7 +1468,7 @@
                                     "zone": "Strefa"
                                 }
                             },
-                            "unsupported_condition": "Brak w interfejsie użytkownika wsparcia dla warunku: {condition}"
+                            "unsupported_condition": "Brak wsparcia edytora wizualnego dla warunku: {condition}"
                         },
                         "copy_to_clipboard": "Skopiuj do schowka",
                         "default_name": "Nowa automatyzacja",
@@ -1433,12 +1476,12 @@
                             "label": "Opis",
                             "placeholder": "Opcjonalny opis"
                         },
-                        "edit_ui": "Edytuj za pomocą interfejsu użytkownika",
-                        "edit_yaml": "Edycja jako YAML",
+                        "edit_ui": "Edytuj w edytorze wizualnym",
+                        "edit_yaml": "Edycja w YAML",
                         "enable_disable": "Włącz/wyłącz automatyzację",
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
                         "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne",
-                        "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no})",
+                        "load_error_unknown": "Wystąpił błąd podczas wczytywania automatyzacji ({err_no})",
                         "max": {
                             "parallel": "Maksymalna liczba równoległych uruchomień",
                             "queued": "Długość kolejki"
@@ -1455,6 +1498,7 @@
                         "move_down": "Przesuń w dół",
                         "move_up": "Przesuń w górę",
                         "save": "Zapisz",
+                        "show_trace": "Pokaż ślad",
                         "triggers": {
                             "add": "Dodaj wyzwalacz",
                             "delete": "Usuń",
@@ -1555,7 +1599,7 @@
                                     "zone": "Strefa"
                                 }
                             },
-                            "unsupported_platform": "Brak w interfejsie użytkownika wsparcia dla platformy: {platform}"
+                            "unsupported_platform": "Brak wsparcia edytora wizualnego dla platformy: {platform}"
                         },
                         "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?"
                     },
@@ -1563,6 +1607,8 @@
                         "add_automation": "Dodaj automatyzację",
                         "delete_automation": "Usuń automatyzację",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę automatyzację?",
+                        "dev_automation": "Debuguj automatyzację",
+                        "dev_only_editable": "Można debugować tylko automatyzacje mające unikalne identyfikatory.",
                         "duplicate": "Duplikuj",
                         "duplicate_automation": "Duplikuj automatyzację",
                         "edit_automation": "Edytuj automatyzację",
@@ -1572,7 +1618,7 @@
                         },
                         "introduction": "Edytor automatyzacji pozwala tworzyć i edytować automatyzacje Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować automatyzacje w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o automatyzacjach",
-                        "no_automations": "Nie znaleziono żadnych edytowalnych automatyzacji",
+                        "no_automations": "Nie znaleziono żadnych automatyzacji",
                         "only_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne.",
                         "pick_automation": "Wybierz automatyzację do edycji",
                         "show_info_automation": "Pokaż informacje o automatyzacji"
@@ -1653,7 +1699,7 @@
                         "google": {
                             "config_documentation": "Dokumentacja konfiguracji",
                             "devices_pin": "Kod PIN urządzeń bezpieczeństwa",
-                            "enable_ha_skill": "Włącz skill Home Assistant dla Asystenta Google",
+                            "enable_ha_skill": "Włącz skill Chmury Home Assistant dla Asystenta Google",
                             "enable_state_reporting": "Włącz raportowanie stanów",
                             "enter_pin_error": "Nie można zapisać kodu PIN:",
                             "enter_pin_hint": "Wprowadź kod PIN",
@@ -1661,6 +1707,8 @@
                             "info": "Dzięki integracji z Asystentem Google dla Chmury Home Assistant będzie możliwe kontrolowanie wszystkich urządzeń Home Assistanta za pośrednictwem dowolnego urządzenia obsługującego Asystenta Google.",
                             "info_state_reporting": "Jeśli włączysz raportowanie stanów, Home Assistant wyśle wszystkie zmiany stanu udostępnionych encji na serwery Google. Dzięki temu zawsze możesz zobaczyć najnowsze stany w aplikacji Google.",
                             "manage_entities": "Zarządzanie encjami",
+                            "not_configured_text": "Aby móc korzystać z Asystenta Google, musisz aktywować skill Chmury Home Assistant dla Asystenta Google w aplikacji Google Home.",
+                            "not_configured_title": "Asystent Google nie jest aktywowany",
                             "security_devices": "Urządzenia bezpieczeństwa",
                             "sync_entities": "Synchronizuj encje",
                             "sync_entities_404_message": "Nie udało się zsynchronizować encji z Google, poproś Google Asystenta 'Hej, Google, zsynchronizuj moje urządzenia', aby ponowić próbę synchronizacji.",
@@ -1823,6 +1871,36 @@
                     "description": "System metryczny, lokalizacja, strefa czasowa oraz inne parametry ogólne",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Zanim to włączysz, odwiedź stronę z dokumentacją analityczną {link}, aby zrozumieć, co wysyłasz i jak to jest przechowywane.",
+                                "header": "Dane analityczne",
+                                "instance_id": "Identyfikator instancji: {huuid}",
+                                "introduction": "Udostępnij informacje o instalacji, aby ulepszyć Home Assistant i pomóż nam przekonać producentów do dodania lokalnych funkcji sterowania i prywatności.",
+                                "learn_more": "Jak przetwarzamy Twoje dane",
+                                "needs_base": "Aby ta opcja była dostępna, musisz włączyć podstawowe dane analityczne",
+                                "preference": {
+                                    "base": {
+                                        "description": "Identyfikator instancji, wersja i typ instalacji.",
+                                        "title": "Podstawowe dane analityczne"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Udostępniaj raporty o awariach, gdy wystąpią nieoczekiwane błędy.",
+                                        "title": "Diagnostyka"
+                                    },
+                                    "statistics": {
+                                        "description": "Suma wykorzystanych encji, użytkowników i innych elementów.",
+                                        "title": "Statystyki użycia"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Nazwy, wersje i możliwości.",
+                                        "title": "Użyte integracje i dodatki"
+                                    },
+                                    "usage": {
+                                        "description": "Informacje o nazwie i wersji.",
+                                        "title": "Używane integracje"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Edytor wyłączony, ponieważ konfiguracja jest przechowywana w pliku configuration.yaml.",
                                 "elevation": "Wysokość",
@@ -2010,6 +2088,9 @@
                     "filtering_by": "Filtrowanie przez",
                     "show": "Pokaż"
                 },
+                "hassio": {
+                    "button": "Konfiguruj"
+                },
                 "header": "Konfiguruj Home Assistanta",
                 "helpers": {
                     "caption": "Pomocnicy",
@@ -2058,7 +2139,7 @@
                     "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
                     "server": "serwer",
                     "source": "Źródło:",
-                    "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
+                    "system_health_error": "Komponent kondycji systemu nie jest wczytany. Dodaj 'system_health:' do pliku configuration.yaml",
                     "system_health": {
                         "manage": "Zarządzaj",
                         "more_info": "więcej info"
@@ -2075,8 +2156,11 @@
                     "caption": "Integracje",
                     "config_entry": {
                         "area": "obszar: {area}",
+                        "check_the_logs": "Sprawdź logi",
+                        "configure": "Konfiguruj",
                         "delete": "Usuń",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
+                        "depends_on_cloud": "Zależny od chmury",
                         "device_unavailable": "Urządzenie niedostępne",
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
                         "disable_restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć wyłączanie tej integracji",
@@ -2096,22 +2180,33 @@
                         "entity_unavailable": "encja niedostępna",
                         "firmware": "oprogramowanie: {version}",
                         "hub": "połączony poprzez:",
+                        "logs": "logi",
                         "manuf": "producent: {manufacturer}",
                         "no_area": "brak",
+                        "not_loaded": "Nie wczytano",
                         "options": "Opcje",
+                        "provided_by_custom_integration": "Dostarczone przez niestandardowy komponent",
                         "reload": "Wczytaj ponownie",
                         "reload_confirm": "Integracja została ponownie wczytana",
                         "reload_restart_confirm": "Uruchom ponownie Home Assistanta, aby dokończyć ponowne wczytywanie tej integracji",
                         "rename": "Zmień nazwę",
                         "restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć usuwanie tej integracji",
                         "services": "{count} {count, plural,\n  one {usługa}\n  few {usługi}\n  many {usług}\n  other {usług}\n}",
+                        "state": {
+                            "failed_unload": "Błąd usuwania",
+                            "loaded": "Wczytano",
+                            "migration_error": "Błąd migracji",
+                            "not_loaded": "Nie wczytano",
+                            "setup_error": "Błąd konfiguracji",
+                            "setup_retry": "Próbuję ponownie skonfigurować"
+                        },
                         "system_options": "Opcje systemowe",
                         "unnamed_entry": "Nienazwany wpis"
                     },
                     "config_flow": {
                         "aborted": "Przerwano",
                         "close": "Zamknij",
-                        "could_not_load": "Nie można wczytać interfejsu konfiguracji",
+                        "could_not_load": "Nie udało się wczytać interfejsu konfiguracji",
                         "created_config": "Utworzono konfigurację dla {name}.",
                         "dismiss": "Okno dialogowe odrzucenia",
                         "error": "Błąd",
@@ -2123,6 +2218,7 @@
                         "finish": "Zakończ",
                         "loading_first_time": "Proszę czekać, trwa instalowanie integracji...",
                         "not_all_required_fields": "Nie wszystkie wymagane pola są wypełnione.",
+                        "not_loaded": "Nie udało się wczytać integracji, spróbuj ponownie uruchomić Home Assistanta.",
                         "pick_flow_step": {
                             "new_flow": "Nie, skonfiguruj inną instancję integracji {integration}",
                             "title": "Odkryliśmy je, chcesz je skonfigurować?"
@@ -2132,11 +2228,12 @@
                     "configure": "Konfiguruj",
                     "configured": "Skonfigurowane",
                     "confirm_new": "Czy chcesz skonfigurować {integration}?",
-                    "description": "Zarządzaj integracjami z usługami, urządzeniami, ...",
+                    "description": "Zarządzaj integracjami z usługami lub urządzeniami",
                     "details": "Szczegóły integracji",
                     "disable": {
                         "disabled_integrations": "Wyłączonych: {number}",
                         "hide_disabled": "Ukryj wyłączone integracje",
+                        "show": "Pokaż",
                         "show_disabled": "Pokaż wyłączone integracje"
                     },
                     "discovered": "Wykryte",
@@ -2170,10 +2267,19 @@
                 "logs": {
                     "caption": "Logi",
                     "clear": "Wyczyść",
+                    "custom_integration": "niestandardowa integracja",
                     "description": "Wyświetlanie logów Home Assistanta",
                     "details": "Szczegóły loga ({level})",
-                    "load_full_log": "Załaduj cały log Home Assistanta",
-                    "loading_log": "Ładowanie loga błędów…",
+                    "error_from_custom_integration": "Ten błąd pochodzi z niestandardowej integracji.",
+                    "level": {
+                        "critical": "KRYTYCZNE",
+                        "debug": "DEBUG",
+                        "error": "BŁĄD",
+                        "info": "INFO",
+                        "warning": "OSTRZEŻENIE"
+                    },
+                    "load_full_log": "Wczytaj cały log Home Assistanta",
+                    "loading_log": "Wczytywanie loga błędów…",
                     "multiple_messages": "wiadomość pojawiła się po raz pierwszy {time} i powtarzała się {counter} razy",
                     "no_errors": "Nie zgłoszono żadnych błędów",
                     "no_issues": "Nie ma nowych problemów!",
@@ -2332,7 +2438,7 @@
                     },
                     "node_query_stages": {
                         "associations": "Odświeżanie grup skojarzeń i członkostwa",
-                        "cacheload": "Ładowanie informacji z pliku pamięci podręcznej OpenZWave. Węzły baterii pozostaną na tym etapie, dopóki węzeł się nie wybudzi.",
+                        "cacheload": "Wczytywanie informacji z pliku pamięci podręcznej OpenZWave. Węzły baterii pozostaną na tym etapie, dopóki węzeł się nie wybudzi.",
                         "complete": "Proces odpytywania jest zakończony",
                         "configuration": "Pobieranie wartości konfiguracyjnych z węzła",
                         "dynamic": "Pobieranie często zmieniających się wartości z węzła",
@@ -2440,7 +2546,7 @@
                         "icon": "Ikona",
                         "introduction": "Użyj scen, aby ożywić swój dom.",
                         "load_error_not_editable": "Tylko sceny zdefiniowane w pliku scenes.yaml są edytowalne",
-                        "load_error_unknown": "Błąd ładowania sceny ({err_no})",
+                        "load_error_unknown": "Błąd wczytywania sceny ({err_no})",
                         "name": "Nazwa",
                         "save": "Zapisz",
                         "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?"
@@ -2456,7 +2562,7 @@
                         },
                         "introduction": "Edytor scen pozwala tworzyć i edytować sceny. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować sceny w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o scenach",
-                        "no_scenes": "Nie znaleziono żadnych edytowalnych scen",
+                        "no_scenes": "Nie znaleziono żadnych scen",
                         "only_editable": "Tylko sceny zdefiniowane w pliku scenes.yaml są edytowalne.",
                         "pick_scene": "Wybierz scenę do edycji",
                         "show_info_scene": "Pokaż informacje o scenie"
@@ -2506,7 +2612,7 @@
                         },
                         "introduction": "Edytor skryptów pozwala tworzyć i edytować skrypty. Kliknij poniższy link, aby przeczytać instrukcję, jak poprawnie konfigurować skrypty w Home Assistant.",
                         "learn_more": "Dowiedz się więcej o skryptach",
-                        "no_scripts": "Nie znaleziono żadnych edytowalnych skryptów",
+                        "no_scripts": "Nie znaleziono żadnych skryptów",
                         "run_script": "Uruchom skrypt",
                         "show_info": "Pokaż informacje o skrypcie"
                     }
@@ -2516,39 +2622,39 @@
                     "description": "Uruchom ponownie i zatrzymaj serwer Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Wczytaj ponownie automatyzacje",
-                            "command_line": "Wczytaj ponownie encje komponentu linia komend",
-                            "core": "Wczytaj ponownie lokalizację i dostosowywanie",
-                            "filesize": "Wczytaj ponownie encje komponentu wielkość pliku",
-                            "filter": "Wczytaj ponownie encje komponentu filtr",
-                            "generic": "Wczytaj ponownie encje komponentu kamera IP generic",
-                            "generic_thermostat": "Wczytaj ponownie encje komponentu termostatu generic",
-                            "group": "Wczytaj ponownie grupy, ich encje oraz ich usługi powiadomień",
+                            "automation": "Automatyzacje",
+                            "command_line": "Encje komponentu linia komend",
+                            "core": "Lokalizacja i dostosowywanie",
+                            "filesize": "Encje komponentu wielkość pliku",
+                            "filter": "Encje komponentu filtr",
+                            "generic": "Encje komponentu kamera IP generic",
+                            "generic_thermostat": "Encje komponentu termostatu generic",
+                            "group": "Grupy, ich encje oraz usługi powiadomień",
                             "heading": "Ponowne wczytanie konfiguracji YAML",
-                            "history_stats": "Wczytaj ponownie encje komponentu historia stanów",
-                            "homekit": "Wczytaj ponownie HomeKit",
-                            "input_boolean": "Wczytaj ponownie pomocników typu przełącznik",
-                            "input_datetime": "Wczytaj ponownie pomocników typu data i czas",
-                            "input_number": "Wczytaj ponownie pomocników typu numer",
-                            "input_select": "Wczytaj ponownie pomocników typu pole wyboru",
-                            "input_text": "Wczytaj ponownie pomocników typu tekst",
+                            "history_stats": "Encje komponentu historia stanów",
+                            "homekit": "HomeKit",
+                            "input_boolean": "Pomocnicy typu przełącznik",
+                            "input_datetime": "Pomocnicy typu data i czas",
+                            "input_number": "Pomocnicy typu numer",
+                            "input_select": "Pomocnicy typu pole wyboru",
+                            "input_text": "Pomocnicy typu tekst",
                             "introduction": "Niektóre fragmenty konfiguracji można wczytać ponownie bez konieczności restartowania Home Assistanta. Poniższe przyciski usuną z pamięci wybraną część konfiguracji YAML i wczytają ją ponownie.",
-                            "min_max": "Wczytaj ponownie encje komponentu min/max",
-                            "mqtt": "Wczytaj ponownie encje komponentu MQTT",
-                            "person": "Wczytaj ponownie osoby",
-                            "ping": "Wczytaj ponownie encje komponentu ping",
-                            "reload": "Wczytaj ponownie domenę {domain}",
-                            "rest": "Wczytaj ponownie encje komponentu rest i ich usługi powiadomień",
-                            "rpi_gpio": "Wczytaj ponownie encje komponentu Raspberry Pi GPIO",
-                            "scene": "Wczytaj ponownie sceny",
-                            "script": "Wczytaj ponownie skrypty",
-                            "smtp": "Wczytaj ponownie usługi powiadomień komponentu SMTP",
-                            "statistics": "Wczytaj ponownie encje komponentu statystyka",
-                            "telegram": "Wczytaj ponownie usługi powiadomień komponentu Telegram",
-                            "template": "Wczytaj ponownie encje zdefiniowane szablonami",
-                            "trend": "Wczytaj ponownie encje komponentu trend",
-                            "universal": "Wczytaj ponownie encje komponentu uniwersalny odtwarzacz mediów",
-                            "zone": "Wczytaj ponownie strefy"
+                            "min_max": "Encje komponentu min/max",
+                            "mqtt": "Encje komponentu MQTT",
+                            "person": "Osoby",
+                            "ping": "Encje komponentu ping",
+                            "reload": "Domenę {domain}",
+                            "rest": "Encje komponentu rest i usługi powiadomień",
+                            "rpi_gpio": "Encje komponentu Raspberry Pi GPIO",
+                            "scene": "Sceny",
+                            "script": "Skrypty",
+                            "smtp": "Usługi powiadomień komponentu SMTP",
+                            "statistics": "Encje komponentu statystyka",
+                            "telegram": "Usługi powiadomień komponentu Telegram",
+                            "template": "Encje zdefiniowane szablonami",
+                            "trend": "Encje komponentu trend",
+                            "universal": "Encje komponentu uniwersalny odtwarzacz mediów",
+                            "zone": "Strefy"
                         },
                         "server_management": {
                             "confirm_restart": "Czy na pewno chcesz ponownie uruchomić Home Assistanta?",
@@ -2724,6 +2830,7 @@
                         "caption": "Sieć"
                     },
                     "visualization": {
+                        "auto_zoom": "Auto Zoom",
                         "caption": "Wizualizacja",
                         "header": "Wizualizacja sieci",
                         "highlight_label": "Zaznacz urządzenia",
@@ -2799,6 +2906,7 @@
                         "server_version": "Wersja serwera"
                     },
                     "device_info": {
+                        "device_config": "Konfiguruj urządzenie",
                         "node_ready": "gotowy",
                         "node_status": "Stan węzła",
                         "zwave_info": "Informacje Z-Wave"
@@ -2810,6 +2918,15 @@
                         "connected": "połączono",
                         "connecting": "łączenie",
                         "unknown": "nieznany"
+                    },
+                    "node_config": {
+                        "attribution": "Parametry konfiguracyjne urządzenia oraz opisy są dostarczane przez {device_database}",
+                        "battery_device_notice": "Urządzenia zasilane bateriami muszą być aktywne, aby zaktualizować ich konfigurację. Zapoznaj się z instrukcją obsługi urządzenia, aby uzyskać instrukcje dotyczące wybudzania urządzenia.",
+                        "error_device_not_found": "Nie znaleziono urządzenia",
+                        "header": "Konfiguracja urządzenia Z-Wave",
+                        "introduction": "Zarządzaj i dostosuj specyficznymi parametrami konfiguracyjnymi dla wybranego urządzenia (nody)",
+                        "parameter_is_read_only": "Ten parametr jest tylko do odczytu.",
+                        "zwave_js_device_database": "Baza danych urządzeń Z-Wave JS"
                     },
                     "node_status": {
                         "alive": "żywy",
@@ -2957,6 +3074,7 @@
                         "column_parameter": "Parametr",
                         "description": "Narzędzie deweloperskie Usługi pozwala na wywołanie dowolnej dostępnej usługi.",
                         "fill_example_data": "Wypełnij przykładowymi danymi",
+                        "no_template_ui_support": "Interfejs użytkownika nie obsługuje szablonów, nadal możesz używać edytora YAML.",
                         "title": "Usługi",
                         "ui_mode": "Przejdź do trybu interfejsu użytkownika",
                         "yaml_mode": "Przejdź do trybu YAML",
@@ -2998,6 +3116,17 @@
                         "title": "Szablon",
                         "unknown_error_template": "Nieznany błąd podczas renderowania szablonu"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Wróć",
+                "supervisor": {
+                    "ask": "Poproś o pomoc",
+                    "observer": "Sprawdź obserwatora",
+                    "reboot": "Spróbuj ponownie uruchomić hosta",
+                    "system_health": "Sprawdź kondycję systemu",
+                    "title": "Nie można wczytać panelu Supervisora!",
+                    "wait": "Jeśli właśnie uruchomiłeś system, upewnij się, że dałeś Supervisorowi wystarczająco dużo czasu na start."
                 }
             },
             "history": {
@@ -3050,7 +3179,7 @@
                         "url": "Otwórz okno do {url_path}"
                     },
                     "safe-mode": {
-                        "description": "Podczas ładowania konfiguracji Home Assistant napotkał problemy i działa teraz w trybie awaryjnym. Zajrzyj do loga, aby sprawdzić, co poszło nie tak.",
+                        "description": "Podczas wczytywania konfiguracji Home Assistant napotkał problemy i działa teraz w trybie awaryjnym. Zajrzyj do loga, aby sprawdzić, co poszło nie tak.",
                         "header": "Tryb awaryjny aktywny"
                     },
                     "shopping-list": {
@@ -3405,7 +3534,7 @@
                         "error_remove": "Nie można usunąć konfiguracji: {error}",
                         "error_save_yaml": "Nie można zapisać YAML: {error}",
                         "header": "Edytuj konfigurację",
-                        "lovelace_changed": "Konfiguracja Lovelace została zaktualizowana, czy chcesz załadować zaktualizowaną konfigurację do edytora i stracić obecne zmiany?",
+                        "lovelace_changed": "Konfiguracja Lovelace została zaktualizowana, czy chcesz wczytać zaktualizowaną konfigurację do edytora i stracić obecne zmiany?",
                         "reload": "Wczytaj ponownie",
                         "resources_moved": "Zasoby nie powinny być już dodawane do konfiguracji Lovelace, można je dodawać w panelu konfiguracji Lovelace.",
                         "save": "Zapisz",
@@ -3645,6 +3774,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Dalej",
+                    "intro": "Udostępniaj dane analityczne ze swojej instancji. Te dane będą publicznie dostępne pod adresem {link}"
+                },
                 "core-config": {
                     "button_detect": "Wykryj",
                     "finish": "Dalej",
@@ -3654,12 +3787,14 @@
                     "location_name": "Nazwa instalacji Home Assistanta",
                     "location_name_default": "Dom"
                 },
+                "finish": "Zakończ",
                 "integration": {
                     "finish": "Koniec",
                     "intro": "Urządzenia i usługi są reprezentowane w Home Assistant jako integracje. Możesz je teraz skonfigurować lub zrobić to później w konfiguracji.",
                     "more_integrations": "Więcej"
                 },
                 "intro": "Czy jesteś gotowy, aby ożywić swój dom, odzyskać prywatność i dołączyć do światowej społeczności majsterkowiczów?",
+                "next": "Dalej",
                 "restore": {
                     "description": "Alternatywnie możesz przywrócić z poprzedniej migawki.",
                     "hide_log": "Ukryj cały log",
@@ -3753,6 +3888,19 @@
                     "disable": "Wyłącz",
                     "enable": "Włącz",
                     "header": "Moduły uwierzytelniania wieloskładnikowego"
+                },
+                "number_format": {
+                    "description": "Wybierz sposób formatowania liczb.",
+                    "dropdown_label": "Format liczbowy",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Auto (użyj ustawień języka)",
+                        "none": "Brak",
+                        "space_comma": "1 234 567,89",
+                        "system": "Użyj ustawień regionalnych systemu"
+                    },
+                    "header": "Format liczbowy"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

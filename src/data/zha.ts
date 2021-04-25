@@ -82,12 +82,17 @@ export interface ZHAGroupMember {
 
 export const reconfigureNode = (
   hass: HomeAssistant,
-  ieeeAddress: string
-): Promise<void> =>
-  hass.callWS({
-    type: "zha/devices/reconfigure",
-    ieee: ieeeAddress,
-  });
+  ieeeAddress: string,
+  callbackFunction: any
+) => {
+  return hass.connection.subscribeMessage(
+    (message) => callbackFunction(message),
+    {
+      type: "zha/devices/reconfigure",
+      ieee: ieeeAddress,
+    }
+  );
+};
 
 export const refreshTopology = (hass: HomeAssistant): Promise<void> =>
   hass.callWS({

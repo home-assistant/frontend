@@ -72,8 +72,6 @@ export const theme = EditorView.theme({
   ".cm-panels.top": { borderBottom: "1px solid var(--divider-color)" },
   ".cm-panels.bottom": { borderTop: "1px solid var(--divider-color)" },
 
-  ".cm-panel.search input": { margin: "4px 4px 0" },
-
   ".cm-button": {
     border: "1px solid var(--primary-color)",
     padding: "0px 16px",

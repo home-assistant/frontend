@@ -146,6 +146,9 @@
                     "hassio_api": {
                         "title": "Supervisor API hozzáférés"
                     },
+                    "host_network": {
+                        "description": "A bővítmények általában a saját elszigetelt hálózati rétegükben futnak, ami megakadályozza, hogy hozzáférjenek a gazdagép operációs rendszer hálózatához. Bizonyos esetekben ez a hálózati elkülönítés korlátozhatja a bővítményeket a szolgáltatásaik nyújtásában, ezért az elkülönítést a bővítmény szerzője feloldhatja, így a bővítmény teljes hozzáférést biztosít a gazdaszámítógép hálózati képességeihez. Ez több hálózati lehetőséget biztosít a bővítménynek, de csökkenti a biztonságot, ezért a bővítmény biztonsági besorolása csökken, ha ezt a beállítást a bővítmény használja."
+                    },
                     "label": {
                         "apparmor": "apparmor",
                         "auth": "auth",
@@ -164,12 +167,16 @@
                         "default": "alapértelmezett",
                         "homeassistant": "homeassistant",
                         "manager": "manager"
+                    },
+                    "stage": {
+                        "title": "Kiegészítő szakasz"
                     }
                 },
                 "changelog": "Változási napló",
                 "cpu_usage": "Bővítmény CPU-használat",
                 "hostname": "Gazdagép neve",
                 "install": "telepítés",
+                "not_available_version": "A(z) {core_version_installed} otthoni segédet futtatja, hogy frissítse az Otthoni segéd legalább {core_version_needed} verzióját.",
                 "open_web_ui": "Webes felhasználói felület megnyitása",
                 "option": {
                     "auto_update": {
@@ -195,7 +202,8 @@
                 "restart": "újraindítás",
                 "start": "indítás",
                 "stop": "leállítás",
-                "uninstall": "eltávolítás"
+                "uninstall": "eltávolítás",
+                "visit_addon_page": "További részletekért látogasson el a(z) {name} oldalra."
             },
             "documentation": {
                 "get_documentation": "Nem sikerült lekérni a bővítmény dokumentációját, {error}"
@@ -398,7 +406,8 @@
                 "unhealthy_reason": {
                     "docker": "A Docker futtatókörnyezet nem működik megfelelően",
                     "setup": "A Supervisor beállítása sikertelen volt",
-                    "supervisor": "A Supervisor nem tudott frissíteni"
+                    "supervisor": "A Supervisor nem tudott frissíteni",
+                    "untrusted": "Nem megbízható tartalom észlelése"
                 },
                 "unhealthy_title": "A telepítés nem megfelelő",
                 "unsupported_reason": {
@@ -795,7 +804,8 @@
             "service-control": {
                 "required": "Ez a mező kötelező",
                 "service_data": "Szolgáltatás adatai",
-                "target": "Célok"
+                "target": "Célok",
+                "target_description": "Mit használjon ez a szolgáltatás célzott területként, eszközként vagy entitásként?"
             },
             "service-picker": {
                 "service": "Szolgáltatás"
@@ -1209,10 +1219,14 @@
                                 "device_id": {
                                     "action": "Művelet",
                                     "extra_fields": {
+                                        "brightness_pct": "Fényerő",
                                         "code": "Kód",
+                                        "humidity": "Páratartalom",
                                         "message": "Üzenet",
+                                        "mode": "Üzemmód",
                                         "position": "Pozíció",
-                                        "title": "Cím"
+                                        "title": "Cím",
+                                        "value": "Érték"
                                     },
                                     "label": "Eszköz"
                                 },
@@ -1285,7 +1299,9 @@
                                     "extra_fields": {
                                         "above": "Felett",
                                         "below": "Alatt",
-                                        "for": "Időtartam"
+                                        "for": "Időtartam",
+                                        "hvac_mode": "HVAC üzemmód",
+                                        "preset_mode": "Előre beállított üzemmód"
                                     },
                                     "label": "Eszköz"
                                 },
@@ -1991,6 +2007,7 @@
                         "devices": "{count} {count, plural,\n  one {eszköz}\n  other {eszköz}\n}",
                         "disable_restart_confirm": "Indítsa újra a Home Assistant programot az integráció lekapcsolásának befejezéséhez",
                         "disable": {
+                            "disable_confirm": "Biztosan letiltja ezt a konfigurációs bejegyzést? Eszközeit és entitásait letiltjuk.",
                             "disabled": "Letiltva",
                             "disabled_by": {
                                 "device": "eszköz",
@@ -2632,6 +2649,7 @@
                         "caption": "Hálózat"
                     },
                     "visualization": {
+                        "auto_zoom": "Automatikus nagyítás",
                         "caption": "Megjelenítés",
                         "header": "Hálózati megjelenítés",
                         "highlight_label": "Kiemelt ezközök",
@@ -2669,17 +2687,36 @@
                     "no_zones_created_yet": "Úgy tűnik, még nem hoztál létre zónákat."
                 },
                 "zwave_js": {
+                    "add_node": {
+                        "view_device": "Eszköz megtekintése"
+                    },
+                    "button": "Konfigurálja",
                     "common": {
-                        "close": "Bezárás"
+                        "add_node": "Node hozzáadása",
+                        "close": "Bezárás",
+                        "network": "Hálózat",
+                        "node_id": "Node azonosító",
+                        "remove_node": "Node eltávolítása"
                     },
                     "dashboard": {
                         "dump_not_ready_confirm": "Letöltés",
                         "server_version": "Szerver verzió"
                     },
+                    "device_info": {
+                        "device_config": "Eszköz beállítása"
+                    },
+                    "navigation": {
+                        "network": "Hálózat"
+                    },
                     "network_status": {
                         "connected": "Csatlakoztatva",
                         "connecting": "Csatlakozás",
                         "unknown": "Ismeretlen"
+                    },
+                    "node_config": {
+                        "error_device_not_found": "Az eszköz nem található",
+                        "header": "Z-Wave eszköz konfigurálása",
+                        "parameter_is_read_only": "Ez a paraméter csak olvasható"
                     },
                     "node_status": {
                         "unknown": "Ismeretlen"
@@ -2853,6 +2890,15 @@
                         "title": "Sablon",
                         "unknown_error_template": "Ismeretlen hiba a sablon kiértékelésekor"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Visszalépés",
+                "supervisor": {
+                    "ask": "Kérjen segítséget",
+                    "reboot": "Próbálja újraindítani a gazdagépet",
+                    "system_health": "A rendszer állapotának ellenőrzése",
+                    "title": "Nem sikerült betölteni a Supervisor panelt!"
                 }
             },
             "history": {

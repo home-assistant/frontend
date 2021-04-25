@@ -113,7 +113,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     if (
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.language !== this.hass!.language
+      oldHass.locale !== this.hass!.locale
     ) {
       return true;
     }
@@ -196,7 +196,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
               ${computeStateDisplay(
                 this.hass.localize,
                 stateObj,
-                this.hass.language
+                this.hass.locale
               )}
             </span>`
           : ""}

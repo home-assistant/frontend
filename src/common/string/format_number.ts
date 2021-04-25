@@ -1,14 +1,36 @@
+import { FrontendTranslationData, NumberFormat } from "../../data/translation";
+
 /**
- * Formats a number based on the specified language with thousands separator(s) and decimal character for better legibility.
+ * Formats a number based on the user's preference with thousands separator(s) and decimal character for better legibility.
  *
  * @param num The number to format
- * @param language The language to use when formatting the number
+ * @param locale The user-selected language and number format, from `hass.locale`
+ * @param options Intl.NumberFormatOptions to use
  */
 export const formatNumber = (
   num: string | number,
-  language: string,
+  locale?: FrontendTranslationData,
   options?: Intl.NumberFormatOptions
 ): string => {
+  let format: string | string[] | undefined;
+
+  switch (locale?.number_format) {
+    case NumberFormat.comma_decimal:
+      format = ["en-US", "en"]; // Use United States with fallback to English formatting 1,234,567.89
+      break;
+    case NumberFormat.decimal_comma:
+      format = ["de", "es", "it"]; // Use German with fallback to Spanish then Italian formatting 1.234.567,89
+      break;
+    case NumberFormat.space_comma:
+      format = ["fr", "sv", "cs"]; // Use French with fallback to Swedish and Czech formatting 1 234 567,89
+      break;
+    case NumberFormat.system:
+      format = undefined;
+      break;
+    default:
+      format = locale?.language;
+  }
+
   // Polyfill for Number.isNaN, which is more reliable than the global isNaN()
   Number.isNaN =
     Number.isNaN ||
@@ -16,11 +38,25 @@ export const formatNumber = (
       return typeof input === "number" && isNaN(input);
     };
 
-  if (!Number.isNaN(Number(num)) && Intl) {
-    return new Intl.NumberFormat(
-      language,
-      getDefaultFormatOptions(num, options)
-    ).format(Number(num));
+  if (
+    !Number.isNaN(Number(num)) &&
+    Intl &&
+    locale?.number_format !== NumberFormat.none
+  ) {
+    try {
+      return new Intl.NumberFormat(
+        format,
+        getDefaultFormatOptions(num, options)
+      ).format(Number(num));
+    } catch (error) {
+      // Don't fail when using "TEST" language
+      // eslint-disable-next-line no-console
+      console.error(error);
+      return new Intl.NumberFormat(
+        undefined,
+        getDefaultFormatOptions(num, options)
+      ).format(Number(num));
+    }
   }
   return num.toString();
 };

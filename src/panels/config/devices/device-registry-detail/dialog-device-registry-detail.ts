@@ -33,7 +33,7 @@ class DialogDeviceRegistryDetail extends LitElement {
 
   @internalProperty() private _params?: DeviceRegistryDetailDialogParams;
 
-  @internalProperty() private _areaId?: string;
+  @internalProperty() private _areaId?: string | null;
 
   @internalProperty() private _disabledBy!: string | null;
 

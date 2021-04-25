@@ -1,8 +1,6 @@
 name: Report a bug with the UI, Frontend or Lovelace
-about: Report an issue related to the Home Assistant frontend.
+description: Report an issue related to the Home Assistant frontend.
 labels: bug
-title: ""
-issue_body: true
 body:
   - type: markdown
     attributes:
@@ -126,13 +124,10 @@ body:
         # Paste your logs here.
 
         ```
-  - type: markdown
+  - type: textarea
     attributes:
-      value: |
-        ## Additional information
-  - type: markdown
-    attributes:
-      value: |
+      label: Additional information
+      description: >
         If you have any additional information for us, use the field below.
-        Please note, you can attach screenshots or screen recordings here,
-        by dragging and dropping files in the field below.
+        Please note, you can attach screenshots or screen recordings here, by
+        dragging and dropping files in the field below.

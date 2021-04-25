@@ -1049,6 +1049,10 @@
                 "key_not_expected": "Nyckeln \"{key}\" förväntas inte eller stöds inte av den visuella redigeraren.",
                 "key_wrong_type": "Det angivna värdet för \"{key}\" stöds inte av den visuella redigeraren. Vi stöder ({type_correct}) men fick ({type_wrong}).",
                 "no_type_provided": "Ingen typ angiven."
+            },
+            "supervisor": {
+                "ask": "Be om hjälp",
+                "wait": "Om du precis börjat, se till att du har gett Supervisor tillräckligt med tid för att starta."
             }
         },
         "login-form": {
@@ -1682,6 +1686,9 @@
                     "description": "Ändra din grundkonfiguration för Home Assistant.",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "learn_more": "Hur vi behandlar din data"
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Redigeraren är inaktiverad eftersom konfigurationen lagras i configuration.yaml.",
                                 "elevation": "Höjd över havet",
@@ -1867,6 +1874,9 @@
                     "clear": "Rensa",
                     "filtering_by": "Filtrera efter"
                 },
+                "hassio": {
+                    "button": "Konfigurera"
+                },
                 "header": "Konfigurera Home Assistant",
                 "helpers": {
                     "caption": "Hjälpare",
@@ -2020,6 +2030,13 @@
                     "clear": "Rensa",
                     "description": "Visa Home Assistant loggarna",
                     "details": "Logginformation ({level})",
+                    "level": {
+                        "critical": "KRITISK",
+                        "debug": "DEBUG",
+                        "error": "FEL",
+                        "info": "INFO",
+                        "warning": "VARNING"
+                    },
                     "load_full_log": "Ladda hela Home Assistant-loggen",
                     "loading_log": "Läser in fellogg ...",
                     "multiple_messages": "Meddelandet inträffade först {time} och har hänt {counter} gånger",
@@ -2572,6 +2589,7 @@
                         "caption": "Nätverk"
                     },
                     "visualization": {
+                        "auto_zoom": "Automatisk zoomning",
                         "caption": "Visualisering",
                         "header": "Visualisering av nätverk",
                         "highlight_label": "Markera enheter",
@@ -2840,6 +2858,12 @@
                         "title": "Mallar",
                         "unknown_error_template": "Okänt fel vid rendering av mall"
                     }
+                }
+            },
+            "error": {
+                "go_back": "Gå tillbaka",
+                "supervisor": {
+                    "ask": "Be om hjälp"
                 }
             },
             "history": {
@@ -3255,7 +3279,7 @@
                         "unsaved_changes": "Osparade ändringar"
                     },
                     "save_config": {
-                        "cancel": "Glöm det",
+                        "cancel": "Avbryt",
                         "close": "Stäng",
                         "empty_config": "Börja med en tom instrumentpanel",
                         "header": "Ta kontroll över Lovelace UI",

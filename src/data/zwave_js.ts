@@ -28,6 +28,34 @@ export interface ZWaveJSNode {
   status: number;
 }
 
+export interface ZWaveJSNodeConfigParams {
+  property: number;
+  value: any;
+  configuration_value_type: string;
+  metadata: ZWaveJSNodeConfigParamMetadata;
+}
+
+export interface ZWaveJSNodeConfigParamMetadata {
+  description: string;
+  label: string;
+  max: number;
+  min: number;
+  readable: boolean;
+  writeable: boolean;
+  type: string;
+  unit: string;
+  states: { [key: number]: string };
+}
+
+export interface ZWaveJSSetConfigParamData {
+  type: string;
+  entry_id: string;
+  node_id: number;
+  property: number;
+  property_key?: number;
+  value: string | number;
+}
+
 export enum NodeStatus {
   Unknown,
   Asleep,
@@ -57,6 +85,36 @@ export const fetchNodeStatus = (
     entry_id,
     node_id,
   });
+
+export const fetchNodeConfigParameters = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number
+): Promise<ZWaveJSNodeConfigParams[]> =>
+  hass.callWS({
+    type: "zwave_js/get_config_parameters",
+    entry_id,
+    node_id,
+  });
+
+export const setNodeConfigParameter = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number,
+  property: number,
+  value: number,
+  property_key?: number
+): Promise<unknown> => {
+  const data: ZWaveJSSetConfigParamData = {
+    type: "zwave_js/set_config_parameter",
+    entry_id,
+    node_id,
+    property,
+    value,
+    property_key,
+  };
+  return hass.callWS(data);
+};
 
 export const getIdentifiersFromDevice = function (
   device: DeviceRegistryEntry

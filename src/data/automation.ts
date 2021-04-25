@@ -23,11 +23,22 @@ export interface ManualAutomationConfig {
   id?: string;
   alias?: string;
   description?: string;
-  trigger: Trigger[];
-  condition?: Condition[];
-  action: Action[];
+  trigger: Trigger | Trigger[];
+  condition?: Condition | Condition[];
+  action: Action | Action[];
   mode?: typeof MODES[number];
   max?: number;
+  max_exceeded?:
+    | "silent"
+    | "critical"
+    | "fatal"
+    | "error"
+    | "warning"
+    | "warn"
+    | "info"
+    | "debug"
+    | "notset";
+  variables?: Record<string, unknown>;
 }
 
 export interface BlueprintAutomationConfig extends ManualAutomationConfig {
@@ -45,7 +56,7 @@ export interface StateTrigger {
   entity_id: string;
   attribute?: string;
   from?: string | number;
-  to?: string | number;
+  to?: string | string[] | number;
   for?: string | number | ForDict;
 }
 
@@ -149,11 +160,13 @@ export type Trigger =
 
 export interface LogicalCondition {
   condition: "and" | "not" | "or";
-  conditions: Condition[];
+  alias?: string;
+  conditions: Condition | Condition[];
 }
 
 export interface StateCondition {
   condition: "state";
+  alias?: string;
   entity_id: string;
   attribute?: string;
   state: string | number;
@@ -162,6 +175,7 @@ export interface StateCondition {
 
 export interface NumericStateCondition {
   condition: "numeric_state";
+  alias?: string;
   entity_id: string;
   attribute?: string;
   above?: number;
@@ -171,6 +185,7 @@ export interface NumericStateCondition {
 
 export interface SunCondition {
   condition: "sun";
+  alias?: string;
   after_offset: number;
   before_offset: number;
   after: "sunrise" | "sunset";
@@ -179,12 +194,14 @@ export interface SunCondition {
 
 export interface ZoneCondition {
   condition: "zone";
+  alias?: string;
   entity_id: string;
   zone: string;
 }
 
 export interface TimeCondition {
   condition: "time";
+  alias?: string;
   after?: string;
   before?: string;
   weekday?: string | string[];
@@ -192,6 +209,7 @@ export interface TimeCondition {
 
 export interface TemplateCondition {
   condition: "template";
+  alias?: string;
   value_template: string;
 }
 
@@ -219,6 +237,9 @@ export const deleteAutomation = (hass: HomeAssistant, id: string) =>
   hass.callApi("DELETE", `config/automation/config/${id}`);
 
 let inititialAutomationEditorData: Partial<AutomationConfig> | undefined;
+
+export const getAutomationConfig = (hass: HomeAssistant, id: string) =>
+  hass.callApi<AutomationConfig>("GET", `config/automation/config/${id}`);
 
 export const showAutomationEditor = (
   el: HTMLElement,

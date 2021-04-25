@@ -36,6 +36,7 @@ import {
   AutomationConfig,
   AutomationEntity,
   deleteAutomation,
+  getAutomationConfig,
   getAutomationEditorInitData,
   showAutomationEditor,
   triggerAutomationActions,
@@ -303,39 +304,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       oldAutomationId !== this.automationId
     ) {
       this._setEntityId();
-      this.hass
-        .callApi<AutomationConfig>(
-          "GET",
-          `config/automation/config/${this.automationId}`
-        )
-        .then(
-          (config) => {
-            // Normalize data: ensure trigger, action and condition are lists
-            // Happens when people copy paste their automations into the config
-            for (const key of ["trigger", "condition", "action"]) {
-              const value = config[key];
-              if (value && !Array.isArray(value)) {
-                config[key] = [value];
-              }
-            }
-            this._dirty = false;
-            this._config = config;
-          },
-          (resp) => {
-            showAlertDialog(this, {
-              text:
-                resp.status_code === 404
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.editor.load_error_not_editable"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.automation.editor.load_error_unknown",
-                      "err_no",
-                      resp.status_code
-                    ),
-            }).then(() => history.back());
-          }
-        );
+      this._loadConfig();
     }
 
     if (changedProps.has("automationId") && !this.automationId && this.hass) {
@@ -376,6 +345,36 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       (entity: AutomationEntity) => entity.attributes.id === this.automationId
     );
     this._entityId = automation?.entity_id;
+  }
+
+  private async _loadConfig() {
+    try {
+      const config = await getAutomationConfig(this.hass, this.automationId);
+
+      // Normalize data: ensure trigger, action and condition are lists
+      // Happens when people copy paste their automations into the config
+      for (const key of ["trigger", "condition", "action"]) {
+        const value = config[key];
+        if (value && !Array.isArray(value)) {
+          config[key] = [value];
+        }
+      }
+      this._dirty = false;
+      this._config = config;
+    } catch (err) {
+      showAlertDialog(this, {
+        text:
+          err.status_code === 404
+            ? this.hass.localize(
+                "ui.panel.config.automation.editor.load_error_not_editable"
+              )
+            : this.hass.localize(
+                "ui.panel.config.automation.editor.load_error_unknown",
+                "err_no",
+                err.status_code
+              ),
+      }).then(() => history.back());
+    }
   }
 
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {

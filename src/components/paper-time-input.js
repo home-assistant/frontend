@@ -133,7 +133,7 @@ export class PaperTimeInput extends PolymerElement {
           always-float-label$="[[alwaysFloatInputLabels]]"
           disabled="[[disabled]]"
         >
-          <span suffix="" slot="suffix">:</span>
+          <span suffix slot="suffix">:</span>
         </paper-input>
 
         <!-- Min Input -->
@@ -303,28 +303,28 @@ export class PaperTimeInput extends PolymerElement {
         notify: true,
       },
       /**
-       * Suffix for the hour input
+       * Label for the hour input
        */
       hourLabel: {
         type: String,
         value: "",
       },
       /**
-       * Suffix for the min input
+       * Label for the min input
        */
       minLabel: {
         type: String,
-        value: ":",
+        value: "",
       },
       /**
-       * Suffix for the sec input
+       * Label for the sec input
        */
       secLabel: {
         type: String,
         value: "",
       },
       /**
-       * Suffix for the milli sec input
+       * Label for the milli sec input
        */
       millisecLabel: {
         type: String,

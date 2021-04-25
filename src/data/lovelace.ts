@@ -19,6 +19,10 @@ export interface LovelacePanelConfig {
 
 export interface LovelaceConfig {
   title?: string;
+  strategy?: {
+    name: string;
+    options?: Record<string, unknown>;
+  };
   views: LovelaceViewConfig[];
   background?: string;
 }
@@ -77,6 +81,10 @@ export interface LovelaceViewConfig {
   index?: number;
   title?: string;
   type?: string;
+  strategy?: {
+    name: string;
+    options?: Record<string, unknown>;
+  };
   badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];
   path?: string;
@@ -94,6 +102,7 @@ export interface LovelaceViewElement extends HTMLElement {
   index?: number;
   cards?: Array<LovelaceCard | HuiErrorCard>;
   badges?: LovelaceBadge[];
+  isStrategy: boolean;
   setConfig(config: LovelaceViewConfig): void;
 }
 
@@ -109,7 +118,7 @@ export interface LovelaceBadgeConfig {
 export interface LovelaceCardConfig {
   index?: number;
   view_index?: number;
-  layout?: any;
+  view_layout?: any;
   type: string;
   [key: string]: any;
 }

@@ -140,7 +140,7 @@ class HassTabsSubpage extends LitElement {
     const showTabs = tabs.length > 1 || !this.narrow;
     return html`
       <div class="toolbar">
-        ${this.mainPage
+        ${this.mainPage || (!this.backPath && history.state?.root)
           ? html`
               <ha-menu-button
                 .hassio=${this.supervisor}
@@ -155,7 +155,7 @@ class HassTabsSubpage extends LitElement {
               ></ha-icon-button-arrow-prev>
             `}
         ${this.narrow
-          ? html` <div class="main-title"><slot name="header"></slot></div> `
+          ? html`<div class="main-title"><slot name="header"></slot></div>`
           : ""}
         ${showTabs
           ? html`
@@ -186,7 +186,7 @@ class HassTabsSubpage extends LitElement {
   }
 
   private _tabTapped(ev: Event): void {
-    navigate(this, (ev.currentTarget as any).path, true);
+    navigate(this, (ev.currentTarget as any).path);
   }
 
   private _backTapped(): void {
@@ -230,7 +230,6 @@ class HassTabsSubpage extends LitElement {
         padding: 0 16px;
         box-sizing: border-box;
       }
-
       #tabbar {
         display: flex;
         font-size: 14px;
@@ -270,9 +269,7 @@ class HassTabsSubpage extends LitElement {
 
       .main-title {
         flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-height: 58px;
+        max-height: var(--header-height);
         line-height: 20px;
       }
 
@@ -292,8 +289,10 @@ class HassTabsSubpage extends LitElement {
       }
 
       :host([narrow]) .content.tabs {
-        height: calc(100% - 128px);
-        height: calc(100% - 128px - env(safe-area-inset-bottom));
+        height: calc(100% - 2 * var(--header-height));
+        height: calc(
+          100% - 2 * var(--header-height) - env(safe-area-inset-bottom)
+        );
       }
 
       #fab {

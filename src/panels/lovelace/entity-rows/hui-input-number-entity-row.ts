@@ -10,6 +10,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-slider";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -88,8 +89,12 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                   id="input"
                 ></ha-slider>
                 <span class="state">
-                  ${Number(stateObj.state)}
-                  ${stateObj.attributes.unit_of_measurement}
+                  ${computeStateDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    stateObj.state
+                  )}
                 </span>
               </div>
             `

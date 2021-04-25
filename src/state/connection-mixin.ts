@@ -3,6 +3,7 @@ import {
   callService,
   Connection,
   ERR_INVALID_AUTH,
+  ERR_CONNECTION_LOST,
   HassConfig,
   subscribeConfig,
   subscribeEntities,
@@ -13,6 +14,8 @@ import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
+import { serviceCallWillDisconnect } from "../data/service";
+import { NumberFormat } from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, ServiceCallResponse } from "../types";
@@ -27,6 +30,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
 ) =>
   class extends superClass {
     protected initializeHass(auth: Auth, conn: Connection) {
+      const language = getLocalLanguage();
+
       this.hass = {
         auth,
         connection: conn,
@@ -40,8 +45,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         user: null as any,
         panelUrl: (this as any)._panelUrl,
         defaultPanel: DEFAULT_PANEL,
-        language: getLocalLanguage(),
+        language,
         selectedLanguage: null,
+        locale: {
+          language,
+          number_format: NumberFormat.language,
+        },
         resources: null as any,
         localize: () => "",
 
@@ -72,6 +81,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               target
             )) as Promise<ServiceCallResponse>;
           } catch (err) {
+            if (
+              err.error?.code === ERR_CONNECTION_LOST &&
+              serviceCallWillDisconnect(domain, service)
+            ) {
+              throw err;
+            }
             if (__DEV__) {
               // eslint-disable-next-line no-console
               console.error(

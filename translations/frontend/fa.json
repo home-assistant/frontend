@@ -99,6 +99,11 @@
             "unknown": "نامشخص"
         }
     },
+    "supervisor": {
+        "common": {
+            "close": "بستن"
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "ميخواي وارد سیستم بموني؟",
@@ -131,7 +136,7 @@
                 "fan_mode": "حالت فن",
                 "heating": "{name} حرارت دادن",
                 "high": "inalt",
-                "low": "jos",
+                "low": "کم",
                 "on_off": "روشن/ خاموش",
                 "operation": "عملیات",
                 "preset_mode": "از پیش تعیین شده",
@@ -312,6 +317,11 @@
                 "play": "پخش",
                 "play-media": "پخش رسانه ها"
             },
+            "related-filter-menu": {
+                "filter_by_entity": "فیلتر بر اساس مجموعه",
+                "filtered_by_area": "ناحیه: {area_name}",
+                "filtered_by_device": "دستگاه : {device_name}"
+            },
             "related-items": {
                 "area": "Zona",
                 "device": "Dispozitiv",
@@ -450,6 +460,9 @@
                         "server_control": "کنترل های سرور",
                         "users": "کاربران",
                         "zone": "مناطق"
+                    },
+                    "types": {
+                        "server_control": "سرور"
                     }
                 }
             },
@@ -472,6 +485,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Prenume utilizator"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "پیکربندی مجدد دستگاه"
             }
         },
         "duration": {
@@ -760,7 +776,7 @@
                         },
                         "introduction": "ویرایشگر اتوماسیون اجازه می دهد تا شما را به ایجاد و ویرایش اتوماسیون بپردازید . لطفا پیوند زیر را دنبال کنید تا دستورالعمل ها را بخوانید که مطمئن شوید که Home Assistant را به درستی پیکربندی کرده اید.",
                         "learn_more": "درباره اتوماسیون بیشتر بدانید",
-                        "no_automations": "هیچ اتوماسیون قابل ویرایشی پیدا نشد",
+                        "no_automations": "ما نميتونستيم هيچ اتوماسيوني پيدا کنيم",
                         "only_editable": "Doar automatizarile definite in automations.yaml sunt editabile",
                         "pick_automation": "انتخاب اتوماسیون برای ویرایش",
                         "show_info_automation": "Afiseaza informatii despre automatizare"
@@ -891,6 +907,9 @@
                     "description": "سیستم واحد ، مکان ، منطقه زمانی و سایر پارامترهای کلی",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "learn_more": "درباره نحوه پردازش داده های خود بیشتر بیاموزید."
+                            },
                             "core_config": {
                                 "edit_requires_storage": "ویرایشگر غیرفعال شده است چون پیکربندی ذخیره شده در configuration.yaml.",
                                 "elevation": "ارتفاع",
@@ -1031,6 +1050,9 @@
                     "clear": "پاک کردن",
                     "filtering_by": "فیلتر کردن با"
                 },
+                "hassio": {
+                    "button": "پیکربندی"
+                },
                 "header": "پیکربندی HOME ASSistant",
                 "helpers": {
                     "caption": "Ajutoare",
@@ -1120,6 +1142,14 @@
                 },
                 "introduction": "در اینجا می توانید اجزای خود و صفحه اصلی دستیار را پیکربندی کنید.فعلا ویرایش همه چیز از طریق ویرایش بصری امکان پذیر نیست ، اما ما داریم روی اون کار می کنیم.",
                 "logs": {
+                    "level": {
+                        "critical": "بحرانی",
+                        "debug": "اشکال زدایی",
+                        "error": "خطا",
+                        "info": "اطلاعات",
+                        "warning": "هشدار"
+                    },
+                    "no_errors": "هیچ خطایی گزارش نشده است",
                     "refresh": "تازه کن"
                 },
                 "lovelace": {
@@ -1198,7 +1228,8 @@
                     },
                     "network_status": {
                         "offline": "آفلاین",
-                        "online": "آنلاین"
+                        "online": "آنلاین",
+                        "unknown": "نامشخص"
                     }
                 },
                 "person": {
@@ -1241,7 +1272,8 @@
                             "name": "نام"
                         },
                         "introduction": "Editorul de scene permite crearea si editare de scene. Va rugam folositi link-ul de mai jos pentru a citi instructiunile si a va asigurat ca ati configurat corect Home Assistant",
-                        "learn_more": "Invata mai multe despre scene"
+                        "learn_more": "Invata mai multe despre scene",
+                        "no_scenes": "هیچ سناریویی پیدا نکردیم"
                     }
                 },
                 "script": {
@@ -1897,6 +1929,9 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "بعدی"
+                },
                 "core-config": {
                     "button_detect": "تشخیص",
                     "finish": "بعدی",
