@@ -38,6 +38,7 @@ import {
 } from "../../../data/entity_registry";
 import {
   domainToName,
+  fetchIntegrationManifest,
   fetchIntegrationManifests,
   IntegrationManifest,
 } from "../../../data/integration";
@@ -127,6 +128,8 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   @internalProperty()
   private _manifests: Record<string, IntegrationManifest> = {};
 
+  private _manifestFetched?: Set<string>;
+
   @internalProperty() private _showIgnored = false;
 
   @internalProperty() private _showDisabled = false;
@@ -154,15 +157,14 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
               this.hass.loadBackendTranslation("config", flow.handler)
             );
           }
+          this._fetchManifest(flow.handler);
         });
         await Promise.all(translationsPromisses);
         await nextRender();
-        this._configEntriesInProgress = flowsInProgress.map((flow) => {
-          return {
-            ...flow,
-            localized_title: localizeConfigFlowTitle(this.hass.localize, flow),
-          };
-        });
+        this._configEntriesInProgress = flowsInProgress.map((flow) => ({
+          ...flow,
+          localized_title: localizeConfigFlowTitle(this.hass.localize, flow),
+        }));
       }),
     ];
   }
@@ -496,10 +498,31 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   }
 
   private async _fetchManifests() {
-    const manifests = {};
     const fetched = await fetchIntegrationManifests(this.hass);
+    // Make a copy so we can keep track of previously loaded manifests
+    // for discovered flows (which are not part of these results)
+    const manifests = { ...this._manifests };
     for (const manifest of fetched) manifests[manifest.domain] = manifest;
     this._manifests = manifests;
+  }
+
+  private async _fetchManifest(domain: string) {
+    if (domain in this._manifests) {
+      return;
+    }
+    if (this._manifestFetched) {
+      if (this._manifestFetched.has(domain)) {
+        return;
+      }
+    } else {
+      this._manifestFetched = new Set();
+    }
+    this._manifestFetched.add(domain);
+    const manifest = await fetchIntegrationManifest(this.hass, domain);
+    this._manifests = {
+      ...this._manifests,
+      [domain]: manifest,
+    };
   }
 
   private _handleEntryRemoved(ev: HASSDomEvent<ConfigEntryRemovedEvent>) {
