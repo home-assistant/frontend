@@ -219,15 +219,18 @@ class ZWaveJSConfigDashboard extends LitElement {
     if (!this.configEntryId) {
       return;
     }
-    this._network = await fetchNetworkStatus(this.hass!, this.configEntryId);
+    const [network, dataCollectionStatus] = await Promise.all([
+      fetchNetworkStatus(this.hass!, this.configEntryId),
+      fetchDataCollectionStatus(this.hass!, this.configEntryId),
+    ]);
+
+    this._network = network;
+
     this._status = this._network.client.state;
     if (this._status === "connected") {
       this._icon = mdiCheckCircle;
     }
-    const dataCollectionStatus = await fetchDataCollectionStatus(
-      this.hass!,
-      this.configEntryId
-    );
+
     this._dataCollectionOptIn =
       dataCollectionStatus.opted_in === true ||
       dataCollectionStatus.enabled === true;
