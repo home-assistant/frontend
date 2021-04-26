@@ -3433,7 +3433,7 @@
             "column_description": "Description",
             "column_example": "Example",
             "fill_example_data": "Fill Example Data",
-            "help": "Integration help",
+            "help": "Integration documentation",
             "yaml_mode": "Go to YAML mode",
             "ui_mode": "Go to UI mode",
             "yaml_parameters": "Parameters only available in YAML mode",
