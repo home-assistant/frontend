@@ -31,6 +31,8 @@ class DialogZWaveJSReinterviewNode extends LitElement {
 
   @internalProperty() private _stage?: string;
 
+  @internalProperty() private _stages: string[] = [];
+
   private _subscribed?: Promise<UnsubscribeFunc>;
 
   public async showDialog(
@@ -150,6 +152,23 @@ class DialogZWaveJSReinterviewNode extends LitElement {
               </mwc-button>
             `
           : ``}
+        ${this._stages.length > 0
+          ? html`
+              <div class="stages">
+                ${this._stages.map(
+                  (stage) => html`
+                    <span class="stage">
+                      <ha-svg-icon
+                        .path=${mdiCheckCircle}
+                        class="success"
+                      ></ha-svg-icon>
+                      ${stage}
+                    </span>
+                  `
+                )}
+              </div>
+            `
+          : ""}
       </ha-dialog>
     `;
   }
@@ -171,7 +190,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
       this._status = "started";
     }
     if (message.event === "interview stage completed") {
-      this._stage = message.stage;
+      this._stages = [...this._stages, message.stage];
     }
     if (message.event === "interview failed") {
       this._unsubscribe();
@@ -195,6 +214,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     this.entry_id = undefined;
     this.node_id = undefined;
     this._status = undefined;
+    this._stages = [];
 
     this._unsubscribe();
 
@@ -216,6 +236,18 @@ class DialogZWaveJSReinterviewNode extends LitElement {
         .flex-container {
           display: flex;
           align-items: center;
+        }
+
+        .stages {
+          margin-top: 16px;
+        }
+
+        .stage ha-svg-icon {
+          width: 16px;
+          height: 16px;
+        }
+        .stage {
+          padding: 8px;
         }
 
         ha-svg-icon {
