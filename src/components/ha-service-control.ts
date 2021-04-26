@@ -185,7 +185,7 @@ export class HaServiceControl extends LitElement {
                 "/integrations/" + computeDomain(this.value?.service)
               )}"
               title="${this.hass.localize(
-                "ui.panel.developer-tools.tabs.services.help"
+                "ui.components.service-control.integration_doc"
               )}"
               target="_blank"
               rel="noreferrer"
@@ -431,7 +431,7 @@ export class HaServiceControl extends LitElement {
         margin-left: -16px;
       }
       .help-icon {
-        color: var(--primary-color);
+        color: var(--secondary-text-color);
       }
       .description {
         justify-content: space-between;

@@ -183,7 +183,7 @@ class HaPanelDevService extends LitElement {
                               computeDomain(this._serviceData?.service)
                           )}"
                           title="${this.hass.localize(
-                            "ui.panel.developer-tools.tabs.services.help"
+                            "ui.components.service-control.integration_doc"
                           )}"
                           target="_blank"
                           rel="noreferrer"
@@ -450,7 +450,7 @@ class HaPanelDevService extends LitElement {
         }
 
         .help-icon {
-          color: var(--primary-color);
+          color: var(--secondary-text-color);
         }
         .description {
           justify-content: space-between;
