@@ -35,7 +35,7 @@ import { zhaTabs } from "./zha-config-dashboard";
 export class ZHANetworkVisualizationPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Object }) public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean }) public narrow!: boolean;
 
