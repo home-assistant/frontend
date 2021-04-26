@@ -239,7 +239,8 @@ class CloudGoogleAssistant extends LitElement {
     return html`
       <hass-subpage
         .hass=${this.hass}
-        .header=${this.hass!.localize("ui.panel.config.cloud.google.title")}>
+        .header=${this.hass!.localize("ui.panel.config.cloud.google.title")}
+        .narrow=${this.narrow}>
         ${
           emptyFilter
             ? html`
@@ -371,7 +372,9 @@ class CloudGoogleAssistant extends LitElement {
     await this._updateConfig(entityId, {
       should_expose: newExposed,
     });
-    this._ensureEntitySync();
+    if (this.cloudStatus.google_registered) {
+      this._ensureEntitySync();
+    }
   }
 
   private async _disable2FAChanged(ev: Event) {

@@ -36,11 +36,11 @@ class DialogBox extends LitElement {
 
   public closeDialog(): boolean {
     if (this._params?.confirmation || this._params?.prompt) {
-      this._dismiss();
-      return true;
+      return false;
     }
     if (this._params) {
-      return false;
+      this._dismiss();
+      return true;
     }
     return true;
   }
@@ -140,7 +140,7 @@ class DialogBox extends LitElement {
   }
 
   private _dialogClosed(ev) {
-    if (this._params?.prompt && ev.detail.action === "ignore") {
+    if (ev.detail.action === "ignore") {
       return;
     }
     this._dismiss();

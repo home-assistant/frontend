@@ -157,17 +157,14 @@ export abstract class HuiElementEditor<T> extends LitElement {
     this.GUImode = !this.GUImode;
   }
 
-  public refreshYamlEditor(focus = false) {
-    if (this._configElement?.refreshYamlEditor) {
-      this._configElement.refreshYamlEditor(focus);
+  public focusYamlEditor() {
+    if (this._configElement?.focusYamlEditor) {
+      this._configElement.focusYamlEditor();
     }
     if (!this._yamlEditor?.codemirror) {
       return;
     }
-    this._yamlEditor.codemirror.refresh();
-    if (focus) {
-      this._yamlEditor.codemirror.focus();
-    }
+    this._yamlEditor.codemirror.focus();
   }
 
   protected async getConfigElement(): Promise<
@@ -237,9 +234,13 @@ export abstract class HuiElementEditor<T> extends LitElement {
               <div class="warning">
                 ${this.hass.localize("ui.errors.config.editor_not_supported")}:
                 <br />
-                <ul>
-                  ${this._warnings!.map((warning) => html`<li>${warning}</li>`)}
-                </ul>
+                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
+                  ? html` <ul>
+                      ${this._warnings!.map(
+                        (warning) => html`<li>${warning}</li>`
+                      )}
+                    </ul>`
+                  : ""}
                 ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
               </div>
             `
@@ -290,7 +291,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
       if (this._configElementType !== this.configElementType) {
         // If the type has changed, we need to load a new GUI editor
-        this._guiSupported = false;
+        this._guiSupported = undefined;
         this._configElement = undefined;
 
         if (!this.configElementType) {
@@ -361,6 +362,9 @@ export abstract class HuiElementEditor<T> extends LitElement {
       .gui-editor,
       .yaml-editor {
         padding: 8px 0px;
+      }
+      ha-code-editor {
+        --code-mirror-max-height: calc(100vh - 245px);
       }
       .error,
       .warning,

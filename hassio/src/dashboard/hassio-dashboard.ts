@@ -29,13 +29,16 @@ class HassioDashboard extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
-        hassio
-        main-page
         .route=${this.route}
         .tabs=${supervisorTabs}
+        main-page
+        supervisor
       >
-        <span slot="header">Dashboard</span>
+        <span slot="header">
+          ${this.supervisor.localize("panel.dashboard")}
+        </span>
         <div class="content">
           <hassio-update
             .hass=${this.hass}

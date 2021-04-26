@@ -6,6 +6,7 @@ import {
   html,
   LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
 import "./state-history-chart-line";
@@ -81,6 +82,10 @@ class StateHistoryCharts extends LitElement {
         `
       )}
     `;
+  }
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return !(changedProps.size === 1 && changedProps.has("hass"));
   }
 
   private _isHistoryEmpty(): boolean {

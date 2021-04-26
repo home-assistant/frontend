@@ -107,6 +107,10 @@ export class PaperTimeInput extends PolymerElement {
         #millisec {
           width: 38px;
         }
+
+        .no-suffix {
+          margin-left: -2px;
+        }
       </style>
 
       <label hidden$="[[hideLabel]]">[[label]]</label>
@@ -129,11 +133,12 @@ export class PaperTimeInput extends PolymerElement {
           always-float-label$="[[alwaysFloatInputLabels]]"
           disabled="[[disabled]]"
         >
-          <span suffix="" slot="suffix">:</span>
+          <span suffix slot="suffix">:</span>
         </paper-input>
 
         <!-- Min Input -->
         <paper-input
+          class$="[[_computeClassNames(enableSecond)]]"
           id="min"
           type="number"
           value="{{min}}"
@@ -155,6 +160,7 @@ export class PaperTimeInput extends PolymerElement {
 
         <!-- Sec Input -->
         <paper-input
+          class$="[[_computeClassNames(enableMillisecond)]]"
           id="sec"
           type="number"
           value="{{sec}}"
@@ -297,28 +303,28 @@ export class PaperTimeInput extends PolymerElement {
         notify: true,
       },
       /**
-       * Suffix for the hour input
+       * Label for the hour input
        */
       hourLabel: {
         type: String,
         value: "",
       },
       /**
-       * Suffix for the min input
+       * Label for the min input
        */
       minLabel: {
         type: String,
-        value: ":",
+        value: "",
       },
       /**
-       * Suffix for the sec input
+       * Label for the sec input
        */
       secLabel: {
         type: String,
         value: "",
       },
       /**
-       * Suffix for the milli sec input
+       * Label for the milli sec input
        */
       millisecLabel: {
         type: String,
@@ -478,6 +484,10 @@ export class PaperTimeInput extends PolymerElement {
 
   _equal(n1, n2) {
     return n1 === n2;
+  }
+
+  _computeClassNames(hasSuffix) {
+    return hasSuffix ? " " : "no-suffix";
   }
 }
 

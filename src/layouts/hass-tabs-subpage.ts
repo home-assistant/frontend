@@ -16,6 +16,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import { navigate } from "../common/navigate";
+import { LocalizeFunc } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-icon";
 import "../components/ha-icon-button-arrow-prev";
@@ -40,7 +41,9 @@ export interface PageNavigation {
 class HassTabsSubpage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public hassio = false;
+  @property({ type: Boolean }) public supervisor = false;
+
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
 
@@ -48,9 +51,9 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
-  @property() public route!: Route;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public tabs!: PageNavigation[];
+  @property({ attribute: false }) public tabs!: PageNavigation[];
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
@@ -71,7 +74,8 @@ class HassTabsSubpage extends LitElement {
       showAdvanced: boolean | undefined,
       _components,
       _language,
-      _narrow
+      _narrow,
+      localizeFunc
     ) => {
       const shownTabs = tabs.filter(
         (page) =>
@@ -91,7 +95,7 @@ class HassTabsSubpage extends LitElement {
               .active=${page === activeTab}
               .narrow=${this.narrow}
               .name=${page.translationKey
-                ? this.hass.localize(page.translationKey)
+                ? localizeFunc(page.translationKey)
                 : page.name}
             >
               ${page.iconPath
@@ -130,15 +134,16 @@ class HassTabsSubpage extends LitElement {
       this.hass.userData?.showAdvanced,
       this.hass.config.components,
       this.hass.language,
-      this.narrow
+      this.narrow,
+      this.localizeFunc || this.hass.localize
     );
     const showTabs = tabs.length > 1 || !this.narrow;
     return html`
       <div class="toolbar">
-        ${this.mainPage
+        ${this.mainPage || (!this.backPath && history.state?.root)
           ? html`
               <ha-menu-button
-                .hassio=${this.hassio}
+                .hassio=${this.supervisor}
                 .hass=${this.hass}
                 .narrow=${this.narrow}
               ></ha-menu-button>
@@ -150,7 +155,7 @@ class HassTabsSubpage extends LitElement {
               ></ha-icon-button-arrow-prev>
             `}
         ${this.narrow
-          ? html` <div class="main-title"><slot name="header"></slot></div> `
+          ? html`<div class="main-title"><slot name="header"></slot></div>`
           : ""}
         ${showTabs
           ? html`
@@ -181,7 +186,7 @@ class HassTabsSubpage extends LitElement {
   }
 
   private _tabTapped(ev: Event): void {
-    navigate(this, (ev.currentTarget as any).path, true);
+    navigate(this, (ev.currentTarget as any).path);
   }
 
   private _backTapped(): void {
@@ -225,7 +230,6 @@ class HassTabsSubpage extends LitElement {
         padding: 0 16px;
         box-sizing: border-box;
       }
-
       #tabbar {
         display: flex;
         font-size: 14px;
@@ -265,9 +269,7 @@ class HassTabsSubpage extends LitElement {
 
       .main-title {
         flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-height: 58px;
+        max-height: var(--header-height);
         line-height: 20px;
       }
 
@@ -287,8 +289,10 @@ class HassTabsSubpage extends LitElement {
       }
 
       :host([narrow]) .content.tabs {
-        height: calc(100% - 128px);
-        height: calc(100% - 128px - env(safe-area-inset-bottom));
+        height: calc(100% - 2 * var(--header-height));
+        height: calc(
+          100% - 2 * var(--header-height) - env(safe-area-inset-bottom)
+        );
       }
 
       #fab {

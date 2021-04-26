@@ -35,11 +35,12 @@ class HcLovelace extends LitElement {
     }
     const lovelace: Lovelace = {
       config: this.lovelaceConfig,
+      rawConfig: this.lovelaceConfig,
       editMode: false,
       urlPath: this.urlPath!,
       enableFullEditMode: () => undefined,
       mode: "storage",
-      language: "en",
+      locale: this.hass.locale,
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
@@ -94,6 +95,7 @@ class HcLovelace extends LitElement {
     return css`
       :host {
         min-height: 100vh;
+        height: 0;
         display: flex;
         flex-direction: column;
         box-sizing: border-box;

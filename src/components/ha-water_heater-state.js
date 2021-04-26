@@ -2,6 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
+import { formatNumber } from "../common/string/format_number";
 import LocalizeMixin from "../mixins/localize-mixin";
 
 /*
@@ -55,21 +56,31 @@ class HaWaterHeaterState extends LocalizeMixin(PolymerElement) {
   computeTarget(hass, stateObj) {
     if (!hass || !stateObj) return null;
     // We're using "!= null" on purpose so that we match both null and undefined.
+
     if (
       stateObj.attributes.target_temp_low != null &&
       stateObj.attributes.target_temp_high != null
     ) {
-      return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${hass.config.unit_system.temperature}`;
+      return `${formatNumber(
+        stateObj.attributes.target_temp_low,
+        this.hass.locale
+      )} - ${formatNumber(
+        stateObj.attributes.target_temp_high,
+        this.hass.locale
+      )} ${hass.config.unit_system.temperature}`;
     }
     if (stateObj.attributes.temperature != null) {
-      return `${stateObj.attributes.temperature} ${hass.config.unit_system.temperature}`;
+      return `${formatNumber(
+        stateObj.attributes.temperature,
+        this.hass.locale
+      )} ${hass.config.unit_system.temperature}`;
     }
 
     return "";
   }
 
   _localizeState(stateObj) {
-    return computeStateDisplay(this.hass.localize, stateObj);
+    return computeStateDisplay(this.hass.localize, stateObj, this.hass.locale);
   }
 }
 customElements.define("ha-water_heater-state", HaWaterHeaterState);

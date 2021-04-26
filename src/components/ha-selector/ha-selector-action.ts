@@ -21,8 +21,11 @@ export class HaActionSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean, reflect: true }) public disabled = false;
+
   protected render() {
     return html`<ha-automation-action
+      .disabled=${this.disabled}
       .actions=${this.value || []}
       .hass=${this.hass}
     ></ha-automation-action>`;
@@ -33,6 +36,10 @@ export class HaActionSelector extends LitElement {
       ha-automation-action {
         display: block;
         margin-bottom: 16px;
+      }
+      :host([disabled]) ha-automation-action {
+        opacity: var(--light-disabled-opacity);
+        pointer-events: none;
       }
     `;
   }

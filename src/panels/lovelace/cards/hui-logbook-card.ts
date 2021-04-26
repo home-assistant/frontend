@@ -19,7 +19,7 @@ import "../../../components/ha-circular-progress";
 import { getLogbookData, LogbookEntry } from "../../../data/logbook";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-warning";
 import type { EntityConfig } from "../entity-rows/types";
@@ -101,7 +101,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
       !this._configEntities ||
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.language !== this.hass!.language
+      oldHass.locale !== this.hass!.locale
     ) {
       return true;
     }

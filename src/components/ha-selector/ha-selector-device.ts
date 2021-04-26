@@ -23,10 +23,12 @@ export class HaDeviceSelector extends LitElement {
 
   @internalProperty() public _configEntries?: ConfigEntry[];
 
+  @property({ type: Boolean }) public disabled = false;
+
   protected updated(changedProperties) {
     if (changedProperties.has("selector")) {
       const oldSelector = changedProperties.get("selector");
-      if (oldSelector !== this.selector && this.selector.device.integration) {
+      if (oldSelector !== this.selector && this.selector.device?.integration) {
         this._loadConfigEntries();
       }
     }
@@ -44,24 +46,25 @@ export class HaDeviceSelector extends LitElement {
       .includeDomains=${this.selector.device.entity?.domain
         ? [this.selector.device.entity.domain]
         : undefined}
+      .disabled=${this.disabled}
       allow-custom-entity
     ></ha-device-picker>`;
   }
 
   private _filterDevices(device: DeviceRegistryEntry): boolean {
     if (
-      this.selector.device.manufacturer &&
+      this.selector.device?.manufacturer &&
       device.manufacturer !== this.selector.device.manufacturer
     ) {
       return false;
     }
     if (
-      this.selector.device.model &&
+      this.selector.device?.model &&
       device.model !== this.selector.device.model
     ) {
       return false;
     }
-    if (this.selector.device.integration) {
+    if (this.selector.device?.integration) {
       if (
         this._configEntries &&
         !this._configEntries.some((entry) =>

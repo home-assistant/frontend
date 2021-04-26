@@ -128,6 +128,13 @@ const actionConfigStructService = object({
   action: literal("call-service"),
   service: string(),
   service_data: optional(object()),
+  target: optional(
+    object({
+      entity_id: optional(union([string(), array(string())])),
+      device_id: optional(union([string(), array(string())])),
+      area_id: optional(union([string(), array(string())])),
+    })
+  ),
   confirmation: optional(actionConfigStructConfirmation),
 });
 

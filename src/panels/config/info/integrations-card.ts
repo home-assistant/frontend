@@ -28,7 +28,13 @@ class IntegrationsCard extends LitElement {
   };
 
   private _sortedIntegrations = memoizeOne((components: string[]) => {
-    return components.filter((comp) => !comp.includes(".")).sort();
+    return Array.from(
+      new Set(
+        components.map((comp) =>
+          comp.includes(".") ? comp.split(".")[1] : comp
+        )
+      )
+    ).sort();
   });
 
   firstUpdated(changedProps) {
@@ -56,7 +62,7 @@ class IntegrationsCard extends LitElement {
                       />
                     </td>
                     <td class="name">
-                      ${domainToName(this.hass.localize, domain)}<br />
+                      ${domainToName(this.hass.localize, domain, manifest)}<br />
                       <span class="domain">${domain}</span>
                     </td>
                     ${!manifest

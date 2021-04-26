@@ -4,7 +4,7 @@
     "dockerfile": "Dockerfile",
     "context": ".."
   },
-  "appPort": 8123,
+  "appPort": "8124:8123",
   "context": "..",
   "postCreateCommand": "script/bootstrap",
   "extensions": [

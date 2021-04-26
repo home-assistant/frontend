@@ -9,7 +9,8 @@ import {
   TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../types";
-import "./hass-subpage";
+import "../components/ha-menu-button";
+import "../components/ha-icon-button-arrow-prev";
 
 @customElement("hass-error-screen")
 class HassErrorScreen extends LitElement {
@@ -17,22 +18,37 @@ class HassErrorScreen extends LitElement {
 
   @property({ type: Boolean }) public toolbar = true;
 
+  @property({ type: Boolean }) public rootnav = false;
+
+  @property() public narrow?: boolean;
+
   @property() public error?: string;
 
   protected render(): TemplateResult {
     return html`
       ${this.toolbar
         ? html`<div class="toolbar">
-            <ha-icon-button-arrow-prev
-              .hass=${this.hass}
-              @click=${this._handleBack}
-            ></ha-icon-button-arrow-prev>
+            ${this.rootnav || history.state?.root
+              ? html`
+                  <ha-menu-button
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                  ></ha-menu-button>
+                `
+              : html`
+                  <ha-icon-button-arrow-prev
+                    .hass=${this.hass}
+                    @click=${this._handleBack}
+                  ></ha-icon-button-arrow-prev>
+                `}
           </div>`
         : ""}
       <div class="content">
         <h3>${this.error}</h3>
         <slot>
-          <mwc-button @click=${this._handleBack}>go back</mwc-button>
+          <mwc-button @click=${this._handleBack}>
+            ${this.hass?.localize("ui.panel.error.go_back") || "go back"}
+          </mwc-button>
         </slot>
       </div>
     `;
@@ -70,9 +86,13 @@ class HassErrorScreen extends LitElement {
           color: var(--primary-text-color);
           height: calc(100% - var(--header-height));
           display: flex;
+          padding: 16px;
           align-items: center;
           justify-content: center;
           flex-direction: column;
+        }
+        a {
+          color: var(--primary-color);
         }
       `,
     ];

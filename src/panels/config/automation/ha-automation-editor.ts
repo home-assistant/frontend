@@ -36,9 +36,10 @@ import {
   AutomationConfig,
   AutomationEntity,
   deleteAutomation,
+  getAutomationConfig,
   getAutomationEditorInitData,
   showAutomationEditor,
-  triggerAutomation,
+  triggerAutomationActions,
 } from "../../../data/automation";
 import {
   showAlertDialog,
@@ -197,7 +198,11 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
               ${this.narrow
                 ? html` <span slot="header">${this._config?.alias}</span> `
                 : ""}
-              <div class="content">
+              <div
+                class="content ${classMap({
+                  "yaml-mode": this._mode === "yaml",
+                })}"
+              >
                 ${this._errors
                   ? html` <div class="errors">${this._errors}</div> `
                   : ""}
@@ -223,52 +228,52 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
                     `
                   : this._mode === "yaml"
                   ? html`
-                      <ha-config-section .isWide=${false}>
-                        ${!this.narrow
-                          ? html`
-                              <span slot="header">${this._config.alias}</span>
-                            `
-                          : ``}
-                        <ha-card>
-                          <div class="card-content">
-                            <ha-yaml-editor
-                              .defaultValue=${this._preprocessYaml()}
-                              @value-changed=${this._yamlChanged}
-                            ></ha-yaml-editor>
-                            <mwc-button @click=${this._copyYaml}>
-                              ${this.hass.localize(
-                                "ui.panel.config.automation.editor.copy_to_clipboard"
-                              )}
-                            </mwc-button>
-                          </div>
-                          ${stateObj
-                            ? html`
-                                <div
-                                  class="card-actions layout horizontal justified center"
-                                >
-                                  <div class="layout horizontal center">
-                                    <ha-entity-toggle
-                                      .hass=${this.hass}
-                                      .stateObj=${stateObj}
-                                    ></ha-entity-toggle>
-                                    ${this.hass.localize(
-                                      "ui.panel.config.automation.editor.enable_disable"
-                                    )}
-                                  </div>
-                                  <mwc-button
-                                    @click=${this._excuteAutomation}
-                                    .stateObj=${stateObj}
-                                  >
-                                    ${this.hass.localize(
-                                      "ui.card.automation.trigger"
-                                    )}
-                                  </mwc-button>
-                                </div>
-                              `
-                            : ""}
-                        </ha-card>
-                        <ha-config-section> </ha-config-section
-                      ></ha-config-section>
+                      ${!this.narrow
+                        ? html`
+                            <ha-card
+                              ><div class="card-header">
+                                ${this._config.alias}
+                              </div>
+                              ${stateObj
+                                ? html`
+                                    <div
+                                      class="card-actions layout horizontal justified center"
+                                    >
+                                      <ha-entity-toggle
+                                        .hass=${this.hass}
+                                        .stateObj=${stateObj}
+                                        .label=${this.hass.localize(
+                                          "ui.panel.config.automation.editor.enable_disable"
+                                        )}
+                                      ></ha-entity-toggle>
+
+                                      <mwc-button
+                                        @click=${this._runActions}
+                                        .stateObj=${stateObj}
+                                      >
+                                        ${this.hass.localize(
+                                          "ui.card.automation.trigger"
+                                        )}
+                                      </mwc-button>
+                                    </div>
+                                  `
+                                : ""}
+                            </ha-card>
+                          `
+                        : ``}
+                      <ha-yaml-editor
+                        .defaultValue=${this._preprocessYaml()}
+                        @value-changed=${this._yamlChanged}
+                      ></ha-yaml-editor>
+                      <ha-card
+                        ><div class="card-actions">
+                          <mwc-button @click=${this._copyYaml}>
+                            ${this.hass.localize(
+                              "ui.panel.config.automation.editor.copy_to_clipboard"
+                            )}
+                          </mwc-button>
+                        </div>
+                      </ha-card>
                     `
                   : ``}
               </div>
@@ -299,39 +304,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       oldAutomationId !== this.automationId
     ) {
       this._setEntityId();
-      this.hass
-        .callApi<AutomationConfig>(
-          "GET",
-          `config/automation/config/${this.automationId}`
-        )
-        .then(
-          (config) => {
-            // Normalize data: ensure trigger, action and condition are lists
-            // Happens when people copy paste their automations into the config
-            for (const key of ["trigger", "condition", "action"]) {
-              const value = config[key];
-              if (value && !Array.isArray(value)) {
-                config[key] = [value];
-              }
-            }
-            this._dirty = false;
-            this._config = config;
-          },
-          (resp) => {
-            showAlertDialog(this, {
-              text:
-                resp.status_code === 404
-                  ? this.hass.localize(
-                      "ui.panel.config.automation.editor.load_error_not_editable"
-                    )
-                  : this.hass.localize(
-                      "ui.panel.config.automation.editor.load_error_unknown",
-                      "err_no",
-                      resp.status_code
-                    ),
-            }).then(() => history.back());
-          }
-        );
+      this._loadConfig();
     }
 
     if (changedProps.has("automationId") && !this.automationId && this.hass) {
@@ -374,6 +347,36 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._entityId = automation?.entity_id;
   }
 
+  private async _loadConfig() {
+    try {
+      const config = await getAutomationConfig(this.hass, this.automationId);
+
+      // Normalize data: ensure trigger, action and condition are lists
+      // Happens when people copy paste their automations into the config
+      for (const key of ["trigger", "condition", "action"]) {
+        const value = config[key];
+        if (value && !Array.isArray(value)) {
+          config[key] = [value];
+        }
+      }
+      this._dirty = false;
+      this._config = config;
+    } catch (err) {
+      showAlertDialog(this, {
+        text:
+          err.status_code === 404
+            ? this.hass.localize(
+                "ui.panel.config.automation.editor.load_error_not_editable"
+              )
+            : this.hass.localize(
+                "ui.panel.config.automation.editor.load_error_unknown",
+                "err_no",
+                err.status_code
+              ),
+      }).then(() => history.back());
+    }
+  }
+
   private _valueChanged(ev: CustomEvent<{ value: AutomationConfig }>) {
     ev.stopPropagation();
     this._config = ev.detail.value;
@@ -381,8 +384,8 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._errors = undefined;
   }
 
-  private _excuteAutomation(ev: Event) {
-    triggerAutomation(this.hass, (ev.target as any).stateObj.entity_id);
+  private _runActions(ev: Event) {
+    triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
   }
 
   private _preprocessYaml() {
@@ -530,6 +533,22 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         }
         .content {
           padding-bottom: 20px;
+        }
+        .yaml-mode {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          padding-bottom: 0;
+        }
+        ha-yaml-editor {
+          flex-grow: 1;
+          --code-mirror-height: 100%;
+          min-height: 0;
+        }
+        .yaml-mode ha-card {
+          overflow: initial;
+          --ha-card-border-radius: 0;
+          border-bottom: 1px solid var(--divider-color);
         }
         p {
           margin-bottom: 0;

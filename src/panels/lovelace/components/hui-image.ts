@@ -159,13 +159,14 @@ export class HuiImage extends LitElement {
                 })}
               />
             `}
-        <div
-          id="brokenImage"
-          style=${styleMap({
-            height: `${this._lastImageHeight || "100"}px`,
-            display: this._loadError ? "block" : "none",
-          })}
-        ></div>
+        ${this._loadError
+          ? html`<div
+              id="brokenImage"
+              style=${styleMap({
+                height: `${this._lastImageHeight || "100"}px`,
+              })}
+            ></div>`
+          : ""}
       </div>
     `;
   }

@@ -7,9 +7,12 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../../components/ha-card";
-import "../../../../components/ha-chips";
+import "../../../../components/ha-chip-set";
 import { showAutomationEditor } from "../../../../data/automation";
-import { DeviceAutomation } from "../../../../data/device_automation";
+import {
+  DeviceAction,
+  DeviceAutomation,
+} from "../../../../data/device_automation";
 import { showScriptEditor } from "../../../../data/script";
 import { HomeAssistant } from "../../../../types";
 
@@ -46,8 +49,8 @@ export abstract class HaDeviceAutomationCard<
     if (changedProps.has("deviceId") || changedProps.has("automations")) {
       return true;
     }
-    const oldHass = changedProps.get("hass");
-    if (!oldHass || this.hass.language !== oldHass.language) {
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.language !== this.hass.language) {
       return true;
     }
     return false;
@@ -62,13 +65,13 @@ export abstract class HaDeviceAutomationCard<
         ${this.hass.localize(this.headerKey)}
       </h3>
       <div class="content">
-        <ha-chips
+        <ha-chip-set
           @chip-clicked=${this._handleAutomationClicked}
           .items=${this.automations.map((automation) =>
             this._localizeDeviceAutomation(this.hass, automation)
           )}
         >
-        </ha-chips>
+        </ha-chip-set>
       </div>
     `;
   }
@@ -79,7 +82,7 @@ export abstract class HaDeviceAutomationCard<
       return;
     }
     if (this.script) {
-      showScriptEditor(this, { sequence: [automation] });
+      showScriptEditor(this, { sequence: [automation as DeviceAction] });
       return;
     }
     const data = {};

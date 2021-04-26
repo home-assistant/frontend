@@ -141,7 +141,10 @@ export class DialogTryTts extends LitElement {
     this._target = target;
 
     if (target === "browser") {
-      this._playBrowser(message);
+      // We create the audio element here + do a play, because iOS requires it to be done by user action
+      const audio = new Audio();
+      audio.play();
+      this._playBrowser(message, audio);
     } else {
       this.hass.callService("tts", "cloud_say", {
         entity_id: target,
@@ -150,7 +153,7 @@ export class DialogTryTts extends LitElement {
     }
   }
 
-  private async _playBrowser(message: string) {
+  private async _playBrowser(message: string, audio: HTMLAudioElement) {
     this._loadingExample = true;
 
     const language = this._params!.defaultVoice[0];
@@ -173,11 +176,15 @@ export class DialogTryTts extends LitElement {
       });
       return;
     }
-    const audio = new Audio(url);
+    audio.src = url;
     audio.addEventListener("canplaythrough", () => {
       audio.play();
     });
     audio.addEventListener("playing", () => {
+      this._loadingExample = false;
+    });
+    audio.addEventListener("error", () => {
+      showAlertDialog(this, { title: "Error playing audio." });
       this._loadingExample = false;
     });
   }

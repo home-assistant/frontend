@@ -82,10 +82,7 @@ class EventSubscribeCard extends LitElement {
                   "name",
                   ev.id
                 )}
-                ${formatTime(
-                  new Date(ev.event.time_fired),
-                  this.hass!.language
-                )}:
+                ${formatTime(new Date(ev.event.time_fired), this.hass!.locale)}:
                 <pre>${JSON.stringify(ev.event, null, 4)}</pre>
               </div>
             `
@@ -125,19 +122,23 @@ class EventSubscribeCard extends LitElement {
     return css`
       form {
         display: block;
-        padding: 16px;
+        padding: 0 0 16px 16px;
       }
       paper-input {
         display: inline-block;
         width: 200px;
+      }
+      mwc-button {
+        vertical-align: middle;
       }
       .events {
         margin: -16px 0;
         padding: 0 16px;
       }
       .event {
-        border-bottom: 1px solid var(--divider-color);
-        padding-bottom: 16px;
+        border-top: 1px solid var(--divider-color);
+        padding-top: 8px;
+        padding-bottom: 8px;
         margin: 16px 0;
       }
       .event:last-child {

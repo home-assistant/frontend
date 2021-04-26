@@ -7,7 +7,7 @@ on:
     branches:
       - dev
     paths:
-      - translations/en.json
+      - src/translations/en.json
 
 env:
   NODE_VERSION: 12

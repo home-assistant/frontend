@@ -25,7 +25,7 @@ import type {
 } from "../../../types";
 import "../../calendar/ha-full-calendar";
 import type { HAFullCalendar } from "../../calendar/ha-full-calendar";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";

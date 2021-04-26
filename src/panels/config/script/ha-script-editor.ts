@@ -176,7 +176,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         ${this.narrow
           ? html` <span slot="header">${this._config?.alias}</span> `
           : ""}
-        <div class="content">
+        <div
+          class="content ${classMap({
+            "yaml-mode": this._mode === "yaml",
+          })}"
+        >
           ${this._errors
             ? html` <div class="errors">${this._errors}</div> `
             : ""}
@@ -189,7 +193,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 >
                   ${this._config
                     ? html`
-                        <ha-config-section .isWide=${this.isWide}>
+                        <ha-config-section vertical .isWide=${this.isWide}>
                           ${!this.narrow
                             ? html`
                                 <span slot="header">${this._config.alias}</span>
@@ -299,12 +303,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                     <mwc-button
                                       @click=${this._runScript}
                                       title="${this.hass.localize(
-                                        "ui.panel.config.script.picker.activate_script"
+                                        "ui.panel.config.script.picker.run_script"
                                       )}"
                                       ?disabled=${this._dirty}
                                     >
                                       ${this.hass.localize(
-                                        "ui.card.script.execute"
+                                        "ui.panel.config.script.picker.run_script"
                                       )}
                                     </mwc-button>
                                   </div>
@@ -313,7 +317,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                           </ha-card>
                         </ha-config-section>
 
-                        <ha-config-section .isWide=${this.isWide}>
+                        <ha-config-section vertical .isWide=${this.isWide}>
                           <span slot="header">
                             ${this.hass.localize(
                               "ui.panel.config.script.editor.sequence"
@@ -350,42 +354,43 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
               `
             : this._mode === "yaml"
             ? html`
-                <ha-config-section .isWide=${false}>
-                  ${!this.narrow
-                    ? html`<span slot="header">${this._config?.alias}</span>`
-                    : ``}
-                  <ha-card>
-                    <div class="card-content">
-                      <ha-yaml-editor
-                        .defaultValue=${this._preprocessYaml()}
-                        @value-changed=${this._yamlChanged}
-                      ></ha-yaml-editor>
-                      <mwc-button @click=${this._copyYaml}>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.copy_to_clipboard"
-                        )}
-                      </mwc-button>
-                    </div>
-                    ${this.scriptEntityId
-                      ? html`
-                          <div
-                            class="card-actions layout horizontal justified center"
+                ${!this.narrow
+                  ? html`
+                      <ha-card
+                        ><div class="card-header">
+                          ${this._config?.alias}
+                        </div>
+                        <div
+                          class="card-actions layout horizontal justified center"
+                        >
+                          <mwc-button
+                            @click=${this._runScript}
+                            title="${this.hass.localize(
+                              "ui.panel.config.script.picker.run_script"
+                            )}"
+                            ?disabled=${this._dirty}
                           >
-                            <span></span>
-                            <mwc-button
-                              @click=${this._runScript}
-                              title="${this.hass.localize(
-                                "ui.panel.config.script.picker.activate_script"
-                              )}"
-                              ?disabled=${this._dirty}
-                            >
-                              ${this.hass.localize("ui.card.script.execute")}
-                            </mwc-button>
-                          </div>
-                        `
-                      : ``}
-                  </ha-card>
-                </ha-config-section>
+                            ${this.hass.localize(
+                              "ui.panel.config.script.picker.run_script"
+                            )}
+                          </mwc-button>
+                        </div>
+                      </ha-card>
+                    `
+                  : ``}
+                <ha-yaml-editor
+                  .defaultValue=${this._preprocessYaml()}
+                  @value-changed=${this._yamlChanged}
+                ></ha-yaml-editor>
+                <ha-card
+                  ><div class="card-actions">
+                    <mwc-button @click=${this._copyYaml}>
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.editor.copy_to_clipboard"
+                      )}
+                    </mwc-button>
+                  </div>
+                </ha-card>
               `
             : ``}
         </div>
@@ -530,7 +535,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     if ((this._config![name] || "") === newVal) {
       return;
     }
-    this._config = { ...this._config!, [name]: newVal };
+    if (!newVal) {
+      delete this._config![name];
+      this._config = { ...this._config! };
+    } else {
+      this._config = { ...this._config!, [name]: newVal };
+    }
     this._dirty = true;
   }
 
@@ -690,6 +700,22 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         }
         .content {
           padding-bottom: 20px;
+        }
+        .yaml-mode {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          padding-bottom: 0;
+        }
+        ha-yaml-editor {
+          flex-grow: 1;
+          --code-mirror-height: 100%;
+          min-height: 0;
+        }
+        .yaml-mode ha-card {
+          overflow: initial;
+          --ha-card-border-radius: 0;
+          border-bottom: 1px solid var(--divider-color);
         }
         span[slot="introduction"] a {
           color: var(--primary-color);

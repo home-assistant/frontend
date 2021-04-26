@@ -26,9 +26,9 @@ class SupervisorMetric extends LitElement {
       <span slot="heading">
         ${this.description}
       </span>
-      <div slot="description" title="${this.tooltip ?? ""}">
+      <div slot="description" .title=${this.tooltip ?? ""}>
         <span class="value">
-          ${roundedValue}%
+          ${roundedValue} %
         </span>
         <ha-bar
           class="${classMap({
@@ -73,7 +73,7 @@ class SupervisorMetric extends LitElement {
         );
       }
       .value {
-        width: 42px;
+        width: 48px;
         padding-right: 4px;
       }
     `;

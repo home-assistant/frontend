@@ -53,6 +53,8 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
+  @property({ type: Boolean }) public isStrategy = false;
+
   @property({ attribute: false }) public cards: Array<
     LovelaceCard | HuiErrorCard
   > = [];
@@ -228,7 +230,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   private _addCardToColumn(columnEl, index, editMode) {
     const card: LovelaceCard = this.cards[index];
-    if (!editMode) {
+    if (!editMode || this.isStrategy) {
       card.editMode = false;
       columnEl.appendChild(card);
     } else {

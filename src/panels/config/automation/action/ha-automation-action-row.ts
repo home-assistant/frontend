@@ -42,7 +42,6 @@ import "./types/ha-automation-action-wait_template";
 const OPTIONS = [
   "condition",
   "delay",
-  "device_id",
   "event",
   "scene",
   "service",
@@ -50,6 +49,7 @@ const OPTIONS = [
   "wait_for_trigger",
   "repeat",
   "choose",
+  "device_id",
 ];
 
 const getType = (action: Action) => {
@@ -99,6 +99,8 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property() public totalActions!: number;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @internalProperty() private _warnings?: string[];
 
   @internalProperty() private _uiModeAvailable = true;
@@ -116,8 +118,9 @@ export default class HaAutomationActionRow extends LitElement {
       this._yamlMode = true;
     }
 
-    if (this._yamlMode && this._yamlEditor) {
-      this._yamlEditor.setValue(this.action);
+    const yamlEditor = this._yamlEditor;
+    if (this._yamlMode && yamlEditor && yamlEditor.value !== this.action) {
+      yamlEditor.setValue(this.action);
     }
   }
 
@@ -190,12 +193,16 @@ export default class HaAutomationActionRow extends LitElement {
           </div>
           ${this._warnings
             ? html`<div class="warning">
-                UI editor is not supported for this config:
+                ${this.hass.localize("ui.errors.config.editor_not_supported")}:
                 <br />
-                <ul>
-                  ${this._warnings.map((warning) => html`<li>${warning}</li>`)}
-                </ul>
-                You can still edit your config in YAML.
+                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
+                  ? html` <ul>
+                      ${this._warnings!.map(
+                        (warning) => html`<li>${warning}</li>`
+                      )}
+                    </ul>`
+                  : ""}
+                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
               </div>`
             : ""}
           ${yamlMode
@@ -209,7 +216,11 @@ export default class HaAutomationActionRow extends LitElement {
                       )}
                     `
                   : ""}
-                <h2>Edit in YAML</h2>
+                <h2>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.edit_yaml"
+                  )}
+                </h2>
                 <ha-yaml-editor
                   .defaultValue=${this.action}
                   @value-changed=${this._onYamlChange}
@@ -242,6 +253,7 @@ export default class HaAutomationActionRow extends LitElement {
                   ${dynamicElement(`ha-automation-action-${type}`, {
                     hass: this.hass,
                     action: this.action,
+                    narrow: this.narrow,
                   })}
                 </div>
               `}
@@ -325,6 +337,7 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _switchYamlMode() {
+    this._warnings = undefined;
     this._yamlMode = !this._yamlMode;
   }
 

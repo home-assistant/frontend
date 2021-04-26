@@ -1,5 +1,6 @@
 import { customElement, property } from "lit-element";
 import { HassioAddonDetails } from "../../../src/data/hassio/addon";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   HassRouterPage,
   RouterOptions,
@@ -16,6 +17,8 @@ class HassioAddonRouter extends HassRouterPage {
   @property({ type: Boolean }) public narrow = false;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
@@ -41,6 +44,7 @@ class HassioAddonRouter extends HassRouterPage {
   protected updatePageEl(el) {
     el.route = this.routeTail;
     el.hass = this.hass;
+    el.supervisor = this.supervisor;
     el.addon = this.addon;
     el.narrow = this.narrow;
   }

@@ -35,7 +35,7 @@ import "../../../components/ha-icon-button";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import "../../map/ha-entity-marker";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { installResizeObserver } from "../common/install-resize-observer";
 import { processConfigEntities } from "../common/process-config-entities";
 import { EntityConfig } from "../entity-rows/types";
@@ -71,9 +71,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
-
-  @property({ type: Boolean, reflect: true })
-  public editMode = false;
 
   @property()
   private _history?: HassEntity[][];
@@ -284,7 +281,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       this.updateMap(changedProps.get("_config") as MapCardConfig);
     }
 
-    if (this._config!.hours_to_show && this._configEntities?.length) {
+    if (this._config?.hours_to_show && this._configEntities?.length) {
       const minute = 60000;
       if (changedProps.has("_config")) {
         this._getHistory();
@@ -658,10 +655,6 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
-      :host([ispanel][editMode]) ha-card {
-        height: calc(100% - 51px);
-      }
-
       ha-card {
         overflow: hidden;
         width: 100%;

@@ -8,12 +8,19 @@ export const batteryIcon = (
   const battery = Number(batteryState.state);
   const battery_charging =
     batteryChargingState && batteryChargingState.state === "on";
+  let icon = "hass:battery";
 
   if (isNaN(battery)) {
-    return "hass:battery-unknown";
+    if (batteryState.state === "off") {
+      icon += "-full";
+    } else if (batteryState.state === "on") {
+      icon += "-alert";
+    } else {
+      icon += "-unknown";
+    }
+    return icon;
   }
 
-  let icon = "hass:battery";
   const batteryRound = Math.round(battery / 10) * 10;
   if (battery_charging && battery > 10) {
     icon += `-charging-${batteryRound}`;

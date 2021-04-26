@@ -9,13 +9,13 @@ export interface DeviceRegistryEntry {
   config_entries: string[];
   connections: Array<[string, string]>;
   identifiers: Array<[string, string]>;
-  manufacturer: string;
-  model?: string;
-  name?: string;
-  sw_version?: string;
-  via_device_id?: string;
-  area_id?: string;
-  name_by_user?: string;
+  manufacturer: string | null;
+  model: string | null;
+  name: string | null;
+  sw_version: string | null;
+  via_device_id: string | null;
+  area_id: string | null;
+  name_by_user: string | null;
   entry_type: "service" | null;
   disabled_by: string | null;
 }

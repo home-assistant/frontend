@@ -40,7 +40,7 @@ import {
   SUPPORT_TURN_ON,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-marquee";
@@ -332,7 +332,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    if (!this._config || !this.hass || (!changedProps.has("_config") && !changedProps.has("hass"))) {
+    if (
+      !this._config ||
+      !this.hass ||
+      (!changedProps.has("_config") && !changedProps.has("hass"))
+    ) {
       return;
     }
 
@@ -662,6 +666,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       ha-icon-button[action="media_play"],
       ha-icon-button[action="media_play_pause"],
+      ha-icon-button[action="media_pause"],
       ha-icon-button[action="media_stop"],
       ha-icon-button[action="turn_on"],
       ha-icon-button[action="turn_off"] {
@@ -739,6 +744,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .narrow ha-icon-button[action="media_play"],
       .narrow ha-icon-button[action="media_play_pause"],
+      .narrow ha-icon-button[action="media_pause"],
       .narrow ha-icon-button[action="turn_on"] {
         --mdc-icon-button-size: 50px;
         --mdc-icon-size: 36px;

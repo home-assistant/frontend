@@ -292,9 +292,11 @@ export const computeMediaControls = (
           ? "hass:pause"
           : "hass:stop",
       action:
-        state === "playing" && !supportsFeature(stateObj, SUPPORT_PAUSE)
-          ? "media_stop"
-          : "media_play_pause",
+        state !== "playing"
+          ? "media_play"
+          : supportsFeature(stateObj, SUPPORT_PAUSE)
+          ? "media_pause"
+          : "media_stop",
     });
   }
 

@@ -183,7 +183,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         this._hiddenTimeout = undefined;
         // setTimeout can be delayed in the background and only fire
         // when we switch to the tab or app again (Hey Android!)
-        if (!document.hidden) {
+        if (document.hidden) {
           this._suspendApp();
         }
       }, 300000);

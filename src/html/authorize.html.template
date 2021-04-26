@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Home Assistant</title>
-    <link rel="preload" href="<%= latestPageJS %>" as="script" crossorigin="use-credentials" />
+    <link rel="modulepreload" href="<%= latestPageJS %>" crossorigin="use-credentials" />
     <%= renderTemplate('_header') %>
     <style>
       .content {
