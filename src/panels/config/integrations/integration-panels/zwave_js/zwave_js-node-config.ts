@@ -47,6 +47,12 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import { classMap } from "lit-html/directives/class-map";
 
+const icons = {
+  accepted: mdiCheckCircle,
+  queued: mdiProgressClock,
+  error: mdiCloseCircle,
+};
+
 const getDevice = memoizeOne(
   (
     deviceId: string,
@@ -87,7 +93,10 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _config?: ZWaveJSNodeConfigParams;
 
-  @internalProperty() private _results: ZWaveJSSetConfigParamResult[] = [];
+  @internalProperty() private _results: Record<
+    string,
+    ZWaveJSSetConfigParamResult
+  > = {};
 
   @internalProperty() private _error?: string;
 
@@ -188,11 +197,6 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   private _generateConfigBox(id, item): TemplateResult {
-    const icons = {
-      accepted: mdiCheckCircle,
-      queued: mdiProgressClock,
-      error: mdiCloseCircle,
-    };
     const result = this._results[id];
     const labelAndDescription = html`
       <span slot="heading">${item.metadata.label}</span>
