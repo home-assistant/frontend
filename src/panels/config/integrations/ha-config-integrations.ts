@@ -128,7 +128,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
   @internalProperty()
   private _manifests: Record<string, IntegrationManifest> = {};
 
-  private _manifestFetched?: Set<string>;
+  private _extraFetchedManifests?: Set<string>;
 
   @internalProperty() private _showIgnored = false;
 
@@ -510,14 +510,14 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (domain in this._manifests) {
       return;
     }
-    if (this._manifestFetched) {
-      if (this._manifestFetched.has(domain)) {
+    if (this._extraFetchedManifests) {
+      if (this._extraFetchedManifests.has(domain)) {
         return;
       }
     } else {
-      this._manifestFetched = new Set();
+      this._extraFetchedManifests = new Set();
     }
-    this._manifestFetched.add(domain);
+    this._extraFetchedManifests.add(domain);
     const manifest = await fetchIntegrationManifest(this.hass, domain);
     this._manifests = {
       ...this._manifests,
