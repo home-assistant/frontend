@@ -17,8 +17,8 @@ import {
   refreshTopology,
   ZHADevice,
 } from "../../../../../data/zha";
-import "../../../../../layouts/hass-subpage";
-import type { HomeAssistant } from "../../../../../types";
+import "../../../../../layouts/hass-tabs-subpage";
+import type { HomeAssistant, Route } from "../../../../../types";
 import { Network, Edge, Node, EdgeOptions } from "vis-network";
 import "../../../../../common/search/search-input";
 import "../../../../../components/device/ha-device-picker";
@@ -29,12 +29,17 @@ import { formatAsPaddedHex } from "./functions";
 import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import { zhaTabs } from "./zha-config-dashboard";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
-  @property({ type: Object }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
+  @property({ type: Object }) public route!: Route;
+
+  @property({ type: Boolean }) public narrow!: boolean;
+
+  @property({ type: Boolean }) public isWide!: boolean;
 
   @property()
   public zoomedDeviceId?: string;
@@ -133,9 +138,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   protected render() {
     return html`
-      <hass-subpage
+      <hass-tabs-subpage
+        .tabs=${zhaTabs}
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .isWide=${this.isWide}
+        .route=${this.route}
         .header=${this.hass.localize(
           "ui.panel.config.zha.visualization.header"
         )}
@@ -172,7 +180,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           >
         </div>
         <div id="visualization"></div>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
