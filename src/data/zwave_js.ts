@@ -61,15 +61,15 @@ export interface ZWaveJSSetConfigParamData {
   value: string | number;
 }
 
-export interface ZWaveJSDataCollectionStatus {
-  enabled: boolean;
-  opted_in: boolean;
-}
-
 export interface ZWaveJSSetConfigParamResult {
   value_id?: string;
   status?: string;
   error?: string;
+}
+
+export interface ZWaveJSDataCollectionStatus {
+  enabled: boolean;
+  opted_in: boolean;
 }
 
 export enum NodeStatus {
