@@ -36,8 +36,6 @@ export interface ZWaveJSNodeConfigParam {
   value: any;
   configuration_value_type: string;
   metadata: ZWaveJSNodeConfigParamMetadata;
-  result?: string;
-  error?: string;
 }
 
 export interface ZWaveJSNodeConfigParamMetadata {
