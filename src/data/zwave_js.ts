@@ -67,8 +67,8 @@ export interface ZWaveJSDataCollectionStatus {
 }
 
 export interface ZWaveJSSetConfigParamResult {
-  value_id: string;
-  status: string;
+  value_id?: string;
+  status?: string;
   error?: string;
 }
 

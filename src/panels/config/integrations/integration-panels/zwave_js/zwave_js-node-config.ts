@@ -388,7 +388,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   private setResult(key: string, value: string | undefined) {
     if (value === undefined) {
-      this._results = { ...this._results, [key]: undefined };
+      delete this._results[key];
+      this.requestUpdate();
     } else {
       this._results = { ...this._results, [key]: { status: value } };
     }
