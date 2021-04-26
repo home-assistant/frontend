@@ -1,3 +1,4 @@
+import { mdiHelpCircle } from "@mdi/js";
 import { HassService, HassServiceTarget } from "home-assistant-js-websocket";
 import {
   css,
@@ -18,11 +19,12 @@ import { ENTITY_COMPONENT_DOMAINS } from "../data/entity";
 import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
+import { documentationUrl } from "../util/documentation-url";
+import "./ha-checkbox";
 import "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-settings-row";
 import "./ha-yaml-editor";
-import "./ha-checkbox";
 import type { HaYamlEditor } from "./ha-yaml-editor";
 
 interface ExtHassService extends Omit<HassService, "fields"> {
@@ -178,7 +180,29 @@ export class HaServiceControl extends LitElement {
         .value=${this._value?.service}
         @value-changed=${this._serviceChanged}
       ></ha-service-picker>
-      <p>${serviceData?.description}</p>
+      <div class="description">
+        <p>${serviceData?.description}</p>
+        ${this.value?.service
+          ? html` <a
+              href="${documentationUrl(
+                this.hass,
+                "/integrations/" + computeDomain(this.value?.service)
+              )}"
+              title="${this.hass.localize(
+                "ui.components.service-control.integration_doc"
+              )}"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <mwc-icon-button>
+                <ha-svg-icon
+                  path=${mdiHelpCircle}
+                  class="help-icon"
+                ></ha-svg-icon>
+              </mwc-icon-button>
+            </a>`
+          : ""}
+      </div>
       ${serviceData && "target" in serviceData
         ? html`<ha-settings-row .narrow=${this.narrow}>
             ${hasOptional
@@ -409,6 +433,15 @@ export class HaServiceControl extends LitElement {
       }
       ha-checkbox {
         margin-left: -16px;
+      }
+      .help-icon {
+        color: var(--secondary-text-color);
+      }
+      .description {
+        justify-content: space-between;
+        display: flex;
+        align-items: center;
+        padding-right: 2px;
       }
     `;
   }
