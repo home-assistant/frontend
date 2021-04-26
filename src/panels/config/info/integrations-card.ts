@@ -30,8 +30,9 @@ class IntegrationsCard extends LitElement {
   private _sortedIntegrations = memoizeOne((components: string[]) => {
     return Array.from(
       new Set(
-        components
-          .map((comp) => (comp.includes(".") ? comp.split(".")[1] : comp))
+        components.map((comp) =>
+          comp.includes(".") ? comp.split(".")[1] : comp
+        )
       )
     ).sort();
   });

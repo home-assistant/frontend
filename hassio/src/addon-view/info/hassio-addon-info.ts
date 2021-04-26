@@ -242,14 +242,18 @@ class HassioAddonInfo extends LitElement {
               ? html`
                   Current version: ${this.addon.version}
                   <div class="changelog" @click=${this._openChangelog}>
-                    (<span class="changelog-link">${
-                      this.supervisor.localize("addon.dashboard.changelog")}</span
+                    (<span class="changelog-link"
+                      >${this.supervisor.localize(
+                        "addon.dashboard.changelog"
+                      )}</span
                     >)
                   </div>
                 `
-              : html`<span class="changelog-link" @click=${this._openChangelog}>${
-                  this.supervisor.localize("addon.dashboard.changelog")
-                }</span>`}
+              : html`<span class="changelog-link" @click=${this._openChangelog}
+                  >${this.supervisor.localize(
+                    "addon.dashboard.changelog"
+                  )}</span
+                >`}
           </div>
 
           <div class="description light-color">

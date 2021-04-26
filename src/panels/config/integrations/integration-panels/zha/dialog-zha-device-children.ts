@@ -76,9 +76,7 @@ class DialogZHADeviceChildren extends LitElement {
     },
   };
 
-  public showDialog(
-    params: ZHADeviceChildrenDialogParams
-  ): void {
+  public showDialog(params: ZHADeviceChildrenDialogParams): void {
     this._device = params.device;
     this._fetchData();
   }

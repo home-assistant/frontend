@@ -374,7 +374,7 @@
         "clear": "Clear",
         "show_areas": "Show areas",
         "area": "Area",
-        "add_new": "Add new area…",
+        "add_new": "Add new area...",
         "no_areas": "You don't have any areas",
         "no_match": "No matching areas found",
         "add_dialog": {
@@ -847,7 +847,7 @@
     },
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
-      "connection_lost": "Connection lost. Reconnecting…",
+      "connection_lost": "Connection lost. Reconnecting...",
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting, not everything will be available until it is finished.",
       "wrapping_up_startup": "Wrapping up startup, not everything will be available until it is finished.",
@@ -1055,7 +1055,7 @@
           "description": "View the Home Assistant logs",
           "details": "Log Details ({level})",
           "load_full_log": "Load Full Home Assistant Log",
-          "loading_log": "Loading error log…",
+          "loading_log": "Loading error log...",
           "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",
           "clear": "Clear",
@@ -1196,7 +1196,7 @@
             },
             "server_management": {
               "heading": "Server management",
-              "introduction": "Control your Home Assistant server… from Home Assistant.",
+              "introduction": "Control your Home Assistant server... from Home Assistant.",
               "restart": "Restart",
               "confirm_restart": "Are you sure you want to restart Home Assistant?",
               "stop": "Stop",
@@ -1781,7 +1781,7 @@
             "integrations_link_all_features": " all available features",
             "connected": "Connected",
             "not_connected": "Not Connected",
-            "fetching_subscription": "Fetching subscription…",
+            "fetching_subscription": "Fetching subscription...",
             "tts": {
               "title": "Text to Speech",
               "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
@@ -1846,7 +1846,7 @@
               "no_hooks_yet2": " or by creating a ",
               "no_hooks_yet_link_automation": "webhook automation",
               "link_learn_more": "Learn more about creating webhook-powered automations.",
-              "loading": "Loading ...",
+              "loading": "Loading...",
               "manage": "Manage",
               "disable_hook_error_msg": "Failed to disable webhook:"
             }
@@ -2799,7 +2799,7 @@
             "clear": "Clear",
             "delete": "Delete card",
             "duplicate": "Duplicate card",
-            "move": "Move to View",
+            "move": "Move to view",
             "move_before": "Move card before",
             "move_after": "Move card after",
             "options": "More options",
@@ -3410,7 +3410,7 @@
           "events": {
             "title": "Events",
             "description": "Fire an event on the event bus.",
-            "documentation": "Events Documentation.",
+            "documentation": "Events documentation",
             "type": "Event Type",
             "data": "Event Data (YAML, optional)",
             "fire_event": "Fire Event",
@@ -3423,7 +3423,7 @@
             "start_listening": "Start listening",
             "stop_listening": "Stop listening",
             "alert_event_type": "Event type is a mandatory field",
-            "notification_event_fired": "Event {type} successful fired!"
+            "notification_event_fired": "Event {type} successfully fired!"
           },
           "services": {
             "title": "Services",
@@ -3442,8 +3442,8 @@
           },
           "states": {
             "title": "States",
-            "description1": "Set the representation of a device within Home Assistant.",
-            "description2": "This will not communicate with the actual device.",
+            "description1": "Set the current state representation of an entity within Home Assistant.",
+            "description2": "If the entity belongs to a device, there will be no actual communication with that device.",
             "entity": "Entity",
             "state": "State",
             "attributes": "Attributes",
