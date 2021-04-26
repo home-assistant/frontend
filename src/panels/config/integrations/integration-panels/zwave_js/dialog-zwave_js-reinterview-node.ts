@@ -17,6 +17,7 @@ import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSReinterviewNodeDialogParams } from "./show-dialog-zwave_js-reinterview-node";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { reinterviewNode } from "../../../../../data/zwave_js";
 
 @customElement("dialog-zwave_js-reinterview-node")
 class DialogZWaveJSReinterviewNode extends LitElement {
@@ -152,13 +153,11 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     if (!this.hass) {
       return;
     }
-    this._subscribed = this.hass.connection.subscribeMessage(
-      (message) => this._handleMessage(message),
-      {
-        type: "zwave_js/refresh_node_info",
-        entry_id: this.entry_id,
-        node_id: this.node_id,
-      }
+    this._subscribed = reinterviewNode(
+      this.hass,
+      this.entry_id!,
+      this.node_id!,
+      this._handleMessage.bind(this)
     );
   }
 

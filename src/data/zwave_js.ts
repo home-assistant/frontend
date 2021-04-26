@@ -1,3 +1,4 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import { DeviceRegistryEntry } from "./device_registry";
 
@@ -149,6 +150,22 @@ export const setNodeConfigParameter = (
     property_key,
   };
   return hass.callWS(data);
+};
+
+export const reinterviewNode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number,
+  callbackFunction: any
+): Promise<UnsubscribeFunc> => {
+  return hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/refresh_node_info",
+      entry_id: entry_id,
+      node_id: node_id,
+    }
+  );
 };
 
 export const getIdentifiersFromDevice = function (
