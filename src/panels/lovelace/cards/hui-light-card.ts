@@ -244,7 +244,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   private _computeColor(stateObj: LightEntity): string {
-    if (!this._config?.state_color) {
+    if (stateObj.state === "off") {
       return "";
     }
     const rgb = getRgbColor(stateObj);

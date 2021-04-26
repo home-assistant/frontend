@@ -374,8 +374,6 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   }
 
   applyRgbColor(rgb) {
-    console.log(rgb);
-    console.log(rgb2hs(rgb));
     const [h, s] = rgb2hs(rgb);
     this.applyHsColor({ h, s });
   }
