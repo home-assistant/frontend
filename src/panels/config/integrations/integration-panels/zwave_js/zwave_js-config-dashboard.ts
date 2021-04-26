@@ -191,10 +191,11 @@ class ZWaveJSConfigDashboard extends LitElement {
                   <div class="card-content">
                     <p>
                       Enable the reporting of anonymized telemetry and
-                      statistics to the <em>Z-Wave JS organization</em>.
-                      Information about the data that is collected and how it is
-                      used, including an example of the data collected, can be
-                      found in the
+                      statistics to the <em>Z-Wave JS organization</em>. This
+                      data will be used to focus development efforts and improve
+                      the user experience. Information about the data that is
+                      collected and how it is used, including an example of the
+                      data collected, can be found in the
                       <a
                         target="_blank"
                         href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection?id=usage-statistics"
