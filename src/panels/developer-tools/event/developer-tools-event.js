@@ -24,12 +24,17 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return html`
       <style include="ha-style iron-flex iron-positioning"></style>
       <style>
+        .content {
+          padding: 16px;
+          max-width: 1200px;
+          margin: auto;
+        }
+
         :host {
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
           @apply --paper-font-body1;
-          padding: 16px;
           display: block;
         }
 
@@ -189,7 +194,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   computeFormClasses(narrow) {
-    return narrow ? "" : "layout horizontal";
+    return narrow ? "content" : "content layout horizontal";
   }
 }
 
