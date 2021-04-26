@@ -11,7 +11,6 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-color-picker";
