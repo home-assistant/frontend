@@ -49,6 +49,8 @@ export class HaServiceControl extends LitElement {
     data?: Record<string, any>;
   };
 
+  @internalProperty() private _value!: this["value"];
+
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
   @property({ type: Boolean }) public showAdvanced?: boolean;
@@ -57,7 +59,7 @@ export class HaServiceControl extends LitElement {
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
-  protected updated(changedProperties: PropertyValues) {
+  protected updated(changedProperties: PropertyValues<this>) {
     if (!changedProperties.has("value")) {
       return;
     }
@@ -92,21 +94,23 @@ export class HaServiceControl extends LitElement {
         target.device_id = this.value.data.device_id;
       }
 
-      this.value = {
+      this._value = {
         ...this.value,
         target,
         data: { ...this.value.data },
       };
 
-      delete this.value.data!.entity_id;
-      delete this.value.data!.device_id;
-      delete this.value.data!.area_id;
+      delete this._value.data!.entity_id;
+      delete this._value.data!.device_id;
+      delete this._value.data!.area_id;
+    } else {
+      this._value = this.value;
     }
 
-    if (this.value?.data) {
+    if (this._value?.data) {
       const yamlEditor = this._yamlEditor;
-      if (yamlEditor && yamlEditor.value !== this.value.data) {
-        yamlEditor.setValue(this.value.data);
+      if (yamlEditor && yamlEditor.value !== this._value.data) {
+        yamlEditor.setValue(this._value.data);
       }
     }
   }
@@ -151,12 +155,12 @@ export class HaServiceControl extends LitElement {
   });
 
   protected render() {
-    const serviceData = this._getServiceInfo(this.value?.service);
+    const serviceData = this._getServiceInfo(this._value?.service);
 
     const shouldRenderServiceDataYaml =
       (serviceData?.fields.length && !serviceData.hasSelector.length) ||
       (serviceData &&
-        Object.keys(this.value?.data || {}).some(
+        Object.keys(this._value?.data || {}).some(
           (key) => !serviceData!.hasSelector.includes(key)
         ));
 
@@ -171,7 +175,7 @@ export class HaServiceControl extends LitElement {
 
     return html`<ha-service-picker
         .hass=${this.hass}
-        .value=${this.value?.service}
+        .value=${this._value?.service}
         @value-changed=${this._serviceChanged}
       ></ha-service-picker>
       <p>${serviceData?.description}</p>
@@ -195,19 +199,19 @@ export class HaServiceControl extends LitElement {
                 ? { target: serviceData.target }
                 : {
                     target: {
-                      entity: { domain: computeDomain(this.value!.service) },
+                      entity: { domain: computeDomain(this._value!.service) },
                     },
                   }}
               @value-changed=${this._targetChanged}
-              .value=${this.value?.target}
+              .value=${this._value?.target}
             ></ha-selector
           ></ha-settings-row>`
         : entityId
         ? html`<ha-entity-picker
             .hass=${this.hass}
-            .value=${this.value?.data?.entity_id}
+            .value=${this._value?.data?.entity_id}
             .label=${entityId.description}
-            .includeDomains=${this._domainFilter(this.value!.service)}
+            .includeDomains=${this._domainFilter(this._value!.service)}
             @value-changed=${this._entityPicked}
             allow-custom-entity
           ></ha-entity-picker>`
@@ -218,15 +222,15 @@ export class HaServiceControl extends LitElement {
               "ui.components.service-control.service_data"
             )}
             .name=${"data"}
-            .defaultValue=${this.value?.data}
+            .defaultValue=${this._value?.data}
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
         : serviceData?.fields.map((dataField) =>
             dataField.selector &&
             (!dataField.advanced ||
               this.showAdvanced ||
-              (this.value?.data &&
-                this.value.data[dataField.key] !== undefined))
+              (this._value?.data &&
+                this._value.data[dataField.key] !== undefined))
               ? html`<ha-settings-row .narrow=${this.narrow}>
                   ${dataField.required
                     ? hasOptional
@@ -235,8 +239,8 @@ export class HaServiceControl extends LitElement {
                     : html`<ha-checkbox
                         .key=${dataField.key}
                         .checked=${this._checkedKeys.has(dataField.key) ||
-                        (this.value?.data &&
-                          this.value.data[dataField.key] !== undefined)}
+                        (this._value?.data &&
+                          this._value.data[dataField.key] !== undefined)}
                         @change=${this._checkboxChanged}
                         slot="prefix"
                       ></ha-checkbox>`}
@@ -245,15 +249,15 @@ export class HaServiceControl extends LitElement {
                   ><ha-selector
                     .disabled=${!dataField.required &&
                     !this._checkedKeys.has(dataField.key) &&
-                    (!this.value?.data ||
-                      this.value.data[dataField.key] === undefined)}
+                    (!this._value?.data ||
+                      this._value.data[dataField.key] === undefined)}
                     .hass=${this.hass}
                     .selector=${dataField.selector}
                     .key=${dataField.key}
                     @value-changed=${this._serviceDataChanged}
-                    .value=${this.value?.data &&
-                    this.value.data[dataField.key] !== undefined
-                      ? this.value.data[dataField.key]
+                    .value=${this._value?.data &&
+                    this._value.data[dataField.key] !== undefined
+                      ? this._value.data[dataField.key]
                       : dataField.default}
                   ></ha-selector
                 ></ha-settings-row>`
@@ -268,13 +272,13 @@ export class HaServiceControl extends LitElement {
       this._checkedKeys.add(key);
     } else {
       this._checkedKeys.delete(key);
-      const data = { ...this.value?.data };
+      const data = { ...this._value?.data };
 
       delete data[key];
 
       fireEvent(this, "value-changed", {
         value: {
-          ...this.value,
+          ...this._value,
           data,
         },
       });
@@ -284,7 +288,7 @@ export class HaServiceControl extends LitElement {
 
   private _serviceChanged(ev: PolymerChangedEvent<string>) {
     ev.stopPropagation();
-    if (ev.detail.value === this.value?.service) {
+    if (ev.detail.value === this._value?.service) {
       return;
     }
     fireEvent(this, "value-changed", {
@@ -295,17 +299,17 @@ export class HaServiceControl extends LitElement {
   private _entityPicked(ev: CustomEvent) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
-    if (this.value?.data?.entity_id === newValue) {
+    if (this._value?.data?.entity_id === newValue) {
       return;
     }
     let value;
-    if (!newValue && this.value?.data) {
-      value = { ...this.value };
+    if (!newValue && this._value?.data) {
+      value = { ...this._value };
       delete value.data.entity_id;
     } else {
       value = {
-        ...this.value,
-        data: { ...this.value?.data, entity_id: ev.detail.value },
+        ...this._value,
+        data: { ...this._value?.data, entity_id: ev.detail.value },
       };
     }
     fireEvent(this, "value-changed", {
@@ -316,15 +320,15 @@ export class HaServiceControl extends LitElement {
   private _targetChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const newValue = ev.detail.value;
-    if (this.value?.target === newValue) {
+    if (this._value?.target === newValue) {
       return;
     }
     let value;
     if (!newValue) {
-      value = { ...this.value };
+      value = { ...this._value };
       delete value.target;
     } else {
-      value = { ...this.value, target: ev.detail.value };
+      value = { ...this._value, target: ev.detail.value };
     }
     fireEvent(this, "value-changed", {
       value,
@@ -336,13 +340,13 @@ export class HaServiceControl extends LitElement {
     const key = (ev.currentTarget as any).key;
     const value = ev.detail.value;
     if (
-      this.value?.data?.[key] === value ||
-      (!this.value?.data?.[key] && (value === "" || value === undefined))
+      this._value?.data?.[key] === value ||
+      (!this._value?.data?.[key] && (value === "" || value === undefined))
     ) {
       return;
     }
 
-    const data = { ...this.value?.data, [key]: value };
+    const data = { ...this._value?.data, [key]: value };
 
     if (value === "" || value === undefined) {
       delete data[key];
@@ -350,7 +354,7 @@ export class HaServiceControl extends LitElement {
 
     fireEvent(this, "value-changed", {
       value: {
-        ...this.value,
+        ...this._value,
         data,
       },
     });
@@ -363,7 +367,7 @@ export class HaServiceControl extends LitElement {
     }
     fireEvent(this, "value-changed", {
       value: {
-        ...this.value,
+        ...this._value,
         data: ev.detail.value,
       },
     });
