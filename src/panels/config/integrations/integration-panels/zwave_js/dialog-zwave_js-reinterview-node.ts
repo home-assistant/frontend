@@ -87,6 +87,11 @@ class DialogZWaveJSReinterviewNode extends LitElement {
                       )}
                     </b>
                   </p>
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.zwave_js.reinterview_node.run_in_background"
+                    )}
+                  </p>
                   ${this._stage
                     ? html`
                         <p>
