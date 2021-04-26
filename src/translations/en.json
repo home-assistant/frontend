@@ -2179,7 +2179,7 @@
               "loaded": "Loaded",
               "setup_error": "Failed to set up",
               "migration_error": "Migration error",
-              "setup_retry": "Retrying to set up",
+              "setup_retry": "Retrying setup",
               "not_loaded": "Not loaded",
               "failed_unload": "Failed to unload"
             }

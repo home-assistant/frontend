@@ -79,7 +79,11 @@ const setupRetryEntry = createConfigEntry("Setup Retry", {
 });
 const setupRetryReasonEntry = createConfigEntry("Setup Retry", {
   state: "setup_retry",
-  reason: "Unable to connect",
+  reason: "connection_error",
+});
+const setupRetryReasonMissingKeyEntry = createConfigEntry("Setup Retry", {
+  state: "setup_retry",
+  reason: "resolve_error",
 });
 const failedUnloadEntry = createConfigEntry("Failed Unload", {
   state: "failed_unload",
@@ -141,6 +145,7 @@ const configEntries: Array<{
   { items: [migrationErrorEntry] },
   { items: [setupRetryEntry] },
   { items: [setupRetryReasonEntry] },
+  { items: [setupRetryReasonMissingKeyEntry] },
   { items: [failedUnloadEntry] },
   { items: [notLoadedEntry] },
   {
@@ -298,6 +303,14 @@ export class DemoIntegrationCard extends LitElement {
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
     hass.updateTranslations("config", "en");
+    // Normally this string is loaded from backend
+    hass.addTranslations(
+      {
+        "component.esphome.config.error.connection_error":
+          "Can't connect to ESP. Please make sure your YAML file contains an 'api:' line.",
+      },
+      "en"
+    );
   }
 
   private _toggleCustomIntegration() {
