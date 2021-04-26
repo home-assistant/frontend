@@ -44,7 +44,10 @@ export class HassioMain extends SupervisorBaseElement {
     // We changed the navigate event to fire directly on the window, as that's
     // where we are listening for it. However, the older panel_custom will
     // listen on this element for navigation events, so we need to forward them.
-    window.addEventListener("location-changed", (ev) =>
+
+    // Joakim - April 26, 2021
+    // Due to changes in behavior in Google Chrome, we changed navigate to fire on the top element
+    top.addEventListener("location-changed", (ev) =>
       // @ts-ignore
       fireEvent(this, ev.type, ev.detail, {
         bubbles: false,
