@@ -32,11 +32,6 @@ class DialogZWaveJSReinterviewNode extends LitElement {
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 
-  public disconnectedCallback(): void {
-    super.disconnectedCallback();
-    this._unsubscribe();
-  }
-
   public async showDialog(
     params: ZWaveJSReinterviewNodeDialogParams
   ): Promise<void> {
@@ -195,7 +190,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
   public closeDialog(): void {
     this.entry_id = undefined;
     this.node_id = undefined;
-    this._status = "";
+    this._status = undefined;
 
     this._unsubscribe();
 
