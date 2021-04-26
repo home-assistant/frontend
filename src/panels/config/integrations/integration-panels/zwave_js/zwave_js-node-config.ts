@@ -212,7 +212,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               )}
             </em>`
           : ""}
-        ${result
+        ${result && result.status
           ? html` <p
               class="result ${classMap({
                 [result.status]: true,
