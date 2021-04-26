@@ -241,22 +241,24 @@ class MoreInfoLight extends LitElement {
     `;
   }
 
-  protected update(changedProps: PropertyValues) {
-    super.update(changedProps);
+  protected updated(changedProps: PropertyValues<this>) {
     if (!changedProps.has("stateObj")) {
       return;
     }
-    this._mode = isColorMode(this.stateObj!)
-      ? "color"
-      : LightColorModes.COLOR_TEMP;
-  }
-
-  protected updated(changedProps: PropertyValues): void {
     const stateObj = this.stateObj! as LightEntity;
-    if (!changedProps.has("stateObj")) {
-      return;
-    }
+    const oldStateObj = changedProps.get("stateObj") as LightEntity | undefined;
+
     if (stateObj.state === "on") {
+      // Don't change tab when the color mode changes
+      if (
+        oldStateObj?.entity_id !== stateObj.entity_id ||
+        oldStateObj?.state !== stateObj.state
+      ) {
+        this._mode = isColorMode(this.stateObj!)
+          ? "color"
+          : LightColorModes.COLOR_TEMP;
+      }
+
       let brightnessAdjust = 100;
       if (
         stateObj.attributes.color_mode === LightColorModes.RGB &&
