@@ -72,6 +72,11 @@ export interface ZWaveJSDataCollectionStatus {
   opted_in: boolean;
 }
 
+export interface ZWaveJSRefreshNodeStatusMessage {
+  event: string;
+  stage?: string;
+}
+
 export enum NodeStatus {
   Unknown,
   Asleep,
@@ -156,7 +161,7 @@ export const reinterviewNode = (
   hass: HomeAssistant,
   entry_id: string,
   node_id: number,
-  callbackFunction: any
+  callbackFunction: (message: ZWaveJSRefreshNodeStatusMessage) => void
 ): Promise<UnsubscribeFunc> => {
   return hass.connection.subscribeMessage(
     (message: any) => callbackFunction(message),
