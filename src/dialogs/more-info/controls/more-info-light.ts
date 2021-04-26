@@ -263,7 +263,11 @@ class MoreInfoLight extends LitElement {
     }
     if (stateObj.state === "on") {
       let brightnessAdjust = 100;
-      if (stateObj.attributes.color_mode === LightColorModes.RGB) {
+      if (
+        stateObj.attributes.color_mode === LightColorModes.RGB &&
+        !lightSupportsColorMode(stateObj, LightColorModes.RGBWW) &&
+        !lightSupportsColorMode(stateObj, LightColorModes.RGBW)
+      ) {
         const maxVal = Math.max(...stateObj.attributes.rgb_color);
         if (maxVal < 255) {
           this._brightnessAdjusted = maxVal;
@@ -375,10 +379,10 @@ class MoreInfoLight extends LitElement {
       return;
     }
 
+    const rgb = this._getRgbColor();
+
     if (name === "wv") {
-      const rgbw_color = this.stateObj!.attributes.rgbw_color
-        ? [...this.stateObj!.attributes.rgbw_color]
-        : [0, 0, 0, 0];
+      const rgbw_color = rgb || [0, 0, 0, 0];
       rgbw_color[3] = wv;
       this.hass.callService("light", "turn_on", {
         entity_id: this.stateObj!.entity_id,
@@ -387,9 +391,10 @@ class MoreInfoLight extends LitElement {
       return;
     }
 
-    const rgbww_color = this.stateObj!.attributes.rgbww_color
-      ? [...this.stateObj!.attributes.rgbww_color]
-      : [0, 0, 0, 0, 0];
+    const rgbww_color = rgb || [0, 0, 0, 0, 0];
+    while (rgbww_color.length < 5) {
+      rgbww_color.push(0);
+    }
     rgbww_color[name === "cw" ? 3 : 4] = wv;
     this.hass.callService("light", "turn_on", {
       entity_id: this.stateObj!.entity_id,
@@ -397,17 +402,25 @@ class MoreInfoLight extends LitElement {
     });
   }
 
+  private _getRgbColor(): number[] | undefined {
+    return this.stateObj!.attributes.color_mode === LightColorModes.RGBWW
+      ? this.stateObj!.attributes.rgbww_color
+      : this.stateObj!.attributes.color_mode === LightColorModes.RGBW
+      ? this.stateObj!.attributes.rgbw_color
+      : this.stateObj!.attributes.color_mode === LightColorModes.RGB
+      ? this.stateObj!.attributes.rgb_color!
+      : undefined;
+  }
+
   private _colorBrightnessSliderChanged(ev: CustomEvent) {
     const target = ev.target as any;
     const value = Number(target.value);
 
-    const rgb = (this.stateObj!.attributes.color_mode === LightColorModes.RGBWW
-      ? this.stateObj!.attributes.rgbww_color.slice(0, 3)
-      : this.stateObj!.attributes.color_mode === LightColorModes.RGBW
-      ? this.stateObj!.attributes.rgbw_color.slice(0, 3)
-      : [255, 255, 255]) as [number, number, number];
-
-    console.log(rgb, value, this._colorBrightnessSliderValue);
+    const rgb = (this._getRgbColor()?.slice(0, 3) || [255, 255, 255]) as [
+      number,
+      number,
+      number
+    ];
 
     this._setRgbColor(
       this._adjustColorBrightness(
