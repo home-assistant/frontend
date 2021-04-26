@@ -13,7 +13,6 @@ import { classMap } from "lit-html/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
-import "../../../components/ha-card";
 import {
   RenderTemplateResult,
   subscribeRenderTemplate,
@@ -98,58 +97,54 @@ class HaPanelDevTemplate extends LitElement {
         })}"
       >
         <div class="edit-pane">
-          <ha-card>
-            <div class="card-content">
-              <p>
-                ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.description"
+          <p>
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.templates.description"
+            )}
+          </p>
+          <ul>
+            <li>
+              <a
+                href="http://jinja.pocoo.org/docs/dev/templates/"
+                target="_blank"
+                rel="noreferrer"
+                >${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.templates.jinja_documentation"
                 )}
-              </p>
-              <ul>
-                <li>
-                  <a
-                    href="http://jinja.pocoo.org/docs/dev/templates/"
-                    target="_blank"
-                    rel="noreferrer"
-                    >${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.templates.jinja_documentation"
-                    )}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="${documentationUrl(
-                      this.hass,
-                      "/docs/configuration/templating/"
-                    )}"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.templates.template_extensions"
-                    )}</a
-                  >
-                </li>
-              </ul>
-              <p>
+              </a>
+            </li>
+            <li>
+              <a
+                href="${documentationUrl(
+                  this.hass,
+                  "/docs/configuration/templating/"
+                )}"
+                target="_blank"
+                rel="noreferrer"
+              >
                 ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.editor"
-                )}
-              </p>
-              <ha-code-editor
-                mode="jinja2"
-                .value=${this._template}
-                .error=${this._error}
-                autofocus
-                @value-changed=${this._templateChanged}
-              ></ha-code-editor>
-              <mwc-button @click=${this._restoreDemo}>
-                ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.templates.reset"
-                )}
-              </mwc-button>
-            </div>
-          </ha-card>
+                  "ui.panel.developer-tools.tabs.templates.template_extensions"
+                )}</a
+              >
+            </li>
+          </ul>
+          <p>
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.templates.editor"
+            )}
+          </p>
+          <ha-code-editor
+            mode="jinja2"
+            .value=${this._template}
+            .error=${this._error}
+            autofocus
+            @value-changed=${this._templateChanged}
+          ></ha-code-editor>
+          <mwc-button @click=${this._restoreDemo}>
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.templates.reset"
+            )}
+          </mwc-button>
         </div>
 
         <div class="render-pane">
@@ -269,12 +264,12 @@ class HaPanelDevTemplate extends LitElement {
         }
 
         .horizontal .edit-pane {
-          max-width: 65%;
+          max-width: 50%;
         }
 
         .render-pane {
           position: relative;
-          flex-grow: 1;
+          max-width: 50%;
         }
 
         .render-spinner {
@@ -288,9 +283,7 @@ class HaPanelDevTemplate extends LitElement {
           clear: both;
           white-space: pre-wrap;
           background-color: var(--secondary-background-color);
-          border-radius: var(--ha-card-border-radius, 4px);
           padding: 8px;
-          margin-top: 0;
         }
 
         .all_listeners {

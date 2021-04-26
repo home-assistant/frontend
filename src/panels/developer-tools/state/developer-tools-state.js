@@ -158,10 +158,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           </template>
         </div>
       </div>
-      <mwc-button on-click="handleSetState" disabled="[[!validJSON]]" raised
-        >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
-      >
-    </div>
 
       <h1>
         [[localize('ui.panel.developer-tools.tabs.states.current_entities')]]
