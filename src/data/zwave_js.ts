@@ -56,6 +56,11 @@ export interface ZWaveJSSetConfigParamData {
   value: string | number;
 }
 
+export interface ZWaveJSDataCollectionStatus {
+  enabled: boolean;
+  opted_in: boolean;
+}
+
 export enum NodeStatus {
   Unknown,
   Asleep,
@@ -73,6 +78,26 @@ export const fetchNetworkStatus = (
   hass.callWS({
     type: "zwave_js/network_status",
     entry_id,
+  });
+
+export const fetchDataCollectionStatus = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<ZWaveJSDataCollectionStatus> =>
+  hass.callWS({
+    type: "zwave_js/data_collection_status",
+    entry_id,
+  });
+
+export const setDataCollectionPreference = (
+  hass: HomeAssistant,
+  entry_id: string,
+  opted_in: boolean
+): Promise<any> =>
+  hass.callWS({
+    type: "zwave_js/update_data_collection_preference",
+    entry_id,
+    opted_in,
   });
 
 export const fetchNodeStatus = (
