@@ -28,6 +28,7 @@ export interface DataEntryFlowStepForm {
   data_schema: HaFormSchema[];
   errors: Record<string, string>;
   description_placeholders: Record<string, string>;
+  last_step: boolean | null;
 }
 
 export interface DataEntryFlowStepExternal {
