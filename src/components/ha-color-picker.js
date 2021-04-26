@@ -2,7 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { EventsMixin } from "../mixins/events-mixin";
-
+import { rgb2hs } from "../common/color/convert-color";
 /**
  * Color-picker custom element
  *
@@ -114,6 +114,12 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
         observer: "applyHsColor",
       },
 
+      // use these properties to update the state via attributes
+      desiredRgbColor: {
+        type: Object,
+        observer: "applyRgbColor",
+      },
+
       // width, height and radius apply to the coordinates of
       // of the canvas.
       // border width are relative to these numbers
@@ -177,8 +183,11 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
     this.drawMarker();
 
     if (this.desiredHsColor) {
-      this.setMarkerOnColor(this.desiredHsColor);
-      this.applyColorToCanvas(this.desiredHsColor);
+      this.applyHsColor(this.desiredHsColor);
+    }
+
+    if (this.desiredRgbColor) {
+      this.applyRgbColor(this.desiredRgbColor);
     }
 
     this.interactionLayer.addEventListener("mousedown", (ev) =>
@@ -362,6 +371,13 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
     this.hsColor = hs;
     // always apply the new color to the interface / canvas
     this.applyColorToCanvas(hs);
+  }
+
+  applyRgbColor(rgb) {
+    console.log(rgb);
+    console.log(rgb2hs(rgb));
+    const [h, s] = rgb2hs(rgb);
+    this.applyHsColor({ h, s });
   }
 
   /*

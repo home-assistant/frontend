@@ -18,6 +18,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import {
+  getRgbColor,
   isColorMode,
   LightColorModes,
   LightEntity,
@@ -28,11 +29,6 @@ import {
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
 import "../../../components/ha-button-toggle-group";
-
-interface HueSatColor {
-  h: number;
-  s: number;
-}
 
 const toggleButtons = [
   { label: "Color", value: "color" },
@@ -62,7 +58,7 @@ class MoreInfoLight extends LitElement {
 
   @internalProperty() private _saturationSegments = 8;
 
-  @internalProperty() private _colorPickerColor?: HueSatColor;
+  @internalProperty() private _colorPickerColor?: [number, number, number];
 
   @internalProperty() private _mode?: "color" | LightColorModes.COLOR_TEMP;
 
@@ -101,11 +97,11 @@ class MoreInfoLight extends LitElement {
                 @change=${this._brightnessSliderChanged}
                 pin
               ></ha-labeled-slider>
-              <hr></hr>
             `
           : ""}
         ${this.stateObj.state === "on"
           ? html`
+              ${supportsTemp || supportsColor ? html`<hr></hr>` : ""}
               ${supportsTemp && supportsColor
                 ? html`<ha-button-toggle-group
                     fullWidth
@@ -138,7 +134,7 @@ class MoreInfoLight extends LitElement {
                       <ha-color-picker
                         class="color"
                         @colorselected=${this._colorPicked}
-                        .desiredHsColor=${this._colorPickerColor}
+                        .desiredRgbColor=${this._colorPickerColor}
                         throttle="500"
                         .hueSegments=${this._hueSegments}
                         .saturationSegments=${this._saturationSegments}
@@ -298,12 +294,9 @@ class MoreInfoLight extends LitElement {
           ? Math.max(...stateObj.attributes.rgbw_color.slice(0, 3))
           : undefined;
 
-      if (stateObj.attributes.hs_color) {
-        this._colorPickerColor = {
-          h: stateObj.attributes.hs_color[0],
-          s: stateObj.attributes.hs_color[1] / 100,
-        };
-      }
+      this._colorPickerColor = getRgbColor(stateObj)?.slice(0, 3) as
+        | [number, number, number]
+        | undefined;
     } else {
       this._brightnessSliderValue = 0;
     }
@@ -378,7 +371,7 @@ class MoreInfoLight extends LitElement {
       return;
     }
 
-    const rgb = this._getRgbColor();
+    const rgb = getRgbColor(this.stateObj!);
 
     if (name === "wv") {
       const rgbw_color = rgb || [0, 0, 0, 0];
@@ -401,25 +394,15 @@ class MoreInfoLight extends LitElement {
     });
   }
 
-  private _getRgbColor(): number[] | undefined {
-    return this.stateObj!.attributes.color_mode === LightColorModes.RGBWW
-      ? this.stateObj!.attributes.rgbww_color
-      : this.stateObj!.attributes.color_mode === LightColorModes.RGBW
-      ? this.stateObj!.attributes.rgbw_color
-      : this.stateObj!.attributes.color_mode === LightColorModes.RGB
-      ? this.stateObj!.attributes.rgb_color!
-      : undefined;
-  }
-
   private _colorBrightnessSliderChanged(ev: CustomEvent) {
     const target = ev.target as any;
     const value = Number(target.value);
 
-    const rgb = (this._getRgbColor()?.slice(0, 3) || [255, 255, 255]) as [
-      number,
-      number,
-      number
-    ];
+    const rgb = (getRgbColor(this.stateObj!)?.slice(0, 3) || [
+      255,
+      255,
+      255,
+    ]) as [number, number, number];
 
     this._setRgbColor(
       this._adjustColorBrightness(

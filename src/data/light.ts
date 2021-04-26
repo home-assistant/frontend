@@ -56,6 +56,13 @@ export const lightSupportsDimming = (entity: LightEntity) => {
   );
 };
 
+export const getRgbColor = (entity: LightEntity): number[] | undefined =>
+  entity.attributes.color_mode === LightColorModes.RGBWW
+    ? entity.attributes.rgbww_color
+    : entity.attributes.color_mode === LightColorModes.RGBW
+    ? entity.attributes.rgbw_color
+    : entity.attributes.rgb_color;
+
 interface LightEntityAttributes extends HassEntityAttributeBase {
   min_mireds: number;
   max_mireds: number;
