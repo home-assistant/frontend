@@ -61,25 +61,25 @@ export const showDialog = async (
   }
 
   if (addHistory) {
-    history.replaceState(
+    top.history.replaceState(
       {
         dialog: dialogTag,
         open: false,
         oldState:
-          history.state?.open && history.state?.dialog !== dialogTag
-            ? history.state
+          top.history.state?.open && top.history.state?.dialog !== dialogTag
+            ? top.history.state
             : null,
       },
       ""
     );
     try {
-      history.pushState(
+      top.history.pushState(
         { dialog: dialogTag, dialogParams: dialogParams, open: true },
         ""
       );
     } catch (err) {
       // dialogParams could not be cloned, probably contains callback
-      history.pushState(
+      top.history.pushState(
         { dialog: dialogTag, dialogParams: null, open: true },
         ""
       );
@@ -90,7 +90,7 @@ export const showDialog = async (
 };
 
 export const replaceDialog = () => {
-  history.replaceState({ ...history.state, replaced: true }, "");
+  top.history.replaceState({ ...top.history.state, replaced: true }, "");
 };
 
 export const closeDialog = async (dialogTag: string): Promise<boolean> => {

@@ -28,13 +28,13 @@ export const urlSyncMixin = <
           if (history.length === 1) {
             history.replaceState({ ...history.state, root: true }, "");
           }
-          window.addEventListener("popstate", this._popstateChangeListener);
+          top.addEventListener("popstate", this._popstateChangeListener);
           this.addEventListener("dialog-closed", this._dialogClosedListener);
         }
 
         public disconnectedCallback(): void {
           super.disconnectedCallback();
-          window.removeEventListener("popstate", this._popstateChangeListener);
+          top.removeEventListener("popstate", this._popstateChangeListener);
           this.removeEventListener("dialog-closed", this._dialogClosedListener);
         }
 
@@ -45,21 +45,21 @@ export const urlSyncMixin = <
             console.log("dialog closed", ev.detail.dialog);
             console.log(
               "open",
-              history.state?.open,
+              top.history.state?.open,
               "dialog",
-              history.state?.dialog
+              top.history.state?.dialog
             );
           }
           // If not closed by navigating back, and not a new dialog is open, remove the open state from history
           if (
-            history.state?.open &&
-            history.state?.dialog === ev.detail.dialog
+            top.history.state?.open &&
+            top.history.state?.dialog === ev.detail.dialog
           ) {
             if (DEBUG) {
               console.log("remove state", ev.detail.dialog);
             }
             this._ignoreNextPopState = true;
-            history.back();
+            top.history.back();
           }
         };
 
@@ -73,7 +73,7 @@ export const urlSyncMixin = <
               if (DEBUG) {
                 console.log("remove old state", ev.state.oldState);
               }
-              history.back();
+              top.history.back();
               return;
             }
             this._ignoreNextPopState = false;
@@ -98,7 +98,7 @@ export const urlSyncMixin = <
                 console.log("dialog could not be closed");
               }
               // dialog could not be closed, push state again
-              history.pushState(
+              top.history.pushState(
                 {
                   dialog: state.dialog,
                   open: true,
