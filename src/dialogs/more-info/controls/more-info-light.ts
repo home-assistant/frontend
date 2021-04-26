@@ -387,7 +387,7 @@ class MoreInfoLight extends LitElement {
       return;
     }
 
-    const rgbww_color = this.stateObj!.attributes.rgbw_color
+    const rgbww_color = this.stateObj!.attributes.rgbww_color
       ? [...this.stateObj!.attributes.rgbww_color]
       : [0, 0, 0, 0, 0];
     rgbww_color[name === "cw" ? 3 : 4] = wv;
@@ -407,14 +407,18 @@ class MoreInfoLight extends LitElement {
       ? this.stateObj!.attributes.rgbw_color.slice(0, 3)
       : [255, 255, 255]) as [number, number, number];
 
+    console.log(rgb, value, this._colorBrightnessSliderValue);
+
     this._setRgbColor(
       this._adjustColorBrightness(
         // first normalize the value
-        this._adjustColorBrightness(
-          rgb,
-          this._colorBrightnessSliderValue,
-          true
-        ),
+        this._colorBrightnessSliderValue
+          ? this._adjustColorBrightness(
+              rgb,
+              this._colorBrightnessSliderValue,
+              true
+            )
+          : rgb,
         value
       )
     );
@@ -479,10 +483,12 @@ class MoreInfoLight extends LitElement {
       lightSupportsColorMode(this.stateObj!, LightColorModes.RGBW)
     ) {
       this._setRgbColor(
-        this._adjustColorBrightness(
-          [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b],
-          this._colorBrightnessSliderValue
-        )
+        this._colorBrightnessSliderValue
+          ? this._adjustColorBrightness(
+              [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b],
+              this._colorBrightnessSliderValue
+            )
+          : [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b]
       );
     } else if (lightSupportsColorMode(this.stateObj!, LightColorModes.RGB)) {
       const rgb_color = [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b] as [
