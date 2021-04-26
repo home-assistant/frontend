@@ -1,6 +1,7 @@
+// Compat needs to be first import
 import "../../src/resources/compatibility";
-import "../../src/resources/safari-14-attachshadow-patch";
 import "../../src/resources/roboto";
+import "../../src/resources/safari-14-attachshadow-patch";
 import "./hassio-main";
 
 const styleEl = document.createElement("style");

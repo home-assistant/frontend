@@ -1,5 +1,6 @@
-import "@polymer/paper-tabs";
-import "@polymer/paper-tabs/paper-tab";
+import "@material/mwc-tab-bar/mwc-tab-bar";
+import "@material/mwc-tab/mwc-tab";
+import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
 import {
   css,
   CSSResultArray,
@@ -18,12 +19,11 @@ import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import { ConditionalCardConfig } from "../../cards/types";
 import { LovelaceCardEditor } from "../../types";
+import "../card-editor/hui-card-element-editor";
+import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
 import "../hui-element-editor";
-import type {
-  ConfigChangedEvent,
-  HuiElementEditor,
-} from "../hui-element-editor";
+import type { ConfigChangedEvent } from "../hui-element-editor";
 import { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
@@ -53,15 +53,16 @@ export class HuiConditionalCardEditor extends LitElement
 
   @internalProperty() private _cardTab = false;
 
-  @query("hui-element-editor") private _cardEditorEl?: HuiElementEditor;
+  @query("hui-card-element-editor")
+  private _cardEditorEl?: HuiCardElementEditor;
 
   public setConfig(config: ConditionalCardConfig): void {
     assert(config, cardConfigStruct);
     this._config = config;
   }
 
-  public refreshYamlEditor(focus) {
-    this._cardEditorEl?.refreshYamlEditor(focus);
+  public focusYamlEditor() {
+    this._cardEditorEl?.focusYamlEditor();
   }
 
   protected render(): TemplateResult {
@@ -70,21 +71,21 @@ export class HuiConditionalCardEditor extends LitElement
     }
 
     return html`
-      <paper-tabs
-        .selected=${this._cardTab ? "1" : "0"}
-        @iron-select=${this._selectTab}
+      <mwc-tab-bar
+        .activeIndex=${this._cardTab ? 1 : 0}
+        @MDCTabBar:activated=${this._selectTab}
       >
-        <paper-tab
-          >${this.hass!.localize(
+        <mwc-tab
+          .label=${this.hass!.localize(
             "ui.panel.lovelace.editor.card.conditional.conditions"
-          )}</paper-tab
-        >
-        <paper-tab
-          >${this.hass!.localize(
+          )}
+        ></mwc-tab>
+        <mwc-tab
+          .label=${this.hass!.localize(
             "ui.panel.lovelace.editor.card.conditional.card"
-          )}</paper-tab
-        >
-      </paper-tabs>
+          )}
+        ></mwc-tab>
+      </mwc-tab-bar>
       ${this._cardTab
         ? html`
             <div class="card">
@@ -108,13 +109,13 @@ export class HuiConditionalCardEditor extends LitElement
                         )}</mwc-button
                       >
                     </div>
-                    <hui-element-editor
+                    <hui-card-element-editor
                       .hass=${this.hass}
                       .value=${this._config.card}
                       .lovelace=${this.lovelace}
                       @config-changed=${this._handleCardChanged}
                       @GUImode-changed=${this._handleGUIModeChanged}
-                    ></hui-element-editor>
+                    ></hui-card-element-editor>
                   `
                 : html`
                     <hui-card-picker
@@ -192,8 +193,8 @@ export class HuiConditionalCardEditor extends LitElement
     `;
   }
 
-  private _selectTab(ev: Event): void {
-    this._cardTab = parseInt((ev.target! as any).selected!, 10) === 1;
+  private _selectTab(ev: MDCTabBarActivatedEvent): void {
+    this._cardTab = ev.detail.index === 1;
   }
 
   private _toggleMode(): void {
@@ -301,9 +302,7 @@ export class HuiConditionalCardEditor extends LitElement
     return [
       configElementStyle,
       css`
-        paper-tabs {
-          --paper-tabs-selection-bar-color: var(--primary-color);
-          --paper-tab-ink: var(--primary-color);
+        mwc-tab-bar {
           border-bottom: 1px solid var(--divider-color);
         }
         .conditions {

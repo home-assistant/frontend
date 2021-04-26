@@ -31,6 +31,8 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
+  @property({ type: Boolean }) public isStrategy = false;
+
   @property({ attribute: false }) public cards: Array<
     LovelaceCard | HuiErrorCard
   > = [];
@@ -47,9 +49,11 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
     if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
-      import(
-        /* webpackChunkName: "default-layout-editable" */ "./default-view-editable"
-      );
+      import("./default-view-editable");
+    }
+
+    if (changedProperties.has("cards")) {
+      this._createCard();
     }
 
     if (!changedProperties.has("lovelace")) {
@@ -73,17 +77,18 @@ export class PanelView extends LitElement implements LovelaceViewElement {
       ${this._card}
       ${this.lovelace?.editMode && this.cards.length === 0
         ? html`
-            <mwc-fab
-              title=${this.hass!.localize(
+            <ha-fab
+              .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
               )}
+              extended
               @click=${this._addCard}
               class=${classMap({
                 rtl: computeRTL(this.hass!),
               })}
             >
               <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-            </mwc-fab>
+            </ha-fab>
           `
         : ""}
     `;
@@ -98,10 +103,16 @@ export class PanelView extends LitElement implements LovelaceViewElement {
   }
 
   private _createCard(): void {
+    if (this.cards.length === 0) {
+      this._card = undefined;
+      return;
+    }
+
     const card: LovelaceCard = this.cards[0];
     card.isPanel = true;
 
-    if (!this.lovelace?.editMode) {
+    if (this.isStrategy || !this.lovelace?.editMode) {
+      card.editMode = false;
       this._card = card;
       return;
     }
@@ -134,7 +145,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
         height: 100%;
       }
 
-      mwc-fab {
+      ha-fab {
         position: sticky;
         float: right;
         right: calc(16px + env(safe-area-inset-right));
@@ -142,7 +153,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
         z-index: 1;
       }
 
-      mwc-fab.rtl {
+      ha-fab.rtl {
         float: left;
         right: auto;
         left: calc(16px + env(safe-area-inset-left));

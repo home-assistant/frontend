@@ -1,7 +1,7 @@
 import { LitElement, property, PropertyValues } from "lit-element";
 import { computeLocalize, LocalizeFunc } from "../common/translations/localize";
 import { Constructor, Resources } from "../types";
-import { getLocalLanguage, getTranslation } from "../util/hass-translation";
+import { getTranslation, getLocalLanguage } from "../util/hass-translation";
 
 const empty = () => "";
 
@@ -36,11 +36,13 @@ export const litLocalizeLiteMixin = <T extends Constructor<LitElement>>(
         (changedProperties.has("language") ||
           changedProperties.has("resources"))
       ) {
-        this.localize = computeLocalize(
+        computeLocalize(
           this.constructor.prototype,
           this.language,
           this.resources
-        );
+        ).then((localize) => {
+          this.localize = localize;
+        });
       }
     }
 

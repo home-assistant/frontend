@@ -8,8 +8,8 @@ import isPwa from "../../../../../common/config/is_pwa";
 import "../../../../../components/ha-card";
 import { EventsMixin } from "../../../../../mixins/events-mixin";
 import LocalizeMixin from "../../../../../mixins/localize-mixin";
-import "../../../ha-config-section";
 import "../../../../../styles/polymer-ha-style";
+import "../../../ha-config-section";
 
 let registeredDialog = false;
 
@@ -137,10 +137,7 @@ class OzwLog extends LocalizeMixin(EventsMixin(PolymerElement)) {
       this.fire("register-dialog", {
         dialogShowEvent: "show-ozwlog-dialog",
         dialogTag: "zwave-log-dialog",
-        dialogImport: () =>
-          import(
-            /* webpackChunkName: "zwave-log-dialog" */ "./zwave-log-dialog"
-          ),
+        dialogImport: () => import("./zwave-log-dialog"),
       });
     }
   }

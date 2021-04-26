@@ -1,29 +1,26 @@
-import {
-  html,
-  PropertyValues,
-  customElement,
-  LitElement,
-  property,
-} from "lit-element";
-import "./hassio-router";
-import { urlSyncMixin } from "../../src/state/url-sync-mixin";
-import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
-import { HomeAssistant, Route } from "../../src/types";
-import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
+import { customElement, html, property, PropertyValues } from "lit-element";
+import { atLeastVersion } from "../../src/common/config/version";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
+import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
+import { Supervisor } from "../../src/data/supervisor/supervisor";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
-import { atLeastVersion } from "../../src/common/config/version";
+import "../../src/layouts/hass-loading-screen";
+import { HomeAssistant, Route } from "../../src/types";
+import "./hassio-router";
+import { SupervisorBaseElement } from "./supervisor-base-element";
 
 @customElement("hassio-main")
-export class HassioMain extends urlSyncMixin(ProvideHassLitMixin(LitElement)) {
+export class HassioMain extends SupervisorBaseElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public panel!: HassioPanelInfo;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @property() public narrow!: boolean;
+  @property({ attribute: false }) public panel!: HassioPanelInfo;
 
-  @property() public route?: Route;
+  @property({ type: Boolean }) public narrow!: boolean;
+
+  @property({ attribute: false }) public route?: Route;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -80,6 +77,7 @@ export class HassioMain extends urlSyncMixin(ProvideHassLitMixin(LitElement)) {
     return html`
       <hassio-router
         .hass=${this.hass}
+        .supervisor=${this.supervisor}
         .route=${this.route}
         .panel=${this.panel}
         .narrow=${this.narrow}

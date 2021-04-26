@@ -9,6 +9,9 @@
   "bg": {
     "nativeName": "Български"
   },
+  "bn": {
+    "nativeName": "বাংলা"
+  },
   "bs": {
     "nativeName": "Bosanski"
   },
@@ -97,6 +100,9 @@
   },
   "ja": {
     "nativeName": "日本語"
+  },
+  "ka": {
+    "nativeName": "Kartuli"
   },
   "ko": {
     "nativeName": "한국어"

@@ -5,10 +5,7 @@ export interface OZWRefreshNodeDialogParams {
   node_id: number;
 }
 
-export const loadRefreshNodeDialog = () =>
-  import(
-    /* webpackChunkName: "dialog-ozw-refresh-node" */ "./dialog-ozw-refresh-node"
-  );
+export const loadRefreshNodeDialog = () => import("./dialog-ozw-refresh-node");
 
 export const showOZWRefreshNodeDialog = (
   element: HTMLElement,

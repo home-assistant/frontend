@@ -6,9 +6,7 @@ export interface ZHADeviceZigbeeInfoDialogParams {
 }
 
 export const loadZHADeviceZigbeeInfoDialog = () =>
-  import(
-    /* webpackChunkName: "dialog-zha-device-zigbee-info" */ "./dialog-zha-device-zigbee-info"
-  );
+  import("./dialog-zha-device-zigbee-info");
 
 export const showZHADeviceZigbeeInfoDialog = (
   element: HTMLElement,

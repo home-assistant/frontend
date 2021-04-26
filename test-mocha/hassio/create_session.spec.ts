@@ -1,21 +1,22 @@
 import * as assert from "assert";
-import { createHassioSession } from "../../src/data/hassio/supervisor";
-
-const sessionID = "fhdsu73rh3io4h8f3irhjel8ousafehf8f3yh";
+import { createHassioSession } from "../../src/data/hassio/ingress";
 
 describe("Create hassio session", function () {
+  const hass = {
+    config: { version: "1.0.0" },
+    callApi: async function () {
+      return { data: { session: "fhdsu73rh3io4h8f3irhjel8ousafehf8f3yh" } };
+    },
+  };
+
   it("Test create session without HTTPS", async function () {
     // @ts-ignore
     global.document = {};
     // @ts-ignore
     global.location = {};
-    await createHassioSession({
-      // @ts-ignore
-      callApi: async function () {
-        return { data: { session: sessionID } };
-      },
-    });
-    assert.equal(
+    // @ts-ignore
+    await createHassioSession(hass);
+    assert.strictEqual(
       // @ts-ignore
       global.document.cookie,
       "ingress_session=fhdsu73rh3io4h8f3irhjel8ousafehf8f3yh;path=/api/hassio_ingress/;SameSite=Strict"
@@ -26,13 +27,9 @@ describe("Create hassio session", function () {
     global.document = {};
     // @ts-ignore
     global.location = { protocol: "https:" };
-    await createHassioSession({
-      // @ts-ignore
-      callApi: async function () {
-        return { data: { session: sessionID } };
-      },
-    });
-    assert.equal(
+    // @ts-ignore
+    await createHassioSession(hass);
+    assert.strictEqual(
       // @ts-ignore
       global.document.cookie,
       "ingress_session=fhdsu73rh3io4h8f3irhjel8ousafehf8f3yh;path=/api/hassio_ingress/;SameSite=Strict;Secure"
@@ -52,6 +49,6 @@ describe("Create hassio session", function () {
       () => true,
       () => false
     );
-    assert.equal(await createSessionPromise, false);
+    assert.strictEqual(await createSessionPromise, false);
   });
 });

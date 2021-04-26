@@ -8,13 +8,13 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../components/ha-card";
+import "../../components/ha-settings-row";
 import "../../components/ha-switch";
 import {
   CoreFrontendUserData,
   getOptimisticFrontendUserDataCollection,
 } from "../../data/frontend";
 import { HomeAssistant } from "../../types";
-import "../../components/ha-settings-row";
 
 @customElement("ha-advanced-mode-row")
 class AdvancedModeRow extends LitElement {
@@ -50,6 +50,7 @@ class AdvancedModeRow extends LitElement {
 
   private async _advancedToggled(ev) {
     getOptimisticFrontendUserDataCollection(this.hass.connection, "core").save({
+      ...this.coreUserData,
       showAdvanced: ev.currentTarget.checked,
     });
   }

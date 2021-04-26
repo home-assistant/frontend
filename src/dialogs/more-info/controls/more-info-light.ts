@@ -19,13 +19,14 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import {
+  LightEntity,
   SUPPORT_BRIGHTNESS,
   SUPPORT_COLOR,
   SUPPORT_COLOR_TEMP,
   SUPPORT_EFFECT,
   SUPPORT_WHITE_VALUE,
 } from "../../../data/light";
-import type { HomeAssistant, LightEntity } from "../../../types";
+import type { HomeAssistant } from "../../../types";
 
 interface HueSatColor {
   h: number;
@@ -150,7 +151,7 @@ class MoreInfoLight extends LitElement {
           : ""}
         <ha-attributes
           .stateObj=${this.stateObj}
-          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds,entity_id"
+          extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,xy_color,min_mireds,max_mireds,entity_id,supported_color_modes,color_mode"
         ></ha-attributes>
       </div>
     `;

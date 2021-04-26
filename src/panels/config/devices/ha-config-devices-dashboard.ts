@@ -1,4 +1,10 @@
+import "@material/mwc-list/mwc-list-item";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
+import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   internalProperty,
@@ -8,14 +14,17 @@ import {
 } from "lit-element";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
+import { computeRTL } from "../../../common/util/compute_rtl";
 import {
   DataTableColumnContainer,
   DataTableRowData,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-battery-icon";
+import "../../../components/ha-button-menu";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
@@ -30,6 +39,7 @@ import {
 } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
 import "../../../layouts/hass-tabs-subpage-data-table";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 
@@ -62,6 +72,12 @@ export class HaConfigDeviceDashboard extends LitElement {
     window.location.search
   );
 
+  @internalProperty() private _showDisabled = false;
+
+  @internalProperty() private _filter = "";
+
+  @internalProperty() private _numHiddenDevices = 0;
+
   private _activeFilters = memoizeOne(
     (
       entries: ConfigEntry[],
@@ -72,6 +88,10 @@ export class HaConfigDeviceDashboard extends LitElement {
       filters.forEach((value, key) => {
         switch (key) {
           case "config_entry": {
+            // If we are requested to show the devices for a given config entry,
+            // also show the disabled ones by default.
+            this._showDisabled = true;
+
             const configEntry = entries.find(
               (entry) => entry.entry_id === value
             );
@@ -96,13 +116,14 @@ export class HaConfigDeviceDashboard extends LitElement {
     }
   );
 
-  private _devices = memoizeOne(
+  private _devicesAndFilterDomains = memoizeOne(
     (
       devices: DeviceRegistryEntry[],
       entries: ConfigEntry[],
       entities: EntityRegistryEntry[],
       areas: AreaRegistryEntry[],
       filters: URLSearchParams,
+      showDisabled: boolean,
       localize: LocalizeFunc
     ) => {
       // Some older installations might have devices pointing at invalid entryIDs
@@ -114,6 +135,9 @@ export class HaConfigDeviceDashboard extends LitElement {
       for (const device of devices) {
         deviceLookup[device.id] = device;
       }
+
+      // If nothing gets filtered, this is our correct count of devices
+      let startLength = outputDevices.length;
 
       const deviceEntityLookup: DeviceEntityLookup = {};
       for (const entity of entities) {
@@ -136,15 +160,24 @@ export class HaConfigDeviceDashboard extends LitElement {
         areaLookup[area.area_id] = area;
       }
 
+      const filterDomains: string[] = [];
+
       filters.forEach((value, key) => {
-        switch (key) {
-          case "config_entry":
-            outputDevices = outputDevices.filter((device) =>
-              device.config_entries.includes(value)
-            );
-            break;
+        if (key === "config_entry") {
+          outputDevices = outputDevices.filter((device) =>
+            device.config_entries.includes(value)
+          );
+          startLength = outputDevices.length;
+          const configEntry = entries.find((entry) => entry.entry_id === value);
+          if (configEntry) {
+            filterDomains.push(configEntry.domain);
+          }
         }
       });
+
+      if (!showDisabled) {
+        outputDevices = outputDevices.filter((device) => !device.disabled_by);
+      }
 
       outputDevices = outputDevices.map((device) => {
         return {
@@ -156,9 +189,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           ),
           model: device.model || "<unknown>",
           manufacturer: device.manufacturer || "<unknown>",
-          area: device.area_id
-            ? areaLookup[device.area_id].name
-            : this.hass.localize("ui.panel.config.devices.data_table.no_area"),
+          area: device.area_id ? areaLookup[device.area_id].name : undefined,
           integration: device.config_entries.length
             ? device.config_entries
                 .filter((entId) => entId in entryLookup)
@@ -176,16 +207,19 @@ export class HaConfigDeviceDashboard extends LitElement {
         };
       });
 
-      return outputDevices;
+      this._numHiddenDevices = startLength - outputDevices.length;
+      return { devicesOutput: outputDevices, filteredDomains: filterDomains };
     }
   );
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer => {
+    (narrow: boolean, showDisabled: boolean): DataTableColumnContainer => {
       const columns: DataTableColumnContainer = narrow
         ? {
             name: {
-              title: "Device",
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.device"
+              ),
               sortable: true,
               filterable: true,
               direction: "asc",
@@ -248,8 +282,8 @@ export class HaConfigDeviceDashboard extends LitElement {
         title: this.hass.localize("ui.panel.config.devices.data_table.battery"),
         sortable: true,
         type: "numeric",
-        width: narrow ? "90px" : "15%",
-        maxWidth: "90px",
+        width: narrow ? "95px" : "15%",
+        maxWidth: "95px",
         template: (batteryEntityPair: DeviceRowData["battery_entity"]) => {
           const battery =
             batteryEntityPair && batteryEntityPair[0]
@@ -259,9 +293,11 @@ export class HaConfigDeviceDashboard extends LitElement {
             batteryEntityPair && batteryEntityPair[1]
               ? this.hass.states[batteryEntityPair[1]]
               : undefined;
-          return battery && !isNaN(battery.state as any)
+          const batteryIsBinary =
+            battery && computeStateDomain(battery) === "binary_sensor";
+          return battery && (batteryIsBinary || !isNaN(battery.state as any))
             ? html`
-                ${battery.state}%
+                ${batteryIsBinary ? "" : battery.state + " %"}
                 <ha-battery-icon
                   .hass=${this.hass!}
                   .batteryStateObj=${battery}
@@ -271,6 +307,24 @@ export class HaConfigDeviceDashboard extends LitElement {
             : html` - `;
         },
       };
+      if (showDisabled) {
+        columns.disabled_by = {
+          title: "",
+          type: "icon",
+          template: (disabled_by) =>
+            disabled_by
+              ? html`<div
+                  tabindex="0"
+                  style="display:inline-block; position: relative;"
+                >
+                  <ha-svg-icon .path=${mdiCancel}></ha-svg-icon>
+                  <paper-tooltip animation-delay="0" position="left">
+                    ${this.hass.localize("ui.panel.config.devices.disabled")}
+                  </paper-tooltip>
+                </div>`
+              : "",
+        };
+      }
       return columns;
     }
   );
@@ -286,6 +340,22 @@ export class HaConfigDeviceDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const { devicesOutput, filteredDomains } = this._devicesAndFilterDomains(
+      this.devices,
+      this.entries,
+      this.entities,
+      this.areas,
+      this._searchParms,
+      this._showDisabled,
+      this.hass.localize
+    );
+    const includeZHAFab = filteredDomains.includes("zha");
+    const activeFilters = this._activeFilters(
+      this.entries,
+      this._searchParms,
+      this.hass.localize
+    );
+
     return html`
       <hass-tabs-subpage-data-table
         .hass=${this.hass}
@@ -295,23 +365,62 @@ export class HaConfigDeviceDashboard extends LitElement {
           : "/config"}
         .tabs=${configSections.integrations}
         .route=${this.route}
-        .columns=${this._columns(this.narrow)}
-        .data=${this._devices(
-          this.devices,
-          this.entries,
-          this.entities,
-          this.areas,
-          this._searchParms,
-          this.hass.localize
+        .activeFilters=${activeFilters}
+        .numHidden=${this._numHiddenDevices}
+        .searchLabel=${this.hass.localize(
+          "ui.panel.config.devices.picker.search"
         )}
-        .activeFilters=${this._activeFilters(
-          this.entries,
-          this._searchParms,
-          this.hass.localize
+        .hiddenLabel=${this.hass.localize(
+          "ui.panel.config.devices.picker.filter.hidden_devices",
+          "number",
+          this._numHiddenDevices
         )}
+        .columns=${this._columns(this.narrow, this._showDisabled)}
+        .data=${devicesOutput}
+        .filter=${this._filter}
+        @clear-filter=${this._clearFilter}
+        @search-changed=${this._handleSearchChange}
         @row-click=${this._handleRowClicked}
         clickable
+        .hasFab=${includeZHAFab}
       >
+        ${includeZHAFab
+          ? html`<a href="/config/zha/add" slot="fab">
+              <ha-fab
+                .label=${this.hass.localize("ui.panel.config.zha.add_device")}
+                extended
+                ?rtl=${computeRTL(this.hass)}
+              >
+                <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+              </ha-fab>
+            </a>`
+          : html``}
+        <ha-button-menu slot="filter-menu" corner="BOTTOM_START" multi>
+          <mwc-icon-button
+            slot="trigger"
+            .label=${this.hass!.localize(
+              "ui.panel.config.devices.picker.filter.filter"
+            )}
+            .title=${this.hass!.localize(
+              "ui.panel.config.devices.picker.filter.filter"
+            )}
+          >
+            <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-list-item
+            @request-selected="${this._showDisabledChanged}"
+            graphic="control"
+            .selected=${this._showDisabled}
+          >
+            <ha-checkbox
+              slot="graphic"
+              .checked=${this._showDisabled}
+            ></ha-checkbox>
+            ${this.hass!.localize(
+              "ui.panel.config.devices.picker.filter.show_disabled"
+            )}
+          </mwc-list-item>
+        </ha-button-menu>
       </hass-tabs-subpage-data-table>
     `;
   }
@@ -341,6 +450,37 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const deviceId = ev.detail.id;
     navigate(this, `/config/devices/device/${deviceId}`);
+  }
+
+  private _showDisabledChanged(ev: CustomEvent<RequestSelectedDetail>) {
+    if (ev.detail.source !== "property") {
+      return;
+    }
+    this._showDisabled = ev.detail.selected;
+  }
+
+  private _handleSearchChange(ev: CustomEvent) {
+    this._filter = ev.detail.value;
+  }
+
+  private _clearFilter() {
+    if (
+      this._activeFilters(this.entries, this._searchParms, this.hass.localize)
+    ) {
+      navigate(this, window.location.pathname, true);
+    }
+    this._showDisabled = true;
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      css`
+        ha-button-menu {
+          margin: 0 -8px 0 8px;
+        }
+      `,
+      haStyle,
+    ];
   }
 }
 

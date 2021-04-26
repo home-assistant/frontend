@@ -1,3 +1,4 @@
+// Compat needs to be first import
 import "../../src/resources/compatibility";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 import { navigate } from "../../src/common/navigate";

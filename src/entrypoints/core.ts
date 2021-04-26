@@ -1,6 +1,5 @@
 // Compat needs to be first import
 import "../resources/compatibility";
-import "../resources/safari-14-attachshadow-patch";
 import {
   Auth,
   Connection,
@@ -24,6 +23,7 @@ import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
+import "../resources/safari-14-attachshadow-patch";
 import { HomeAssistant } from "../types";
 
 declare global {
@@ -35,9 +35,9 @@ declare global {
 
 const authProm = isExternal
   ? () =>
-      import(
-        /* webpackChunkName: "external_auth" */ "../external_app/external_auth"
-      ).then(({ createExternalAuth }) => createExternalAuth(hassUrl))
+      import("../external_app/external_auth").then(({ createExternalAuth }) =>
+        createExternalAuth(hassUrl)
+      )
   : () =>
       getAuth({
         hassUrl,
@@ -48,10 +48,19 @@ const authProm = isExternal
 const connProm = async (auth) => {
   try {
     const conn = await createConnection({ auth });
-
-    // Clear url if we have been able to establish a connection
+    // Clear auth data from url if we have been able to establish a connection
     if (location.search.includes("auth_callback=1")) {
-      history.replaceState(null, "", location.pathname);
+      const searchParams = new URLSearchParams(location.search);
+      // https://github.com/home-assistant/home-assistant-js-websocket/blob/master/lib/auth.ts
+      // Remove all data from QueryCallbackData type
+      searchParams.delete("auth_callback");
+      searchParams.delete("code");
+      searchParams.delete("state");
+      history.replaceState(
+        null,
+        "",
+        `${location.pathname}?${searchParams.toString()}`
+      );
     }
 
     return { auth, conn };

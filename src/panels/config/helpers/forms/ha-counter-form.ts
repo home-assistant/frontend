@@ -44,8 +44,8 @@ class HaCounterForm extends LitElement {
     if (item) {
       this._name = item.name || "";
       this._icon = item.icon || "";
-      this._maximum = item.maximum;
-      this._minimum = item.minimum;
+      this._maximum = item.maximum ?? undefined;
+      this._minimum = item.minimum ?? undefined;
       this._restore = item.restore ?? true;
       this._step = item.step ?? 1;
       this._initial = item.initial ?? 0;
@@ -163,7 +163,9 @@ class HaCounterForm extends LitElement {
     const configValue = target.configValue;
     const value =
       target.type === "number"
-        ? Number(ev.detail.value)
+        ? ev.detail.value !== ""
+          ? Number(ev.detail.value)
+          : undefined
         : target.localName === "ha-switch"
         ? (ev.target as HaSwitch).checked
         : ev.detail.value;

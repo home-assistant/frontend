@@ -73,13 +73,23 @@ export const sortableStyles = css`
     display: none;
     position: absolute;
     top: 0;
-    right: 0;
+    right: 4px;
     --mdc-icon-button-size: 40px;
+  }
+
+  :host([rtl]) .show-panel {
+    right: initial;
+    left: 4px;
   }
 
   .hide-panel {
     top: 4px;
     right: 8px;
+  }
+
+  :host([rtl]) .hide-panel {
+    right: initial;
+    left: 8px;
   }
 
   :host([expanded]) .hide-panel {

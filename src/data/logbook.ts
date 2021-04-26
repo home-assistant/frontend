@@ -14,7 +14,9 @@ export interface LogbookEntry {
   message?: string;
   entity_id?: string;
   icon?: string;
-  domain: string;
+  source?: string;
+  domain?: string;
+  context_id?: string;
   context_user_id?: string;
   context_event_type?: string;
   context_domain?: string;
@@ -29,21 +31,45 @@ const DATA_CACHE: {
   [cacheKey: string]: { [entityId: string]: Promise<LogbookEntry[]> };
 } = {};
 
+export const getLogbookDataForContext = async (
+  hass: HomeAssistant,
+  startDate: string,
+  contextId?: string
+): Promise<LogbookEntry[]> =>
+  addLogbookMessage(
+    hass,
+    await getLogbookDataFromServer(
+      hass,
+      startDate,
+      undefined,
+      undefined,
+      undefined,
+      contextId
+    )
+  );
+
 export const getLogbookData = async (
   hass: HomeAssistant,
   startDate: string,
   endDate: string,
   entityId?: string,
   entity_matches_only?: boolean
-) => {
-  const logbookData = await getLogbookDataCache(
+): Promise<LogbookEntry[]> =>
+  addLogbookMessage(
     hass,
-    startDate,
-    endDate,
-    entityId,
-    entity_matches_only
+    await getLogbookDataCache(
+      hass,
+      startDate,
+      endDate,
+      entityId,
+      entity_matches_only
+    )
   );
 
+export const addLogbookMessage = (
+  hass: HomeAssistant,
+  logbookData: LogbookEntry[]
+): LogbookEntry[] => {
   for (const entry of logbookData) {
     const stateObj = hass!.states[entry.entity_id!];
     if (entry.state && stateObj) {
@@ -55,7 +81,6 @@ export const getLogbookData = async (
       );
     }
   }
-
   return logbookData;
 };
 
@@ -100,15 +125,30 @@ export const getLogbookDataCache = async (
 const getLogbookDataFromServer = async (
   hass: HomeAssistant,
   startDate: string,
-  endDate: string,
+  endDate?: string,
   entityId?: string,
-  entity_matches_only?: boolean
+  entitymatchesOnly?: boolean,
+  contextId?: string
 ) => {
-  const url = `logbook/${startDate}?end_time=${endDate}${
-    entityId ? `&entity=${entityId}` : ""
-  }${entity_matches_only ? `&entity_matches_only` : ""}`;
+  const params = new URLSearchParams();
 
-  return hass.callApi<LogbookEntry[]>("GET", url);
+  if (endDate) {
+    params.append("end_time", endDate);
+  }
+  if (entityId) {
+    params.append("entity", entityId);
+  }
+  if (entitymatchesOnly) {
+    params.append("entity_matches_only", "");
+  }
+  if (contextId) {
+    params.append("context_id", contextId);
+  }
+
+  return hass.callApi<LogbookEntry[]>(
+    "GET",
+    `logbook/${startDate}?${params.toString()}`
+  );
 };
 
 export const clearLogbookCache = (startDate: string, endDate: string) => {
@@ -124,13 +164,17 @@ export const getLogbookMessage = (
   switch (domain) {
     case "device_tracker":
     case "person":
-      return state === "not_home"
-        ? hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`)
-        : hass.localize(
-            `${LOGBOOK_LOCALIZE_PATH}.was_at_state`,
-            "state",
-            state
-          );
+      if (state === "not_home") {
+        return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_away`);
+      }
+      if (state === "home") {
+        return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_at_home`);
+      }
+      return hass.localize(
+        `${LOGBOOK_LOCALIZE_PATH}.was_at_state`,
+        "state",
+        state
+      );
 
     case "sun":
       return state === "above_horizon"
@@ -212,7 +256,6 @@ export const getLogbookMessage = (
         case "cold":
         case "gas":
         case "heat":
-        case "colightld":
         case "moisture":
         case "motion":
         case "occupancy":
@@ -242,9 +285,17 @@ export const getLogbookMessage = (
     }
 
     case "cover":
-      return state === "open"
-        ? hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`)
-        : hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
+      switch (state) {
+        case "open":
+          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_opened`);
+        case "opening":
+          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.is_opening`);
+        case "closing":
+          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.is_closing`);
+        case "closed":
+          return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.was_closed`);
+      }
+      break;
 
     case "lock":
       if (state === "unlocked") {
@@ -272,7 +323,7 @@ export const getLogbookMessage = (
     `${LOGBOOK_LOCALIZE_PATH}.changed_to_state`,
     "state",
     stateObj
-      ? computeStateDisplay(hass.localize, stateObj, hass.language, state)
+      ? computeStateDisplay(hass.localize, stateObj, hass.locale, state)
       : state
   );
 };

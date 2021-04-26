@@ -49,7 +49,7 @@ documentContainer.innerHTML = `<custom-style>
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
 
       /* for header */
-      --header-height: 64px;
+      --header-height: 56px;
 
       /* for label-badge */
       --label-badge-red: #DF4C1E;
@@ -112,6 +112,11 @@ documentContainer.innerHTML = `<custom-style>
 
     paper-dialog-scrollable.can-scroll > .scrollable {
       -webkit-overflow-scrolling: touch !important;
+    }
+
+    /* for paper-dialog */
+    iron-overlay-backdrop {
+      backdrop-filter: var(--dialog-backdrop-filter, none);
     }
   </style>
 </custom-style>`;

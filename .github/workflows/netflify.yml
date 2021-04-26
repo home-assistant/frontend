@@ -1,0 +1,19 @@
+name: Netlify
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  trigger_builds:
+    name: Trigger netlify build preview
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Trigger Cast build
+        run: curl -X POST -d {} https://api.netlify.com/build_hooks/${{ secrets.NETLIFY_CAST_DEV_BUILD_HOOK }}
+
+      - name: Trigger Demo build
+        run: curl -X POST -d {} https://api.netlify.com/build_hooks/${{ secrets.NETLIFY_DEMO_DEV_BUILD_HOOK }}
+
+      - name: Trigger Gallery build
+        run: curl -X POST -d {} https://api.netlify.com/build_hooks/${{ secrets.NETLIFY_GALLERY_DEV_BUILD_HOOK }}

@@ -1,5 +1,5 @@
 import { HassEntities } from "home-assistant-js-websocket";
-import { GroupEntity } from "../../types";
+import type { GroupEntity } from "../../data/group";
 import { DEFAULT_VIEW_ENTITY_ID } from "../const";
 
 // Return an ordered array of available views

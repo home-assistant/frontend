@@ -16,9 +16,7 @@ import { IframeCardConfig } from "./types";
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-iframe-card-editor" */ "../editor/config-elements/hui-iframe-card-editor"
-    );
+    await import("../editor/config-elements/hui-iframe-card-editor");
     return document.createElement("hui-iframe-card-editor");
   }
 
@@ -32,9 +30,6 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
 
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
-
-  @property({ type: Boolean, reflect: true })
-  public editMode = false;
 
   @property() protected _config?: IframeCardConfig;
 
@@ -94,10 +89,6 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       :host([ispanel]) ha-card {
         width: 100%;
         height: 100%;
-      }
-
-      :host([ispanel][editMode]) ha-card {
-        height: calc(100% - 51px);
       }
 
       ha-card {

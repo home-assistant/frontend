@@ -1,15 +1,17 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { FrontendTranslationData } from "../../data/translation";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
+import { formatNumber } from "../string/format_number";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
 
 export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
-  language: string,
+  locale: FrontendTranslationData,
   state?: string
 ): string => {
   const compareState = state !== undefined ? state : stateObj.state;
@@ -19,7 +21,9 @@ export const computeStateDisplay = (
   }
 
   if (stateObj.attributes.unit_of_measurement) {
-    return `${compareState} ${stateObj.attributes.unit_of_measurement}`;
+    return `${formatNumber(compareState, locale)} ${
+      stateObj.attributes.unit_of_measurement
+    }`;
   }
 
   const domain = computeStateDomain(stateObj);
@@ -32,7 +36,7 @@ export const computeStateDisplay = (
         stateObj.attributes.month - 1,
         stateObj.attributes.day
       );
-      return formatDate(date, language);
+      return formatDate(date, locale);
     }
     if (!stateObj.attributes.has_date) {
       const now = new Date();
@@ -45,7 +49,7 @@ export const computeStateDisplay = (
         stateObj.attributes.hour,
         stateObj.attributes.minute
       );
-      return formatTime(date, language);
+      return formatTime(date, locale);
     }
 
     date = new Date(
@@ -55,13 +59,22 @@ export const computeStateDisplay = (
       stateObj.attributes.hour,
       stateObj.attributes.minute
     );
-    return formatDateTime(date, language);
+    return formatDateTime(date, locale);
   }
 
   if (domain === "humidifier") {
     if (compareState === "on" && stateObj.attributes.humidity) {
-      return `${stateObj.attributes.humidity}%`;
+      return `${stateObj.attributes.humidity} %`;
     }
+  }
+
+  // `counter` `number` and `input_number` domains do not have a unit of measurement but should still use `formatNumber`
+  if (
+    domain === "counter" ||
+    domain === "number" ||
+    domain === "input_number"
+  ) {
+    return formatNumber(compareState, locale);
   }
 
   return (

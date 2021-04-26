@@ -1,5 +1,19 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
-import { Themes } from "../types";
+
+export interface Theme {
+  // Incomplete
+  "primary-color": string;
+  "text-primary-color": string;
+  "accent-color": string;
+  [key: string]: string;
+}
+
+export interface Themes {
+  default_theme: string;
+  default_dark_theme: string | null;
+  themes: Record<string, Theme>;
+  darkMode: boolean;
+}
 
 const fetchThemes = (conn) =>
   conn.sendMessagePromise({

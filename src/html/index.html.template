@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="preload" href="<%= latestCoreJS %>" as="script" crossorigin="use-credentials" />
-    <link rel="preload" href="<%= latestAppJS %>" as="script" crossorigin="use-credentials" />
+    <% if (!useWDS) { %>
+    <link rel="modulepreload" href="<%= latestCoreJS %>" crossorigin="use-credentials" />
+    <link rel="modulepreload" href="<%= latestAppJS %>" crossorigin="use-credentials" />
+    <% } %>
     <%= renderTemplate('_header') %>
     <title>Home Assistant</title>
     <link rel="mask-icon" href="/static/icons/mask-icon.svg" color="#03a9f4" />
@@ -40,7 +42,7 @@
       #ha-init-skeleton::before {
         display: block;
         content: "";
-        height: 112px;
+        height: 56px;
         background-color: #THEMEC;
       }
       html {
@@ -63,7 +65,7 @@
     <%= renderTemplate('_js_base') %>
     <%= renderTemplate('_preload_roboto') %>
 
-    <script crossorigin="use-credentials">
+    <script <% if (!useWDS) { %>crossorigin="use-credentials"<% } %>>
       import("<%= latestCoreJS %>");
       import("<%= latestAppJS %>");
       window.customPanelJS = "<%= latestCustomPanelJS %>";

@@ -1,3 +1,4 @@
+import "../../../../src/components/ha-card";
 import {
   css,
   CSSResult,
@@ -19,10 +20,13 @@ import "../../../../src/layouts/hass-loading-screen";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 
 @customElement("hassio-addon-documentation-tab")
 class HassioAddonDocumentationDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
 
@@ -81,9 +85,11 @@ class HassioAddonDocumentationDashboard extends LitElement {
         this.addon!.slug
       );
     } catch (err) {
-      this._error = `Failed to get addon documentation, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "addon.documentation.get_logs",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
   }
 }

@@ -1,9 +1,24 @@
+import {
+  HassEntityAttributeBase,
+  HassEntityBase,
+} from "home-assistant-js-websocket";
 import { timeCachePromiseFunc } from "../common/util/time-cache-function-promise";
-import { CameraEntity, HomeAssistant } from "../types";
+import { HomeAssistant } from "../types";
 import { getSignedPath } from "./auth";
 
 export const CAMERA_SUPPORT_ON_OFF = 1;
 export const CAMERA_SUPPORT_STREAM = 2;
+
+interface CameraEntityAttributes extends HassEntityAttributeBase {
+  model_name: string;
+  access_token: string;
+  brand: string;
+  motion_detection: boolean;
+}
+
+export interface CameraEntity extends HassEntityBase {
+  attributes: CameraEntityAttributes;
+}
 
 export interface CameraPreferences {
   preload_stream: boolean;

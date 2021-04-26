@@ -4,9 +4,9 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/ha-paper-dropdown-menu";
+import "../../components/ha-settings-row";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
-import "../../components/ha-settings-row";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -96,14 +96,14 @@ class HaPickLanguageRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
     // Only fire event if language was changed. This prevents select updates when
     // responding to hass changes.
     if (newVal !== this.hass.language) {
-      this.fire("hass-language-select", { language: newVal });
+      this.fire("hass-language-select", newVal);
     }
   }
 
   ready() {
     super.ready();
-    if (this.hass && this.hass.language) {
-      this.setLanguageSelection(this.hass.language);
+    if (this.hass && this.hass.locale && this.hass.locale.language) {
+      this.setLanguageSelection(this.hass.locale.language);
     }
   }
 }

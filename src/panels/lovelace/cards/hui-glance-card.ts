@@ -27,7 +27,7 @@ import {
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -40,9 +40,7 @@ import { GlanceCardConfig, GlanceConfigEntity } from "./types";
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-glance-card-editor" */ "../editor/config-elements/hui-glance-card-editor"
-    );
+    await import("../editor/config-elements/hui-glance-card-editor");
     return document.createElement("hui-glance-card-editor");
   }
 
@@ -136,7 +134,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       !this._configEntities ||
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.language !== this.hass!.language
+      oldHass.locale !== this.hass!.locale
     ) {
       return true;
     }
@@ -197,7 +195,6 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         display: flex;
         padding: 0 16px 4px;
         flex-wrap: wrap;
-        height: 100%;
         box-sizing: border-box;
         align-content: center;
       }
@@ -304,7 +301,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                   : computeStateDisplay(
                       this.hass!.localize,
                       stateObj,
-                      this.hass!.language
+                      this.hass!.locale
                     )}
               </div>
             `

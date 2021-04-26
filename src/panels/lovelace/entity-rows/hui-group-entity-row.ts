@@ -38,7 +38,7 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
-      throw new Error("Configuration error");
+      throw new Error("Invalid configuration");
     }
     this._config = config;
   }
@@ -76,7 +76,7 @@ class HuiGroupEntityRow extends LitElement implements LovelaceRow {
                 ${computeStateDisplay(
                   this.hass!.localize,
                   stateObj,
-                  this.hass.language
+                  this.hass.locale
                 )}
               </div>
             `}

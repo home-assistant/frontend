@@ -3,9 +3,9 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";

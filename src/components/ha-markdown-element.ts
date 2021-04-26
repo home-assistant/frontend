@@ -47,7 +47,6 @@ class HaMarkdownElement extends UpdatingElement {
         node.host !== document.location.host
       ) {
         node.target = "_blank";
-        node.rel = "noreferrer";
 
         // protect referrer on external links and deny window.opener access for security reasons
         // (see https://mathiasbynens.github.io/rel-noopener/)

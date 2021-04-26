@@ -40,7 +40,7 @@ type ExternalMessage = ExternalMessageResult | ExternalMessageResultError;
 export class ExternalMessaging {
   public commands: { [msgId: number]: CommandInFlight } = {};
 
-  public cache: { [key: string]: any } = {};
+  public cache: Record<string, any> = {};
 
   public msgId = 0;
 

@@ -110,5 +110,13 @@ export const showOptionsFlowDialog = (
           <p>${hass.localize(`ui.dialogs.options_flow.success.description`)}</p>
         `;
       },
+
+      renderShowFormProgressHeader(_hass, _step) {
+        return "";
+      },
+
+      renderShowFormProgressDescription(_hass, _step) {
+        return "";
+      },
     }
   );

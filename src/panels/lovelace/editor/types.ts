@@ -2,6 +2,9 @@ import {
   any,
   array,
   boolean,
+  dynamic,
+  enums,
+  literal,
   number,
   object,
   optional,
@@ -14,7 +17,8 @@ import {
   LovelaceViewConfig,
   ShowViewConfig,
 } from "../../../data/lovelace";
-import { EntityConfig } from "../entity-rows/types";
+import { EntityConfig, LovelaceRowConfig } from "../entity-rows/types";
+import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 export interface YamlChangedEvent extends Event {
   detail: {
@@ -72,16 +76,90 @@ export interface Card {
   isCustom?: boolean;
 }
 
+export interface HeaderFooter {
+  type: string;
+  icon?: string;
+}
+
 export interface CardPickTarget extends EventTarget {
   config: LovelaceCardConfig;
 }
 
-export const actionConfigStruct = object({
-  action: string(),
-  navigation_path: optional(string()),
-  url_path: optional(string()),
-  service: optional(string()),
+export interface SubElementEditorConfig {
+  index?: number;
+  elementConfig?: LovelaceRowConfig | LovelaceHeaderFooterConfig;
+  type: string;
+}
+
+export interface EditSubElementEvent {
+  subElementConfig: SubElementEditorConfig;
+}
+
+export const actionConfigStruct = dynamic((_value, ctx) => {
+  if (ctx.branch[0][ctx.path[0]]) {
+    return (
+      actionConfigMap[ctx.branch[0][ctx.path[0]].action] ||
+      actionConfigStructType
+    );
+  }
+
+  return actionConfigStructType;
+});
+
+const actionConfigStructUser = object({
+  user: string(),
+});
+
+const actionConfigStructConfirmation = union([
+  boolean(),
+  object({
+    text: optional(string()),
+    excemptions: optional(array(actionConfigStructUser)),
+  }),
+]);
+
+const actionConfigStructUrl = object({
+  action: literal("url"),
+  url_path: string(),
+  confirmation: optional(actionConfigStructConfirmation),
+});
+
+const actionConfigStructService = object({
+  action: literal("call-service"),
+  service: string(),
   service_data: optional(object()),
+  target: optional(
+    object({
+      entity_id: optional(union([string(), array(string())])),
+      device_id: optional(union([string(), array(string())])),
+      area_id: optional(union([string(), array(string())])),
+    })
+  ),
+  confirmation: optional(actionConfigStructConfirmation),
+});
+
+const actionConfigStructNavigate = object({
+  action: literal("navigate"),
+  navigation_path: string(),
+  confirmation: optional(actionConfigStructConfirmation),
+});
+
+const actionConfigMap = {
+  url: actionConfigStructUrl,
+  navigate: actionConfigStructNavigate,
+  "call-service": actionConfigStructService,
+};
+
+export const actionConfigStructType = object({
+  action: enums([
+    "none",
+    "toggle",
+    "more-info",
+    "call-service",
+    "url",
+    "navigate",
+  ]),
+  confirmation: optional(actionConfigStructConfirmation),
 });
 
 const buttonEntitiesRowConfigStruct = object({

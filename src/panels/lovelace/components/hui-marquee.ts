@@ -72,7 +72,7 @@ class HuiMarquee extends LitElement {
         display: flex;
         position: relative;
         align-items: center;
-        height: 1em;
+        height: 1.2em;
         contain: strict;
       }
 

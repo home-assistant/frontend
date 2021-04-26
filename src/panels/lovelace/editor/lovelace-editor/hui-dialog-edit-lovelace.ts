@@ -5,19 +5,20 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
-import "../../../../components/ha-circular-progress";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
+import "../../../../components/ha-circular-progress";
 import type { LovelaceConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
 import type { Lovelace } from "../../types";
 import "./hui-lovelace-editor";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-dialog-edit-lovelace")
 export class HuiDialogEditLovelace extends LitElement {
@@ -46,6 +47,12 @@ export class HuiDialogEditLovelace extends LitElement {
     this._dialog.open();
   }
 
+  public closeDialog(): void {
+    this._config = undefined;
+    this._dialog.close();
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   private get _dialog(): HaPaperDialog {
     return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
@@ -69,7 +76,7 @@ export class HuiDialogEditLovelace extends LitElement {
           ></hui-lovelace-editor
         ></paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <mwc-button @click="${this._closeDialog}"
+          <mwc-button @click=${this.closeDialog}
             >${this.hass!.localize("ui.common.cancel")}</mwc-button
           >
           <mwc-button
@@ -90,17 +97,12 @@ export class HuiDialogEditLovelace extends LitElement {
     `;
   }
 
-  private _closeDialog(): void {
-    this._config = undefined;
-    this._dialog.close();
-  }
-
   private async _save(): Promise<void> {
     if (!this._config) {
       return;
     }
     if (!this._isConfigChanged()) {
-      this._closeDialog();
+      this.closeDialog();
       return;
     }
 
@@ -114,7 +116,7 @@ export class HuiDialogEditLovelace extends LitElement {
 
     try {
       await lovelace.saveConfig(config);
-      this._closeDialog();
+      this.closeDialog();
     } catch (err) {
       alert(`Saving failed: ${err.message}`);
     } finally {

@@ -31,6 +31,7 @@ import { HomeAssistant } from "../types";
 import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-create-user";
 import "./onboarding-loading";
+import "./onboarding-analytics";
 
 type OnboardingEvent =
   | {
@@ -43,6 +44,9 @@ type OnboardingEvent =
     }
   | {
       type: "integration";
+    }
+  | {
+      type: "analytics";
     };
 
 declare global {
@@ -102,6 +106,15 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         ></onboarding-core-config>
       `;
     }
+    if (step.step === "analytics") {
+      return html`
+        <onboarding-analytics
+          .hass=${this.hass}
+          .localize=${this.localize}
+        ></onboarding-analytics>
+      `;
+    }
+
     if (step.step === "integration") {
       return html`
         <onboarding-integrations
@@ -117,14 +130,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     super.firstUpdated(changedProps);
     this._fetchOnboardingSteps();
     this._fetchDiscoveryInformation();
-    import(
-      /* webpackChunkName: "onboarding-integrations" */ "./onboarding-integrations"
-    );
-    import(
-      /* webpackChunkName: "onboarding-core-config" */ "./onboarding-core-config"
-    );
+    import("./onboarding-integrations");
+    import("./onboarding-core-config");
     registerServiceWorker(this, false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
+    if (window.innerWidth > 450) {
+      import("./particles");
+    }
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -157,9 +169,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       ].includes(response.installation_type);
       if (this._supervisor) {
         // Only load if we have supervisor
-        import(
-          /* webpackChunkName: "onboarding-restore-snapshot" */ "./onboarding-restore-snapshot"
-        );
+        import("./onboarding-restore-snapshot");
       }
     } catch (err) {
       // eslint-disable-next-line no-console

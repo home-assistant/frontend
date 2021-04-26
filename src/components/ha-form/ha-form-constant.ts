@@ -1,15 +1,15 @@
 import {
+  css,
+  CSSResult,
   customElement,
   html,
   LitElement,
   property,
-  TemplateResult,
-  CSSResult,
-  css,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { HaFormElement, HaFormConstantSchema } from "./ha-form";
 import { fireEvent } from "../../common/dom/fire_event";
+import { HaFormConstantSchema, HaFormElement } from "./ha-form";
 
 @customElement("ha-form-constant")
 export class HaFormConstant extends LitElement implements HaFormElement {

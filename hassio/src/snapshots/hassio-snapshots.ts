@@ -26,7 +26,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import { atLeastVersion } from "../../../src/common/config/version";
-import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
@@ -41,7 +40,8 @@ import {
   HassioSnapshot,
   reloadHassioSnapshots,
 } from "../../../src/data/hassio/snapshot";
-import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-tabs-subpage";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { haStyle } from "../../../src/resources/styles";
@@ -55,8 +55,8 @@ import { hassioStyle } from "../resources/hassio-style";
 
 interface CheckboxItem {
   slug: string;
-  name: string;
   checked: boolean;
+  name?: string;
 }
 
 @customElement("hassio-snapshots")
@@ -67,7 +67,7 @@ class HassioSnapshots extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @property({ attribute: false }) public supervisorInfo!: HassioSupervisorInfo;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @internalProperty() private _snapshotName = "";
 
@@ -84,13 +84,12 @@ class HassioSnapshots extends LitElement {
   @internalProperty() private _folderList: CheckboxItem[] = [
     {
       slug: "homeassistant",
-      name: "Home Assistant configuration",
       checked: true,
     },
-    { slug: "ssl", name: "SSL", checked: true },
-    { slug: "share", name: "Share", checked: true },
-    { slug: "media", name: "Media", checked: true },
-    { slug: "addons/local", name: "Local add-ons", checked: true },
+    { slug: "ssl", checked: true },
+    { slug: "share", checked: true },
+    { slug: "media", checked: true },
+    { slug: "addons/local", checked: true },
   ];
 
   @internalProperty() private _error = "";
@@ -104,13 +103,16 @@ class HassioSnapshots extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
-        hassio
-        main-page
         .route=${this.route}
         .tabs=${supervisorTabs}
+        main-page
+        supervisor
       >
-        <span slot="header">Snapshots</span>
+        <span slot="header">
+          ${this.supervisor.localize("panel.snapshots")}
+        </span>
         <ha-button-menu
           corner="BOTTOM_START"
           slot="toolbar-icon"
@@ -120,50 +122,50 @@ class HassioSnapshots extends LitElement {
             <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-list-item>
-            Reload
+            ${this.supervisor.localize("common.reload")}
           </mwc-list-item>
           ${atLeastVersion(this.hass.config.version, 0, 116)
             ? html`<mwc-list-item>
-                Upload snapshot
+                ${this.supervisor.localize("snapshot.upload_snapshot")}
               </mwc-list-item>`
             : ""}
         </ha-button-menu>
 
         <div class="content">
           <h1>
-            Create Snapshot
+            ${this.supervisor.localize("snapshot.create_snapshot")}
           </h1>
           <p class="description">
-            Snapshots allow you to easily backup and restore all data of your
-            Home Assistant instance.
+            ${this.supervisor.localize("snapshot.description")}
           </p>
           <div class="card-group">
             <ha-card>
               <div class="card-content">
                 <paper-input
                   autofocus
-                  label="Name"
+                  .label=${this.supervisor.localize("snapshot.name")}
                   name="snapshotName"
                   .value=${this._snapshotName}
                   @value-changed=${this._handleTextValueChanged}
                 ></paper-input>
-                Type:
+                ${this.supervisor.localize("snapshot.type")}:
                 <paper-radio-group
                   name="snapshotType"
+                  type="${this.supervisor.localize("snapshot.type")}"
                   .selected=${this._snapshotType}
                   @selected-changed=${this._handleRadioValueChanged}
                 >
                   <paper-radio-button name="full">
-                    Full snapshot
+                    ${this.supervisor.localize("snapshot.full_snapshot")}
                   </paper-radio-button>
                   <paper-radio-button name="partial">
-                    Partial snapshot
+                    ${this.supervisor.localize("snapshot.partial_snapshot")}
                   </paper-radio-button>
                 </paper-radio-group>
                 ${this._snapshotType === "full"
                   ? undefined
                   : html`
-                      Folders:
+                      ${this.supervisor.localize("snapshot.folders")}:
                       ${this._folderList.map(
                         (folder, idx) => html`
                           <paper-checkbox
@@ -171,11 +173,13 @@ class HassioSnapshots extends LitElement {
                             .checked=${folder.checked}
                             @checked-changed=${this._folderChecked}
                           >
-                            ${folder.name}
+                            ${this.supervisor.localize(
+                              `snapshot.folder.${folder.slug}`
+                            )}
                           </paper-checkbox>
                         `
                       )}
-                      Add-ons:
+                      ${this.supervisor.localize("snapshot.addons")}:
                       ${this._addonList.map(
                         (addon, idx) => html`
                           <paper-checkbox
@@ -188,18 +192,18 @@ class HassioSnapshots extends LitElement {
                         `
                       )}
                     `}
-                Security:
+                ${this.supervisor.localize("snapshot.security")}:
                 <paper-checkbox
                   name="snapshotHasPassword"
                   .checked=${this._snapshotHasPassword}
                   @checked-changed=${this._handleCheckboxValueChanged}
                 >
-                  Password protection
+                  ${this.supervisor.localize("snapshot.password_protection")}
                 </paper-checkbox>
                 ${this._snapshotHasPassword
                   ? html`
                       <paper-input
-                        label="Password"
+                        .label=${this.supervisor.localize("snapshot.password")}
                         type="password"
                         name="snapshotPassword"
                         .value=${this._snapshotPassword}
@@ -212,14 +216,24 @@ class HassioSnapshots extends LitElement {
                   : undefined}
               </div>
               <div class="card-actions">
-                <ha-progress-button @click=${this._createSnapshot}>
-                  Create
+                <ha-progress-button
+                  @click=${this._createSnapshot}
+                  .title=${this.supervisor.info.state !== "running"
+                    ? this.supervisor.localize(
+                        "snapshot.create_blocked_not_running",
+                        "state",
+                        this.supervisor.info.state
+                      )
+                    : ""}
+                  .disabled=${this.supervisor.info.state !== "running"}
+                >
+                  ${this.supervisor.localize("snapshot.create")}
                 </ha-progress-button>
               </div>
             </ha-card>
           </div>
 
-          <h1>Available Snapshots</h1>
+          <h1>${this.supervisor.localize("snapshot.available_snapshots")}</h1>
           <div class="card-group">
             ${this._snapshots === undefined
               ? undefined
@@ -227,7 +241,7 @@ class HassioSnapshots extends LitElement {
               ? html`
                   <ha-card>
                     <div class="card-content">
-                      You don't have any snapshots yet.
+                      ${this.supervisor.localize("snapshot.no_snapshots")}
                     </div>
                   </ha-card>
                 `
@@ -265,8 +279,8 @@ class HassioSnapshots extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("supervisorInfo")) {
-      this._addonList = this.supervisorInfo.addons
+    if (changedProps.has("supervisor")) {
+      this._addonList = this.supervisor.supervisor.addons
         .map((addon) => ({
           slug: addon.slug,
           name: addon.name,
@@ -326,12 +340,22 @@ class HassioSnapshots extends LitElement {
   }
 
   private async _createSnapshot(ev: CustomEvent): Promise<void> {
+    if (this.supervisor.info.state !== "running") {
+      await showAlertDialog(this, {
+        title: this.supervisor.localize("snapshot.could_not_create"),
+        text: this.supervisor.localize(
+          "snapshot.create_blocked_not_running",
+          "state",
+          this.supervisor.info.state
+        ),
+      });
+    }
     const button = ev.currentTarget as any;
     button.progress = true;
 
     this._error = "";
     if (this._snapshotHasPassword && !this._snapshotPassword.length) {
-      this._error = "Please enter a password.";
+      this._error = this.supervisor.localize("snapshot.enter_password");
       button.progress = false;
       return;
     }
@@ -372,7 +396,6 @@ class HassioSnapshots extends LitElement {
         await createHassioPartialSnapshot(this.hass, data);
       }
       this._updateSnapshots();
-      fireEvent(this, "hass-api-called", { success: true, response: null });
     } catch (err) {
       this._error = extractApiErrorMessage(err);
     }
@@ -381,13 +404,16 @@ class HassioSnapshots extends LitElement {
 
   private _computeDetails(snapshot: HassioSnapshot) {
     const type =
-      snapshot.type === "full" ? "Full snapshot" : "Partial snapshot";
+      snapshot.type === "full"
+        ? this.supervisor.localize("snapshot.full_snapshot")
+        : this.supervisor.localize("snapshot.partial_snapshot");
     return snapshot.protected ? `${type}, password protected` : type;
   }
 
   private _snapshotClicked(ev) {
     showHassioSnapshotDialog(this, {
       slug: ev.currentTarget!.snapshot.slug,
+      supervisor: this.supervisor,
       onDelete: () => this._updateSnapshots(),
     });
   }
@@ -397,6 +423,7 @@ class HassioSnapshots extends LitElement {
       showSnapshot: (slug: string) =>
         showHassioSnapshotDialog(this, {
           slug,
+          supervisor: this.supervisor,
           onDelete: () => this._updateSnapshots(),
         }),
       reloadSnapshot: () => this.refreshData(),

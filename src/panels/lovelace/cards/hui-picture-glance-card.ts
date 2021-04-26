@@ -22,7 +22,7 @@ import "../../../components/ha-icon-button";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { findEntities } from "../common/find-entites";
+import { findEntities } from "../common/find-entities";
 import { handleAction } from "../common/handle-action";
 import { hasAction } from "../common/has-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -38,9 +38,7 @@ const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-picture-glance-card-editor" */ "../editor/config-elements/hui-picture-glance-card-editor"
-    );
+    await import("../editor/config-elements/hui-picture-glance-card-editor");
     return document.createElement("hui-picture-glance-card-editor");
   }
 
@@ -86,7 +84,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       !(config.image || config.camera_image || config.state_image) ||
       (config.state_image && !config.entity)
     ) {
-      throw new Error("Invalid card configuration");
+      throw new Error("Invalid configuration");
     }
 
     const entities = processConfigEntities(config.entities);
@@ -120,7 +118,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     if (
       !oldHass ||
       oldHass.themes !== this.hass!.themes ||
-      oldHass.language !== this.hass!.language
+      oldHass.locale !== this.hass!.locale
     ) {
       return true;
     }
@@ -257,13 +255,11 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             "state-on": !STATES_OFF.has(stateObj.state),
           })}
           .icon=${entityConf.icon || stateIcon(stateObj)}
-          title=${`
-            ${computeStateName(stateObj)} : ${computeStateDisplay(
+          title=${`${computeStateName(stateObj)} : ${computeStateDisplay(
             this.hass!.localize,
             stateObj,
-            this.hass!.language
-          )}
-          `}
+            this.hass!.locale
+          )}`}
         ></ha-icon-button>
         ${this._config!.show_state !== true && entityConf.show_state !== true
           ? html`<div class="state"></div>`
@@ -278,7 +274,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                   : computeStateDisplay(
                       this.hass!.localize,
                       stateObj,
-                      this.hass!.language
+                      this.hass!.locale
                     )}
               </div>
             `}
@@ -316,11 +312,14 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: var(
+          --ha-picture-card-background-color,
+          rgba(0, 0, 0, 0.3)
+        );
         padding: 4px 8px;
         font-size: 16px;
         line-height: 40px;
-        color: white;
+        color: var(--ha-picture-card-text-color, white);
         display: flex;
         justify-content: space-between;
         flex-direction: row;
@@ -334,11 +333,11 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       ha-icon-button {
         --mdc-icon-button-size: 40px;
         --disabled-text-color: currentColor;
-        color: #a9a9a9;
+        color: var(--ha-picture-icon-button-color, #a9a9a9);
       }
 
       ha-icon-button.state-on {
-        color: white;
+        color: var(--ha-picture-icon-button-on-color, white);
       }
       .state {
         display: block;

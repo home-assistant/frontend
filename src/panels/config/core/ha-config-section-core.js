@@ -3,12 +3,12 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-card";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
 import "../ha-config-section";
+import "./ha-config-analytics";
 import "./ha-config-core-form";
 import "./ha-config-name-form";
 import "./ha-config-url-form";
@@ -30,6 +30,7 @@ class HaConfigSectionCore extends LocalizeMixin(PolymerElement) {
         <ha-config-name-form hass="[[hass]]"></ha-config-name-form>
         <ha-config-core-form hass="[[hass]]"></ha-config-core-form>
         <ha-config-url-form hass="[[hass]]"></ha-config-url-form>
+        <ha-config-analytics hass="[[hass]]"></ha-config-analytics>
       </ha-config-section>
     `;
   }

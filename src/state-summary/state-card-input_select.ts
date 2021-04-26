@@ -15,9 +15,9 @@ import {
 import { stopPropagation } from "../common/dom/stop_propagation";
 import { computeStateName } from "../common/entity/compute_state_name";
 import "../components/entity/state-badge";
-import { setInputSelectOption } from "../data/input_select";
+import { InputSelectEntity, setInputSelectOption } from "../data/input_select";
 import type { PolymerIronSelectEvent } from "../polymer-types";
-import type { HomeAssistant, InputSelectEntity } from "../types";
+import type { HomeAssistant } from "../types";
 
 @customElement("state-card-input_select")
 class StateCardInputSelect extends LitElement {

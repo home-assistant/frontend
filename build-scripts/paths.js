@@ -1,4 +1,4 @@
-var path = require("path");
+const path = require("path");
 
 module.exports = {
   polymer_dir: path.resolve(__dirname, ".."),
@@ -34,6 +34,7 @@ module.exports = {
 
   hassio_dir: path.resolve(__dirname, "../hassio"),
   hassio_output_root: path.resolve(__dirname, "../hassio/build"),
+  hassio_output_static: path.resolve(__dirname, "../hassio/build/static"),
   hassio_output_latest: path.resolve(
     __dirname,
     "../hassio/build/frontend_latest"

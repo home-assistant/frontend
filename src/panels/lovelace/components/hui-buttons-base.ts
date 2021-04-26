@@ -8,19 +8,16 @@ import {
   queryAll,
   TemplateResult,
 } from "lit-element";
-
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { computeTooltip } from "../common/compute-tooltip";
-import { actionHandler } from "../common/directives/action-handler-directive";
-import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
-
+import "../../../components/entity/state-badge";
 import type { StateBadge } from "../../../components/entity/state-badge";
 import type { ActionHandlerEvent } from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
-
-import "../../../components/entity/state-badge";
+import { computeTooltip } from "../common/compute-tooltip";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
+import { hasAction } from "../common/has-action";
 
 @customElement("hui-buttons-base")
 export class HuiButtonsBase extends LitElement {

@@ -40,6 +40,7 @@ export class HaDialog extends MwcDialog {
         .mdc-dialog {
           --mdc-dialog-scroll-divider-color: var(--divider-color);
           z-index: var(--dialog-z-index, 7);
+          backdrop-filter: var(--dialog-backdrop-filter, none);
         }
         .mdc-dialog__actions {
           justify-content: var(--justify-action-buttons, flex-end);

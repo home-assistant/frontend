@@ -9,5 +9,5 @@ export interface DemoConfig {
   authorUrl: string;
   lovelace: (localize: LocalizeFunc) => LovelaceConfig;
   entities: (localize: LocalizeFunc) => Entity[];
-  theme: () => { [key: string]: string } | null;
+  theme: () => Record<string, string> | null;
 }

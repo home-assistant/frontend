@@ -4,9 +4,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -18,9 +18,10 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
 import { timerTimeRemaining } from "../../common/entity/timer_time_remaining";
+import { formatNumber } from "../../common/string/format_number";
+import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
-import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 
 @customElement("ha-state-label-badge")
 export class HaStateLabelBadge extends LitElement {
@@ -115,12 +116,8 @@ export class HaStateLabelBadge extends LitElement {
           : state.state === UNKNOWN
           ? "-"
           : state.attributes.unit_of_measurement
-          ? state.state
-          : computeStateDisplay(
-              this.hass!.localize,
-              state,
-              this.hass!.language
-            );
+          ? formatNumber(state.state, this.hass!.locale)
+          : computeStateDisplay(this.hass!.localize, state, this.hass!.locale);
     }
   }
 
@@ -154,11 +151,8 @@ export class HaStateLabelBadge extends LitElement {
       case "device_tracker":
       case "updater":
       case "person":
-        return stateIcon(state);
       case "sun":
-        return state.state === "above_horizon"
-          ? domainIcon(domain)
-          : "hass:brightness-3";
+        return stateIcon(state);
       case "timer":
         return state.state === "active"
           ? "hass:timer-outline"

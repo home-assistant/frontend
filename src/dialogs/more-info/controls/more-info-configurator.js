@@ -2,10 +2,10 @@ import "@material/mwc-button";
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/iron-input/iron-input";
 import "@polymer/paper-input/paper-input";
-import "../../../components/ha-circular-progress";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "../../../components/ha-circular-progress";
 import "../../../components/ha-markdown";
 
 class MoreInfoConfigurator extends PolymerElement {

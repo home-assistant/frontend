@@ -25,7 +25,7 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
 
   public setConfig(config: IconElementConfig): void {
     if (!config.icon) {
-      throw Error("Invalid Configuration: 'icon' required");
+      throw Error("Icon required");
     }
 
     this._config = { hold_action: { action: "more-info" }, ...config };

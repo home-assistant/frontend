@@ -1,18 +1,18 @@
 import {
+  css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  TemplateResult,
-  css,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import { fetchZHADevice, ZHADevice } from "../../../../../../data/zha";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
-import { ZHADevice, fetchZHADevice } from "../../../../../../data/zha";
 import { formatAsPaddedHex } from "../../../../integrations/integration-panels/zha/functions";
 
 @customElement("ha-device-info-zha")

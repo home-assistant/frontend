@@ -1,23 +1,23 @@
 import {
+  css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  TemplateResult,
-  css,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
-import { haStyle } from "../../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../../types";
 import {
-  OZWDevice,
   fetchOZWNodeStatus,
   getIdentifiersFromDevice,
+  OZWDevice,
   OZWNodeIdentifiers,
 } from "../../../../../../data/ozw";
+import { haStyle } from "../../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../../types";
 
 @customElement("ha-device-info-ozw")
 export class HaDeviceInfoOzw extends LitElement {

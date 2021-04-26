@@ -73,7 +73,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   }
 
   get _default_zoom(): number {
-    return this._config!.default_zoom || NaN;
+    return this._config!.default_zoom || 0;
   }
 
   get _geo_location_sources(): string[] {
@@ -98,34 +98,37 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         <paper-input
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.title"
-          )} (${this.hass.localize(
+          )}
+          (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
           <paper-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.aspect_ratio"
-            )} (${this.hass.localize(
+            )}
+            (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._aspect_ratio}"
-            .configValue="${"aspect_ratio"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._aspect_ratio}
+            .configValue=${"aspect_ratio"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
           <paper-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.default_zoom"
-            )} (${this.hass.localize(
+            )}
+            (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             type="number"
-            .value="${this._default_zoom}"
-            .configValue="${"default_zoom"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._default_zoom}
+            .configValue=${"default_zoom"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
         <div class="side-by-side">
@@ -136,27 +139,28 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             .dir=${computeRTLDirection(this.hass)}
           >
             <ha-switch
-              .checked="${this._dark_mode}"
-              .configValue="${"dark_mode"}"
-              @change="${this._valueChanged}"
+              .checked=${this._dark_mode}
+              .configValue=${"dark_mode"}
+              @change=${this._valueChanged}
             ></ha-switch
           ></ha-formfield>
           <paper-input
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.hours_to_show"
-            )} (${this.hass.localize(
+            )}
+            (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             type="number"
-            .value="${this._hours_to_show}"
-            .configValue="${"hours_to_show"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._hours_to_show}
+            .configValue=${"hours_to_show"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
         <hui-entity-editor
           .hass=${this.hass}
-          .entities="${this._configEntities}"
-          @entities-changed="${this._entitiesValueChanged}"
+          .entities=${this._configEntities}
+          @entities-changed=${this._entitiesValueChanged}
         ></hui-entity-editor>
         <h3>
           ${this.hass.localize(
@@ -165,13 +169,13 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         </h3>
         <div class="geo_location_sources">
           <hui-input-list-editor
-            inputLabel=${this.hass.localize(
+            .inputLabel=${this.hass.localize(
               "ui.panel.lovelace.editor.card.map.source"
             )}
             .hass=${this.hass}
-            .value="${this._geo_location_sources}"
-            .configValue="${"geo_location_sources"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._geo_location_sources}
+            .configValue=${"geo_location_sources"}
+            @value-changed=${this._valueChanged}
           ></hui-input-list-editor>
         </div>
       </div>
@@ -195,21 +199,25 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (target.configValue && this[`_${target.configValue}`] === target.value) {
+    if (!target.configValue) {
       return;
     }
-    let value: any = target.value;
-    if (target.type === "number") {
+
+    let value = target.checked ?? ev.detail.value;
+
+    if (value && target.type === "number") {
       value = Number(value);
     }
-    if (target.value === "" || (target.type === "number" && isNaN(value))) {
+    if (this[`_${target.configValue}`] === value) {
+      return;
+    }
+    if (value === "") {
       this._config = { ...this._config };
       delete this._config[target.configValue!];
     } else if (target.configValue) {
       this._config = {
         ...this._config,
-        [target.configValue]:
-          target.checked !== undefined ? target.checked : value,
+        [target.configValue]: value,
       };
     }
     fireEvent(this, "config-changed", { config: this._config });

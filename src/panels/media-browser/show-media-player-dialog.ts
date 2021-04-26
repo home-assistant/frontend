@@ -12,10 +12,7 @@ export const showWebBrowserPlayMediaDialog = (
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "hui-dialog-web-browser-play-media",
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "hui-dialog-media-player" */ "./hui-dialog-web-browser-play-media"
-      ),
+    dialogImport: () => import("./hui-dialog-web-browser-play-media"),
     dialogParams: webBrowserPlayMediaDialogParams,
   });
 };

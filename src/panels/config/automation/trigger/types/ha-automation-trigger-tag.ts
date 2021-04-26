@@ -2,16 +2,16 @@ import "@polymer/paper-input/paper-input";
 import {
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
 } from "lit-element";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import { TagTrigger } from "../../../../../data/automation";
+import { fetchTags, Tag } from "../../../../../data/tag";
 import { HomeAssistant } from "../../../../../types";
 import { TriggerElement } from "../ha-automation-trigger-row";
-import { Tag, fetchTags } from "../../../../../data/tag";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 @customElement("ha-automation-trigger-tag")
 export class HaTagTrigger extends LitElement implements TriggerElement {

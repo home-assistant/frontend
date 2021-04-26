@@ -14,15 +14,16 @@ import "../../../../components/ha-card";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import {
   CloudStatusLoggedIn,
   CloudWebhook,
   createCloudhook,
   deleteCloudhook,
 } from "../../../../data/cloud";
-import { fetchWebhooks, Webhook } from "../../../../data/webhook";
+import { fetchWebhooks, Webhook, WebhookError } from "../../../../data/webhook";
 import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant, WebhookError } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 import { showManageCloudhookDialog } from "../dialog-manage-cloudhook/show-dialog-manage-cloudhook";
 
 @customElement("cloud-webhooks")
@@ -202,7 +203,7 @@ export class CloudWebhooks extends LitElement {
   }
 
   private async _fetchData() {
-    this._localHooks = this.hass!.config.components.includes("webhook")
+    this._localHooks = isComponentLoaded(this.hass!, "webhook")
       ? await fetchWebhooks(this.hass!)
       : [];
   }

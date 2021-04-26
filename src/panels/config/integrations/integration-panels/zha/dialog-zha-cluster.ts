@@ -2,32 +2,32 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
+import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
-import { haStyleDialog } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
-import { ZHADeviceZigbeeInfoDialogParams } from "./show-dialog-zha-device-zigbee-info";
 import {
-  ZHADevice,
   Cluster,
-  ZHAGroup,
   fetchBindableDevices,
   fetchGroups,
+  ZHADevice,
+  ZHAGroup,
 } from "../../../../../data/zha";
+import { haStyleDialog } from "../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../types";
+import { sortZHADevices, sortZHAGroups } from "./functions";
+import { ZHADeviceZigbeeInfoDialogParams } from "./show-dialog-zha-device-zigbee-info";
 import { ZHAClusterSelectedParams } from "./types";
 import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
 import "./zha-clusters";
 import "./zha-device-binding";
 import "./zha-group-binding";
-import { HASSDomEvent } from "../../../../../common/dom/fire_event";
-import { sortZHADevices, sortZHAGroups } from "./functions";
 
 @customElement("dialog-zha-cluster")
 class DialogZHACluster extends LitElement {

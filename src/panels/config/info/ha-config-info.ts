@@ -6,13 +6,13 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { documentationUrl } from "../../../util/documentation-url";
+import { configSections } from "../ha-panel-config";
 import "./integrations-card";
 import "./system-health-card";
-import { configSections } from "../ha-panel-config";
-import "../../../layouts/hass-tabs-subpage";
-import { documentationUrl } from "../../../util/documentation-url";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;

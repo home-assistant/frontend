@@ -11,6 +11,7 @@ import "./state-card-input_select";
 import "./state-card-input_text";
 import "./state-card-lock";
 import "./state-card-media_player";
+import "./state-card-number";
 import "./state-card-scene";
 import "./state-card-script";
 import "./state-card-timer";

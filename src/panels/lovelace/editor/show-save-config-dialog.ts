@@ -14,6 +14,7 @@ const dialogTag = "hui-dialog-save-config";
 export interface SaveDialogParams {
   lovelace: Lovelace;
   mode: "yaml" | "storage";
+  narrow: boolean;
 }
 
 let registeredDialog = false;
@@ -27,10 +28,7 @@ export const showSaveDialog = (
     fireEvent(element, "register-dialog", {
       dialogShowEvent,
       dialogTag,
-      dialogImport: () =>
-        import(
-          /* webpackChunkName: "hui-dialog-save-config" */ "./hui-dialog-save-config"
-        ),
+      dialogImport: () => import("./hui-dialog-save-config"),
     });
   }
   fireEvent(element, dialogShowEvent, saveDialogParams);

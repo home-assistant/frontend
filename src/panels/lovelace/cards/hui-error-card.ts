@@ -1,16 +1,16 @@
+import { safeDump } from "js-yaml";
 import {
   css,
   CSSResult,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { ErrorCardConfig } from "./types";
-import { safeDump } from "js-yaml";
 
 @customElement("hui-error-card")
 export class HuiErrorCard extends LitElement implements LovelaceCard {
@@ -31,11 +31,18 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
+    let dumped: string | undefined;
+
+    if (this._config.origConfig) {
+      try {
+        dumped = safeDump(this._config.origConfig);
+      } catch (err) {
+        dumped = `[Error dumping ${this._config.origConfig}]`;
+      }
+    }
+
     return html`
-      ${this._config.error}
-      ${this._config.origConfig
-        ? html`<pre>${safeDump(this._config.origConfig)}</pre>`
-        : ""}
+      ${this._config.error}${dumped ? html`<pre>${dumped}</pre>` : ""}
     `;
   }
 
@@ -52,6 +59,8 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       }
       pre {
         font-family: var(--code-font-family, monospace);
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
     `;
   }

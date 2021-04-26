@@ -16,6 +16,7 @@ import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-loading-screen";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
@@ -58,6 +59,8 @@ const logProviders: LogProvider[] = [
 class HassioSupervisorLog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @internalProperty() private _error?: string;
 
   @internalProperty() private _selectedLogProvider = "supervisor";
@@ -76,7 +79,7 @@ class HassioSupervisorLog extends LitElement {
         ${this.hass.userData?.showAdvanced
           ? html`
               <paper-dropdown-menu
-                label="Log Provider"
+                .label=${this.supervisor.localize("system.log.log_provider")}
                 @iron-select=${this._setLogProvider}
               >
                 <paper-listbox
@@ -86,9 +89,9 @@ class HassioSupervisorLog extends LitElement {
                 >
                   ${logProviders.map((provider) => {
                     return html`
-                      <paper-item provider=${provider.key}
-                        >${provider.name}</paper-item
-                      >
+                      <paper-item provider=${provider.key}>
+                        ${provider.name}
+                      </paper-item>
                     `;
                   })}
                 </paper-listbox>
@@ -98,14 +101,13 @@ class HassioSupervisorLog extends LitElement {
 
         <div class="card-content" id="content">
           ${this._content
-            ? html`<hassio-ansi-to-html
-                .content=${this._content}
-              ></hassio-ansi-to-html>`
+            ? html`<hassio-ansi-to-html .content=${this._content}>
+              </hassio-ansi-to-html>`
             : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
         </div>
         <div class="card-actions">
           <ha-progress-button @click=${this._refresh}>
-            Refresh
+            ${this.supervisor.localize("common.refresh")}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -134,9 +136,13 @@ class HassioSupervisorLog extends LitElement {
         this._selectedLogProvider
       );
     } catch (err) {
-      this._error = `Failed to get supervisor logs, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "system.log.get_logs",
+        "provider",
+        this._selectedLogProvider,
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
   }
 

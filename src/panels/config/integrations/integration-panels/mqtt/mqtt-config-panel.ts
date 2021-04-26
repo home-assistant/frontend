@@ -5,23 +5,25 @@ import {
   CSSResultArray,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
+import { getConfigEntries } from "../../../../../data/config_entries";
+import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
+import "../../../../../layouts/hass-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import "./mqtt-subscribe-card";
-import "../../../../../layouts/hass-subpage";
-import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
-import { getConfigEntries } from "../../../../../data/config_entries";
 
 @customElement("mqtt-config-panel")
 class HaPanelDevMqtt extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ type: Boolean }) public narrow!: boolean;
 
   @internalProperty() private topic = "";
 
@@ -41,7 +43,7 @@ class HaPanelDevMqtt extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-subpage>
+      <hass-subpage .narrow=${this.narrow} .hass=${this.hass}>
         <div class="content">
           <ha-card header="MQTT settings">
             <div class="card-actions">

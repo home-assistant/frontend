@@ -6,3 +6,10 @@ export interface ConditionalBaseConfig extends LovelaceCardConfig {
   card: LovelaceCardConfig | LovelaceElementConfig;
   conditions: Condition[];
 }
+
+export type TimestampRenderingFormats =
+  | "relative"
+  | "total"
+  | "date"
+  | "time"
+  | "datetime";

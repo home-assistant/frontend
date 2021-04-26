@@ -13,10 +13,7 @@ export interface HaImageCropperDialogParams {
   croppedCallback: (file: File) => void;
 }
 
-const loadImageCropperDialog = () =>
-  import(
-    /* webpackChunkName: "image-cropper-dialog" */ "./image-cropper-dialog"
-  );
+const loadImageCropperDialog = () => import("./image-cropper-dialog");
 
 export const showImageCropperDialog = (
   element: HTMLElement,

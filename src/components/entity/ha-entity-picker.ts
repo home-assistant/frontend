@@ -99,7 +99,19 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) private _opened = false;
 
-  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+  @query("vaadin-combo-box-light", true) private comboBox!: HTMLElement;
+
+  public open() {
+    this.updateComplete.then(() => {
+      (this.shadowRoot?.querySelector("vaadin-combo-box-light") as any)?.open();
+    });
+  }
+
+  public focus() {
+    this.updateComplete.then(() => {
+      this.shadowRoot?.querySelector("paper-input")?.focus();
+    });
+  }
 
   private _initedStates = false;
 
@@ -153,6 +165,24 @@ export class HaEntityPicker extends LitElement {
         );
       }
 
+      if (!states.length) {
+        return [
+          {
+            entity_id: "",
+            state: "",
+            last_changed: "",
+            last_updated: "",
+            context: { id: "", user_id: null },
+            attributes: {
+              friendly_name: this.hass!.localize(
+                "ui.components.entity.entity-picker.no_match"
+              ),
+              icon: "mdi:magnify",
+            },
+          },
+        ];
+      }
+
       return states;
     }
   );
@@ -178,7 +208,7 @@ export class HaEntityPicker extends LitElement {
         this.entityFilter,
         this.includeDeviceClasses
       );
-      (this._comboBox as any).filteredItems = this._states;
+      (this.comboBox as any).filteredItems = this._states;
       this._initedStates = true;
     }
   }
@@ -203,7 +233,6 @@ export class HaEntityPicker extends LitElement {
           .label=${this.label === undefined
             ? this.hass.localize("ui.components.entity.entity-picker.entity")
             : this.label}
-          .value=${this._value}
           .disabled=${this.disabled}
           class="input"
           autocapitalize="none"
@@ -267,7 +296,7 @@ export class HaEntityPicker extends LitElement {
 
   private _filterChanged(ev: CustomEvent): void {
     const filterString = ev.detail.value.toLowerCase();
-    (this._comboBox as any).filteredItems = this._states.filter(
+    (this.comboBox as any).filteredItems = this._states.filter(
       (state) =>
         state.entity_id.toLowerCase().includes(filterString) ||
         computeStateName(state).toLowerCase().includes(filterString)

@@ -1,9 +1,6 @@
 import { fireEvent } from "../../common/dom/fire_event";
 
-const loadVoiceCommandDialog = () =>
-  import(
-    /* webpackChunkName: "ha-voice-command-dialog" */ "./ha-voice-command-dialog"
-  );
+const loadVoiceCommandDialog = () => import("./ha-voice-command-dialog");
 
 export const showVoiceCommandDialog = (element: HTMLElement): void => {
   fireEvent(element, "show-dialog", {

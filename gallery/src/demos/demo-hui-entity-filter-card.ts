@@ -1,6 +1,11 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  customElement,
+  html,
+  LitElement,
+  PropertyValues,
+  query,
+  TemplateResult,
+} from "lit-element";
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -43,7 +48,7 @@ const ENTITIES = [
 
 const CONFIGS = [
   {
-    heading: "Controller",
+    heading: "Unfiltered controller",
     config: `
 - type: entities
   entities:
@@ -53,7 +58,7 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "Basic",
+    heading: "Filtered entities card",
     config: `
 - type: entity-filter
   entities:
@@ -69,7 +74,27 @@ const CONFIGS = [
     `,
   },
   {
-    heading: "With card config",
+    heading: 'With "entities" card config',
+    config: `
+- type: entity-filter
+  entities:
+    - device_tracker.demo_anne_therese
+    - device_tracker.demo_home_boy
+    - device_tracker.demo_paulus
+    - light.bed_light
+    - light.ceiling_lights
+    - light.kitchen_lights
+  state_filter:
+    - "on"
+    - not_home
+  card:
+    type: entities
+    title: Custom Title
+    show_header_toggle: false
+    `,
+  },
+  {
+    heading: 'With "glance" card config',
     config: `
 - type: entity-filter
   entities:
@@ -84,31 +109,27 @@ const CONFIGS = [
     - not_home
   card:
     type: glance
-    show_state: false
+    show_state: true
+    title: Custom Title
     `,
   },
 ];
 
-class DemoFilter extends PolymerElement {
-  static get template() {
-    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
+@customElement("demo-hui-entity-filter-card")
+class DemoEntityFilter extends LitElement {
+  @query("#demos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  static get properties() {
-    return {
-      _configs: {
-        type: Object,
-        value: CONFIGS,
-      },
-    };
-  }
-
-  public ready() {
-    super.ready();
-    const hass = provideHass(this.$.demos);
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
   }
 }
 
-customElements.define("demo-hui-entity-filter-card", DemoFilter);
+customElements.define("demo-hui-entity-filter-card", DemoEntityFilter);

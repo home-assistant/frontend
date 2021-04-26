@@ -1,26 +1,27 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  internalProperty,
-  TemplateResult,
-  css,
-  CSSResultArray,
-} from "lit-element";
-import "../../../../components/dialog/ha-paper-dialog";
-import "../../components/hui-views-list";
-import type { SelectViewDialogParams } from "./show-select-view-dialog";
-import { HomeAssistant } from "../../../../types";
-import { haStyleDialog } from "../../../../resources/styles";
-import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import {
-  LovelaceDashboard,
+  css,
+  CSSResultArray,
+  customElement,
+  html,
+  internalProperty,
+  LitElement,
+  TemplateResult,
+} from "lit-element";
+import "../../../../components/dialog/ha-paper-dialog";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-paper-dropdown-menu";
+import {
+  fetchConfig,
   fetchDashboards,
   LovelaceConfig,
-  fetchConfig,
+  LovelaceDashboard,
 } from "../../../../data/lovelace";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { haStyleDialog } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import "../../components/hui-views-list";
+import type { SelectViewDialogParams } from "./show-select-view-dialog";
 
 @customElement("hui-dialog-select-view")
 export class HuiDialogSelectView extends LitElement {
@@ -45,6 +46,7 @@ export class HuiDialogSelectView extends LitElement {
 
   public closeDialog(): void {
     this._params = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {

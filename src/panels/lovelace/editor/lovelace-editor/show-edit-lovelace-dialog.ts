@@ -16,10 +16,7 @@ const registerEditLovelaceDialog = (element: HTMLElement): Event =>
   fireEvent(element, "register-dialog", {
     dialogShowEvent,
     dialogTag,
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "hui-dialog-edit-lovelace" */ "./hui-dialog-edit-lovelace"
-      ),
+    dialogImport: () => import("./hui-dialog-edit-lovelace"),
   });
 
 export const showEditLovelaceDialog = (

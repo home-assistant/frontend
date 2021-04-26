@@ -1,5 +1,5 @@
 import { HassEntities } from "home-assistant-js-websocket";
-import { GroupEntity } from "../../types";
+import { GroupEntity } from "../../data/group";
 import { computeDomain } from "./compute_domain";
 import { getGroupEntities } from "./get_group_entities";
 

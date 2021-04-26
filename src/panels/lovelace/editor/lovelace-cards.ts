@@ -92,10 +92,16 @@ export const coreCards: Card[] = [
     type: "entity-filter",
   },
   {
+    type: "grid",
+  },
+  {
     type: "horizontal-stack",
   },
   {
     type: "iframe",
+  },
+  {
+    type: "logbook",
   },
   {
     type: "vertical-stack",

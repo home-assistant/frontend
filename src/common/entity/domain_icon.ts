@@ -77,6 +77,11 @@ export const domainIcon = (
         return "hass:calendar";
       }
       break;
+
+    case "sun":
+      return stateObj?.state === "above_horizon"
+        ? FIXED_DOMAIN_ICONS[domain]
+        : "hass:weather-night";
   }
 
   if (domain in FIXED_DOMAIN_ICONS) {

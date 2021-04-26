@@ -9,8 +9,8 @@ import "../../../components/ha-code-editor";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import { documentationUrl } from "../../../util/documentation-url";
 import "../../../styles/polymer-ha-style";
+import { documentationUrl } from "../../../util/documentation-url";
 import "./event-subscribe-card";
 import "./events-list";
 

@@ -1,14 +1,14 @@
 import {
   fetchConfig,
-  LovelaceConfig,
-  saveConfig,
   fetchDashboards,
+  LovelaceConfig,
   LovelacePanelConfig,
+  saveConfig,
 } from "../../../data/lovelace";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
 import { showSuggestCardDialog } from "./card-editor/show-suggest-card-dialog";
 import { showSelectViewDialog } from "./select-view/show-select-view-dialog";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 export const addEntitiesToLovelaceView = async (
   element: HTMLElement,

@@ -1,8 +1,8 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   customElement,
-  property,
   internalProperty,
+  property,
   PropertyValues,
 } from "lit-element";
 import { compare } from "../../../common/string/compare";

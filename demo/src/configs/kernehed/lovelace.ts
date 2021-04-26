@@ -2,44 +2,7 @@ import { DemoConfig } from "../types";
 
 export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
   name: "Hem",
-  resources: [
-    // {
-    //   url: "/local/custom-lovelace/monster-card.js",
-    //   type: "js",
-    // },
-    // {
-    //   url: "/local/custom-lovelace/mini-media-player-bundle.js?v=0.9.8",
-    //   type: "module",
-    // },
-    // {
-    //   url: "/local/custom-lovelace/slideshow-card.js?=1.1.0",
-    //   type: "js",
-    // },
-    // {
-    //   url: "/local/custom-lovelace/fold-entity-row.js?v=3ae2c4",
-    //   type: "js",
-    // },
-    // {
-    //   url: "/local/custom-lovelace/swipe-card/swipe-card.js?v=2.0.0",
-    //   type: "module",
-    // },
-    // {
-    //   url: "/local/custom-lovelace/upcoming-media-card/upcoming-media-card.js",
-    //   type: "js",
-    // },
-    // {
-    //   url: "/local/custom-lovelace/tracker-card.js?v=0.1.5",
-    //   type: "js",
-    // },
-    // {
-    //   url: "/local/custom-lovelace/card-tools.js?v=6ce5d0",
-    //   type: "js",
-    // },
-    // {
-    //   url: "/local/custom-lovelace/krisinfo.js?=0.0.1",
-    //   type: "js",
-    // },
-  ],
+  resources: [],
   views: [
     {
       cards: [
@@ -64,7 +27,7 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
                       style: {
                         color: "white",
                         top: "93%",
-                        left: "90%",
+                        left: "85%",
                       },
                       type: "state-label",
                       entity: "sensor.battery_oskar",
@@ -87,7 +50,7 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
                     {
                       style: {
                         color: "white",
-                        top: "92%",
+                        top: "93%",
                         left: "20%",
                       },
                       type: "state-label",
@@ -96,8 +59,8 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
                     {
                       style: {
                         color: "white",
-                        top: "92%",
-                        left: "90%",
+                        top: "93%",
+                        left: "85%",
                       },
                       type: "state-label",
                       entity: "sensor.battery_bella",
@@ -105,7 +68,7 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
                     {
                       style: {
                         color: "white",
-                        top: "92%",
+                        top: "93%",
                         left: "55%",
                       },
                       type: "state-label",
@@ -131,78 +94,6 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
           type: "entities",
           title: "Lock",
         },
-        // {
-        //   filter: {
-        //     exclude: [
-        //       {
-        //         state: "not_home",
-        //       },
-        //     ],
-        //     include: [
-        //       {
-        //         entity_id: "device_tracker.annasiphone",
-        //       },
-        //       {
-        //         entity_id: "device_tracker.iphone_2",
-        //       },
-        //     ],
-        //   },
-        //   type: "custom:monster-card",
-        //   card: {
-        //     show_header_toggle: false,
-        //     type: "entities",
-        //     title: "G\u00e4ster",
-        //   },
-        //   show_empty: false,
-        // },
-        // {
-        //   filter: {
-        //     exclude: [
-        //       {
-        //         state: "Inget",
-        //       },
-        //       {
-        //         state: "i.u.",
-        //       },
-        //     ],
-        //     include: [
-        //       {
-        //         entity_id: "sensor.pollen_al",
-        //       },
-        //       {
-        //         entity_id: "sensor.pollen_alm",
-        //       },
-        //       {
-        //         entity_id: "sensor.pollen_salg_vide",
-        //       },
-        //       {
-        //         entity_id: "sensor.pollen_bjork",
-        //       },
-        //       {
-        //         entity_id: "sensor.pollen_bok",
-        //       },
-        //       {
-        //         entity_id: "sensor.pollen_ek",
-        //       },
-        //       {
-        //         entity_id: "sensor.pollen_grabo",
-        //       },
-        //       {
-        //         entity_id: "sensor.pollen_gras",
-        //       },
-        //       {
-        //         entity_id: "sensor.pollen_hassel",
-        //       },
-        //     ],
-        //   },
-        //   type: "custom:monster-card",
-        //   card: {
-        //     show_header_toggle: false,
-        //     type: "entities",
-        //     title: "Pollenniv\u00e5er",
-        //   },
-        //   show_empty: false,
-        // },
         {
           cards: [
             {
@@ -226,10 +117,6 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
           ],
           type: "vertical-stack",
         },
-        // {
-        //   url: "https://embed.windy.com/embed2.html",
-        //   type: "iframe",
-        // },
         {
           entities: [
             {
@@ -263,6 +150,7 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
           ],
           type: "glance",
           show_state: false,
+          columns: 4,
         },
         {
           entities: ["sensor.oskar_bluetooth"],
@@ -270,32 +158,6 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
           type: "entities",
           title: "Occupancy",
         },
-        // {
-        //   filter: {
-        //     exclude: [
-        //       {
-        //         state: false,
-        //       },
-        //     ],
-        //     include: [
-        //       {
-        //         entity_id:
-        //           "binary_sensor.fibaro_system_unknown_type0c02_id1003_sensor_2",
-        //       },
-        //       {
-        //         entity_id:
-        //           "binary_sensor.fibaro_system_unknown_type0c02_id1003_sensor_3",
-        //       },
-        //     ],
-        //   },
-        //   type: "custom:monster-card",
-        //   card: {
-        //     show_header_toggle: false,
-        //     type: "entities",
-        //     title: "Brandvarnare",
-        //   },
-        //   show_empty: false,
-        // },
         {
           type: "weather-forecast",
           entity: "weather.smhi_vader",
@@ -378,41 +240,9 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
             "binary_sensor.windows_server",
             "binary_sensor.teamspeak",
             "binary_sensor.harmony_hub",
-            // {
-            //   style: {
-            //     height: "1px",
-            //     width: "85%",
-            //     "margin-left": "auto",
-            //     background: "#62717b",
-            //     "margin-right": "auto",
-            //   },
-            //   type: "divider",
-            // },
-            // {
-            //   items: ["sensor.uptime_router", "sensor.installerad_routeros"],
-            //   head: {
-            //     entity: "binary_sensor.router",
-            //   },
-            //   type: "custom:fold-entity-row",
-            //   group_config: {
-            //     icon: "mdi:router",
-            //   },
-            // },
-            // {
-            //   items: [
-            //     "sensor.uptime_router_server",
-            //     "sensor.installerad_routeros_server",
-            //   ],
-            //   head: {
-            //     entity: "binary_sensor.router_server",
-            //   },
-            //   type: "custom:fold-entity-row",
-            //   group_config: {
-            //     icon: "mdi:router",
-            //   },
-            // },
           ],
           show_header_toggle: false,
+          state_color: true,
           type: "entities",
           title: "Network",
         },
@@ -422,29 +252,10 @@ export const demoLovelaceKernehed: DemoConfig["lovelace"] = () => ({
             "binary_sensor.ubiquiti_switch",
             "binary_sensor.ubiquiti_nvr",
             "binary_sensor.entre_kamera",
-            // {
-            //   items: ["sensor.uptime_ap_1"],
-            //   head: {
-            //     entity: "binary_sensor.accesspunkt_1",
-            //   },
-            //   type: "custom:fold-entity-row",
-            //   group_config: {
-            //     icon: "router-wireless",
-            //   },
-            // },
-            // {
-            //   items: ["sensor.uptime_ap_2"],
-            //   head: {
-            //     entity: "binary_sensor.accesspunkt_2",
-            //   },
-            //   type: "custom:fold-entity-row",
-            //   group_config: {
-            //     icon: "router-wireless",
-            //   },
-            // },
             "sensor.total_clients_wireless",
           ],
           show_header_toggle: false,
+          state_color: true,
           type: "entities",
           title: "Ubiquiti",
         },

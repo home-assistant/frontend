@@ -1,20 +1,45 @@
+import {
+  internalProperty,
+  property,
+  PropertyValues,
+  UpdatingElement,
+} from "lit-element";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
+import { computeCardSize } from "../common/compute-card-size";
 import { evaluateFilter } from "../common/evaluate-filter";
+import { findEntities } from "../common/find-entities";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createCardElement } from "../create-element/create-card-element";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { EntityFilterCardConfig } from "./types";
-import {
-  property,
-  internalProperty,
-  PropertyValues,
-  UpdatingElement,
-} from "lit-element";
-import { computeCardSize } from "../common/compute-card-size";
 
 class EntityFilterCard extends UpdatingElement implements LovelaceCard {
+  public static getStubConfig(
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ): EntityFilterCardConfig {
+    const maxEntities = 3;
+    const foundEntities = findEntities(
+      hass,
+      maxEntities,
+      entities,
+      entitiesFallback,
+      ["light", "switch", "sensor"]
+    );
+
+    return {
+      type: "entity-filter",
+      entities: foundEntities,
+      state_filter: [
+        foundEntities[0] ? hass.states[foundEntities[0]].state : "",
+      ],
+      card: { type: "entities" },
+    };
+  }
+
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public isPanel = false;
@@ -36,8 +61,8 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
   }
 
   public setConfig(config: EntityFilterCardConfig): void {
-    if (!config.entities || !Array.isArray(config.entities)) {
-      throw new Error("entities must be specified.");
+    if (!config.entities.length || !Array.isArray(config.entities)) {
+      throw new Error("Entities must be specified");
     }
 
     if (
@@ -49,7 +74,7 @@ class EntityFilterCard extends UpdatingElement implements LovelaceCard {
           Array.isArray(entity.state_filter)
       )
     ) {
-      throw new Error("Incorrect filter config.");
+      throw new Error("Incorrect filter config");
     }
 
     this._configEntities = processConfigEntities(config.entities);

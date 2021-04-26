@@ -1,13 +1,10 @@
-interface LoadedCodeMirror {
-  codeMirror: any;
-  codeMirrorCss: any;
-}
+let loaded: Promise<typeof import("./codemirror")>;
 
-let loaded: Promise<LoadedCodeMirror>;
-
-export const loadCodeMirror = async (): Promise<LoadedCodeMirror> => {
+export const loadCodeMirror = async (): Promise<
+  typeof import("./codemirror")
+> => {
   if (!loaded) {
-    loaded = import(/* webpackChunkName: "codemirror" */ "./codemirror");
+    loaded = import("./codemirror");
   }
   return loaded;
 };

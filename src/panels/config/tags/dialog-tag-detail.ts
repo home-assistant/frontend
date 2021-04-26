@@ -10,7 +10,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
@@ -73,7 +72,7 @@ class DialogTagDetail extends LitElement
           this.hass,
           this._params.entry
             ? this._params.entry.name || this._params.entry.id
-            : this.hass!.localize("ui.panel.config.tags.detail.new_tag")
+            : this.hass!.localize("ui.panel.config.tag.detail.new_tag")
         )}
       >
         <div>
@@ -81,7 +80,7 @@ class DialogTagDetail extends LitElement
           <div class="form">
             ${this._params.entry
               ? html`${this.hass!.localize(
-                  "ui.panel.config.tags.detail.tag_id"
+                  "ui.panel.config.tag.detail.tag_id"
                 )}:
                 ${this._params.entry.id}`
               : ""}
@@ -90,11 +89,9 @@ class DialogTagDetail extends LitElement
               .value=${this._name}
               .configValue=${"name"}
               @value-changed=${this._valueChanged}
-              .label="${this.hass!.localize(
-                "ui.panel.config.tags.detail.name"
-              )}"
+              .label="${this.hass!.localize("ui.panel.config.tag.detail.name")}"
               .errorMessage="${this.hass!.localize(
-                "ui.panel.config.tags.detail.required_error_msg"
+                "ui.panel.config.tag.detail.required_error_msg"
               )}"
               required
               auto-validate
@@ -105,10 +102,10 @@ class DialogTagDetail extends LitElement
                   .configValue=${"id"}
                   @value-changed=${this._valueChanged}
                   .label=${this.hass!.localize(
-                    "ui.panel.config.tags.detail.tag_id"
+                    "ui.panel.config.tag.detail.tag_id"
                   )}
                   .placeholder=${this.hass!.localize(
-                    "ui.panel.config.tags.detail.tag_id_placeholder"
+                    "ui.panel.config.tag.detail.tag_id_placeholder"
                   )}
                 ></paper-input>`
               : ""}
@@ -118,14 +115,14 @@ class DialogTagDetail extends LitElement
                 <div>
                   <p>
                     ${this.hass!.localize(
-                      "ui.panel.config.tags.detail.usage",
+                      "ui.panel.config.tag.detail.usage",
                       "companion_link",
                       html`<a
                         href="https://companion.home-assistant.io/"
                         target="_blank"
                         rel="noreferrer"
                         >${this.hass!.localize(
-                          "ui.panel.config.tags.detail.companion_apps"
+                          "ui.panel.config.tag.detail.companion_apps"
                         )}</a
                       >`
                     )}
@@ -152,7 +149,7 @@ class DialogTagDetail extends LitElement
                 @click="${this._deleteEntry}"
                 .disabled=${this._submitting}
               >
-                ${this.hass!.localize("ui.panel.config.tags.detail.delete")}
+                ${this.hass!.localize("ui.panel.config.tag.detail.delete")}
               </mwc-button>
             `
           : html``}
@@ -162,8 +159,8 @@ class DialogTagDetail extends LitElement
           .disabled=${this._submitting}
         >
           ${this._params.entry
-            ? this.hass!.localize("ui.panel.config.tags.detail.update")
-            : this.hass!.localize("ui.panel.config.tags.detail.create")}
+            ? this.hass!.localize("ui.panel.config.tag.detail.update")
+            : this.hass!.localize("ui.panel.config.tag.detail.create")}
         </mwc-button>
         ${this._params.openWrite && !this._params.entry
           ? html` <mwc-button
@@ -172,7 +169,7 @@ class DialogTagDetail extends LitElement
               .disabled=${this._submitting}
             >
               ${this.hass!.localize(
-                "ui.panel.config.tags.detail.create_and_write"
+                "ui.panel.config.tag.detail.create_and_write"
               )}
             </mwc-button>`
           : ""}
@@ -231,7 +228,7 @@ class DialogTagDetail extends LitElement
   private async _generateQR() {
     const qrcode = await import("qrcode");
     const canvas = await qrcode.toCanvas(
-      `https://home-assistant.io/tag/${this._params?.entry?.id}`,
+      `https://www.home-assistant.io/tag/${this._params!.entry!.id}`,
       {
         width: 180,
         errorCorrectionLevel: "Q",

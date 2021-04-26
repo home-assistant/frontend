@@ -3,49 +3,7 @@ import { DemoConfig } from "../types";
 
 export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
   name: "Kingia Castle",
-  resources: [
-    // {
-    //   url: "/local/custom_ui/dark-sky-weather-card.js?v=4",
-    //   type: "js",
-    // },
-    // {
-    //   url: "/local/custom_ui/mini-media-player-bundle.js?v=0.9.8",
-    //   type: "module",
-    // },
-    // {
-    //   url: "/local/custom_ui/tracker-card.js?v=0.1.5",
-    //   type: "js",
-    // },
-    // {
-    //   url: "/local/custom_ui/surveillance-card.js?v=0.0.1",
-    //   type: "module",
-    // },
-    // {
-    //   url: "/local/custom_ui/mini-graph-card-bundle.js?v=0.1.0",
-    //   type: "module",
-    // },
-    // {
-    //   url: "/local/custom_ui/slider-entity-row.js?v=d6da75",
-    //   type: "js",
-    // },
-    // {
-    //   url:
-    //     "/local/custom_ui/compact-custom-header/compact-custom-header.js?v=0.2.7",
-    //   type: "js",
-    // },
-    // {
-    //   url: "/local/custom_ui/waze-card.js?v=1.1.1",
-    //   type: "js",
-    // },
-    // {
-    //   url: "/local/custom_ui/circle-sensor-card.js?v=1.2.0",
-    //   type: "module",
-    // },
-    // {
-    //   url: "/local/custom_ui/monster-card.js?v=0.2.3",
-    //   type: "js",
-    // },
-  ],
+  resources: [],
   views: [
     {
       cards: [
@@ -603,89 +561,6 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
         },
         {
           cards: [
-            // {
-            //   style: {
-            //     "background-image": 'url("/assets/jimpower/cardbackK.png")',
-            //     "background-size": "100% 400px",
-            //     "box-shadow": "3px 3px rgba(0,0,0,0.4)",
-            //     "background-repeat": "no-repeat",
-            //     color: "#999999",
-            //     "border-radius": "20px",
-            //     border: "solid 1px rgba(100,100,100,0.3)",
-            //     "background-color": "rgba(50,50,50,0.3)",
-            //   },
-            //   type: "custom:card-modder",
-            //   card: {
-            //     entity_visibility: "sensor.dark_sky_visibility",
-            //     entity_sun: "sun.sun",
-            //     entity_daily_summary:
-            //       "sensor.bom_gc_forecast_detailed_summary_0",
-            //     entity_temperature: "sensor.bom_temp",
-            //     entity_forecast_high_temp_3:
-            //       "sensor.bom_gc_forecast_max_temp_c_3",
-            //     entity_forecast_high_temp_2:
-            //       "sensor.bom_gc_forecast_max_temp_c_2",
-            //     entity_forecast_high_temp_5:
-            //       "sensor.bom_gc_forecast_max_temp_c_5",
-            //     entity_forecast_high_temp_4:
-            //       "sensor.bom_gc_forecast_max_temp_c_4",
-            //     entity_wind_speed: "sensor.bom_wind_sp",
-            //     entity_forecast_icon_4: "sensor.dark_sky_icon_4",
-            //     entity_forecast_icon_5: "sensor.dark_sky_icon_5",
-            //     entity_forecast_icon_2: "sensor.dark_sky_icon_2",
-            //     entity_forecast_icon_3: "sensor.dark_sky_icon_3",
-            //     entity_forecast_icon_1: "sensor.dark_sky_icon_1",
-            //     entity_forecast_high_temp_1:
-            //       "sensor.bom_gc_forecast_max_temp_c_1",
-            //     entity_wind_bearing: "sensor.bom_wind_bear",
-            //     entity_forecast_low_temp_2:
-            //       "sensor.bom_gc_forecast_min_temp_c_2",
-            //     entity_forecast_low_temp_3:
-            //       "sensor.bom_gc_forecast_min_temp_c_3",
-            //     entity_pressure: "sensor.bom_pres",
-            //     entity_forecast_low_temp_1:
-            //       "sensor.bom_gc_forecast_min_temp_c_1",
-            //     entity_forecast_low_temp_4:
-            //       "sensor.bom_gc_forecast_min_temp_c_4",
-            //     entity_forecast_low_temp_5:
-            //       "sensor.bom_gc_forecast_min_temp_c_5",
-            //     entity_humidity: "sensor.bom_humd",
-            //     type: "custom:dark-sky-weather-card",
-            //     entity_current_conditions: "sensor.dark_sky_icon",
-            //   },
-            // },
-            // {
-            //   style: {
-            //     "background-image": 'url("/assets/jimpower/home/waze_5.png")',
-            //     "background-size": "100% 400px",
-            //     "box-shadow": "3px 3px rgba(0,0,0,0.4)",
-            //     "background-repeat": "no-repeat",
-            //     "border-radius": "20px",
-            //     border: "solid 1px rgba(100,100,100,0.3)",
-            //     "background-color": "rgba(50,50,50,0.3)",
-            //   },
-            //   type: "custom:card-modder",
-            //   card: {
-            //     entities: [
-            //       {
-            //         name: "James",
-            //         zone: "zone.home",
-            //         entity: "sensor.james_to_home",
-            //       },
-            //       {
-            //         name: "Tina",
-            //         zone: "zone.home",
-            //         entity: "sensor.tina_to_home",
-            //       },
-            //       {
-            //         name: "Work",
-            //         zone: "zone.powertec",
-            //         entity: "sensor.commute_to_work",
-            //       },
-            //     ],
-            //     type: "custom:waze-card",
-            //   },
-            // },
             {
               style: {
                 "border-radius": "20px",
@@ -722,46 +597,8 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
           ],
           type: "vertical-stack",
         },
-        // {
-        //   cards: [
-        //     {
-        //       style: {
-        //         "border-radius": "20px",
-        //         color: "#999999",
-        //         "box-shadow": "3px 3px rgba(0,0,0,0.4)",
-        //         border: "solid 1px rgba(100,100,100,0.3)",
-        //       },
-        //       type: "custom:card-modder",
-        //       card: {
-        //         type: "picture-entity",
-        //         entity: "camera.bom_radar",
-        //       },
-        //     },
-        //     // {
-        //     //   style: {
-        //     //     "background-image": 'url("/assets/jimpower/cardbackK.png")',
-        //     //     "background-size": "100% 525px",
-        //     //     "box-shadow": "3px 3px rgba(0,0,0,0.4)",
-        //     //     "background-repeat": "no-repeat",
-        //     //     color: "#999999",
-        //     //     "border-radius": "20px",
-        //     //     border: "solid 1px rgba(100,100,100,0.3)",
-        //     //     "background-color": "rgba(50,50,50,0.3)",
-        //     //   },
-        //     //   type: "custom:card-modder",
-        //     //   card: {
-        //     //     title: null,
-        //     //     type: "custom:tracker-card",
-        //     //     trackers: [
-        //     //       "sensor.custom_card_tracker",
-        //     //       "sensor.custom_component_tracker",
-        //     //     ],
-        //     //   },
-        //     // },
-        //   ],
-        //   type: "vertical-stack",
-        // },
       ],
+      path: "home",
       icon: "mdi:castle",
       name: "Home",
       background:
@@ -882,25 +719,12 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
                 image: "/assets/jimpower/security/air_8.jpg",
                 elements: [
                   {
-                    image:
-                      "https://www.airvisual.com/assets/aqi/ic-face-1-green.svg",
-                    type: "image",
-                    style: {
-                      width: "80px",
-                      top: "30%",
-                      left: "12%",
-                      transform: "none",
-                      height: "80px",
-                    },
-                    entity: "sensor.us_air_pollution_level_2",
-                  },
-                  {
                     style: {
                       color: "hsl(120, 41%, 39%)",
                       top: "50%",
                       "font-weight": 600,
-                      "font-size": "20px",
-                      left: "44%",
+                      "font-size": "50px",
+                      left: "30%",
                     },
                     type: "state-label",
                     entity: "sensor.us_air_pollution_level_2",
@@ -920,7 +744,7 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
                     style: {
                       color: "white",
                       top: "80%",
-                      left: "52%",
+                      left: "48%",
                     },
                     type: "state-icon",
                     entity: "sensor.us_main_pollutant_2",
@@ -1411,6 +1235,7 @@ export const demoLovelaceJimpower: DemoConfig["lovelace"] = () => ({
           type: "vertical-stack",
         },
       ],
+      path: "security",
       icon: "hass:shield-home",
       name: "Security",
       background:

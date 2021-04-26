@@ -653,7 +653,7 @@ export const demoEntitiesJimpower: DemoConfig["entities"] = () =>
       entity_id: "binary_sensor.smoke_sensor_158d0001b8ddc7",
       state: "off",
       attributes: {
-        Density: 0,
+        density: 0,
         battery_level: 59,
         friendly_name: "Downstairs Smoke Detector",
         device_class: "smoke",
@@ -663,7 +663,7 @@ export const demoEntitiesJimpower: DemoConfig["entities"] = () =>
       entity_id: "binary_sensor.smoke_sensor_158d0001b8deba",
       state: "off",
       attributes: {
-        Density: 0,
+        density: 0,
         battery_level: 65,
         friendly_name: "Upstairs Smoke Detector",
         device_class: "smoke",

@@ -1,6 +1,7 @@
 import { ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
+import { TimestampRenderingFormats } from "../components/types";
 
 export interface EntityConfig {
   entity: string;
@@ -17,7 +18,7 @@ export interface EntityFilterEntityConfig extends EntityConfig {
 }
 export interface DividerConfig {
   type: "divider";
-  style: { [key: string]: string };
+  style: Record<string, string>;
 }
 export interface SectionConfig {
   type: "section";
@@ -28,6 +29,8 @@ export interface WeblinkConfig {
   name?: string;
   icon?: string;
   url: string;
+  new_tab?: boolean;
+  download?: boolean;
 }
 export interface TextConfig {
   type: "text";
@@ -38,7 +41,7 @@ export interface TextConfig {
 export interface CallServiceConfig extends EntityConfig {
   type: "call-service";
   service: string;
-  service_data?: { [key: string]: any };
+  service_data?: Record<string, any>;
   action_name?: string;
 }
 export interface ButtonRowConfig extends EntityConfig {
@@ -84,8 +87,10 @@ export interface ConditionalRowConfig extends EntityConfig {
   row: EntityConfig;
   conditions: Condition[];
 }
+
 export interface AttributeRowConfig extends EntityConfig {
   attribute: string;
   prefix?: string;
   suffix?: string;
+  format?: TimestampRenderingFormats;
 }

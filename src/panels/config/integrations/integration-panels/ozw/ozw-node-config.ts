@@ -1,12 +1,11 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-fab";
 import {
   css,
   CSSResultArray,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   property,
   TemplateResult,
 } from "lit-element";
@@ -14,21 +13,21 @@ import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";
+import {
+  fetchOZWNodeConfig,
+  fetchOZWNodeMetadata,
+  fetchOZWNodeStatus,
+  OZWDevice,
+  OZWDeviceConfig,
+  OZWDeviceMetaDataResponse,
+} from "../../../../../data/ozw";
+import { ERR_NOT_FOUND } from "../../../../../data/websocket_api";
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
-import {
-  fetchOZWNodeStatus,
-  fetchOZWNodeMetadata,
-  fetchOZWNodeConfig,
-  OZWDevice,
-  OZWDeviceMetaDataResponse,
-  OZWDeviceConfig,
-} from "../../../../../data/ozw";
-import { ERR_NOT_FOUND } from "../../../../../data/websocket_api";
-import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
 import { ozwNodeTabs } from "./ozw-node-router";
+import { showOZWRefreshNodeDialog } from "./show-dialog-ozw-refresh-node";
 
 @customElement("ozw-node-config")
 class OZWNodeConfig extends LitElement {
@@ -68,9 +67,10 @@ class OZWNodeConfig extends LitElement {
     if (this._error) {
       return html`
         <hass-error-screen
-          .error="${this.hass.localize(
+          .hass=${this.hass}
+          .error=${this.hass.localize(
             "ui.panel.config.ozw.node." + this._error
-          )}"
+          )}
         ></hass-error-screen>
       `;
     }

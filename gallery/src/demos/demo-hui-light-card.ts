@@ -1,6 +1,11 @@
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-/* eslint-plugin-disable lit */
-import { PolymerElement } from "@polymer/polymer/polymer-element";
+import {
+  customElement,
+  html,
+  LitElement,
+  PropertyValues,
+  query,
+  TemplateResult,
+} from "lit-element";
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -8,29 +13,43 @@ import "../components/demo-cards";
 const ENTITIES = [
   getEntity("light", "bed_light", "on", {
     friendly_name: "Bed Light",
-    brightness: 130,
+    brightness: 255,
   }),
-  getEntity("light", "dim", "off", {
+  getEntity("light", "dim_on", "on", {
+    friendly_name: "Dining Room",
+    supported_features: 1,
+    brightness: 100,
+  }),
+  getEntity("light", "dim_off", "off", {
+    friendly_name: "Dining Room",
     supported_features: 1,
   }),
   getEntity("light", "unavailable", "unavailable", {
+    friendly_name: "Lost Light",
     supported_features: 1,
   }),
 ];
 
 const CONFIGS = [
   {
-    heading: "Basic example",
+    heading: "Switchable Light",
     config: `
 - type: light
   entity: light.bed_light
     `,
   },
   {
-    heading: "Dim",
+    heading: "Dimmable Light On",
     config: `
 - type: light
-  entity: light.dim
+  entity: light.dim_on
+    `,
+  },
+  {
+    heading: "Dimmable Light Off",
+    config: `
+- type: light
+  entity: light.dim_off
     `,
   },
   {
@@ -49,24 +68,19 @@ const CONFIGS = [
   },
 ];
 
-class DemoLightEntity extends PolymerElement {
-  static get template() {
-    return html` <demo-cards id="demos" configs="[[_configs]]"></demo-cards> `;
+@customElement("demo-hui-light-card")
+class DemoLightEntity extends LitElement {
+  @query("#demos") private _demoRoot!: HTMLElement;
+
+  protected render(): TemplateResult {
+    return html`<demo-cards id="demos" .configs=${CONFIGS}></demo-cards>`;
   }
 
-  static get properties() {
-    return {
-      _configs: {
-        type: Object,
-        value: CONFIGS,
-      },
-    };
-  }
-
-  public ready() {
-    super.ready();
-    const hass = provideHass(this.$.demos);
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.firstUpdated(changedProperties);
+    const hass = provideHass(this._demoRoot);
     hass.updateTranslations(null, "en");
+    hass.updateTranslations("lovelace", "en");
     hass.addEntities(ENTITIES);
   }
 }

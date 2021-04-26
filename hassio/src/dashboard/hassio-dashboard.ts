@@ -7,11 +7,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { HassioHassOSInfo } from "../../../src/data/hassio/host";
-import {
-  HassioHomeAssistantInfo,
-  HassioSupervisorInfo,
-} from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
@@ -23,37 +19,34 @@ import "./hassio-update";
 class HassioDashboard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
-
-  @property({ attribute: false }) public supervisorInfo!: HassioSupervisorInfo;
-
-  @property({ attribute: false }) public hassInfo!: HassioHomeAssistantInfo;
-
-  @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
 
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
-        hassio
-        main-page
         .route=${this.route}
         .tabs=${supervisorTabs}
+        main-page
+        supervisor
       >
-        <span slot="header">Dashboard</span>
+        <span slot="header">
+          ${this.supervisor.localize("panel.dashboard")}
+        </span>
         <div class="content">
           <hassio-update
             .hass=${this.hass}
-            .hassInfo=${this.hassInfo}
-            .supervisorInfo=${this.supervisorInfo}
-            .hassOsInfo=${this.hassOsInfo}
+            .supervisor=${this.supervisor}
           ></hassio-update>
           <hassio-addons
             .hass=${this.hass}
-            .addons=${this.supervisorInfo.addons}
+            .supervisor=${this.supervisor}
           ></hassio-addons>
         </div>
       </hass-tabs-subpage>

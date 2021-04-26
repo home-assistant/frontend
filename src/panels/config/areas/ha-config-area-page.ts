@@ -81,7 +81,8 @@ class HaConfigAreaPage extends LitElement {
     if (!area) {
       return html`
         <hass-error-screen
-          error="${this.hass.localize("ui.panel.config.areas.area_not_found")}"
+          .hass=${this.hass}
+          .error=${this.hass.localize("ui.panel.config.areas.area_not_found")}
         ></hass-error-screen>
       `;
     }
@@ -312,8 +313,8 @@ class HaConfigAreaPage extends LitElement {
             text: this.hass.localize(
               "ui.panel.config.areas.delete.confirmation_text"
             ),
-            dismissText: this.hass.localize("ui.common.no"),
-            confirmText: this.hass.localize("ui.common.yes"),
+            dismissText: this.hass.localize("ui.common.cancel"),
+            confirmText: this.hass.localize("ui.common.delete"),
           }))
         ) {
           return false;

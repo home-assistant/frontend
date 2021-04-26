@@ -21,7 +21,7 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
-      throw new Error("Invalid Configuration: 'entity' required");
+      throw new Error("Entity must be specified");
     }
 
     this._config = config;
@@ -52,7 +52,7 @@ class HuiHumidifierEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         .secondaryText=${stateObj.attributes.humidity
           ? `${this.hass!.localize("ui.card.humidifier.humidity")}:
-            ${stateObj.attributes.humidity}%${
+            ${stateObj.attributes.humidity} %${
               stateObj.attributes.mode
                 ? ` (${
                     this.hass!.localize(

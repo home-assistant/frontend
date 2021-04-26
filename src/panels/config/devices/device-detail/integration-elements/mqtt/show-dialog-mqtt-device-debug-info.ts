@@ -6,9 +6,7 @@ export interface MQTTDeviceDebugInfoDialogParams {
 }
 
 export const loadMQTTDeviceDebugInfoDialog = () =>
-  import(
-    /* webpackChunkName: "dialog-mqtt-device-debug-info" */ "./dialog-mqtt-device-debug-info"
-  );
+  import("./dialog-mqtt-device-debug-info");
 
 export const showMQTTDeviceDebugInfoDialog = (
   element: HTMLElement,

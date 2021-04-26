@@ -4,8 +4,8 @@ import { CustomPanelInfo } from "../../data/panel_custom";
 import { HomeAssistant, Route } from "../../types";
 import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
 import {
-  loadCustomPanel,
   getUrl,
+  loadCustomPanel,
 } from "../../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../../util/custom-panel/set-custom-panel-properties";
 

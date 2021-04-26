@@ -16,13 +16,12 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
-import Vibrant from "node-vibrant";
-import { Swatch } from "node-vibrant/lib/color";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
+import { extractColors } from "../../../common/image/extract_color";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -31,24 +30,17 @@ import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
+  computeMediaControls,
   computeMediaDescription,
-  CONTRAST_RATIO,
-  ControlButton,
   getCurrentProgress,
   MediaPickedEvent,
-  SUPPORTS_PLAY,
+  MediaPlayerEntity,
   SUPPORT_BROWSE_MEDIA,
-  SUPPORT_NEXT_TRACK,
-  SUPPORT_PAUSE,
-  SUPPORT_PREVIOUS_TRACK,
   SUPPORT_SEEK,
-  SUPPORT_STOP,
-  SUPPORT_TURN_OFF,
   SUPPORT_TURN_ON,
 } from "../../../data/media-player";
-import type { HomeAssistant, MediaEntity } from "../../../types";
-import { contrast } from "../common/color/contrast";
-import { findEntities } from "../common/find-entites";
+import type { HomeAssistant } from "../../../types";
+import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-marquee";
@@ -56,120 +48,10 @@ import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import { MediaControlCardConfig } from "./types";
 
-function getContrastRatio(
-  rgb1: [number, number, number],
-  rgb2: [number, number, number]
-): number {
-  return Math.round((contrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
-}
-
-// How much the total diff between 2 RGB colors can be
-// to be considered similar.
-const COLOR_SIMILARITY_THRESHOLD = 150;
-
-// For debug purposes, is being tree shaken.
-const DEBUG_COLOR = __DEV__ && false;
-
-const logColor = (
-  color: Swatch,
-  label = `${color.getHex()} - ${color.getPopulation()}`
-) =>
-  // eslint-disable-next-line no-console
-  console.log(
-    `%c${label}`,
-    `color: ${color.getBodyTextColor()}; background-color: ${color.getHex()}`
-  );
-
-const customGenerator = (colors: Swatch[]) => {
-  colors.sort((colorA, colorB) => colorB.population - colorA.population);
-
-  const backgroundColor = colors[0];
-  let foregroundColor: string | undefined;
-
-  const contrastRatios = new Map<Swatch, number>();
-  const approvedContrastRatio = (color: Swatch) => {
-    if (!contrastRatios.has(color)) {
-      contrastRatios.set(
-        color,
-        getContrastRatio(backgroundColor.rgb, color.rgb)
-      );
-    }
-
-    return contrastRatios.get(color)! > CONTRAST_RATIO;
-  };
-
-  // We take each next color and find one that has better contrast.
-  for (let i = 1; i < colors.length && foregroundColor === undefined; i++) {
-    // If this color matches, score, take it.
-    if (approvedContrastRatio(colors[i])) {
-      if (DEBUG_COLOR) {
-        logColor(colors[i], "PICKED");
-      }
-      foregroundColor = colors[i].hex;
-      break;
-    }
-
-    // This color has the wrong contrast ratio, but it is the right color.
-    // Let's find similar colors that might have the right contrast ratio
-
-    const currentColor = colors[i];
-    if (DEBUG_COLOR) {
-      logColor(colors[i], "Finding similar color with better contrast");
-    }
-
-    for (let j = i + 1; j < colors.length; j++) {
-      const compareColor = colors[j];
-
-      // difference. 0 is same, 765 max difference
-      const diffScore =
-        Math.abs(currentColor.rgb[0] - compareColor.rgb[0]) +
-        Math.abs(currentColor.rgb[1] - compareColor.rgb[1]) +
-        Math.abs(currentColor.rgb[2] - compareColor.rgb[2]);
-
-      if (DEBUG_COLOR) {
-        logColor(colors[j], `${colors[j].hex} - ${diffScore}`);
-      }
-
-      if (diffScore > COLOR_SIMILARITY_THRESHOLD) {
-        continue;
-      }
-
-      if (approvedContrastRatio(compareColor)) {
-        if (DEBUG_COLOR) {
-          logColor(compareColor, "PICKED");
-        }
-        foregroundColor = compareColor.hex;
-        break;
-      }
-    }
-  }
-
-  if (foregroundColor === undefined) {
-    foregroundColor = backgroundColor.bodyTextColor;
-  }
-
-  if (DEBUG_COLOR) {
-    // eslint-disable-next-line no-console
-    console.log();
-    // eslint-disable-next-line no-console
-    console.log(
-      "%cPicked colors",
-      `color: ${foregroundColor}; background-color: ${backgroundColor.hex}; font-weight: bold; padding: 16px;`
-    );
-    colors.forEach((color) => logColor(color));
-    // eslint-disable-next-line no-console
-    console.log();
-  }
-
-  return [foregroundColor, backgroundColor.hex];
-};
-
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(
-      /* webpackChunkName: "hui-media-control-card-editor" */ "../editor/config-elements/hui-media-control-card-editor"
-    );
+    await import("../editor/config-elements/hui-media-control-card-editor");
     return document.createElement("hui-media-control-card-editor");
   }
 
@@ -219,7 +101,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: MediaControlCardConfig): void {
     if (!config.entity || config.entity.split(".")[0] !== "media_player") {
-      throw new Error("Specify an entity from within the media_player domain.");
+      throw new Error("Specify an entity from within the media_player domain");
     }
 
     this._config = config;
@@ -297,7 +179,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       UNAVAILABLE_STATES.includes(state) ||
       (state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
-    const controls = this._getControls();
+    const controls = computeMediaControls(stateObj);
     const showControls =
       controls &&
       (!this._veryNarrow || isOffState || state === "idle" || state === "on");
@@ -361,82 +243,78 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ></ha-icon-button>
             </div>
           </div>
-          ${isUnavailable
-            ? ""
-            : html`
-                <div
-                  class="title-controls"
-                  style=${styleMap({
-                    paddingRight: isOffState
-                      ? "0"
-                      : `${this._cardHeight - 40}px`,
-                  })}
-                >
-                  ${!mediaDescription && !stateObj.attributes.media_title
-                    ? ""
-                    : html`
-                        <div class="media-info">
-                          <hui-marquee
-                            .text=${stateObj.attributes.media_title ||
-                            mediaDescription}
-                            .active=${this._marqueeActive}
-                            @mouseover=${this._marqueeMouseOver}
-                            @mouseleave=${this._marqueeMouseLeave}
-                          ></hui-marquee>
-                          ${!stateObj.attributes.media_title
-                            ? ""
-                            : mediaDescription}
-                        </div>
-                      `}
-                  ${!showControls
-                    ? ""
-                    : html`
-                        <div class="controls">
-                          ${controls!.map(
-                            (control) => html`
-                              <ha-icon-button
-                                .title=${this.hass.localize(
-                                  `ui.card.media_player.${control.action}`
-                                )}
-                                .icon=${control.icon}
-                                action=${control.action}
-                                @click=${this._handleClick}
-                              ></ha-icon-button>
-                            `
-                          )}
-                          ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
-                            ? html`
-                                <mwc-icon-button
-                                  class="browse-media"
+          ${!isUnavailable &&
+          (mediaDescription || stateObj.attributes.media_title || showControls)
+            ? html`
+                <div>
+                  <div class="title-controls">
+                    ${!mediaDescription && !stateObj.attributes.media_title
+                      ? ""
+                      : html`
+                          <div class="media-info">
+                            <hui-marquee
+                              .text=${stateObj.attributes.media_title ||
+                              mediaDescription}
+                              .active=${this._marqueeActive}
+                              @mouseover=${this._marqueeMouseOver}
+                              @mouseleave=${this._marqueeMouseLeave}
+                            ></hui-marquee>
+                            ${!stateObj.attributes.media_title
+                              ? ""
+                              : mediaDescription}
+                          </div>
+                        `}
+                    ${!showControls
+                      ? ""
+                      : html`
+                          <div class="controls">
+                            ${controls!.map(
+                              (control) => html`
+                                <ha-icon-button
                                   .title=${this.hass.localize(
-                                    "ui.card.media_player.browse_media"
+                                    `ui.card.media_player.${control.action}`
                                   )}
-                                  @click=${this._handleBrowseMedia}
-                                  ><ha-svg-icon
-                                    .path=${mdiPlayBoxMultiple}
-                                  ></ha-svg-icon
-                                ></mwc-icon-button>
+                                  .icon=${control.icon}
+                                  action=${control.action}
+                                  @click=${this._handleClick}
+                                ></ha-icon-button>
                               `
-                            : ""}
-                        </div>
+                            )}
+                            ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
+                              ? html`
+                                  <mwc-icon-button
+                                    class="browse-media"
+                                    .title=${this.hass.localize(
+                                      "ui.card.media_player.browse_media"
+                                    )}
+                                    @click=${this._handleBrowseMedia}
+                                    ><ha-svg-icon
+                                      .path=${mdiPlayBoxMultiple}
+                                    ></ha-svg-icon
+                                  ></mwc-icon-button>
+                                `
+                              : ""}
+                          </div>
+                        `}
+                  </div>
+                  ${!this._showProgressBar
+                    ? ""
+                    : html`
+                        <paper-progress
+                          .max=${stateObj.attributes.media_duration}
+                          style=${styleMap({
+                            "--paper-progress-active-color":
+                              this._foregroundColor || "var(--accent-color)",
+                            cursor: supportsFeature(stateObj, SUPPORT_SEEK)
+                              ? "pointer"
+                              : "initial",
+                          })}
+                          @click=${this._handleSeek}
+                        ></paper-progress>
                       `}
                 </div>
-                ${!this._showProgressBar
-                  ? ""
-                  : html`
-                      <paper-progress
-                        .max=${stateObj.attributes.media_duration}
-                        style=${styleMap({
-                          "--paper-progress-active-color":
-                            this._foregroundColor || "var(--accent-color)",
-                          cursor: supportsFeature(stateObj, SUPPORT_SEEK)
-                            ? "pointer"
-                            : "initial",
-                        })}
-                        @click=${this._handleSeek}
-                      ></paper-progress>
-                    `}
-              `}
+              `
+            : ""}
         </div>
       </ha-card>
     `;
@@ -454,7 +332,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    if (!this._config || !this.hass || !changedProps.has("hass")) {
+    if (
+      !this._config ||
+      !this.hass ||
+      (!changedProps.has("_config") && !changedProps.has("hass"))
+    ) {
       return;
     }
 
@@ -516,88 +398,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     if (this._image !== oldImage) {
       this._setColors();
     }
-  }
-
-  private _getControls(): ControlButton[] | undefined {
-    const stateObj = this._stateObj;
-
-    if (!stateObj) {
-      return undefined;
-    }
-
-    const state = stateObj.state;
-
-    if (UNAVAILABLE_STATES.includes(state)) {
-      return undefined;
-    }
-
-    if (state === "off") {
-      return supportsFeature(stateObj, SUPPORT_TURN_ON)
-        ? [
-            {
-              icon: "hass:power",
-              action: "turn_on",
-            },
-          ]
-        : undefined;
-    }
-
-    if (state === "on") {
-      return supportsFeature(stateObj, SUPPORT_TURN_OFF)
-        ? [
-            {
-              icon: "hass:power",
-              action: "turn_off",
-            },
-          ]
-        : undefined;
-    }
-
-    if (state === "idle") {
-      return supportsFeature(stateObj, SUPPORTS_PLAY)
-        ? [
-            {
-              icon: "hass:play",
-              action: "media_play",
-            },
-          ]
-        : undefined;
-    }
-
-    const buttons: ControlButton[] = [];
-
-    if (supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)) {
-      buttons.push({
-        icon: "hass:skip-previous",
-        action: "media_previous_track",
-      });
-    }
-
-    if (
-      (state === "playing" &&
-        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
-          supportsFeature(stateObj, SUPPORT_STOP))) ||
-      (state === "paused" && supportsFeature(stateObj, SUPPORTS_PLAY))
-    ) {
-      buttons.push({
-        icon:
-          state !== "playing"
-            ? "hass:play"
-            : supportsFeature(stateObj, SUPPORT_PAUSE)
-            ? "hass:pause"
-            : "hass:stop",
-        action: "media_play_pause",
-      });
-    }
-
-    if (supportsFeature(stateObj, SUPPORT_NEXT_TRACK)) {
-      buttons.push({
-        icon: "hass:skip-next",
-        action: "media_next_track",
-      });
-    }
-
-    return buttons.length > 0 ? buttons : undefined;
   }
 
   private get _image() {
@@ -699,8 +499,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private get _stateObj(): MediaEntity | undefined {
-    return this.hass!.states[this._config!.entity] as MediaEntity;
+  private get _stateObj(): MediaPlayerEntity | undefined {
+    return this.hass!.states[this._config!.entity] as MediaPlayerEntity;
   }
 
   private _handleSeek(e: MouseEvent): void {
@@ -723,26 +523,21 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _setColors(): void {
+  private async _setColors(): Promise<void> {
     if (!this._image) {
       return;
     }
 
-    new Vibrant(this._image, {
-      colorCount: 16,
-      generator: customGenerator,
-    })
-      .getPalette()
-      .then(([foreground, background]: [string, string]) => {
-        this._backgroundColor = background;
-        this._foregroundColor = foreground;
-      })
-      .catch((err: any) => {
-        // eslint-disable-next-line no-console
-        console.error("Error getting Image Colors", err);
-        this._foregroundColor = undefined;
-        this._backgroundColor = undefined;
-      });
+    try {
+      const { foreground, background } = await extractColors(this._image);
+      this._backgroundColor = background.hex;
+      this._foregroundColor = foreground.hex;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error("Error getting Image Colors", err);
+      this._foregroundColor = undefined;
+      this._backgroundColor = undefined;
+    }
   }
 
   private _marqueeMouseOver(): void {
@@ -839,6 +634,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       .player {
         position: relative;
         padding: 16px;
+        height: 100%;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         color: var(--text-primary-color);
         transition-property: color, padding;
         transition-duration: 0.4s;
@@ -866,6 +666,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       ha-icon-button[action="media_play"],
       ha-icon-button[action="media_play_pause"],
+      ha-icon-button[action="media_pause"],
+      ha-icon-button[action="media_stop"],
       ha-icon-button[action="turn_on"],
       ha-icon-button[action="turn_off"] {
         --mdc-icon-button-size: 56px;
@@ -874,7 +676,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       mwc-icon-button.browse-media {
         position: absolute;
-        right: 0;
+        right: 4px;
         --mdc-icon-size: 24px;
       }
 
@@ -895,8 +697,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .more-info {
         position: absolute;
-        top: 8px;
-        right: 0px;
+        top: 4px;
+        right: 4px;
       }
 
       .media-info {
@@ -942,6 +744,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .narrow ha-icon-button[action="media_play"],
       .narrow ha-icon-button[action="media_play_pause"],
+      .narrow ha-icon-button[action="media_pause"],
       .narrow ha-icon-button[action="turn_on"] {
         --mdc-icon-button-size: 50px;
         --mdc-icon-size: 36px;

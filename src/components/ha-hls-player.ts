@@ -1,3 +1,4 @@
+import type HlsType from "hls.js";
 import {
   css,
   CSSResult,
@@ -14,8 +15,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
-
-type HLSModule = typeof import("hls.js");
 
 @customElement("ha-hls-player")
 class HaHLSPlayer extends LitElement {
@@ -43,7 +42,7 @@ class HaHLSPlayer extends LitElement {
 
   @internalProperty() private _attached = false;
 
-  private _hlsPolyfillInstance?: Hls;
+  private _hlsPolyfillInstance?: HlsType;
 
   private _useExoPlayer = false;
 
@@ -104,14 +103,11 @@ class HaHLSPlayer extends LitElement {
 
   private async _startHls(): Promise<void> {
     const videoEl = this._videoEl;
-    const playlist_url = this.url.replace("master_playlist", "playlist");
     const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
-    const hls = ((await import(
-      /* webpackChunkName: "hls.js" */ "hls.js"
-    )) as any).default as HLSModule;
-    let hlsSupported = hls.isSupported();
+    const Hls = (await import("hls.js")).default;
+    let hlsSupported = Hls.isSupported();
 
     if (!hlsSupported) {
       hlsSupported =
@@ -126,16 +122,29 @@ class HaHLSPlayer extends LitElement {
     }
 
     this._useExoPlayer = await useExoPlayerPromise;
-    let hevcRegexp: RegExp;
-    let masterPlaylist: string;
-    if (this._useExoPlayer) {
-      hevcRegexp = /CODECS=".*?((hev1)|(hvc1))\..*?"/;
-      masterPlaylist = await (await masterPlaylistPromise).text();
+    const masterPlaylist = await (await masterPlaylistPromise).text();
+
+    // Parse playlist assuming it is a master playlist. Match group 1 is whether hevc, match group 2 is regular playlist url
+    // See https://tools.ietf.org/html/rfc8216 for HLS spec details
+    const playlistRegexp = /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
+    const match = playlistRegexp.exec(masterPlaylist);
+    const matchTwice = playlistRegexp.exec(masterPlaylist);
+
+    // Get the regular playlist url from the input (master) playlist, falling back to the input playlist if necessary
+    // This avoids the player having to load and parse the master playlist again before loading the regular playlist
+    let playlist_url: string;
+    if (match !== null && matchTwice === null) {
+      // Only send the regular playlist url if we match exactly once
+      playlist_url = new URL(match[2], this.url).href;
+    } else {
+      playlist_url = this.url;
     }
-    if (this._useExoPlayer && hevcRegexp!.test(masterPlaylist!)) {
+
+    // If codec is HEVC and ExoPlayer is supported, use ExoPlayer.
+    if (this._useExoPlayer && match !== null && match[1] !== undefined) {
       this._renderHLSExoPlayer(playlist_url);
-    } else if (hls.isSupported()) {
-      this._renderHLSPolyfill(videoEl, hls, playlist_url);
+    } else if (Hls.isSupported()) {
+      this._renderHLSPolyfill(videoEl, Hls, playlist_url);
     } else {
       this._renderHLSNative(videoEl, playlist_url);
     }
@@ -172,7 +181,7 @@ class HaHLSPlayer extends LitElement {
 
   private async _renderHLSPolyfill(
     videoEl: HTMLVideoElement,
-    Hls: HLSModule,
+    Hls: typeof HlsType,
     url: string
   ) {
     const hls = new Hls({

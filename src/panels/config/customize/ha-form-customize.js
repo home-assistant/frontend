@@ -12,7 +12,7 @@ import hassAttributeUtil from "../../../util/hass-attributes-util";
 import "../ha-form-style";
 import "./ha-form-customize-attributes";
 
-class HaFormCustomize extends LocalizeMixin(PolymerElement) {
+export class HaFormCustomize extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style include="iron-flex ha-style ha-form-style">
@@ -73,26 +73,28 @@ class HaFormCustomize extends LocalizeMixin(PolymerElement) {
           attributes="{{newAttributes}}"
         ></ha-form-customize-attributes>
       </template>
-      <div class="form-group">
-        <paper-dropdown-menu
-          label="[[localize('ui.panel.config.customize.pick_attribute')]]"
-          class="flex"
-          dynamic-align=""
-        >
-          <paper-listbox
-            slot="dropdown-content"
-            selected="{{selectedNewAttribute}}"
+      <template is="dom-if" if="[[entity]]">
+        <div class="form-group">
+          <paper-dropdown-menu
+            label="[[localize('ui.panel.config.customize.pick_attribute')]]"
+            class="flex"
+            dynamic-align=""
           >
-            <template
-              is="dom-repeat"
-              items="[[newAttributesOptions]]"
-              as="option"
+            <paper-listbox
+              slot="dropdown-content"
+              selected="{{selectedNewAttribute}}"
             >
-              <paper-item>[[option]]</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
+              <template
+                is="dom-repeat"
+                items="[[newAttributesOptions]]"
+                as="option"
+              >
+                <paper-item>[[option]]</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+      </template>
     `;
   }
 

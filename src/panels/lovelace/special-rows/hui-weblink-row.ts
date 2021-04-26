@@ -3,10 +3,11 @@ import {
   CSSResult,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   TemplateResult,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 import "../../../components/ha-icon";
 import { HomeAssistant } from "../../../types";
 import { LovelaceRow, WeblinkConfig } from "../entity-rows/types";
@@ -19,7 +20,7 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: WeblinkConfig): void {
     if (!config || !config.url) {
-      throw new Error("Invalid Configuration: 'url' required");
+      throw new Error("URL required");
     }
 
     this._config = {
@@ -37,8 +38,9 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
     return html`
       <a
         href=${this._config.url}
-        target=${this._config.url.indexOf("://") !== -1 ? "_blank" : ""}
+        target=${ifDefined(this._computeTargetValue())}
         rel="noreferrer"
+        ?download=${this._config.download}
       >
         <ha-icon .icon="${this._config.icon}"></ha-icon>
         <div>${this._config.name}</div>
@@ -65,6 +67,15 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
         margin-left: 16px;
       }
     `;
+  }
+
+  protected _computeTargetValue(): string | undefined {
+    return this._config &&
+      (this._config.url.indexOf("://") !== -1 ||
+        this._config.new_tab === true ||
+        this._config.download === true)
+      ? "_blank"
+      : undefined;
   }
 }
 

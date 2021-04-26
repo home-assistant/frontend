@@ -3,6 +3,7 @@ import {
   LovelaceCardConfig,
   LovelaceConfig,
 } from "../../data/lovelace";
+import { FrontendTranslationData } from "../../data/translation";
 import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceRow, LovelaceRowConfig } from "./entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
@@ -17,10 +18,12 @@ declare global {
 
 export interface Lovelace {
   config: LovelaceConfig;
+  // If not set, a strategy was used to generate everything
+  rawConfig: LovelaceConfig | undefined;
   editMode: boolean;
   urlPath: string | null;
   mode: "generated" | "yaml" | "storage";
-  language: string;
+  locale: FrontendTranslationData;
   enableFullEditMode: () => void;
   setEditMode: (editMode: boolean) => void;
   saveConfig: (newConfig: LovelaceConfig) => Promise<void>;
@@ -49,6 +52,16 @@ export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
   getConfigElement?: () => LovelaceCardEditor;
 }
 
+export interface LovelaceHeaderFooterConstructor
+  extends Constructor<LovelaceHeaderFooter> {
+  getStubConfig?: (
+    hass: HomeAssistant,
+    entities: string[],
+    entitiesFallback: string[]
+  ) => LovelaceHeaderFooterConfig;
+  getConfigElement?: () => LovelaceHeaderFooterEditor;
+}
+
 export interface LovelaceRowConstructor extends Constructor<LovelaceRow> {
   getConfigElement?: () => LovelaceRowEditor;
 }
@@ -59,15 +72,22 @@ export interface LovelaceHeaderFooter extends HTMLElement {
   setConfig(config: LovelaceHeaderFooterConfig): void;
 }
 
-export interface LovelaceCardEditor extends HTMLElement {
-  hass?: HomeAssistant;
-  lovelace?: LovelaceConfig;
+export interface LovelaceCardEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceCardConfig): void;
-  refreshYamlEditor?: (focus: boolean) => void;
 }
 
-export interface LovelaceRowEditor extends HTMLElement {
-  hass?: HomeAssistant;
+export interface LovelaceHeaderFooterEditor
+  extends LovelaceGenericElementEditor {
+  setConfig(config: LovelaceHeaderFooterConfig): void;
+}
+
+export interface LovelaceRowEditor extends LovelaceGenericElementEditor {
   setConfig(config: LovelaceRowConfig): void;
-  refreshYamlEditor?: (focus: boolean) => void;
+}
+
+export interface LovelaceGenericElementEditor extends HTMLElement {
+  hass?: HomeAssistant;
+  lovelace?: LovelaceConfig;
+  setConfig(config: any): void;
+  focusYamlEditor?: () => void;
 }

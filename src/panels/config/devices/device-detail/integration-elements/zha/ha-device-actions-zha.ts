@@ -1,26 +1,24 @@
 import {
+  css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
-  TemplateResult,
-  css,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
+import { navigate } from "../../../../../../common/navigate";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
+import { fetchZHADevice, ZHADevice } from "../../../../../../data/zha";
+import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
-import {
-  ZHADevice,
-  fetchZHADevice,
-  reconfigureNode,
-} from "../../../../../../data/zha";
-import { navigate } from "../../../../../../common/navigate";
-import { showZHADeviceZigbeeInfoDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-zigbee-info";
-import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
 import { showZHAClusterDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-cluster";
+import { showZHADeviceZigbeeInfoDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-zigbee-info";
+import { showZHAReconfigureDeviceDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-reconfigure-device";
+import { showZHADeviceChildrenDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-children";
 
 @customElement("ha-device-actions-zha")
 export class HaDeviceActionsZha extends LitElement {
@@ -65,6 +63,11 @@ export class HaDeviceActionsZha extends LitElement {
             <mwc-button @click=${this._onAddDevicesClick}>
               ${this.hass!.localize("ui.dialogs.zha_device_info.buttons.add")}
             </mwc-button>
+            <mwc-button @click=${this._handleDeviceChildrenClicked}>
+              ${this.hass!.localize(
+                "ui.dialogs.zha_device_info.buttons.device_children"
+              )}
+            </mwc-button>
           `
         : ""}
       ${this._zhaDevice.device_type !== "Coordinator"
@@ -77,6 +80,11 @@ export class HaDeviceActionsZha extends LitElement {
             <mwc-button @click=${this._showClustersDialog}>
               ${this.hass!.localize(
                 "ui.dialogs.zha_device_info.buttons.clusters"
+              )}
+            </mwc-button>
+            <mwc-button @click=${this._onViewInVisualizationClick}>
+              ${this.hass!.localize(
+                "ui.dialogs.zha_device_info.buttons.view_in_visualization"
               )}
             </mwc-button>
             <mwc-button class="warning" @click=${this._removeDevice}>
@@ -97,15 +105,26 @@ export class HaDeviceActionsZha extends LitElement {
     if (!this.hass) {
       return;
     }
-    reconfigureNode(this.hass, this._zhaDevice!.ieee);
+    showZHAReconfigureDeviceDialog(this, { device: this._zhaDevice! });
   }
 
   private _onAddDevicesClick() {
     navigate(this, "/config/zha/add/" + this._zhaDevice!.ieee);
   }
 
+  private _onViewInVisualizationClick() {
+    navigate(
+      this,
+      "/config/zha/visualization/" + this._zhaDevice!.device_reg_id
+    );
+  }
+
   private async _handleZigbeeInfoClicked() {
     showZHADeviceZigbeeInfoDialog(this, { device: this._zhaDevice! });
+  }
+
+  private async _handleDeviceChildrenClicked() {
+    showZHADeviceChildrenDialog(this, { device: this._zhaDevice! });
   }
 
   private async _removeDevice() {

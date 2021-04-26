@@ -1,40 +1,42 @@
-import "../../../components/ha-icon-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { debounce } from "../../../common/util/debounce";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-slider";
-import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
+import { UNAVAILABLE, UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import {
-  SUPPORTS_PLAY,
+  computeMediaDescription,
+  MediaPlayerEntity,
   SUPPORT_NEXT_TRACK,
   SUPPORT_PAUSE,
+  SUPPORT_PLAY,
   SUPPORT_PREVIOUS_TRACK,
+  SUPPORT_STOP,
   SUPPORT_TURN_OFF,
   SUPPORT_TURN_ON,
   SUPPORT_VOLUME_BUTTONS,
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_SET,
-  computeMediaDescription,
 } from "../../../data/media-player";
 import type { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { EntityConfig, LovelaceRow } from "./types";
-import { installResizeObserver } from "../common/install-resize-observer";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
@@ -50,7 +52,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
-      throw new Error("Invalid Configuration: 'entity' required");
+      throw new Error("Entity must be specified");
     }
 
     this._config = config;
@@ -79,7 +81,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       return html``;
     }
 
-    const stateObj = this.hass.states[this._config.entity];
+    const stateObj = this.hass.states[this._config.entity] as MediaPlayerEntity;
 
     if (!stateObj) {
       return html`
@@ -89,8 +91,12 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const state = stateObj.state;
+
     const buttons = html`
-      ${!this._narrow && supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+      ${!this._narrow &&
+      state === "playing" &&
+      supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
         ? html`
             <ha-icon-button
               icon="hass:skip-previous"
@@ -98,16 +104,22 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ></ha-icon-button>
           `
         : ""}
-      ${stateObj.state !== "playing" &&
-      !supportsFeature(stateObj, SUPPORTS_PLAY)
-        ? ""
-        : html`
+      ${(state === "playing" &&
+        (supportsFeature(stateObj, SUPPORT_PAUSE) ||
+          supportsFeature(stateObj, SUPPORT_STOP))) ||
+      ((state === "paused" || state === "idle") &&
+        supportsFeature(stateObj, SUPPORT_PLAY)) ||
+      (state === "on" &&
+        (supportsFeature(stateObj, SUPPORT_PLAY) ||
+          supportsFeature(stateObj, SUPPORT_PAUSE)))
+        ? html`
             <ha-icon-button
               icon=${this._computeControlIcon(stateObj)}
-              @click=${this._playPause}
+              @click=${this._playPauseStop}
             ></ha-icon-button>
-          `}
-      ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+          `
+        : ""}
+      ${state === "playing" && supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
         ? html`
             <ha-icon-button
               icon="hass:skip-next"
@@ -124,11 +136,12 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         .hass=${this.hass}
         .config=${this._config}
         .secondaryText=${mediaDescription ||
-        computeStateDisplay(this.hass.localize, stateObj, this.hass.language)}
+        computeStateDisplay(this.hass.localize, stateObj, this.hass.locale)}
       >
         <div class="controls">
           ${supportsFeature(stateObj, SUPPORT_TURN_ON) &&
-          stateObj.state === "off"
+          state === "off" &&
+          !UNAVAILABLE_STATES.includes(state)
             ? html`
                 <ha-icon-button
                   icon="hass:power"
@@ -138,8 +151,10 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             : !supportsFeature(stateObj, SUPPORT_VOLUME_SET) &&
               !supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
             ? buttons
-            : supportsFeature(stateObj, SUPPORT_TURN_OFF) &&
-              stateObj.state !== "off"
+            : ""}
+          ${supportsFeature(stateObj, SUPPORT_TURN_OFF) &&
+          state !== "off" &&
+          !UNAVAILABLE_STATES.includes(state)
             ? html`
                 <ha-icon-button
                   icon="hass:power"
@@ -151,7 +166,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       </hui-generic-entity-row>
       ${(supportsFeature(stateObj, SUPPORT_VOLUME_SET) ||
         supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)) &&
-      ![UNAVAILABLE, UNKNOWN, "off"].includes(stateObj.state)
+      ![UNAVAILABLE, UNKNOWN, "off"].includes(state)
         ? html`
             <div class="flex">
               <div class="volume">
@@ -220,12 +235,11 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   }
 
   private _computeControlIcon(stateObj: HassEntity): string {
-    if (stateObj.state !== "playing") {
-      return "hass:play";
-    }
-
-    // eslint-disable-next-line:no-bitwise
-    return supportsFeature(stateObj, SUPPORT_PAUSE)
+    return stateObj.state === "on"
+      ? "hass:play-pause"
+      : stateObj.state !== "playing"
+      ? "hass:play"
+      : supportsFeature(stateObj, SUPPORT_PAUSE)
       ? "hass:pause"
       : "hass:stop";
   }
@@ -235,17 +249,24 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
     this.hass!.callService(
       "media_player",
-      stateObj.state === "off" || stateObj.state === "idle"
-        ? "turn_on"
-        : "turn_off",
+      stateObj.state === "off" ? "turn_on" : "turn_off",
       {
         entity_id: this._config!.entity,
       }
     );
   }
 
-  private _playPause(): void {
-    this.hass!.callService("media_player", "media_play_pause", {
+  private _playPauseStop(): void {
+    const stateObj = this.hass!.states[this._config!.entity];
+
+    const service =
+      stateObj.state !== "playing"
+        ? "media_play"
+        : supportsFeature(stateObj, SUPPORT_PAUSE)
+        ? "media_pause"
+        : "media_stop";
+
+    this.hass!.callService("media_player", service, {
       entity_id: this._config!.entity,
     });
   }

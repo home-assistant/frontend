@@ -1,6 +1,6 @@
-import "@polymer/paper-tabs/paper-tabs";
 import type { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";
 import type { PaperTabElement } from "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
 import type { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
 import { customElement } from "lit-element";
 import { Constructor } from "../types";
@@ -34,8 +34,8 @@ export class HaTabs extends PaperTabs {
 
       superStyle!.appendChild(
         document.createTextNode(`
-          :host {
-            padding-top: .5px;
+          #selectionBar {
+            box-sizing: border-box;
           }
           .not-visible {
             display: none;

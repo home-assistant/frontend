@@ -4,11 +4,12 @@ import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 import {
+  css,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-card";
@@ -86,6 +87,14 @@ class ConfigNameForm extends LitElement {
     } finally {
       this._working = false;
     }
+  }
+
+  static get styles() {
+    return css`
+      .card-actions {
+        text-align: right;
+      }
+    `;
   }
 }
 

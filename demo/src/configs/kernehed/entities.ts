@@ -101,7 +101,12 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
     "sensor.zwave_battery_front_door": {
       entity_id: "sensor.zwave_battery_front_door",
       state: "63",
-      attributes: { friendly_name: "Battery", icon: "mdi:battery-60" },
+      attributes: {
+        friendly_name: "Battery",
+        icon: "mdi:battery-60",
+        unit_of_measurement: "%",
+        device_class: "battery",
+      },
     },
     "sensor.oskar_devices": {
       entity_id: "sensor.oskar_devices",
@@ -164,7 +169,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
     },
     "input_select.christmas_pattern": {
       entity_id: "input_select.christmas_pattern",
-      state: "None",
+      state: "Rainbow",
       attributes: {
         options: [
           "None",
@@ -186,7 +191,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
     },
     "input_select.christmas_palette": {
       entity_id: "input_select.christmas_palette",
-      state: "None",
+      state: "Party",
       attributes: {
         options: [
           "None",
@@ -457,7 +462,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       state: "0.0",
       attributes: {
         unit_of_measurement: "kB/s",
-        friendly_name: "Nedladdning",
+        friendly_name: "Downloading",
         icon: "mdi:file-download",
       },
     },
@@ -471,7 +476,7 @@ export const demoEntitiesKernehed: DemoConfig["entities"] = () =>
       state: "0.0",
       attributes: {
         unit_of_measurement: "kB/s",
-        friendly_name: "Uppladdning",
+        friendly_name: "Uploading",
         icon: "mdi:file-upload",
       },
     },

@@ -3,9 +3,9 @@ import {
   css,
   CSSResult,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   query,
   TemplateResult,
 } from "lit-element";
@@ -33,7 +33,7 @@ class NotificationManager extends LitElement {
 
   @internalProperty() private _noCancelOnOutsideClick = false;
 
-  @query("ha-toast", true) private _toast!: HaToast;
+  @query("ha-toast") private _toast!: HaToast;
 
   public async showDialog({
     message,

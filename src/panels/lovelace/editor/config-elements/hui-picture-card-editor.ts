@@ -74,6 +74,12 @@ export class HuiPictureCardEditor extends LitElement
           .configValue="${"image"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
+        <hui-theme-select-editor
+          .hass=${this.hass}
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @value-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
         <div class="side-by-side">
           <hui-action-editor
             .label="${this.hass.localize(
@@ -99,12 +105,6 @@ export class HuiPictureCardEditor extends LitElement
             .configValue="${"hold_action"}"
             @value-changed="${this._valueChanged}"
           ></hui-action-editor>
-          <hui-theme-select-editor
-            .hass=${this.hass}
-            .value="${this._theme}"
-            .configValue="${"theme"}"
-            @value-changed="${this._valueChanged}"
-          ></hui-theme-select-editor>
         </div>
       </div>
     `;

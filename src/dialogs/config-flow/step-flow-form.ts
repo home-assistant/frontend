@@ -34,7 +34,7 @@ class StepFlowForm extends LitElement {
   private _loading = false;
 
   @property()
-  private _stepData?: { [key: string]: any };
+  private _stepData?: Record<string, any>;
 
   @property()
   private _errorMsg?: string;

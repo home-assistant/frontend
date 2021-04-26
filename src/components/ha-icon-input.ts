@@ -60,8 +60,9 @@ export class HaIconInput extends LitElement {
   static get styles() {
     return css`
       ha-icon {
-        position: relative;
-        bottom: 4px;
+        position: absolute;
+        bottom: 2px;
+        right: 0;
       }
     `;
   }

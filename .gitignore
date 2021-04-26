@@ -23,6 +23,8 @@ dist
 # vscode
 .vscode/*
 !.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
 
 # Cast dev settings
 src/cast/dev_const.ts
@@ -33,3 +35,6 @@ yarn-error.log
 
 #asdf
 .tool-versions
+
+# Home Assistant config
+/config

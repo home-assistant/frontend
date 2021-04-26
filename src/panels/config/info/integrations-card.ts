@@ -3,9 +3,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
@@ -17,6 +17,7 @@ import {
   IntegrationManifest,
 } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
+import { brandsUrl } from "../../../util/brands-url";
 
 @customElement("integrations-card")
 class IntegrationsCard extends LitElement {
@@ -27,7 +28,13 @@ class IntegrationsCard extends LitElement {
   };
 
   private _sortedIntegrations = memoizeOne((components: string[]) => {
-    return components.filter((comp) => !comp.includes(".")).sort();
+    return Array.from(
+      new Set(
+        components.map((comp) =>
+          comp.includes(".") ? comp.split(".")[1] : comp
+        )
+      )
+    ).sort();
   });
 
   firstUpdated(changedProps) {
@@ -50,12 +57,12 @@ class IntegrationsCard extends LitElement {
                     <td>
                       <img
                         loading="lazy"
-                        src="https://brands.home-assistant.io/_/${domain}/icon.png"
+                        src=${brandsUrl(domain, "icon", true)}
                         referrerpolicy="no-referrer"
                       />
                     </td>
                     <td class="name">
-                      ${domainToName(this.hass.localize, domain)}<br />
+                      ${domainToName(this.hass.localize, domain, manifest)}<br />
                       <span class="domain">${domain}</span>
                     </td>
                     ${!manifest

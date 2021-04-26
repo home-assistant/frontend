@@ -30,7 +30,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
 
   public setConfig(config: StateIconElementConfig): void {
     if (!config.entity) {
-      throw Error("Invalid Configuration: 'entity' required");
+      throw Error("Entity required");
     }
 
     this._config = {

@@ -1,3 +1,9 @@
+import "@material/mwc-button/mwc-button";
+import "@material/mwc-list/mwc-list";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import { mdiCalendar } from "@mdi/js";
+import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
@@ -5,20 +11,14 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../types";
-import { mdiCalendar } from "@mdi/js";
 import { formatDateTime } from "../common/datetime/format_date_time";
-import "@material/mwc-button/mwc-button";
-import "@material/mwc-list/mwc-list-item";
-import "./ha-svg-icon";
-import "@polymer/paper-input/paper-input";
-import "@material/mwc-list/mwc-list";
-import "./date-range-picker";
 import { computeRTLDirection } from "../common/util/compute_rtl";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import { HomeAssistant } from "../types";
+import "./date-range-picker";
+import "./ha-svg-icon";
 
 export interface DateRangePickerRanges {
   [key: string]: [Date, Date];
@@ -43,7 +43,7 @@ export class HaDateRangePicker extends LitElement {
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.language !== this.hass.language) {
+      if (!oldHass || oldHass.locale !== this.hass.locale) {
         this._hour24format = this._compute24hourFormat();
         this._rtlDirection = computeRTLDirection(this.hass);
       }
@@ -62,7 +62,7 @@ export class HaDateRangePicker extends LitElement {
         <div slot="input" class="date-range-inputs">
           <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
           <paper-input
-            .value=${formatDateTime(this.startDate, this.hass.language)}
+            .value=${formatDateTime(this.startDate, this.hass.locale)}
             .label=${this.hass.localize(
               "ui.components.date-range-picker.start_date"
             )}
@@ -71,7 +71,7 @@ export class HaDateRangePicker extends LitElement {
             readonly
           ></paper-input>
           <paper-input
-            .value=${formatDateTime(this.endDate, this.hass.language)}
+            .value=${formatDateTime(this.endDate, this.hass.locale)}
             label=${this.hass.localize(
               "ui.components.date-range-picker.end_date"
             )}

@@ -12,7 +12,7 @@ import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
 import { compare } from "../../../src/common/string/compare";
 import "../../../src/components/ha-card";
-import { HassioAddonInfo } from "../../../src/data/hassio/addon";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
@@ -22,26 +22,24 @@ import { hassioStyle } from "../resources/hassio-style";
 class HassioAddons extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public addons?: HassioAddonInfo[];
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   protected render(): TemplateResult {
     return html`
       <div class="content">
-        <h1>Add-ons</h1>
+        <h1>${this.supervisor.localize("dashboard.addons")}</h1>
         <div class="card-group">
-          ${!this.addons?.length
+          ${!this.supervisor.supervisor.addons?.length
             ? html`
                 <ha-card>
                   <div class="card-content">
-                    You don't have any add-ons installed yet. Head over to
                     <button class="link" @click=${this._openStore}>
-                      the add-on store
+                      ${this.supervisor.localize("dashboard.no_addons")}
                     </button>
-                    to get started!
                   </div>
                 </ha-card>
               `
-            : this.addons
+            : this.supervisor.supervisor.addons
                 .sort((a, b) => compare(a.name, b.name))
                 .map(
                   (addon) => html`
@@ -58,10 +56,16 @@ class HassioAddons extends LitElement {
                             ? mdiArrowUpBoldCircle
                             : mdiPuzzle}
                           .iconTitle=${addon.state !== "started"
-                            ? "Add-on is stopped"
+                            ? this.supervisor.localize(
+                                "dashboard.addon_stopped"
+                              )
                             : addon.update_available!
-                            ? "New version available"
-                            : "Add-on is running"}
+                            ? this.supervisor.localize(
+                                "dashboard.addon_new_version"
+                              )
+                            : this.supervisor.localize(
+                                "dashboard.addon_running"
+                              )}
                           .iconClass=${addon.update_available
                             ? addon.state === "started"
                               ? "update"

@@ -30,7 +30,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
 
   public setConfig(config: StateLabelElementConfig): void {
     if (!config.entity) {
-      throw Error("Invalid Configuration: 'entity' required");
+      throw Error("Entity required");
     }
 
     this._config = { hold_action: { action: "more-info" }, ...config };
@@ -57,7 +57,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
 
     if (
       this._config.attribute &&
-      !stateObj.attributes[this._config.attribute]
+      !(this._config.attribute in stateObj.attributes)
     ) {
       return html`
         <hui-warning-element
@@ -85,11 +85,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
         )}
       >
         ${this._config.prefix}${!this._config.attribute
-          ? computeStateDisplay(
-              this.hass.localize,
-              stateObj,
-              this.hass.language
-            )
+          ? computeStateDisplay(this.hass.localize, stateObj, this.hass.locale)
           : stateObj.attributes[this._config.attribute]}${this._config.suffix}
       </div>
     `;

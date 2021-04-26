@@ -4,19 +4,19 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { canRun, ScriptEntity } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { ActionRowConfig, LovelaceRow } from "./types";
-import { canExcecute, ScriptEntity } from "../../../data/script";
 
 @customElement("hui-script-entity-row")
 class HuiScriptEntityRow extends LitElement implements LovelaceRow {
@@ -26,7 +26,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
 
   public setConfig(config: ActionRowConfig): void {
     if (!config) {
-      throw new Error("Configuration error");
+      throw new Error("Invalid configuration");
     }
     this._config = config;
   }
@@ -54,7 +54,8 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${stateObj.state === "on"
           ? html`<mwc-button @click=${this._cancelScript}>
-              ${(stateObj.attributes.current || 0) > 0
+              ${stateObj.attributes.mode !== "single" &&
+              (stateObj.attributes.current || 0) > 0
                 ? this.hass.localize(
                     "ui.card.script.cancel_multiple",
                     "number",
@@ -65,12 +66,12 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
           : ""}
         ${stateObj.state === "off" || stateObj.attributes.max
           ? html`<mwc-button
-              @click=${this._executeScript}
+              @click=${this._runScript}
               .disabled=${UNAVAILABLE_STATES.includes(stateObj.state) ||
-              !canExcecute(stateObj)}
+              !canRun(stateObj)}
             >
               ${this._config.action_name ||
-              this.hass!.localize("ui.card.script.execute")}
+              this.hass!.localize("ui.card.script.run")}
             </mwc-button>`
           : ""}
       </hui-generic-entity-row>
@@ -90,7 +91,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
     this._callService("turn_off");
   }
 
-  private _executeScript(ev): void {
+  private _runScript(ev): void {
     ev.stopPropagation();
     this._callService("turn_on");
   }

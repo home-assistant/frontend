@@ -1,5 +1,4 @@
 import { wrap } from "comlink";
-
 import type { api } from "./sort_filter_worker";
 
 type FilterDataType = api["filterData"];

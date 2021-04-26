@@ -1,7 +1,8 @@
 import "@material/mwc-button";
-import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-icon-button";
-import "../../../components/ha-button-menu";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import {
   css,
   CSSResult,
@@ -9,21 +10,21 @@ import {
   html,
   LitElement,
   property,
-  TemplateResult,
+  PropertyValues,
   queryAssignedNodes,
+  TemplateResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
-import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
-import { swapCard, moveCard, addCard, deleteCard } from "../editor/config-util";
-import { confDeleteCard } from "../editor/delete-card";
-import { Lovelace, LovelaceCard } from "../types";
-import { computeCardSize } from "../common/compute-card-size";
-import { mdiDotsVertical, mdiArrowDown, mdiArrowUp } from "@mdi/js";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
-import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
+import { fireEvent } from "../../../common/dom/fire_event";
+import "../../../components/ha-button-menu";
 import { saveConfig } from "../../../data/lovelace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { HomeAssistant } from "../../../types";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
+import { computeCardSize } from "../common/compute-card-size";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { addCard, deleteCard, moveCard, swapCard } from "../editor/config-util";
+import { showSelectViewDialog } from "../editor/select-view/show-select-view-dialog";
+import { Lovelace, LovelaceCard } from "../types";
 
 @customElement("hui-card-options")
 export class HuiCardOptions extends LitElement {
@@ -39,9 +40,19 @@ export class HuiCardOptions extends LitElement {
     return this._assignedNodes ? computeCardSize(this._assignedNodes[0]) : 1;
   }
 
+  protected updated(changedProps: PropertyValues) {
+    if (!changedProps.has("path") || !this.path) {
+      return;
+    }
+    this.classList.toggle(
+      "panel",
+      this.lovelace!.config.views[this.path![0]].panel
+    );
+  }
+
   protected render(): TemplateResult {
     return html`
-      <slot></slot>
+      <div class="card"><slot></slot></div>
       <ha-card>
         <div class="card-actions">
           <mwc-button @click=${this._editCard}
@@ -108,8 +119,12 @@ export class HuiCardOptions extends LitElement {
         outline: 2px solid var(--primary-color);
       }
 
-      ::slotted(*) {
+      :host:not(.panel) ::slotted(*) {
         display: block;
+      }
+
+      :host(.panel) .card {
+        height: calc(100% - 59px);
       }
 
       ha-card {
@@ -168,11 +183,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _editCard(): void {
-    showEditCardDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: this.path!,
-    });
+    fireEvent(this, "ll-edit-card", { path: this.path! });
   }
 
   private _cardUp(): void {
@@ -229,7 +240,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _deleteCard(): void {
-    confDeleteCard(this, this.hass!, this.lovelace!, this.path!);
+    fireEvent(this, "ll-delete-card", { path: this.path! });
   }
 }
 

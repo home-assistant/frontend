@@ -7,8 +7,7 @@ export interface UserDetailDialogParams {
   removeEntry: () => Promise<boolean>;
 }
 
-export const loadUserDetailDialog = () =>
-  import(/* webpackChunkName: "user-detail-dialog" */ "./dialog-user-detail");
+export const loadUserDetailDialog = () => import("./dialog-user-detail");
 
 export const showUserDetailDialog = (
   element: HTMLElement,

@@ -17,7 +17,7 @@ export const createEntityNotFoundWarning = (
     ? hass.localize(
         "ui.panel.lovelace.warning.entity_not_found",
         "entity",
-        entityId
+        entityId || "[empty]"
       )
     : hass.localize("ui.panel.lovelace.warning.starting");
 };

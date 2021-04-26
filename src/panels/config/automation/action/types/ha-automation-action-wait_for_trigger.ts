@@ -39,7 +39,7 @@ export class HaWaitForTriggerAction extends LitElement
         )}
       >
         <ha-switch
-          .checked=${continue_on_timeout}
+          .checked=${continue_on_timeout ?? true}
           @change=${this._continueChanged}
         ></ha-switch>
       </ha-formfield>

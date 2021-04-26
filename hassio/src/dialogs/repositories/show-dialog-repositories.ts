@@ -1,10 +1,10 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { HassioAddonRepository } from "../../../../src/data/hassio/addon";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import "./dialog-hassio-repositories";
 
 export interface HassioRepositoryDialogParams {
-  repos: HassioAddonRepository[];
-  loadData: () => Promise<void>;
+  supervisor: Supervisor;
+  url?: string;
 }
 
 export const showRepositoriesDialog = (
@@ -13,10 +13,7 @@ export const showRepositoriesDialog = (
 ): void => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-hassio-repositories",
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "dialog-hassio-repositories" */ "./dialog-hassio-repositories"
-      ),
+    dialogImport: () => import("./dialog-hassio-repositories"),
     dialogParams,
   });
 };

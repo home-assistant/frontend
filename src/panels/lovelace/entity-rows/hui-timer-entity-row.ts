@@ -28,7 +28,7 @@ class HuiTimerEntityRow extends LitElement {
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
-      throw new Error("Configuration error");
+      throw new Error("Invalid configuration");
     }
     this._config = config;
   }
@@ -41,7 +41,7 @@ class HuiTimerEntityRow extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     if (this._config && this._config.entity) {
-      const stateObj = this.hass!.states[this._config!.entity];
+      const stateObj = this.hass?.states[this._config!.entity];
       if (stateObj) {
         this._startInterval(stateObj);
       }

@@ -5,6 +5,7 @@ import { debounce } from "../common/util/debounce";
 import {
   getHassTranslations,
   getHassTranslationsPre109,
+  NumberFormat,
   saveTranslationPreferences,
   TranslationCategory,
 } from "../data/translation";
@@ -12,11 +13,23 @@ import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
-  getLocalLanguage,
   getTranslation,
-  getUserLanguage,
+  getLocalLanguage,
+  getUserLocale,
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "hass-language-select": {
+      language: string;
+    };
+    "hass-number-format-select": {
+      number_format: NumberFormat;
+    };
+  }
+}
 
 interface LoadedTranslationCategory {
   // individual integrations loaded for this category
@@ -36,6 +49,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     // eslint-disable-next-line: variable-name
     private __coreProgress?: string;
 
+    private __loadedFragmetTranslations: Set<string> = new Set();
+
     private __loadedTranslations: {
       // track what things have been loaded
       [category: string]: LoadedTranslationCategory;
@@ -43,20 +58,45 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
-      this.addEventListener("hass-language-select", (e) =>
-        this._selectLanguage((e as CustomEvent).detail.language, true)
-      );
+      this.addEventListener("hass-language-select", (e) => {
+        this._selectLanguage((e as CustomEvent).detail, true);
+      });
+      this.addEventListener("hass-number-format-select", (e) => {
+        this._selectNumberFormat((e as CustomEvent).detail, true);
+      });
       this._loadCoreTranslations(getLocalLanguage());
+    }
+
+    protected updated(changedProps) {
+      super.updated(changedProps);
+      if (!changedProps.has("hass")) {
+        return;
+      }
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+      if (
+        this.hass?.panels &&
+        (!oldHass || oldHass.panels !== this.hass.panels)
+      ) {
+        this._loadFragmentTranslations(this.hass.language, this.hass.panelUrl);
+      }
     }
 
     protected hassConnected() {
       super.hassConnected();
-      getUserLanguage(this.hass!).then((language) => {
-        if (language && this.hass!.language !== language) {
-          // We just get language from backend, no need to save back
-          this._selectLanguage(language, false);
+      getUserLocale(this.hass!).then((locale) => {
+        if (locale?.language && this.hass!.language !== locale.language) {
+          // We just got language from backend, no need to save back
+          this._selectLanguage(locale.language, false);
+        }
+        if (
+          locale?.number_format &&
+          this.hass!.locale.number_format !== locale.number_format
+        ) {
+          // We just got number_format from backend, no need to save back
+          this._selectNumberFormat(locale.number_format, false);
         }
       });
+
       this.hass!.connection.subscribeEvents(
         debounce(() => {
           this._refetchCachedHassTranslations(false, false);
@@ -81,6 +121,18 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       );
     }
 
+    private _selectNumberFormat(
+      number_format: NumberFormat,
+      saveToBackend: boolean
+    ) {
+      this._updateHass({
+        locale: { ...this.hass!.locale, number_format: number_format },
+      });
+      if (saveToBackend) {
+        saveTranslationPreferences(this.hass!, this.hass!.locale);
+      }
+    }
+
     private _selectLanguage(language: string, saveToBackend: boolean) {
       if (!this.hass) {
         // should not happen, do it to avoid use this.hass!
@@ -88,10 +140,14 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       // update selectedLanguage so that it can be saved to local storage
-      this._updateHass({ language, selectedLanguage: language });
+      this._updateHass({
+        locale: { ...this.hass!.locale, language: language },
+        language: language,
+        selectedLanguage: language,
+      });
       storeState(this.hass);
       if (saveToBackend) {
-        saveTranslationPreferences(this.hass, { language });
+        saveTranslationPreferences(this.hass, this.hass.locale);
       }
       this._applyTranslations(this.hass);
       this._refetchCachedHassTranslations(true, true);
@@ -101,6 +157,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       document.querySelector("html")!.setAttribute("lang", hass.language);
       this.style.direction = computeRTL(hass) ? "rtl" : "ltr";
       this._loadCoreTranslations(hass.language);
+      this.__loadedFragmetTranslations = new Set();
       this._loadFragmentTranslations(hass.language, hass.panelUrl);
     }
 
@@ -133,7 +190,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           return this.hass!.localize;
         }
 
-        this._updateResources(language, resources);
+        await this._updateResources(language, resources);
         return this.hass!.localize;
       }
 
@@ -187,7 +244,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return this.hass!.localize;
       }
 
-      this._updateResources(language, resources);
+      await this._updateResources(language, resources);
       return this.hass!.localize;
     }
 
@@ -195,10 +252,28 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       language: string,
       panelUrl: string
     ) {
-      if (translationMetadata.fragments.includes(panelUrl)) {
-        const result = await getTranslation(panelUrl, language);
-        this._updateResources(result.language, result.data);
+      if (!panelUrl) {
+        return;
       }
+      const panelComponent = this.hass?.panels?.[panelUrl]?.component_name;
+
+      // If it's the first call we don't have panel info yet to check the component.
+      const fragment = translationMetadata.fragments.includes(
+        panelComponent || panelUrl
+      )
+        ? panelComponent || panelUrl
+        : undefined;
+
+      if (!fragment) {
+        return;
+      }
+
+      if (this.__loadedFragmetTranslations.has(fragment)) {
+        return;
+      }
+      this.__loadedFragmetTranslations.add(fragment);
+      const result = await getTranslation(fragment, language);
+      await this._updateResources(result.language, result.data);
     }
 
     private async _loadCoreTranslations(language: string) {
@@ -210,28 +285,45 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.__coreProgress = language;
       try {
         const result = await getTranslation(null, language);
-        this._updateResources(result.language, result.data);
+        await this._updateResources(result.language, result.data);
       } finally {
         this.__coreProgress = undefined;
       }
     }
 
-    private _updateResources(language: string, data: any) {
+    private async _updateResources(language: string, data: any) {
       // Update the language in hass, and update the resources with the newly
       // loaded resources. This merges the new data on top of the old data for
       // this language, so that the full translation set can be loaded across
       // multiple fragments.
+      //
+      // Beware of a subtle race condition: it is possible to get here twice
+      // before this.hass is even created. In this case our base state comes
+      // from this._pendingHass instead. Otherwise the first set of strings is
+      // overwritten when we call _updateHass the second time!
+
+      // Allow hass to be updated
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      if (language !== (this.hass ?? this._pendingHass).language) {
+        // the language was changed, abort
+        return;
+      }
+
       const resources = {
         [language]: {
-          ...this.hass?.resources?.[language],
+          ...(this.hass ?? this._pendingHass)?.resources?.[language],
           ...data,
         },
       };
-      const changes: Partial<HomeAssistant> = { resources };
-      if (this.hass && language === this.hass.language) {
-        changes.localize = computeLocalize(this, language, resources);
+      const changes: Partial<HomeAssistant> = {
+        resources,
+        localize: await computeLocalize(this, language, resources),
+      };
+
+      if (language === (this.hass ?? this._pendingHass).language) {
+        this._updateHass(changes);
       }
-      this._updateHass(changes);
     }
 
     private _refetchCachedHassTranslations(

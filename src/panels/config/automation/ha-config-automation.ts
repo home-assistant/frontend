@@ -2,15 +2,15 @@ import { HassEntities } from "home-assistant-js-websocket";
 import { customElement, property, PropertyValues } from "lit-element";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { debounce } from "../../../common/util/debounce";
 import { AutomationEntity } from "../../../data/automation";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../types";
-import "./ha-automation-editor";
 import "./ha-automation-picker";
-import { debounce } from "../../../common/util/debounce";
+import "./ha-automation-editor";
 
 const equal = (a: AutomationEntity[], b: AutomationEntity[]): boolean => {
   if (a.length !== b.length) {
@@ -48,6 +48,10 @@ class HaConfigAutomation extends HassRouterPage {
       edit: {
         tag: "ha-automation-editor",
       },
+      trace: {
+        tag: "ha-automation-trace",
+        load: () => import("./trace/ha-automation-trace"),
+      },
     },
   };
 
@@ -81,7 +85,7 @@ class HaConfigAutomation extends HassRouterPage {
 
     if (
       (!changedProps || changedProps.has("route")) &&
-      this._currentPage === "edit"
+      this._currentPage !== "dashboard"
     ) {
       const automationId = this.routeTail.path.substr(1);
       pageEl.automationId = automationId === "new" ? null : automationId;

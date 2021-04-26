@@ -8,9 +8,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { UNIT_C } from "../../../common/const";
@@ -243,6 +243,10 @@ class ConfigCoreForm extends LitElement {
 
       .row > * {
         margin: 0 8px;
+      }
+
+      .card-actions {
+        text-align: right;
       }
     `;
   }

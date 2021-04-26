@@ -43,6 +43,13 @@ class StepFlowCreateEntry extends LitElement {
       <h2>Success!</h2>
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
+        ${this.step.result?.state === "not_loaded"
+          ? html`<span class="error"
+              >${localize(
+                "ui.panel.config.integrations.config_flow.not_loaded"
+              )}</span
+            >`
+          : ""}
         ${this.devices.length === 0
           ? ""
           : html`
@@ -135,6 +142,9 @@ class StepFlowCreateEntry extends LitElement {
           .device {
             width: 100%;
           }
+        }
+        .error {
+          color: var(--error-color);
         }
       `,
     ];

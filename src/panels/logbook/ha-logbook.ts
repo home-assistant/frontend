@@ -11,6 +11,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { scroll } from "lit-virtualizer";
+import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../../common/const";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
@@ -18,11 +19,12 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
+import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
-import "../../components/ha-icon";
 import "../../components/ha-relative-time";
+import { TraceContexts } from "../../data/trace";
 import { LogbookEntry } from "../../data/logbook";
-import { haStyle } from "../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
 @customElement("ha-logbook")
@@ -30,6 +32,9 @@ class HaLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public userIdToName = {};
+
+  @property({ attribute: false })
+  public traceContexts: TraceContexts = {};
 
   @property({ attribute: false }) public entries: LogbookEntry[] = [];
 
@@ -54,12 +59,16 @@ class HaLogbook extends LitElement {
   // @ts-ignore
   @restoreScroll(".container") private _savedScrollPos?: number;
 
-  protected shouldUpdate(changedProps: PropertyValues) {
+  protected shouldUpdate(changedProps: PropertyValues<this>) {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const languageChanged =
-      oldHass === undefined || oldHass.language !== this.hass.language;
+      oldHass === undefined || oldHass.locale !== this.hass.locale;
 
-    return changedProps.has("entries") || languageChanged;
+    return (
+      changedProps.has("entries") ||
+      changedProps.has("traceContexts") ||
+      languageChanged
+    );
   }
 
   protected updated(_changedProps: PropertyValues) {
@@ -81,7 +90,7 @@ class HaLogbook extends LitElement {
 
     return html`
       <div
-        class="container ${classMap({
+        class="container ha-scrollbar ${classMap({
           narrow: this.narrow,
           rtl: this._rtl,
           "no-name": this.noName,
@@ -111,9 +120,15 @@ class HaLogbook extends LitElement {
     }
 
     const previous = this.entries[index - 1];
-    const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
+    const stateObj = item.entity_id
+      ? this.hass.states[item.entity_id]
+      : undefined;
     const item_username =
       item.context_user_id && this.userIdToName[item.context_user_id];
+    const domain = item.entity_id
+      ? computeDomain(item.entity_id)
+      : // Domain is there if there is no entity ID.
+        item.domain!;
 
     return html`
       <div class="entry-container">
@@ -124,7 +139,7 @@ class HaLogbook extends LitElement {
             new Date(previous.when).toDateString())
           ? html`
               <h4 class="date">
-                ${formatDate(new Date(item.when), this.hass.language)}
+                ${formatDate(new Date(item.when), this.hass.locale)}
               </h4>
             `
           : html``}
@@ -132,17 +147,18 @@ class HaLogbook extends LitElement {
         <div class="entry ${classMap({ "no-entity": !item.entity_id })}">
           <div class="icon-message">
             ${!this.noIcon
-              ? html`
-                  <ha-icon
-                    .icon=${item.icon ??
-                    domainIcon(
-                      item.entity_id
-                        ? computeDomain(item.entity_id)
-                        : item.domain,
-                      state,
-                      item.state
-                    )}
-                  ></ha-icon>
+              ? // We do not want to use dynamic entity pictures (e.g., from media player) for the log book rendering,
+                // as they would present a false state in the log (played media right now vs actual historic data).
+                html`
+                  <state-badge
+                    .hass=${this.hass}
+                    .overrideIcon=${item.icon ??
+                    domainIcon(domain, stateObj, item.state)}
+                    .overrideImage=${DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
+                      ? ""
+                      : stateObj?.attributes.entity_picture_local ||
+                        stateObj?.attributes.entity_picture}
+                  ></state-badge>
                 `
               : ""}
             <div class="message-relative_time">
@@ -188,7 +204,7 @@ class HaLogbook extends LitElement {
                 <span
                   >${formatTimeWithSeconds(
                     new Date(item.when),
-                    this.hass.language
+                    this.hass.locale
                   )}</span
                 >
                 -
@@ -196,6 +212,22 @@ class HaLogbook extends LitElement {
                   .hass=${this.hass}
                   .datetime=${item.when}
                 ></ha-relative-time>
+                ${item.domain === "automation" &&
+                item.context_id! in this.traceContexts
+                  ? html`
+                      -
+                      <a
+                        href=${`/config/automation/trace/${
+                          this.traceContexts[item.context_id!].item_id
+                        }?run_id=${
+                          this.traceContexts[item.context_id!].run_id
+                        }`}
+                        >${this.hass.localize(
+                          "ui.components.logbook.show_trace"
+                        )}</a
+                      >
+                    `
+                  : ""}
               </div>
             </div>
           </div>
@@ -225,8 +257,9 @@ class HaLogbook extends LitElement {
   static get styles(): CSSResultArray {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
-        :host {
+        :host([virtualize]) {
           display: block;
           height: 100%;
         }
@@ -271,6 +304,10 @@ class HaLogbook extends LitElement {
           line-height: 1.7;
         }
 
+        .secondary a {
+          color: var(--secondary-text-color);
+        }
+
         .date {
           margin: 8px 0;
           padding: 0 16px;
@@ -294,7 +331,7 @@ class HaLogbook extends LitElement {
           color: var(--secondary-text-color);
         }
 
-        ha-icon {
+        state-badge {
           margin-right: 16px;
           flex-shrink: 0;
           color: var(--state-icon-color);
@@ -329,7 +366,7 @@ class HaLogbook extends LitElement {
           padding: 8px;
         }
 
-        .narrow .icon-message ha-icon {
+        .narrow .icon-message state-badge {
           margin-left: 0;
         }
       `,

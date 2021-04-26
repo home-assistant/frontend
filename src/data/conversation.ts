@@ -1,7 +1,7 @@
 import { HomeAssistant } from "../types";
 
 interface ProcessResults {
-  card: { [key: string]: { [key: string]: string } };
+  card: { [key: string]: Record<string, string> };
   speech: {
     [SpeechType in "plain" | "ssml"]: { extra_data: any; speech: string };
   };

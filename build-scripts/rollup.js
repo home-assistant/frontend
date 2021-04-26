@@ -3,7 +3,7 @@ const path = require("path");
 const commonjs = require("@rollup/plugin-commonjs");
 const resolve = require("@rollup/plugin-node-resolve");
 const json = require("@rollup/plugin-json");
-const babel = require("rollup-plugin-babel");
+const babel = require("@rollup/plugin-babel").babel;
 const replace = require("@rollup/plugin-replace");
 const visualizer = require("rollup-plugin-visualizer");
 const { string } = require("rollup-plugin-string");
@@ -31,6 +31,7 @@ const createRollupConfig = ({
   isStatsBuild,
   publicPath,
   dontHash,
+  isWDS,
 }) => {
   return {
     /**
@@ -61,6 +62,7 @@ const createRollupConfig = ({
           ...bundle.babelOptions({ latestBuild }),
           extensions,
           exclude: bundle.babelExclude(),
+          babelHelpers: isWDS ? "inline" : "bundled",
         }),
         string({
           // Import certain extensions as strings
@@ -69,19 +71,21 @@ const createRollupConfig = ({
         replace(
           bundle.definedVars({ isProdBuild, latestBuild, defineOverlay })
         ),
-        manifest({
-          publicPath,
-        }),
-        worker(),
-        dontHashPlugin({ dontHash }),
-        isProdBuild && terser(bundle.terserOptions(latestBuild)),
-        isStatsBuild &&
+        !isWDS &&
+          manifest({
+            publicPath,
+          }),
+        !isWDS && worker(),
+        !isWDS && dontHashPlugin({ dontHash }),
+        !isWDS && isProdBuild && terser(bundle.terserOptions(latestBuild)),
+        !isWDS &&
+          isStatsBuild &&
           visualizer({
             // https://github.com/btd/rollup-plugin-visualizer#options
             open: true,
             sourcemap: true,
           }),
-      ],
+      ].filter(Boolean),
     },
     /**
      * @type { import("rollup").OutputOptions }
@@ -108,12 +112,13 @@ const createRollupConfig = ({
   };
 };
 
-const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
+const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild, isWDS }) => {
   return createRollupConfig(
     bundle.config.app({
       isProdBuild,
       latestBuild,
       isStatsBuild,
+      isWDS,
     })
   );
 };

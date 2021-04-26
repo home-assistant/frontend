@@ -44,7 +44,7 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
 });
 
 module.exports.terserOptions = (latestBuild) => ({
-  safari10: true,
+  safari10: !latestBuild,
   ecma: latestBuild ? undefined : 5,
   output: { comments: false },
 });
@@ -55,7 +55,6 @@ module.exports.babelOptions = ({ latestBuild }) => ({
     !latestBuild && [
       require("@babel/preset-env").default,
       {
-        modules: false,
         useBuiltIns: "entry",
         corejs: "3.6",
       },
@@ -71,7 +70,6 @@ module.exports.babelOptions = ({ latestBuild }) => ({
     // Only support the syntax, Webpack will handle it.
     "@babel/plugin-syntax-import-meta",
     "@babel/plugin-syntax-dynamic-import",
-    "@babel/plugin-syntax-top-level-await",
     "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-proposal-nullish-coalescing-operator",
     [
@@ -119,7 +117,7 @@ BundleConfig {
 */
 
 module.exports.config = {
-  app({ isProdBuild, latestBuild, isStatsBuild }) {
+  app({ isProdBuild, latestBuild, isStatsBuild, isWDS }) {
     return {
       entry: {
         service_worker: "./src/entrypoints/service_worker.ts",
@@ -134,6 +132,7 @@ module.exports.config = {
       isProdBuild,
       latestBuild,
       isStatsBuild,
+      isWDS,
     };
   },
 

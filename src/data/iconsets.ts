@@ -1,6 +1,6 @@
+import { clear, get, set, Store } from "idb-keyval";
 import { iconMetadata } from "../resources/icon-metadata";
 import { IconMeta } from "../types";
-import { get, set, clear, Store } from "idb-keyval";
 
 export interface Icons {
   [key: string]: string;

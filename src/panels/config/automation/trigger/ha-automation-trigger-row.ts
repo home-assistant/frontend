@@ -136,7 +136,11 @@ export default class HaAutomationTriggerRow extends LitElement {
                       )}
                     `
                   : ""}
-                <h2>Edit in YAML</h2>
+                <h2>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.edit_yaml"
+                  )}
+                </h2>
                 <ha-yaml-editor
                   .defaultValue=${this.trigger}
                   @value-changed=${this._onYamlChange}
@@ -196,8 +200,8 @@ export default class HaAutomationTriggerRow extends LitElement {
       text: this.hass.localize(
         "ui.panel.config.automation.editor.triggers.delete_confirm"
       ),
-      dismissText: this.hass.localize("ui.common.no"),
-      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirmText: this.hass.localize("ui.common.delete"),
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
       },

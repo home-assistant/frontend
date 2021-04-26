@@ -26,7 +26,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
 
   public setConfig(config: ImageElementConfig): void {
     if (!config) {
-      throw Error("Error in element configuration");
+      throw Error("Invalid configuration");
     }
 
     this._config = { hold_action: { action: "more-info" }, ...config };

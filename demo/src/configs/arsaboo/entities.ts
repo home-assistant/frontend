@@ -54,6 +54,8 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "21",
       attributes: {
         friendly_name: "Living room temperature",
+        device_class: "temperature",
+        unit_of_measurement: "°C",
       },
     },
     "sensor.study_temp_rounded": {
@@ -61,6 +63,8 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "23",
       attributes: {
         friendly_name: "Study temperature",
+        device_class: "temperature",
+        unit_of_measurement: "°C",
       },
     },
     "sensor.living_room": {
@@ -261,7 +265,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       entity_id: "light.kitchen_lights",
       state: "off",
       attributes: {
-        friendly_name: "Kitchen lights",
+        friendly_name: "Kitchen Lights",
         supported_features: 1,
       },
     },
@@ -484,7 +488,7 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       attributes: {
         min_mireds: 111,
         max_mireds: 400,
-        friendly_name: "Garage lights",
+        friendly_name: "Garage Lights",
         supported_features: 55,
       },
     },

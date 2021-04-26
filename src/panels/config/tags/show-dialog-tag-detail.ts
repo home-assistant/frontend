@@ -12,8 +12,7 @@ export interface TagDetailDialogParams {
   removeEntry?: () => Promise<boolean>;
 }
 
-export const loadTagDetailDialog = () =>
-  import(/* webpackChunkName: "dialog-tag-detail" */ "./dialog-tag-detail");
+export const loadTagDetailDialog = () => import("./dialog-tag-detail");
 
 export const showTagDetailDialog = (
   element: HTMLElement,

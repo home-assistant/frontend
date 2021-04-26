@@ -3,8 +3,8 @@ import {
   CSSResult,
   customElement,
   html,
-  LitElement,
   internalProperty,
+  LitElement,
   TemplateResult,
 } from "lit-element";
 import "../../../components/buttons/ha-call-service-button";
@@ -24,19 +24,17 @@ export class HuiServiceButtonElement extends LitElement
 
   public setConfig(config: ServiceButtonElementConfig): void {
     if (!config || !config.service) {
-      throw Error("Invalid Configuration: 'service' required");
+      throw Error("Service required");
     }
 
     [this._domain, this._service] = config.service.split(".", 2);
 
     if (!this._domain) {
-      throw Error("Invalid Configuration: 'service' does not have a domain");
+      throw Error("Service does not have a service domain");
     }
 
     if (!this._service) {
-      throw Error(
-        "Invalid Configuration: 'service' does not have a service name"
-      );
+      throw Error("Service does not have a service name");
     }
 
     this._config = config;
@@ -50,9 +48,9 @@ export class HuiServiceButtonElement extends LitElement
     return html`
       <ha-call-service-button
         .hass=${this.hass}
-        .domain="${this._domain}"
-        .service="${this._service}"
-        .serviceData="${this._config.service_data}"
+        .domain=${this._domain}
+        .service=${this._service}
+        .serviceData=${this._config.service_data}
         >${this._config.title}</ha-call-service-button
       >
     `;

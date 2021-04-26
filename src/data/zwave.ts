@@ -42,6 +42,11 @@ export interface ZWaveAttributes {
   wake_up_interval?: number;
 }
 
+export interface ZWaveMigrationConfig {
+  usb_path: string;
+  network_key: string;
+}
+
 export const ZWAVE_NETWORK_STATE_STOPPED = 0;
 export const ZWAVE_NETWORK_STATE_FAILED = 1;
 export const ZWAVE_NETWORK_STATE_STARTED = 5;
@@ -53,6 +58,20 @@ export const fetchNetworkStatus = (
 ): Promise<ZWaveNetworkStatus> =>
   hass.callWS({
     type: "zwave/network_status",
+  });
+
+export const startOzwConfigFlow = (
+  hass: HomeAssistant
+): Promise<{ flow_id: string }> =>
+  hass.callWS({
+    type: "zwave/start_ozw_config_flow",
+  });
+
+export const fetchMigrationConfig = (
+  hass: HomeAssistant
+): Promise<ZWaveMigrationConfig> =>
+  hass.callWS({
+    type: "zwave/get_migration_config",
   });
 
 export const fetchValues = (hass: HomeAssistant, nodeId: number) =>

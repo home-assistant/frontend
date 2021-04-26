@@ -4,17 +4,18 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
-import { createCloseHeading } from "../../../../components/ha-dialog";
-import "../../../../components/ha-icon-input";
-import type { HaSwitch } from "../../../../components/ha-switch";
-import "../../../../components/ha-switch";
-import "../../../../components/ha-formfield";
 import { slugify } from "../../../../common/string/slugify";
+import { computeRTLDirection } from "../../../../common/util/compute_rtl";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-icon-input";
+import "../../../../components/ha-switch";
+import type { HaSwitch } from "../../../../components/ha-switch";
 import {
   LovelaceDashboard,
   LovelaceDashboardCreateParams,
@@ -25,7 +26,6 @@ import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {

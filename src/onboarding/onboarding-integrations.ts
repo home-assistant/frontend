@@ -137,9 +137,7 @@ class OnboardingIntegrations extends LitElement {
     loadConfigFlowDialog();
     this._loadConfigEntries();
     /* polyfill for paper-dropdown */
-    import(
-      /* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"
-    );
+    import("web-animations-js/web-animations-next-lite.min");
   }
 
   private _createFlow() {

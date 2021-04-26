@@ -37,6 +37,7 @@ export interface EmptyStateCardConfig extends LovelaceCardConfig {
 export interface EntityCardConfig extends LovelaceCardConfig {
   attribute?: string;
   unit?: string;
+  theme?: string;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
@@ -91,7 +92,7 @@ export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;
   state_filter: Array<{ key: string } | string>;
-  card: Partial<LovelaceCardConfig>;
+  card?: Partial<LovelaceCardConfig>;
   show_empty?: boolean;
 }
 
@@ -169,6 +170,14 @@ export interface LightCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
 }
 
+export interface LogbookCardConfig extends LovelaceCardConfig {
+  type: "logbook";
+  entities: string[];
+  title?: string;
+  hours_to_show?: number;
+  theme?: string;
+}
+
 export interface MapCardConfig extends LovelaceCardConfig {
   type: "map";
   title?: string;
@@ -191,6 +200,7 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
   entity: string;
+  theme?: string;
 }
 
 export interface HistoryGraphCardConfig extends LovelaceCardConfig {
@@ -288,6 +298,11 @@ export interface StackCardConfig extends LovelaceCardConfig {
   title?: string;
 }
 
+export interface GridCardConfig extends StackCardConfig {
+  columns?: number;
+  square?: boolean;
+}
+
 export interface ThermostatCardConfig extends LovelaceCardConfig {
   entity: string;
   theme?: string;
@@ -299,4 +314,8 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   name?: string;
   show_forecast?: boolean;
   secondary_info_attribute?: string;
+  theme?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }

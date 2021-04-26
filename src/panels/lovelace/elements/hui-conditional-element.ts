@@ -25,7 +25,7 @@ class HuiConditionalElement extends HTMLElement implements LovelaceElement {
       !Array.isArray(config.elements) ||
       !validateConditionalConfig(config.conditions)
     ) {
-      throw new Error("Error in card configuration.");
+      throw new Error("Invalid configuration");
     }
 
     if (this._elements.length > 0) {

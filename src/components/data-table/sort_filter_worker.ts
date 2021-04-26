@@ -58,6 +58,14 @@ const sortData = (
       valB = valB.toUpperCase();
     }
 
+    // Ensure "undefined" is always sorted to the bottom
+    if (valA === undefined && valB !== undefined) {
+      return 1;
+    }
+    if (valB === undefined && valA !== undefined) {
+      return -1;
+    }
+
     if (valA < valB) {
       return sort * -1;
     }

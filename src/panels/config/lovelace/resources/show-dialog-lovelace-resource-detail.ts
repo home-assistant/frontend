@@ -14,9 +14,7 @@ export interface LovelaceResourceDetailsDialogParams {
 }
 
 export const loadResourceDetailDialog = () =>
-  import(
-    /* webpackChunkName: "lovelace-resource-detail-dialog" */ "./dialog-lovelace-resource-detail"
-  );
+  import("./dialog-lovelace-resource-detail");
 
 export const showResourceDetailDialog = (
   element: HTMLElement,

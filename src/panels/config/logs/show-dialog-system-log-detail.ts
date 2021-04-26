@@ -20,10 +20,7 @@ const registerDialog = (element: HTMLElement) =>
   fireEvent(element, "register-dialog", {
     dialogShowEvent,
     dialogTag,
-    dialogImport: () =>
-      import(
-        /* webpackChunkName: "system-log-detail-dialog" */ "./dialog-system-log-detail"
-      ),
+    dialogImport: () => import("./dialog-system-log-detail"),
   });
 
 export const showSystemLogDetailDialog = (

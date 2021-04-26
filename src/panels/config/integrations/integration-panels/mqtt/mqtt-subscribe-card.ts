@@ -5,9 +5,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import { formatTime } from "../../../../../common/datetime/format_time";
@@ -77,7 +77,7 @@ class MqttSubscribeCard extends LitElement {
                   "topic",
                   msg.message.topic,
                   "time",
-                  formatTime(msg.time, this.hass!.language)
+                  formatTime(msg.time, this.hass!.locale)
                 )}
                 <pre>${msg.payload}</pre>
                 <div class="bottom">

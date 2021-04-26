@@ -1,10 +1,4 @@
-const expand_hex = (hex: string): string => {
-  let result = "";
-  for (const val of hex) {
-    result += val + val;
-  }
-  return result;
-};
+import { expandHex } from "./hex";
 
 const rgb_hex = (component: number): string => {
   const hex = Math.round(Math.min(Math.max(component, 0), 255)).toString(16);
@@ -14,10 +8,7 @@ const rgb_hex = (component: number): string => {
 // Conversion between HEX and RGB
 
 export const hex2rgb = (hex: string): [number, number, number] => {
-  hex = hex.replace("#", "");
-  if (hex.length === 3 || hex.length === 4) {
-    hex = expand_hex(hex);
-  }
+  hex = expandHex(hex);
 
   return [
     parseInt(hex.substring(0, 2), 16),

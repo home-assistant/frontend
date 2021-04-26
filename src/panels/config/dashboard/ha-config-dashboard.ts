@@ -1,4 +1,4 @@
-import "../../../layouts/ha-app-layout";
+import { mdiCloudLock } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -14,13 +14,14 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
+import "../../../components/ha-svg-icon";
 import { CloudStatus } from "../../../data/cloud";
+import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import "../ha-config-section";
 import { configSections } from "../ha-panel-config";
 import "./ha-config-navigation";
-import { mdiCloudLock } from "@mdi/js";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -58,7 +59,7 @@ class HaConfigDashboard extends LitElement {
                   {
                     component: "cloud",
                     path: "/config/cloud",
-                    translationKey: "ui.panel.config.cloud.caption",
+                    name: "Home Assistant Cloud",
                     info: this.cloudStatus,
                     iconPath: mdiCloudLock,
                   },
@@ -78,36 +79,6 @@ class HaConfigDashboard extends LitElement {
           </ha-card>
         `
       )}
-      ${isComponentLoaded(this.hass, "zha")
-        ? html`
-            <div class="promo-advanced">
-              ${this.hass.localize(
-                "ui.panel.config.integration_panel_move.missing_zha",
-                "integrations_page",
-                html`<a href="/config/integrations">
-                  ${this.hass.localize(
-                    "ui.panel.config.integration_panel_move.link_integration_page"
-                  )}
-                </a>`
-              )}
-            </div>
-          `
-        : ""}
-      ${isComponentLoaded(this.hass, "zwave")
-        ? html`
-            <div class="promo-advanced">
-              ${this.hass.localize(
-                "ui.panel.config.integration_panel_move.missing_zwave",
-                "integrations_page",
-                html`<a href="/config/integrations">
-                  ${this.hass.localize(
-                    "ui.panel.config.integration_panel_move.link_integration_page"
-                  )}
-                </a>`
-              )}
-            </div>
-          `
-        : ""}
       ${!this.showAdvanced
         ? html`
             <div class="promo-advanced">

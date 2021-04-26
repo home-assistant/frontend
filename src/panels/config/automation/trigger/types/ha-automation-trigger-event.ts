@@ -1,15 +1,15 @@
 import "@polymer/paper-input/paper-input";
 import { customElement, LitElement, property } from "lit-element";
 import { html } from "lit-html";
-import "../../../../../components/ha-yaml-editor";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/ha-yaml-editor";
+import "../../../../../components/user/ha-users-picker";
 import { EventTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import {
   handleChangeEvent,
   TriggerElement,
 } from "../ha-automation-trigger-row";
-import "../../../../../components/user/ha-users-picker";
 
 @customElement("ha-automation-trigger-event")
 export class HaEventTrigger extends LitElement implements TriggerElement {

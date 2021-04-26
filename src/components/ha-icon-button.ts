@@ -1,12 +1,12 @@
 import "@material/mwc-icon-button";
 import {
+  css,
+  CSSResult,
   customElement,
   html,
-  TemplateResult,
-  property,
   LitElement,
-  CSSResult,
-  css,
+  property,
+  TemplateResult,
 } from "lit-element";
 import "./ha-icon";
 

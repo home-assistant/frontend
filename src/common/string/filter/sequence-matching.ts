@@ -10,10 +10,13 @@ import { fuzzyScore } from "./filter";
  * @return {number} Score representing how well the word matches the filter. Return of 0 means no match.
  */
 
-export const fuzzySequentialMatch = (filter: string, ...words: string[]) => {
-  let topScore = 0;
+export const fuzzySequentialMatch = (
+  filter: string,
+  item: ScorableTextItem
+) => {
+  let topScore = Number.NEGATIVE_INFINITY;
 
-  for (const word of words) {
+  for (const word of item.strings) {
     const scores = fuzzyScore(
       filter,
       filter.toLowerCase(),
@@ -28,22 +31,39 @@ export const fuzzySequentialMatch = (filter: string, ...words: string[]) => {
       continue;
     }
 
-    // The VS Code implementation of filter treats a score of "0" as just barely a match
-    // But we will typically use this matcher in a .filter(), which interprets 0 as a failure.
-    // By shifting all scores up by 1, we allow "0" matches, while retaining score precedence
-    const score = scores[0] + 1;
+    // The VS Code implementation of filter returns a 0 for a weak match.
+    // But if .filter() sees a "0", it considers that a failed match and will remove it.
+    // So, we set score to 1 in these cases so the match will be included, and mostly respect correct ordering.
+    const score = scores[0] === 0 ? 1 : scores[0];
 
     if (score > topScore) {
       topScore = score;
     }
   }
+
+  if (topScore === Number.NEGATIVE_INFINITY) {
+    return undefined;
+  }
+
   return topScore;
 };
 
+/**
+ * An interface that objects must extend in order to use the fuzzy sequence matcher
+ *
+ * @param {number} score - A number representing the existence and strength of a match.
+ *    - `< 0` means a good match that starts in the middle of the string
+ *    - `> 0` means a good match that starts at the beginning of the string
+ *    - `0` means just barely a match
+ *    - `undefined` means not a match
+ *
+ * @param {string} strings - Array of strings (aliases) representing the item. The filter string will be compared against each of these for a match.
+ *
+ */
+
 export interface ScorableTextItem {
   score?: number;
-  text: string;
-  altText?: string;
+  strings: string[];
 }
 
 type FuzzyFilterSort = <T extends ScorableTextItem>(
@@ -54,12 +74,10 @@ type FuzzyFilterSort = <T extends ScorableTextItem>(
 export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
   return items
     .map((item) => {
-      item.score = item.altText
-        ? fuzzySequentialMatch(filter, item.text, item.altText)
-        : fuzzySequentialMatch(filter, item.text);
+      item.score = fuzzySequentialMatch(filter, item);
       return item;
     })
-    .filter((item) => item.score === undefined || item.score > 0)
+    .filter((item) => item.score !== undefined)
     .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
       scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
     );

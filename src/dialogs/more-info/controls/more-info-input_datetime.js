@@ -3,8 +3,8 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker";
 import { attributeClassNames } from "../../../common/entity/attribute_class_names";
+import "../../../components/ha-date-input";
 import "../../../components/ha-relative-time";
 import "../../../components/paper-time-input";
 
@@ -14,12 +14,11 @@ class DatetimeInput extends PolymerElement {
       <div class$="[[computeClassNames(stateObj)]]">
         <template is="dom-if" if="[[doesHaveDate(stateObj)]]" restamp="">
           <div>
-            <vaadin-date-picker
+            <ha-date-input
               id="dateInput"
-              on-value-changed="dateTimeChanged"
               label="Date"
               value="{{selectedDate}}"
-            ></vaadin-date-picker>
+            ></ha-date-input>
           </div>
         </template>
         <template is="dom-if" if="[[doesHaveTime(stateObj)]]" restamp="">

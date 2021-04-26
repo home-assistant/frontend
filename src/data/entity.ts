@@ -27,6 +27,7 @@ export const ENTITY_COMPONENT_DOMAINS = [
   "lock",
   "mailbox",
   "media_player",
+  "number",
   "person",
   "plant",
   "remember_the_milk",

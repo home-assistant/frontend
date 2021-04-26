@@ -1,5 +1,5 @@
-import { customElement, property } from "lit-element";
 import { CircularProgress } from "@material/mwc-circular-progress";
+import { customElement, property } from "lit-element";
 
 @customElement("ha-circular-progress")
 // @ts-ignore
@@ -11,7 +11,7 @@ export class HaCircularProgress extends CircularProgress {
   public alt = "Loading";
 
   @property()
-  public size: "small" | "medium" | "large" = "medium";
+  public size: "tiny" | "small" | "medium" | "large" = "medium";
 
   // @ts-ignore
   public set density(_) {
@@ -20,6 +20,8 @@ export class HaCircularProgress extends CircularProgress {
 
   public get density() {
     switch (this.size) {
+      case "tiny":
+        return -8;
       case "small":
         return -5;
       case "medium":

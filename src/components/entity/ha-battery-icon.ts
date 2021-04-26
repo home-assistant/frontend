@@ -1,6 +1,6 @@
+import { customElement, html, LitElement, property } from "lit-element";
 import { batteryIcon } from "../../common/entity/battery_icon";
 import "../ha-icon";
-import { customElement, html, property, LitElement } from "lit-element";
 
 @customElement("ha-battery-icon")
 export class HaBatteryIcon extends LitElement {

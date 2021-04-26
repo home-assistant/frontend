@@ -6,8 +6,7 @@ export interface AddUserDialogParams {
   name?: string;
 }
 
-export const loadAddUserDialog = () =>
-  import(/* webpackChunkName: "add-user-dialog" */ "./dialog-add-user");
+export const loadAddUserDialog = () => import("./dialog-add-user");
 
 export const showAddUserDialog = (
   element: HTMLElement,

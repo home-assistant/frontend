@@ -15,17 +15,19 @@ import {
   LitElement,
   property,
   PropertyValues,
+  query,
 } from "lit-element";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
+import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Action } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { handleStructError } from "../../../lovelace/common/structs/handle-errors";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
@@ -40,7 +42,6 @@ import "./types/ha-automation-action-wait_template";
 const OPTIONS = [
   "condition",
   "delay",
-  "device_id",
   "event",
   "scene",
   "service",
@@ -48,6 +49,7 @@ const OPTIONS = [
   "wait_for_trigger",
   "repeat",
   "choose",
+  "device_id",
 ];
 
 const getType = (action: Action) => {
@@ -97,11 +99,15 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property() public totalActions!: number;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @internalProperty() private _warnings?: string[];
 
   @internalProperty() private _uiModeAvailable = true;
 
   @internalProperty() private _yamlMode = false;
+
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   protected updated(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
@@ -110,6 +116,11 @@ export default class HaAutomationActionRow extends LitElement {
     this._uiModeAvailable = Boolean(getType(this.action));
     if (!this._uiModeAvailable && !this._yamlMode) {
       this._yamlMode = true;
+    }
+
+    const yamlEditor = this._yamlEditor;
+    if (this._yamlMode && yamlEditor && yamlEditor.value !== this.action) {
+      yamlEditor.setValue(this.action);
     }
   }
 
@@ -182,12 +193,16 @@ export default class HaAutomationActionRow extends LitElement {
           </div>
           ${this._warnings
             ? html`<div class="warning">
-                UI editor is not supported for this config:
+                ${this.hass.localize("ui.errors.config.editor_not_supported")}:
                 <br />
-                <ul>
-                  ${this._warnings.map((warning) => html`<li>${warning}</li>`)}
-                </ul>
-                You can still edit your config in yaml.
+                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
+                  ? html` <ul>
+                      ${this._warnings!.map(
+                        (warning) => html`<li>${warning}</li>`
+                      )}
+                    </ul>`
+                  : ""}
+                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
               </div>`
             : ""}
           ${yamlMode
@@ -201,7 +216,11 @@ export default class HaAutomationActionRow extends LitElement {
                       )}
                     `
                   : ""}
-                <h2>Edit in YAML</h2>
+                <h2>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.edit_yaml"
+                  )}
+                </h2>
                 <ha-yaml-editor
                   .defaultValue=${this.action}
                   @value-changed=${this._onYamlChange}
@@ -234,6 +253,7 @@ export default class HaAutomationActionRow extends LitElement {
                   ${dynamicElement(`ha-automation-action-${type}`, {
                     hass: this.hass,
                     action: this.action,
+                    narrow: this.narrow,
                   })}
                 </div>
               `}
@@ -243,7 +263,7 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
-    this._warnings = handleStructError(ev.detail);
+    this._warnings = handleStructError(this.hass, ev.detail).warnings;
     if (!this._yamlMode) {
       this._yamlMode = true;
     }
@@ -276,8 +296,8 @@ export default class HaAutomationActionRow extends LitElement {
       text: this.hass.localize(
         "ui.panel.config.automation.editor.actions.delete_confirm"
       ),
-      dismissText: this.hass.localize("ui.common.no"),
-      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.cancel"),
+      confirmText: this.hass.localize("ui.common.delete"),
       confirm: () => {
         fireEvent(this, "value-changed", { value: null });
       },
@@ -317,6 +337,7 @@ export default class HaAutomationActionRow extends LitElement {
   }
 
   private _switchYamlMode() {
+    this._warnings = undefined;
     this._yamlMode = !this._yamlMode;
   }
 

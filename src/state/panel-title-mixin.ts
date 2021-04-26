@@ -21,7 +21,8 @@ export const panelTitleMixin = <T extends Constructor<HassBaseEl>>(
       if (
         !oldHass ||
         oldHass.panels !== this.hass.panels ||
-        oldHass.panelUrl !== this.hass.panelUrl
+        oldHass.panelUrl !== this.hass.panelUrl ||
+        oldHass.localize !== this.hass.localize
       ) {
         setTitle(getPanelTitle(this.hass));
       }

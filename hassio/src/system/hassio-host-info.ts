@@ -8,27 +8,25 @@ import {
   CSSResult,
   customElement,
   html,
-  internalProperty,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
+import { atLeastVersion } from "../../../src/common/config/version";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import {
   extractApiErrorMessage,
-  ignoredStatusCodes,
+  ignoreSupervisorError,
 } from "../../../src/data/hassio/common";
 import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
   changeHostOptions,
   configSyncOS,
-  fetchHassioHostInfo,
-  HassioHassOSInfo,
-  HassioHostInfo as HassioHostInfoType,
   rebootHost,
   shutdownHost,
   updateOS,
@@ -37,7 +35,7 @@ import {
   fetchNetworkInfo,
   NetworkInfo,
 } from "../../../src/data/hassio/network";
-import { HassioInfo } from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
@@ -45,6 +43,11 @@ import {
 } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+import {
+  getValueInPercentage,
+  roundWithOneDecimal,
+} from "../../../src/util/calculate";
+import "../components/supervisor-metric";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
 import { hassioStyle } from "../resources/hassio-style";
@@ -53,114 +56,136 @@ import { hassioStyle } from "../resources/hassio-style";
 class HassioHostInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public hostInfo!: HassioHostInfoType;
-
-  @property({ attribute: false }) public hassioInfo!: HassioInfo;
-
-  @property({ attribute: false }) public hassOsInfo!: HassioHassOSInfo;
-
-  @internalProperty() public _networkInfo?: NetworkInfo;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   protected render(): TemplateResult | void {
-    const primaryIpAddress = this.hostInfo.features.includes("network")
-      ? this._primaryIpAddress(this._networkInfo!)
+    const primaryIpAddress = this.supervisor.host.features.includes("network")
+      ? this._primaryIpAddress(this.supervisor.network!)
       : "";
-    return html`
-      <ha-card header="Host System">
-        <div class="card-content">
-          ${this.hostInfo.features.includes("hostname")
-            ? html`<ha-settings-row>
-                <span slot="heading">
-                  Hostname
-                </span>
-                <span slot="description">
-                  ${this.hostInfo.hostname}
-                </span>
-                <mwc-button
-                  title="Change the hostname"
-                  label="Change"
-                  @click=${this._changeHostnameClicked}
-                >
-                </mwc-button>
-              </ha-settings-row>`
-            : ""}
-          ${this.hostInfo.features.includes("network")
-            ? html` <ha-settings-row>
-                <span slot="heading">
-                  IP Address
-                </span>
-                <span slot="description">
-                  ${primaryIpAddress}
-                </span>
-                <mwc-button
-                  title="Change the network"
-                  label="Change"
-                  @click=${this._changeNetworkClicked}
-                >
-                </mwc-button>
-              </ha-settings-row>`
-            : ""}
 
-          <ha-settings-row>
-            <span slot="heading">
-              Operating System
-            </span>
-            <span slot="description">
-              ${this.hostInfo.operating_system}
-            </span>
-            ${this.hostInfo.features.includes("hassos") &&
-            this.hassOsInfo.update_available
-              ? html`
-                  <ha-progress-button
-                    title="Update the host OS"
-                    @click=${this._osUpdate}
+    const metrics = [
+      {
+        description: this.supervisor.localize("system.host.used_space"),
+        value: this._getUsedSpace(
+          this.supervisor.host.disk_used,
+          this.supervisor.host.disk_total
+        ),
+        tooltip: `${this.supervisor.host.disk_used} GB/${this.supervisor.host.disk_total} GB`,
+      },
+    ];
+    return html`
+      <ha-card header="Host">
+        <div class="card-content">
+          <div>
+            ${this.supervisor.host.features.includes("hostname")
+              ? html`<ha-settings-row>
+                  <span slot="heading">
+                    ${this.supervisor.localize("system.host.hostname")}
+                  </span>
+                  <span slot="description">
+                    ${this.supervisor.host.hostname}
+                  </span>
+                  <mwc-button
+                    .label=${this.supervisor.localize("system.host.change")}
+                    @click=${this._changeHostnameClicked}
                   >
-                    Update
-                  </ha-progress-button>
-                `
+                  </mwc-button>
+                </ha-settings-row>`
               : ""}
-          </ha-settings-row>
-          ${!this.hostInfo.features.includes("hassos")
-            ? html`<ha-settings-row>
-                <span slot="heading">
-                  Docker version
-                </span>
-                <span slot="description">
-                  ${this.hassioInfo.docker}
-                </span>
-              </ha-settings-row>`
-            : ""}
-          ${this.hostInfo.deployment
-            ? html`<ha-settings-row>
-                <span slot="heading">
-                  Deployment
-                </span>
-                <span slot="description">
-                  ${this.hostInfo.deployment}
-                </span>
-              </ha-settings-row>`
-            : ""}
+            ${this.supervisor.host.features.includes("network")
+              ? html` <ha-settings-row>
+                  <span slot="heading">
+                    ${this.supervisor.localize("system.host.ip_address")}
+                  </span>
+                  <span slot="description">
+                    ${primaryIpAddress}
+                  </span>
+                  <mwc-button
+                    .label=${this.supervisor.localize("system.host.change")}
+                    @click=${this._changeNetworkClicked}
+                  >
+                  </mwc-button>
+                </ha-settings-row>`
+              : ""}
+
+            <ha-settings-row>
+              <span slot="heading">
+                ${this.supervisor.localize("system.host.operating_system")}
+              </span>
+              <span slot="description">
+                ${this.supervisor.host.operating_system}
+              </span>
+              ${this.supervisor.os.update_available
+                ? html`
+                    <ha-progress-button @click=${this._osUpdate}>
+                      ${this.supervisor.localize("commmon.update")}
+                    </ha-progress-button>
+                  `
+                : ""}
+            </ha-settings-row>
+            ${!this.supervisor.host.features.includes("hassos")
+              ? html`<ha-settings-row>
+                  <span slot="heading">
+                    ${this.supervisor.localize("system.host.docker_version")}
+                  </span>
+                  <span slot="description">
+                    ${this.supervisor.info.docker}
+                  </span>
+                </ha-settings-row>`
+              : ""}
+            ${this.supervisor.host.deployment
+              ? html`<ha-settings-row>
+                  <span slot="heading">
+                    ${this.supervisor.localize("system.host.deployment")}
+                  </span>
+                  <span slot="description">
+                    ${this.supervisor.host.deployment}
+                  </span>
+                </ha-settings-row>`
+              : ""}
+          </div>
+          <div>
+            ${this.supervisor.host.disk_life_time !== "" &&
+            this.supervisor.host.disk_life_time >= 10
+              ? html` <ha-settings-row>
+                  <span slot="heading">
+                    ${this.supervisor.localize(
+                      "system.host.emmc_lifetime_used"
+                    )}
+                  </span>
+                  <span slot="description">
+                    ${this.supervisor.host.disk_life_time - 10} % -
+                    ${this.supervisor.host.disk_life_time} %
+                  </span>
+                </ha-settings-row>`
+              : ""}
+            ${metrics.map(
+              (metric) =>
+                html`
+                  <supervisor-metric
+                    .description=${metric.description}
+                    .value=${metric.value ?? 0}
+                    .tooltip=${metric.tooltip}
+                  ></supervisor-metric>
+                `
+            )}
+          </div>
         </div>
         <div class="card-actions">
-          ${this.hostInfo.features.includes("reboot")
+          ${this.supervisor.host.features.includes("reboot")
             ? html`
-                <ha-progress-button
-                  title="Reboot the host OS"
-                  class="warning"
-                  @click=${this._hostReboot}
-                >
-                  Reboot
+                <ha-progress-button class="warning" @click=${this._hostReboot}>
+                  ${this.supervisor.localize("system.host.reboot_host")}
                 </ha-progress-button>
               `
             : ""}
-          ${this.hostInfo.features.includes("shutdown")
+          ${this.supervisor.host.features.includes("shutdown")
             ? html`
                 <ha-progress-button
-                  title="Shutdown the host OS"
                   class="warning"
                   @click=${this._hostShutdown}
                 >
-                  Shutdown
+                  ${this.supervisor.localize("system.host.shutdown_host")}
                 </ha-progress-button>
               `
             : ""}
@@ -172,14 +197,12 @@ class HassioHostInfo extends LitElement {
             <mwc-icon-button slot="trigger">
               <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
             </mwc-icon-button>
-            <mwc-list-item title="Show a list of hardware">
-              Hardware
+            <mwc-list-item>
+              ${this.supervisor.localize("system.host.hardware")}
             </mwc-list-item>
-            ${this.hostInfo.features.includes("hassos")
-              ? html`<mwc-list-item
-                  title="Load HassOS configs or updates from USB"
-                >
-                  Import from USB
+            ${this.supervisor.host.features.includes("hassos")
+              ? html`<mwc-list-item>
+                  ${this.supervisor.localize("system.host.import_from_usb")}
                 </mwc-list-item>`
               : ""}
           </ha-button-menu>
@@ -192,13 +215,15 @@ class HassioHostInfo extends LitElement {
     this._loadData();
   }
 
+  private _getUsedSpace = memoizeOne((used: number, total: number) =>
+    roundWithOneDecimal(getValueInPercentage(used, 0, total))
+  );
+
   private _primaryIpAddress = memoizeOne((network_info: NetworkInfo) => {
-    if (!network_info) {
+    if (!network_info || !network_info.interfaces) {
       return "";
     }
-    return Object.keys(network_info?.interfaces)
-      .map((device) => network_info.interfaces[device])
-      .find((device) => device.primary)?.ip_address;
+    return network_info.interfaces.find((a) => a.primary)?.ipv4?.address![0];
   });
 
   private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
@@ -216,12 +241,14 @@ class HassioHostInfo extends LitElement {
     try {
       const content = await fetchHassioHardwareInfo(this.hass);
       showHassioMarkdownDialog(this, {
-        title: "Hardware",
+        title: this.supervisor.localize("system.host.hardware"),
         content: `<pre>${safeDump(content, { indent: 2 })}</pre>`,
       });
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to get hardware list",
+        title: this.supervisor.localize(
+          "system.host.failed_to_get_hardware_list"
+        ),
         text: extractApiErrorMessage(err),
       });
     }
@@ -232,10 +259,10 @@ class HassioHostInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: "Reboot",
-      text: "Are you sure you want to reboot the host?",
-      confirmText: "reboot host",
-      dismissText: "no",
+      title: this.supervisor.localize("system.host.reboot_host"),
+      text: this.supervisor.localize("system.host.confirm_reboot"),
+      confirmText: this.supervisor.localize("system.host.reboot_host"),
+      dismissText: this.supervisor.localize("common.cancel"),
     });
 
     if (!confirmed) {
@@ -247,9 +274,9 @@ class HassioHostInfo extends LitElement {
       await rebootHost(this.hass);
     } catch (err) {
       // Ignore connection errors, these are all expected
-      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
+      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
-          title: "Failed to reboot",
+          title: this.supervisor.localize("system.host.failed_to_reboot"),
           text: extractApiErrorMessage(err),
         });
       }
@@ -262,10 +289,10 @@ class HassioHostInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: "Shutdown",
-      text: "Are you sure you want to shutdown the host?",
-      confirmText: "shutdown host",
-      dismissText: "no",
+      title: this.supervisor.localize("system.host.shutdown_host"),
+      text: this.supervisor.localize("system.host.confirm_shutdown"),
+      confirmText: this.supervisor.localize("system.host.shutdown_host"),
+      dismissText: this.supervisor.localize("common.cancel"),
     });
 
     if (!confirmed) {
@@ -277,9 +304,9 @@ class HassioHostInfo extends LitElement {
       await shutdownHost(this.hass);
     } catch (err) {
       // Ignore connection errors, these are all expected
-      if (err.status_code && !ignoredStatusCodes.has(err.status_code)) {
+      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
-          title: "Failed to shutdown",
+          title: this.supervisor.localize("system.host.failed_to_shutdown"),
           text: extractApiErrorMessage(err),
         });
       }
@@ -292,9 +319,19 @@ class HassioHostInfo extends LitElement {
     button.progress = true;
 
     const confirmed = await showConfirmationDialog(this, {
-      title: "Update",
-      text: "Are you sure you want to update the OS?",
-      confirmText: "update os",
+      title: this.supervisor.localize(
+        "confirm.update.title",
+        "name",
+        "Home Assistant Operating System"
+      ),
+      text: this.supervisor.localize(
+        "confirm.update.text",
+        "name",
+        "Home Assistant Operating System",
+        "version",
+        this.supervisor.os.version_latest
+      ),
+      confirmText: this.supervisor.localize("common.update"),
       dismissText: "no",
     });
 
@@ -305,38 +342,48 @@ class HassioHostInfo extends LitElement {
 
     try {
       await updateOS(this.hass);
+      fireEvent(this, "supervisor-collection-refresh", { collection: "os" });
     } catch (err) {
-      showAlertDialog(this, {
-        title: "Failed to update",
-        text: extractApiErrorMessage(err),
-      });
+      if (this.hass.connection.connected) {
+        showAlertDialog(this, {
+          title: this.supervisor.localize(
+            "common.failed_to_update_name",
+            "name",
+            "Home Assistant Operating System"
+          ),
+          text: extractApiErrorMessage(err),
+        });
+      }
     }
     button.progress = false;
   }
 
   private async _changeNetworkClicked(): Promise<void> {
     showNetworkDialog(this, {
-      network: this._networkInfo!,
+      supervisor: this.supervisor,
       loadData: () => this._loadData(),
     });
   }
 
   private async _changeHostnameClicked(): Promise<void> {
-    const curHostname: string = this.hostInfo.hostname;
+    const curHostname: string = this.supervisor.host.hostname;
     const hostname = await showPromptDialog(this, {
-      title: "Change Hostname",
-      inputLabel: "Please enter a new hostname:",
+      title: this.supervisor.localize("system.host.change_hostname"),
+      inputLabel: this.supervisor.localize("system.host.new_hostname"),
       inputType: "string",
       defaultValue: curHostname,
+      confirmText: this.supervisor.localize("common.update"),
     });
 
     if (hostname && hostname !== curHostname) {
       try {
         await changeHostOptions(this.hass, { hostname });
-        this.hostInfo = await fetchHassioHostInfo(this.hass);
+        fireEvent(this, "supervisor-collection-refresh", {
+          collection: "host",
+        });
       } catch (err) {
         showAlertDialog(this, {
-          title: "Setting hostname failed",
+          title: this.supervisor.localize("system.host.failed_to_set_hostname"),
           text: extractApiErrorMessage(err),
         });
       }
@@ -346,17 +393,28 @@ class HassioHostInfo extends LitElement {
   private async _importFromUSB(): Promise<void> {
     try {
       await configSyncOS(this.hass);
-      this.hostInfo = await fetchHassioHostInfo(this.hass);
+      fireEvent(this, "supervisor-collection-refresh", {
+        collection: "host",
+      });
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to import from USB",
+        title: this.supervisor.localize(
+          "system.host.failed_to_import_from_usb"
+        ),
         text: extractApiErrorMessage(err),
       });
     }
   }
 
   private async _loadData(): Promise<void> {
-    this._networkInfo = await fetchNetworkInfo(this.hass);
+    if (atLeastVersion(this.hass.config.version, 2021, 2, 4)) {
+      fireEvent(this, "supervisor-collection-refresh", {
+        collection: "network",
+      });
+    } else {
+      const network = await fetchNetworkInfo(this.hass);
+      fireEvent(this, "supervisor-update", { network });
+    }
   }
 
   static get styles(): CSSResult[] {
@@ -376,6 +434,12 @@ class HassioHostInfo extends LitElement {
           display: flex;
           justify-content: space-between;
           align-items: center;
+        }
+        .card-content {
+          display: flex;
+          flex-direction: column;
+          height: calc(100% - 124px);
+          justify-content: space-between;
         }
         ha-settings-row {
           padding: 0;

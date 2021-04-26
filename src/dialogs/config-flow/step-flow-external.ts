@@ -8,11 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { fireEvent } from "../../common/dom/fire_event";
-import {
-  DataEntryFlowProgressedEvent,
-  DataEntryFlowStepExternal,
-} from "../../data/data_entry_flow";
+import { DataEntryFlowStepExternal } from "../../data/data_entry_flow";
 import { HomeAssistant } from "../../types";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
 import { configFlowContentStyles } from "./styles";
@@ -51,18 +47,6 @@ class StepFlowExternal extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this.hass.connection.subscribeEvents<DataEntryFlowProgressedEvent>(
-      async (ev) => {
-        if (ev.data.flow_id !== this.step.flow_id) {
-          return;
-        }
-
-        fireEvent(this, "flow-update", {
-          stepPromise: this.flowConfig.fetchFlow(this.hass, this.step.flow_id),
-        });
-      },
-      "data_entry_flow_progressed"
-    );
     window.open(this.step.url);
   }
 

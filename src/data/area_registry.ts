@@ -1,8 +1,8 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
+import { Store } from "home-assistant-js-websocket/dist/store";
 import { compare } from "../common/string/compare";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
-import { Store } from "home-assistant-js-websocket/dist/store";
 
 export interface AreaRegistryEntry {
   area_id: string;

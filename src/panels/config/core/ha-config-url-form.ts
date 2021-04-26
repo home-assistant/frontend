@@ -6,9 +6,9 @@ import {
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-card";
@@ -157,6 +157,10 @@ class ConfigUrlForm extends LitElement {
       }
       .error {
         color: var(--error-color);
+      }
+
+      .card-actions {
+        text-align: right;
       }
     `;
   }

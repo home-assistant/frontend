@@ -1,9 +1,10 @@
 import "@material/mwc-button";
-import { html, LitElement, TemplateResult } from "lit-element";
+import { customElement, html, LitElement, TemplateResult } from "lit-element";
 import "../../../src/components/ha-card";
 import { ActionHandlerEvent } from "../../../src/data/lovelace";
 import { actionHandler } from "../../../src/panels/lovelace/common/directives/action-handler-directive";
 
+@customElement("demo-util-long-press")
 export class DemoUtilLongPress extends LitElement {
   protected render(): TemplateResult {
     return html`
@@ -20,7 +21,7 @@ export class DemoUtilLongPress extends LitElement {
 
             <textarea></textarea>
 
-            <div>(try pressing and scrolling too!)</div>
+            <div>Try pressing and scrolling too!</div>
           </ha-card>
         `
       )}
@@ -62,5 +63,3 @@ export class DemoUtilLongPress extends LitElement {
     `;
   }
 }
-
-customElements.define("demo-util-long-press", DemoUtilLongPress);

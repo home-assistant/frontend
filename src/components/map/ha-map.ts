@@ -1,4 +1,3 @@
-import "../ha-icon-button";
 import { Circle, Layer, Map, Marker, TileLayer } from "leaflet";
 import {
   css,
@@ -12,14 +11,15 @@ import {
 } from "lit-element";
 import {
   LeafletModuleType,
-  setupLeafletMap,
   replaceTileLayer,
+  setupLeafletMap,
 } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { debounce } from "../../common/util/debounce";
 import "../../panels/map/ha-entity-marker";
 import { HomeAssistant } from "../../types";
+import "../ha-icon-button";
 
 @customElement("ha-map")
 class HaMap extends LitElement {

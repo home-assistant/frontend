@@ -20,13 +20,13 @@ export class HuiNotificationDrawer extends EventsMixin(
 ) {
   static get template() {
     return html`
-    <style include="paper-material-styles">
+    <style>
       app-toolbar {
         color: var(--primary-text-color);
         border-bottom: 1px solid var(--divider-color);
         background-color: var(--primary-background-color);
-        min-height: 64px;
-        width: calc(100% - 32px);
+        height: var(--header-height);
+        box-sizing: border-box;
       }
 
       div[main-title] {
@@ -63,7 +63,10 @@ export class HuiNotificationDrawer extends EventsMixin(
     <app-drawer id="drawer" opened="{{open}}" disable-swipe align="start">
       <app-toolbar>
         <div main-title>[[localize('ui.notification_drawer.title')]]</div>
-        <ha-icon-button-prev on-click="_closeDrawer" aria-label$="[[localize('ui.notification_drawer.close')]]"></ha-icon-button-prev>
+        <ha-icon-button-prev hass="[[hass]]" on-click="_closeDrawer"
+          title="[[localize('ui.notification_drawer.close')]]"
+          label="[[localize('ui.notification_drawer.close')]]">
+        </ha-icon-button-prev>
       </app-toolbar>
       <div class="notifications">
         <template is="dom-if" if="[[!_empty(notifications)]]">
@@ -161,7 +164,7 @@ export class HuiNotificationDrawer extends EventsMixin(
     if (
       this.open &&
       oldNotifications.length > 0 &&
-      !newNotifications.length === 0
+      newNotifications.length === 0
     ) {
       this.open = false;
     }

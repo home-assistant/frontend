@@ -1,24 +1,25 @@
-import "../../../components/ha-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
   customElement,
   html,
+  internalProperty,
   LitElement,
   property,
-  internalProperty,
   TemplateResult,
 } from "lit-element";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import "../../../components/ha-card";
+import "../../../components/ha-circular-progress";
+import "../../../components/ha-icon-button";
 import { domainToName } from "../../../data/integration";
 import {
   fetchSystemLog,
   getLoggedErrorIntegration,
+  isCustomIntegrationError,
   LoggedError,
 } from "../../../data/system_log";
 import { HomeAssistant } from "../../../types";
@@ -68,18 +69,27 @@ export class SystemLogCard extends LitElement {
                             <div secondary>
                               ${formatSystemLogTime(
                                 item.timestamp,
-                                this.hass!.language
+                                this.hass!.locale
                               )}
                               –
+                              ${html`(<span class="${item.level.toLowerCase()}"
+                                  >${this.hass.localize(
+                                    "ui.panel.config.logs.level." +
+                                      item.level.toLowerCase()
+                                  )}</span
+                                >) `}
                               ${integrations[idx]
-                                ? domainToName(
+                                ? `${domainToName(
                                     this.hass!.localize,
                                     integrations[idx]!
-                                  )
+                                  )}${
+                                    isCustomIntegrationError(item)
+                                      ? ` (${this.hass.localize(
+                                          "ui.panel.config.logs.custom_integration"
+                                        )})`
+                                      : ""
+                                  }`
                                 : item.source[0]}
-                              ${html`(<span class="${item.level.toLowerCase()}"
-                                  >${item.level}</span
-                                >)`}
                               ${item.count > 1
                                 ? html`
                                     -
@@ -88,7 +98,7 @@ export class SystemLogCard extends LitElement {
                                       "time",
                                       formatSystemLogTime(
                                         item.first_occurred,
-                                        this.hass!.language
+                                        this.hass!.locale
                                       ),
                                       "counter",
                                       item.count

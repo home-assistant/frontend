@@ -24,7 +24,7 @@ class HaPanelIframe extends PolymerElement {
 
       <iframe
         src="[[panel.config.url]]"
-        sandbox="allow-forms allow-popups allow-pointer-lock allow-same-origin allow-scripts"
+        sandbox="allow-forms allow-popups allow-pointer-lock allow-same-origin allow-scripts allow-modals"
         allowfullscreen="true"
         webkitallowfullscreen="true"
         mozallowfullscreen="true"

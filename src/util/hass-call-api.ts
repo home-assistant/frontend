@@ -52,13 +52,14 @@ export default async function hassCallApi<T>(
   auth: Auth,
   method: string,
   path: string,
-  parameters?: Record<string, unknown>
+  parameters?: Record<string, unknown>,
+  headers?: Record<string, string>
 ) {
   const url = `${auth.data.hassUrl}/api/${path}`;
 
   const init: RequestInit = {
     method,
-    headers: {},
+    headers: headers || {},
   };
 
   if (parameters) {

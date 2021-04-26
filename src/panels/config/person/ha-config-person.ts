@@ -1,4 +1,3 @@
-import "@material/mwc-fab";
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -13,6 +12,7 @@ import {
 } from "lit-element";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import "../../../components/user/ha-person-badge";
 import {
@@ -146,13 +146,14 @@ class HaConfigPerson extends LitElement {
               `
             : ""}
         </ha-config-section>
-        <mwc-fab
+        <ha-fab
           slot="fab"
-          title="${hass.localize("ui.panel.config.person.add_person")}"
+          .label=${hass.localize("ui.panel.config.person.add_person")}
+          extended
           @click=${this._createPerson}
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
-        </mwc-fab>
+        </ha-fab>
       </hass-tabs-subpage>
     `;
   }
@@ -247,8 +248,8 @@ class HaConfigPerson extends LitElement {
           !(await showConfirmationDialog(this, {
             title: this.hass!.localize("ui.panel.config.person.confirm_delete"),
             text: this.hass!.localize("ui.panel.config.person.confirm_delete2"),
-            dismissText: this.hass!.localize("ui.common.no"),
-            confirmText: this.hass!.localize("ui.common.yes"),
+            dismissText: this.hass!.localize("ui.common.cancel"),
+            confirmText: this.hass!.localize("ui.common.delete"),
           }))
         ) {
           return false;

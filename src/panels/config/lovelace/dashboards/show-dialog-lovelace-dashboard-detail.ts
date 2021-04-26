@@ -16,9 +16,7 @@ export interface LovelaceDashboardDetailsDialogParams {
 }
 
 export const loadDashboardDetailDialog = () =>
-  import(
-    /* webpackChunkName: "lovelace-dashboard-detail-dialog" */ "./dialog-lovelace-dashboard-detail"
-  );
+  import("./dialog-lovelace-dashboard-detail");
 
 export const showDashboardDetailDialog = (
   element: HTMLElement,

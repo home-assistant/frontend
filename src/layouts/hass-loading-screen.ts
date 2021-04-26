@@ -9,19 +9,19 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../components/ha-circular-progress";
-import "../components/ha-menu-button";
 import "../components/ha-icon-button-arrow-prev";
+import "../components/ha-menu-button";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 
 @customElement("hass-loading-screen")
 class HassLoadingScreen extends LitElement {
+  @property({ attribute: false }) public hass?: HomeAssistant;
+
   @property({ type: Boolean, attribute: "no-toolbar" })
   public noToolbar = false;
 
   @property({ type: Boolean }) public rootnav = false;
-
-  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public narrow?: boolean;
 
@@ -30,7 +30,7 @@ class HassLoadingScreen extends LitElement {
       ${this.noToolbar
         ? ""
         : html`<div class="toolbar">
-            ${this.rootnav
+            ${this.rootnav || history.state?.root
               ? html`
                   <ha-menu-button
                     .hass=${this.hass}
@@ -39,6 +39,7 @@ class HassLoadingScreen extends LitElement {
                 `
               : html`
                   <ha-icon-button-arrow-prev
+                    .hass=${this.hass}
                     @click=${this._handleBack}
                   ></ha-icon-button-arrow-prev>
                 `}
@@ -66,7 +67,7 @@ class HassLoadingScreen extends LitElement {
           display: flex;
           align-items: center;
           font-size: 20px;
-          height: 65px;
+          height: var(--header-height);
           padding: 0 16px;
           pointer-events: none;
           background-color: var(--app-header-background-color);
