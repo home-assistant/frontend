@@ -31,6 +31,7 @@ export interface ZWaveJSNode {
 export interface ZWaveJSNodeConfigParams {
   [key: string]: ZWaveJSNodeConfigParam;
 }
+
 export interface ZWaveJSNodeConfigParam {
   property: number;
   value: any;
