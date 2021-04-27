@@ -1,8 +1,4 @@
 import { ThemeVars } from "../../data/ws-themes";
-import {
-  DEFAULT_PRIMARY_COLOR,
-  DEFAULT_ACCENT_COLOR,
-} from "../../resources/ha-style";
 import { darkStyles, derivedStyles } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import {
@@ -59,7 +55,6 @@ export const applyThemesOnElement = (
         accentColor =
           themes.themes[selectedTheme].styles?.dark?.["accent-color"];
       } else {
-        // eslint-disable-next-line no-lonely-if
         primaryColor =
           themes.themes[selectedTheme].styles?.light?.["primary-color"];
         accentColor =
@@ -72,11 +67,11 @@ export const applyThemesOnElement = (
       themeRules = darkStyles;
 
       if (primaryColor) {
-      themeRules["app-header-background-color"] = hexBlend(
-        primaryColor,
-        "#121212",
-        8
-      );
+        themeRules["app-header-background-color"] = hexBlend(
+          primaryColor,
+          "#121212",
+          8
+        );
       }
     }
 
