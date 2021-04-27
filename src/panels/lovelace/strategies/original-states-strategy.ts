@@ -85,7 +85,7 @@ export class OriginalStatesStrategy {
     return {
       views: [
         {
-          strategy: { name: "original-states" },
+          strategy: { type: "original-states" },
           title: info.hass.config.location_name,
         },
       ],

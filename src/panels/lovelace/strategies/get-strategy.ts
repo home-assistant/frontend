@@ -32,17 +32,17 @@ const strategies: Record<
 const getLovelaceStrategy = async <
   T extends LovelaceDashboardStrategy | LovelaceViewStrategy
 >(
-  name: string
+  strategyType: string
 ): Promise<T> => {
-  if (name in strategies) {
-    return strategies[name] as T;
+  if (strategyType in strategies) {
+    return strategies[strategyType] as T;
   }
 
-  if (!name.startsWith(CUSTOM_PREFIX)) {
+  if (!strategyType.startsWith(CUSTOM_PREFIX)) {
     throw new Error("Unknown strategy");
   }
 
-  const tag = `ll-strategy-${name.substr(CUSTOM_PREFIX.length)}`;
+  const tag = `ll-strategy-${strategyType.substr(CUSTOM_PREFIX.length)}`;
 
   if (
     (await Promise.race([
@@ -69,14 +69,14 @@ const generateStrategy = async <T extends keyof GenerateMethods>(
   generateMethod: T,
   renderError: (err: string | Error) => AsyncReturnType<GenerateMethods[T]>,
   info: Parameters<GenerateMethods[T]>[0],
-  name: string | undefined
+  strategyType: string | undefined
 ): Promise<ReturnType<GenerateMethods[T]>> => {
-  if (!name) {
-    return renderError("No strategy name found");
+  if (!strategyType) {
+    return renderError("No strategy type found");
   }
 
   try {
-    const strategy = (await getLovelaceStrategy(name)) as any;
+    const strategy = (await getLovelaceStrategy(strategyType)) as any;
     return await strategy[generateMethod](info);
   } catch (err) {
     if (err.message !== "timeout") {
@@ -90,7 +90,7 @@ const generateStrategy = async <T extends keyof GenerateMethods>(
 
 export const generateLovelaceDashboardStrategy = async (
   info: Parameters<LovelaceDashboardStrategy["generateDashboard"]>[0],
-  name?: string
+  strategyType?: string
 ): ReturnType<LovelaceDashboardStrategy["generateDashboard"]> =>
   generateStrategy(
     "generateDashboard",
@@ -108,12 +108,12 @@ export const generateLovelaceDashboardStrategy = async (
       ],
     }),
     info,
-    name || info.config?.strategy?.name
+    strategyType || info.config?.strategy?.type
   );
 
 export const generateLovelaceViewStrategy = async (
   info: Parameters<LovelaceViewStrategy["generateView"]>[0],
-  name?: string
+  strategyType?: string
 ): ReturnType<LovelaceViewStrategy["generateView"]> =>
   generateStrategy(
     "generateView",
@@ -126,7 +126,7 @@ export const generateLovelaceViewStrategy = async (
       ],
     }),
     info,
-    name || info.view?.strategy?.name
+    strategyType || info.view?.strategy?.type
   );
 
 /**

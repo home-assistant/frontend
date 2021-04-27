@@ -20,7 +20,7 @@ export interface LovelacePanelConfig {
 export interface LovelaceConfig {
   title?: string;
   strategy?: {
-    name: string;
+    type: string;
     options?: Record<string, unknown>;
   };
   views: LovelaceViewConfig[];
@@ -82,7 +82,7 @@ export interface LovelaceViewConfig {
   title?: string;
   type?: string;
   strategy?: {
-    name: string;
+    type: string;
     options?: Record<string, unknown>;
   };
   badges?: Array<string | LovelaceBadgeConfig>;
