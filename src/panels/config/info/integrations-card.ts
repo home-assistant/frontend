@@ -13,8 +13,10 @@ import "../../../components/ha-card";
 import {
   domainToName,
   fetchIntegrationManifests,
+  fetchIntegrationSetups,
   integrationIssuesUrl,
   IntegrationManifest,
+  IntegrationSetup,
 } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -23,8 +25,14 @@ import { brandsUrl } from "../../../util/brands-url";
 class IntegrationsCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @internalProperty() private _manifests?: {
     [domain: string]: IntegrationManifest;
+  };
+
+  @internalProperty() private _setups?: {
+    [domain: string]: IntegrationSetup;
   };
 
   private _sortedIntegrations = memoizeOne((components: string[]) => {
@@ -40,6 +48,7 @@ class IntegrationsCard extends LitElement {
   firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     this._fetchManifests();
+    this._fetchSetups();
   }
 
   protected render(): TemplateResult {
@@ -48,10 +57,47 @@ class IntegrationsCard extends LitElement {
         .header=${this.hass.localize("ui.panel.config.info.integrations")}
       >
         <table class="card-content">
+          <thead>
+            <tr>
+              <th></th>
+              ${!this.narrow
+                ? html`<th></th>
+                    <th></th>
+                    <th></th>`
+                : ""}
+              <th>Setup time</th>
+            </tr>
+          </thead>
           <tbody>
             ${this._sortedIntegrations(this.hass!.config.components).map(
               (domain) => {
                 const manifest = this._manifests && this._manifests[domain];
+                const docLink = manifest
+                  ? html`<a
+                      href=${manifest.documentation}
+                      target="_blank"
+                      rel="noreferrer"
+                      >${this.hass.localize(
+                        "ui.panel.config.info.documentation"
+                      )}</a
+                    >`
+                  : "";
+                const issueLink =
+                  manifest && (manifest.is_built_in || manifest.issue_tracker)
+                    ? html`
+                        <a
+                          href=${integrationIssuesUrl(domain, manifest)}
+                          target="_blank"
+                          rel="noreferrer"
+                          >${this.hass.localize(
+                            "ui.panel.config.info.issues"
+                          )}</a
+                        >
+                      `
+                    : "";
+                const setupSeconds = this._setups?.[domain]?.seconds?.toFixed(
+                  2
+                );
                 return html`
                   <tr>
                     <td>
@@ -64,39 +110,25 @@ class IntegrationsCard extends LitElement {
                     <td class="name">
                       ${domainToName(this.hass.localize, domain, manifest)}<br />
                       <span class="domain">${domain}</span>
+                      ${this.narrow
+                        ? html`<div class="mobile-row">
+                            <div>${docLink} ${issueLink}</div>
+                            ${setupSeconds ? html`${setupSeconds}s` : ""}
+                          </div>`
+                        : ""}
                     </td>
-                    ${!manifest
+                    ${this.narrow
                       ? ""
                       : html`
                           <td>
-                            <a
-                              href=${manifest.documentation}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.info.documentation"
-                              )}
-                            </a>
+                            ${docLink}
                           </td>
-                          ${manifest.is_built_in || manifest.issue_tracker
-                            ? html`
-                                <td>
-                                  <a
-                                    href=${integrationIssuesUrl(
-                                      domain,
-                                      manifest
-                                    )}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                  >
-                                    ${this.hass.localize(
-                                      "ui.panel.config.info.issues"
-                                    )}
-                                  </a>
-                                </td>
-                              `
-                            : ""}
+                          <td>
+                            ${issueLink}
+                          </td>
+                          <td class="setup">
+                            ${setupSeconds ? html`${setupSeconds}s` : ""}
+                          </td>
                         `}
                   </tr>
                 `;
@@ -116,9 +148,21 @@ class IntegrationsCard extends LitElement {
     this._manifests = manifests;
   }
 
+  private async _fetchSetups() {
+    const setups = {};
+    for (const setup of await fetchIntegrationSetups(this.hass)) {
+      setups[setup.domain] = setup;
+    }
+    this._setups = setups;
+  }
+
   static get styles(): CSSResult {
     return css`
-      td {
+      table {
+        width: 100%;
+      }
+      td,
+      th {
         padding: 0 8px;
       }
       td:first-child {
@@ -127,8 +171,21 @@ class IntegrationsCard extends LitElement {
       td.name {
         padding: 8px;
       }
+      td.setup {
+        text-align: right;
+      }
+      th {
+        text-align: right;
+      }
       .domain {
         color: var(--secondary-text-color);
+      }
+      .mobile-row {
+        display: flex;
+        justify-content: space-between;
+      }
+      .mobile-row a:not(:last-of-type) {
+        margin-right: 4px;
       }
       img {
         display: block;
