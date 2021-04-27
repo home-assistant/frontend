@@ -11,8 +11,8 @@ import {
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import {
-  fetchLogConfig,
-  setLogLevel,
+  fetchZWaveJSLogConfig,
+  setZWaveJSLogLevel,
   subscribeZWaveJSLogs,
   ZWaveJSLogConfig,
 } from "../../../../../data/zwave_js";
@@ -109,7 +109,10 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     if (!this.configEntryId) {
       return;
     }
-    this._logConfig = await fetchLogConfig(this.hass!, this.configEntryId);
+    this._logConfig = await fetchZWaveJSLogConfig(
+      this.hass!,
+      this.configEntryId
+    );
   }
 
   private _dropdownSelected(ev) {
@@ -119,7 +122,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     if (this._logConfig.level === ev.target.selected) {
       return;
     }
-    setLogLevel(this.hass!, this.configEntryId, ev.target.selected);
+    setZWaveJSLogLevel(this.hass!, this.configEntryId, ev.target.selected);
   }
 
   static get styles(): CSSResultArray {

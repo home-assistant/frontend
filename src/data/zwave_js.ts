@@ -219,7 +219,7 @@ export interface ZWaveJSLogConfig {
   force_console: boolean;
 }
 
-export const fetchLogConfig = (
+export const fetchZWaveJSLogConfig = (
   hass: HomeAssistant,
   entry_id: string
 ): Promise<ZWaveJSLogConfig> =>
@@ -228,7 +228,7 @@ export const fetchLogConfig = (
     entry_id,
   });
 
-export const setLogLevel = (
+export const setZWaveJSLogLevel = (
   hass: HomeAssistant,
   entry_id: string,
   level: string
