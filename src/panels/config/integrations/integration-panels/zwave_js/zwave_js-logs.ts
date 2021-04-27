@@ -39,15 +39,15 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
       subscribeZWaveJSLogs(this.hass, this.configEntryId, (log) => {
-        if (this._textarea) {
-          if (Array.isArray(log.message)) {
-            log.message.map((line) => {
-              this._textarea!.value += `${line}\n`;
-              return null;
-            });
-          } else {
-            this._textarea!.value += `${log.message}\n`;
+        if (!this._textarea) {
+          return;
+        }
+        if (Array.isArray(log.message)) {
+          for (const line of log.message) {
+            this._textarea!.value += `${line}\n`;
           }
+        } else {
+          this._textarea!.value += `${log.message}\n`;
         }
       }),
     ];

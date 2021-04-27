@@ -198,7 +198,7 @@ export interface ZWaveJSLogMessage {
   timestamp: string;
   level: string;
   primary_tags: string;
-  message: string | Array<string>;
+  message: string | string[];
 }
 
 export const subscribeZWaveJSLogs = (
