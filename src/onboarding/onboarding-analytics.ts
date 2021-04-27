@@ -32,9 +32,9 @@ class OnboardingAnalytics extends LitElement {
   protected render(): TemplateResult {
     return html`
       <p>
-        Share your installation information to help make Home Assistant better
-        and help us convince manufacturers to add local control and
-        privacy-focused features.
+        Share anonymized information from your installation to help make Home
+        Assistant better and help us convince manufacturers to add local control
+        and privacy-focused features.
       </p>
       <ha-analytics
         @analytics-preferences-changed=${this._preferencesChanged}
