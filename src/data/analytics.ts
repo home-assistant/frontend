@@ -9,6 +9,7 @@ export interface AnalyticsPreferences {
 
 export interface Analytics {
   preferences: AnalyticsPreferences;
+  onboarded: boolean;
 }
 
 export const getAnalyticsDetails = (hass: HomeAssistant) =>

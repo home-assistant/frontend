@@ -15,7 +15,9 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
 import "../../../components/ha-svg-icon";
+import { getAnalyticsDetails } from "../../../data/analytics";
 import { CloudStatus } from "../../../data/cloud";
+import { showDialogAnalyticsOptIn } from "../../../dialogs/analytics/show-dialog-analytics-optin";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -35,6 +37,15 @@ class HaConfigDashboard extends LitElement {
   @property() public cloudStatus?: CloudStatus;
 
   @property() public showAdvanced!: boolean;
+
+  protected firstUpdated(changedProperties) {
+    super.firstUpdated(changedProperties);
+    getAnalyticsDetails(this.hass).then((analytics) => {
+      if (!analytics.onboarded) {
+        showDialogAnalyticsOptIn(this, { analytics });
+      }
+    });
+  }
 
   protected render(): TemplateResult {
     const content = html` <ha-config-section

@@ -27,6 +27,7 @@ class OnboardingAnalytics extends LitElement {
 
   @internalProperty() private _analyticsDetails: Analytics = {
     preferences: {},
+    onboarded: false,
   };
 
   protected render(): TemplateResult {
