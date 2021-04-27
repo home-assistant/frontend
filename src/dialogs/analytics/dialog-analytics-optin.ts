@@ -67,7 +67,7 @@ class DialogAnalyticsOptIn extends LitElement {
             : html` <div class="introduction">
                 To help us better understand how you use Home Assistant, and to
                 ensure our priorities align with yours. We ask that you share
-                your anonymized installation information to help make Home
+                anonymized information from your installation to help make Home
                 Assistant better and help us convince manufacturers to add local
                 control and privacy-focused features.
                 <p>
