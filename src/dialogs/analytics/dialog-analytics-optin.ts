@@ -16,6 +16,7 @@ import { Analytics, setAnalyticsPreferences } from "../../data/analytics";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { DialogAnalyticsOptInParams } from "./show-dialog-analytics-optin";
+import { analyticsLearnMore } from "../../components/ha-analytics-learn-more";
 
 @customElement("dialog-analytics-optin")
 class DialogAnalyticsOptIn extends LitElement {
@@ -74,6 +75,7 @@ class DialogAnalyticsOptIn extends LitElement {
                   under "General" here in the configuration panel
                 </p>
               </div>`}
+          ${analyticsLearnMore(this.hass)}
         </div>
         <div class="dialog-actions">
           <mwc-button @click=${this._ignore} .disabled=${this._submitting}>
