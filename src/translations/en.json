@@ -172,7 +172,10 @@
       "light": {
         "brightness": "Brightness",
         "color_temperature": "Color temperature",
-        "white_value": "White value",
+        "white_value": "White brightness",
+        "color_brightness": "Color brightness",
+        "cold_white_value": "Cold white brightness",
+        "warm_white_value": "Warm white brightness",
         "effect": "Effect"
       },
       "lock": {
