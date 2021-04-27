@@ -173,9 +173,9 @@ export const reinterviewNode = (
   );
 };
 
-export const getIdentifiersFromDevice = function (
+export const getIdentifiersFromDevice = (
   device: DeviceRegistryEntry
-): ZWaveJSNodeIdentifiers | undefined {
+): ZWaveJSNodeIdentifiers | undefined => {
   if (!device) {
     return undefined;
   }
@@ -193,3 +193,20 @@ export const getIdentifiersFromDevice = function (
     home_id: identifiers[0],
   };
 };
+
+export interface ZWaveJSLogMessage {
+  timestamp: string;
+  level: string;
+  primary_tags: string;
+  message: string;
+}
+
+export const subscribeZWaveJSLogs = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callback: (message: ZWaveJSLogMessage) => void
+) =>
+  hass.connection.subscribeMessage<ZWaveJSLogMessage>(callback, {
+    type: "zwave_js/subscribe_logs",
+    entry_id,
+  });
