@@ -1918,9 +1918,9 @@
     lezer-tree "^0.13.0"
 
 "@codemirror/gutter@^0.18.0":
-  version "0.18.1"
-  resolved "https://registry.yarnpkg.com/@codemirror/gutter/-/gutter-0.18.1.tgz#65657be98d8c7183d23c03038a32df22dd631cc2"
-  integrity sha512-OJXT3giUPtMOLKmr3hHoLekEUHjLoGFA+1fIQUw7/39t4UZJr3S/1EQGI3NEPhyCg4+NCEHZJWS33x6dz5oOiA==
+  version "0.18.2"
+  resolved "https://registry.yarnpkg.com/@codemirror/gutter/-/gutter-0.18.2.tgz#b47ad6ea2ae9f18eccf015610598dfb302d086d3"
+  integrity sha512-mrmzt6TG9sXSKOjL5LRLv/yPbVdQqVDNSUrisq9OpIHXwZgb2pg9jYhlhw8zdgB952BmENIMr2624I13uy568Q==
   dependencies:
     "@codemirror/rangeset" "^0.18.0"
     "@codemirror/state" "^0.18.0"
@@ -2035,9 +2035,9 @@
   integrity sha512-HMzHNIAbjCiCf3tEJMRg6ul01KPuXxQGNiHlHgAnqPguq/CX+L4Nvj5JlWQAI91Pupk18zhmM1c6eaazX4YeTg==
 
 "@codemirror/view@^0.18.0":
-  version "0.18.8"
-  resolved "https://registry.yarnpkg.com/@codemirror/view/-/view-0.18.8.tgz#e8e6b26adf427ce65356b9f1020876d7947d7953"
-  integrity sha512-vzP8oUBiLMbl5OCWUMGQdYtonk0tt9eUzi/xEDpYmo8Ao48/49fxPQUqBpUwy5Rcce9kUnkTi6r44iJKsEHpmg==
+  version "0.18.9"
+  resolved "https://registry.yarnpkg.com/@codemirror/view/-/view-0.18.9.tgz#bc2e4a30556888a07490df293171880275e0cdc3"
+  integrity sha512-u/sqtt1Exbcpwzj/K37++eToT/MehS6LFE3rfYMNsoxmjT75z2oFM2Q9PLymu344ZxgjgUNWh5cWmVxdjFdTwA==
   dependencies:
     "@codemirror/rangeset" "^0.18.0"
     "@codemirror/state" "^0.18.0"
