@@ -707,7 +707,7 @@
                     "text": "Enter the name of the new area.",
                     "title": "Add new area"
                 },
-                "add_new": "Add new area…",
+                "add_new": "Add new area...",
                 "area": "Area",
                 "clear": "Clear",
                 "no_areas": "You don't have any areas",
@@ -886,6 +886,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Integration documentation",
                 "required": "This field is required",
                 "service_data": "Service data",
                 "target": "Targets",
@@ -1237,7 +1238,7 @@
             "title": "Notifications"
         },
         "notification_toast": {
-            "connection_lost": "Connection lost. Reconnecting…",
+            "connection_lost": "Connection lost. Reconnecting...",
             "dismiss": "Dismiss",
             "intergration_starting": "Starting {integration}, not everything will be available until it is finished.",
             "service_call_failed": "Failed to call service {service}.",
@@ -1695,7 +1696,7 @@
                         },
                         "connected": "Connected",
                         "connection_status": "Cloud connection status",
-                        "fetching_subscription": "Fetching subscription…",
+                        "fetching_subscription": "Fetching subscription...",
                         "google": {
                             "config_documentation": "Configuration documentation",
                             "devices_pin": "Security Devices PIN",
@@ -1751,7 +1752,7 @@
                             "disable_hook_error_msg": "Failed to disable webhook:",
                             "info": "Anything that is configured to be triggered by a webhook can be given a publicly accessible URL to allow you to send data back to Home Assistant from anywhere, without exposing your instance to the internet.",
                             "link_learn_more": "Learn more about creating webhook-powered automations.",
-                            "loading": "Loading ...",
+                            "loading": "Loading...",
                             "manage": "Manage",
                             "no_hooks_yet": "Looks like you have no webhooks yet. Get started by configuring a ",
                             "no_hooks_yet_link_automation": "webhook automation",
@@ -2198,7 +2199,7 @@
                             "migration_error": "Migration error",
                             "not_loaded": "Not loaded",
                             "setup_error": "Failed to set up",
-                            "setup_retry": "Retrying to set up"
+                            "setup_retry": "Retrying setup"
                         },
                         "system_options": "System options",
                         "unnamed_entry": "Unnamed entry"
@@ -2279,7 +2280,7 @@
                         "warning": "WARNING"
                     },
                     "load_full_log": "Load Full Home Assistant Log",
-                    "loading_log": "Loading error log…",
+                    "loading_log": "Loading error log...",
                     "multiple_messages": "message first occurred at {time} and shows up {counter} times",
                     "no_errors": "No errors have been reported",
                     "no_issues": "There are no new issues!",
@@ -2660,7 +2661,7 @@
                             "confirm_restart": "Are you sure you want to restart Home Assistant?",
                             "confirm_stop": "Are you sure you want to stop Home Assistant?",
                             "heading": "Server management",
-                            "introduction": "Control your Home Assistant server… from Home Assistant.",
+                            "introduction": "Control your Home Assistant server... from Home Assistant.",
                             "restart": "Restart",
                             "stop": "Stop"
                         },
@@ -2786,6 +2787,15 @@
                         "clusters": "Clusters",
                         "manufacturer_code_override": "Manufacturer Code Override",
                         "value": "Value"
+                    },
+                    "configuration_page": {
+                        "shortcuts_title": "Shortcuts",
+                        "update_button": "Update Configuration",
+                        "zha_options": {
+                            "default_light_transition": "Default light transition time (seconds)",
+                            "enable_identify_on_join": "Enable identify effect when devices join the network",
+                            "title": "Global Options"
+                        }
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuration Complete",
@@ -2926,6 +2936,9 @@
                         "header": "Z-Wave Device Configuration",
                         "introduction": "Manage and adjust device (node) specific configuration parameters for the selected device",
                         "parameter_is_read_only": "This parameter is read-only.",
+                        "set_param_accepted": "The parameter has been updated.",
+                        "set_param_error": "An error occurred.",
+                        "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
                         "zwave_js_device_database": "Z-Wave JS Device Database"
                     },
                     "node_status": {
@@ -3053,12 +3066,12 @@
                         "count_listeners": " ({count}  listeners)",
                         "data": "Event Data (YAML, optional)",
                         "description": "Fire an event on the event bus.",
-                        "documentation": "Events Documentation.",
+                        "documentation": "Events documentation",
                         "event_fired": "Event {name} fired",
                         "fire_event": "Fire Event",
                         "listen_to_events": "Listen to events",
                         "listening_to": "Listening to",
-                        "notification_event_fired": "Event {type} successful fired!",
+                        "notification_event_fired": "Event {type} successfully fired!",
                         "start_listening": "Start listening",
                         "stop_listening": "Stop listening",
                         "subscribe_to": "Event to subscribe to",
@@ -3085,8 +3098,8 @@
                         "attributes": "Attributes",
                         "copy_id": "Copy ID to clipboard",
                         "current_entities": "Current entities",
-                        "description1": "Set the representation of a device within Home Assistant.",
-                        "description2": "This will not communicate with the actual device.",
+                        "description1": "Set the current state representation of an entity within Home Assistant.",
+                        "description2": "If the entity belongs to a device, there will be no actual communication with that device.",
                         "entity": "Entity",
                         "filter_attributes": "Filter attributes",
                         "filter_entities": "Filter entities",
@@ -3458,7 +3471,7 @@
                         "duplicate": "Duplicate card",
                         "edit": "Edit",
                         "header": "Card Configuration",
-                        "move": "Move to View",
+                        "move": "Move to view",
                         "move_after": "Move card after",
                         "move_before": "Move card before",
                         "options": "More options",

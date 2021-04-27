@@ -1243,7 +1243,8 @@
             "service_call_failed": "Službu {service} se nepodařilo zavolat.",
             "started": "Home Assistant je spuštěn!",
             "starting": "Home Assistant se spouští, ne všechno bude k dispozici, dokud nebude spuštění dokončeno.",
-            "triggered": "Spuštěno {name}"
+            "triggered": "Spuštěno {name}",
+            "wrapping_up_startup": "Home Assistant se spouští, vše ještě nemusí být dostupné"
         },
         "panel": {
             "config": {

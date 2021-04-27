@@ -2787,6 +2787,15 @@
                         "manufacturer_code_override": "制造商代码覆盖",
                         "value": "值"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "捷径",
+                        "update_button": "更新配置",
+                        "zha_options": {
+                            "default_light_transition": "默认灯光过渡时长（秒）",
+                            "enable_identify_on_join": "设备加入网络时启用识别效果",
+                            "title": "全局选项"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "配置完成",
                         "CONFIGURED_status_text": "正在初始化",

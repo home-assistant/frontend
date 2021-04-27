@@ -473,7 +473,7 @@
                 "unhealthy_title": "Votre installation est défectueuse",
                 "unsupported_description": "Vous trouverez ci-dessous une liste des problèmes rencontrés avec votre installation, cliquez sur les liens pour savoir comment vous pouvez résoudre les problèmes.",
                 "unsupported_reason": {
-                    "apparmor": "AppArmo n'est pas activé sur l'hôte",
+                    "apparmor": "AppArmor n'est pas activé sur l'hôte",
                     "container": "Conteneurs connus pour causer des problèmes",
                     "content-trust": "La validation de la confiance du contenu est désactivée",
                     "dbus": "DBUS",

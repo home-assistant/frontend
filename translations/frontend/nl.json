@@ -707,7 +707,7 @@
                     "text": "Geef de naam op van het nieuwe gebied.",
                     "title": "Gebied toevoegen"
                 },
-                "add_new": "Gebied toevoegen...",
+                "add_new": "Nieuw gebied toevoegen...",
                 "area": "Gebied",
                 "clear": "Wis",
                 "no_areas": "Je hebt geen gebieden",
@@ -2183,7 +2183,7 @@
                         "logs": "logs",
                         "manuf": "door {manufacturer}",
                         "no_area": "Geen Gebied",
-                        "not_loaded": "Niet geladen, controleer de {logs_link}",
+                        "not_loaded": "Niet geladen",
                         "options": "Opties",
                         "provided_by_custom_integration": "Geleverd door een aangepaste integratie",
                         "reload": "Herlaad",
@@ -2787,6 +2787,15 @@
                         "manufacturer_code_override": "Fabrikant Code Override",
                         "value": "Waarde"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Snelkoppelingen",
+                        "update_button": "Update configuratie",
+                        "zha_options": {
+                            "default_light_transition": "Standaard licht transitietijd (seconden)",
+                            "enable_identify_on_join": "Schakel het identificatie-effect in wanneer apparaten in het netwerk komen",
+                            "title": "Globale opties"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuratie voltooid",
                         "CONFIGURED_status_text": "Initialiseren",
@@ -3053,7 +3062,7 @@
                         "count_listeners": " ({count} luisteraars)",
                         "data": "Gebeurtenis data (YAML, optioneel)",
                         "description": "Start een evenement op de Home Assistant-gebeurtenisbus",
-                        "documentation": "Gebeurtenissen documentatie.",
+                        "documentation": "Gebeurtenissen documentatie",
                         "event_fired": "Gebeurtenis {name} uitgevoerd",
                         "fire_event": "Gebeurtenis uitvoeren",
                         "listen_to_events": "Luisteren naar gebeurtenissen",
@@ -3085,8 +3094,8 @@
                         "attributes": "Attributen",
                         "copy_id": "Kopieer ID naar klembord",
                         "current_entities": "Huidige entiteiten",
-                        "description1": "Stelt de weergave van een apparaat in Home Assistant in.",
-                        "description2": "Er vindt geen communicatie met het daadwerkelijke apparaat plaats.",
+                        "description1": "Stelt de weergave van een entiteit in Home Assistant in.",
+                        "description2": "Als de entiteit tot een apparaat behoort, dan is er geen daadwerkelijke communicatie met dat apparaat.",
                         "entity": "Entiteit",
                         "filter_attributes": "Filter attributen",
                         "filter_entities": "Filter entiteiten",
@@ -3458,7 +3467,7 @@
                         "duplicate": "Dupliceer kaart",
                         "edit": "Bewerken",
                         "header": "Kaart configuratie",
-                        "move": "Verplaatsen",
+                        "move": "Verplaats naar weergave",
                         "move_after": "Verplaats kaart na",
                         "move_before": "Verplaats kaart voor",
                         "options": "Meer opties",
