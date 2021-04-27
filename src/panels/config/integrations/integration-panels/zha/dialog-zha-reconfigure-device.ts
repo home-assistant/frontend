@@ -36,7 +36,7 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   @internalProperty() private _active = false;
 
-  @internalProperty() private _clusterConfigurationStatuses: Map<
+  @internalProperty() private _clusterConfigurationStatuses?: Map<
     number,
     ClusterConfigurationStatus
   > = new Map();
@@ -44,8 +44,6 @@ class DialogZHAReconfigureDevice extends LitElement {
   @internalProperty() private _params:
     | ZHAReconfigureDeviceDialogParams
     | undefined = undefined;
-
-  @internalProperty() private _eventCount = 0;
 
   @internalProperty() private _allSuccessful = true;
 
@@ -75,8 +73,7 @@ class DialogZHAReconfigureDevice extends LitElement {
   public closeDialog(): void {
     this._unsubscribe();
     this._params = undefined;
-    this._clusterConfigurationStatuses = new Map();
-    this._eventCount = 0;
+    this._clusterConfigurationStatuses = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -172,10 +169,10 @@ class DialogZHAReconfigureDevice extends LitElement {
                   )}
                 </h2>
 
-                ${this._clusterConfigurationStatuses.size > 0
+                ${this._clusterConfigurationStatuses!.size > 0
                   ? html`
                       ${Array.from(
-                        this._clusterConfigurationStatuses.values()
+                        this._clusterConfigurationStatuses!.values()
                       ).map(
                         (clusterStatus) => html`
                           <div class="grid-item">
@@ -252,11 +249,10 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   private _handleMessage(message: ClusterConfigurationEvent): void {
     // this is currently here to hack rerendering because map updates aren't triggering rendering?
-    this._eventCount += 1;
     if (message.type === ZHA_CHANNEL_CFG_DONE) {
       this._unsubscribe();
     } else {
-      const clusterConfigurationStatus = this._clusterConfigurationStatuses.get(
+      const clusterConfigurationStatus = this._clusterConfigurationStatuses!.get(
         message.zha_channel_msg_data.cluster_id
       );
       if (message.type === ZHA_CHANNEL_MSG_BIND) {
@@ -272,6 +268,7 @@ class DialogZHAReconfigureDevice extends LitElement {
           this._allSuccessful = this._allSuccessful && attribute.success;
         });
       }
+      this.requestUpdate();
     }
   }
 
