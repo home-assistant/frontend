@@ -25,6 +25,8 @@ import { brandsUrl } from "../../../util/brands-url";
 class IntegrationsCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @internalProperty() private _manifests?: {
     [domain: string]: IntegrationManifest;
   };
@@ -55,11 +57,47 @@ class IntegrationsCard extends LitElement {
         .header=${this.hass.localize("ui.panel.config.info.integrations")}
       >
         <table class="card-content">
+          <thead>
+            <tr>
+              <th></th>
+              ${!this.narrow
+                ? html`<th></th>
+                    <th></th>
+                    <th></th>`
+                : ""}
+              <th>Setup time</th>
+            </tr>
+          </thead>
           <tbody>
             ${this._sortedIntegrations(this.hass!.config.components).map(
               (domain) => {
                 const manifest = this._manifests && this._manifests[domain];
-                const setup = this._setups && this._setups[domain];
+                const docLink = manifest
+                  ? html`<a
+                      href=${manifest.documentation}
+                      target="_blank"
+                      rel="noreferrer"
+                      >${this.hass.localize(
+                        "ui.panel.config.info.documentation"
+                      )}</a
+                    >`
+                  : "";
+                const issueLink =
+                  manifest && (manifest.is_built_in || manifest.issue_tracker)
+                    ? html`
+                        <a
+                          href=${integrationIssuesUrl(domain, manifest)}
+                          target="_blank"
+                          rel="noreferrer"
+                          >${this.hass.localize(
+                            "ui.panel.config.info.issues"
+                          )}</a
+                        >
+                      `
+                    : "";
+                const setupSeconds = this._setups?.[domain]?.seconds?.toFixed(
+                  2
+                );
                 return html`
                   <tr>
                     <td>
@@ -72,44 +110,26 @@ class IntegrationsCard extends LitElement {
                     <td class="name">
                       ${domainToName(this.hass.localize, domain, manifest)}<br />
                       <span class="domain">${domain}</span>
+                      ${this.narrow
+                        ? html`<div class="mobile-row">
+                            <div>${docLink} ${issueLink}</div>
+                            ${setupSeconds ? html`${setupSeconds}s` : ""}
+                          </div>`
+                        : ""}
                     </td>
-                    ${!manifest
-                      ? html`<td></td>
-                          <td></td>`
+                    ${this.narrow
+                      ? ""
                       : html`
                           <td>
-                            <a
-                              href=${manifest.documentation}
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              ${this.hass.localize(
-                                "ui.panel.config.info.documentation"
-                              )}
-                            </a>
+                            ${docLink}
                           </td>
-                          ${manifest.is_built_in || manifest.issue_tracker
-                            ? html`
-                                <td>
-                                  <a
-                                    href=${integrationIssuesUrl(
-                                      domain,
-                                      manifest
-                                    )}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                  >
-                                    ${this.hass.localize(
-                                      "ui.panel.config.info.issues"
-                                    )}
-                                  </a>
-                                </td>
-                              `
-                            : html`<td></td>`}
+                          <td>
+                            ${issueLink}
+                          </td>
+                          <td class="setup">
+                            ${setupSeconds ? html`${setupSeconds}s` : ""}
+                          </td>
                         `}
-                    ${setup?.seconds
-                      ? html`<td>${setup.seconds.toFixed(2)} s</td>`
-                      : html`<td></td>`}
                   </tr>
                 `;
               }
@@ -138,7 +158,11 @@ class IntegrationsCard extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      td {
+      table {
+        width: 100%;
+      }
+      td,
+      th {
         padding: 0 8px;
       }
       td:first-child {
@@ -147,8 +171,21 @@ class IntegrationsCard extends LitElement {
       td.name {
         padding: 8px;
       }
+      td.setup {
+        text-align: right;
+      }
+      th {
+        text-align: right;
+      }
       .domain {
         color: var(--secondary-text-color);
+      }
+      .mobile-row {
+        display: flex;
+        justify-content: space-between;
+      }
+      .mobile-row a:not(:last-of-type) {
+        margin-right: 4px;
       }
       img {
         display: block;
