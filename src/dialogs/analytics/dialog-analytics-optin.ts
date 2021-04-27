@@ -86,7 +86,7 @@ class DialogAnalyticsOptIn extends LitElement {
             Customize
           </mwc-button>
           <mwc-button @click=${this._submit} .disabled=${this._submitting}>
-            ${this._showPreferences ? "Submit" : "Enable all"}
+            ${this._showPreferences ? "Submit" : "Enable analytics"}
           </mwc-button>
         </div>
       </ha-dialog>
