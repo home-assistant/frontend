@@ -31,13 +31,14 @@ class DialogZWaveJSReinterviewNode extends LitElement {
 
   @internalProperty() private _stage?: string;
 
-  @internalProperty() private _stages: string[] = [];
+  @internalProperty() private _stages?: string[];
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 
   public async showDialog(
     params: ZWaveJSReinterviewNodeDialogParams
   ): Promise<void> {
+    this._stages = undefined;
     this.entry_id = params.entry_id;
     this.node_id = params.node_id;
   }
@@ -152,7 +153,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
               </mwc-button>
             `
           : ``}
-        ${this._stages.length > 0
+        ${this._stages
           ? html`
               <div class="stages">
                 ${this._stages.map(
@@ -190,7 +191,11 @@ class DialogZWaveJSReinterviewNode extends LitElement {
       this._status = "started";
     }
     if (message.event === "interview stage completed") {
-      this._stages = [...this._stages, message.stage];
+      if (this._stages === undefined) {
+        this._stages = [message.stage];
+      } else {
+        this._stages = [...this._stages, message.stage];
+      }
     }
     if (message.event === "interview failed") {
       this._unsubscribe();
@@ -214,7 +219,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     this.entry_id = undefined;
     this.node_id = undefined;
     this._status = undefined;
-    this._stages = [];
+    this._stages = undefined;
 
     this._unsubscribe();
 
