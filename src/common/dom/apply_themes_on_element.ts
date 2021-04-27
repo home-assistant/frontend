@@ -47,29 +47,23 @@ export const applyThemesOnElement = (
     let accentColor;
     if (selectedTheme === "default") {
       // User selected colors
-      primaryColor = themeSettings.primaryColor || DEFAULT_PRIMARY_COLOR;
-      accentColor = themeSettings.accentColor || DEFAULT_ACCENT_COLOR;
+      primaryColor = themeSettings.primaryColor;
+      accentColor = themeSettings.accentColor;
     } else if (selectedTheme && themes.themes[selectedTheme]) {
       // Try in that order:
       // 1. Fixed values from theme styles
       // 2. HA default colors
       if (themeSettings.dark) {
         primaryColor =
-          themes.themes[selectedTheme].styles?.dark!["primary-color"] ||
-          darkStyles["primary-color"] ||
-          DEFAULT_PRIMARY_COLOR;
+          themes.themes[selectedTheme].styles?.dark?.["primary-color"];
         accentColor =
-          themes.themes[selectedTheme].styles?.dark!["accent-color"] ||
-          darkStyles["accent-color"] ||
-          DEFAULT_ACCENT_COLOR;
+          themes.themes[selectedTheme].styles?.dark?.["accent-color"];
       } else {
         // eslint-disable-next-line no-lonely-if
         primaryColor =
-          themes.themes[selectedTheme].styles?.light!["primary-color"] ||
-          DEFAULT_PRIMARY_COLOR;
+          themes.themes[selectedTheme].styles?.light?.["primary-color"];
         accentColor =
-          themes.themes[selectedTheme].styles?.light!["accent-color"] ||
-          DEFAULT_ACCENT_COLOR;
+          themes.themes[selectedTheme].styles?.light?.["accent-color"];
       }
     }
 
@@ -77,11 +71,13 @@ export const applyThemesOnElement = (
       cacheKey = `${cacheKey}__dark`;
       themeRules = darkStyles;
 
+      if (primaryColor) {
       themeRules["app-header-background-color"] = hexBlend(
         primaryColor,
         "#121212",
         8
       );
+      }
     }
 
     if (primaryColor) {
