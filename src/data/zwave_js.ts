@@ -198,7 +198,7 @@ export interface ZWaveJSLogMessage {
   timestamp: string;
   level: string;
   primary_tags: string;
-  message: string;
+  message: string | Array<string>;
 }
 
 export const subscribeZWaveJSLogs = (
@@ -209,4 +209,32 @@ export const subscribeZWaveJSLogs = (
   hass.connection.subscribeMessage<ZWaveJSLogMessage>(callback, {
     type: "zwave_js/subscribe_logs",
     entry_id,
+  });
+
+export interface ZWaveJSLogConfig {
+  level: string;
+  enabled: boolean;
+  filename: string;
+  log_to_file: boolean;
+  force_console: boolean;
+}
+
+export const fetchLogConfig = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<ZWaveJSLogConfig> =>
+  hass.callWS({
+    type: "zwave_js/get_log_config",
+    entry_id,
+  });
+
+export const setLogLevel = (
+  hass: HomeAssistant,
+  entry_id: string,
+  level: string
+): Promise<ZWaveJSLogConfig> =>
+  hass.callWS({
+    type: "zwave_js/update_log_config",
+    entry_id,
+    config: { level },
   });
