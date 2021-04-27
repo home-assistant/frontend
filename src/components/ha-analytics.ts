@@ -8,7 +8,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
@@ -17,7 +16,18 @@ import "./ha-checkbox";
 import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-settings-row";
 
-const ADDITIONAL_PREFERENCES = ["usage", "statistics"];
+const ADDITIONAL_PREFERENCES = [
+  {
+    key: "usage",
+    title: "Usage",
+    description: "Details of what you use with Home Assistant",
+  },
+  {
+    key: "statistics",
+    title: "Statistical data",
+    description: "Counts containing total number of datapoints",
+  },
+];
 
 declare global {
   interface HASSDomEvents {
@@ -48,14 +58,10 @@ export class HaAnalytics extends LitElement {
           </ha-checkbox>
         </span>
         <span slot="heading" data-for="base">
-          ${this.hass.localize(
-            `ui.panel.config.core.section.core.analytics.preference.base.title`
-          )}
+          Basic analytics
         </span>
         <span slot="description" data-for="base">
-          ${this.hass.localize(
-            `ui.panel.config.core.section.core.analytics.preference.base.description`
-          )}
+          This includes information about your system.
         </span>
       </ha-settings-row>
       ${ADDITIONAL_PREFERENCES.map(
@@ -64,44 +70,23 @@ export class HaAnalytics extends LitElement {
             <span slot="prefix">
               <ha-checkbox
                 @change=${this._handleRowCheckboxClick}
-                .checked=${this.analytics?.preferences[preference]}
-                .preference=${preference}
-                name=${preference}
+                .checked=${this.analytics?.preferences[preference.key]}
+                .preference=${preference.key}
+                name=${preference.key}
               >
               </ha-checkbox>
               ${!baseEnabled
-                ? html`<paper-tooltip animation-delay="0" position="right"
-                    >${this.hass.localize(
-                      "ui.panel.config.core.section.core.analytics.needs_base"
-                    )}
+                ? html`<paper-tooltip animation-delay="0" position="right">
+                    You need to enable basic analytics for this option to be
+                    available
                   </paper-tooltip>`
                 : ""}
             </span>
-            <span slot="heading" data-for=${preference}>
-              ${preference === "usage"
-                ? isComponentLoaded(this.hass, "hassio")
-                  ? this.hass.localize(
-                      `ui.panel.config.core.section.core.analytics.preference.usage_supervisor.title`
-                    )
-                  : this.hass.localize(
-                      `ui.panel.config.core.section.core.analytics.preference.usage.title`
-                    )
-                : this.hass.localize(
-                    `ui.panel.config.core.section.core.analytics.preference.${preference}.title`
-                  )}
+            <span slot="heading" data-for=${preference.key}>
+              ${preference.title}
             </span>
-            <span slot="description" data-for=${preference}>
-              ${preference !== "usage"
-                ? this.hass.localize(
-                    `ui.panel.config.core.section.core.analytics.preference.${preference}.description`
-                  )
-                : isComponentLoaded(this.hass, "hassio")
-                ? this.hass.localize(
-                    `ui.panel.config.core.section.core.analytics.preference.usage_supervisor.description`
-                  )
-                : this.hass.localize(
-                    `ui.panel.config.core.section.core.analytics.preference.usage.description`
-                  )}
+            <span slot="description" data-for=${preference.key}>
+              ${preference.description}
             </span>
           </ha-settings-row>`
       )}
@@ -117,14 +102,10 @@ export class HaAnalytics extends LitElement {
           </ha-checkbox>
         </span>
         <span slot="heading" data-for="diagnostics">
-          ${this.hass.localize(
-            `ui.panel.config.core.section.core.analytics.preference.diagnostics.title`
-          )}
+          Diagnostics
         </span>
         <span slot="description" data-for="diagnostics">
-          ${this.hass.localize(
-            `ui.panel.config.core.section.core.analytics.preference.diagnostics.description`
-          )}
+          Share crash reports when unexpected errors occur.
         </span>
       </ha-settings-row>
     `;
@@ -161,7 +142,10 @@ export class HaAnalytics extends LitElement {
 
     preferences[preference] = checkbox.checked;
 
-    if (ADDITIONAL_PREFERENCES.includes(preference) && checkbox.checked) {
+    if (
+      ADDITIONAL_PREFERENCES.some((entry) => entry.key === preference) &&
+      checkbox.checked
+    ) {
       preferences.base = true;
     } else if (preference === "base" && !checkbox.checked) {
       preferences.usage = false;

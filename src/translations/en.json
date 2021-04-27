@@ -997,34 +997,6 @@
                 "save_button": "Save",
                 "external_url": "External URL",
                 "internal_url": "Internal URL"
-              },
-              "analytics": {
-                "header": "Analytics",
-                "introduction": "Share your installation information to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
-                "needs_base": "You need to enable base analytics for this option to be available",
-                "preference": {
-                  "base": {
-                    "title": "Basic analytics",
-                    "description": "Instance ID, version and installation type."
-                  },
-                  "diagnostics": {
-                    "title": "Diagnostics",
-                    "description": "Share crash reports when unexpected errors occur."
-                  },
-                  "usage": {
-                    "title": "Used Integrations",
-                    "description": "Names and version information."
-                  },
-                  "usage_supervisor": {
-                    "title": "Used integrations and add-ons",
-                    "description": "Names, versions and capabilities."
-                  },
-                  "statistics": {
-                    "title": "Usage statistics",
-                    "description": "Total used entities, users and other elements."
-                  }
-                },
-                "learn_more": "How we process your data"
               }
             }
           }
