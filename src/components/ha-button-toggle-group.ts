@@ -9,7 +9,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
@@ -37,11 +36,11 @@ export class HaButtonToggleGroup extends LitElement {
                 <ha-svg-icon .path=${button.iconPath}></ha-svg-icon>
               </mwc-icon-button>`
             : html`<mwc-button
-                style=${ifDefined(
-                  this.fullWidth
-                    ? styleMap({ width: `${100 / this.buttons.length}%` })
-                    : undefined
-                )}
+                style=${styleMap({
+                  width: this.fullWidth
+                    ? `${100 / this.buttons.length}%`
+                    : "initial",
+                })}
                 .value=${button.value}
                 ?active=${this.active === button.value}
                 @click=${this._handleClick}

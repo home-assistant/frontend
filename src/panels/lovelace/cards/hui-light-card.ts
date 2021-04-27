@@ -22,7 +22,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
 import {
-  getRgbColor,
+  getLightRgbColor,
   LightEntity,
   lightSupportsDimming,
 } from "../../../data/light";
@@ -247,7 +247,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     if (stateObj.state === "off") {
       return "";
     }
-    const rgb = getRgbColor(stateObj);
+    const rgb = getLightRgbColor(stateObj);
     return rgb ? `rgb(${rgb.slice(0, 3).join(",")})` : "";
   }
 

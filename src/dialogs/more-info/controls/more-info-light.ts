@@ -18,10 +18,10 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import {
-  getRgbColor,
-  isColorMode,
+  getLightRgbColor,
   LightColorModes,
   LightEntity,
+  lightIsInColorMode,
   lightSupportsColor,
   lightSupportsColorMode,
   lightSupportsDimming,
@@ -154,7 +154,7 @@ class MoreInfoLight extends LitElement {
                               "ui.card.light.color_brightness"
                             )}
                             icon="hass:brightness-7"
-                            max="255"
+                            max="100"
                             .value=${this._colorBrightnessSliderValue ?? 255}
                             @change=${this._colorBrightnessSliderChanged}
                             pin
@@ -169,7 +169,7 @@ class MoreInfoLight extends LitElement {
                                 "ui.card.light.white_value"
                               )}
                               icon="hass:file-word-box"
-                              max="255"
+                              max="100"
                               .name=${"wv"}
                               .value=${this._wvSliderValue}
                               @change=${this._wvSliderChanged}
@@ -186,7 +186,7 @@ class MoreInfoLight extends LitElement {
                                 "ui.card.light.cold_white_value"
                               )}
                               icon="hass:file-word-box-outline"
-                              max="255"
+                              max="100"
                               .name=${"cw"}
                               .value=${this._cwSliderValue}
                               @change=${this._wvSliderChanged}
@@ -197,7 +197,7 @@ class MoreInfoLight extends LitElement {
                                 "ui.card.light.warm_white_value"
                               )}
                               icon="hass:file-word-box"
-                              max="255"
+                              max="100"
                               .name=${"ww"}
                               .value=${this._wwSliderValue}
                               @change=${this._wvSliderChanged}
@@ -254,7 +254,7 @@ class MoreInfoLight extends LitElement {
         oldStateObj?.entity_id !== stateObj.entity_id ||
         oldStateObj?.state !== stateObj.state
       ) {
-        this._mode = isColorMode(this.stateObj!)
+        this._mode = lightIsInColorMode(this.stateObj!)
           ? "color"
           : LightColorModes.COLOR_TEMP;
       }
@@ -279,24 +279,30 @@ class MoreInfoLight extends LitElement {
       this._ctSliderValue = stateObj.attributes.color_temp;
       this._wvSliderValue =
         stateObj.attributes.color_mode === LightColorModes.RGBW
-          ? stateObj.attributes.rgbw_color[3]
+          ? Math.round((stateObj.attributes.rgbw_color[3] * 100) / 255)
           : undefined;
       this._cwSliderValue =
         stateObj.attributes.color_mode === LightColorModes.RGBWW
-          ? stateObj.attributes.rgbww_color[3]
+          ? Math.round((stateObj.attributes.rgbww_color[3] * 100) / 255)
           : undefined;
       this._wwSliderValue =
         stateObj.attributes.color_mode === LightColorModes.RGBWW
-          ? stateObj.attributes.rgbww_color[4]
+          ? Math.round((stateObj.attributes.rgbww_color[4] * 100) / 255)
           : undefined;
       this._colorBrightnessSliderValue =
         stateObj.attributes.color_mode === LightColorModes.RGBWW
-          ? Math.max(...stateObj.attributes.rgbww_color.slice(0, 3))
+          ? Math.round(
+              (Math.max(...stateObj.attributes.rgbww_color.slice(0, 3)) * 100) /
+                255
+            )
           : stateObj.attributes.color_mode === LightColorModes.RGBW
-          ? Math.max(...stateObj.attributes.rgbw_color.slice(0, 3))
+          ? Math.round(
+              (Math.max(...stateObj.attributes.rgbw_color.slice(0, 3)) * 100) /
+                255
+            )
           : undefined;
 
-      this._colorPickerColor = getRgbColor(stateObj)?.slice(0, 3) as
+      this._colorPickerColor = getLightRgbColor(stateObj)?.slice(0, 3) as
         | [number, number, number]
         | undefined;
     } else {
@@ -322,7 +328,7 @@ class MoreInfoLight extends LitElement {
   }
 
   private _brightnessSliderChanged(ev: CustomEvent) {
-    const bri = parseInt((ev.target as any).value, 10);
+    const bri = Number((ev.target as any).value);
 
     if (isNaN(bri)) {
       return;
@@ -352,7 +358,7 @@ class MoreInfoLight extends LitElement {
   }
 
   private _ctSliderChanged(ev: CustomEvent) {
-    const ct = parseInt((ev.target as any).value, 10);
+    const ct = Number((ev.target as any).value);
 
     if (isNaN(ct)) {
       return;
@@ -366,14 +372,16 @@ class MoreInfoLight extends LitElement {
 
   private _wvSliderChanged(ev: CustomEvent) {
     const target = ev.target as any;
-    const wv = Number(target.value);
+    let wv = Number(target.value);
     const name = target.name;
 
     if (isNaN(wv)) {
       return;
     }
 
-    const rgb = getRgbColor(this.stateObj!);
+    wv = (wv * 255) / 100;
+
+    const rgb = getLightRgbColor(this.stateObj!);
 
     if (name === "wv") {
       const rgbw_color = rgb || [0, 0, 0, 0];
@@ -400,7 +408,7 @@ class MoreInfoLight extends LitElement {
     const target = ev.target as any;
     const value = Number(target.value);
 
-    const rgb = (getRgbColor(this.stateObj!)?.slice(0, 3) || [
+    const rgb = (getLightRgbColor(this.stateObj!)?.slice(0, 3) || [
       255,
       255,
       255,

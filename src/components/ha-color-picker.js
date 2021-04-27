@@ -492,7 +492,7 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
       .getPropertyValue("--wheel-bordercolor")
       .trim();
     const wheelShadow = wheelStyle.getPropertyValue("--wheel-shadow").trim();
-    // extract shadow properties from  CSS variable
+    // extract shadow properties from CSS variable
     // the shadow should be defined as: "10px 5px 5px 0px COLOR"
     if (wheelShadow !== "none") {
       const values = wheelShadow.split("px ");
