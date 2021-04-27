@@ -30,7 +30,7 @@ class DialogAnalyticsOptIn extends LitElement {
 
   @internalProperty() private _analyticsDetails?: Analytics;
 
-  public async showDialog(params: DialogAnalyticsOptInParams): Promise<void> {
+  public showDialog(params: DialogAnalyticsOptInParams): void {
     this._error = undefined;
     this._submitting = false;
     this._analyticsDetails = params.analytics;
