@@ -29,8 +29,6 @@ class DialogZWaveJSReinterviewNode extends LitElement {
 
   @internalProperty() private _status?: string;
 
-  @internalProperty() private _stage?: string;
-
   @internalProperty() private _stages?: string[];
 
   private _subscribed?: Promise<UnsubscribeFunc>;
@@ -95,17 +93,6 @@ class DialogZWaveJSReinterviewNode extends LitElement {
                       "ui.panel.config.zwave_js.reinterview_node.run_in_background"
                     )}
                   </p>
-                  ${this._stage
-                    ? html`
-                        <p>
-                          ${this.hass.localize(
-                            "ui.panel.config.zwave_js.reinterview_node.interview_stage",
-                            "stage",
-                            this._stage
-                          )}
-                        </p>
-                      `
-                    : ""}
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
@@ -212,7 +199,6 @@ class DialogZWaveJSReinterviewNode extends LitElement {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
-    this._stage = undefined;
   }
 
   public closeDialog(): void {
