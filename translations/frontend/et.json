@@ -2787,6 +2787,15 @@
                         "manufacturer_code_override": "Tootja koodi alistamine",
                         "value": "Väärtus"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Otseteed",
+                        "update_button": "Seadete värskendamine",
+                        "zha_options": {
+                            "default_light_transition": "Valguse vaikeülemineku aeg (sekundites)",
+                            "enable_identify_on_join": "Luba tuvastamise efekt kui seadmed liituvad võrguga",
+                            "title": "Üldised valikud"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Seadistamine on lõpetatud",
                         "CONFIGURED_status_text": "Lähtestan",
@@ -3085,8 +3094,8 @@
                         "attributes": "Atribuudid",
                         "copy_id": "Kopeeri ID lõikepuhvrisse",
                         "current_entities": "Praegused olemid",
-                        "description1": "Seadke seadme esitus Home Assistendis.",
-                        "description2": "See ei suhtle tegeliku seadmega.",
+                        "description1": "Sea seadme oleku esitus Home Assistendis.",
+                        "description2": "Kui olem kuulub seadmele siis selle seadmega tegelikku suhtlust ei toimu.",
                         "entity": "Olem",
                         "filter_attributes": "Filtreeri atribuute",
                         "filter_entities": "Filtreeri olemeid",

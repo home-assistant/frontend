@@ -1695,7 +1695,7 @@
                         },
                         "connected": "Conectado",
                         "connection_status": "Estado de conexión a la nube",
-                        "fetching_subscription": "Obteniendo suscripción ...",
+                        "fetching_subscription": "Obteniendo suscripción...",
                         "google": {
                             "config_documentation": "Documentación de configuración",
                             "devices_pin": "PIN de dispositivos de seguridad",
@@ -1751,7 +1751,7 @@
                             "disable_hook_error_msg": "No se pudo deshabilitar el webhook:",
                             "info": "Cualquier cosa que esté configurada para ser activada por un webhook puede recibir una URL de acceso público para permitirte enviar datos a Home Assistant desde cualquier lugar, sin exponer tu instancia a Internet.",
                             "link_learn_more": "Saber más sobre la creación de automatizaciones basadas en webhook.",
-                            "loading": "Cargando ...",
+                            "loading": "Cargando...",
                             "manage": "Administrar",
                             "no_hooks_yet": "Parece que aún no tienes webhooks. Comienza configurando un",
                             "no_hooks_yet_link_automation": "automatización de webhook",
@@ -2198,7 +2198,7 @@
                             "migration_error": "Error de migración",
                             "not_loaded": "No se ha cargado",
                             "setup_error": "No se pudo configurar",
-                            "setup_retry": "Volviendo a intentar configurar"
+                            "setup_retry": "Reintentando la configuración"
                         },
                         "system_options": "Opciones del sistema",
                         "unnamed_entry": "Entrada sin nombre"
@@ -2787,6 +2787,15 @@
                         "manufacturer_code_override": "Anulación del código del fabricante",
                         "value": "Valor"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Atajos",
+                        "update_button": "Actualizar la configuración",
+                        "zha_options": {
+                            "default_light_transition": "Tiempo de transición de la luz por defecto (segundos)",
+                            "enable_identify_on_join": "Habilita el efecto de identificación cuando los dispositivos se unen a la red",
+                            "title": "Opciones globales"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuración completada",
                         "CONFIGURED_status_text": "Inicializando",
@@ -3053,12 +3062,12 @@
                         "count_listeners": " ({count} oyentes)",
                         "data": "Datos del evento (YAML, opcional)",
                         "description": "Disparar un evento en el bus de eventos.",
-                        "documentation": "Documentación de eventos.",
+                        "documentation": "Documentación de eventos",
                         "event_fired": "Evento {name} disparado",
                         "fire_event": "Lanzar evento",
                         "listen_to_events": "Escuchar eventos",
                         "listening_to": "Escuchando",
-                        "notification_event_fired": "¡Evento {tipe} disparado con éxito!",
+                        "notification_event_fired": "¡Evento {type} disparado con éxito!",
                         "start_listening": "Empezar a escuchar",
                         "stop_listening": "Dejar de escuchar",
                         "subscribe_to": "Evento al que suscribirse",
@@ -3085,8 +3094,8 @@
                         "attributes": "Atributos",
                         "copy_id": "Copiar ID al portapapeles",
                         "current_entities": "Entidades actuales",
-                        "description1": "Establecer la representación de un dispositivo dentro de Home Assistant.",
-                        "description2": "Esto no se comunicará con el dispositivo actual.",
+                        "description1": "Establece la representación del estado actual de una entidad dentro de Home Assistant.",
+                        "description2": "Si la entidad pertenece a un dispositivo, no habrá comunicación real con ese dispositivo.",
                         "entity": "Entidad",
                         "filter_attributes": "Filtrar atributos",
                         "filter_entities": "Filtrar entidades",
