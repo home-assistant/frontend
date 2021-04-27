@@ -24,6 +24,11 @@ export interface IntegrationManifest {
     | "local_push";
 }
 
+export interface IntegrationSetup {
+  domain: string;
+  seconds?: number;
+}
+
 export const integrationIssuesUrl = (
   domain: string,
   manifest: IntegrationManifest
@@ -44,3 +49,6 @@ export const fetchIntegrationManifest = (
   hass: HomeAssistant,
   integration: string
 ) => hass.callWS<IntegrationManifest>({ type: "manifest/get", integration });
+
+export const fetchIntegrationSetups = (hass: HomeAssistant) =>
+  hass.callWS<IntegrationSetup[]>({ type: "integration/setup_info" });
