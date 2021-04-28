@@ -886,6 +886,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "集成文档",
                 "required": "此字段为必填字段",
                 "service_data": "服务数据",
                 "target": "目标",
@@ -2935,6 +2936,9 @@
                         "header": "Z-Wave 设备配置",
                         "introduction": "管理并调整所选设备（节点）的具体配置参数。",
                         "parameter_is_read_only": "此参数为只读。",
+                        "set_param_accepted": "参数已更新。",
+                        "set_param_error": "发生错误。",
+                        "set_param_queued": "参数更改操作已加入队列，将在设备唤醒时更新。",
                         "zwave_js_device_database": "Z-Wave JS 设备数据库"
                     },
                     "node_status": {

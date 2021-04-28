@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "Brightness",
+                "cold_white_value": "Cold white brightness",
+                "color_brightness": "Color brightness",
                 "color_temperature": "Color temperature",
                 "effect": "Effect",
-                "white_value": "White value"
+                "warm_white_value": "Warm white brightness",
+                "white_value": "White brightness"
             },
             "lock": {
                 "code": "Code",
@@ -2947,6 +2950,16 @@
                         "awake": "Awake",
                         "dead": "Dead",
                         "unknown": "Unknown"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "You will need to wake battery powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
+                        "in_progress": "The device is being interviewed. This may take some time.",
+                        "interview_complete": "Device interview complete.",
+                        "interview_failed": "The device interview failed. Additional information may be available in the logs.",
+                        "introduction": "Re-interview a device on your Z-Wave network. Use this feature if your device has missing or incorrect functionality.",
+                        "run_in_background": "You can close this dialog and the interview will continue in the background.",
+                        "start_reinterview": "Start Re-interview",
+                        "title": "Re-interview a Z-Wave Device"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Cancel Exclusion",

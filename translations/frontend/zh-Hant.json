@@ -886,6 +886,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "整合文件",
                 "required": "必填欄位",
                 "service_data": "服務資料",
                 "target": "目標",
@@ -2198,7 +2199,7 @@
                             "migration_error": "遷移錯誤",
                             "not_loaded": "未載入",
                             "setup_error": "設定失敗",
-                            "setup_retry": "重新設定中"
+                            "setup_retry": "重試設定中"
                         },
                         "system_options": "系統選項",
                         "unnamed_entry": "未命名實體"
@@ -2660,7 +2661,7 @@
                             "confirm_restart": "確定要重啟 Home Assistant 嗎？",
                             "confirm_stop": "確定要停止 Home Assistant 嗎？",
                             "heading": "服務器管理",
-                            "introduction": "由 Home Assistant，控制 Home Assistant 伺服器。",
+                            "introduction": "使用 Home Assistant、於離家時遠端控制 Home Assistant 伺服器。",
                             "restart": "重啟",
                             "stop": "停止"
                         },
@@ -2786,6 +2787,15 @@
                         "clusters": "叢集",
                         "manufacturer_code_override": "製造商代碼覆寫",
                         "value": "數值"
+                    },
+                    "configuration_page": {
+                        "shortcuts_title": "捷徑",
+                        "update_button": "更新設定",
+                        "zha_options": {
+                            "default_light_transition": "預設燈光轉換時間（秒）",
+                            "enable_identify_on_join": "當裝置加入網路時、開啟識別效果",
+                            "title": "Global 選項"
+                        }
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "設定完成",
@@ -2926,6 +2936,9 @@
                         "header": "Z-Wave 裝置設定",
                         "introduction": "管理與調整所選擇裝置 (節點) 之特定設定參數",
                         "parameter_is_read_only": "此參數為唯讀。",
+                        "set_param_accepted": "參數已更新。",
+                        "set_param_error": "發生錯誤。",
+                        "set_param_queued": "參數變更已排序、將會於裝置喚醒時更新。",
                         "zwave_js_device_database": "Z-Wave JS 裝置資料庫"
                     },
                     "node_status": {
@@ -3085,8 +3098,8 @@
                         "attributes": "屬性",
                         "copy_id": "複製 ID 至剪貼簿",
                         "current_entities": "目前實體",
-                        "description1": "設定 Home Assistant 裝置代表。",
-                        "description2": "將不會與實際裝置進行通訊。",
+                        "description1": "設定 Home Assistant 實體目前狀態。",
+                        "description2": "假如實體屬於裝置，將不會與實際裝置進行通訊。",
                         "entity": "實體",
                         "filter_attributes": "屬性篩選器",
                         "filter_entities": "實體篩選器",
