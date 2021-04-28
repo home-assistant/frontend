@@ -102,16 +102,12 @@ export class HaAutomationTracePathDetails extends LitElement {
     const parts: TemplateResult[][] = [];
 
     let active = false;
-    const childKeyPrefix = `${this.selected.path}/`;
+    const childConditionsPrefix = `${this.selected.path}/conditions/`;
 
     for (const curPath of Object.keys(this.trace.trace)) {
-      // We are going to render all results starting at selected path
-      // and include all paths that fall below it that are not in tracked nodes
+      // Include all child conditions too
       if (active) {
-        if (
-          !curPath.startsWith(childKeyPrefix) ||
-          curPath in this.trackedNodes
-        ) {
+        if (!curPath.startsWith(childConditionsPrefix)) {
           break;
         }
       } else if (curPath === this.selected.path) {
@@ -136,7 +132,9 @@ export class HaAutomationTracePathDetails extends LitElement {
           return html`
             ${curPath === this.selected.path
               ? ""
-              : html`<h2>${curPath.substr(childKeyPrefix.length)}</h2>`}
+              : html`<h2>
+                  Condition ${curPath.substr(childConditionsPrefix.length)}
+                </h2>`}
             ${data.length === 1 ? "" : html`<h3>Iteration ${idx + 1}</h3>`}
             Executed:
             ${formatDateTimeWithSeconds(
