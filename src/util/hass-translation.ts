@@ -36,9 +36,21 @@ export function findAvailableLanguage(language: string) {
     return LOCALE_LOOKUP[langLower];
   }
 
-  return Object.keys(translationMetadata.translations).find(
+  let translation = Object.keys(translationMetadata.translations).find(
     (lang) => lang.toLowerCase() === langLower
   );
+  if (translation) {
+    return translation;
+  }
+
+  if (language.includes("-")) {
+    translation = findAvailableLanguage(language.split("-")[0]);
+    if (translation) {
+      return translation;
+    }
+  }
+
+  return null;
 }
 
 /**
@@ -87,12 +99,6 @@ export function getLocalLanguage() {
       language = findAvailableLanguage(locale);
       if (language) {
         return language;
-      }
-      if (locale.includes("-")) {
-        language = findAvailableLanguage(locale.split("-")[0]);
-        if (language) {
-          return language;
-        }
       }
     }
   }
