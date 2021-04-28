@@ -112,7 +112,7 @@ export class HuiGaugeCardEditor extends LitElement
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .value=${this._unit}
-          configValue="unit"
+          .configValue=${"unit"}
           @value-changed=${this._valueChanged}
         ></paper-input>
         <hui-theme-select-editor
