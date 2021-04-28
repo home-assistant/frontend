@@ -55,7 +55,6 @@ import {
 import { QuickBarParams } from "./show-dialog-quick-bar";
 import "../../components/ha-chip";
 import { toTitleCase } from "../../common/string/casing";
-import { unsafeHTML } from "lit-html/directives/unsafe-html";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -121,6 +120,7 @@ export class QuickBar extends LitElement {
     this._focusSet = false;
     this._filter = "";
     this._search = "";
+    this._resetDecorations();
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -258,7 +258,7 @@ export class QuickBar extends LitElement {
             ></ha-icon>`}
         <span class="item-text primary"
           >${item.decoratedStrings
-            ? unsafeHTML(item.decoratedStrings[0])
+            ? item.decoratedStrings[0]
             : item.primaryText}</span
         >
         ${item.altText
@@ -266,7 +266,7 @@ export class QuickBar extends LitElement {
               <span slot="secondary" class="item-text secondary">
                 <span
                   >${item.decoratedStrings
-                    ? unsafeHTML(item.decoratedStrings[1])
+                    ? item.decoratedStrings[1]
                     : item.altText}</span
                 ></span
               >
@@ -298,16 +298,12 @@ export class QuickBar extends LitElement {
                   slot="icon"
                 ></ha-svg-icon>`
               : ""}
-            ${decoratedItem
-              ? unsafeHTML(decoratedItem[0])
-              : item.categoryText}</ha-chip
+            ${decoratedItem ? decoratedItem[0] : item.categoryText}</ha-chip
           >
         </span>
 
         <span class="command-text"
-          >${decoratedItem
-            ? unsafeHTML(decoratedItem[1])
-            : item.primaryText}</span
+          >${decoratedItem ? decoratedItem[1] : item.primaryText}</span
         >
       </mwc-list-item>
     `;
@@ -629,7 +625,10 @@ export class QuickBar extends LitElement {
       return fuzzyFilterSort<QuickBarItem>(
         filter.trimLeft(),
         items,
-        createMatchDecorator("<span class='highlight-letter'>", "</span>")
+        createMatchDecorator(
+          (matchedChunk) =>
+            html`<span class="highlight-letter">${matchedChunk}</span>`
+        )
       );
     }
   );

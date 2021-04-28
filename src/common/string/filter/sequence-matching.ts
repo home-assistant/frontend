@@ -1,3 +1,4 @@
+import { TemplateResult } from "lit-html";
 import {
   createMatches,
   createMatchesFragmented,
@@ -24,10 +25,10 @@ type FuzzySequentialMatcher = (
 export const fuzzySequentialMatch: FuzzySequentialMatcher = (
   filter,
   item,
-  decorate = createMatchDecorator("[", "]")
+  decorate = createMatchDecorator((letter) => `[${letter}]`)
 ) => {
   let topScore = Number.NEGATIVE_INFINITY;
-  const decoratedStrings: string[][] = [];
+  const decoratedStrings: Decoration[][][] = [];
   const strings = item.treatArrayAsSingleString
     ? [item.strings.join("")]
     : item.strings;
@@ -88,7 +89,7 @@ export const fuzzySequentialMatch: FuzzySequentialMatcher = (
 export interface ScorableTextItem {
   score?: number;
   strings: string[];
-  decoratedStrings?: string[][];
+  decoratedStrings?: Decoration[][][];
   treatArrayAsSingleString?: boolean;
 }
 
@@ -101,7 +102,7 @@ type FuzzyFilterSort = <T extends ScorableTextItem>(
 export const fuzzyFilterSort: FuzzyFilterSort = (
   filter,
   items,
-  decorate = createMatchDecorator("[", "]")
+  decorate = createMatchDecorator((letter) => `[${letter}]`)
 ) => {
   return items
     .map((item) => {
@@ -118,48 +119,56 @@ export const fuzzyFilterSort: FuzzyFilterSort = (
     );
 };
 
+type Decoration = string | TemplateResult;
+
+export type Surrounder = (matchedChunk: Decoration) => Decoration;
+
 type MatchDecorator = (
   word: string,
   item: ScorableTextItem,
   scores?: FuzzyScore
-) => string[];
+) => Decoration[][];
+
 export const createMatchDecorator: (
-  left: string,
-  right: string
-) => MatchDecorator = (left, right) => (word, item, scores) =>
-  _decorateMatch(word, [left, right], item, scores);
+  surrounder: Surrounder
+) => MatchDecorator = (surrounder) => (word, item, scores) =>
+  _decorateMatch(word, surrounder, item, scores);
 
 const _decorateMatch: (
   word: string,
-  surroundWith: [string, string],
+  surrounder: Surrounder,
   item: ScorableTextItem,
   scores?: FuzzyScore
-) => string[] = (word, surroundWith, item, scores) => {
+) => Decoration[][] = (word, surrounder, item, scores) => {
   if (!scores) {
-    return [word];
+    return [[word]];
   }
 
-  const decoratedText: string[] = [];
+  const decoratedText: Decoration[][] = [];
   const matches = item.treatArrayAsSingleString
     ? createMatchesFragmented(scores, item.strings)
     : [createMatches(scores)];
-  const [left, right] = surroundWith;
 
   for (let i = 0; i < matches.length; i++) {
     const match = matches[i];
     const _word = item.treatArrayAsSingleString ? item.strings[i] : word;
     let pos = 0;
-    let actualWord = "";
+    const actualWord: Decoration[] = [];
+
     for (const fragmentedMatch of match) {
-      actualWord +=
-        _word.substring(pos, fragmentedMatch.start) +
-        left +
-        _word.substring(fragmentedMatch.start, fragmentedMatch.end) +
-        right;
+      const unmatchedChunk = _word.substring(pos, fragmentedMatch.start);
+      const matchedChunk = _word.substring(
+        fragmentedMatch.start,
+        fragmentedMatch.end
+      );
+
+      actualWord.push(unmatchedChunk);
+      actualWord.push(surrounder(matchedChunk));
+
       pos = fragmentedMatch.end;
     }
-    actualWord += _word.substring(pos);
 
+    actualWord.push(_word.substring(pos));
     decoratedText.push(actualWord);
   }
   return decoratedText;

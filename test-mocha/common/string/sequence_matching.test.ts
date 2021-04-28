@@ -77,8 +77,13 @@ describe("fuzzySequentialMatch", () => {
 
       it(`decorates '${expectation.pattern}' as '${expectation.expected?.decoratedString}'`, () => {
         const res = fuzzySequentialMatch(expectation.pattern, item);
-        assert.includeDeepMembers(res!.decoratedStrings!, [
-          [expectation.expected!.decoratedString!],
+        const allDecoratedStrings = [
+          res!.decoratedStrings![0][0].join(""),
+          res!.decoratedStrings![1][0].join(""),
+        ];
+
+        assert.includeDeepMembers(allDecoratedStrings, [
+          expectation.expected!.decoratedString!,
         ]);
       });
     }
@@ -114,7 +119,7 @@ describe("fuzzyFilterSort", () => {
     strings: ["light.chandelier", "Chandelier"],
     score: 0,
   };
-  const itemsBeforeFilter = [
+  const itemsBeforeFilter: ScorableTextItem[] = [
     automationTicker,
     sensorTicker,
     timerCheckRouter,
@@ -149,7 +154,13 @@ describe("fuzzyFilterSort", () => {
       },
     ];
 
-    const res = fuzzyFilterSort(filter, itemsBeforeFilter);
+    const res = fuzzyFilterSort(filter, itemsBeforeFilter).map((item) => ({
+      ...item,
+      decoratedStrings: [
+        [item.decoratedStrings![0][0].join("")],
+        [item.decoratedStrings![1][0].join("")],
+      ],
+    }));
 
     assert.deepEqual(res, expectedItemsAfterFilter);
   });
