@@ -473,6 +473,7 @@
                 "unhealthy_title": "L'installazione non è integra",
                 "unsupported_description": "Di seguito è riportato un elenco dei problemi riscontrati con l'installazione, fare clic sui collegamenti per scoprire come risolvere i problemi.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor non è abilitato sull'host",
                     "container": "Container noti per causare problemi",
                     "content-trust": "La convalida dell'attendibilità del contenuto è disabilitata",
                     "dbus": "DBUS",
@@ -706,7 +707,7 @@
                     "text": "Inserisci il nome della nuova area.",
                     "title": "Aggiungi nuova area"
                 },
-                "add_new": "Aggiungi nuova area…",
+                "add_new": "Aggiungi nuova area",
                 "area": "Area",
                 "clear": "Cancella",
                 "no_areas": "Non hai aree",
@@ -885,6 +886,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Documentazione dell'integrazione",
                 "required": "Questo campo è obbligatorio",
                 "service_data": "Dati del servizio",
                 "target": "Destinazioni",
@@ -1213,6 +1215,14 @@
                 "key_wrong_type": "Il valore fornito per \"{key}\" non è supportato dall'editor visivo. Supportiamo ({type_correct}) ma ricevuto ({type_wrong}).",
                 "no_template_editor_support": "Modelli non supportati nell'editor visivo",
                 "no_type_provided": "Nessun tipo fornito."
+            },
+            "supervisor": {
+                "ask": "Chiedere aiuto",
+                "observer": "Controlla l'Observer",
+                "reboot": "Prova a riavviare l'host",
+                "system_health": "Controlla l'integrità del sistema",
+                "title": "Impossibile caricare il pannello Supervisor!",
+                "wait": "Se hai appena avviato, assicurati di aver dato al Supervisor abbastanza tempo per partire."
             }
         },
         "login-form": {
@@ -1230,10 +1240,12 @@
         "notification_toast": {
             "connection_lost": "Connessione persa. Riconnessione…",
             "dismiss": "Rimuovi",
+            "intergration_starting": "{integration} si sta avviando, non tutto sarà disponibile fino ad avvio completo.",
             "service_call_failed": "Fallita chiamata a servizio {service} .",
             "started": "Home Assistant si è avviato!",
             "starting": "Home Assistant si sta avviando, non tutto sarà disponibile fino ad avvio completo.",
-            "triggered": "Attivato {name}"
+            "triggered": "Attivato {name}",
+            "wrapping_up_startup": "Si sta concludendo l'avvio, non tutto sarà disponibile fino al termine."
         },
         "panel": {
             "config": {
@@ -1597,7 +1609,7 @@
                         "delete_automation": "Elimina automazione",
                         "delete_confirm": "Sei sicuro di voler eliminare questa automazione?",
                         "dev_automation": "Debug dell'automazione",
-                        "dev_only_editable": "È possibile eseguire il debug solo delle automazioni definite in automations.yaml.",
+                        "dev_only_editable": "Solo le automazioni che hanno assegnato un ID univoco sono debuggabili.",
                         "duplicate": "Duplica",
                         "duplicate_automation": "Duplica automazione",
                         "edit_automation": "Modifica automazione",
@@ -1684,7 +1696,7 @@
                         },
                         "connected": "Connesso",
                         "connection_status": "Stato della connessione cloud",
-                        "fetching_subscription": "Recupero abbonamento ...",
+                        "fetching_subscription": "Recupero iscrizione in corso...",
                         "google": {
                             "config_documentation": "Documentazione di configurazione",
                             "devices_pin": "PIN dei dispositivi di sicurezza",
@@ -1740,7 +1752,7 @@
                             "disable_hook_error_msg": "Impossibile disabilitare webhook:",
                             "info": "Tutto ciò che è configurato per essere attivato da un webhook può essere dotato di un URL accessibile pubblicamente per consentire d'inviare i dati ad Home Assistant da qualsiasi luogo, senza esporre la vostra istanza a Internet.",
                             "link_learn_more": "Ulteriori informazioni sulla creazione di automazioni basate su webhook.",
-                            "loading": "Caricamento in corso ...",
+                            "loading": "Caricamento in corso...",
                             "manage": "Gestisci",
                             "no_hooks_yet": "Sembra che tu non abbia ancora dei webhook. Per iniziare, configurare un ",
                             "no_hooks_yet_link_automation": "automazione webhook",
@@ -1864,28 +1876,28 @@
                                 "documentation": "Prima di abilitarlo, assicurati di visitare la pagina della documentazione di analisi {link} per capire cosa stai inviando e come viene archiviato.",
                                 "header": "Analisi",
                                 "instance_id": "ID istanza: {huuid}",
-                                "introduction": "Condividi l'analisi dalla tua istanza. Questi dati saranno disponibili pubblicamente all'indirizzo {link}",
-                                "learn_more": "Scopri di più su come verranno elaborati i tuoi dati.",
+                                "introduction": "Condividi le informazioni di installazione per migliorare Home Assistant e aiutarci a convincere i produttori ad aggiungere funzionalità incentrate sul controllo locale e sulla privacy.",
+                                "learn_more": "Come elaboriamo i tuoi dati",
                                 "needs_base": "È necessario abilitare l'analisi di base affinché questa opzione sia disponibile",
                                 "preference": {
                                     "base": {
-                                        "description": "Questo include l'ID dell'istanza, la versione e il tipo di installazione",
+                                        "description": "ID dell'istanza, versione e tipo di installazione.",
                                         "title": "Analisi di base"
                                     },
                                     "diagnostics": {
-                                        "description": "Condividi i rapporti sugli arresti anomali e le informazioni diagnostiche",
+                                        "description": "Condividi i rapporti sugli arresti anomali quando si verificano errori imprevisti.",
                                         "title": "Diagnostica"
                                     },
                                     "statistics": {
-                                        "description": "Questo include un conteggio degli elementi nella tua installazione, per un elenco completo guarda la documentazione",
+                                        "description": "Totale entità, utenti e altri elementi utilizzati.",
                                         "title": "Statistiche d'uso"
                                     },
                                     "usage_supervisor": {
-                                        "description": "Questo include i nomi e le funzionalità delle integrazioni e dei componenti aggiuntivi",
+                                        "description": "Nomi, versioni e funzionalità.",
                                         "title": "Integrazioni e componenti aggiuntivi utilizzati"
                                     },
                                     "usage": {
-                                        "description": "Questo include i nomi delle tue integrazioni",
+                                        "description": "Nomi e informazioni sulla versione.",
                                         "title": "Integrazioni usate"
                                     }
                                 }
@@ -2145,8 +2157,11 @@
                     "caption": "Integrazioni",
                     "config_entry": {
                         "area": "In {area}",
+                        "check_the_logs": "Controlla i registri",
+                        "configure": "Configura",
                         "delete": "Elimina",
                         "delete_confirm": "Sei sicuro di voler eliminare questa integrazione?",
+                        "depends_on_cloud": "Dipende dal cloud",
                         "device_unavailable": "Dispositivo non disponibile",
                         "devices": "{count} {count, plural, \none {dispositivo}\nother {dispositivi}\n}",
                         "disable_restart_confirm": "Riavvia Home Assistant per terminare la disabilitazione di questa integrazione",
@@ -2169,14 +2184,23 @@
                         "logs": "registri",
                         "manuf": "da {manufacturer}",
                         "no_area": "Nessuna area",
-                        "not_loaded": "Non caricato, controlla il {logs_link}",
+                        "not_loaded": "Non caricato",
                         "options": "Opzioni",
+                        "provided_by_custom_integration": "Fornito da un'integrazione personalizzata",
                         "reload": "Ricarica",
                         "reload_confirm": "L'integrazione è stata ricaricata",
                         "reload_restart_confirm": "Riavvia Home Assistant per completare il ricaricamento di questa integrazione",
                         "rename": "Rinomina",
                         "restart_confirm": "Riavvia Home Assistant per completare la rimozione di questa integrazione",
                         "services": "{count} {count, plural,\n  one {servizio}\n  other {servizi}\n}",
+                        "state": {
+                            "failed_unload": "Impossibile scaricare",
+                            "loaded": "Caricato",
+                            "migration_error": "Errore di migrazione",
+                            "not_loaded": "Non caricato",
+                            "setup_error": "Configurazione non riuscita",
+                            "setup_retry": "Nuovo tentativo di configurazione"
+                        },
                         "system_options": "Opzioni di sistema",
                         "unnamed_entry": "Voce senza nome"
                     },
@@ -2205,7 +2229,7 @@
                     "configure": "Configura",
                     "configured": "Configurato",
                     "confirm_new": "Vuoi configurare {integration}?",
-                    "description": "Gestisci le integrazioni con servizi, dispositivi, ...",
+                    "description": "Gestisci le integrazioni con servizi o dispositivi",
                     "details": "Dettagli dell'integrazione",
                     "disable": {
                         "disabled_integrations": "{number} disabilitate",
@@ -2244,8 +2268,10 @@
                 "logs": {
                     "caption": "Registri",
                     "clear": "Pulisci",
+                    "custom_integration": "integrazione personalizzata",
                     "description": "Vedi i registri di Home Assistant",
                     "details": "Dettagli registro ({level})",
+                    "error_from_custom_integration": "Questo errore ha avuto origine da un'integrazione personalizzata.",
                     "level": {
                         "critical": "CRITICO",
                         "debug": "DEBUG",
@@ -2635,7 +2661,7 @@
                             "confirm_restart": "Sei sicuro di voler riavviare Home Assistant?",
                             "confirm_stop": "Sei sicuro di voler arrestare Home Assistant?",
                             "heading": "Gestione del Server",
-                            "introduction": "Controllare il server Home Assistant... da Home Assistant.",
+                            "introduction": "Controlla il tuo Server Home Assistant... da Home Assistant.",
                             "restart": "Riavviare",
                             "stop": "Arrestare"
                         },
@@ -2761,6 +2787,15 @@
                         "clusters": "Clusters",
                         "manufacturer_code_override": "Sostituzione codice produttore",
                         "value": "Valore"
+                    },
+                    "configuration_page": {
+                        "shortcuts_title": "Collegamenti",
+                        "update_button": "Aggiorna Configurazione",
+                        "zha_options": {
+                            "default_light_transition": "Tempo di transizione della luce predefinito (secondi)",
+                            "enable_identify_on_join": "Abilita la notifica di identificazione quando i dispositivi si collegano alla rete",
+                            "title": "Opzioni Globali"
+                        }
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Configurazione completata",
@@ -3028,12 +3063,12 @@
                         "count_listeners": " ({count} ascoltatori)",
                         "data": "Dati Evento (YAML, opzionale)",
                         "description": "Attiva un evento sul bus eventi.",
-                        "documentation": "Documentazione degli Eventi.",
+                        "documentation": "Documentazione degli eventi",
                         "event_fired": "Evento {name} generato",
                         "fire_event": "Scatena Evento",
                         "listen_to_events": "Ascoltare gli eventi",
                         "listening_to": "In ascolto di",
-                        "notification_event_fired": "Evento {type} eseguito correttamente!",
+                        "notification_event_fired": "Evento {type} eseguito con successo!",
                         "start_listening": "Iniziare ad ascoltare",
                         "stop_listening": "Interrompere l'ascolto",
                         "subscribe_to": "Evento a cui iscriversi",
@@ -3060,8 +3095,8 @@
                         "attributes": "Attributi",
                         "copy_id": "Copia ID negli appunti",
                         "current_entities": "Entità correnti",
-                        "description1": "Impostare la rappresentazione di un dispositivo all'interno di Home Assistant.",
-                        "description2": "Questo non comunicherà con il dispositivo attuale.",
+                        "description1": "Imposta lo stato corrente di un'entità all'interno di Home Assistant.",
+                        "description2": "Se l'entità appartiene a un dispositivo, non si potrà attuare nessuna comunicazione con esso.",
                         "entity": "Entità",
                         "filter_attributes": "Filtra attributi",
                         "filter_entities": "Filtra entità",
@@ -3433,7 +3468,7 @@
                         "duplicate": "Duplica scheda",
                         "edit": "Modifica",
                         "header": "Configurazione della scheda",
-                        "move": "Sposta nella vista",
+                        "move": "Sposta in Visualizza",
                         "move_after": "Sposta la scheda dopo",
                         "move_before": "Sposta la scheda prima",
                         "options": "Altre opzioni",

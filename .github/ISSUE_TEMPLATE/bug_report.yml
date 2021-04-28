@@ -1,8 +1,6 @@
 name: Report a bug with the UI, Frontend or Lovelace
-about: Report an issue related to the Home Assistant frontend.
+description: Report an issue related to the Home Assistant frontend.
 labels: bug
-title: ""
-issue_body: true
 body:
   - type: markdown
     attributes:
@@ -97,11 +95,7 @@ body:
         If your issue is about how an entity is shown in the UI, please add the
         state and attributes for all situations. You can find this information
         at Developer Tools -> States.
-      value: |
-        ```yaml
-        # Paste your state here.
-
-        ```
+      render: txt
   - type: textarea
     attributes:
       label: Problem-relevant frontend configuration
@@ -110,29 +104,18 @@ body:
         configuration of the used cards. Fill this out even if it seems
         unimportant to you. Please be sure to remove personal information like
         passwords, private URLs and other credentials.
-      value: |
-        ```yaml
-        # Paste your YAML here.
-
-        ```
+      render: yaml
   - type: textarea
     attributes:
       label: Javascript errors shown in your browser console/inspector
       description: >
         If you come across any Javascript or other error logs, e.g., in your
         browser console/inspector please provide them.
-      value: |
-        ```txt
-        # Paste your logs here.
-
-        ```
-  - type: markdown
+      render: txt
+  - type: textarea
     attributes:
-      value: |
-        ## Additional information
-  - type: markdown
-    attributes:
-      value: |
+      label: Additional information
+      description: >
         If you have any additional information for us, use the field below.
-        Please note, you can attach screenshots or screen recordings here,
-        by dragging and dropping files in the field below.
+        Please note, you can attach screenshots or screen recordings here, by
+        dragging and dropping files in the field below.

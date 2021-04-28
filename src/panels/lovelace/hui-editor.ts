@@ -106,7 +106,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this.yamlEditor.value = safeDump(this.lovelace!.config);
+    this.yamlEditor.value = safeDump(this.lovelace!.rawConfig);
   }
 
   protected updated(changedProps: PropertyValues) {

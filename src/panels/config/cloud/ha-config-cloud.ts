@@ -73,7 +73,7 @@ class HaConfigCloud extends HassRouterPage {
 
   private _resolveCloudStatusLoaded!: () => void;
 
-  private _cloudStatusLoaded = new Promise((resolve) => {
+  private _cloudStatusLoaded = new Promise<void>((resolve) => {
     this._resolveCloudStatusLoaded = resolve;
   });
 

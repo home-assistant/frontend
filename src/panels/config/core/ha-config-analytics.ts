@@ -40,21 +40,13 @@ class ConfigAnalytics extends LitElement {
       : undefined;
 
     return html`
-      <ha-card
-        .header=${this.hass.localize(
-          "ui.panel.config.core.section.core.analytics.header"
-        )}
-      >
+      <ha-card header="Analytics">
         <div class="card-content">
           ${error ? html`<div class="error">${error}</div>` : ""}
           <p>
-            ${this.hass.localize(
-              "ui.panel.config.core.section.core.analytics.introduction",
-              "link",
-              html`<a href="https://analytics.home-assistant.io" target="_blank"
-                >analytics.home-assistant.io</a
-              >`
-            )}
+            Share anonymized information from your installation to help make
+            Home Assistant better and help us convince manufacturers to add
+            local control and privacy-focused features.
           </p>
           <ha-analytics
             @analytics-preferences-changed=${this._preferencesChanged}

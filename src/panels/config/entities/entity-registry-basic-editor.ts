@@ -38,7 +38,7 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _entityId!: string;
 
-  @internalProperty() private _areaId?: string;
+  @internalProperty() private _areaId?: string | null;
 
   @internalProperty() private _disabledBy!: string | null;
 

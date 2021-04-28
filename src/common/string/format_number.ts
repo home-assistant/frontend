@@ -58,7 +58,7 @@ export const formatNumber = (
       ).format(Number(num));
     }
   }
-  return num ? num.toString() : "";
+  return num.toString();
 };
 
 /**

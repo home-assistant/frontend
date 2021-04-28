@@ -32,6 +32,19 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         storeState(this.hass!);
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
+      if (mql.matches) {
+        applyThemesOnElement(
+          document.documentElement,
+          {
+            default_theme: "default",
+            default_dark_theme: null,
+            themes: {},
+            darkMode: false,
+          },
+          "default",
+          { dark: true }
+        );
+      }
     }
 
     protected hassConnected() {

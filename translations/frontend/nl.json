@@ -240,7 +240,7 @@
                     "title": "Waarschuwing: Beschermingsmodus is uitgeschakeld!"
                 },
                 "ram_usage": "Add-on RAM-gebruik",
-                "rebuild": "Herbouw",
+                "rebuild": "herbouw",
                 "restart": "herstart",
                 "start": "start",
                 "stop": "stop",
@@ -473,6 +473,7 @@
                 "unhealthy_title": "Er is iets mis met je installatie",
                 "unsupported_description": "Hieronder vindt je een lijst met problemen die bij je installatie zijn aangetroffen. Klik op de links om te zien hoe je de problemen kunt oplossen.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor is niet ingeschakeld op de host",
                     "container": "Containers waarvan bekend is dat ze problemen veroorzaken",
                     "content-trust": "Validatie van content-trust is uitgeschakeld",
                     "dbus": "DBUS",
@@ -706,7 +707,7 @@
                     "text": "Geef de naam op van het nieuwe gebied.",
                     "title": "Gebied toevoegen"
                 },
-                "add_new": "Gebied toevoegen...",
+                "add_new": "Nieuw gebied toevoegen...",
                 "area": "Gebied",
                 "clear": "Wis",
                 "no_areas": "Je hebt geen gebieden",
@@ -885,6 +886,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Integratiedocumentatie",
                 "required": "Dit veld is verplicht",
                 "service_data": "Service data",
                 "target": "Doelen",
@@ -1122,7 +1124,7 @@
                         "input_number": "Input numbers",
                         "input_select": "Input selects",
                         "input_text": "Input texts",
-                        "min_max": "Laad min/max entiteiten opnieuw",
+                        "min_max": "Min/max entiteiten",
                         "mqtt": "Handmatig geconfigureerde MQTT-entiteiten",
                         "person": "Personen",
                         "ping": "Ping binaire sensor entiteiten",
@@ -1238,10 +1240,12 @@
         "notification_toast": {
             "connection_lost": "Verbinding verbroken. Opnieuw verbinden...",
             "dismiss": "Afwijzen",
+            "intergration_starting": "Start {integration}, niet alles is beschikbaar totdat het voltooid is.",
             "service_call_failed": "Kan service {service} niet aanroepen",
             "started": "Home Assistant is gestart!",
-            "starting": "Home Assistant is aan het opstarten. Gedurende het opstarten is niet alles beschikbaar.",
-            "triggered": "Geactiveerd {name}"
+            "starting": "Home Assistant is aan het opstarten. Tijdens het opstarten is niet alles beschikbaar.",
+            "triggered": "Geactiveerd {name}",
+            "wrapping_up_startup": "Opstarten aan het afronden, niet alles is beschikbaar totdat het voltooid is."
         },
         "panel": {
             "config": {
@@ -1432,9 +1436,9 @@
                                 },
                                 "sun": {
                                     "after": "Na:",
-                                    "after_offset": "Na offset (optioneel)",
+                                    "after_offset": "Afwijking na (optioneel)",
                                     "before": "Voor:",
-                                    "before_offset": "Voor offset (optioneel)",
+                                    "before_offset": "Afwijking voor (optioneel)",
                                     "label": "Zon",
                                     "sunrise": "Zonsopkomst",
                                     "sunset": "Zonsondergang"
@@ -1560,7 +1564,7 @@
                                 "sun": {
                                     "event": "Gebeurtenis:",
                                     "label": "Zon",
-                                    "offset": "Offset (optioneel)",
+                                    "offset": "Afwijking (optioneel)",
                                     "sunrise": "Zonsopkomst",
                                     "sunset": "Zonsondergang"
                                 },
@@ -1872,28 +1876,28 @@
                                 "documentation": "Voordat u dit inschakelt, moet u de analytics documentatie pagina {link} bezoeken om te begrijpen wat u verstuurt en hoe het wordt opgeslagen.",
                                 "header": "Analytics",
                                 "instance_id": "Instantie-ID: {huuid}",
-                                "introduction": "Deel analyses vanuit uw instantie. Deze gegevens zijn openbaar beschikbaar op {link}",
-                                "learn_more": "Lees meer over hoe uw gegevens worden verwerkt.",
+                                "introduction": "Deel uw installatie-informatie om Home Assistant te helpen verbeteren en ons te helpen fabrikanten te overtuigen om lokale controle en privacygerichte functies toe te voegen.",
+                                "learn_more": "Hoe wij uw gegevens verwerken",
                                 "needs_base": "U moet basisanalyses inschakelen om deze optie beschikbaar te maken",
                                 "preference": {
                                     "base": {
-                                        "description": "Dit bevat de instantie-ID, de versie en het installatietype",
+                                        "description": "Instantie-ID, versie en installatietype.",
                                         "title": "Basisanalyses"
                                     },
                                     "diagnostics": {
-                                        "description": "Deel crashrapporten en diagnostische informatie",
+                                        "description": "Deel crashrapporten wanneer onverwachte fouten optreden.",
                                         "title": "Diagnostiek"
                                     },
                                     "statistics": {
-                                        "description": "Dit omvat een telling van elementen in uw installatie, voor een volledige lijst zie de documentatie",
+                                        "description": "Totaal gebruikte entiteiten, gebruikers en andere elementen.",
                                         "title": "Gebruiksstatistieken"
                                     },
                                     "usage_supervisor": {
-                                        "description": "Dit omvat de namen en mogelijkheden van uw integraties en add-ons",
+                                        "description": "Namen, versies en mogelijkheden.",
                                         "title": "Gebruikte integraties en add-ons"
                                     },
                                     "usage": {
-                                        "description": "Dit bevat de namen van uw integraties",
+                                        "description": "Namen en versie-informatie.",
                                         "title": "Gebruikte integraties"
                                     }
                                 }
@@ -1931,7 +1935,7 @@
                     "different_include": "Mogelijk via een domein, een glob of een andere include.",
                     "pick_attribute": "Kies een attribuut om te overschrijven",
                     "picker": {
-                        "documentation": "Documentatie aanpassen",
+                        "documentation": "Documentatie van aanpassingen",
                         "header": "Aanpassingen",
                         "introduction": "Pas attributen per entiteit aan. Toegevoegde/gewijzigde aanpassingen worden onmiddellijk van kracht. Verwijderde aanpassingen worden van kracht wanneer de entiteit wordt bijgewerkt."
                     },
@@ -2153,8 +2157,11 @@
                     "caption": "Integraties",
                     "config_entry": {
                         "area": "In {area}",
+                        "check_the_logs": "Controleer de logboeken",
+                        "configure": "Configureer",
                         "delete": "Verwijder",
                         "delete_confirm": "Weet je zeker dat je deze integratie wilt verwijderen?",
+                        "depends_on_cloud": "Cloud afhankelijk",
                         "device_unavailable": "Apparaat niet beschikbaar",
                         "devices": "{count} {count, plural,\n  one {apparaat}\n  other {apparaten}\n}",
                         "disable_restart_confirm": "Start Home Assistant opnieuw op om het uitzetten van deze integratie te voltooien",
@@ -2177,14 +2184,23 @@
                         "logs": "logs",
                         "manuf": "door {manufacturer}",
                         "no_area": "Geen Gebied",
-                        "not_loaded": "Niet geladen, controleer de {logs_link}",
+                        "not_loaded": "Niet geladen",
                         "options": "Opties",
+                        "provided_by_custom_integration": "Geleverd door een aangepaste integratie",
                         "reload": "Herlaad",
                         "reload_confirm": "De integratie is opnieuw geladen",
                         "reload_restart_confirm": "Start Home Assistant opnieuw om het opnieuw laden van deze integratie te voltooien",
                         "rename": "Naam wijzigen",
                         "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
                         "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
+                        "state": {
+                            "failed_unload": "Uitladen mislukt",
+                            "loaded": "Geladen",
+                            "migration_error": "Migratiefout",
+                            "not_loaded": "Niet geladen",
+                            "setup_error": "Instellen mislukt",
+                            "setup_retry": "Opnieuw proberen in te stellen"
+                        },
                         "system_options": "Systeeminstellingen",
                         "unnamed_entry": "Naamloze invoer"
                     },
@@ -2213,7 +2229,7 @@
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
                     "confirm_new": "Wil je {integration} instellen?",
-                    "description": "Beheer integraties met services, apparaten, ...",
+                    "description": "Beheer integraties met services of apparaten",
                     "details": "Integratiedetails",
                     "disable": {
                         "disabled_integrations": "{number} uitgeschakeld",
@@ -2252,8 +2268,10 @@
                 "logs": {
                     "caption": "Logboek",
                     "clear": "Wis",
+                    "custom_integration": "aangepaste integratie",
                     "description": "Home Assistant logboek bekijken",
                     "details": "Logboekdetails ({level})",
+                    "error_from_custom_integration": "Deze fout is ontstaan door een aangepaste integratie.",
                     "level": {
                         "critical": "KRITISCH",
                         "debug": "DEBUG",
@@ -2649,7 +2667,7 @@
                         },
                         "validation": {
                             "check_config": "Controleer configuratie",
-                            "heading": "Valideer configuratie",
+                            "heading": "Configuratie validatie",
                             "introduction": "Controleer je configuratie als je onlangs wijzigingen hebt aangebracht en zeker wilt weten dat ze geldig zijn",
                             "invalid": "Ongeldige configuratie",
                             "valid": "Geldige configuratie!"
@@ -2769,6 +2787,15 @@
                         "clusters": "Clusters",
                         "manufacturer_code_override": "Fabrikant Code Override",
                         "value": "Waarde"
+                    },
+                    "configuration_page": {
+                        "shortcuts_title": "Snelkoppelingen",
+                        "update_button": "Update configuratie",
+                        "zha_options": {
+                            "default_light_transition": "Standaard licht transitietijd (seconden)",
+                            "enable_identify_on_join": "Schakel het identificatie-effect in wanneer apparaten in het netwerk komen",
+                            "title": "Globale opties"
+                        }
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuratie voltooid",
@@ -2909,6 +2936,9 @@
                         "header": "Z-Wave apparaatconfiguratie",
                         "introduction": "Beheren en aanpassen van apparaat (node) specifieke configuratieparameters voor het geselecteerde apparaat",
                         "parameter_is_read_only": "Deze parameter is alleen-lezen.",
+                        "set_param_accepted": "De parameter is bijgewerkt.",
+                        "set_param_error": "Er is een fout opgetreden.",
+                        "set_param_queued": "De parameterwijziging is in een wachtrij geplaatst, en zal worden bijgewerkt wanneer het apparaat wakker wordt.",
                         "zwave_js_device_database": "Z-Wave JS Apparaat Database"
                     },
                     "node_status": {
@@ -3036,7 +3066,7 @@
                         "count_listeners": " ({count} luisteraars)",
                         "data": "Gebeurtenis data (YAML, optioneel)",
                         "description": "Start een evenement op de Home Assistant-gebeurtenisbus",
-                        "documentation": "Gebeurtenissen documentatie.",
+                        "documentation": "Gebeurtenissen documentatie",
                         "event_fired": "Gebeurtenis {name} uitgevoerd",
                         "fire_event": "Gebeurtenis uitvoeren",
                         "listen_to_events": "Luisteren naar gebeurtenissen",
@@ -3068,8 +3098,8 @@
                         "attributes": "Attributen",
                         "copy_id": "Kopieer ID naar klembord",
                         "current_entities": "Huidige entiteiten",
-                        "description1": "Stelt de weergave van een apparaat in Home Assistant in.",
-                        "description2": "Er vindt geen communicatie met het daadwerkelijke apparaat plaats.",
+                        "description1": "Stelt de weergave van een entiteit in Home Assistant in.",
+                        "description2": "Als de entiteit tot een apparaat behoort, dan is er geen daadwerkelijke communicatie met dat apparaat.",
                         "entity": "Entiteit",
                         "filter_attributes": "Filter attributen",
                         "filter_entities": "Filter entiteiten",
@@ -3441,7 +3471,7 @@
                         "duplicate": "Dupliceer kaart",
                         "edit": "Bewerken",
                         "header": "Kaart configuratie",
-                        "move": "Verplaatsen",
+                        "move": "Verplaats naar weergave",
                         "move_after": "Verplaats kaart na",
                         "move_before": "Verplaats kaart voor",
                         "options": "Meer opties",
@@ -3595,7 +3625,7 @@
                     "entity_non_numeric": "Entiteit is niet-numeriek: {entity}",
                     "entity_not_found": "Entiteit niet beschikbaar: {entity}",
                     "entity_unavailable": "Entiteit is momenteel niet beschikbaar: {entity}",
-                    "starting": "Home Assistant is aan het opstarten, wellicht is nog niet alles beschikbaar"
+                    "starting": "Home Assistant is aan het opstarten, nog niet alles is beschikbaar"
                 }
             },
             "mailbox": {

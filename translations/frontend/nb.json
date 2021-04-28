@@ -473,6 +473,7 @@
                 "unhealthy_title": "Installasjonen din er usunn",
                 "unsupported_description": "Nedenfor er en liste over problemer som er funnet med installasjonen din. Klikk på lenkene for å lære hvordan du kan løse problemene.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor er ikke aktivert på verten",
                     "container": "Containere som er kjent for å forårsake problemer",
                     "content-trust": "Validering av innholds klarering er deaktivert",
                     "dbus": "",
@@ -706,7 +707,7 @@
                     "text": "Fyll inn navnet på det nye området.",
                     "title": "Legg til nytt område"
                 },
-                "add_new": "Legg til nytt område ...",
+                "add_new": "Legg til nytt område...",
                 "area": "Område",
                 "clear": "Tøm",
                 "no_areas": "Du har ingen områder",
@@ -885,6 +886,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Dokumentasjon for integrering",
                 "required": "Dette feltet er påkrevd",
                 "service_data": "Tjenestedata",
                 "target": "Mål",
@@ -1117,7 +1119,7 @@
                         "group": "Grupper, gruppeenheter og varsler tjenester",
                         "history_stats": "Historikkstatistiske enheter",
                         "homekit": "HomeKit",
-                        "input_boolean": "Inngang booleans",
+                        "input_boolean": "Boolske innganger",
                         "input_datetime": "Inngangsdato ganger",
                         "input_number": "Inndatanumre",
                         "input_select": "Inngang velges",
@@ -1213,6 +1215,14 @@
                 "key_wrong_type": "Den angitte verdien for \"{key}\" støttes ikke av det visuelle redigeringsprogrammet. Vi støtter ({type_correct}), men mottatt ({type_wrong}).",
                 "no_template_editor_support": "Maler støttes ikke i visual editor",
                 "no_type_provided": "Ingen type oppgitt."
+            },
+            "supervisor": {
+                "ask": "Be om hjelp",
+                "observer": "Sjekk observatøren",
+                "reboot": "Prøv en omstart av verten",
+                "system_health": "Sjekk systemtilstand",
+                "title": "Kunne ikke laste Supervisor-panelet!",
+                "wait": "Hvis du nettopp startet, må du sørge for at du har gitt Supervisor nok tid til å starte."
             }
         },
         "login-form": {
@@ -1228,12 +1238,14 @@
             "title": "Varsler"
         },
         "notification_toast": {
-            "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt...",
+            "connection_lost": "Forbindelse mistet. Koble til igjen...",
             "dismiss": "Avvis",
+            "intergration_starting": "Starter {integration}. Ikke alt er tilgjengelig før lasting er ferdig.",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
             "started": "Home Assistant har startet!",
             "starting": "Home Assistant starter, alt er ikke tilgjengelig før starten er fullført.",
-            "triggered": "Utløst {name}"
+            "triggered": "Utløst {name}",
+            "wrapping_up_startup": "Oppstart pågår, ikke alt er tilgjengelig før den er ferdig."
         },
         "panel": {
             "config": {
@@ -1597,7 +1609,7 @@
                         "delete_automation": "Slett automasjon",
                         "delete_confirm": "Er du sikker på at du vil slette denne automasjonen?",
                         "dev_automation": "Feilsøk automatisering",
-                        "dev_only_editable": "Bare automatiseringer definert i automations.yaml kan feilsøkes.",
+                        "dev_only_editable": "Bare automatisering som har en unik ID tildelt, kan feilsøkes.",
                         "duplicate": "Dupliser",
                         "duplicate_automation": "Dupliser automasjon",
                         "edit_automation": "Rediger automasjon",
@@ -1740,7 +1752,7 @@
                             "disable_hook_error_msg": "Kan ikke deaktivere webhook:",
                             "info": "Alt som er konfigurert til å utløses av en webhook, kan gis en offentlig tilgjengelig URL-adresse for å tillate deg å sende data tilbake til Home Assistent fra hvor som helst, uten å utsette forekomsten din for Internett.",
                             "link_learn_more": "Finn ut mer om hvordan du oppretter webhook-drevne automasjoner.",
-                            "loading": "Laster inn ...",
+                            "loading": "Laster inn...",
                             "manage": "Administrer",
                             "no_hooks_yet": "Ser ut som du ikke har noen webhook'er ennå. Kom i gang ved å konfigurere en ",
                             "no_hooks_yet_link_automation": "webhook-automasjon",
@@ -1861,31 +1873,31 @@
                     "section": {
                         "core": {
                             "analytics": {
-                                "documentation": "Før du aktiverer dette, må du gå til analysedokumentasjonssiden {link} å forstå hva du sender og hvordan den er lagret.",
-                                "header": "Analytics",
+                                "documentation": "Før du aktiverer dette, må du gå til analysedokumentasjonssiden {link} for å forstå hva du sender og hvordan den er lagret.",
+                                "header": "Analyser",
                                 "instance_id": "Forekomst-ID: {huuid}",
-                                "introduction": "Del analyser fra forekomsten din. Disse dataene vil være offentlig tilgjengelige på {link}",
-                                "learn_more": "Lær mer om hvordan dataene dine blir behandlet.",
+                                "introduction": "Del installasjonsinformasjonen din for å gjøre Home Assistant bedre og hjelpe oss med å overbevise produsenter om å legge til lokal kontroll og personvernfokuserte funksjoner.",
+                                "learn_more": "Hvordan vi behandler dataene dine",
                                 "needs_base": "Du må aktivere basisanalyse for at dette alternativet skal være tilgjengelig",
                                 "preference": {
                                     "base": {
-                                        "description": "Dette inkluderer forekomst-ID, versjon og installasjonstype",
+                                        "description": "Forekomst-ID, versjon og installasjonstype.",
                                         "title": "Grunnleggende analyse"
                                     },
                                     "diagnostics": {
-                                        "description": "Del krasjrapporter og diagnostisk informasjon",
+                                        "description": "Del krasjrapporter når uventede feil oppstår.",
                                         "title": "Diagnostikk"
                                     },
                                     "statistics": {
-                                        "description": "Dette inkluderer en rekke elementer i installasjonen din, for å se en fullstendig liste i dokumentasjonen",
+                                        "description": "Totalt brukte enheter, brukere og andre elementer.",
                                         "title": "Bruksstatistikk"
                                     },
                                     "usage_supervisor": {
-                                        "description": "Dette inkluderer navnene og funksjonene til integrasjonene og tilleggene dine",
+                                        "description": "Navn, versjoner og evner.",
                                         "title": "Brukte integrasjoner og tillegg"
                                     },
                                     "usage": {
-                                        "description": "Dette inkluderer navnene på integrasjonene dine",
+                                        "description": "Navn og versjonsinformasjon.",
                                         "title": "Brukte integrasjoner"
                                     }
                                 }
@@ -2145,8 +2157,11 @@
                     "caption": "Integrasjoner",
                     "config_entry": {
                         "area": "I {area}",
+                        "check_the_logs": "Kontroller loggene",
+                        "configure": "Konfigurer",
                         "delete": "Slett",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
+                        "depends_on_cloud": "Avhenger av skyen",
                         "device_unavailable": "Enheten er utilgjengelig",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
                         "disable_restart_confirm": "Start Home Assistant på nytt for å fullføre deaktiveringen av denne integreringen",
@@ -2169,14 +2184,23 @@
                         "logs": "Logger",
                         "manuf": "av {manufacturer}",
                         "no_area": "Intet område",
-                        "not_loaded": "Ikke lastet inn, sjekk {logs_link}",
+                        "not_loaded": "Ikke lastet",
                         "options": "Alternativer",
+                        "provided_by_custom_integration": "Levert av en tilpasset integrasjon",
                         "reload": "Last inn på nytt",
                         "reload_confirm": "Integrasjonen ble lastet på nytt",
                         "reload_restart_confirm": "Start Home Assistant på nytt for å fullføre omlastingen av denne integrasjonen",
                         "rename": "Gi nytt navn",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
                         "services": "{count} {count, plural,\n  one {tjeneste}\n  other {tjenester}\n}",
+                        "state": {
+                            "failed_unload": "Kan ikke laste ut",
+                            "loaded": "Lastet",
+                            "migration_error": "Migrasjonsfeil",
+                            "not_loaded": "Ikke lastet",
+                            "setup_error": "Kunne ikke konfigurere",
+                            "setup_retry": "Prøver på nytt oppsett"
+                        },
                         "system_options": "Systemalternativer",
                         "unnamed_entry": "Ikke navngitt oppføring"
                     },
@@ -2205,7 +2229,7 @@
                     "configure": "Konfigurer",
                     "configured": "Konfigurert",
                     "confirm_new": "Vil du sette opp {integration}?",
-                    "description": "Administrer integrasjoner med tjenester, enheter, ...",
+                    "description": "Administrer integrasjoner med tjenester eller enheter",
                     "details": "Integrasjonsdetaljer",
                     "disable": {
                         "disabled_integrations": "{number} deaktivert",
@@ -2244,8 +2268,10 @@
                 "logs": {
                     "caption": "Logger",
                     "clear": "Tøm",
+                    "custom_integration": "tilpasset integrasjon",
                     "description": "Vis Home Assistant loggene",
                     "details": "Loggdetaljer ({level})",
+                    "error_from_custom_integration": "Denne feilen stammer fra en tilpasset integrasjon.",
                     "level": {
                         "critical": "KRITISK",
                         "debug": "DEBUG",
@@ -2254,7 +2280,7 @@
                         "warning": "ADVARSEL"
                     },
                     "load_full_log": "Last inn fullstendig Home Assistant logg",
-                    "loading_log": "Laster inn feillogg ...",
+                    "loading_log": "Laster inn feillogg...",
                     "multiple_messages": "meldingen oppstod først ved {time} og vist {counter} ganger",
                     "no_errors": "Ingen feil er rapportert",
                     "no_issues": "Det er ingen nye problemer!",
@@ -2608,7 +2634,7 @@
                             "heading": "YAML konfigurasjon lastes på nytt",
                             "history_stats": "Historikkstatistiske enheter",
                             "homekit": "HomeKit",
-                            "input_boolean": "Inngang booleans",
+                            "input_boolean": "Boolske innganger",
                             "input_datetime": "Inngangsdato ganger",
                             "input_number": "Inndatanumre",
                             "input_select": "Inngang velges",
@@ -2635,7 +2661,7 @@
                             "confirm_restart": "Er du sikker på at du vil starte Home Assistant på nytt?",
                             "confirm_stop": "Er du sikker på at du vil stoppe Home Assistant?",
                             "heading": "Serveradministrasjon",
-                            "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
+                            "introduction": "Kontroller Home Assistant-serveren ... fra Home Assistant.",
                             "restart": "Omstart",
                             "stop": "Stopp"
                         },
@@ -2761,6 +2787,15 @@
                         "clusters": "Klynger",
                         "manufacturer_code_override": "Overstyring av produsentkode",
                         "value": "Verdi"
+                    },
+                    "configuration_page": {
+                        "shortcuts_title": "Snarveier",
+                        "update_button": "Oppdater konfigurasjon",
+                        "zha_options": {
+                            "default_light_transition": "Standard overgangstid for lys (sekunder)",
+                            "enable_identify_on_join": "Aktiver identifiseringseffekt når enheter blir med i nettverket",
+                            "title": "Globale alternativer"
+                        }
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Konfigurasjonen er fullført",
@@ -2901,6 +2936,9 @@
                         "header": "Z-Wave enhetskonfigurasjon",
                         "introduction": "Administrer og juster enhets (node) spesifikke konfigurasjonsparametere for den valgte enheten",
                         "parameter_is_read_only": "Denne parameteren er skrivebeskyttet.",
+                        "set_param_accepted": "Parameteren er oppdatert.",
+                        "set_param_error": "Det oppstod en feil.",
+                        "set_param_queued": "Parameterendringen har blitt satt i kø, og vil bli oppdatert når enheten våkner.",
                         "zwave_js_device_database": "Z-Wave JS Device Database"
                     },
                     "node_status": {
@@ -3028,12 +3066,12 @@
                         "count_listeners": " ({count} lyttere)",
                         "data": "Hendelsedata (YAML, valgfritt)",
                         "description": "Send ut en hendelse på hendelsesbussen",
-                        "documentation": "Hendelsedokumentasjon.",
+                        "documentation": "Dokumentasjon for hendelser",
                         "event_fired": "Hendelse {name} utført",
                         "fire_event": "Utfør hendelse",
                         "listen_to_events": "Lytt til hendelser",
                         "listening_to": "Lytte til",
-                        "notification_event_fired": "Hendelse {type} vellykket utløst!",
+                        "notification_event_fired": "Arrangementet {type} vellykket!",
                         "start_listening": "Begynn å lytte",
                         "stop_listening": "Stopp lytting",
                         "subscribe_to": "Hendelse for å abonnere på",
@@ -3060,8 +3098,8 @@
                         "attributes": "Attributter",
                         "copy_id": "Kopier ID til utklippstavlen",
                         "current_entities": "Gjeldende entiteter",
-                        "description1": "Angi representasjonen av en enhet i Home Assistant.",
-                        "description2": "Dette vil ikke kommunisere med den faktiske enheten.",
+                        "description1": "Angi gjeldende tilstandsrepresentasjon for en enhet i Home Assistant.",
+                        "description2": "Hvis enheten tilhører en enhet, vil det ikke være noen faktisk kommunikasjon med den enheten.",
                         "entity": "Entitet",
                         "filter_attributes": "Filtrere attributter",
                         "filter_entities": "Filtrere entiteter",
@@ -3433,7 +3471,7 @@
                         "duplicate": "Dupliser kort",
                         "edit": "Rediger",
                         "header": "Kortkonfigurasjon",
-                        "move": "Flytt til visning",
+                        "move": "Gå til visning",
                         "move_after": "Flytt kortet etter",
                         "move_before": "Flytt kortet før",
                         "options": "Flere alternativer",
@@ -3873,7 +3911,7 @@
                         "language": "Automatisk (bruk språkinnstilling)",
                         "none": "Ingen",
                         "space_comma": "1 234 567,89",
-                        "system": "Bruk systemområdet"
+                        "system": "Bruk systemets lokasjonsinnstilling."
                     },
                     "header": "Tallformat"
                 },

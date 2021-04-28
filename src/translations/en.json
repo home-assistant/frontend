@@ -172,7 +172,10 @@
       "light": {
         "brightness": "Brightness",
         "color_temperature": "Color temperature",
-        "white_value": "White value",
+        "white_value": "White brightness",
+        "color_brightness": "Color brightness",
+        "cold_white_value": "Cold white brightness",
+        "warm_white_value": "Warm white brightness",
         "effect": "Effect"
       },
       "lock": {
@@ -374,7 +377,7 @@
         "clear": "Clear",
         "show_areas": "Show areas",
         "area": "Area",
-        "add_new": "Add new area…",
+        "add_new": "Add new area...",
         "no_areas": "You don't have any areas",
         "no_match": "No matching areas found",
         "add_dialog": {
@@ -452,7 +455,8 @@
         "required": "This field is required",
         "target": "Targets",
         "target_description": "What should this service use as targeted areas, devices or entities.",
-        "service_data": "Service data"
+        "service_data": "Service data",
+        "integration_doc": "Integration documentation"
       },
       "related-items": {
         "no_related_found": "No related items found.",
@@ -756,7 +760,22 @@
         "update": "Update"
       },
       "zha_reconfigure_device": {
-        "heading": "Reconfiguring device"
+        "heading": "Reconfiguring device",
+        "configuring_alt": "Configuring",
+        "introduction": "Reconfigure a device on your Zigbee network. Use this feature if your device is not functioning correctly.",
+        "battery_device_warning": "You will need to wake battery powered devices before starting the reconfiguration process. Refer to your device's manual for instructions on how to wake the device.",
+        "run_in_background": "You can close this dialog and the reconfiguration will continue in the background.",
+        "start_reconfiguration": "Start Reconfiguration",
+        "in_progress": "The device is being reconfigured. This may take some time.",
+        "configuration_failed": "The device reconfiguration failed. Additional information may be available in the logs.",
+        "configuration_complete": "Device reconfiguration complete.",
+        "button_show": "Show Details",
+        "button_hide": "Hide Details",
+        "cluster_header": "Cluster",
+        "bind_header": "Binding",
+        "reporting_header": "Reporting",
+        "attribute": "Attribute",
+        "min_max_change": "min/max/change"
       },
       "zha_device_info": {
         "manuf": "by {manufacturer}",
@@ -847,9 +866,11 @@
     },
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
-      "connection_lost": "Connection lost. Reconnecting…",
+      "connection_lost": "Connection lost. Reconnecting...",
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting, not everything will be available until it is finished.",
+      "wrapping_up_startup": "Wrapping up startup, not everything will be available until it is finished.",
+      "intergration_starting": "Starting {integration}, not everything will be available until it is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss"
     },
@@ -874,11 +895,6 @@
           "hint_enable": "Missing config options? Enable advanced mode on",
           "link_profile_page": "your profile page"
         },
-        "integration_panel_move": {
-          "missing_zha": "Missing the ZHA config panel? It was moved to the ZHA entry on the {integrations_page}.",
-          "missing_zwave": "Missing the Z-Wave config panel? It was moved to the Z-Wave entry on the {integrations_page}.",
-          "link_integration_page": "integrations page"
-        },
         "common": {
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
@@ -889,7 +905,8 @@
           "description": "Group devices and entities into areas",
           "data_table": {
             "area": "Area",
-            "devices": "Devices"
+            "devices": "Devices",
+            "entities": "Entities"
           },
           "picker": {
             "header": "Areas",
@@ -907,7 +924,9 @@
             "name": "Name",
             "name_required": "Name is required",
             "area_id": "Area ID",
-            "unknown_error": "Unknown error"
+            "unknown_error": "Unknown error",
+            "linked_entities_caption": "Entities",
+            "no_linked_entities": "There are no entities linked to this area."
           },
           "delete": {
             "confirmation_title": "Are you sure you want to delete this area?",
@@ -996,34 +1015,6 @@
                 "save_button": "Save",
                 "external_url": "External URL",
                 "internal_url": "Internal URL"
-              },
-              "analytics": {
-                "header": "Analytics",
-                "introduction": "Share your installation information to help make Home Assistant better and help us convince manufacturers to add local control and privacy-focused features.",
-                "needs_base": "You need to enable base analytics for this option to be available",
-                "preference": {
-                  "base": {
-                    "title": "Basic analytics",
-                    "description": "Instance ID, version and installation type."
-                  },
-                  "diagnostics": {
-                    "title": "Diagnostics",
-                    "description": "Share crash reports when unexpected errors occur."
-                  },
-                  "usage": {
-                    "title": "Used Integrations",
-                    "description": "Names and version information."
-                  },
-                  "usage_supervisor": {
-                    "title": "Used integrations and add-ons",
-                    "description": "Names, versions and capabilities."
-                  },
-                  "statistics": {
-                    "title": "Usage statistics",
-                    "description": "Total used entities, users and other elements."
-                  }
-                },
-                "learn_more": "How we process your data"
               }
             }
           }
@@ -1058,7 +1049,7 @@
           "description": "View the Home Assistant logs",
           "details": "Log Details ({level})",
           "load_full_log": "Load Full Home Assistant Log",
-          "loading_log": "Loading error log…",
+          "loading_log": "Loading error log...",
           "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",
           "clear": "Clear",
@@ -1070,7 +1061,9 @@
             "warning": "WARNING",
             "info": "INFO",
             "debug": "DEBUG"
-          }
+          },
+          "custom_integration": "custom integration",
+          "error_from_custom_integration": "This error originated from a custom integration."
         },
         "lovelace": {
           "caption": "Lovelace Dashboards",
@@ -1197,7 +1190,7 @@
             },
             "server_management": {
               "heading": "Server management",
-              "introduction": "Control your Home Assistant server… from Home Assistant.",
+              "introduction": "Control your Home Assistant server... from Home Assistant.",
               "restart": "Restart",
               "confirm_restart": "Are you sure you want to restart Home Assistant?",
               "stop": "Stop",
@@ -1782,7 +1775,7 @@
             "integrations_link_all_features": " all available features",
             "connected": "Connected",
             "not_connected": "Not Connected",
-            "fetching_subscription": "Fetching subscription…",
+            "fetching_subscription": "Fetching subscription...",
             "tts": {
               "title": "Text to Speech",
               "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
@@ -1847,7 +1840,7 @@
               "no_hooks_yet2": " or by creating a ",
               "no_hooks_yet_link_automation": "webhook automation",
               "link_learn_more": "Learn more about creating webhook-powered automations.",
-              "loading": "Loading ...",
+              "loading": "Loading...",
               "manage": "Manage",
               "disable_hook_error_msg": "Failed to disable webhook:"
             }
@@ -2101,7 +2094,7 @@
         },
         "integrations": {
           "caption": "Integrations",
-          "description": "Manage integrations with services, devices, ...",
+          "description": "Manage integrations with services or devices",
           "integration": "integration",
           "discovered": "Discovered",
           "attention": "Attention required",
@@ -2143,7 +2136,7 @@
             "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
             "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
             "rename": "Rename",
-            "options": "Options",
+            "configure": "Configure",
             "system_options": "System options",
             "documentation": "Documentation",
             "delete": "Delete",
@@ -2162,8 +2155,8 @@
             "entity_unavailable": "Entity unavailable",
             "area": "In {area}",
             "no_area": "No Area",
-            "not_loaded": "Not loaded, check the {logs_link}",
-            "logs": "logs",
+            "not_loaded": "Not loaded",
+            "check_the_logs": "Check the logs",
             "disable": {
               "disabled": "Disabled",
               "disabled_cause": "Disabled by {cause}",
@@ -2173,6 +2166,16 @@
                 "device": "device"
               },
               "disable_confirm": "Are you sure you want to disable this config entry? Its devices and entities will be disabled."
+            },
+            "provided_by_custom_integration": "Provided by a custom integration",
+            "depends_on_cloud": "Depends on the cloud",
+            "state": {
+              "loaded": "Loaded",
+              "setup_error": "Failed to set up",
+              "migration_error": "Migration error",
+              "setup_retry": "Retrying setup",
+              "not_loaded": "Not loaded",
+              "failed_unload": "Failed to unload"
             }
           },
           "config_flow": {
@@ -2244,11 +2247,7 @@
             "create": "Create"
           }
         },
-        "hassio": {
-          "button": "Configure"
-        },
         "mqtt": {
-          "button": "Configure",
           "title": "MQTT",
           "description_publish": "Publish a packet",
           "topic": "topic",
@@ -2262,7 +2261,6 @@
           "message_received": "Message {id} received on {topic} at {time}:"
         },
         "ozw": {
-          "button": "Configure",
           "common": {
             "zwave": "Z-Wave",
             "node_id": "Node ID",
@@ -2377,11 +2375,19 @@
           }
         },
         "zha": {
-          "button": "Configure",
           "common": {
             "clusters": "Clusters",
             "manufacturer_code_override": "Manufacturer Code Override",
             "value": "Value"
+          },
+          "configuration_page": {
+            "shortcuts_title": "Shortcuts",
+            "update_button": "Update Configuration",
+            "zha_options": {
+              "title": "Global Options",
+              "enable_identify_on_join": "Enable identify effect when devices join the network",
+              "default_light_transition": "Default light transition time (seconds)"
+            }
           },
           "add_device_page": {
             "spinner": "Searching for ZHA Zigbee devices...",
@@ -2465,7 +2471,6 @@
           }
         },
         "zwave": {
-          "button": "Configure",
           "description": "Manage your Z-Wave network",
           "learn_more": "Learn more about Z-Wave",
           "common": {
@@ -2556,9 +2561,9 @@
           }
         },
         "zwave_js": {
-          "button": "Configure",
           "navigation": {
-            "network": "Network"
+            "network": "Network",
+            "logs": "Logs"
           },
           "common": {
             "network": "Network",
@@ -2595,7 +2600,10 @@
             "zwave_js_device_database": "Z-Wave JS Device Database",
             "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device.",
             "parameter_is_read_only": "This parameter is read-only.",
-            "error_device_not_found": "Device not found"
+            "error_device_not_found": "Device not found",
+            "set_param_accepted": "The parameter has been updated.",
+            "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
+            "set_param_error": "An error occurred."
           },
           "node_status": {
             "unknown": "Unknown",
@@ -2632,6 +2640,20 @@
             "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
             "exclusion_failed": "The node could not be removed. Please check the logs for more information.",
             "exclusion_finished": "Node {id} has been removed from your Z-Wave network."
+          },
+          "reinterview_node": {
+            "title": "Re-interview a Z-Wave Device",
+            "introduction": "Re-interview a device on your Z-Wave network. Use this feature if your device has missing or incorrect functionality.",
+            "battery_device_warning": "You will need to wake battery powered devices before starting the re-interview. Refer to your device's manual for instructions on how to wake the device.",
+            "run_in_background": "You can close this dialog and the interview will continue in the background.",
+            "start_reinterview": "Start Re-interview",
+            "in_progress": "The device is being interviewed. This may take some time.",
+            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
+            "interview_complete": "Device interview complete."
+          },
+          "logs": {
+            "title": "Z-Wave JS Logs",
+            "log_level": "Log Level"
           }
         }
       },
@@ -2798,7 +2820,7 @@
             "clear": "Clear",
             "delete": "Delete card",
             "duplicate": "Duplicate card",
-            "move": "Move to View",
+            "move": "Move to view",
             "move_before": "Move card before",
             "move_after": "Move card after",
             "options": "More options",
@@ -2824,7 +2846,6 @@
             "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
             "yaml_config": "To help you start here is the current config of this dashboard:",
             "empty_config": "Start with an empty dashboard",
-            "cancel": "Never mind",
             "close": "Close",
             "save": "Take control"
           },
@@ -3410,7 +3431,7 @@
           "events": {
             "title": "Events",
             "description": "Fire an event on the event bus.",
-            "documentation": "Events Documentation.",
+            "documentation": "Events documentation",
             "type": "Event Type",
             "data": "Event Data (YAML, optional)",
             "fire_event": "Fire Event",
@@ -3423,7 +3444,7 @@
             "start_listening": "Start listening",
             "stop_listening": "Stop listening",
             "alert_event_type": "Event type is a mandatory field",
-            "notification_event_fired": "Event {type} successful fired!"
+            "notification_event_fired": "Event {type} successfully fired!"
           },
           "services": {
             "title": "Services",
@@ -3442,8 +3463,8 @@
           },
           "states": {
             "title": "States",
-            "description1": "Set the representation of a device within Home Assistant.",
-            "description2": "This will not communicate with the actual device.",
+            "description1": "Set the current state representation of an entity within Home Assistant.",
+            "description2": "If the entity belongs to a device, there will be no actual communication with that device.",
             "entity": "Entity",
             "state": "State",
             "attributes": "Attributes",

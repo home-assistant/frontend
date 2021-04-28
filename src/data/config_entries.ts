@@ -5,11 +5,18 @@ export interface ConfigEntry {
   domain: string;
   title: string;
   source: string;
-  state: string;
+  state:
+    | "loaded"
+    | "setup_error"
+    | "migration_error"
+    | "setup_retry"
+    | "not_loaded"
+    | "failed_unload";
   connection_class: string;
   supports_options: boolean;
   supports_unload: boolean;
-  disabled_by: string | null;
+  disabled_by: "user" | null;
+  reason: string | null;
 }
 
 export interface ConfigEntryMutableParams {

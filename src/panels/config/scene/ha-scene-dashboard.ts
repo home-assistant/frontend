@@ -228,7 +228,7 @@ class HaSceneDashboard extends LitElement {
 
   private async _activateScene(ev) {
     ev.stopPropagation();
-    const scene = ev.target.scene as SceneEntity;
+    const scene = ev.currentTarget.scene as SceneEntity;
     await activateScene(this.hass, scene.entity_id);
     showToast(this, {
       message: this.hass.localize(

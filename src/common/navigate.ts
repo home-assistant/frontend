@@ -12,20 +12,24 @@ declare global {
 export const navigate = (_node: any, path: string, replace = false) => {
   if (__DEMO__) {
     if (replace) {
-      history.replaceState(
-        history.state?.root ? { root: true } : null,
+      top.history.replaceState(
+        top.history.state?.root ? { root: true } : null,
         "",
-        `${location.pathname}#${path}`
+        `${top.location.pathname}#${path}`
       );
     } else {
-      window.location.hash = path;
+      top.location.hash = path;
     }
   } else if (replace) {
-    history.replaceState(history.state?.root ? { root: true } : null, "", path);
+    top.history.replaceState(
+      top.history.state?.root ? { root: true } : null,
+      "",
+      path
+    );
   } else {
-    history.pushState(null, "", path);
+    top.history.pushState(null, "", path);
   }
-  fireEvent(window, "location-changed", {
+  fireEvent(top, "location-changed", {
     replace,
   });
 };

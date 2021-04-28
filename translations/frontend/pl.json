@@ -473,6 +473,7 @@
                 "unhealthy_title": "Twoja instalacja jest \"niezdrowa\"",
                 "unsupported_description": "Poniżej znajduje się lista problemów z Twoją instalacją. Kliknij łącza, aby dowiedzieć się, jak możesz je rozwiązać.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor nie jest włączony na hoście",
                     "container": "Kontenery, o których wiadomo, że powodują problemy",
                     "content-trust": "Weryfikacja zaufania zawartości jest wyłączona",
                     "dbus": "DBUS",
@@ -666,7 +667,7 @@
             "enable": "Włącz",
             "error_required": "To pole jest wymagane",
             "leave": "Wyjdź",
-            "loading": "Ładowanie",
+            "loading": "Wczytywanie",
             "menu": "Menu",
             "next": "Dalej",
             "no": "Nie",
@@ -693,7 +694,7 @@
                         "title": "Błąd podczas pobierania dodatków"
                     },
                     "no_supervisor": {
-                        "description": "Nie znaleziono Supervisora, więc nie można załadować dodatków.",
+                        "description": "Nie znaleziono Supervisora, więc nie można wczytać dodatków.",
                         "title": "Brak Supervisora"
                     }
                 }
@@ -757,7 +758,7 @@
             },
             "history_charts": {
                 "history_disabled": "Integracja historia wyłączona",
-                "loading_history": "Ładowanie historii...",
+                "loading_history": "Wczytywanie historii...",
                 "no_history_found": "Nie znaleziono historii."
             },
             "logbook": {
@@ -1000,7 +1001,7 @@
                     "pattern": "Wyrażenie regularne do sprawdzania poprawności po stronie klienta",
                     "text": "Pole tekstowe"
                 },
-                "platform_not_loaded": "Komponent {platform} nie jest załadowany, dodaj go do swojej konfiguracji dodając 'default_config:' lub ''{platform}:''.",
+                "platform_not_loaded": "Komponent {platform} nie jest wczytany, dodaj go do swojej konfiguracji dodając 'default_config:' lub ''{platform}:''.",
                 "required_error_msg": "To pole jest wymagane",
                 "timer": {
                     "duration": "Czas"
@@ -1219,7 +1220,7 @@
                 "observer": "Sprawdź obserwatora",
                 "reboot": "Spróbuj ponownie uruchomić hosta",
                 "system_health": "Sprawdź kondycję systemu",
-                "title": "Nie można załadować panelu Supervisora!",
+                "title": "Nie można wczytać panelu Supervisora!",
                 "wait": "Jeśli właśnie uruchomiłeś system, upewnij się, że dałeś Supervisorowi wystarczająco dużo czasu na start."
             }
         },
@@ -1238,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Utracono połączenie. Łączę ponownie...",
             "dismiss": "Ukryj",
+            "intergration_starting": "{integration} uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
             "service_call_failed": "Nie udało się wywołać usługi {service}.",
             "started": "Home Assistant uruchomił się!",
             "starting": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
-            "triggered": "Wyzwolenie {name}"
+            "triggered": "Wyzwolenie {name}",
+            "wrapping_up_startup": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy."
         },
         "panel": {
             "config": {
@@ -1478,7 +1481,7 @@
                         "enable_disable": "Włącz/wyłącz automatyzację",
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
                         "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne",
-                        "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no})",
+                        "load_error_unknown": "Wystąpił błąd podczas wczytywania automatyzacji ({err_no})",
                         "max": {
                             "parallel": "Maksymalna liczba równoległych uruchomień",
                             "queued": "Długość kolejki"
@@ -1605,7 +1608,7 @@
                         "delete_automation": "Usuń automatyzację",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę automatyzację?",
                         "dev_automation": "Debuguj automatyzację",
-                        "dev_only_editable": "Można debugować tylko automatyzacje zdefiniowane w pliku automations.yaml.",
+                        "dev_only_editable": "Można debugować tylko automatyzacje mające unikalne identyfikatory.",
                         "duplicate": "Duplikuj",
                         "duplicate_automation": "Duplikuj automatyzację",
                         "edit_automation": "Edytuj automatyzację",
@@ -1870,30 +1873,30 @@
                         "core": {
                             "analytics": {
                                 "documentation": "Zanim to włączysz, odwiedź stronę z dokumentacją analityczną {link}, aby zrozumieć, co wysyłasz i jak to jest przechowywane.",
-                                "header": "Analityka",
+                                "header": "Dane analityczne",
                                 "instance_id": "Identyfikator instancji: {huuid}",
-                                "introduction": "Udostępniaj dane analityczne ze swojej instancji. Te dane będą publicznie dostępne pod adresem {link}",
-                                "learn_more": "Dowiedz się więcej, jak Twoje dane będą przetwarzane.",
-                                "needs_base": "Aby ta opcja była dostępna, musisz włączyć podstawowe analityki",
+                                "introduction": "Udostępnij informacje o instalacji, aby ulepszyć Home Assistant i pomóż nam przekonać producentów do dodania lokalnych funkcji sterowania i prywatności.",
+                                "learn_more": "Jak przetwarzamy Twoje dane",
+                                "needs_base": "Aby ta opcja była dostępna, musisz włączyć podstawowe dane analityczne",
                                 "preference": {
                                     "base": {
-                                        "description": "Obejmuje to identyfikator instancji, wersję i typ instalacji",
-                                        "title": "Podstawowe analityki"
+                                        "description": "Identyfikator instancji, wersja i typ instalacji.",
+                                        "title": "Podstawowe dane analityczne"
                                     },
                                     "diagnostics": {
-                                        "description": "Udostępniaj raporty o awariach i informacje diagnostyczne",
+                                        "description": "Udostępniaj raporty o awariach, gdy wystąpią nieoczekiwane błędy.",
                                         "title": "Diagnostyka"
                                     },
                                     "statistics": {
-                                        "description": "Obejmuje to liczbę elementów w instalacji. Pełną listę można znaleźć w dokumentacji.",
+                                        "description": "Suma wykorzystanych encji, użytkowników i innych elementów.",
                                         "title": "Statystyki użycia"
                                     },
                                     "usage_supervisor": {
-                                        "description": "Obejmuje to nazwy i możliwości twoich integracji i dodatków",
+                                        "description": "Nazwy, wersje i możliwości.",
                                         "title": "Użyte integracje i dodatki"
                                     },
                                     "usage": {
-                                        "description": "Obejmuje to nazwy twoich integracji",
+                                        "description": "Informacje o nazwie i wersji.",
                                         "title": "Używane integracje"
                                     }
                                 }
@@ -2136,7 +2139,7 @@
                     "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
                     "server": "serwer",
                     "source": "Źródło:",
-                    "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
+                    "system_health_error": "Komponent kondycji systemu nie jest wczytany. Dodaj 'system_health:' do pliku configuration.yaml",
                     "system_health": {
                         "manage": "Zarządzaj",
                         "more_info": "więcej info"
@@ -2153,8 +2156,11 @@
                     "caption": "Integracje",
                     "config_entry": {
                         "area": "obszar: {area}",
+                        "check_the_logs": "Sprawdź logi",
+                        "configure": "Konfiguruj",
                         "delete": "Usuń",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
+                        "depends_on_cloud": "Zależny od chmury",
                         "device_unavailable": "Urządzenie niedostępne",
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
                         "disable_restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć wyłączanie tej integracji",
@@ -2177,21 +2183,30 @@
                         "logs": "logi",
                         "manuf": "producent: {manufacturer}",
                         "no_area": "brak",
-                        "not_loaded": "Nie załadowano, sprawdź {logs_link}",
+                        "not_loaded": "Nie wczytano",
                         "options": "Opcje",
+                        "provided_by_custom_integration": "Dostarczone przez niestandardowy komponent",
                         "reload": "Wczytaj ponownie",
                         "reload_confirm": "Integracja została ponownie wczytana",
                         "reload_restart_confirm": "Uruchom ponownie Home Assistanta, aby dokończyć ponowne wczytywanie tej integracji",
                         "rename": "Zmień nazwę",
                         "restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć usuwanie tej integracji",
                         "services": "{count} {count, plural,\n  one {usługa}\n  few {usługi}\n  many {usług}\n  other {usług}\n}",
+                        "state": {
+                            "failed_unload": "Błąd usuwania",
+                            "loaded": "Wczytano",
+                            "migration_error": "Błąd migracji",
+                            "not_loaded": "Nie wczytano",
+                            "setup_error": "Błąd konfiguracji",
+                            "setup_retry": "Próbuję ponownie skonfigurować"
+                        },
                         "system_options": "Opcje systemowe",
                         "unnamed_entry": "Nienazwany wpis"
                     },
                     "config_flow": {
                         "aborted": "Przerwano",
                         "close": "Zamknij",
-                        "could_not_load": "Nie można wczytać interfejsu konfiguracji",
+                        "could_not_load": "Nie udało się wczytać interfejsu konfiguracji",
                         "created_config": "Utworzono konfigurację dla {name}.",
                         "dismiss": "Okno dialogowe odrzucenia",
                         "error": "Błąd",
@@ -2203,7 +2218,7 @@
                         "finish": "Zakończ",
                         "loading_first_time": "Proszę czekać, trwa instalowanie integracji...",
                         "not_all_required_fields": "Nie wszystkie wymagane pola są wypełnione.",
-                        "not_loaded": "Nie udało się załadować integracji, spróbuj ponownie uruchomić Home Assistanta.",
+                        "not_loaded": "Nie udało się wczytać integracji, spróbuj ponownie uruchomić Home Assistanta.",
                         "pick_flow_step": {
                             "new_flow": "Nie, skonfiguruj inną instancję integracji {integration}",
                             "title": "Odkryliśmy je, chcesz je skonfigurować?"
@@ -2213,7 +2228,7 @@
                     "configure": "Konfiguruj",
                     "configured": "Skonfigurowane",
                     "confirm_new": "Czy chcesz skonfigurować {integration}?",
-                    "description": "Zarządzaj integracjami z usługami, urządzeniami, ...",
+                    "description": "Zarządzaj integracjami z usługami lub urządzeniami",
                     "details": "Szczegóły integracji",
                     "disable": {
                         "disabled_integrations": "Wyłączonych: {number}",
@@ -2252,8 +2267,10 @@
                 "logs": {
                     "caption": "Logi",
                     "clear": "Wyczyść",
+                    "custom_integration": "niestandardowa integracja",
                     "description": "Wyświetlanie logów Home Assistanta",
                     "details": "Szczegóły loga ({level})",
+                    "error_from_custom_integration": "Ten błąd pochodzi z niestandardowej integracji.",
                     "level": {
                         "critical": "KRYTYCZNE",
                         "debug": "DEBUG",
@@ -2261,8 +2278,8 @@
                         "info": "INFO",
                         "warning": "OSTRZEŻENIE"
                     },
-                    "load_full_log": "Załaduj cały log Home Assistanta",
-                    "loading_log": "Ładowanie loga błędów…",
+                    "load_full_log": "Wczytaj cały log Home Assistanta",
+                    "loading_log": "Wczytywanie loga błędów…",
                     "multiple_messages": "wiadomość pojawiła się po raz pierwszy {time} i powtarzała się {counter} razy",
                     "no_errors": "Nie zgłoszono żadnych błędów",
                     "no_issues": "Nie ma nowych problemów!",
@@ -2421,7 +2438,7 @@
                     },
                     "node_query_stages": {
                         "associations": "Odświeżanie grup skojarzeń i członkostwa",
-                        "cacheload": "Ładowanie informacji z pliku pamięci podręcznej OpenZWave. Węzły baterii pozostaną na tym etapie, dopóki węzeł się nie wybudzi.",
+                        "cacheload": "Wczytywanie informacji z pliku pamięci podręcznej OpenZWave. Węzły baterii pozostaną na tym etapie, dopóki węzeł się nie wybudzi.",
                         "complete": "Proces odpytywania jest zakończony",
                         "configuration": "Pobieranie wartości konfiguracyjnych z węzła",
                         "dynamic": "Pobieranie często zmieniających się wartości z węzła",
@@ -2529,7 +2546,7 @@
                         "icon": "Ikona",
                         "introduction": "Użyj scen, aby ożywić swój dom.",
                         "load_error_not_editable": "Tylko sceny zdefiniowane w pliku scenes.yaml są edytowalne",
-                        "load_error_unknown": "Błąd ładowania sceny ({err_no})",
+                        "load_error_unknown": "Błąd wczytywania sceny ({err_no})",
                         "name": "Nazwa",
                         "save": "Zapisz",
                         "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?"
@@ -3108,7 +3125,7 @@
                     "observer": "Sprawdź obserwatora",
                     "reboot": "Spróbuj ponownie uruchomić hosta",
                     "system_health": "Sprawdź kondycję systemu",
-                    "title": "Nie można załadować panelu Supervisora!",
+                    "title": "Nie można wczytać panelu Supervisora!",
                     "wait": "Jeśli właśnie uruchomiłeś system, upewnij się, że dałeś Supervisorowi wystarczająco dużo czasu na start."
                 }
             },
@@ -3162,7 +3179,7 @@
                         "url": "Otwórz okno do {url_path}"
                     },
                     "safe-mode": {
-                        "description": "Podczas ładowania konfiguracji Home Assistant napotkał problemy i działa teraz w trybie awaryjnym. Zajrzyj do loga, aby sprawdzić, co poszło nie tak.",
+                        "description": "Podczas wczytywania konfiguracji Home Assistant napotkał problemy i działa teraz w trybie awaryjnym. Zajrzyj do loga, aby sprawdzić, co poszło nie tak.",
                         "header": "Tryb awaryjny aktywny"
                     },
                     "shopping-list": {
@@ -3517,7 +3534,7 @@
                         "error_remove": "Nie można usunąć konfiguracji: {error}",
                         "error_save_yaml": "Nie można zapisać YAML: {error}",
                         "header": "Edytuj konfigurację",
-                        "lovelace_changed": "Konfiguracja Lovelace została zaktualizowana, czy chcesz załadować zaktualizowaną konfigurację do edytora i stracić obecne zmiany?",
+                        "lovelace_changed": "Konfiguracja Lovelace została zaktualizowana, czy chcesz wczytać zaktualizowaną konfigurację do edytora i stracić obecne zmiany?",
                         "reload": "Wczytaj ponownie",
                         "resources_moved": "Zasoby nie powinny być już dodawane do konfiguracji Lovelace, można je dodawać w panelu konfiguracji Lovelace.",
                         "save": "Zapisz",

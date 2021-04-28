@@ -473,6 +473,7 @@
                 "unhealthy_title": "Votre installation est défectueuse",
                 "unsupported_description": "Vous trouverez ci-dessous une liste des problèmes rencontrés avec votre installation, cliquez sur les liens pour savoir comment vous pouvez résoudre les problèmes.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor n'est pas activé sur l'hôte",
                     "container": "Conteneurs connus pour causer des problèmes",
                     "content-trust": "La validation de la confiance du contenu est désactivée",
                     "dbus": "DBUS",
@@ -1213,6 +1214,14 @@
                 "key_wrong_type": "La valeur fournie pour \"{key}\" n'est pas prise en charge par l'éditeur visuel. Nous supportons ({type_correct}) mais avons reçu ({type_wrong}).",
                 "no_template_editor_support": "Modèles non pris en charge dans l'éditeur visuel",
                 "no_type_provided": "Aucun type fourni."
+            },
+            "supervisor": {
+                "ask": "Demandez de l’aide",
+                "observer": "Vérifiez l'observateur",
+                "reboot": "Essayez un redémarrage de l’hôte",
+                "system_health": "Vérifier la santé du système",
+                "title": "Impossible de charger le panneau du Supervisor!",
+                "wait": "Si vous venez de commencer, assurez-vous d’avoir donné au Superviseur suffisamment de temps pour démarrer."
             }
         },
         "login-form": {
@@ -1230,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Connexion perdue. Reconnexion en cours ...",
             "dismiss": "Ignorer",
+            "intergration_starting": "Démarrage de {integration}, tout ne sera pas disponible tant qu'il n'aura pas terminé",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
             "started": "Home Assistant a démarré !",
             "starting": "Home Assistant est en cours de démarrage, tout ne sera pas disponible tant qu’il n’aura pas terminé.",
-            "triggered": "{name} déclenché"
+            "triggered": "{name} déclenché",
+            "wrapping_up_startup": "En terminant le démarrage, tout ne sera pas disponible tant qu'il ne sera pas terminé."
         },
         "panel": {
             "config": {
@@ -1862,17 +1873,30 @@
                         "core": {
                             "analytics": {
                                 "documentation": "Avant d'activer cette fonction, prenez soin de visiter la page de documentation {link} afin de comprendre ce que vous envoyez et comment cela est conservé.",
+                                "header": "Analytique",
                                 "instance_id": "ID de l'instance: {huuid}",
-                                "learn_more": "En appendre plus sur le traitement de vos données",
+                                "introduction": "Partagez vos informations d'installation pour améliorer Home Assistant et nous aider à convaincre les fabricants d'ajouter des fonctionnalités de contrôle local et de confidentialité.",
+                                "learn_more": "En apprendre plus sur le traitement de vos données",
+                                "needs_base": "Vous devez activer l'analyse de base pour que cette option soit disponible",
                                 "preference": {
+                                    "base": {
+                                        "description": "ID de l'instance, version et type d'installation.",
+                                        "title": "Analyse de base"
+                                    },
                                     "diagnostics": {
                                         "description": "Partager les rapports d'accident et les informations de diagnostic",
                                         "title": "Diagnostiques"
                                     },
                                     "statistics": {
+                                        "description": "Nombre total d’entités, d’utilisateurs et d’autres éléments utilisés.",
                                         "title": "Statistiques d'utilisation"
                                     },
+                                    "usage_supervisor": {
+                                        "description": "Noms, versions et fonctionnalités.",
+                                        "title": "Intégrations et add-ons utilisés"
+                                    },
                                     "usage": {
+                                        "description": "Noms et versions",
                                         "title": "Intégrations utilisées"
                                     }
                                 }
@@ -2156,6 +2180,7 @@
                         "logs": "journaux",
                         "manuf": "par {manufacturer}",
                         "no_area": "Pas de zone",
+                        "not_loaded": "Non chargé, vérifiez le {logs_link}",
                         "options": "Options",
                         "reload": "Recharger",
                         "reload_confirm": "L'intégration a été rechargée",
@@ -2234,6 +2259,7 @@
                     "details": "Détails du journal ( {level} )",
                     "level": {
                         "critical": "CRITIQUE",
+                        "debug": "DEBUG",
                         "error": "ERREUR",
                         "info": "INFO",
                         "warning": "ATTENTION"
@@ -3034,6 +3060,7 @@
                         "column_parameter": "Paramètre",
                         "description": "L'outil de développement 'services' vous permet d'appeler n'importe quel service disponible dans Home Assistant.",
                         "fill_example_data": "Remplir des exemples de données",
+                        "no_template_ui_support": "L'interface utilisateur ne prend pas en charge les modèles, vous pouvez toujours utiliser l'éditeur YAML.",
                         "title": "Services",
                         "ui_mode": "Passer en mode UI",
                         "yaml_mode": "Passez en mode YAML",
@@ -3501,7 +3528,7 @@
                         "unsaved_changes": "Modifications non enregistrées"
                     },
                     "save_config": {
-                        "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
+                        "cancel": "Annuler",
                         "close": "Fermer",
                         "empty_config": "Commencer par un tableau de bord vide",
                         "header": "Prenez le contrôle de votre Interface Lovelace",
@@ -3734,7 +3761,8 @@
             },
             "page-onboarding": {
                 "analytics": {
-                    "finish": "Suivant"
+                    "finish": "Suivant",
+                    "intro": "Partagez les analyses de votre instance. Ces données seront accessibles au public à l' {link}"
                 },
                 "core-config": {
                     "button_detect": "Détecter",
@@ -3849,9 +3877,16 @@
                 },
                 "number_format": {
                     "description": "Définir le formatage des nombres",
+                    "dropdown_label": "Format de nombre",
                     "formats": {
-                        "none": "Aucun"
-                    }
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Auto (utiliser le paramètre de langue)",
+                        "none": "Aucun",
+                        "space_comma": "1 234 567,89",
+                        "system": "Utiliser les paramètres régionaux du système"
+                    },
+                    "header": "Format de nombre"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

@@ -314,16 +314,18 @@ class ActionRenderer {
 
     if (defaultExecuted) {
       this._renderEntry(choosePath, `${name}: Default action executed`);
-    } else {
+    } else if (chooseTrace.result) {
       const choiceConfig = this._getDataFromPath(
-        `${this.keys[index]}/choose/${chooseTrace.result?.choice}`
+        `${this.keys[index]}/choose/${chooseTrace.result.choice}`
       ) as ChooseActionChoice | undefined;
       const choiceName = choiceConfig
         ? `${
-            choiceConfig.alias || `Choice ${chooseTrace.result?.choice}`
+            choiceConfig.alias || `Choice ${chooseTrace.result.choice}`
           } executed`
         : `Error: ${chooseTrace.error}`;
       this._renderEntry(choosePath, `${name}: ${choiceName}`);
+    } else {
+      this._renderEntry(choosePath, `${name}: No action taken`);
     }
 
     let i;

@@ -99,33 +99,63 @@ export class HaAutomationTracePathDetails extends LitElement {
       return "This node was not executed and so no further trace information is available.";
     }
 
-    const data: ActionTraceStep[] = paths[this.selected.path];
+    const parts: TemplateResult[][] = [];
 
-    return data.map((trace, idx) => {
-      const {
-        path,
-        timestamp,
-        result,
-        error,
-        changed_variables,
-        ...rest
-      } = trace as any;
+    let active = false;
+    const childConditionsPrefix = `${this.selected.path}/conditions/`;
 
-      return html`
-        ${data.length === 1 ? "" : html`<h3>Iteration ${idx + 1}</h3>`}
-        Executed:
-        ${formatDateTimeWithSeconds(new Date(timestamp), this.hass.locale)}<br />
-        ${result
-          ? html`Result:
-              <pre>${safeDump(result)}</pre>`
-          : error
-          ? html`<div class="error">Error: ${error}</div>`
-          : ""}
-        ${Object.keys(rest).length === 0
-          ? ""
-          : html`<pre>${safeDump(rest)}</pre>`}
-      `;
-    });
+    for (const curPath of Object.keys(this.trace.trace)) {
+      // Include all child conditions too
+      if (active) {
+        if (!curPath.startsWith(childConditionsPrefix)) {
+          break;
+        }
+      } else if (curPath === this.selected.path) {
+        active = true;
+      } else {
+        continue;
+      }
+
+      const data: ActionTraceStep[] = paths[curPath];
+
+      parts.push(
+        data.map((trace, idx) => {
+          const {
+            path,
+            timestamp,
+            result,
+            error,
+            changed_variables,
+            ...rest
+          } = trace as any;
+
+          return html`
+            ${curPath === this.selected.path
+              ? ""
+              : html`<h2>
+                  Condition ${curPath.substr(childConditionsPrefix.length)}
+                </h2>`}
+            ${data.length === 1 ? "" : html`<h3>Iteration ${idx + 1}</h3>`}
+            Executed:
+            ${formatDateTimeWithSeconds(
+              new Date(timestamp),
+              this.hass.locale
+            )}<br />
+            ${result
+              ? html`Result:
+                  <pre>${safeDump(result)}</pre>`
+              : error
+              ? html`<div class="error">Error: ${error}</div>`
+              : ""}
+            ${Object.keys(rest).length === 0
+              ? ""
+              : html`<pre>${safeDump(rest)}</pre>`}
+          `;
+        })
+      );
+    }
+
+    return parts;
   }
 
   private _renderSelectedConfig() {

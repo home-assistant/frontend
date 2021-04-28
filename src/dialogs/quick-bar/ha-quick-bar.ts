@@ -66,10 +66,11 @@ interface CommandItem extends QuickBarItem {
 }
 
 interface EntityItem extends QuickBarItem {
+  altText: string;
   icon?: string;
 }
 
-const isCommandItem = (item: EntityItem | CommandItem): item is CommandItem => {
+const isCommandItem = (item: QuickBarItem): item is CommandItem => {
   return (item as CommandItem).categoryKey !== undefined;
 };
 
@@ -230,7 +231,7 @@ export class QuickBar extends LitElement {
   private _renderItem(item: QuickBarItem, index?: number) {
     return isCommandItem(item)
       ? this._renderCommandItem(item, index)
-      : this._renderEntityItem(item, index);
+      : this._renderEntityItem(item as EntityItem, index);
   }
 
   private _renderEntityItem(item: EntityItem, index?: number) {
@@ -289,13 +290,6 @@ export class QuickBar extends LitElement {
         </span>
 
         <span class="command-text">${item.primaryText}</span>
-        ${item.altText
-          ? html`
-              <span slot="secondary" class="item-text secondary"
-                >${item.altText}</span
-              >
-            `
-          : null}
       </mwc-list-item>
     `;
   }
@@ -389,16 +383,19 @@ export class QuickBar extends LitElement {
     }
   }
 
-  private _generateEntityItems(): QuickBarItem[] {
+  private _generateEntityItems(): EntityItem[] {
     return Object.keys(this.hass.states)
       .map((entityId) => {
-        const primaryText = computeStateName(this.hass.states[entityId]);
-        return {
-          primaryText,
-          filterText: primaryText,
+        const entityItem = {
+          primaryText: computeStateName(this.hass.states[entityId]),
           altText: entityId,
           icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
           action: () => fireEvent(this, "hass-more-info", { entityId }),
+        };
+
+        return {
+          ...entityItem,
+          strings: [entityItem.primaryText, entityItem.altText],
         };
       })
       .sort((a, b) =>
@@ -412,7 +409,10 @@ export class QuickBar extends LitElement {
       ...this._generateServerControlCommands(),
       ...this._generateNavigationCommands(),
     ].sort((a, b) =>
-      compare(a.filterText.toLowerCase(), b.filterText.toLowerCase())
+      compare(
+        a.strings.join(" ").toLowerCase(),
+        b.strings.join(" ").toLowerCase()
+      )
     );
   }
 
@@ -420,24 +420,27 @@ export class QuickBar extends LitElement {
     const reloadableDomains = componentsWithService(this.hass, "reload").sort();
 
     return reloadableDomains.map((domain) => {
-      const categoryText = this.hass.localize(
-        `ui.dialogs.quick-bar.commands.types.reload`
-      );
-      const primaryText =
-        this.hass.localize(`ui.dialogs.quick-bar.commands.reload.${domain}`) ||
-        this.hass.localize(
-          "ui.dialogs.quick-bar.commands.reload.reload",
-          "domain",
-          domainToName(this.hass.localize, domain)
-        );
+      const commandItem = {
+        primaryText:
+          this.hass.localize(
+            `ui.dialogs.quick-bar.commands.reload.${domain}`
+          ) ||
+          this.hass.localize(
+            "ui.dialogs.quick-bar.commands.reload.reload",
+            "domain",
+            domainToName(this.hass.localize, domain)
+          ),
+        action: () => this.hass.callService(domain, "reload"),
+        iconPath: mdiReload,
+        categoryText: this.hass.localize(
+          `ui.dialogs.quick-bar.commands.types.reload`
+        ),
+      };
 
       return {
-        primaryText,
-        filterText: `${categoryText} ${primaryText}`,
-        action: () => this.hass.callService(domain, "reload"),
+        ...commandItem,
         categoryKey: "reload",
-        iconPath: mdiReload,
-        categoryText,
+        strings: [`${commandItem.categoryText} ${commandItem.primaryText}`],
       };
     });
   }
@@ -446,26 +449,28 @@ export class QuickBar extends LitElement {
     const serverActions = ["restart", "stop"];
 
     return serverActions.map((action) => {
-      const categoryKey = "server_control";
-      const categoryText = this.hass.localize(
-        `ui.dialogs.quick-bar.commands.types.${categoryKey}`
-      );
-      const primaryText = this.hass.localize(
-        "ui.dialogs.quick-bar.commands.server_control.perform_action",
-        "action",
-        this.hass.localize(
-          `ui.dialogs.quick-bar.commands.server_control.${action}`
-        )
-      );
+      const categoryKey: CommandItem["categoryKey"] = "server_control";
+
+      const item = {
+        primaryText: this.hass.localize(
+          "ui.dialogs.quick-bar.commands.server_control.perform_action",
+          "action",
+          this.hass.localize(
+            `ui.dialogs.quick-bar.commands.server_control.${action}`
+          )
+        ),
+        iconPath: mdiServerNetwork,
+        categoryText: this.hass.localize(
+          `ui.dialogs.quick-bar.commands.types.${categoryKey}`
+        ),
+        categoryKey,
+        action: () => this.hass.callService("homeassistant", action),
+      };
 
       return this._generateConfirmationCommand(
         {
-          primaryText,
-          filterText: `${categoryText} ${primaryText}`,
-          categoryKey,
-          iconPath: mdiServerNetwork,
-          categoryText,
-          action: () => this.hass.callService("homeassistant", action),
+          ...item,
+          strings: [`${item.categoryText} ${item.primaryText}`],
         },
         this.hass.localize("ui.dialogs.generic.ok")
       );
@@ -550,18 +555,21 @@ export class QuickBar extends LitElement {
     items: BaseNavigationCommand[]
   ): CommandItem[] {
     return items.map((item) => {
-      const categoryKey = "navigation";
-      const categoryText = this.hass.localize(
-        `ui.dialogs.quick-bar.commands.types.${categoryKey}`
-      );
+      const categoryKey: CommandItem["categoryKey"] = "navigation";
+
+      const navItem = {
+        ...item,
+        iconPath: mdiEarth,
+        categoryText: this.hass.localize(
+          `ui.dialogs.quick-bar.commands.types.${categoryKey}`
+        ),
+        action: () => navigate(this, item.path),
+      };
 
       return {
-        ...item,
+        ...navItem,
+        strings: [`${navItem.categoryText} ${navItem.primaryText}`],
         categoryKey,
-        iconPath: mdiEarth,
-        categoryText,
-        filterText: `${categoryText} ${item.primaryText}`,
-        action: () => navigate(this, item.path),
       };
     });
   }

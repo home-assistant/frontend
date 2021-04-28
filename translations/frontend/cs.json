@@ -29,7 +29,7 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Automatika",
+                "auto": "Auto",
                 "off": "Neaktivní",
                 "on": "Aktivní"
             },
@@ -54,7 +54,7 @@
         },
         "humidifier": {
             "mode": {
-                "auto": "Automatika",
+                "auto": "Auto",
                 "away": "Pryč",
                 "baby": "Dítě",
                 "boost": "Boost",
@@ -307,7 +307,7 @@
             },
             "update": {
                 "text": "Opravdu chcete aktualizovat {name} na verzi {version}?",
-                "title": "Aktualizovat {název}"
+                "title": "Aktualizovat {name}"
             }
         },
         "dashboard": {
@@ -383,7 +383,7 @@
             "create": "Vytvořit",
             "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
             "create_snapshot": "Vytvořit zálohu",
-            "description": "Snímky umožňují snadno zálohovat a obnovovat všechna data instance Home Assistant.",
+            "description": "Zálohy umožňují snadno zálohovat a obnovovat všechna data vaší instance Home Assistant.",
             "enter_password": "Prosím zadejte heslo.",
             "folder": {
                 "addons/local": "Místní doplňky",
@@ -473,6 +473,7 @@
                 "unhealthy_title": "Instalace není v pořádku",
                 "unsupported_description": "Níže je uveden seznam problémů nalezených ve vaší instalaci. Kliknutím na odkazy se dozvíte, jak tyto problémy vyřešit.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor není na hostiteli povolen",
                     "container": "Kontejnery, o nichž je známo, že způsobují problémy",
                     "content-trust": "Ověřování důvěryhodnosti obsahu je zakázáno.",
                     "dbus": "DBUS",
@@ -791,7 +792,7 @@
                     "was_unplugged": "bylo odpojeno",
                     "was_unsafe": "bylo v nebezpečí"
                 },
-                "show_trace": "Zobrazit stopu"
+                "show_trace": "Zobrazit trasu"
             },
             "media-browser": {
                 "audio_not_supported": "Váš prohlížeč nepodporuje element \"audio\".",
@@ -1213,6 +1214,14 @@
                 "key_wrong_type": "Zadávanou hodnotu \"{key}\" nepodporuje vizuální editor. Podporuje ({type_correct}), ale obdržel ({type_wrong}).",
                 "no_template_editor_support": "Šablony nejsou podporovány v uživatelském rozhraní",
                 "no_type_provided": "Není k dispozici žádný typ."
+            },
+            "supervisor": {
+                "ask": "Požádat o pomoc",
+                "observer": "Zkontrolovat Observer",
+                "reboot": "Zkuste restartovat hostitele",
+                "system_health": "Kontrola stavu systému",
+                "title": "Nelze načíst panel Supervisora!",
+                "wait": "Pokud jste právě začali, ujistěte se, že jste poskytli dostatek času na start Supervisora."
             }
         },
         "login-form": {
@@ -1230,10 +1239,12 @@
         "notification_toast": {
             "connection_lost": "Připojení bylo ztraceno. Připojuji se znovu...",
             "dismiss": "Zavřít",
+            "intergration_starting": "Integrace {integration} se spouští - dokud nebude spuštění dokončeno, nemusí být vše k dispozici.",
             "service_call_failed": "Službu {service} se nepodařilo zavolat.",
             "started": "Home Assistant je spuštěn!",
             "starting": "Home Assistant se spouští, ne všechno bude k dispozici, dokud nebude spuštění dokončeno.",
-            "triggered": "Spuštěno {name}"
+            "triggered": "Spuštěno {name}",
+            "wrapping_up_startup": "Home Assistant se spouští, vše ještě nemusí být dostupné"
         },
         "panel": {
             "config": {
@@ -1487,7 +1498,7 @@
                         "move_down": "Posunout dolů",
                         "move_up": "Posunout nahoru",
                         "save": "Uložit",
-                        "show_trace": "Zobrazit trasování",
+                        "show_trace": "Zobrazit trasu",
                         "triggers": {
                             "add": "Přidat spouštěč",
                             "delete": "Smazat",
@@ -1597,7 +1608,7 @@
                         "delete_automation": "Odstranit automatizaci",
                         "delete_confirm": "Opravdu chcete odstranit tuto automatizaci?",
                         "dev_automation": "Debugování automatizace",
-                        "dev_only_editable": "Pouze automatizace definované v automations.yaml jsou debugovatelné",
+                        "dev_only_editable": "Pouze automatizace s unikátní ID jsou debugovatelné.",
                         "duplicate": "Duplikát",
                         "duplicate_automation": "Duplikovat automatizaci",
                         "edit_automation": "Upravit automatizaci",
@@ -1864,28 +1875,28 @@
                                 "documentation": "Před povolením této možnosti se ujistěte, že jste navštívili stránku dokumentace analytiky {link}, abyste pochopili, co odesíláte za data a jak budou uložena.",
                                 "header": "Analytika",
                                 "instance_id": "ID instance: {huuid}",
-                                "introduction": "Sdílejte analytiku ze své instance. Tato data budou veřejně dostupná na {link}",
-                                "learn_more": "Zjistěte více, jak budou vaše údaje zpracovány.",
+                                "introduction": "Sdílejte informace o instalaci, abyste pomohli vylepšit Home Assistant a pomohli nám přesvědčit výrobce, aby přidali funkce místního ovládání a ochrany soukromí.",
+                                "learn_more": "Jak budou vaše údaje zpracovány",
                                 "needs_base": "Aby byla tato možnost k dispozici, musíte povolit základní analytiku",
                                 "preference": {
                                     "base": {
-                                        "description": "To zahrnuje ID instance, verzi a typ instalace",
+                                        "description": "ID instance, verze a typ instalace.",
                                         "title": "Základní analytika"
                                     },
                                     "diagnostics": {
-                                        "description": "Sdílet zprávy o selhání a diagnostické informace",
+                                        "description": "Sdílejte zprávy o selhání, když dojde k neočekávané chybě.",
                                         "title": "Diagnostika"
                                     },
                                     "statistics": {
-                                        "description": "To zahrnuje počet prvků v instalaci, úplný seznam najdete v dokumentaci",
+                                        "description": "Celkový počet entit, uživatelů a dalších prvků.",
                                         "title": "Statistiky používání"
                                     },
                                     "usage_supervisor": {
-                                        "description": "To zahrnuje názvy a možnosti vašich integrací a doplňků",
+                                        "description": "Názvy, verze a funkce.",
                                         "title": "Použité integrace a doplňky"
                                     },
                                     "usage": {
-                                        "description": "To zahrnuje názvy vašich integrací",
+                                        "description": "Informace o názvech a verzích.",
                                         "title": "Použité integrace"
                                     }
                                 }
@@ -2033,7 +2044,7 @@
                         },
                         "enable_selected": {
                             "button": "Povolit vybrané",
-                            "confirm_text": "Pokud budou nyní deaktivovány, budou opět k dispozici v Home Assistant.",
+                            "confirm_text": "Tím se znovu zpřístupní v Home Assistant, pokud jsou nyní deaktivované.",
                             "confirm_title": "Chcete povolit {number} {number, plural,\n  one {entitu}\n  few {entity}\n  other {entit}\n}?"
                         },
                         "filter": {
@@ -2145,8 +2156,11 @@
                     "caption": "Integrace",
                     "config_entry": {
                         "area": "V {area}",
+                        "check_the_logs": "Zkontrolujte logy",
+                        "configure": "Nastavit",
                         "delete": "Smazat",
                         "delete_confirm": "Opravdu chcete odstranit tuto integraci?",
+                        "depends_on_cloud": "Závisí na cloudu",
                         "device_unavailable": "Zařízení není dostupné",
                         "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
                         "disable_restart_confirm": "Restartujte Home Assistant pro dokončení odstranění této integrace",
@@ -2169,14 +2183,23 @@
                         "logs": "logy",
                         "manuf": "od {manufacturer}",
                         "no_area": "Žádná oblast",
-                        "not_loaded": "Není načtena, zkontrolujte {logs_link}",
+                        "not_loaded": "Nenačteno",
                         "options": "Možnosti",
+                        "provided_by_custom_integration": "Poskytováno vlastní integrací",
                         "reload": "Nově načíst",
                         "reload_confirm": "Integrace byla nově načtena",
                         "reload_restart_confirm": "Restartujte Home Assistant pro nové načtení této integrace",
                         "rename": "Přejmenovat",
                         "restart_confirm": "Restartujte Home Assistant pro odstranění této integrace",
                         "services": "{count} {count, plural,\n  one {služba}\n  few {služby}\n  other {služeb}\n}",
+                        "state": {
+                            "failed_unload": "Zrušení načtení se nezdařilo",
+                            "loaded": "Načteno",
+                            "migration_error": "Chyba migrace",
+                            "not_loaded": "Nenačteno",
+                            "setup_error": "Nastavení se nezdařilo",
+                            "setup_retry": "Opakovaný pokus o nastavení"
+                        },
                         "system_options": "Více možností",
                         "unnamed_entry": "Nepojmenovaný záznam"
                     },
@@ -2205,7 +2228,7 @@
                     "configure": "Nastavit",
                     "configured": "Nastaveno",
                     "confirm_new": "Chcete nastavit {integration}?",
-                    "description": "Správa integrací a jejich služeb, zařízení, ...",
+                    "description": "Správa integrací a jejich služeb či zařízení",
                     "details": "Podrobnosti o integraci",
                     "disable": {
                         "disabled_integrations": "{number} zakázáno",
@@ -2244,8 +2267,10 @@
                 "logs": {
                     "caption": "Logy",
                     "clear": "Zrušit",
+                    "custom_integration": "vlastní integrace",
                     "description": "Zobrazení logů Home Assistant",
                     "details": "Detaily protokolu ({level})",
+                    "error_from_custom_integration": "Tato chyba pochází z vlastní integrace.",
                     "level": {
                         "critical": "KRITICKÉ",
                         "debug": "LADĚNÍ",
