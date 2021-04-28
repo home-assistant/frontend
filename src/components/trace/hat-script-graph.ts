@@ -143,7 +143,7 @@ class HatScriptGraph extends LitElement {
     const trace = this.trace.trace[path] as ChooseActionTraceStep[] | undefined;
     const trace_path = trace?.[0].result
       ? trace[0].result.choice === "default"
-        ? [config.choose?.length || 0]
+        ? [Array.isArray(config.choose) ? config.choose.length : 0]
         : [trace[0].result.choice]
       : [];
     return html`
@@ -167,31 +167,33 @@ class HatScriptGraph extends LitElement {
           nofocus
         ></hat-graph-node>
 
-        ${config.choose?.map((branch, i) => {
-          const branch_path = `${path}/choose/${i}`;
-          const track_this =
-            trace !== undefined && trace[0].result?.choice === i;
-          if (track_this) {
-            this.trackedNodes[branch_path] = { config, path: branch_path };
-          }
-          return html`
-            <hat-graph>
-              <hat-graph-node
-                .iconPath=${!trace || track_this
-                  ? mdiCheckBoxOutline
-                  : mdiCheckboxBlankOutline}
-                @focus=${this.selectNode(config, branch_path)}
-                class=${classMap({
-                  active: this.selected === branch_path,
-                  track: track_this,
-                })}
-              ></hat-graph-node>
-              ${ensureArray(branch.sequence).map((action, j) =>
-                this.render_node(action, `${branch_path}/sequence/${j}`)
-              )}
-            </hat-graph>
-          `;
-        })}
+        ${config.choose
+          ? ensureArray(config.choose)?.map((branch, i) => {
+              const branch_path = `${path}/choose/${i}`;
+              const track_this =
+                trace !== undefined && trace[0].result?.choice === i;
+              if (track_this) {
+                this.trackedNodes[branch_path] = { config, path: branch_path };
+              }
+              return html`
+                <hat-graph>
+                  <hat-graph-node
+                    .iconPath=${!trace || track_this
+                      ? mdiCheckBoxOutline
+                      : mdiCheckboxBlankOutline}
+                    @focus=${this.selectNode(config, branch_path)}
+                    class=${classMap({
+                      active: this.selected === branch_path,
+                      track: track_this,
+                    })}
+                  ></hat-graph-node>
+                  ${ensureArray(branch.sequence).map((action, j) =>
+                    this.render_node(action, `${branch_path}/sequence/${j}`)
+                  )}
+                </hat-graph>
+              `;
+            })
+          : ""}
         <hat-graph>
           <hat-graph-spacer
             class=${classMap({
