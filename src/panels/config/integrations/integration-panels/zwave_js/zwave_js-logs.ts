@@ -7,6 +7,7 @@ import {
   LitElement,
   CSSResultArray,
   internalProperty,
+  query,
 } from "lit-element";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
