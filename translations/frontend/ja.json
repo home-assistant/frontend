@@ -467,6 +467,7 @@
                 "unhealthy_title": "インストールが正常でない",
                 "unsupported_description": "以下は、インストールに関する問題の一覧です。",
                 "unsupported_reason": {
+                    "apparmor": "ホストでAppArmorが有効になっていない",
                     "container": "問題が発生することが知られているコンテナ",
                     "content-trust": "コンテンツ信頼の検証が無効になっています",
                     "dbus": "DBUS",
@@ -767,9 +768,9 @@
                     "set": "セット",
                     "turned_off": "オフになりました",
                     "turned_on": "オンになりました",
-                    "was_at_home": "家にいた",
+                    "was_at_home": "在宅中",
                     "was_at_state": "{state}でした",
-                    "was_away": "離れていた",
+                    "was_away": "外出中",
                     "was_closed": "閉鎖されました",
                     "was_connected": "接続されました",
                     "was_disconnected": "切断されました",
@@ -1173,6 +1174,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "デバイス名の変更"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "デバイスを再設定"
             }
         },
         "duration": {
@@ -1193,6 +1197,14 @@
                 "key_wrong_type": "\"{key}\" に指定された値は、ビジュアル エディターではサポートされていません。({type_correct}) をサポートしていますが、受信しました ({type_wrong})。",
                 "no_template_editor_support": "ビジュアルエディタでサポートされていないテンプレート",
                 "no_type_provided": "タイプは提供されていません。"
+            },
+            "supervisor": {
+                "ask": "ヘルプを確認する",
+                "observer": "オブザーバーの確認",
+                "reboot": "ホストを再起動してみてください",
+                "system_health": "システム状態のチェック",
+                "title": "スーパーバイザ パネルを読み込めませんでした。",
+                "wait": "開始したばかりの場合は、開始するのに十分な時間をスーパーバイザーに与えていることを確認してください。"
             }
         },
         "login-form": {
@@ -1210,10 +1222,12 @@
         "notification_toast": {
             "connection_lost": "接続が切れました。再接続中...",
             "dismiss": "閉じる",
+            "intergration_starting": "{integration}を開始すると、完了するまですべてが利用できるわけではありません。",
             "service_call_failed": "サービス{service}の呼び出しに失敗しました。",
             "started": "ホームアシスタントが開始されました！",
             "starting": "Home Assistantが起動中です。全て利用可能なるまでもうしばらくお待ち下さい。",
-            "triggered": "トリガーしました {name}"
+            "triggered": "トリガーしました {name}",
+            "wrapping_up_startup": "スタートアップを総括すると、完成するまですべてが公開されるわけではありません。"
         },
         "panel": {
             "config": {
@@ -1373,7 +1387,7 @@
                             "type_select": "条件の種類",
                             "type": {
                                 "and": {
-                                    "label": "の"
+                                    "label": "AND"
                                 },
                                 "device": {
                                     "condition": "条件",
@@ -1387,16 +1401,16 @@
                                     "label": "デバイス"
                                 },
                                 "not": {
-                                    "label": "ない"
+                                    "label": "Not"
                                 },
                                 "numeric_state": {
                                     "above": "超過",
                                     "below": "未満",
-                                    "label": "数的な状態",
+                                    "label": "数的状態",
                                     "value_template": "バリューテンプレート（オプショナル）"
                                 },
                                 "or": {
-                                    "label": "または"
+                                    "label": "OR"
                                 },
                                 "state": {
                                     "label": "状態",
@@ -1676,6 +1690,8 @@
                             "info": "ホーム アシスタント クラウド向けの Google アシスタント統合機能を使用すると、Google アシスタント対応のデバイスを介してすべてのホーム アシスタント デバイスを制御できます。",
                             "info_state_reporting": "状態レポートを有効にすると、ホーム アシスタントは公開されたエンティティのすべての状態変更を Google に送信します。これにより、Google アプリで最新の状態を常に確認できます。",
                             "manage_entities": "エンティティの管理",
+                            "not_configured_text": "Google アシスタントを使用する前に、「Google Home」アプリで「Google アシスタント」のホームアシスタントクラウドスキルを有効にする必要があります。",
+                            "not_configured_title": "Googleアシスタントがアクティブ化されていません",
                             "security_devices": "セキュリティデバイス",
                             "sync_entities": "エンティティをGoogleに同期",
                             "sync_entities_404_message": "エンティティをGoogleに同期できませんでした。Googleに「OK Google、デバイスを同期して」と尋ねてエンティティを同期してください。",
@@ -1843,6 +1859,7 @@
                                 "header": "アナリティクス",
                                 "instance_id": "インスタンス ID: {huuid}",
                                 "introduction": "インスタンスからの分析を共有します。 {link}で公開されます",
+                                "learn_more": "データの処理方法",
                                 "needs_base": "このオプションを有効にするには、ベースアナリティクスを有効にする必要があります。",
                                 "preference": {
                                     "base": {
@@ -2054,6 +2071,9 @@
                     "filtering_by": "フィルタリング",
                     "show": "表示"
                 },
+                "hassio": {
+                    "button": "設定"
+                },
                 "header": "Home Assistant の設定",
                 "helpers": {
                     "caption": "ヘルパー",
@@ -2140,8 +2160,10 @@
                         "entity_unavailable": "エンティティは利用できません",
                         "firmware": "ファームウェア： {version}",
                         "hub": "経由で接続",
+                        "logs": "ログ",
                         "manuf": "{manufacturer}",
                         "no_area": "エリアなし",
+                        "not_loaded": "読み込まれていない場合は{logs_link} を確認してください",
                         "options": "オプション",
                         "reload": "再読込",
                         "reload_confirm": "インテグレーションが再読み込みされました",
@@ -2167,6 +2189,7 @@
                         "finish": "完了",
                         "loading_first_time": "インテグレーションのインストールを完了するまでお待ちください",
                         "not_all_required_fields": "必須フィールドの一覧に入力するわけではありません。",
+                        "not_loaded": "インテグレーションファイルを読み込めませんでした。ホームアシスタントを再起動してください。",
                         "pick_flow_step": {
                             "new_flow": "いいえ、{integration} の他のインスタンスを設定します",
                             "title": "これらを発見しました。設定しますか？"
@@ -2215,8 +2238,17 @@
                 "logs": {
                     "caption": "ログ",
                     "clear": "消去",
+                    "custom_integration": "カスタム・インテグレーション",
                     "description": "Home Assistantログを表示する",
                     "details": "ログの詳細（ {level} ）",
+                    "error_from_custom_integration": "このエラーは、カスタム統合から発生しました。",
+                    "level": {
+                        "critical": "クリティカル",
+                        "debug": "デバッグ",
+                        "error": "エラー",
+                        "info": "情報",
+                        "warning": "警告"
+                    },
                     "load_full_log": "完全な Home Assistant ログを読み込む",
                     "loading_log": "エラーログを読み込んでいます…",
                     "multiple_messages": "メッセージは最初に{time}発生し、 {counter}回表示されます",
@@ -3712,6 +3744,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "次",
+                    "intro": "インスタンスのアナリティクスを共有する。このデータは{link}で公開されます。"
+                },
                 "core-config": {
                     "button_detect": "検出",
                     "finish": "次",
@@ -3721,6 +3757,7 @@
                     "location_name": "ホーム アシスタントの名前",
                     "location_name_default": "自宅"
                 },
+                "finish": "終了",
                 "integration": {
                     "finish": "完了",
                     "intro": "デバイスとサービスは、統合としてHome Assistantに表示されます。今すぐ設定することも、後で設定画面から設定することもできます。",

@@ -473,6 +473,7 @@
                 "unhealthy_title": "La teva instal·lació no és bona",
                 "unsupported_description": "A continuació es mostra una llista de problemes relacionats amb la instal·lació, fes clic als enllaços per obtenir informació sobre com resoldre'ls.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor no està habilitat a l'amfitrió",
                     "container": "Els contenidors són coneguts per causar problemes",
                     "content-trust": "Validació de continguts de confiança desactivada",
                     "dbus": "DBUS",
@@ -560,9 +561,12 @@
             },
             "light": {
                 "brightness": "Brillantor",
+                "cold_white_value": "Brillantor de blancs freds",
+                "color_brightness": "Brillantor del color",
                 "color_temperature": "Temperatura de color",
                 "effect": "Efecte",
-                "white_value": "Ajust de blanc"
+                "warm_white_value": "Brillantor de blancs calents",
+                "white_value": "Brillantor de blanc"
             },
             "lock": {
                 "code": "Codi",
@@ -706,7 +710,7 @@
                     "text": "Introdueix el nom de la nova àrea.",
                     "title": "Afegeix àrea nova"
                 },
-                "add_new": "Afegir àrea nova...",
+                "add_new": "Afegeix nova àrea...",
                 "area": "Àrea",
                 "clear": "Esborra",
                 "no_areas": "No tens cap àrea",
@@ -885,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Documentació de la integració",
                 "required": "Aquest camp és obligatori",
                 "service_data": "Dades del servei",
                 "target": "Objectius",
@@ -1238,10 +1243,12 @@
         "notification_toast": {
             "connection_lost": "Connexió perduda. Tornant a connectar...",
             "dismiss": "Omet",
+            "intergration_starting": "Iniciant {integration}, no estarà tot disponible fins que acabi.",
             "service_call_failed": "Ha fallat la crida al servei {service}.",
             "started": "Home Assistant s'ha iniciat!",
             "starting": "Home Assistant està iniciant-se, no estarà tot disponible fins que acabi",
-            "triggered": "{name} disparat/ada"
+            "triggered": "{name} disparat/ada",
+            "wrapping_up_startup": "Finalitzant l'arrencada, no estarà tot disponible fins que acabi."
         },
         "panel": {
             "config": {
@@ -1605,7 +1612,7 @@
                         "delete_automation": "Elimina l'automatització",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta automatització?",
                         "dev_automation": "Depurar automatització",
-                        "dev_only_editable": "Només es poden depurar les automatitzacions definides al fitxer automations.yaml.",
+                        "dev_only_editable": "Només es poden depurar les automatitzacions que tinguin un identificador únic.",
                         "duplicate": "Duplica",
                         "duplicate_automation": "Duplica l'automatització",
                         "edit_automation": "Edita automatització",
@@ -1692,7 +1699,7 @@
                         },
                         "connected": "Connectat",
                         "connection_status": "Estat de connexió amb Cloud",
-                        "fetching_subscription": "Obtenint la subscripció...",
+                        "fetching_subscription": "Obtenint subscripció...",
                         "google": {
                             "config_documentation": "Documentació de configuració",
                             "devices_pin": "PIN dels dispositius de seguretat",
@@ -1748,7 +1755,7 @@
                             "disable_hook_error_msg": "No s'ha pogut desactivar el webhook:",
                             "info": "Qualsevol cosa que estigui configurada per disparar-se a través d'un webhook pot disposar d'un URL accessible públicament que permet retornar-li dades a Home Assistant des de qualsevol lloc i sense exposar la teva instància a Internet.",
                             "link_learn_more": "Més informació sobre la creació d'automatizacions basats en webhook.",
-                            "loading": "Carregant ...",
+                            "loading": "Carregant...",
                             "manage": "Gestiona",
                             "no_hooks_yet": "Sembla que encara no tens cap webhook. Comença configurant una ",
                             "no_hooks_yet_link_automation": "automatització de webhook",
@@ -1872,28 +1879,28 @@
                                 "documentation": "Abans d'activar això, revisa't la documentació d'anàlisi a {link}, per entendre el què s'enviarà i com s'emmagatzemarà.",
                                 "header": "Dades analítiques",
                                 "instance_id": "ID de la instància: {huuid}",
-                                "introduction": "Comparteix dades analítiques de la teva instància. Aquestes dades estaran disponibles públicament a {link}",
-                                "learn_more": "Més informació sobre com les teves dades es processaran.",
+                                "introduction": "Comparteix informació de la teva instal·lació per ajudar a millorar Home Assistant i ajudar-nos a convèncer als fabricants perquè afegeixin control local i funcions centrades en la privadesa.",
+                                "learn_more": "Com processem les teves dades",
                                 "needs_base": "Has d'habilitar l'anàlisi bàsica perquè aquesta opció estigui disponible",
                                 "preference": {
                                     "base": {
-                                        "description": "Inclou l'ID de la instància, la versió i el tipus d'instal·lació",
+                                        "description": "ID de la instància, versió i tipus d'instal·lació.",
                                         "title": "Anàlisi bàsica"
                                     },
                                     "diagnostics": {
-                                        "description": "Comparteix informes d'errors i informació de diagnòstic",
+                                        "description": "Comparteix informes d'error quan es produeixin errors inesperats.",
                                         "title": "Diagnòstics"
                                     },
                                     "statistics": {
-                                        "description": "Això inclou un seguit d'elements de la teva instal·lació. Per obtenir-ne una llista completa, consulta la documentació",
+                                        "description": "Nombre total d'entitats utilitzades, usuaris i altres elements.",
                                         "title": "Estadístiques d’ús"
                                     },
                                     "usage_supervisor": {
-                                        "description": "Inclou els noms i funcionalitats de les teves integracions i complements",
+                                        "description": "Noms, versions i funcionalitats.",
                                         "title": "Integracions i complements utilitzats"
                                     },
                                     "usage": {
-                                        "description": "Inclou els noms de les teves integracions",
+                                        "description": "Noms i informació de versió.",
                                         "title": "Integracions utilitzades"
                                     }
                                 }
@@ -2153,8 +2160,11 @@
                     "caption": "Integracions",
                     "config_entry": {
                         "area": "A {area}",
+                        "check_the_logs": "Comprova els registres",
+                        "configure": "Configura",
                         "delete": "Elimina",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta integració?",
+                        "depends_on_cloud": "Depèn del núvol",
                         "device_unavailable": "Dispositiu no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositiu}\n  other {dispositius}\n}",
                         "disable_restart_confirm": "Reinicia Home Assistant per acabar de desactivar aquesta integració",
@@ -2177,14 +2187,23 @@
                         "logs": "registres",
                         "manuf": "de {manufacturer}",
                         "no_area": "Sense àrea",
-                        "not_loaded": "No carregat, comprova {logs_link}",
+                        "not_loaded": "No carregada",
                         "options": "Opcions",
+                        "provided_by_custom_integration": "Proporcionada per una integració personalitzada",
                         "reload": "Torna a carregar",
                         "reload_confirm": "La integració s'ha tornat a carregar",
                         "reload_restart_confirm": "Reinicia Home Assistant per acabar de carregar aquesta integració",
                         "rename": "Canvia el nom",
                         "restart_confirm": "Reinicia Home Assistant per acabar d'eliminar aquesta integració",
                         "services": "{count} {count, plural,\n  one {servei}\n  other {serveis}\n}",
+                        "state": {
+                            "failed_unload": "No s'ha pogut desactivar",
+                            "loaded": "Carregada",
+                            "migration_error": "Error de migració",
+                            "not_loaded": "No carregada",
+                            "setup_error": "No s'ha pogut configurar",
+                            "setup_retry": "S'està tornant a provar de configurar"
+                        },
                         "system_options": "Opcions de sistema",
                         "unnamed_entry": "Entrada sense nom"
                     },
@@ -2213,7 +2232,7 @@
                     "configure": "Configurar",
                     "configured": "Configurades",
                     "confirm_new": "Vols configurar {integration}?",
-                    "description": "Gestiona les integracions amb serveis, dispositius, ...",
+                    "description": "Gestiona les integracions amb serveis o dispositius",
                     "details": "Detalls de la integració",
                     "disable": {
                         "disabled_integrations": "{number} desactivada/es",
@@ -2252,17 +2271,19 @@
                 "logs": {
                     "caption": "Registres",
                     "clear": "Esborra",
+                    "custom_integration": "integració personalitzada",
                     "description": "Consulta els registres de Home Assistant",
                     "details": "Detalls del registre ({level})",
+                    "error_from_custom_integration": "Aquest error té origen en una integració personalitzada.",
                     "level": {
                         "critical": "CRÍTIC",
                         "debug": "DEPURACIÓ",
                         "error": "ERROR",
                         "info": "INFO",
-                        "warning": "ADVERTÈNCIA"
+                        "warning": "ALERTA"
                     },
                     "load_full_log": "Carrega el registre complet de Home Assistant",
-                    "loading_log": "Carregant el registre d'errors...",
+                    "loading_log": "Carregant registre d'errors...",
                     "multiple_messages": "missatge produit per primera vegada a les {time}, apareix {counter} vegades",
                     "no_errors": "No s'ha informat de cap error",
                     "no_issues": "No hi ha registres nous!",
@@ -2643,7 +2664,7 @@
                             "confirm_restart": "Segur que vols reiniciar Home Assistant?",
                             "confirm_stop": "Segur que vols aturar Home Assistant?",
                             "heading": "Gestió del servidor",
-                            "introduction": "Controla el servidor de Home Assistant... des de Home Assistant.",
+                            "introduction": "Controla el teu servidor de Home Assistant... des de Home Assistant.",
                             "restart": "Reinicia",
                             "stop": "Atura"
                         },
@@ -2770,6 +2791,15 @@
                         "manufacturer_code_override": "Substitució del codi de fabricant",
                         "value": "Valor"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Dreceres",
+                        "update_button": "Actualitza la configuració",
+                        "zha_options": {
+                            "default_light_transition": "Temps de transició predeterminat (segons)",
+                            "enable_identify_on_join": "Activa l'efecte d'identificació quan els dispositius s'uneixin a la xarxa",
+                            "title": "Opcions globals"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuració completada",
                         "CONFIGURED_status_text": "Inicialitzant",
@@ -2863,7 +2893,7 @@
                         "start_secure_inclusion": "Inicia la inclusió segura",
                         "title": "Afegeix un node Z-Wave",
                         "use_secure_inclusion": "Utilitza la inclusió segura",
-                        "view_device": "Veure el dispositiu"
+                        "view_device": "Mostra el dispositiu"
                     },
                     "button": "Configura",
                     "common": {
@@ -2909,6 +2939,9 @@
                         "header": "Configuració de dispositiu Z-Wave",
                         "introduction": "Gestiona i ajusta els paràmetres de configuració específics del dispositiu (node) seleccionat",
                         "parameter_is_read_only": "Aquest paràmetre de només lectura.",
+                        "set_param_accepted": "El paràmetre s'ha actualitzat.",
+                        "set_param_error": "S'ha produït un error.",
+                        "set_param_queued": "El canvi de paràmetre s'ha posat en espera i s'actualitzarà quan es desperti el dispositiu.",
                         "zwave_js_device_database": "Base de dades de dispositiu Z-Wave JS"
                     },
                     "node_status": {
@@ -3036,12 +3069,12 @@
                         "count_listeners": " ({count} oient/s)",
                         "data": "Dades de l'esdeveniment (en YAML, opcionals)",
                         "description": "Crida un esdeveniment al bus d'esdeveniments.",
-                        "documentation": "Documentació d'esdeveniments.",
+                        "documentation": "Documentació d'esdeveniments",
                         "event_fired": "Esdeveniment {name} cridat",
                         "fire_event": "Crida esdeveniment",
                         "listen_to_events": "Escolta esdeveniments",
                         "listening_to": "Escoltant a",
-                        "notification_event_fired": "L'esdeveniment {type} s'ha cridat correctament",
+                        "notification_event_fired": "Esdeveniment {type} disparat correctament!",
                         "start_listening": "Comença a escoltar",
                         "stop_listening": "Deixa d'escoltar",
                         "subscribe_to": "Esdeveniment al qual subscriure's",
@@ -3068,8 +3101,8 @@
                         "attributes": "Atributs",
                         "copy_id": "Copia l'identificador al porta-retalls",
                         "current_entities": "Entitats actuals",
-                        "description1": "Defineix la representació d'un dispositiu a Home Assistant.",
-                        "description2": "No hi haurà cap comunicació amb el dispositiu real.",
+                        "description1": "Defineix la visualització de l'estat actual d'una entitat a Home Assistant.",
+                        "description2": "Si l'entitat pertany a un dispositiu, no hi haurà cap comunicació amb el dispositiu.",
                         "entity": "Entitat",
                         "filter_attributes": "Filtra atributs",
                         "filter_entities": "Filtra entitats",
@@ -3874,7 +3907,7 @@
                 },
                 "number_format": {
                     "description": "Trieu el format dels números.",
-                    "dropdown_label": "Format de número",
+                    "dropdown_label": "Format dels números",
                     "formats": {
                         "comma_decimal": "1,234,567.89",
                         "decimal_comma": "1.234.567,89",
@@ -3883,7 +3916,7 @@
                         "space_comma": "1 234 567,89",
                         "system": "Utilitza la configuració regional del sistema"
                     },
-                    "header": "Format de número"
+                    "header": "Format dels números"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

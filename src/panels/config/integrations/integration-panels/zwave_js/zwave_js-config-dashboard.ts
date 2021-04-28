@@ -17,9 +17,11 @@ import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-icon-next";
 import { getSignedPath } from "../../../../../data/auth";
 import {
+  fetchDataCollectionStatus,
   fetchNetworkStatus,
   fetchNodeStatus,
   NodeStatus,
+  setDataCollectionPreference,
   ZWaveJSNetwork,
   ZWaveJSNode,
 } from "../../../../../data/zwave_js";
@@ -54,6 +56,8 @@ class ZWaveJSConfigDashboard extends LitElement {
   @internalProperty() private _status = "unknown";
 
   @internalProperty() private _icon = mdiCircle;
+
+  @internalProperty() private _dataCollectionOptIn?: boolean;
 
   protected firstUpdated() {
     if (this.hass) {
@@ -167,6 +171,39 @@ class ZWaveJSConfigDashboard extends LitElement {
                     </mwc-button>
                   </div>
                 </ha-card>
+                <ha-card>
+                  <div class="card-header">
+                    <h1>Third-Party Data Reporting</h1>
+                    ${this._dataCollectionOptIn !== undefined
+                      ? html`
+                          <ha-switch
+                            .checked=${this._dataCollectionOptIn === true}
+                            @change=${this._dataCollectionToggled}
+                          ></ha-switch>
+                        `
+                      : html`
+                          <ha-circular-progress
+                            size="small"
+                            active
+                          ></ha-circular-progress>
+                        `}
+                  </div>
+                  <div class="card-content">
+                    <p>
+                      Enable the reporting of anonymized telemetry and
+                      statistics to the <em>Z-Wave JS organization</em>. This
+                      data will be used to focus development efforts and improve
+                      the user experience. Information about the data that is
+                      collected and how it is used, including an example of the
+                      data collected, can be found in the
+                      <a
+                        target="_blank"
+                        href="https://zwave-js.github.io/node-zwave-js/#/data-collection/data-collection?id=usage-statistics"
+                        >Z-Wave JS data collection documentation</a
+                      >.
+                    </p>
+                  </div>
+                </ha-card>
               `
             : ``}
           <button class="link dump" @click=${this._dumpDebugClicked}>
@@ -183,11 +220,22 @@ class ZWaveJSConfigDashboard extends LitElement {
     if (!this.configEntryId) {
       return;
     }
-    this._network = await fetchNetworkStatus(this.hass!, this.configEntryId);
+    const [network, dataCollectionStatus] = await Promise.all([
+      fetchNetworkStatus(this.hass!, this.configEntryId),
+      fetchDataCollectionStatus(this.hass!, this.configEntryId),
+    ]);
+
+    this._network = network;
+
     this._status = this._network.client.state;
     if (this._status === "connected") {
       this._icon = mdiCheckCircle;
     }
+
+    this._dataCollectionOptIn =
+      dataCollectionStatus.opted_in === true ||
+      dataCollectionStatus.enabled === true;
+
     this._fetchNodeStatus();
   }
 
@@ -211,6 +259,14 @@ class ZWaveJSConfigDashboard extends LitElement {
     showZWaveJSRemoveNodeDialog(this, {
       entry_id: this.configEntryId!,
     });
+  }
+
+  private _dataCollectionToggled(ev) {
+    setDataCollectionPreference(
+      this.hass!,
+      this.configEntryId!,
+      ev.target.checked
+    );
   }
 
   private async _dumpDebugClicked() {
@@ -321,8 +377,19 @@ class ZWaveJSConfigDashboard extends LitElement {
           font-size: 1rem;
         }
 
+        .card-header {
+          display: flex;
+        }
+        .card-header h1 {
+          flex: 1;
+        }
+        .card-header ha-switch {
+          width: 48px;
+          margin-top: 16px;
+        }
+
         ha-card {
-          margin: 0 auto;
+          margin: 0px auto 24px;
           max-width: 600px;
         }
 

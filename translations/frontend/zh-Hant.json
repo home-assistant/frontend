@@ -242,7 +242,7 @@
                 "ram_usage": "附加元件 RAM 使用率",
                 "rebuild": "重建",
                 "restart": "重啟",
-                "start": "開始",
+                "start": "啟動",
                 "stop": "停止",
                 "uninstall": "移除",
                 "visit_addon_page": "參閱 {name} 頁面以獲得更詳細資訊"
@@ -473,6 +473,7 @@
                 "unhealthy_title": "安裝版本不健康",
                 "unsupported_description": "執行不健康的安裝版本可能會導致問題。下方列表為安裝問題清單，點選連結以了解如何解決問題。",
                 "unsupported_reason": {
+                    "apparmor": "主機端未啟用 AppArmor",
                     "container": "已知造成問題的 Container",
                     "content-trust": "內容認證已關閉",
                     "dbus": "DBUS",
@@ -885,6 +886,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "整合文件",
                 "required": "必填欄位",
                 "service_data": "服務資料",
                 "target": "目標",
@@ -1213,6 +1215,14 @@
                 "key_wrong_type": "視覺化編輯器不支援所提供的 \"{key}\" 數值。支援 ({type_correct}) 但卻收到 ({type_wrong})。",
                 "no_template_editor_support": "視覺化編輯器不支援模版",
                 "no_type_provided": "未提供類型。"
+            },
+            "supervisor": {
+                "ask": "尋求協助",
+                "observer": "檢查 Observer",
+                "reboot": "嘗試重啟主機",
+                "system_health": "檢查系統健康狀態",
+                "title": "無法載入 Supervisor 面板！",
+                "wait": "假如為剛剛啟動，請確認已經給予 Supervisor 足夠時間進行啟動。"
             }
         },
         "login-form": {
@@ -1230,10 +1240,12 @@
         "notification_toast": {
             "connection_lost": "連線中斷。重新連線中...",
             "dismiss": "關閉",
+            "intergration_starting": "{integration} 正在啟動，在完成載入前、可能無法顯示所有功能。",
             "service_call_failed": "服務 {service} 執行失敗。",
             "started": "Home Assistant 已啟動！",
             "starting": "Home Assistant 正在啟動，在完成載入前、可能無法顯示所有功能。",
-            "triggered": "觸發 {name}"
+            "triggered": "觸發 {name}",
+            "wrapping_up_startup": "啟動完成中，在完成載入前、可能無法顯示所有功能。"
         },
         "panel": {
             "config": {
@@ -1597,7 +1609,7 @@
                         "delete_automation": "刪除自動化",
                         "delete_confirm": "確定要刪除此自動化？",
                         "dev_automation": "自動化除錯",
-                        "dev_only_editable": "僅有於 automations.yaml 內定義的自動化、方能進行除錯。",
+                        "dev_only_editable": "僅有具有唯一 ID 指派的自動化、方能進行除錯。",
                         "duplicate": "複製",
                         "duplicate_automation": "複製自動化",
                         "edit_automation": "編輯自動化",
@@ -1864,28 +1876,28 @@
                                 "documentation": "於開啟前，請先確定您已經瀏覽分析資料文件頁面 {link}、並了解所要傳送的資料及相關資料如何儲存。",
                                 "header": "分析資料",
                                 "instance_id": "實例 ID：{huuid}",
-                                "introduction": "分享實例分析資料，資料將可透過 {link} 連結公開取得",
-                                "learn_more": "詳細了解資料會如何處理。",
+                                "introduction": "分享安裝資訊將有助於協助 Home Assistant 改善、並協助說服更多製造廠商包含本地端控制與隱私權相關功能。",
+                                "learn_more": "資料會如何處理。",
                                 "needs_base": "需要開啟基本分析、方能使用此選項",
                                 "preference": {
                                     "base": {
-                                        "description": "將包含實例 ID、版本與安裝類型",
+                                        "description": "實例 ID、版本與安裝類型。",
                                         "title": "基本分析"
                                     },
                                     "diagnostics": {
-                                        "description": "分享當機回報與診斷資訊",
+                                        "description": "當發生位預期錯誤時，分享當機回報。",
                                         "title": "診斷資料"
                                     },
                                     "statistics": {
-                                        "description": "將包含安裝的元件總數，完整列表、請參閱文件",
+                                        "description": "已使用實體、使用者與其他元素總數。",
                                         "title": "統計資訊"
                                     },
                                     "usage_supervisor": {
-                                        "description": "將包含整合與附加元件的名稱與功能",
+                                        "description": "名稱、版本與功能。",
                                         "title": "已使用整合與附加元件"
                                     },
                                     "usage": {
-                                        "description": "將包含整合名稱",
+                                        "description": "名稱與版本資訊。",
                                         "title": "已使用整合"
                                     }
                                 }
@@ -2145,8 +2157,11 @@
                     "caption": "整合",
                     "config_entry": {
                         "area": "於 {area}",
+                        "check_the_logs": "檢查日誌",
+                        "configure": "設定",
                         "delete": "刪除",
                         "delete_confirm": "確定要刪除此整合？",
+                        "depends_on_cloud": "跟隨雲服務",
                         "device_unavailable": "裝置不可用",
                         "devices": "{count} {count, plural,\n  one {個裝置}\n  other {個裝置}\n}",
                         "disable_restart_confirm": "重啟 Home Assistant 以完成整合關閉",
@@ -2169,14 +2184,23 @@
                         "logs": "日誌",
                         "manuf": "廠牌：{manufacturer}",
                         "no_area": "無分區",
-                        "not_loaded": "未載入，請檢查 {logs_link}",
+                        "not_loaded": "未載入",
                         "options": "選項",
+                        "provided_by_custom_integration": "由自訂整合提供",
                         "reload": "重新載入",
                         "reload_confirm": "整合已重新載入",
                         "reload_restart_confirm": "重啟 Home Assistant 以完成整合重新載入",
                         "rename": "重新命名",
                         "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
                         "services": "{count} {count, plural,\n  one {項服務}\n  other {項服務}\n}",
+                        "state": {
+                            "failed_unload": "卸載失敗",
+                            "loaded": "已載入",
+                            "migration_error": "遷移錯誤",
+                            "not_loaded": "未載入",
+                            "setup_error": "設定失敗",
+                            "setup_retry": "重試設定中"
+                        },
                         "system_options": "系統選項",
                         "unnamed_entry": "未命名實體"
                     },
@@ -2205,7 +2229,7 @@
                     "configure": "設定",
                     "configured": "已設定整合",
                     "confirm_new": "是否要設定 {integration}？",
-                    "description": "管理服務、裝置整合等",
+                    "description": "管理整合服務或裝置",
                     "details": "整合詳細資訊",
                     "disable": {
                         "disabled_integrations": "{number} 個已關閉",
@@ -2244,8 +2268,10 @@
                 "logs": {
                     "caption": "記錄",
                     "clear": "清除",
+                    "custom_integration": "自訂整合",
                     "description": "檢視 Home Assistant 日誌",
                     "details": "記錄詳細資料（{level}）",
+                    "error_from_custom_integration": "自訂整合產生錯誤。",
                     "level": {
                         "critical": "緊急",
                         "debug": "除錯",
@@ -2635,7 +2661,7 @@
                             "confirm_restart": "確定要重啟 Home Assistant 嗎？",
                             "confirm_stop": "確定要停止 Home Assistant 嗎？",
                             "heading": "服務器管理",
-                            "introduction": "由 Home Assistant，控制 Home Assistant 伺服器。",
+                            "introduction": "使用 Home Assistant、於離家時遠端控制 Home Assistant 伺服器。",
                             "restart": "重啟",
                             "stop": "停止"
                         },
@@ -2761,6 +2787,15 @@
                         "clusters": "叢集",
                         "manufacturer_code_override": "製造商代碼覆寫",
                         "value": "數值"
+                    },
+                    "configuration_page": {
+                        "shortcuts_title": "捷徑",
+                        "update_button": "更新設定",
+                        "zha_options": {
+                            "default_light_transition": "預設燈光轉換時間（秒）",
+                            "enable_identify_on_join": "當裝置加入網路時、開啟識別效果",
+                            "title": "Global 選項"
+                        }
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "設定完成",
@@ -2901,6 +2936,9 @@
                         "header": "Z-Wave 裝置設定",
                         "introduction": "管理與調整所選擇裝置 (節點) 之特定設定參數",
                         "parameter_is_read_only": "此參數為唯讀。",
+                        "set_param_accepted": "參數已更新。",
+                        "set_param_error": "發生錯誤。",
+                        "set_param_queued": "參數變更已排序、將會於裝置喚醒時更新。",
                         "zwave_js_device_database": "Z-Wave JS 裝置資料庫"
                     },
                     "node_status": {
@@ -3060,8 +3098,8 @@
                         "attributes": "屬性",
                         "copy_id": "複製 ID 至剪貼簿",
                         "current_entities": "目前實體",
-                        "description1": "設定 Home Assistant 裝置代表。",
-                        "description2": "將不會與實際裝置進行通訊。",
+                        "description1": "設定 Home Assistant 實體目前狀態。",
+                        "description2": "假如實體屬於裝置，將不會與實際裝置進行通訊。",
                         "entity": "實體",
                         "filter_attributes": "屬性篩選器",
                         "filter_entities": "實體篩選器",

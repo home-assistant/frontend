@@ -1,4 +1,4 @@
-export const afterNextRender = (cb: () => void): void => {
+export const afterNextRender = (cb: (value: unknown) => void): void => {
   requestAnimationFrame(() => setTimeout(cb, 0));
 };
 

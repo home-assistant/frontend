@@ -45,7 +45,8 @@ export const showDialog = async (
   root: ShadowRoot | HTMLElement,
   dialogTag: string,
   dialogParams: unknown,
-  dialogImport?: () => Promise<unknown>
+  dialogImport?: () => Promise<unknown>,
+  addHistory = true
 ) => {
   if (!(dialogTag in LOADED)) {
     if (!dialogImport) {
@@ -59,36 +60,37 @@ export const showDialog = async (
     });
   }
 
-  history.replaceState(
-    {
-      dialog: dialogTag,
-      open: false,
-      oldState:
-        history.state?.open && history.state?.dialog !== dialogTag
-          ? history.state
-          : null,
-    },
-    ""
-  );
-  try {
-    history.pushState(
-      { dialog: dialogTag, dialogParams: dialogParams, open: true },
+  if (addHistory) {
+    top.history.replaceState(
+      {
+        dialog: dialogTag,
+        open: false,
+        oldState:
+          top.history.state?.open && top.history.state?.dialog !== dialogTag
+            ? top.history.state
+            : null,
+      },
       ""
     );
-  } catch (err) {
-    // dialogParams could not be cloned, probably contains callback
-    history.pushState(
-      { dialog: dialogTag, dialogParams: null, open: true },
-      ""
-    );
+    try {
+      top.history.pushState(
+        { dialog: dialogTag, dialogParams: dialogParams, open: true },
+        ""
+      );
+    } catch (err) {
+      // dialogParams could not be cloned, probably contains callback
+      top.history.pushState(
+        { dialog: dialogTag, dialogParams: null, open: true },
+        ""
+      );
+    }
   }
-
   const dialogElement = await LOADED[dialogTag];
   dialogElement.showDialog(dialogParams);
 };
 
 export const replaceDialog = () => {
-  history.replaceState({ ...history.state, replaced: true }, "");
+  top.history.replaceState({ ...top.history.state, replaced: true }, "");
 };
 
 export const closeDialog = async (dialogTag: string): Promise<boolean> => {

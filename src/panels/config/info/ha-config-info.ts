@@ -140,7 +140,10 @@ class HaConfigInfo extends LitElement {
         </div>
         <div class="content">
           <system-health-card .hass=${this.hass}></system-health-card>
-          <integrations-card .hass=${this.hass}></integrations-card>
+          <integrations-card
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></integrations-card>
         </div>
       </hass-tabs-subpage>
     `;

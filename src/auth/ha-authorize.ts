@@ -8,6 +8,7 @@ import {
   PropertyValues,
 } from "lit-element";
 import punycode from "punycode";
+import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import {
   AuthProvider,
@@ -115,6 +116,20 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     super.firstUpdated(changedProps);
     this._fetchAuthProviders();
     this._fetchDiscoveryInfo();
+
+    if (matchMedia("(prefers-color-scheme: dark)").matches) {
+      applyThemesOnElement(
+        document.documentElement,
+        {
+          default_theme: "default",
+          default_dark_theme: null,
+          themes: {},
+          darkMode: false,
+        },
+        "default",
+        { dark: true }
+      );
+    }
 
     if (!this.redirectUri) {
       return;

@@ -221,11 +221,17 @@ export class HcMain extends HassElement {
   }
 
   private async _generateLovelaceConfig() {
-    const { generateLovelaceConfigFromHass } = await import(
-      "../../../../src/panels/lovelace/common/generate-lovelace-config"
+    const { generateLovelaceDashboardStrategy } = await import(
+      "../../../../src/panels/lovelace/strategies/get-strategy"
     );
     this._handleNewLovelaceConfig(
-      await generateLovelaceConfigFromHass(this.hass!)
+      await generateLovelaceDashboardStrategy(
+        {
+          hass: this.hass!,
+          narrow: false,
+        },
+        "original-states"
+      )
     );
   }
 

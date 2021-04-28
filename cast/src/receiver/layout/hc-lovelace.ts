@@ -35,6 +35,7 @@ class HcLovelace extends LitElement {
     }
     const lovelace: Lovelace = {
       config: this.lovelaceConfig,
+      rawConfig: this.lovelaceConfig,
       editMode: false,
       urlPath: this.urlPath!,
       enableFullEditMode: () => undefined,

@@ -473,6 +473,7 @@
                 "unhealthy_title": "系统状态不佳",
                 "unsupported_description": "以下是系统存在的问题的列表，请点击链接以了解如何解决问题。",
                 "unsupported_reason": {
+                    "apparmor": "未在主机上启用 AppArmor",
                     "container": "已知会导致问题的容器",
                     "content-trust": "内容信任验证已禁用",
                     "dbus": "DBUS",
@@ -885,6 +886,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "集成文档",
                 "required": "此字段为必填字段",
                 "service_data": "服务数据",
                 "target": "目标",
@@ -949,7 +951,7 @@
                 },
                 "faq": "文档",
                 "info_customize": "您可以在{customize_link}部分中覆盖一些属性。",
-                "no_unique_id": "该实体 (\"{entity_id}\") 没有唯一的 ID，因此无法由 UI 管理其设置。请参阅 {faq_link} 以详细了解。",
+                "no_unique_id": "该实体 (\"{entity_id}\") 没有 unique ID，因此无法由 UI 管理其设置。请参阅 {faq_link} 以详细了解。",
                 "related": "关联",
                 "settings": "设置"
             },
@@ -1213,6 +1215,14 @@
                 "key_wrong_type": "“{key}”的值不受可视化编辑器支持。支持 ({type_correct}) 但得到 ({type_wrong})。",
                 "no_template_editor_support": "可视化编辑器不支持模板",
                 "no_type_provided": "未提供类型。"
+            },
+            "supervisor": {
+                "ask": "寻求帮助",
+                "observer": "检查 Observer",
+                "reboot": "请尝试重启主机",
+                "system_health": "检查系统状态",
+                "title": "无法加载 Supervisor 面板！",
+                "wait": "如果系统刚刚启动，请确保已等候足够的时间以便 Supervisor 启动完成。"
             }
         },
         "login-form": {
@@ -1230,10 +1240,12 @@
         "notification_toast": {
             "connection_lost": "连接中断。正在重新连接...",
             "dismiss": "关闭",
+            "intergration_starting": "正在启动 {integration}。在启动完成前，部分功能暂不可用。",
             "service_call_failed": "调用服务 {service} 失败。",
             "started": "Home Assistant 已启动！",
             "starting": "Home Assistant 正在启动。在启动完成前，部分功能暂不可用。",
-            "triggered": "已触发 {name}"
+            "triggered": "已触发 {name}",
+            "wrapping_up_startup": "启动即将完成。完成后即可使用全部功能。"
         },
         "panel": {
             "config": {
@@ -1597,7 +1609,7 @@
                         "delete_automation": "删除自动化",
                         "delete_confirm": "您确定要删除此自动化吗？",
                         "dev_automation": "调试自动化",
-                        "dev_only_editable": "只能调试 automations.yaml 中的自动化。",
+                        "dev_only_editable": "只能调试具有 unique ID 的自动化。",
                         "duplicate": "制作副本",
                         "duplicate_automation": "复制自动化",
                         "edit_automation": "编辑自动化",
@@ -1864,28 +1876,28 @@
                                 "documentation": "在启用此功能之前，请确保您已阅读了分析文档页面 {link}，以了解将发送的内容及其存储方式。",
                                 "header": "分析",
                                 "instance_id": "实例ID: {huuid}",
-                                "introduction": "共享实例的分析。此数据将在 {link} 公开。",
-                                "learn_more": "详细了解您的数据将被如何处理。",
+                                "introduction": "分享您的安装信息，让 Home Assistant 变得更好，并帮助我们与厂商沟通，增加本地控制和注重隐私的功能。",
+                                "learn_more": "我们如何处理您的数据",
                                 "needs_base": "需要启用基础分析才能启用此选项",
                                 "preference": {
                                     "base": {
-                                        "description": "包括实例 ID，版本号和安装类型",
+                                        "description": "实例 ID、版本号和安装类型。",
                                         "title": "基础分析"
                                     },
                                     "diagnostics": {
-                                        "description": "共享崩溃报告和诊断信息",
+                                        "description": "发生意外错误时共享崩溃报告。",
                                         "title": "诊断"
                                     },
                                     "statistics": {
-                                        "description": "包括安装的元素数量，完整列表请参阅文档",
+                                        "description": "已使用的实体、用户和其他元素数量。",
                                         "title": "使用情况统计"
                                     },
                                     "usage_supervisor": {
-                                        "description": "包括集成和加载项的名称和能力",
+                                        "description": "名称、版本和功能。",
                                         "title": "使用的集成和加载项"
                                     },
                                     "usage": {
-                                        "description": "包括集成的名称",
+                                        "description": "名称和版本信息。",
                                         "title": "使用的集成"
                                     }
                                 }
@@ -2145,8 +2157,11 @@
                     "caption": "集成",
                     "config_entry": {
                         "area": "位于：{area}",
+                        "check_the_logs": "检查日志",
+                        "configure": "选项",
                         "delete": "删除",
                         "delete_confirm": "您确定要删除此集成吗？",
+                        "depends_on_cloud": "取决于云端",
                         "device_unavailable": "设备不可用",
                         "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
                         "disable_restart_confirm": "重启 Home Assistant 以完成此集成的禁用",
@@ -2169,14 +2184,23 @@
                         "logs": "日志",
                         "manuf": "by {manufacturer}",
                         "no_area": "没有区域",
-                        "not_loaded": "未加载，请检查{logs_link}",
+                        "not_loaded": "未加载",
                         "options": "选项",
+                        "provided_by_custom_integration": "由自定义集成提供",
                         "reload": "重载",
                         "reload_confirm": "集成已重新加载",
                         "reload_restart_confirm": "重启 Home Assistant 以完成此集成的重载",
                         "rename": "重命名",
                         "restart_confirm": "重启 Home Assistant 以完成此集成的删除",
                         "services": "{count} {count, plural,\n  one {个服务}\n  other {个服务}\n}",
+                        "state": {
+                            "failed_unload": "卸载失败",
+                            "loaded": "已加载",
+                            "migration_error": "迁移错误",
+                            "not_loaded": "未加载",
+                            "setup_error": "设置失败",
+                            "setup_retry": "正在重试设置"
+                        },
                         "system_options": "系统选项",
                         "unnamed_entry": "未命名条目"
                     },
@@ -2244,8 +2268,10 @@
                 "logs": {
                     "caption": "日志",
                     "clear": "清除",
+                    "custom_integration": "自定义集成",
                     "description": "查看 Home Assistant 日志",
                     "details": "日志详细信息（ {level} ）",
+                    "error_from_custom_integration": "此错误来自自定义集成。",
                     "level": {
                         "critical": "CRITICAL",
                         "debug": "DEBUG",
@@ -2762,6 +2788,15 @@
                         "manufacturer_code_override": "制造商代码覆盖",
                         "value": "值"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "捷径",
+                        "update_button": "更新配置",
+                        "zha_options": {
+                            "default_light_transition": "默认灯光过渡时长（秒）",
+                            "enable_identify_on_join": "设备加入网络时启用识别效果",
+                            "title": "全局选项"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "配置完成",
                         "CONFIGURED_status_text": "正在初始化",
@@ -2901,6 +2936,9 @@
                         "header": "Z-Wave 设备配置",
                         "introduction": "管理并调整所选设备（节点）的具体配置参数。",
                         "parameter_is_read_only": "此参数为只读。",
+                        "set_param_accepted": "参数已更新。",
+                        "set_param_error": "发生错误。",
+                        "set_param_queued": "参数更改操作已加入队列，将在设备唤醒时更新。",
                         "zwave_js_device_database": "Z-Wave JS 设备数据库"
                     },
                     "node_status": {

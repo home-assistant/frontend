@@ -1451,6 +1451,14 @@
                     "description": "Sistemul de unități, locația, fusul orar și alți parametri generali",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Inainte de activare acestuia asigurați-va ca vizitați pagina de documentare {link} pentru a înțelege ce trimiteți si cum este stocată",
+                                "preference": {
+                                    "statistics": {
+                                        "title": "Statistici de utilizare"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Editorul a fost dezactivat deoarece configurația a fost stocata în configuration.yaml.",
                                 "elevation": "Altitudine",
@@ -3169,12 +3177,14 @@
                     "location_name": "Numele instalării Home Assistant",
                     "location_name_default": "Acasă"
                 },
+                "finish": "Finalizare",
                 "integration": {
                     "finish": "Finalizați",
                     "intro": "Dispozitivele și serviciile sunt reprezentate în Home Assistant ca integrări. Aveți posibilitatea să le configurați acum sau să le faceți mai târziu din ecranul de configurare.",
                     "more_integrations": "Mai Mult"
                 },
                 "intro": "Sunteți gata să vă treziți casa, să vă recuperați intimitatea și să vă alăturați unei comunități mondiale de creatori?",
+                "next": "Următorul",
                 "restore": {
                     "hide_log": "Ascundeți jurnalul complet",
                     "in_progress": "Restaurare în curs",

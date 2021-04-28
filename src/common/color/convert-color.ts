@@ -102,3 +102,18 @@ export const lab2hex = (lab: [number, number, number]): string => {
   const rgb = lab2rgb(lab);
   return rgb2hex(rgb);
 };
+
+export const rgb2hsv = (
+  rgb: [number, number, number]
+): [number, number, number] => {
+  const [r, g, b] = rgb;
+  const v = Math.max(r, g, b);
+  const c = v - Math.min(r, g, b);
+  const h =
+    c && (v === r ? (g - b) / c : v === g ? 2 + (b - r) / c : 4 + (r - g) / c);
+  return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
+};
+
+export const rgb2hs = (rgb: [number, number, number]): [number, number] => {
+  return rgb2hsv(rgb).slice(0, 2) as [number, number];
+};

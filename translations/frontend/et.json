@@ -473,6 +473,7 @@
                 "unhealthy_title": "Paigaldus on vigane",
                 "unsupported_description": "Allpool on loend paigaldusel leitud probleemidest. Klõpsa linkidel, et saada teada, kuidas saad probleeme lahendada.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor pole hostis lubatud",
                     "container": "Konteinerid mis teadaolevalt põhjustavad probleeme",
                     "content-trust": "Sisu usaldatavuse kontroll on keelatud",
                     "dbus": "DBUS",
@@ -560,9 +561,12 @@
             },
             "light": {
                 "brightness": "Heledus",
+                "cold_white_value": "Külma valguse heledus",
+                "color_brightness": "Värvilise valguse heledus",
                 "color_temperature": "Värvustemperatuur",
                 "effect": "Efekt",
-                "white_value": "Valge väärtus"
+                "warm_white_value": "Sooja valguse heledus",
+                "white_value": "Valge valguse heledus"
             },
             "lock": {
                 "code": "Kood",
@@ -885,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Sidumise teave",
                 "required": "See väli on nõutav",
                 "service_data": "Teenuse andmed",
                 "target": "Eesmärgid",
@@ -922,7 +927,7 @@
             },
             "entity_registry": {
                 "control": "Juhtimine",
-                "customize_link": "olemite kohandused",
+                "customize_link": "olemite kohandamised",
                 "dismiss": "Loobu",
                 "editor": {
                     "advanced": "Täpsemad sätted",
@@ -1238,10 +1243,12 @@
         "notification_toast": {
             "connection_lost": "Ühendus kadunud. Taasühendamine...",
             "dismiss": "Loobu",
+            "intergration_starting": "Sidumine {integration} käivitub, kõik elemendid pole veel saadaval.",
             "service_call_failed": "Teenuse {service} väljakutsumine ebaõnnestus.",
             "started": "Home Assistant on käivitunud!",
             "starting": "Home Assistant  käivitub, kõik elemendid ei pruugi veel saadaval olla",
-            "triggered": "Käivitati {name}"
+            "triggered": "Käivitati {name}",
+            "wrapping_up_startup": "Lõpetan käivitumist, kõik elemendid pole veel saadaval."
         },
         "panel": {
             "config": {
@@ -1605,7 +1612,7 @@
                         "delete_automation": "Kustuta automatiseering",
                         "delete_confirm": "Oled kindel, et soovid selle automatiseeringu kustutada?",
                         "dev_automation": "Automatiseeringu silumine",
-                        "dev_only_editable": "Siluda saab ainult kirjes automations.yaml olevaid automatiseeringuid.",
+                        "dev_only_editable": "Siluda saab ainult kordumatu ID-ga automatiseeringuid.",
                         "duplicate": "Paljunda",
                         "duplicate_automation": "Paljunda automatiseering",
                         "edit_automation": "Muuda automatiseeringut",
@@ -1872,28 +1879,28 @@
                                 "documentation": "Enne selle lubamist külasta kindlasti olekuteabe dokumentatsiooni lehte {link} et aru saada, mida saadetakse ja kuidas see talletatakse.",
                                 "header": "Olekuteave",
                                 "instance_id": "Eksemplari ID: {huuid}",
-                                "introduction": "Jaga oma Home Assistanti oleku teavet. Need andmed on avalikult saadaval aadressil {link}",
-                                "learn_more": "Uuri lisateavet andmete töötlemise kohta.",
+                                "introduction": "Jaga oma paigalduse teavet, et muuta Home Assistant paremaks ja aidata meil veenda tootjaid lisama kohalikku juhtimist ja privaatsusele keskendunud funktsioone.",
+                                "learn_more": "Uuri lisateavet andmete töötlemise kohta",
                                 "needs_base": "Selle suvandi kasutamiseks pead lubama põhilise olekuteabe",
                                 "preference": {
                                     "base": {
-                                        "description": "See hõlmab eksemplari ID-d, versiooni ja paigalduse tüüpi",
+                                        "description": "Eksemplari ID, versioon ja paigalduse tüüp.",
                                         "title": "Põhiline olekuteave"
                                     },
                                     "diagnostics": {
-                                        "description": "Jaga krahhiaruandeid ja diagnostikateavet",
+                                        "description": "Ootamatute vigade ilmnemisel jaga krahhiaruandeid.",
                                         "title": "Diagnostika"
                                     },
                                     "statistics": {
-                                        "description": "See hõlmab paigalduse elementide arvu, täieliku loendi saamiseks vaata dokumentatsiooni",
+                                        "description": "Kasutatud olemid, kasutajad ja muud elemendid kokku.",
                                         "title": "Kasutusstatistika"
                                     },
                                     "usage_supervisor": {
-                                        "description": "See hõlmab sidumiste ja lisandmoodulite nimesid ja võimalusi",
+                                        "description": "Nimed, versioonid ja võimalused.",
                                         "title": "Kasutusel olevad sidumised ja lisandmoodulid"
                                     },
                                     "usage": {
-                                        "description": "See hõlmab kasutusel olevate sidumiste nimesid",
+                                        "description": "Nimed ja teave versiooni kohta.",
                                         "title": "Kasutusel olevad sidumised"
                                     }
                                 }
@@ -1933,7 +1940,7 @@
                     "picker": {
                         "documentation": "Kohandamiste dokumentatsioon",
                         "header": "Kohandamine",
-                        "introduction": "Kohanda olemi atribuute. Lisatud või muudetud kohandused rakenduvad kohe. Eemaldatud kohandused rakenduvad olemi värskendamisel."
+                        "introduction": "Kohanda olemi atribuute. Lisatud või muudetud kohandamised rakenduvad kohe. Eemaldatud kohandamised rakenduvad olemi värskendamisel."
                     },
                     "warning": {
                         "include_link": "kaasa customize.yaml",
@@ -2153,8 +2160,11 @@
                     "caption": "Sidumised",
                     "config_entry": {
                         "area": "alas {area}",
+                        "check_the_logs": "Kontrolli logisid",
+                        "configure": "Seadista",
                         "delete": "Kustuta",
                         "delete_confirm": "Oled kindel, et soovid selle sidumise kustutada?",
+                        "depends_on_cloud": "Sõltub pilveteenusest",
                         "device_unavailable": "Seade pole saadaval",
                         "devices": "{count} {count, plural,\n  one {seade}\n  other {seadet}\n}",
                         "disable_restart_confirm": "Taaskäivita Home Assistant, et lõpetada selle sidumise keelamine",
@@ -2177,14 +2187,23 @@
                         "logs": "Logid",
                         "manuf": "{manufacturer}",
                         "no_area": "Ala puudub",
-                        "not_loaded": "Laadimine nurjus, lisateavet vaata siit {logs_link}",
+                        "not_loaded": "Pole laaditud",
                         "options": "Valikud",
+                        "provided_by_custom_integration": "Saadaval välise sidumise kaudu",
                         "reload": "Taaslae",
                         "reload_confirm": "Sidumine on taaslaetud",
                         "reload_restart_confirm": "Taaskäivita Home Assistant, et lõpetada selle sidumise taaslaadimine",
                         "rename": "Nimeta ümber",
                         "restart_confirm": "Selle sidumise lõplikuks eemaldamiseks taaskäivita Home Assistant",
                         "services": "{count} {count, plural,\n one {teenus}\n other {teenust}\n}",
+                        "state": {
+                            "failed_unload": "Eemaldamine nurjus",
+                            "loaded": "Laetud",
+                            "migration_error": "Tõrge teisaldamisel",
+                            "not_loaded": "Pole laaditud",
+                            "setup_error": "Häälestamine nurjus",
+                            "setup_retry": "Proovin uuesti seadistada"
+                        },
                         "system_options": "Süsteemisuvandid",
                         "unnamed_entry": "Nimetu kanne"
                     },
@@ -2213,7 +2232,7 @@
                     "configure": "Seadista",
                     "configured": "Seadistatud",
                     "confirm_new": "Kas soovid seadistada sidumist {integration}?",
-                    "description": "Halda teenuste, seadmete jne. sidumisi",
+                    "description": "Halda teenuste või  seadmete sidumisi",
                     "details": "Sidumise üksikasjad",
                     "disable": {
                         "disabled_integrations": "{number} keelatut",
@@ -2252,8 +2271,10 @@
                 "logs": {
                     "caption": "Logid",
                     "clear": "Puhasta",
+                    "custom_integration": "kohandatud sidumine",
                     "description": "Home Assistanti logid",
                     "details": "Logi üksikasjad ({level})",
+                    "error_from_custom_integration": "Selle tõrke põhjustas kohandatud sidumine.",
                     "level": {
                         "critical": "OLULINE",
                         "debug": "SILUMINE",
@@ -2770,6 +2791,15 @@
                         "manufacturer_code_override": "Tootja koodi alistamine",
                         "value": "Väärtus"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Otseteed",
+                        "update_button": "Seadete värskendamine",
+                        "zha_options": {
+                            "default_light_transition": "Valguse vaikeülemineku aeg (sekundites)",
+                            "enable_identify_on_join": "Luba tuvastamise efekt kui seadmed liituvad võrguga",
+                            "title": "Üldised valikud"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Seadistamine on lõpetatud",
                         "CONFIGURED_status_text": "Lähtestan",
@@ -2909,6 +2939,9 @@
                         "header": "Z-Wave seadme häälestamine",
                         "introduction": "Valitud seadme (sõlme) spetsiifiliste seadistuste haldamine ja muutmine",
                         "parameter_is_read_only": "See parameeter on kirjutuskaitstud.",
+                        "set_param_accepted": "Parameeter on uuendatud.",
+                        "set_param_error": "Ilmnes tõrge.",
+                        "set_param_queued": "Parameetri uuendamine on ootel ja seda värskendatakse seadme ärkamisel.",
                         "zwave_js_device_database": "Z-Wave JS seadmete andmebaas"
                     },
                     "node_status": {
@@ -3068,8 +3101,8 @@
                         "attributes": "Atribuudid",
                         "copy_id": "Kopeeri ID lõikepuhvrisse",
                         "current_entities": "Praegused olemid",
-                        "description1": "Seadke seadme esitus Home Assistendis.",
-                        "description2": "See ei suhtle tegeliku seadmega.",
+                        "description1": "Sea seadme oleku esitus Home Assistendis.",
+                        "description2": "Kui olem kuulub seadmele siis selle seadmega tegelikku suhtlust ei toimu.",
                         "entity": "Olem",
                         "filter_attributes": "Filtreeri atribuute",
                         "filter_entities": "Filtreeri olemeid",

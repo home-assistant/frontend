@@ -658,7 +658,8 @@
                 "integrations": {
                     "config_entry": {
                         "hub": "Prijungtas per",
-                        "no_area": "Nėra srities"
+                        "no_area": "Nėra srities",
+                        "provided_by_custom_integration": "Teikiama naudojant pasirinktinę integraciją"
                     },
                     "config_flow": {
                         "aborted": "Nutraukta",
