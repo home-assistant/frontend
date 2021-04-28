@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "Brillantor",
+                "cold_white_value": "Brillantor de blancs freds",
+                "color_brightness": "Brillantor del color",
                 "color_temperature": "Temperatura de color",
                 "effect": "Efecte",
-                "white_value": "Ajust de blanc"
+                "warm_white_value": "Brillantor de blancs calents",
+                "white_value": "Brillantor de blanc"
             },
             "lock": {
                 "code": "Codi",

@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "Brillo",
+                "cold_white_value": "Brillo del blanco frío",
+                "color_brightness": "Brillo del color",
                 "color_temperature": "Temperatura del color",
                 "effect": "Efecto",
-                "white_value": "Valor de blanco"
+                "warm_white_value": "Brillo del blanco cálido",
+                "white_value": "Brillo del blanco"
             },
             "lock": {
                 "code": "Código",
@@ -886,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Documentación sobre la integración",
                 "required": "Este campo es obligatorio",
                 "service_data": "Datos del servicio",
                 "target": "Objetivos",
@@ -2935,6 +2939,9 @@
                         "header": "Configuración del dispositivo Z-Wave",
                         "introduction": "Administra y ajusta los parámetros de configuración específicos del dispositivo (nodo) para el dispositivo seleccionado",
                         "parameter_is_read_only": "Este parámetro es de solo lectura.",
+                        "set_param_accepted": "El parámetro se ha actualizado.",
+                        "set_param_error": "Se ha producido un error.",
+                        "set_param_queued": "El cambio de parámetro se ha puesto en cola y se actualizará cuando el dispositivo se active.",
                         "zwave_js_device_database": "Base de datos de dispositivos Z-Wave JS"
                     },
                     "node_status": {
@@ -2943,6 +2950,16 @@
                         "awake": "Despierto",
                         "dead": "No responde",
                         "unknown": "Desconocido"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Deberás reactivar los dispositivos que funcionan con baterías antes de comenzar la reentrevista. Consulta el manual de tu dispositivo para obtener instrucciones sobre cómo reactivar el dispositivo.",
+                        "in_progress": "El dispositivo está siendo entrevistado. Esto puede llevar algún tiempo.",
+                        "interview_complete": "Entrevista con el dispositivo completa.",
+                        "interview_failed": "La entrevista del dispositivo falló. Es posible que haya información adicional disponible en los registros.",
+                        "introduction": "Vuelve a entrevistar un dispositivo en tu red Z-Wave. Utiliza esta función si tu dispositivo tiene una funcionalidad incorrecta o ausente.",
+                        "run_in_background": "Puedes cerrar este cuadro de diálogo y la entrevista continuará en segundo plano.",
+                        "start_reinterview": "Iniciar la reentrevista",
+                        "title": "Volver a entrevistar un dispositivo Z-Wave"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Cancelar exclusión",

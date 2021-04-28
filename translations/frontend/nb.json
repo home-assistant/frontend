@@ -886,6 +886,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Dokumentasjon for integrering",
                 "required": "Dette feltet er påkrevd",
                 "service_data": "Tjenestedata",
                 "target": "Mål",
@@ -2198,7 +2199,7 @@
                             "migration_error": "Migrasjonsfeil",
                             "not_loaded": "Ikke lastet",
                             "setup_error": "Kunne ikke konfigurere",
-                            "setup_retry": "Prøver på nytt for å sette opp"
+                            "setup_retry": "Prøver på nytt oppsett"
                         },
                         "system_options": "Systemalternativer",
                         "unnamed_entry": "Ikke navngitt oppføring"
@@ -2787,6 +2788,15 @@
                         "manufacturer_code_override": "Overstyring av produsentkode",
                         "value": "Verdi"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Snarveier",
+                        "update_button": "Oppdater konfigurasjon",
+                        "zha_options": {
+                            "default_light_transition": "Standard overgangstid for lys (sekunder)",
+                            "enable_identify_on_join": "Aktiver identifiseringseffekt når enheter blir med i nettverket",
+                            "title": "Globale alternativer"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Konfigurasjonen er fullført",
                         "CONFIGURED_status_text": "Initialiserer",
@@ -2926,6 +2936,9 @@
                         "header": "Z-Wave enhetskonfigurasjon",
                         "introduction": "Administrer og juster enhets (node) spesifikke konfigurasjonsparametere for den valgte enheten",
                         "parameter_is_read_only": "Denne parameteren er skrivebeskyttet.",
+                        "set_param_accepted": "Parameteren er oppdatert.",
+                        "set_param_error": "Det oppstod en feil.",
+                        "set_param_queued": "Parameterendringen har blitt satt i kø, og vil bli oppdatert når enheten våkner.",
                         "zwave_js_device_database": "Z-Wave JS Device Database"
                     },
                     "node_status": {

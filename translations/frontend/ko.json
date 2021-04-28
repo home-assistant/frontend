@@ -886,6 +886,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "통합구성요소 설명서",
                 "required": "이 입력란은 필수 요소입니다",
                 "service_data": "서비스 데이터",
                 "target": "대상",
@@ -2785,6 +2786,13 @@
                         "manufacturer_code_override": "제조업체 코드 재정의",
                         "value": "값"
                     },
+                    "configuration_page": {
+                        "update_button": "구성 업데이트",
+                        "zha_options": {
+                            "default_light_transition": "조명 전환 시간 기본 값(초)",
+                            "title": "전역 옵션"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "구성이 완료되었습니다",
                         "CONFIGURED_status_text": "초기화 중",
@@ -2924,6 +2932,9 @@
                         "header": "Z-Wave 기기 구성",
                         "introduction": "선택한 기기(노드)의 매개 변수를 관리하고 조정합니다.",
                         "parameter_is_read_only": "이 매개 변수는 읽기 전용입니다.",
+                        "set_param_accepted": "매개 변수가 업데이트되었습니다.",
+                        "set_param_error": "오류가 발생했습니다.",
+                        "set_param_queued": "장치의 절전모드가 해제되면 매개 변수가 업데이트됩니다.",
                         "zwave_js_device_database": "Z-Wave JS 기기 데이터베이스"
                     },
                     "node_status": {

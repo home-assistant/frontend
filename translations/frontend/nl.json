@@ -886,6 +886,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Integratiedocumentatie",
                 "required": "Dit veld is verplicht",
                 "service_data": "Service data",
                 "target": "Doelen",
@@ -2935,6 +2936,9 @@
                         "header": "Z-Wave apparaatconfiguratie",
                         "introduction": "Beheren en aanpassen van apparaat (node) specifieke configuratieparameters voor het geselecteerde apparaat",
                         "parameter_is_read_only": "Deze parameter is alleen-lezen.",
+                        "set_param_accepted": "De parameter is bijgewerkt.",
+                        "set_param_error": "Er is een fout opgetreden.",
+                        "set_param_queued": "De parameterwijziging is in een wachtrij geplaatst, en zal worden bijgewerkt wanneer het apparaat wakker wordt.",
                         "zwave_js_device_database": "Z-Wave JS Apparaat Database"
                     },
                     "node_status": {

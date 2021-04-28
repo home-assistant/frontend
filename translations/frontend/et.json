@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "Heledus",
+                "cold_white_value": "Külma valguse heledus",
+                "color_brightness": "Värvilise valguse heledus",
                 "color_temperature": "Värvustemperatuur",
                 "effect": "Efekt",
-                "white_value": "Valge väärtus"
+                "warm_white_value": "Sooja valguse heledus",
+                "white_value": "Valge valguse heledus"
             },
             "lock": {
                 "code": "Kood",
@@ -886,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Sidumise teave",
                 "required": "See väli on nõutav",
                 "service_data": "Teenuse andmed",
                 "target": "Eesmärgid",
@@ -2935,6 +2939,9 @@
                         "header": "Z-Wave seadme häälestamine",
                         "introduction": "Valitud seadme (sõlme) spetsiifiliste seadistuste haldamine ja muutmine",
                         "parameter_is_read_only": "See parameeter on kirjutuskaitstud.",
+                        "set_param_accepted": "Parameeter on uuendatud.",
+                        "set_param_error": "Ilmnes tõrge.",
+                        "set_param_queued": "Parameetri uuendamine on ootel ja seda värskendatakse seadme ärkamisel.",
                         "zwave_js_device_database": "Z-Wave JS seadmete andmebaas"
                     },
                     "node_status": {
