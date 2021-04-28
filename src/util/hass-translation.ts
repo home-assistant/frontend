@@ -88,19 +88,18 @@ export function getLocalLanguage() {
       if (language) {
         return language;
       }
+      if (locale.includes("-")) {
+        language = findAvailableLanguage(locale.split("-")[0]);
+        if (language) {
+          return language;
+        }
+      }
     }
   }
   language = findAvailableLanguage(navigator.language);
   if (language) {
     return language;
   }
-  if (navigator.language && navigator.language.includes("-")) {
-    language = findAvailableLanguage(navigator.language.split("-")[0]);
-    if (language) {
-      return language;
-    }
-  }
-
   // Final fallback
   return "en";
 }
