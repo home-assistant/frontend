@@ -173,9 +173,9 @@ export const reinterviewNode = (
   );
 };
 
-export const getIdentifiersFromDevice = function (
+export const getIdentifiersFromDevice = (
   device: DeviceRegistryEntry
-): ZWaveJSNodeIdentifiers | undefined {
+): ZWaveJSNodeIdentifiers | undefined => {
   if (!device) {
     return undefined;
   }
@@ -193,3 +193,48 @@ export const getIdentifiersFromDevice = function (
     home_id: identifiers[0],
   };
 };
+
+export interface ZWaveJSLogMessage {
+  timestamp: string;
+  level: string;
+  primary_tags: string;
+  message: string | string[];
+}
+
+export const subscribeZWaveJSLogs = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callback: (message: ZWaveJSLogMessage) => void
+) =>
+  hass.connection.subscribeMessage<ZWaveJSLogMessage>(callback, {
+    type: "zwave_js/subscribe_logs",
+    entry_id,
+  });
+
+export interface ZWaveJSLogConfig {
+  level: string;
+  enabled: boolean;
+  filename: string;
+  log_to_file: boolean;
+  force_console: boolean;
+}
+
+export const fetchZWaveJSLogConfig = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<ZWaveJSLogConfig> =>
+  hass.callWS({
+    type: "zwave_js/get_log_config",
+    entry_id,
+  });
+
+export const setZWaveJSLogLevel = (
+  hass: HomeAssistant,
+  entry_id: string,
+  level: string
+): Promise<ZWaveJSLogConfig> =>
+  hass.callWS({
+    type: "zwave_js/update_log_config",
+    entry_id,
+    config: { level },
+  });

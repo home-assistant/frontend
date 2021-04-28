@@ -7,13 +7,18 @@ import { HomeAssistant } from "../../../../../types";
 import { navigate } from "../../../../../common/navigate";
 import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 
-import { mdiServerNetwork } from "@mdi/js";
+import { mdiServerNetwork, mdiMathLog } from "@mdi/js";
 
 export const configTabs: PageNavigation[] = [
   {
     translationKey: "ui.panel.config.zwave_js.navigation.network",
     path: `/config/zwave_js/dashboard`,
     iconPath: mdiServerNetwork,
+  },
+  {
+    translationKey: "ui.panel.config.zwave_js.navigation.logs",
+    path: `/config/zwave_js/logs`,
+    iconPath: mdiMathLog,
   },
 ];
 
@@ -40,6 +45,10 @@ class ZWaveJSConfigRouter extends HassRouterPage {
       node_config: {
         tag: "zwave_js-node-config",
         load: () => import("./zwave_js-node-config"),
+      },
+      logs: {
+        tag: "zwave_js-logs",
+        load: () => import("./zwave_js-logs"),
       },
     },
   };
