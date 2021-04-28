@@ -1,4 +1,9 @@
-import { createMatches, FuzzyScore, fuzzyScore } from "./filter";
+import {
+  createMatches,
+  createMatchesFragmented,
+  FuzzyScore,
+  fuzzyScore,
+} from "./filter";
 
 /**
  * Determine whether a sequence of letters exists in another string,
@@ -23,8 +28,11 @@ export const fuzzySequentialMatch: FuzzySequentialMatcher = (
 ) => {
   let topScore = Number.NEGATIVE_INFINITY;
   const decoratedStrings: string[][] = [];
+  const strings = item.treatArrayAsSingleString
+    ? [item.strings.join("")]
+    : item.strings;
 
-  for (const word of item.strings) {
+  for (const word of strings) {
     const scores = fuzzyScore(
       filter,
       filter.toLowerCase(),
@@ -36,7 +44,7 @@ export const fuzzySequentialMatch: FuzzySequentialMatcher = (
     );
 
     if (decorate) {
-      decoratedStrings.push(decorate(word, scores));
+      decoratedStrings.push(decorate(word, item, scores));
     }
 
     if (!scores) {
@@ -81,6 +89,7 @@ export interface ScorableTextItem {
   score?: number;
   strings: string[];
   decoratedStrings?: string[][];
+  treatArrayAsSingleString?: boolean;
 }
 
 type FuzzyFilterSort = <T extends ScorableTextItem>(
@@ -109,43 +118,49 @@ export const fuzzyFilterSort: FuzzyFilterSort = (
     );
 };
 
-type MatchDecorator = (word: string, scores?: FuzzyScore) => string[];
+type MatchDecorator = (
+  word: string,
+  item: ScorableTextItem,
+  scores?: FuzzyScore
+) => string[];
 export const createMatchDecorator: (
   left: string,
   right: string
-) => MatchDecorator = (left, right) => (word, scores) =>
-  _decorateMatch(word, [left, right], scores);
+) => MatchDecorator = (left, right) => (word, item, scores) =>
+  _decorateMatch(word, [left, right], item, scores);
 
 const _decorateMatch: (
   word: string,
   surroundWith: [string, string],
+  item: ScorableTextItem,
   scores?: FuzzyScore
-) => string[] = (word, surroundWith, scores) => {
+) => string[] = (word, surroundWith, item, scores) => {
   if (!scores) {
     return [word];
   }
 
   const decoratedText: string[] = [];
-  const matches = createMatches(scores);
+  const matches = item.treatArrayAsSingleString
+    ? createMatchesFragmented(scores, item.strings)
+    : [createMatches(scores)];
   const [left, right] = surroundWith;
-  let pos = 0;
 
-  let actualWord = "";
-  for (const match of matches) {
-    actualWord +=
-      word.substring(pos, match.start) +
-      left +
-      word.substring(match.start, match.end) +
-      right;
-    pos = match.end;
+  for (let i = 0; i < matches.length; i++) {
+    const match = matches[i];
+    const _word = item.treatArrayAsSingleString ? item.strings[i] : word;
+    let pos = 0;
+    let actualWord = "";
+    for (const fragmentedMatch of match) {
+      actualWord +=
+        _word.substring(pos, fragmentedMatch.start) +
+        left +
+        _word.substring(fragmentedMatch.start, fragmentedMatch.end) +
+        right;
+      pos = fragmentedMatch.end;
+    }
+    actualWord += _word.substring(pos);
+
+    decoratedText.push(actualWord);
   }
-  actualWord += word.substring(pos);
-
-  const fragments = actualWord.split("::");
-
-  for (const fragment of fragments) {
-    decoratedText.push(fragment);
-  }
-
   return decoratedText;
 };

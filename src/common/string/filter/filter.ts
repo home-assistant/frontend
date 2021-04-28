@@ -510,13 +510,10 @@ export interface FuzzyScorer {
   ): FuzzyScore | undefined;
 }
 
-export function createMatches(score: undefined | FuzzyScore): Match[] {
-  if (typeof score === "undefined") {
-    return [];
-  }
+function _createMatches(score: FuzzyScore, wordPos: number) {
   const res: Match[] = [];
-  const wordPos = score[1];
-  for (let i = score.length - 1; i > 1; i--) {
+
+  for (let i = score.length - 1; i >= 0; i--) {
     const pos = score[i] + wordPos;
     const last = res[res.length - 1];
     if (last && last.end === pos) {
@@ -525,7 +522,62 @@ export function createMatches(score: undefined | FuzzyScore): Match[] {
       res.push({ start: pos, end: pos + 1 });
     }
   }
+
   return res;
+}
+
+export function createMatches(score: undefined | FuzzyScore): Match[] {
+  if (typeof score === "undefined") {
+    return [];
+  }
+
+  const wordPos = score[1];
+  const _score = score.splice(2);
+
+  return _createMatches(_score, wordPos);
+}
+
+// The first and second elements in score represent total score, and the offset at which
+// matching started. For this method, we only care about match positions, not the score
+// or offset.
+const findFirstOutOfRangeElement = (number, score: FuzzyScore) =>
+  score.findIndex((num) => num < number);
+
+export function createMatchesFragmented(
+  score: undefined | FuzzyScore,
+  strings: string[]
+): Match[][] {
+  if (typeof score === "undefined") {
+    return [];
+  }
+
+  const matches: Match[][] = [];
+  const wordPos = score[1];
+  let lengthCounter = 0;
+  const _score = score.splice(2);
+  const fragmentedScores: FuzzyScore[] = [];
+
+  for (const string of strings) {
+    const prevLengthCounter = lengthCounter;
+    lengthCounter += string.length;
+    const lastIndex = findFirstOutOfRangeElement(lengthCounter, _score);
+
+    if (lastIndex < 0) {
+      fragmentedScores.push([]);
+      continue;
+    }
+
+    fragmentedScores.push(
+      _score.splice(lastIndex).map((pos) => pos - prevLengthCounter)
+    );
+  }
+
+  for (const fragmentedScore of fragmentedScores) {
+    const res = _createMatches(fragmentedScore, wordPos);
+    matches.push(res);
+  }
+
+  return matches;
 }
 
 /**

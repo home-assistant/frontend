@@ -476,7 +476,8 @@ export class QuickBar extends LitElement {
       return {
         ...commandItem,
         categoryKey: "reload",
-        strings: [`${commandItem.categoryText}::${commandItem.primaryText}`],
+        strings: [`${commandItem.categoryText} `, commandItem.primaryText],
+        treatArrayAsSingleString: true,
       };
     });
   }
@@ -510,7 +511,8 @@ export class QuickBar extends LitElement {
       return this._generateConfirmationCommand(
         {
           ...item,
-          strings: [`${item.categoryText}::${item.primaryText}`],
+          strings: [`${item.categoryText} `, item.primaryText],
+          treatArrayAsSingleString: true,
         },
         this.hass.localize("ui.dialogs.generic.ok")
       );
@@ -611,7 +613,8 @@ export class QuickBar extends LitElement {
 
       return {
         ...navItem,
-        strings: [`${navItem.categoryText}::${navItem.primaryText}`],
+        strings: [`${navItem.categoryText} `, navItem.primaryText],
+        treatArrayAsSingleString: true,
         categoryKey,
       };
     });
