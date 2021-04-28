@@ -53,9 +53,9 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   private _subscribed?: Promise<() => Promise<void>>;
 
-  public async showDialog(
+  public showDialog(
     params: ZHAReconfigureDeviceDialogParams
-  ): Promise<void> {
+  ): void {
     this._params = params;
     this._stages = undefined;
   }
