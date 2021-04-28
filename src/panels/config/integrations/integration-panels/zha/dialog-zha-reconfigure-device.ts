@@ -51,7 +51,7 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   @internalProperty() private _showDetails = false;
 
-  private _subscribed?: Promise<() => Promise<void>>;
+  private _subscribed?: Promise<UnsubscribeFunc>;
 
   public showDialog(
     params: ZHAReconfigureDeviceDialogParams
