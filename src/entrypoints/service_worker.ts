@@ -12,7 +12,7 @@ import {
 } from "workbox-strategies";
 
 const noFallBackRegEx = new RegExp(
-  `${location.host}/(api|static|auth|frontend_latest|frontend_es5|local)/.*`
+  "/(api|static|auth|frontend_latest|frontend_es5|local)/.*"
 );
 
 // Clean up caches from older workboxes and old service workers.
@@ -31,27 +31,22 @@ function initRouting() {
 
   // Cache static content (including translations) on first access.
   registerRoute(
-    new RegExp(`${location.host}/(static|frontend_latest|frontend_es5)/.+`),
+    new RegExp("/(static|frontend_latest|frontend_es5)/.+"),
     new CacheFirst({ matchOptions: { ignoreSearch: true } })
   );
 
   // Get api from network.
-  registerRoute(
-    new RegExp(`${location.host}/(api|auth)/.*`),
-    new NetworkOnly()
-  );
+  registerRoute(new RegExp("/(api|auth)/.*"), new NetworkOnly());
 
   // Get manifest, service worker, onboarding from network.
   registerRoute(
-    new RegExp(
-      `${location.host}/(service_worker.js|manifest.json|onboarding.html)`
-    ),
+    new RegExp("/(service_worker.js|manifest.json|onboarding.html)"),
     new NetworkOnly()
   );
 
   // For the root "/" we ignore search
   registerRoute(
-    new RegExp(`^${location.host}/(\\?.*)?$`),
+    new RegExp(/\/(\?.*)?$/),
     new StaleWhileRevalidate({ matchOptions: { ignoreSearch: true } })
   );
 
