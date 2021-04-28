@@ -8,8 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { mdiCheckCircle, mdiClose, mdiCloseCircle } from "@mdi/js";
-import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import "@material/mwc-button/mwc-button";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
@@ -28,7 +27,8 @@ import {
   ZHA_CHANNEL_MSG_CFG_RPT,
 } from "../../../../../data/zha";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 
 @customElement("dialog-zha-reconfigure-device")
 class DialogZHAReconfigureDevice extends LitElement {
@@ -53,9 +53,7 @@ class DialogZHAReconfigureDevice extends LitElement {
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 
-  public showDialog(
-    params: ZHAReconfigureDeviceDialogParams
-  ): void {
+  public showDialog(params: ZHAReconfigureDeviceDialogParams): void {
     this._params = params;
     this._stages = undefined;
   }
@@ -78,20 +76,12 @@ class DialogZHAReconfigureDevice extends LitElement {
       <ha-dialog
         open
         @closed="${this.closeDialog}"
-        .heading=${html`
-          <span class="header_title">
-            ${this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`)}:
-            ${this._params?.device.user_given_name || this._params?.device.name}
-          </span>
-          <mwc-icon-button
-            aria-label=${this.hass.localize("ui.dialogs.generic.close")}
-            dialogAction="close"
-            class="header_button"
-            dir=${computeRTLDirection(this.hass)}
-          >
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
-        `}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`) +
+            ": " +
+            (this._params?.device.user_given_name || this._params?.device.name)
+        )}
       >
         ${!this._status
           ? html`
