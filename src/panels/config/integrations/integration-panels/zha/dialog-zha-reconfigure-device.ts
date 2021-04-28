@@ -355,7 +355,6 @@ class DialogZHAReconfigureDevice extends LitElement {
   }
 
   private _handleMessage(message: ClusterConfigurationEvent): void {
-    // this is currently here to hack rerendering because map updates aren't triggering rendering?
     if (message.type === ZHA_CHANNEL_CFG_DONE) {
       this._unsubscribe();
       this._status = this._allSuccessful ? "finished" : "failed";
