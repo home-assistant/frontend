@@ -34,12 +34,12 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   @internalProperty() private _logConfig?: ZWaveJSLogConfig;
 
-  private _textarea?: HTMLTextAreaElement;
+  @query("textarea", true) private _textarea?: HTMLTextAreaElement;
 
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
       subscribeZWaveJSLogs(this.hass, this.configEntryId, (log) => {
-        if (!this._textarea) {
+        if (!this.hasUpdated) {
           return;
         }
         if (Array.isArray(log.message)) {
@@ -95,7 +95,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
                 : ""}
             </div>
           </ha-card>
-          <textarea></textarea>
+          <textarea readonly></textarea>
         </div>
       </hass-tabs-subpage>
     `;
@@ -103,7 +103,6 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._textarea = this.shadowRoot!.querySelector("textarea")!;
     this._fetchData();
   }
 
@@ -135,15 +134,15 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
           display: flex;
           flex-direction: column;
           height: 100%;
-          margin: 16px;
+          box-sizing: border-box;
+          padding: 16px;
         }
         textarea {
           flex-grow: 1;
           padding: 16px;
         }
         ha-card {
-          width: 90%;
-          margin: 16px auto;
+          margin: 16px 0;
         }
       `,
     ];

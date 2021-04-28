@@ -7,7 +7,7 @@ import { HomeAssistant } from "../../../../../types";
 import { navigate } from "../../../../../common/navigate";
 import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 
-import { mdiServerNetwork, mdiFormatListBulleted } from "@mdi/js";
+import { mdiServerNetwork, mdiMathLog } from "@mdi/js";
 
 export const configTabs: PageNavigation[] = [
   {
@@ -18,7 +18,7 @@ export const configTabs: PageNavigation[] = [
   {
     translationKey: "ui.panel.config.zwave_js.navigation.logs",
     path: `/config/zwave_js/logs`,
-    iconPath: mdiFormatListBulleted,
+    iconPath: mdiMathLog,
   },
 ];
 
