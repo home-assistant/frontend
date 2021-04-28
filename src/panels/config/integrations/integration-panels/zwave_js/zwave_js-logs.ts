@@ -61,40 +61,42 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configTabs}
       >
-        <ha-card>
-          <div class="card-header">
-            <h1>
-              ${this.hass.localize("ui.panel.config.zwave_js.logs.title")}
-            </h1>
-          </div>
-          <div class="card-content">
-            ${this._logConfig
-              ? html`
-                  <paper-dropdown-menu
-                    dynamic-align
-                    .label=${this.hass.localize(
-                      "ui.panel.config.zwave_js.logs.log_level"
-                    )}
-                  >
-                    <paper-listbox
-                      slot="dropdown-content"
-                      .selected=${this._logConfig.level}
-                      attr-for-selected="value"
-                      @iron-select=${this._dropdownSelected}
+        <div class="container">
+          <ha-card>
+            <div class="card-header">
+              <h1>
+                ${this.hass.localize("ui.panel.config.zwave_js.logs.title")}
+              </h1>
+            </div>
+            <div class="card-content">
+              ${this._logConfig
+                ? html`
+                    <paper-dropdown-menu
+                      dynamic-align
+                      .label=${this.hass.localize(
+                        "ui.panel.config.zwave_js.logs.log_level"
+                      )}
                     >
-                      <paper-item value="error">Error</paper-item>
-                      <paper-item value="warn">Warn</paper-item>
-                      <paper-item value="info">Info</paper-item>
-                      <paper-item value="verbose">Verbose</paper-item>
-                      <paper-item value="debug">Debug</paper-item>
-                      <paper-item value="silly">Silly</paper-item>
-                    </paper-listbox>
-                  </paper-dropdown-menu>
-                `
-              : ""}
-          </div>
-        </ha-card>
-        <textarea></textarea>
+                      <paper-listbox
+                        slot="dropdown-content"
+                        .selected=${this._logConfig.level}
+                        attr-for-selected="value"
+                        @iron-select=${this._dropdownSelected}
+                      >
+                        <paper-item value="error">Error</paper-item>
+                        <paper-item value="warn">Warn</paper-item>
+                        <paper-item value="info">Info</paper-item>
+                        <paper-item value="verbose">Verbose</paper-item>
+                        <paper-item value="debug">Debug</paper-item>
+                        <paper-item value="silly">Silly</paper-item>
+                      </paper-listbox>
+                    </paper-dropdown-menu>
+                  `
+                : ""}
+            </div>
+          </ha-card>
+          <textarea></textarea>
+        </div>
       </hass-tabs-subpage>
     `;
   }
@@ -129,11 +131,15 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     return [
       haStyle,
       css`
+        .container {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          margin: 16px;
+        }
         textarea {
-          width: 90%;
-          height: 90%;
-          margin: 16px auto;
-          display: block;
+          flex-grow: 1;
+          padding: 16px;
         }
         ha-card {
           width: 90%;
