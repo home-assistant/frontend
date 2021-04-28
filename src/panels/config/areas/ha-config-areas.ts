@@ -16,6 +16,10 @@ import {
   subscribeDeviceRegistry,
 } from "../../../data/device_registry";
 import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../data/entity_registry";
+import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
@@ -50,6 +54,9 @@ class HaConfigAreas extends HassRouterPage {
 
   @internalProperty()
   private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+
+  @internalProperty()
+  private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
   @internalProperty() private _areas: AreaRegistryEntry[] = [];
 
@@ -90,6 +97,7 @@ class HaConfigAreas extends HassRouterPage {
 
     pageEl.entries = this._configEntries;
     pageEl.devices = this._deviceRegistryEntries;
+    pageEl.entities = this._entityRegistryEntries;
     pageEl.areas = this._areas;
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
@@ -112,6 +120,9 @@ class HaConfigAreas extends HassRouterPage {
       }),
       subscribeDeviceRegistry(this.hass.connection, (entries) => {
         this._deviceRegistryEntries = entries;
+      }),
+      subscribeEntityRegistry(this.hass.connection, (entries) => {
+        this._entityRegistryEntries = entries;
       }),
     ];
   }
