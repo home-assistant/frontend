@@ -10,6 +10,8 @@ import {
   NetworkOnly,
   StaleWhileRevalidate,
 } from "workbox-strategies";
+import { CacheableResponsePlugin } from "workbox-cacheable-response";
+import { ExpirationPlugin } from "workbox-expiration";
 
 const noFallBackRegEx = new RegExp(
   "/(api|static|auth|frontend_latest|frontend_es5|local)/.*"
@@ -54,7 +56,20 @@ function initRouting() {
   // This includes "/states" response and user files from "/local".
   // First access might bring stale data from cache, but a single refresh will bring updated
   // file.
-  registerRoute(new RegExp(`${location.host}/.*`), new StaleWhileRevalidate());
+  registerRoute(
+    new RegExp(/\/.*/),
+    new StaleWhileRevalidate({
+      cacheName: "file-cache",
+      plugins: [
+        new CacheableResponsePlugin({
+          statuses: [0, 200],
+        }),
+        new ExpirationPlugin({
+          maxAgeSeconds: 60 * 60 * 24,
+        }),
+      ],
+    })
+  );
 }
 
 function initPushNotifications() {
