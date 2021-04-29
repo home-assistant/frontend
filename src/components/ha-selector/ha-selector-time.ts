@@ -1,5 +1,6 @@
 import { customElement, html, LitElement, property } from "lit-element";
 import memoizeOne from "memoize-one";
+import { useAmPm } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { TimeSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
@@ -16,13 +17,8 @@ export class HaTimeSelector extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  private _useAmPm = memoizeOne((language: string) => {
-    const test = new Date().toLocaleString(language);
-    return test.includes("AM") || test.includes("PM");
-  });
-
   protected render() {
-    const useAMPM = this._useAmPm(this.hass.locale.language);
+    const useAMPM = useAmPm(this.hass.locale);
 
     const parts = this.value?.split(":") || [];
     const hours = parts[0];
@@ -47,7 +43,7 @@ export class HaTimeSelector extends LitElement {
 
   private _timeChanged(ev) {
     let value = ev.target.value;
-    const useAMPM = this._useAmPm(this.hass.locale.language);
+    const useAMPM = useAmPm(this.hass.locale);
     let hours = Number(ev.target.hour || 0);
     if (value && useAMPM) {
       if (ev.target.amPm === "PM") {

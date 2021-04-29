@@ -1,26 +1,31 @@
 import { format } from "fecha";
-import { FrontendTranslationData } from "../../data/translation";
+import { FrontendLocaleData } from "../../data/translation";
 import { toLocaleStringSupportsOptions } from "./check_options_support";
+import { useAmPm } from "./format_time";
 
 export const formatDateTime = toLocaleStringSupportsOptions
-  ? (dateObj: Date, locales: FrontendTranslationData) =>
-      dateObj.toLocaleString(locales.language, {
+  ? (dateObj: Date, locale: FrontendLocaleData) =>
+      dateObj.toLocaleString(locale.language, {
         year: "numeric",
         month: "long",
         day: "numeric",
         hour: "numeric",
         minute: "2-digit",
+        hour12: useAmPm(locale),
       })
-  : (dateObj: Date) => format(dateObj, "MMMM D, YYYY, HH:mm");
+  : (dateObj: Date, locale: FrontendLocaleData) =>
+      format(dateObj, "MMMM D, YYYY, HH:mm" + useAmPm(locale) ? " A" : "");
 
 export const formatDateTimeWithSeconds = toLocaleStringSupportsOptions
-  ? (dateObj: Date, locales: FrontendTranslationData) =>
-      dateObj.toLocaleString(locales.language, {
+  ? (dateObj: Date, locale: FrontendLocaleData) =>
+      dateObj.toLocaleString(locale.language, {
         year: "numeric",
         month: "long",
         day: "numeric",
         hour: "numeric",
         minute: "2-digit",
         second: "2-digit",
+        hour12: useAmPm(locale),
       })
-  : (dateObj: Date) => format(dateObj, "MMMM D, YYYY, HH:mm:ss");
+  : (dateObj: Date, locale: FrontendLocaleData) =>
+      format(dateObj, "MMMM D, YYYY, HH:mm:ss" + useAmPm(locale) ? " A" : "");

@@ -15,7 +15,7 @@ import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
 import { serviceCallWillDisconnect } from "../data/service";
-import { NumberFormat } from "../data/translation";
+import { NumberFormat, TimeFormat } from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, ServiceCallResponse } from "../types";
@@ -49,6 +49,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         locale: {
           language,
           number_format: NumberFormat.language,
+          time_format: TimeFormat.system,
         },
         resources: null as any,
         localize: () => "",

@@ -2,13 +2,15 @@ import { assert } from "chai";
 import { computeStateDisplay } from "../../../src/common/entity/compute_state_display";
 import { UNKNOWN } from "../../../src/data/entity";
 import {
-  FrontendTranslationData,
+  FrontendLocaleData,
   NumberFormat,
+  TimeFormat,
 } from "../../../src/data/translation";
 
-const localeData: FrontendTranslationData = {
+const localeData: FrontendLocaleData = {
   language: "en",
   number_format: NumberFormat.comma_decimal,
+  time_format: TimeFormat.am_pm,
 };
 
 describe("computeStateDisplay", () => {
@@ -158,14 +160,20 @@ describe("computeStateDisplay", () => {
         year: 2017,
         month: 11,
         day: 18,
-        hour: 11,
+        hour: 23,
         minute: 12,
         second: 13,
       },
     };
+    localeData.time_format = TimeFormat.am_pm;
     assert.strictEqual(
       computeStateDisplay(localize, stateObj, localeData),
-      "November 18, 2017, 11:12 AM"
+      "November 18, 2017, 11:12 PM"
+    );
+    localeData.time_format = TimeFormat.twenty_four;
+    assert.strictEqual(
+      computeStateDisplay(localize, stateObj, localeData),
+      "November 18, 2017, 23:12"
     );
   });
 
@@ -179,7 +187,7 @@ describe("computeStateDisplay", () => {
         year: 2017,
         month: 11,
         day: 18,
-        hour: 11,
+        hour: 23,
         minute: 12,
         second: 13,
       },
@@ -200,14 +208,20 @@ describe("computeStateDisplay", () => {
         year: 2017,
         month: 11,
         day: 18,
-        hour: 11,
+        hour: 23,
         minute: 12,
         second: 13,
       },
     };
+    localeData.time_format = TimeFormat.am_pm;
     assert.strictEqual(
       computeStateDisplay(localize, stateObj, localeData),
-      "11:12 AM"
+      "11:12 PM"
+    );
+    localeData.time_format = TimeFormat.twenty_four;
+    assert.strictEqual(
+      computeStateDisplay(localize, stateObj, localeData),
+      "23:12"
     );
   });
 
