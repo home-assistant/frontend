@@ -561,8 +561,11 @@
             },
             "light": {
                 "brightness": "Helderheid",
+                "cold_white_value": "Koud wit helderheid",
+                "color_brightness": "Kleurhelderheid",
                 "color_temperature": "Kleurtemperatuur",
                 "effect": "Effect",
+                "warm_white_value": "Warm wit helderheid",
                 "white_value": "Witwaarde"
             },
             "lock": {
@@ -1194,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Apparaat opnieuw configureren"
+                "attribute": "Attribuut",
+                "battery_device_warning": "U moet apparaten met een batterij wekken voordat u het herconfiguratieproces start. Raadpleeg de handleiding van uw toestel voor instructies over hoe u het toestel kunt wekken.",
+                "bind_header": "Binding",
+                "button_hide": "Details verbergen",
+                "button_show": "Details weergeven",
+                "cluster_header": "Cluster",
+                "configuration_complete": "Herconfiguratie van apparaat voltooid.",
+                "configuration_failed": "De herconfiguratie van het apparaat is mislukt. Mogelijk is er aanvullende informatie beschikbaar in de logboeken.",
+                "configuring_alt": "Configureren",
+                "heading": "Apparaat opnieuw configureren",
+                "in_progress": "Het apparaat wordt opnieuw geconfigureerd. Dit kan wat tijd kosten.",
+                "introduction": "Herconfigureer een apparaat op je Zigbee netwerk. Gebruik deze functie als uw apparaat niet correct functioneert.",
+                "min_max_change": "mix/max/verander",
+                "reporting_header": "Rapporteren",
+                "run_in_background": "U kunt dit dialoogvenster sluiten en de herconfiguratie wordt op de achtergrond voortgezet.",
+                "start_reconfiguration": "Start herconfiguratie"
             }
         },
         "duration": {
@@ -1257,7 +1275,8 @@
                     "caption": "Gebieden",
                     "data_table": {
                         "area": "Gebied",
-                        "devices": "Apparaten"
+                        "devices": "Apparaten",
+                        "entities": "Entiteiten"
                     },
                     "delete": {
                         "confirmation_text": "Alle apparaten in dit gebied zullen niet meer toegewezen zijn.",
@@ -1269,8 +1288,10 @@
                         "create": "Aanmaken",
                         "default_name": "Nieuw Gebied",
                         "delete": "Verwijderen",
+                        "linked_entities_caption": "Entiteiten",
                         "name": "Naam",
                         "name_required": "Naam is vereist",
+                        "no_linked_entities": "Er zijn geen entiteiten gekoppeld aan dit gebied.",
                         "unknown_error": "Onbekende fout",
                         "update": "Bijwerken"
                     },

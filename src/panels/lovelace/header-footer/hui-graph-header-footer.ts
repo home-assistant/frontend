@@ -104,7 +104,7 @@ export class HuiGraphHeaderFooter extends LitElement
     if (!this._coordinates) {
       return html`
         <div class="container">
-          <ha-circular-progress active></ha-circular-progress>
+          <ha-circular-progress active size="small"></ha-circular-progress>
         </div>
       `;
     }
@@ -210,7 +210,7 @@ export class HuiGraphHeaderFooter extends LitElement
     return css`
       ha-circular-progress {
         position: absolute;
-        top: calc(50% - 28px);
+        top: calc(50% - 14px);
       }
       .container {
         display: flex;

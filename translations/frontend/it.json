@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "Luminosità",
+                "cold_white_value": "Luminosità bianca fredda",
+                "color_brightness": "Luminosità del colore",
                 "color_temperature": "Temperatura colore",
                 "effect": "Effetto",
-                "white_value": "Valore bianco"
+                "warm_white_value": "Luminosità bianca calda",
+                "white_value": "Luminosità del bianco"
             },
             "lock": {
                 "code": "Codice",
@@ -1194,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Riconfigurazione del dispositivo"
+                "attribute": "Attributo",
+                "battery_device_warning": "Sarà necessario riattivare i dispositivi alimentati a batteria prima di avviare il processo di riconfigurazione. Fare riferimento al manuale del dispositivo per istruzioni su come riattivare il dispositivo.",
+                "bind_header": "Collegamento",
+                "button_hide": "Nascondi dettagli",
+                "button_show": "Mostra dettagli",
+                "cluster_header": "Grappolo",
+                "configuration_complete": "Riconfigurazione del dispositivo completata.",
+                "configuration_failed": "La riconfigurazione del dispositivo non è riuscita. Ulteriori informazioni potrebbero essere disponibili nei registri.",
+                "configuring_alt": "Configurazione",
+                "heading": "Riconfigurazione del dispositivo",
+                "in_progress": "Il dispositivo è in fase di riconfigurazione. Potrebbe volerci un po' di tempo.",
+                "introduction": "Riconfigura un dispositivo sulla tua rete Zigbee. Usa questa funzione se il tuo dispositivo non funziona correttamente.",
+                "min_max_change": "min/max/cambio",
+                "reporting_header": "Segnalazione",
+                "run_in_background": "È possibile chiudere questa finestra di dialogo e la riconfigurazione continuerà in background.",
+                "start_reconfiguration": "Avvia la riconfigurazione"
             }
         },
         "duration": {
@@ -1257,7 +1275,8 @@
                     "caption": "Aree",
                     "data_table": {
                         "area": "Area",
-                        "devices": "Dispositivi"
+                        "devices": "Dispositivi",
+                        "entities": "Entità"
                     },
                     "delete": {
                         "confirmation_text": "Tutti i dispositivi in quest'area non saranno assegnati.",
@@ -1269,8 +1288,10 @@
                         "create": "Crea",
                         "default_name": "Nuova area",
                         "delete": "Elimina",
+                        "linked_entities_caption": "Entità",
                         "name": "Nome",
                         "name_required": "Il nome è obbligatorio",
+                        "no_linked_entities": "Non ci sono entità collegate a quest'area.",
                         "unknown_error": "Errore sconosciuto",
                         "update": "Aggiorna"
                     },
@@ -2936,6 +2957,9 @@
                         "header": "Configurazione del dispositivo Z-Wave",
                         "introduction": "Gestire e regolare i parametri di configurazione specifici del dispositivo (nodo) per il dispositivo selezionato",
                         "parameter_is_read_only": "Questo parametro è di sola lettura.",
+                        "set_param_accepted": "Il parametro è stato aggiornato.",
+                        "set_param_error": "Si è verificato un errore.",
+                        "set_param_queued": "La modifica del parametro è stata messa in coda e verrà aggiornata quando il dispositivo si riattiva.",
                         "zwave_js_device_database": "Database dei dispositivi Z-Wave JS"
                     },
                     "node_status": {
@@ -2944,6 +2968,16 @@
                         "awake": "Sveglio",
                         "dead": "Disattivo",
                         "unknown": "Sconosciuto"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Sarà necessario riattivare i dispositivi alimentati a batteria prima di iniziare la nuova interrogazione. Fare riferimento al manuale del dispositivo per istruzioni su come riattivare il dispositivo.",
+                        "in_progress": "Il dispositivo viene interrogato. Potrebbe volerci un po' di tempo.",
+                        "interview_complete": "Interrogazione del dispositivo completata.",
+                        "interview_failed": "L'interrogazione al dispositivo non è riuscita. Ulteriori informazioni potrebbero essere disponibili nei registri.",
+                        "introduction": "Interroga nuovamente un dispositivo sulla tua rete Z-Wave. Usa questa funzione se il tuo dispositivo ha funzionalità mancanti o errate.",
+                        "run_in_background": "Puoi chiudere questa finestra di dialogo e l'interrogazione continuerà in background.",
+                        "start_reinterview": "Inizia una nuova interrogazione",
+                        "title": "Re-interroga un dispositivo Z-Wave"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Annulla esclusione",

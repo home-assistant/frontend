@@ -363,11 +363,22 @@ class LovelacePanel extends LitElement {
           mode: previousMode,
         } = this.lovelace!;
         newConfig = this._checkLovelaceConfig(newConfig);
+        let conf: LovelaceConfig;
+        // If strategy defined, apply it here.
+        if (newConfig.strategy) {
+          conf = await generateLovelaceDashboardStrategy({
+            config: newConfig,
+            hass: this.hass!,
+            narrow: this.narrow,
+          });
+        } else {
+          conf = newConfig;
+        }
         try {
           // Optimistic update
           this._updateLovelace({
-            config: newConfig,
-            rawConfig: undefined,
+            config: conf,
+            rawConfig: newConfig,
             mode: "storage",
           });
           this._ignoreNextUpdateEvent = true;

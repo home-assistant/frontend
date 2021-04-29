@@ -1197,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Reconfiguring device"
+                "attribute": "Attribute",
+                "battery_device_warning": "You will need to wake battery powered devices before starting the reconfiguration process. Refer to your device's manual for instructions on how to wake the device.",
+                "bind_header": "Binding",
+                "button_hide": "Hide Details",
+                "button_show": "Show Details",
+                "cluster_header": "Cluster",
+                "configuration_complete": "Device reconfiguration complete.",
+                "configuration_failed": "The device reconfiguration failed. Additional information may be available in the logs.",
+                "configuring_alt": "Configuring",
+                "heading": "Reconfiguring device",
+                "in_progress": "The device is being reconfigured. This may take some time.",
+                "introduction": "Reconfigure a device on your Zigbee network. Use this feature if your device is not functioning correctly.",
+                "min_max_change": "min/max/change",
+                "reporting_header": "Reporting",
+                "run_in_background": "You can close this dialog and the reconfiguration will continue in the background.",
+                "start_reconfiguration": "Start Reconfiguration"
             }
         },
         "duration": {
@@ -1260,7 +1275,8 @@
                     "caption": "Areas",
                     "data_table": {
                         "area": "Area",
-                        "devices": "Devices"
+                        "devices": "Devices",
+                        "entities": "Entities"
                     },
                     "delete": {
                         "confirmation_text": "All devices in this area will become unassigned.",
@@ -1272,8 +1288,10 @@
                         "create": "Create",
                         "default_name": "New Area",
                         "delete": "Delete",
+                        "linked_entities_caption": "Entities",
                         "name": "Name",
                         "name_required": "Name is required",
+                        "no_linked_entities": "There are no entities linked to this area.",
                         "unknown_error": "Unknown error",
                         "update": "Update"
                     },
@@ -2924,7 +2942,12 @@
                         "node_status": "Node Status",
                         "zwave_info": "Z-Wave Info"
                     },
+                    "logs": {
+                        "log_level": "Log Level",
+                        "title": "Z-Wave JS Logs"
+                    },
                     "navigation": {
+                        "logs": "Logs",
                         "network": "Network"
                     },
                     "network_status": {
