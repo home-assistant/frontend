@@ -108,6 +108,7 @@ const CONFIGS = [
     heading: "Columns 4",
     config: `
 - type: grid
+  columns: 4
   cards:
     - type: entity
       entity: light.kitchen_lights
