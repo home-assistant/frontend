@@ -18,7 +18,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import {
-  getLightRgbColor,
+  getLightRawRgbColor,
   LightColorModes,
   LightEntity,
   lightIsInColorMode,
@@ -34,6 +34,7 @@ const toggleButtons = [
   { label: "Color", value: "color" },
   { label: "Temperature", value: LightColorModes.COLOR_TEMP },
 ];
+
 @customElement("more-info-light")
 class MoreInfoLight extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -302,7 +303,7 @@ class MoreInfoLight extends LitElement {
             )
           : undefined;
 
-      this._colorPickerColor = getLightRgbColor(stateObj)?.slice(0, 3) as
+      this._colorPickerColor = getLightRawRgbColor(stateObj)?.slice(0, 3) as
         | [number, number, number]
         | undefined;
     } else {
@@ -381,7 +382,7 @@ class MoreInfoLight extends LitElement {
 
     wv = Math.min(255, Math.round((wv * 255) / 100));
 
-    const rgb = getLightRgbColor(this.stateObj!);
+    const rgb = getLightRawRgbColor(this.stateObj!);
 
     if (name === "wv") {
       const rgbw_color = rgb || [0, 0, 0, 0];
@@ -414,7 +415,7 @@ class MoreInfoLight extends LitElement {
 
     value = (value * 255) / 100;
 
-    const rgb = (getLightRgbColor(this.stateObj!)?.slice(0, 3) || [
+    const rgb = (getLightRawRgbColor(this.stateObj!)?.slice(0, 3) || [
       255,
       255,
       255,
