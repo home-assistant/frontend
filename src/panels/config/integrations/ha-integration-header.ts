@@ -1,3 +1,4 @@
+import "../../../components/ha-svg-icon";
 import { mdiPackageVariant, mdiCloud } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
@@ -24,7 +25,7 @@ export class HaIntegrationHeader extends LitElement {
 
   @property() public label!: string;
 
-  @property() public manifest?: IntegrationManifest;
+  @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   protected render(): TemplateResult {
     let primary: string;
@@ -44,7 +45,7 @@ export class HaIntegrationHeader extends LitElement {
     const icons: [string, string][] = [];
 
     if (this.manifest) {
-      if (!this.manifest.is_built_in) {
+      if (this.manifest.is_built_in) {
         icons.push([
           mdiPackageVariant,
           this.hass.localize(
@@ -55,7 +56,7 @@ export class HaIntegrationHeader extends LitElement {
 
       if (
         this.manifest.iot_class &&
-        this.manifest.iot_class.startsWith("cloud_")
+        !this.manifest.iot_class.startsWith("cloud_")
       ) {
         icons.push([
           mdiCloud,
@@ -126,7 +127,7 @@ export class HaIntegrationHeader extends LitElement {
     }
     .header img {
       margin-right: 16px;
-      padding-top: 16px;
+      margin-top: 16px;
       width: 40px;
       height: 40px;
     }
@@ -153,6 +154,7 @@ export class HaIntegrationHeader extends LitElement {
     }
     .icons {
       margin-right: 8px;
+      margin-left: 8px;
       height: 28px;
       color: var(--text-on-state-color, var(--secondary-text-color));
       background-color: var(--state-color, #e0e0e0);
@@ -164,7 +166,7 @@ export class HaIntegrationHeader extends LitElement {
     .icons ha-svg-icon {
       width: 20px;
       height: 20px;
-      padding: 4px;
+      margin: 4px;
     }
     paper-tooltip {
       white-space: nowrap;

@@ -640,6 +640,7 @@ export class HaIntegrationCard extends LitElement {
           flex: 1;
           margin-left: 8px;
           padding-top: 2px;
+          padding-right: 2px;
         }
 
         .content {
