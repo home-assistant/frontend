@@ -40,15 +40,8 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
 
     let totalHeight = this._config.title ? 1 : 0;
 
-    console.log(cardSizes);
-
     // Each column will adjust to max card size of it's row
     for (let start = 0; start < cardSizes.length; start += this.columns) {
-      console.log({
-        start,
-        end: start + this.columns,
-        height: cardSizes.slice(start, start + this.columns),
-      });
       totalHeight += Math.max(...cardSizes.slice(start, start + this.columns));
     }
 
