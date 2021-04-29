@@ -102,4 +102,8 @@ class DemoPictureEntity extends LitElement {
   }
 }
 
-customElements.define("demo-hui-picture-entity-card", DemoPictureEntity);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-picture-entity-card": DemoPictureEntity;
+  }
+}

@@ -91,4 +91,8 @@ class DemoButtonEntity extends LitElement {
   }
 }
 
-customElements.define("demo-hui-entity-button-card", DemoButtonEntity);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-entity-button-card": DemoButtonEntity;
+  }
+}
