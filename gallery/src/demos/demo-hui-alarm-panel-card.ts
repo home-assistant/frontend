@@ -93,4 +93,8 @@ class DemoAlarmPanelEntity extends LitElement {
   }
 }
 
-customElements.define("demo-hui-alarm-panel-card", DemoAlarmPanelEntity);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-alarm-panel-card": DemoAlarmPanelEntity;
+  }
+}
