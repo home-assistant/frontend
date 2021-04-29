@@ -1197,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Seadme sätete muutmine"
+                "attribute": "Atribuut",
+                "battery_device_warning": "Patareitoitel seadmed peavad olema ärkvel, et neid taasseadistada. Seadme äratamiseks vaata oma seadme kasutusjuhendit.",
+                "bind_header": "Sidumine",
+                "button_hide": "Peida üksikasjad",
+                "button_show": "Kuva üksikasjad",
+                "cluster_header": "Kobar",
+                "configuration_complete": "Seadme ümberseadistamine on lõpule viidud.",
+                "configuration_failed": "Seadme ümberseadistamine nurjus. Lisateavet võib saada logidest.",
+                "configuring_alt": "Seadistan",
+                "heading": "Seadme sätete muutmine",
+                "in_progress": "Seadet muudetakse ümber. See võib võtta aega.",
+                "introduction": "Seadista uuesti seadet  Zigbee võrgus. Kasuta seda funktsiooni kui seadmel on puuduv või vale funktsionaalsus.",
+                "min_max_change": "min/max/muutus",
+                "reporting_header": "Aruandlus",
+                "run_in_background": "Saad selle dialoogi sulgeda ja ümberseadistamine jätkub taustal.",
+                "start_reconfiguration": "Alusta ümberseadistamist"
             }
         },
         "duration": {
@@ -1260,7 +1275,8 @@
                     "caption": "Alade register",
                     "data_table": {
                         "area": "Ala",
-                        "devices": "Seadmed"
+                        "devices": "Seadmed",
+                        "entities": "Olemid"
                     },
                     "delete": {
                         "confirmation_text": "Kõik sellele ala seadmed jäävad peremehetuks.",
@@ -1272,8 +1288,10 @@
                         "create": "LOO",
                         "default_name": "Uus ala",
                         "delete": "KUSTUTA",
+                        "linked_entities_caption": "Olemid",
                         "name": "Nimi",
                         "name_required": "Nimi on kohustuslik",
+                        "no_linked_entities": "Selle alaga pole seotud ühtegi olemit.",
                         "unknown_error": "Tundmatu viga",
                         "update": "UUENDA"
                     },
@@ -2924,7 +2942,12 @@
                         "node_status": "Sõlme olek",
                         "zwave_info": "Z-Wave teave"
                     },
+                    "logs": {
+                        "log_level": "Logimise tase",
+                        "title": "Z-Wave JS logid"
+                    },
                     "navigation": {
+                        "logs": "Logid",
                         "network": "Võrk"
                     },
                     "network_status": {
@@ -2950,6 +2973,16 @@
                         "awake": "Ärkvel",
                         "dead": "Kadunud",
                         "unknown": "Teadmata"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Patareitoitel seadmed peavad olema ärkvel, et neid küsitleda. Seadme äratamiseks vaata oma seadme kasutusjuhendit.",
+                        "in_progress": "Seadet küsitletakse. See võib võtta aega.",
+                        "interview_complete": "Seadme küsitlemine on lõpetatud.",
+                        "interview_failed": "Seadme küsitlemine nurjus. Lisateave võib olla kättesaadav logides.",
+                        "introduction": "Küsitle uuesti seadet  Z-Wave-võrgus. Kasuta seda funktsiooni kui seadmel on puuduv või vale funktsionaalsus.",
+                        "run_in_background": "Saad selle dialoogi sulgeda ja küsitlus jätkub taustal.",
+                        "start_reinterview": "Alusta küsitlust uuesti",
+                        "title": "Z-Wave seadme taasküsitlemine"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Tühista välistamine",

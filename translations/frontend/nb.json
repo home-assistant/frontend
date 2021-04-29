@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "Lysstyrke",
+                "cold_white_value": "Kald hvit lysstyrke",
+                "color_brightness": "Farge lysstyrke",
                 "color_temperature": "Fargetemperatur",
                 "effect": "Effekt",
-                "white_value": "Hvit verdi"
+                "warm_white_value": "Varm hvit lysstyrke",
+                "white_value": "Hvit lysstyrke"
             },
             "lock": {
                 "code": "Kode",
@@ -2947,6 +2950,16 @@
                         "awake": "Våken",
                         "dead": "Død",
                         "unknown": "Ukjent"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Du må vekke batteridrevne enheter før du begynner på nytt intervju. Se enhetens håndbok for instruksjoner om hvordan du vekker enheten.",
+                        "in_progress": "Enheten blir intervjuet. Dette kan ta litt tid.",
+                        "interview_complete": "Enhetsintervjuet er fullført.",
+                        "interview_failed": "Enhetsintervjuet mislyktes. Ytterligere informasjon kan være tilgjengelig i loggene.",
+                        "introduction": "Intervju en enhet på nytt på Z-Wave-nettverket. Bruk denne funksjonen hvis enheten mangler eller ikke har feil funksjonalitet.",
+                        "run_in_background": "Du kan lukke denne dialogen, og intervjuet fortsetter i bakgrunnen.",
+                        "start_reinterview": "Start Re-intervju",
+                        "title": "Intervju en Z-Wave-enhet på nytt"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Avbryt ekskludering",

@@ -1103,7 +1103,7 @@
                 "force_narrow": {
                     "header": "ซ่อนแถบด้านข้างเสมอ"
                 },
-                "is_owner": "ในฐานะ \"เจ้าของ\"",
+                "is_owner": "คุณเป็นเจ้าของ",
                 "language": {
                     "dropdown_label": "ภาษา",
                     "header": "ภาษา",

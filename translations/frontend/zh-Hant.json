@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "亮度",
+                "cold_white_value": "冷白亮度",
+                "color_brightness": "色彩亮度",
                 "color_temperature": "色溫",
                 "effect": "場景",
-                "white_value": "白色值"
+                "warm_white_value": "暖白亮度",
+                "white_value": "白亮度"
             },
             "lock": {
                 "code": "密碼",
@@ -2947,6 +2950,16 @@
                         "awake": "喚醒",
                         "dead": "失效",
                         "unknown": "未知"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "電池供電裝置必須先喚醒以重新探訪。請參考您的裝置手冊以了解如何喚醒裝置。",
+                        "in_progress": "正在探訪裝置，可能需要一點時間。",
+                        "interview_complete": "裝置探訪完成。",
+                        "interview_failed": "裝置探訪失敗。日誌中可能包含其他相關資訊。",
+                        "introduction": "重新探訪 Z-Wave 網路中的裝置。假如裝置缺少、或者功能不正確時，請使用此選項。",
+                        "run_in_background": "可以關閉此對話框、探訪將於背景繼續執行。",
+                        "start_reinterview": "開始重新探訪",
+                        "title": "重新探訪 Z-Wave 裝置"
                     },
                     "remove_node": {
                         "cancel_exclusion": "取消排除",
