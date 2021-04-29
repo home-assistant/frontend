@@ -185,6 +185,6 @@ class DemoMap extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "demo-hui-map-card": DempMap;
+    "demo-hui-map-card": DemoMap;
   }
 }
