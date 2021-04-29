@@ -3,7 +3,9 @@ import { useAmPm } from "../../common/datetime/format_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { TimeSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
+import memoizeOne from "memoize-one";
 import "../paper-time-input";
+import { FrontendLocaleData } from "../../data/translation";
 @customElement("ha-selector-time")
 export class HaTimeSelector extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -16,8 +18,12 @@ export class HaTimeSelector extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  private _useAmPmMem = memoizeOne((locale: FrontendLocaleData): boolean => {
+    return useAmPm(locale);
+  });
+
   protected render() {
-    const useAMPM = useAmPm(this.hass.locale);
+    const useAMPM = this._useAmPmMem(this.hass.locale);
 
     const parts = this.value?.split(":") || [];
     const hours = parts[0];
