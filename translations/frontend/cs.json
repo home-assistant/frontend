@@ -1256,7 +1256,8 @@
                     "caption": "Oblasti",
                     "data_table": {
                         "area": "Oblast",
-                        "devices": "Zařízení"
+                        "devices": "Zařízení",
+                        "entities": "Entity"
                     },
                     "delete": {
                         "confirmation_text": "Všechna zařízení v této oblasti budou nastavena jako nepřiřazena.",
@@ -1268,8 +1269,10 @@
                         "create": "VYTVOŘIT",
                         "default_name": "Nová oblast",
                         "delete": "Odstranit",
+                        "linked_entities_caption": "Entity",
                         "name": "Název",
                         "name_required": "Název je povinný",
+                        "no_linked_entities": "S touto oblastí nejsou spojeny žádné entity.",
                         "unknown_error": "Neznámá chyba",
                         "update": "Aktualizovat"
                     },

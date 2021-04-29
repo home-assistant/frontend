@@ -561,8 +561,11 @@
             },
             "light": {
                 "brightness": "밝기",
+                "cold_white_value": "주광색 밝기",
+                "color_brightness": "색상 밝기",
                 "color_temperature": "색온도",
                 "effect": "효과",
+                "warm_white_value": "전구색 밝기",
                 "white_value": "흰색 값"
             },
             "lock": {
@@ -1194,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "기기 재구성 중"
+                "attribute": "속성",
+                "battery_device_warning": "재구성하기 전에 배터리 전원 장치의 절전 모드를 해제해야 합니다. 절전 모드를 해제하는 방법은 기기 설명서를 참조하십시오.",
+                "bind_header": "묶기",
+                "button_hide": "세부 정보 숨기기",
+                "button_show": "세부 정보 표시",
+                "cluster_header": "클러스터",
+                "configuration_complete": "장치 재구성이 완료되었습니다.",
+                "configuration_failed": "장치 재구성에 실패했습니다. 로그에서 정보를 확인할 수 있습니다.",
+                "configuring_alt": "구성",
+                "heading": "기기 재구성 중",
+                "in_progress": "장치가 재구성 중입니다. 시간이 좀 걸릴 수 있습니다.",
+                "introduction": "Zigbee 네트워크에서 장치를 재구성합니다. 장치가 올바르게 작동하지 않는 경우에 이 기능을 사용하십시오.",
+                "min_max_change": "최소/최대/변경",
+                "reporting_header": "보고",
+                "run_in_background": "이 대화 상자를 닫을 수 있으며 재구성은 백그라운드에서 계속됩니다.",
+                "start_reconfiguration": "재구성 시작"
             }
         },
         "duration": {
@@ -2943,6 +2961,16 @@
                         "awake": "절전해제",
                         "dead": "사용불가",
                         "unknown": "알 수 없음"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "재인터뷰를 시작하기 전에 배터리 전원 장치의 절전 모드를 해제해야 합니다. 절전 모드를 해제하는 방법은 기기 설명서를 참조하십시오.",
+                        "in_progress": "장치가 인터뷰중입니다. 시간이 좀 걸릴 수 있습니다.",
+                        "interview_complete": "장치 인터뷰가 완료되었습니다.",
+                        "interview_failed": "장치 인터뷰에 실패했습니다. 로그에서 정보를 확인할 수 있습니다.",
+                        "introduction": "Z-Wave 네트워크 상의 장치를 다시 인터뷰합니다. 장치가 사라지거나 오동작할 경우에 이 기능을 사용하십시오.",
+                        "run_in_background": "이 대화 상자를 닫을 수 있으며 인터뷰는 백그라운드에서 계속됩니다.",
+                        "start_reinterview": "재인터뷰 시작",
+                        "title": "Z-Wave 장치 재인터뷰"
                     },
                     "remove_node": {
                         "cancel_exclusion": "제외 취소하기",
