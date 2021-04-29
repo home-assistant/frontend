@@ -115,8 +115,8 @@ class LovelaceFullConfigEditor extends LitElement {
       !this._saving &&
       oldLovelace &&
       this.lovelace &&
-      oldLovelace.config !== this.lovelace.config &&
-      !deepEqual(oldLovelace.config, this.lovelace.config)
+      oldLovelace.rawConfig !== this.lovelace.rawConfig &&
+      !deepEqual(oldLovelace.rawConfig, this.lovelace.rawConfig)
     ) {
       showToast(this, {
         message: this.hass!.localize(
@@ -124,7 +124,7 @@ class LovelaceFullConfigEditor extends LitElement {
         ),
         action: {
           action: () => {
-            this.yamlEditor.value = safeDump(this.lovelace!.config);
+            this.yamlEditor.value = safeDump(this.lovelace!.rawConfig);
           },
           text: this.hass!.localize(
             "ui.panel.lovelace.editor.raw_editor.reload"

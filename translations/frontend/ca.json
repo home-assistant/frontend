@@ -1197,7 +1197,19 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "S'està reconfigurant el dispositiu"
+                "attribute": "Atribut",
+                "bind_header": "Vinculació",
+                "button_hide": "Amaga els detalls",
+                "button_show": "Mostra els detalls",
+                "cluster_header": "Clúster",
+                "configuration_complete": "Reconfiguració de dispositiu completada.",
+                "configuration_failed": "Ha fallat la reconfiguració del dispositiu. Pots trobar informació addicional als registres.",
+                "configuring_alt": "Configurant",
+                "heading": "S'està reconfigurant el dispositiu",
+                "in_progress": "El dispositiu s'està reconfigurant. Això pot trigar una estona.",
+                "min_max_change": "min/max/canvi",
+                "run_in_background": "Pots tancar aquest diàleg, la reconfiguració continuarà en segon pla.",
+                "start_reconfiguration": "Inicia la reconfiguració"
             }
         },
         "duration": {
@@ -1260,7 +1272,8 @@
                     "caption": "Àrees",
                     "data_table": {
                         "area": "Àrea",
-                        "devices": "Dispositius"
+                        "devices": "Dispositius",
+                        "entities": "Entitats"
                     },
                     "delete": {
                         "confirmation_text": "Tots els dispositius d'aquesta àrea quedaran sense assignar.",
@@ -1272,8 +1285,10 @@
                         "create": "Crea",
                         "default_name": "Nova àrea",
                         "delete": "Elimina",
+                        "linked_entities_caption": "Entitats",
                         "name": "Nom",
                         "name_required": "Nom obligatori",
+                        "no_linked_entities": "No hi ha entitats vinculades amb aquesta àrea.",
                         "unknown_error": "Error desconegut",
                         "update": "Actualitza"
                     },
@@ -2924,7 +2939,12 @@
                         "node_status": "Estat del node",
                         "zwave_info": "Informació Z-Wave"
                     },
+                    "logs": {
+                        "log_level": "Nivell dels registres",
+                        "title": "Registres de Z-Wave JS"
+                    },
                     "navigation": {
+                        "logs": "Registres",
                         "network": "Xarxa"
                     },
                     "network_status": {
@@ -2950,6 +2970,13 @@
                         "awake": "Despert",
                         "dead": "Mort",
                         "unknown": "Desconegut"
+                    },
+                    "reinterview_node": {
+                        "in_progress": "S'està consultant el dispositiu. Això pot trigar una estona.",
+                        "interview_complete": "Consulta del dispositiu completada.",
+                        "interview_failed": "Ha fallat la consulta del dispositiu. Pots trobar informació addicional als registres.",
+                        "start_reinterview": "Torna a iniciar consulta",
+                        "title": "Torna a consultar un dispositiu Z-Wave"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Cancel·la l'exclusió",
