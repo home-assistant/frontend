@@ -270,8 +270,7 @@ class ZWaveJSConfigDashboard extends LitElement {
   }
 
   private async _openOptionFlow() {
-    const searchParams = new URLSearchParams(window.location.search);
-    if (!searchParams.has("config_entry")) {
+    if (!this.configEntryId) {
       return;
     }
     const configEntries = await getConfigEntries(this.hass);
