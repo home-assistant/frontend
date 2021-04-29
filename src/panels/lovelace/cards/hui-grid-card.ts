@@ -5,7 +5,7 @@ import { GridCardConfig } from "./types";
 import { LovelaceCardEditor } from "../types";
 
 const DEFAULT_COLUMNS = 3;
-const SQUARE_ROW_HEIGHTS = {
+const SQUARE_ROW_HEIGHTS_BY_COLUMNS = {
   1: 5,
   2: 3,
   3: 2,
@@ -23,7 +23,7 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
     }
 
     if (this.square) {
-      const rowHeight = SQUARE_ROW_HEIGHTS[this.columns] || 1;
+      const rowHeight = SQUARE_ROW_HEIGHTS_BY_COLUMNS[this.columns] || 1;
       return (
         (this._cards.length / this.columns) * rowHeight +
         (this._config.title ? 1 : 0)
