@@ -50,7 +50,7 @@ export function findAvailableLanguage(language: string) {
     }
   }
 
-  return null;
+  return undefined;
 }
 
 /**
