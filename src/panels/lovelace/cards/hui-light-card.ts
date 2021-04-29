@@ -21,11 +21,7 @@ import { stateIcon } from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
-import {
-  getLightRgbColor,
-  LightEntity,
-  lightSupportsDimming,
-} from "../../../data/light";
+import { LightEntity, lightSupportsDimming } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -247,8 +243,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     if (stateObj.state === "off") {
       return "";
     }
-    const rgb = getLightRgbColor(stateObj);
-    return rgb ? `rgb(${rgb.slice(0, 3).join(",")})` : "";
+    return stateObj.attributes.rgb_color
+      ? `rgb(${stateObj.attributes.rgb_color.join(",")})`
+      : "";
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
