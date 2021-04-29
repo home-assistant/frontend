@@ -45,7 +45,7 @@ export class HaIntegrationHeader extends LitElement {
     const icons: [string, string][] = [];
 
     if (this.manifest) {
-      if (this.manifest.is_built_in) {
+      if (!this.manifest.is_built_in) {
         icons.push([
           mdiPackageVariant,
           this.hass.localize(
@@ -56,7 +56,7 @@ export class HaIntegrationHeader extends LitElement {
 
       if (
         this.manifest.iot_class &&
-        !this.manifest.iot_class.startsWith("cloud_")
+        this.manifest.iot_class.startsWith("cloud_")
       ) {
         icons.push([
           mdiCloud,
@@ -85,6 +85,7 @@ export class HaIntegrationHeader extends LitElement {
           <div class="primary">${primary}</div>
           ${secondary ? html`<div class="secondary">${secondary}</div>` : ""}
         </div>
+
         ${icons.length === 0
           ? ""
           : html`
@@ -146,7 +147,8 @@ export class HaIntegrationHeader extends LitElement {
     }
     .primary {
       font-size: 16px;
-      padding-top: 16px;
+      margin-top: 16px;
+      margin-right: 2px;
       font-weight: 400;
       color: var(--primary-text-color);
     }
@@ -156,7 +158,7 @@ export class HaIntegrationHeader extends LitElement {
     }
     .icons {
       margin-right: 8px;
-      margin-left: 8px;
+      margin-left: auto;
       height: 28px;
       color: var(--text-on-state-color, var(--secondary-text-color));
       background-color: var(--state-color, #e0e0e0);
