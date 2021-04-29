@@ -36,7 +36,7 @@ export function findAvailableLanguage(language: string) {
     return LOCALE_LOOKUP[langLower];
   }
 
-  let translation = Object.keys(translationMetadata.translations).find(
+  const translation = Object.keys(translationMetadata.translations).find(
     (lang) => lang.toLowerCase() === langLower
   );
   if (translation) {
