@@ -1,15 +1,16 @@
 import { format } from "fecha";
+import memoizeOne from "memoize-one";
 import { FrontendLocaleData, TimeFormat } from "../../data/translation";
 import { toLocaleTimeStringSupportsOptions } from "./check_options_support";
 
-export const useAmPm = (locale: FrontendLocaleData): boolean => {
+export const useAmPm = memoizeOne((locale: FrontendLocaleData): boolean => {
   if (locale.time_format === TimeFormat.system) {
     const test = new Date().toLocaleString(locale.language);
     return test.includes("AM") || test.includes("PM");
   }
 
   return locale.time_format === TimeFormat.am_pm;
-};
+});
 
 export const formatTime = toLocaleTimeStringSupportsOptions
   ? (dateObj: Date, locale: FrontendLocaleData) =>
