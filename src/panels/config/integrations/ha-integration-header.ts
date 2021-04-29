@@ -119,8 +119,8 @@ export class HaIntegrationHeader extends LitElement {
       color: var(--text-on-state-color);
       text-align: center;
       padding: 2px;
-      border-top-left-radius: var(--ha-card-border-radius, 0);
-      border-top-right-radius: var(--ha-card-border-radius, 0);
+      border-top-left-radius: var(--ha-card-border-radius, 4px);
+      border-top-right-radius: var(--ha-card-border-radius, 4px);
     }
     .header {
       display: flex;
