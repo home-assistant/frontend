@@ -18,7 +18,7 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import {
-  getLightRawRgbColor,
+  getLightCurrentModeRgbColor,
   LightColorModes,
   LightEntity,
   lightIsInColorMode,
@@ -303,9 +303,10 @@ class MoreInfoLight extends LitElement {
             )
           : undefined;
 
-      this._colorPickerColor = getLightRawRgbColor(stateObj)?.slice(0, 3) as
-        | [number, number, number]
-        | undefined;
+      this._colorPickerColor = getLightCurrentModeRgbColor(stateObj)?.slice(
+        0,
+        3
+      ) as [number, number, number] | undefined;
     } else {
       this._brightnessSliderValue = 0;
     }
@@ -382,7 +383,7 @@ class MoreInfoLight extends LitElement {
 
     wv = Math.min(255, Math.round((wv * 255) / 100));
 
-    const rgb = getLightRawRgbColor(this.stateObj!);
+    const rgb = getLightCurrentModeRgbColor(this.stateObj!);
 
     if (name === "wv") {
       const rgbw_color = rgb || [0, 0, 0, 0];
@@ -415,7 +416,7 @@ class MoreInfoLight extends LitElement {
 
     value = (value * 255) / 100;
 
-    const rgb = (getLightRawRgbColor(this.stateObj!)?.slice(0, 3) || [
+    const rgb = (getLightCurrentModeRgbColor(this.stateObj!)?.slice(0, 3) || [
       255,
       255,
       255,
