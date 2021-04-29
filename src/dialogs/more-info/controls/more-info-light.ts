@@ -155,7 +155,7 @@ class MoreInfoLight extends LitElement {
                             )}
                             icon="hass:brightness-7"
                             max="100"
-                            .value=${this._colorBrightnessSliderValue ?? 255}
+                            .value=${this._colorBrightnessSliderValue ?? 100}
                             @change=${this._colorBrightnessSliderChanged}
                             pin
                           ></ha-labeled-slider>`
@@ -379,7 +379,7 @@ class MoreInfoLight extends LitElement {
       return;
     }
 
-    wv = (wv * 255) / 100;
+    wv = Math.min(255, Math.round((wv * 255) / 100));
 
     const rgb = getLightRgbColor(this.stateObj!);
 
@@ -406,7 +406,13 @@ class MoreInfoLight extends LitElement {
 
   private _colorBrightnessSliderChanged(ev: CustomEvent) {
     const target = ev.target as any;
-    const value = Number(target.value);
+    let value = Number(target.value);
+
+    if (isNaN(value)) {
+      return;
+    }
+
+    value = (value * 255) / 100;
 
     const rgb = (getLightRgbColor(this.stateObj!)?.slice(0, 3) || [
       255,
@@ -420,7 +426,7 @@ class MoreInfoLight extends LitElement {
         this._colorBrightnessSliderValue
           ? this._adjustColorBrightness(
               rgb,
-              this._colorBrightnessSliderValue,
+              (this._colorBrightnessSliderValue * 255) / 100,
               true
             )
           : rgb,
@@ -449,9 +455,9 @@ class MoreInfoLight extends LitElement {
       if (invert) {
         ratio = 1 / ratio;
       }
-      rgbColor[0] *= ratio;
-      rgbColor[1] *= ratio;
-      rgbColor[2] *= ratio;
+      rgbColor[0] = Math.min(255, Math.round(rgbColor[0] * ratio));
+      rgbColor[1] = Math.min(255, Math.round(rgbColor[1] * ratio));
+      rgbColor[2] = Math.min(255, Math.round(rgbColor[2] * ratio));
     }
     return rgbColor;
   }
@@ -491,7 +497,7 @@ class MoreInfoLight extends LitElement {
         this._colorBrightnessSliderValue
           ? this._adjustColorBrightness(
               [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b],
-              this._colorBrightnessSliderValue
+              (this._colorBrightnessSliderValue * 255) / 100
             )
           : [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b]
       );
