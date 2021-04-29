@@ -1,3 +1,4 @@
+import "../../../components/ha-svg-icon";
 import { mdiPackageVariant, mdiCloud } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
@@ -24,7 +25,7 @@ export class HaIntegrationHeader extends LitElement {
 
   @property() public label!: string;
 
-  @property() public manifest?: IntegrationManifest;
+  @property({ attribute: false }) public manifest?: IntegrationManifest;
 
   protected render(): TemplateResult {
     let primary: string;
@@ -84,6 +85,7 @@ export class HaIntegrationHeader extends LitElement {
           <div class="primary">${primary}</div>
           ${secondary ? html`<div class="secondary">${secondary}</div>` : ""}
         </div>
+
         ${icons.length === 0
           ? ""
           : html`
@@ -118,14 +120,17 @@ export class HaIntegrationHeader extends LitElement {
       color: var(--text-on-state-color);
       text-align: center;
       padding: 2px;
+      border-top-left-radius: var(--ha-card-border-radius, 4px);
+      border-top-right-radius: var(--ha-card-border-radius, 4px);
     }
     .header {
       display: flex;
       position: relative;
-      padding: 16px 8px 8px 16px;
+      padding: 0 8px 8px 16px;
     }
     .header img {
       margin-right: 16px;
+      margin-top: 16px;
       width: 40px;
       height: 40px;
     }
@@ -142,6 +147,8 @@ export class HaIntegrationHeader extends LitElement {
     }
     .primary {
       font-size: 16px;
+      margin-top: 16px;
+      margin-right: 2px;
       font-weight: 400;
       color: var(--primary-text-color);
     }
@@ -150,18 +157,20 @@ export class HaIntegrationHeader extends LitElement {
       color: var(--secondary-text-color);
     }
     .icons {
-      position: absolute;
-      top: 0px;
-      right: 16px;
+      margin-right: 8px;
+      margin-left: auto;
+      height: 28px;
       color: var(--text-on-state-color, var(--secondary-text-color));
       background-color: var(--state-color, #e0e0e0);
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
-      padding: 1px 4px 2px;
+      display: flex;
+      float: right;
     }
     .icons ha-svg-icon {
       width: 20px;
       height: 20px;
+      margin: 4px;
     }
     paper-tooltip {
       white-space: nowrap;
