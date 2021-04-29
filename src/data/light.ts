@@ -56,7 +56,9 @@ export const lightSupportsDimming = (entity: LightEntity) => {
   );
 };
 
-export const getLightRgbColor = (entity: LightEntity): number[] | undefined =>
+export const getLightCurrentModeRgbColor = (
+  entity: LightEntity
+): number[] | undefined =>
   entity.attributes.color_mode === LightColorModes.RGBWW
     ? entity.attributes.rgbww_color
     : entity.attributes.color_mode === LightColorModes.RGBW
