@@ -22,6 +22,8 @@ const mql = matchMedia("(prefers-color-scheme: dark)");
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
+    private _themeApplied = false;
+
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
@@ -32,7 +34,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         storeState(this.hass!);
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
-      if (mql.matches) {
+      if (!this._themeApplied && mql.matches) {
         applyThemesOnElement(
           document.documentElement,
           {
@@ -51,6 +53,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       super.hassConnected();
 
       subscribeThemes(this.hass!.connection, (themes) => {
+        this._themeApplied = true;
         this._updateHass({ themes });
         invalidateThemeCache();
         this._applyTheme(mql.matches);
