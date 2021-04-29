@@ -122,10 +122,11 @@ export class HaIntegrationHeader extends LitElement {
     .header {
       display: flex;
       position: relative;
-      padding: 16px 8px 8px 16px;
+      padding: 0 8px 8px 16px;
     }
     .header img {
       margin-right: 16px;
+      padding-top: 16px;
       width: 40px;
       height: 40px;
     }
@@ -142,7 +143,7 @@ export class HaIntegrationHeader extends LitElement {
     }
     .primary {
       font-size: 16px;
-      margin-right: 64px;
+      padding-top: 16px;
       font-weight: 400;
       color: var(--primary-text-color);
     }
@@ -151,18 +152,19 @@ export class HaIntegrationHeader extends LitElement {
       color: var(--secondary-text-color);
     }
     .icons {
-      position: absolute;
-      top: 0px;
-      right: 16px;
+      margin-right: 8px;
+      height: 28px;
       color: var(--text-on-state-color, var(--secondary-text-color));
       background-color: var(--state-color, #e0e0e0);
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
-      padding: 1px 4px 2px;
+      display: flex;
+      float: right;
     }
     .icons ha-svg-icon {
       width: 20px;
       height: 20px;
+      padding: 4px;
     }
     paper-tooltip {
       white-space: nowrap;
