@@ -183,4 +183,8 @@ class DemoMap extends LitElement {
   }
 }
 
-customElements.define("demo-hui-map-card", DemoMap);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-map-card": DempMap;
+  }
+}

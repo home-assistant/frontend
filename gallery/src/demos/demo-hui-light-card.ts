@@ -85,4 +85,8 @@ class DemoLightEntity extends LitElement {
   }
 }
 
-customElements.define("demo-hui-light-card", DemoLightEntity);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-light-card": DemoLightEntity;
+  }
+}

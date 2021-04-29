@@ -276,4 +276,8 @@ class DemoMarkdown extends LitElement {
   }
 }
 
-customElements.define("demo-hui-markdown-card", DemoMarkdown);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-markdown-card": DemoMarkdown;
+  }
+}
