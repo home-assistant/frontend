@@ -44,10 +44,7 @@ export function findAvailableLanguage(language: string) {
   }
 
   if (language.includes("-")) {
-    translation = findAvailableLanguage(language.split("-")[0]);
-    if (translation) {
-      return translation;
-    }
+    return findAvailableLanguage(language.split("-")[0]);
   }
 
   return undefined;
