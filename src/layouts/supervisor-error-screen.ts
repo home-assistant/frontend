@@ -47,9 +47,7 @@ class SupervisorErrorScreen extends LitElement {
         <ha-card header="Troubleshooting">
           <div class="card-content">
             <ol>
-              <li>
-                ${this.hass.localize("ui.errors.supervisor.wait")}
-              </li>
+              <li>${this.hass.localize("ui.errors.supervisor.wait")}</li>
               <li>
                 <a
                   class="supervisor_error-link"
@@ -60,9 +58,7 @@ class SupervisorErrorScreen extends LitElement {
                   ${this.hass.localize("ui.errors.supervisor.observer")}
                 </a>
               </li>
-              <li>
-                ${this.hass.localize("ui.errors.supervisor.reboot")}
-              </li>
+              <li>${this.hass.localize("ui.errors.supervisor.reboot")}</li>
               <li>
                 <a href="/config/info" target="_parent">
                   ${this.hass.localize("ui.errors.supervisor.system_health")}

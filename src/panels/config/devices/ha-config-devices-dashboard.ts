@@ -179,33 +179,31 @@ export class HaConfigDeviceDashboard extends LitElement {
         outputDevices = outputDevices.filter((device) => !device.disabled_by);
       }
 
-      outputDevices = outputDevices.map((device) => {
-        return {
-          ...device,
-          name: computeDeviceName(
-            device,
-            this.hass,
-            deviceEntityLookup[device.id]
-          ),
-          model: device.model || "<unknown>",
-          manufacturer: device.manufacturer || "<unknown>",
-          area: device.area_id ? areaLookup[device.area_id].name : undefined,
-          integration: device.config_entries.length
-            ? device.config_entries
-                .filter((entId) => entId in entryLookup)
-                .map(
-                  (entId) =>
-                    localize(`component.${entryLookup[entId].domain}.title`) ||
-                    entryLookup[entId].domain
-                )
-                .join(", ")
-            : "No integration",
-          battery_entity: [
-            this._batteryEntity(device.id, deviceEntityLookup),
-            this._batteryChargingEntity(device.id, deviceEntityLookup),
-          ],
-        };
-      });
+      outputDevices = outputDevices.map((device) => ({
+        ...device,
+        name: computeDeviceName(
+          device,
+          this.hass,
+          deviceEntityLookup[device.id]
+        ),
+        model: device.model || "<unknown>",
+        manufacturer: device.manufacturer || "<unknown>",
+        area: device.area_id ? areaLookup[device.area_id].name : undefined,
+        integration: device.config_entries.length
+          ? device.config_entries
+              .filter((entId) => entId in entryLookup)
+              .map(
+                (entId) =>
+                  localize(`component.${entryLookup[entId].domain}.title`) ||
+                  entryLookup[entId].domain
+              )
+              .join(", ")
+          : "No integration",
+        battery_entity: [
+          this._batteryEntity(device.id, deviceEntityLookup),
+          this._batteryChargingEntity(device.id, deviceEntityLookup),
+        ],
+      }));
 
       this._numHiddenDevices = startLength - outputDevices.length;
       return { devicesOutput: outputDevices, filteredDomains: filterDomains };
@@ -224,14 +222,12 @@ export class HaConfigDeviceDashboard extends LitElement {
               filterable: true,
               direction: "asc",
               grows: true,
-              template: (name, device: DataTableRowData) => {
-                return html`
-                  ${name}
-                  <div class="secondary">
-                    ${device.area} | ${device.integration}
-                  </div>
-                `;
-              },
+              template: (name, device: DataTableRowData) => html`
+                ${name}
+                <div class="secondary">
+                  ${device.area} | ${device.integration}
+                </div>
+              `,
             },
           }
         : {

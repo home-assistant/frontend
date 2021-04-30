@@ -108,8 +108,8 @@ class HassioRegistriesDialog extends LitElement {
                 </mwc-button>
               `
             : html`${this._registries?.length
-                  ? this._registries.map((entry) => {
-                      return html`
+                  ? this._registries.map(
+                      (entry) => html`
                         <mwc-list-item class="option" hasMeta twoline>
                           <span>${entry.registry}</span>
                           <span slot="secondary"
@@ -129,8 +129,8 @@ class HassioRegistriesDialog extends LitElement {
                             <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
                           </mwc-icon-button>
                         </mwc-list-item>
-                      `;
-                    })
+                      `
+                    )
                   : html`
                       <mwc-list-item>
                         <span

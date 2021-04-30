@@ -1,15 +1,10 @@
 import { strokeWidth } from "../../../../data/graph";
 
-const average = (items: any[]): number => {
-  return (
-    items.reduce((sum, entry) => sum + parseFloat(entry.state), 0) /
-    items.length
-  );
-};
+const average = (items: any[]): number =>
+  items.reduce((sum, entry) => sum + parseFloat(entry.state), 0) / items.length;
 
-const lastValue = (items: any[]): number => {
-  return parseFloat(items[items.length - 1].state) || 0;
-};
+const lastValue = (items: any[]): number =>
+  parseFloat(items[items.length - 1].state) || 0;
 
 const calcPoints = (
   history: any,

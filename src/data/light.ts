@@ -36,25 +36,20 @@ export const SUPPORT_TRANSITION = 32;
 export const lightSupportsColorMode = (
   entity: LightEntity,
   mode: LightColorModes
-) => {
-  return entity.attributes.supported_color_modes?.includes(mode);
-};
+) => entity.attributes.supported_color_modes?.includes(mode);
 
-export const lightIsInColorMode = (entity: LightEntity) => {
-  return modesSupportingColor.includes(entity.attributes.color_mode);
-};
+export const lightIsInColorMode = (entity: LightEntity) =>
+  modesSupportingColor.includes(entity.attributes.color_mode);
 
-export const lightSupportsColor = (entity: LightEntity) => {
-  return entity.attributes.supported_color_modes?.some((mode) =>
+export const lightSupportsColor = (entity: LightEntity) =>
+  entity.attributes.supported_color_modes?.some((mode) =>
     modesSupportingColor.includes(mode)
   );
-};
 
-export const lightSupportsDimming = (entity: LightEntity) => {
-  return entity.attributes.supported_color_modes?.some((mode) =>
+export const lightSupportsDimming = (entity: LightEntity) =>
+  entity.attributes.supported_color_modes?.some((mode) =>
     modesSupportingDimming.includes(mode)
   );
-};
 
 export const getLightCurrentModeRgbColor = (
   entity: LightEntity

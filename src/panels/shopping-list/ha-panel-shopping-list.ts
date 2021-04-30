@@ -75,9 +75,7 @@ class PanelShoppingList extends LitElement {
           </app-toolbar>
         </app-header>
         <div id="columns">
-          <div class="column">
-            ${this._card}
-          </div>
+          <div class="column">${this._card}</div>
         </div>
       </ha-app-layout>
     `;

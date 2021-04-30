@@ -14,7 +14,8 @@ import { LovelaceHeaderFooter } from "../types";
 import { ButtonsHeaderFooterConfig } from "./types";
 
 @customElement("hui-buttons-header-footer")
-export class HuiButtonsHeaderFooter extends LitElement
+export class HuiButtonsHeaderFooter
+  extends LitElement
   implements LovelaceHeaderFooter {
   public static getStubConfig(): Record<string, unknown> {
     return { entities: [] };

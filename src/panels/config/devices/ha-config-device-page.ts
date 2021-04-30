@@ -99,9 +99,10 @@ export class HaConfigDevicePage extends LitElement {
     ): EntityRegistryStateEntry[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
-        .map((entity) => {
-          return { ...entity, stateName: this._computeEntityName(entity) };
-        })
+        .map((entity) => ({
+          ...entity,
+          stateName: this._computeEntityName(entity),
+        }))
         .sort((ent1, ent2) =>
           compare(
             ent1.stateName || `zzz${ent1.entity_id}`,

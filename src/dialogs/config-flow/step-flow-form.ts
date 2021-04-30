@@ -55,9 +55,7 @@ class StepFlowForm extends LitElement {
           );
 
     return html`
-      <h2>
-        ${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}
-      </h2>
+      <h2>${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}</h2>
       <div class="content">
         ${this._errorMsg
           ? html` <div class="error">${this._errorMsg}</div> `

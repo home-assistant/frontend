@@ -38,7 +38,7 @@ export const fetchSupervisorStore = async (
   hass: HomeAssistant
 ): Promise<SupervisorStore> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/store",
       method: "get",

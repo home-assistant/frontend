@@ -222,9 +222,7 @@ export class HaIntegrationCard extends LitElement {
         ? html`
             <div class="message">
               <ha-svg-icon .path=${mdiAlertCircle}></ha-svg-icon>
-              <div>
-                ${this.hass.localize(...stateText)}${stateTextExtra}
-              </div>
+              <div>${this.hass.localize(...stateText)}${stateTextExtra}</div>
             </div>
           `
         : ""}

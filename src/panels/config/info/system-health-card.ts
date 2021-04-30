@@ -122,9 +122,7 @@ class SystemHealthCard extends LitElement {
           sections.push(
             html`
               <div class="card-header">
-                <h3>
-                  ${domainToName(this.hass.localize, domain)}
-                </h3>
+                <h3>${domainToName(this.hass.localize, domain)}</h3>
                 ${!domainInfo.manage_url
                   ? ""
                   : html`

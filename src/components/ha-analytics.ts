@@ -57,9 +57,7 @@ export class HaAnalytics extends LitElement {
           >
           </ha-checkbox>
         </span>
-        <span slot="heading" data-for="base">
-          Basic analytics
-        </span>
+        <span slot="heading" data-for="base"> Basic analytics </span>
         <span slot="description" data-for="base">
           This includes information about your system.
         </span>
@@ -101,9 +99,7 @@ export class HaAnalytics extends LitElement {
           >
           </ha-checkbox>
         </span>
-        <span slot="heading" data-for="diagnostics">
-          Diagnostics
-        </span>
+        <span slot="heading" data-for="diagnostics"> Diagnostics </span>
         <span slot="description" data-for="diagnostics">
           Share crash reports when unexpected errors occur.
         </span>

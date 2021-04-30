@@ -58,8 +58,8 @@ export class HaConfigAreasDashboard extends LitElement {
       areas: AreaRegistryEntry[],
       devices: DeviceRegistryEntry[],
       entities: EntityRegistryEntry[]
-    ) => {
-      return areas.map((area) => {
+    ) =>
+      areas.map((area) => {
         const devicesInArea = new Set();
 
         for (const device of devices) {
@@ -85,8 +85,7 @@ export class HaConfigAreasDashboard extends LitElement {
           devices: devicesInArea.size,
           entities: entitiesInArea,
         };
-      });
-    }
+      })
   );
 
   private _columns = memoizeOne(

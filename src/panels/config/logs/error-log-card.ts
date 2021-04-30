@@ -27,9 +27,7 @@ class ErrorLogCard extends LitElement {
                   icon="hass:refresh"
                   @click=${this._refreshErrorLog}
                 ></ha-icon-button>
-                <div class="card-content error-log">
-                  ${this._errorHTML}
-                </div>
+                <div class="card-content error-log">${this._errorHTML}</div>
               </ha-card>
             `
           : html`

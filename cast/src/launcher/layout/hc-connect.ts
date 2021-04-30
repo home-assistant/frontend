@@ -86,9 +86,7 @@ export class HcConnect extends LitElement {
           </div>
           <div class="card-actions">
             <a href="/">
-              <mwc-button>
-                Retry
-              </mwc-button>
+              <mwc-button> Retry </mwc-button>
             </a>
             <div class="spacer"></div>
             <mwc-button @click=${this._handleLogout}>Log out</mwc-button>

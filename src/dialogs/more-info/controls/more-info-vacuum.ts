@@ -177,9 +177,7 @@ class MoreInfoVacuum extends LitElement {
                   >
                     ${stateObj.attributes.fan_speed_list!.map(
                       (mode) => html`
-                        <paper-item .itemName=${mode}>
-                          ${mode}
-                        </paper-item>
+                        <paper-item .itemName=${mode}> ${mode} </paper-item>
                       `
                     )}
                   </paper-listbox>

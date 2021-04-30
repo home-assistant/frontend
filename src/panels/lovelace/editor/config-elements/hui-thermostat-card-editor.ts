@@ -28,7 +28,8 @@ const cardConfigStruct = object({
 const includeDomains = ["climate"];
 
 @customElement("hui-thermostat-card-editor")
-export class HuiThermostatCardEditor extends LitElement
+export class HuiThermostatCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

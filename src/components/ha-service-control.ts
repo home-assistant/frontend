@@ -140,13 +140,11 @@ export class HaServiceControl extends LitElement {
 
     const fields = Object.entries(
       serviceDomains[domain][serviceName].fields
-    ).map(([key, value]) => {
-      return {
-        key,
-        ...value,
-        selector: value.selector as Selector | undefined,
-      };
-    });
+    ).map(([key, value]) => ({
+      key,
+      ...value,
+      selector: value.selector as Selector | undefined,
+    }));
     return {
       ...serviceDomains[domain][serviceName],
       fields,

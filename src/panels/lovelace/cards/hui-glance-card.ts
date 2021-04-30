@@ -91,12 +91,10 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     };
     const entities = processConfigEntities<GlanceConfigEntity>(
       config.entities
-    ).map((entityConf) => {
-      return {
-        hold_action: { action: "more-info" } as MoreInfoActionConfig,
-        ...entityConf,
-      };
-    });
+    ).map((entityConf) => ({
+      hold_action: { action: "more-info" } as MoreInfoActionConfig,
+      ...entityConf,
+    }));
 
     for (const entity of entities) {
       if (
