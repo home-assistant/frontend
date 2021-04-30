@@ -230,6 +230,10 @@ export const computeHistory = (
       unit = hass.config.unit_system.temperature;
     } else if (computeStateDomain(stateInfo[0]) === "humidifier") {
       unit = "%";
+    } else if (computeStateDomain(stateInfo[0]) === "counter") {
+      unit = "#";
+    } else if (computeStateDomain(stateInfo[0]) === "input_number") {
+      unit = "#";
     }
 
     if (!unit) {

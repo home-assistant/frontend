@@ -7,6 +7,8 @@ import { LovelaceCardEditor } from "../types";
 import { HuiEntityCard } from "./hui-entity-card";
 import { EntityCardConfig, SensorCardConfig } from "./types";
 
+const includeDomains = ["counter", "input_number", "sensor"];
+
 @customElement("hui-sensor-card")
 class HuiSensorCard extends HuiEntityCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -19,7 +21,6 @@ class HuiSensorCard extends HuiEntityCard {
     entities: string[],
     entitiesFallback: string[]
   ): SensorCardConfig {
-    const includeDomains = ["sensor"];
     const maxEntities = 1;
     const entityFilter = (stateObj: HassEntity): boolean =>
       !isNaN(Number(stateObj.state)) &&
@@ -38,7 +39,10 @@ class HuiSensorCard extends HuiEntityCard {
   }
 
   public setConfig(config: SensorCardConfig): void {
-    if (!config.entity || config.entity.split(".")[0] !== "sensor") {
+    if (
+      !config.entity ||
+      !includeDomains.includes(config.entity.split(".")[0])
+    ) {
       throw new Error("Specify an entity from within the sensor domain");
     }
 

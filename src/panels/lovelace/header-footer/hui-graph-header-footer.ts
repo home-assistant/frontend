@@ -22,6 +22,7 @@ import { GraphHeaderFooterConfig } from "./types";
 
 const MINUTE = 60000;
 const HOUR = MINUTE * 60;
+const includeDomains = ["counter", "input_number", "sensor"];
 
 @customElement("hui-graph-header-footer")
 export class HuiGraphHeaderFooter
@@ -37,7 +38,6 @@ export class HuiGraphHeaderFooter
     entities: string[],
     entitiesFallback: string[]
   ): GraphHeaderFooterConfig {
-    const includeDomains = ["sensor"];
     const maxEntities = 1;
     const entityFilter = (stateObj: HassEntity): boolean =>
       !isNaN(Number(stateObj.state)) &&
@@ -75,7 +75,10 @@ export class HuiGraphHeaderFooter
   }
 
   public setConfig(config: GraphHeaderFooterConfig): void {
-    if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
+    if (
+      !config?.entity ||
+      !includeDomains.includes(config.entity.split(".")[0])
+    ) {
       throw new Error("Specify an entity from within the sensor domain");
     }
 
