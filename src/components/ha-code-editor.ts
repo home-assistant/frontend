@@ -124,10 +124,6 @@ export class HaCodeEditor extends UpdatingElement {
       }
     </style>`;
 
-    const container = document.createElement("span");
-
-    shadowRoot.appendChild(container);
-
     this.codemirror = new this._loadedCodeMirror.EditorView({
       state: this._loadedCodeMirror.EditorState.create({
         doc: this._value,
@@ -160,7 +156,7 @@ export class HaCodeEditor extends UpdatingElement {
         ],
       }),
       root: shadowRoot,
-      parent: container,
+      parent: shadowRoot,
     });
   }
 
