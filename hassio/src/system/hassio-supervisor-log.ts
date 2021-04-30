@@ -87,13 +87,13 @@ class HassioSupervisorLog extends LitElement {
                   attr-for-selected="provider"
                   .selected=${this._selectedLogProvider}
                 >
-                  ${logProviders.map((provider) => {
-                    return html`
+                  ${logProviders.map(
+                    (provider) => html`
                       <paper-item provider=${provider.key}>
                         ${provider.name}
                       </paper-item>
-                    `;
-                  })}
+                    `
+                  )}
                 </paper-listbox>
               </paper-dropdown-menu>
             `

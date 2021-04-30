@@ -76,33 +76,28 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private _getZones = memoizeOne(
     (storageItems: Zone[], stateItems: HassEntity[]): MarkerLocation[] => {
-      const stateLocations: MarkerLocation[] = stateItems.map((state) => {
-        return {
-          id: state.entity_id,
-          icon: state.attributes.icon,
-          name: state.attributes.friendly_name || state.entity_id,
-          latitude: state.attributes.latitude,
-          longitude: state.attributes.longitude,
-          radius: state.attributes.radius,
-          radius_color:
-            state.entity_id === "zone.home"
-              ? homeRadiusColor
-              : state.attributes.passive
-              ? passiveRadiusColor
-              : defaultRadiusColor,
-          location_editable:
-            state.entity_id === "zone.home" && this._canEditCore,
-          radius_editable: false,
-        };
-      });
-      const storageLocations: MarkerLocation[] = storageItems.map((zone) => {
-        return {
-          ...zone,
-          radius_color: zone.passive ? passiveRadiusColor : defaultRadiusColor,
-          location_editable: true,
-          radius_editable: true,
-        };
-      });
+      const stateLocations: MarkerLocation[] = stateItems.map((state) => ({
+        id: state.entity_id,
+        icon: state.attributes.icon,
+        name: state.attributes.friendly_name || state.entity_id,
+        latitude: state.attributes.latitude,
+        longitude: state.attributes.longitude,
+        radius: state.attributes.radius,
+        radius_color:
+          state.entity_id === "zone.home"
+            ? homeRadiusColor
+            : state.attributes.passive
+            ? passiveRadiusColor
+            : defaultRadiusColor,
+        location_editable: state.entity_id === "zone.home" && this._canEditCore,
+        radius_editable: false,
+      }));
+      const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
+        ...zone,
+        radius_color: zone.passive ? passiveRadiusColor : defaultRadiusColor,
+        location_editable: true,
+        radius_editable: true,
+      }));
       return storageLocations.concat(stateLocations);
     }
   );
@@ -143,17 +138,15 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               attr-for-selected="data-id"
               .selected=${this._activeEntry || ""}
             >
-              ${this._storageItems.map((entry) => {
-                return html`
+              ${this._storageItems.map(
+                (entry) => html`
                   <paper-icon-item
                     data-id=${entry.id}
                     @click=${this._itemClicked}
                     .entry=${entry}
                   >
                     <ha-icon .icon=${entry.icon} slot="item-icon"></ha-icon>
-                    <paper-item-body>
-                      ${entry.name}
-                    </paper-item-body>
+                    <paper-item-body> ${entry.name} </paper-item-body>
                     ${!this.narrow
                       ? html`
                           <mwc-icon-button
@@ -165,10 +158,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                         `
                       : ""}
                   </paper-icon-item>
-                `;
-              })}
-              ${this._stateItems.map((state) => {
-                return html`
+                `
+              )}
+              ${this._stateItems.map(
+                (state) => html`
                   <paper-icon-item
                     data-id=${state.entity_id}
                     @click=${this._stateItemClicked}
@@ -213,8 +206,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       </paper-tooltip>
                     </div>
                   </paper-icon-item>
-                `;
-              })}
+                `
+              )}
             </paper-listbox>
           `;
 
@@ -249,9 +242,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                   @radius-updated=${this._radiusUpdated}
                   @marker-clicked=${this._markerClicked}
                 ></ha-locations-editor>
-                <div class="overflow">
-                  ${listBox}
-                </div>
+                <div class="overflow">${listBox}</div>
               </div>
             `
           : ""}

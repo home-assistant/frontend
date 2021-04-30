@@ -132,4 +132,8 @@ class DemoEntityFilter extends LitElement {
   }
 }
 
-customElements.define("demo-hui-entity-filter-card", DemoEntityFilter);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-entity-filter-card": DemoEntityFilter;
+  }
+}

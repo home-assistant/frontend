@@ -19,9 +19,7 @@ import { ActionElement } from "../ha-automation-action-row";
 
 const OPTIONS = ["count", "while", "until"];
 
-const getType = (action) => {
-  return OPTIONS.find((option) => option in action);
-};
+const getType = (action) => OPTIONS.find((option) => option in action);
 
 @customElement("ha-automation-action-repeat")
 export class HaRepeatAction extends LitElement implements ActionElement {

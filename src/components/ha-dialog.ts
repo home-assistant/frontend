@@ -28,9 +28,7 @@ export class HaDialog extends MwcDialog {
   }
 
   protected renderHeading() {
-    return html`<slot name="heading">
-      ${super.renderHeading()}
-    </slot>`;
+    return html`<slot name="heading"> ${super.renderHeading()} </slot>`;
   }
 
   protected static get styles(): CSSResult[] {

@@ -51,9 +51,7 @@ class MoreInfoHumidifier extends LitElement {
         <div class="container-humidity">
           <div>${hass.localize("ui.card.humidifier.humidity")}</div>
           <div class="single-row">
-            <div class="target-humidity">
-              ${stateObj.attributes.humidity} %
-            </div>
+            <div class="target-humidity">${stateObj.attributes.humidity} %</div>
             <ha-slider
               class="humidity"
               step="1"

@@ -37,7 +37,8 @@ const cardConfigStruct = object({
 const views = ["dayGridMonth", "dayGridDay", "listWeek"];
 
 @customElement("hui-calendar-card-editor")
-export class HuiCalendarCardEditor extends LitElement
+export class HuiCalendarCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -93,15 +94,15 @@ export class HuiCalendarCardEditor extends LitElement
               .configValue=${"initial_view"}
               @iron-select=${this._viewChanged}
             >
-              ${views.map((view) => {
-                return html`
+              ${views.map(
+                (view) => html`
                   <paper-item .view=${view}
                     >${this.hass!.localize(
                       `ui.panel.lovelace.editor.card.calendar.views.${view}`
                     )}
                   </paper-item>
-                `;
-              })}
+                `
+              )}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>

@@ -143,4 +143,8 @@ class DemoPictureGlance extends LitElement {
   }
 }
 
-customElements.define("demo-hui-picture-glance-card", DemoPictureGlance);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-picture-glance-card": DemoPictureGlance;
+  }
+}

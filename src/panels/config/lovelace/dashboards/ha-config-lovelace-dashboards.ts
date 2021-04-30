@@ -190,13 +190,11 @@ export class HaConfigLovelaceDashboards extends LitElement {
         mode: defaultMode,
         filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
       },
-      ...dashboards.map((dashboard) => {
-        return {
-          filename: "",
-          ...dashboard,
-          default: defaultUrlPath === dashboard.url_path,
-        };
-      }),
+      ...dashboards.map((dashboard) => ({
+        filename: "",
+        ...dashboard,
+        default: defaultUrlPath === dashboard.url_path,
+      })),
     ];
   });
 

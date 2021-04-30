@@ -36,9 +36,7 @@ export class HaSelectSelector extends LitElement {
       >
         ${this.selector.select.options.map(
           (item: string) => html`
-            <paper-item .itemValue=${item}>
-              ${item}
-            </paper-item>
+            <paper-item .itemValue=${item}> ${item} </paper-item>
           `
         )}
       </paper-listbox>

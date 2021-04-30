@@ -53,14 +53,13 @@ const _computeFolders = (folders) => {
   return list;
 };
 
-const _computeAddons = (addons) => {
-  return addons.map((addon) => ({
+const _computeAddons = (addons) =>
+  addons.map((addon) => ({
     slug: addon.slug,
     name: addon.name,
     version: addon.version,
     checked: true,
   }));
-};
 
 interface AddonItem {
   slug: string;
@@ -122,9 +121,7 @@ class HassioSnapshotDialog extends LitElement {
       <ha-dialog open @closing=${this._closeDialog} .heading=${true}>
         <div slot="heading">
           <ha-header-bar>
-            <span slot="title">
-              ${this._computeName}
-            </span>
+            <span slot="title"> ${this._computeName} </span>
             <mwc-icon-button slot="actionItems" dialogAction="cancel">
               <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
             </mwc-icon-button>
@@ -152,8 +149,8 @@ class HassioSnapshotDialog extends LitElement {
           ? html`
               <div>Folders:</div>
               <paper-dialog-scrollable class="no-margin-top">
-                ${this._folders.map((item) => {
-                  return html`
+                ${this._folders.map(
+                  (item) => html`
                     <paper-checkbox
                       .checked=${item.checked}
                       @change="${(ev: Event) =>
@@ -164,8 +161,8 @@ class HassioSnapshotDialog extends LitElement {
                     >
                       ${item.name}
                     </paper-checkbox>
-                  `;
-                })}
+                  `
+                )}
               </paper-dialog-scrollable>
             `
           : ""}
@@ -173,8 +170,8 @@ class HassioSnapshotDialog extends LitElement {
           ? html`
               <div>Add-on:</div>
               <paper-dialog-scrollable class="no-margin-top">
-                ${this._addons.map((item) => {
-                  return html`
+                ${this._addons.map(
+                  (item) => html`
                     <paper-checkbox
                       .checked=${item.checked}
                       @change="${(ev: Event) =>
@@ -185,8 +182,8 @@ class HassioSnapshotDialog extends LitElement {
                     >
                       ${item.name}
                     </paper-checkbox>
-                  `;
-                })}
+                  `
+                )}
               </paper-dialog-scrollable>
             `
           : ""}

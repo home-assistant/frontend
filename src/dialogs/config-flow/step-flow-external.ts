@@ -27,9 +27,7 @@ class StepFlowExternal extends LitElement {
     const localize = this.hass.localize;
 
     return html`
-      <h2>
-        ${this.flowConfig.renderExternalStepHeader(this.hass, this.step)}
-      </h2>
+      <h2>${this.flowConfig.renderExternalStepHeader(this.hass, this.step)}</h2>
       <div class="content">
         ${this.flowConfig.renderExternalStepDescription(this.hass, this.step)}
         <div class="open-button">

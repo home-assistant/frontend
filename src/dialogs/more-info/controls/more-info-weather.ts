@@ -169,8 +169,8 @@ class MoreInfoWeather extends LitElement {
             <div class="section">
               ${this.hass.localize("ui.card.weather.forecast")}:
             </div>
-            ${this.stateObj.attributes.forecast.map((item) => {
-              return html`
+            ${this.stateObj.attributes.forecast.map(
+              (item) => html`
                 <div class="flex">
                   ${item.condition
                     ? html`
@@ -204,12 +204,14 @@ class MoreInfoWeather extends LitElement {
                       `
                     : ""}
                   <div class="temp">
-                    ${formatNumber(item.temperature, this.hass.locale)}
-                    ${getWeatherUnit(this.hass, "temperature")}
+                    ${this._showValue(item.temperature)
+                      ? `${formatNumber(item.temperature, this.hass.locale)}
+                    ${getWeatherUnit(this.hass, "temperature")}`
+                      : ""}
                   </div>
                 </div>
-              `;
-            })}
+              `
+            )}
           `
         : ""}
       ${this.stateObj.attributes.attribution

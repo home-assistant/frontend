@@ -46,9 +46,7 @@ class MoreInfoRemote extends LitElement {
               >
                 ${stateObj.attributes.activity_list!.map(
                   (activity) => html`
-                    <paper-item .itemName=${activity}>
-                      ${activity}
-                    </paper-item>
+                    <paper-item .itemName=${activity}> ${activity} </paper-item>
                   `
                 )}
               </paper-listbox>

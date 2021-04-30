@@ -70,12 +70,12 @@ class DialogPersonDetail extends LitElement {
 
   @internalProperty() private _personExists = false;
 
-  private _deviceTrackersAvailable = memoizeOne((hass) => {
-    return Object.keys(hass.states).some(
+  private _deviceTrackersAvailable = memoizeOne((hass) =>
+    Object.keys(hass.states).some(
       (entityId) =>
         entityId.substr(0, entityId.indexOf(".")) === "device_tracker"
-    );
-  });
+    )
+  );
 
   public async showDialog(params: PersonDetailDialogParams): Promise<void> {
     this._params = params;

@@ -32,7 +32,8 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-stack-card-editor")
-export class HuiStackCardEditor extends LitElement
+export class HuiStackCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -73,13 +74,9 @@ export class HuiStackCardEditor extends LitElement
             scrollable
             @iron-activate=${this._handleSelectedCard}
           >
-            ${this._config.cards.map((_card, i) => {
-              return html`
-                <paper-tab>
-                  ${i + 1}
-                </paper-tab>
-              `;
-            })}
+            ${this._config.cards.map(
+              (_card, i) => html` <paper-tab> ${i + 1} </paper-tab> `
+            )}
           </paper-tabs>
           <paper-tabs
             id="add-card"

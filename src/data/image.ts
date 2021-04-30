@@ -33,7 +33,7 @@ export const createImage = async (
   } else if (resp.status !== 200) {
     throw new Error("Unknown error");
   }
-  return await resp.json();
+  return resp.json();
 };
 
 export const updateImage = (

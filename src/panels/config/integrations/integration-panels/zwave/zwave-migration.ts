@@ -180,9 +180,7 @@ export class ZwaveMigration extends LitElement {
                   ? html`
                       <ha-card class="content" header="Set up OZWDaemon">
                         <div class="card-content">
-                          <p>
-                            Now it's time to set up the OZW integration.
-                          </p>
+                          <p>Now it's time to set up the OZW integration.</p>
                           ${isComponentLoaded(this.hass, "hassio")
                             ? html`
                                 <p>

@@ -250,9 +250,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             <div id="slider">
               ${slider}
               <div id="slider-center">
-                <div id="temperature">
-                  ${currentTemperature} ${setValues}
-                </div>
+                <div id="temperature">${currentTemperature} ${setValues}</div>
               </div>
             </div>
           </div>

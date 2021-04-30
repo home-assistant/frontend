@@ -94,11 +94,7 @@ export class ZHADeviceBindingControl extends LitElement {
               >Bind</mwc-button
             >
             ${this._showHelp
-              ? html`
-                  <div class="helpText">
-                    Bind devices.
-                  </div>
-                `
+              ? html` <div class="helpText">Bind devices.</div> `
               : ""}
             <mwc-button
               @click="${this._onUnbindDevicesClick}"
@@ -106,11 +102,7 @@ export class ZHADeviceBindingControl extends LitElement {
               >Unbind</mwc-button
             >
             ${this._showHelp
-              ? html`
-                  <div class="helpText">
-                    Unbind devices.
-                  </div>
-                `
+              ? html` <div class="helpText">Unbind devices.</div> `
               : ""}
           </div>
         </ha-card>

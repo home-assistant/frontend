@@ -26,7 +26,7 @@ export const fetchHassioHardwareAudio = async (
   hass: HomeAssistant
 ): Promise<HassioHardwareAudioList> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: `/hardware/audio`,
       method: "get",
@@ -45,7 +45,7 @@ export const fetchHassioHardwareInfo = async (
   hass: HomeAssistant
 ): Promise<HassioHardwareInfo> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: `/hardware/info`,
       method: "get",

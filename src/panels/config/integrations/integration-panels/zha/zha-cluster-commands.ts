@@ -171,9 +171,7 @@ export class ZHAClusterCommands extends LitElement {
         this.selectedCluster!.id,
         this.selectedCluster!.type
       );
-      this._commands.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
+      this._commands.sort((a, b) => a.name.localeCompare(b.name));
     }
   }
 

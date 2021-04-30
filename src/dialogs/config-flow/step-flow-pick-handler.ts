@@ -54,12 +54,10 @@ class StepFlowPickHandler extends LitElement {
 
   private _getHandlers = memoizeOne(
     (h: string[], filter?: string, _localize?: LocalizeFunc) => {
-      const handlers: HandlerObj[] = h.map((handler) => {
-        return {
-          name: domainToName(this.hass.localize, handler),
-          slug: handler,
-        };
-      });
+      const handlers: HandlerObj[] = h.map((handler) => ({
+        name: domainToName(this.hass.localize, handler),
+        slug: handler,
+      }));
 
       if (filter) {
         const options: Fuse.IFuseOptions<HandlerObj> = {
@@ -113,9 +111,7 @@ class StepFlowPickHandler extends LitElement {
                   referrerpolicy="no-referrer"
                 />
 
-                <paper-item-body>
-                  ${handler.name}
-                </paper-item-body>
+                <paper-item-body> ${handler.name} </paper-item-body>
                 <ha-icon-next></ha-icon-next>
               </paper-icon-item>
             `

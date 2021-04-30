@@ -291,9 +291,10 @@ class HaPanelDevService extends LitElement {
       }
       const target = "target" in serviceDomains[domain][service];
       const fields = serviceDomains[domain][service].fields;
-      const result = Object.keys(fields).map((field) => {
-        return { key: field, ...fields[field] };
-      });
+      const result = Object.keys(fields).map((field) => ({
+        key: field,
+        ...fields[field],
+      }));
 
       return {
         target,

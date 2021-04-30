@@ -39,7 +39,8 @@ const SecondaryInfoValues: { [key: string]: { domains?: string[] } } = {
 };
 
 @customElement("hui-generic-entity-row-editor")
-export class HuiGenericEntityRowEditor extends LitElement
+export class HuiGenericEntityRowEditor
+  extends LitElement
   implements LovelaceRowEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

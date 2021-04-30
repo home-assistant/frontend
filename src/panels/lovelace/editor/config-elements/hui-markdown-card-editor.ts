@@ -26,7 +26,8 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-markdown-card-editor")
-export class HuiMarkdownCardEditor extends LitElement
+export class HuiMarkdownCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

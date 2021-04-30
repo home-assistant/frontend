@@ -70,9 +70,8 @@ interface EntityItem extends QuickBarItem {
   icon?: string;
 }
 
-const isCommandItem = (item: QuickBarItem): item is CommandItem => {
-  return (item as CommandItem).categoryKey !== undefined;
-};
+const isCommandItem = (item: QuickBarItem): item is CommandItem =>
+  (item as CommandItem).categoryKey !== undefined;
 
 interface QuickBarNavigationItem extends CommandItem {
   path: string;
@@ -579,9 +578,8 @@ export class QuickBar extends LitElement {
   }
 
   private _filterItems = memoizeOne(
-    (items: QuickBarItem[], filter: string): QuickBarItem[] => {
-      return fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items);
-    }
+    (items: QuickBarItem[], filter: string): QuickBarItem[] =>
+      fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
   );
 
   static get styles() {

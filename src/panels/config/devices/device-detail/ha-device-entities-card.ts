@@ -140,9 +140,7 @@ export class HaDeviceEntitiesCard extends LitElement {
           .icon=${domainIcon(computeDomain(entry.entity_id))}
         ></ha-icon>
         <paper-item-body>
-          <div class="name">
-            ${entry.stateName || entry.entity_id}
-          </div>
+          <div class="name">${entry.stateName || entry.entity_id}</div>
         </paper-item-body>
       </paper-icon-item>
     `;

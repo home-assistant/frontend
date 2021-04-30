@@ -73,13 +73,11 @@ class HaAutomationPicker extends LitElement {
             filteredAutomations!.includes(automation.entity_id)
           )
         : automations
-      ).map((automation) => {
-        return {
-          ...automation,
-          name: computeStateName(automation),
-          last_triggered: automation.attributes.last_triggered || undefined,
-        };
-      });
+      ).map((automation) => ({
+        ...automation,
+        name: computeStateName(automation),
+        last_triggered: automation.attributes.last_triggered || undefined,
+      }));
     }
   );
 

@@ -24,7 +24,8 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-iframe-card-editor")
-export class HuiIframeCardEditor extends LitElement
+export class HuiIframeCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

@@ -45,16 +45,13 @@ const i18n = {
   clear: "Clear",
   today: "Today",
   cancel: "Cancel",
-  formatTitle: (monthName, fullYear) => {
-    return monthName + " " + fullYear;
-  },
-  formatDate: (d: { day: number; month: number; year: number }) => {
-    return [
+  formatTitle: (monthName, fullYear) => monthName + " " + fullYear,
+  formatDate: (d: { day: number; month: number; year: number }) =>
+    [
       ("0000" + String(d.year)).slice(-4),
       ("0" + String(d.month + 1)).slice(-2),
       ("0" + String(d.day)).slice(-2),
-    ].join("-");
-  },
+    ].join("-"),
   parseDate: (text: string) => {
     const parts = text.split("-");
     const today = new Date();

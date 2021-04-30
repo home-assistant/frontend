@@ -172,8 +172,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           ${(stateObj.state === "disarmed"
             ? this._config.states!
             : ["disarm"]
-          ).map((state) => {
-            return html`
+          ).map(
+            (state) => html`
               <mwc-button
                 .action="${state}"
                 @click="${this._handleActionClick}"
@@ -181,8 +181,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
               >
                 ${this._actionDisplay(state)}
               </mwc-button>
-            `;
-          })}
+            `
+          )}
         </div>
         ${!stateObj.attributes.code_format
           ? html``
@@ -200,8 +200,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           ? html``
           : html`
               <div id="keypad">
-                ${BUTTONS.map((value) => {
-                  return value === ""
+                ${BUTTONS.map((value) =>
+                  value === ""
                     ? html` <mwc-button disabled></mwc-button> `
                     : html`
                         <mwc-button
@@ -218,8 +218,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                               )
                             : value}
                         </mwc-button>
-                      `;
-                })}
+                      `
+                )}
               </div>
             `}
       </ha-card>

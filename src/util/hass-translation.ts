@@ -36,9 +36,18 @@ export function findAvailableLanguage(language: string) {
     return LOCALE_LOOKUP[langLower];
   }
 
-  return Object.keys(translationMetadata.translations).find(
+  const translation = Object.keys(translationMetadata.translations).find(
     (lang) => lang.toLowerCase() === langLower
   );
+  if (translation) {
+    return translation;
+  }
+
+  if (language.includes("-")) {
+    return findAvailableLanguage(language.split("-")[0]);
+  }
+
+  return undefined;
 }
 
 /**
@@ -94,13 +103,6 @@ export function getLocalLanguage() {
   if (language) {
     return language;
   }
-  if (navigator.language && navigator.language.includes("-")) {
-    language = findAvailableLanguage(navigator.language.split("-")[0]);
-    if (language) {
-      return language;
-    }
-  }
-
   // Final fallback
   return "en";
 }

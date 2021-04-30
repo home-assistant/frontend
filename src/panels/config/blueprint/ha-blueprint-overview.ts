@@ -102,9 +102,7 @@ class HaBlueprintOverview extends LitElement {
           ? (name, entity: any) =>
               html`
                 ${name}<br />
-                <div class="secondary">
-                  ${entity.path}
-                </div>
+                <div class="secondary">${entity.path}</div>
               `
           : undefined,
       },

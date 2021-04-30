@@ -39,7 +39,8 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-conditional-card-editor")
-export class HuiConditionalCardEditor extends LitElement
+export class HuiConditionalCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -131,8 +132,8 @@ export class HuiConditionalCardEditor extends LitElement
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.card.conditional.condition_explanation"
               )}
-              ${this._config.conditions.map((cond, idx) => {
-                return html`
+              ${this._config.conditions.map(
+                (cond, idx) => html`
                   <div class="condition">
                     <div class="entity">
                       <ha-entity-picker
@@ -180,8 +181,8 @@ export class HuiConditionalCardEditor extends LitElement
                       ></paper-input>
                     </div>
                   </div>
-                `;
-              })}
+                `
+              )}
               <div class="condition">
                 <ha-entity-picker
                   .hass=${this.hass}

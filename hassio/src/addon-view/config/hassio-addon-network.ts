@@ -79,12 +79,10 @@ class HassioAddonNetwork extends LitElement {
                     "addon.configuration.network.host"
                   )}
                 </th>
-                <th>
-                  ${this.supervisor.localize("common.description")}
-                </th>
+                <th>${this.supervisor.localize("common.description")}</th>
               </tr>
-              ${this._config!.map((item) => {
-                return html`
+              ${this._config!.map(
+                (item) => html`
                   <tr>
                     <td>${item.container}</td>
                     <td>
@@ -100,8 +98,8 @@ class HassioAddonNetwork extends LitElement {
                     </td>
                     <td>${this._computeDescription(item)}</td>
                   </tr>
-                `;
-              })}
+                `
+              )}
             </tbody>
           </table>
         </div>
@@ -124,25 +122,20 @@ class HassioAddonNetwork extends LitElement {
     }
   }
 
-  private _computeDescription = (item: NetworkItem): string => {
-    return (
-      this.addon.translations[this.hass.language]?.network?.[item.container]
-        ?.description ||
-      this.addon.translations.en?.network?.[item.container]?.description ||
-      item.description
-    );
-  };
+  private _computeDescription = (item: NetworkItem): string =>
+    this.addon.translations[this.hass.language]?.network?.[item.container]
+      ?.description ||
+    this.addon.translations.en?.network?.[item.container]?.description ||
+    item.description;
 
   private _setNetworkConfig(): void {
     const network = this.addon.network || {};
     const description = this.addon.network_description || {};
-    const items: NetworkItem[] = Object.keys(network).map((key) => {
-      return {
-        container: key,
-        host: network[key],
-        description: description[key],
-      };
-    });
+    const items: NetworkItem[] = Object.keys(network).map((key) => ({
+      container: key,
+      host: network[key],
+      description: description[key],
+    }));
     this._config = items.sort((a, b) => (a.container > b.container ? 1 : -1));
   }
 
