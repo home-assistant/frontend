@@ -1258,7 +1258,7 @@
         "notification_toast": {
             "connection_lost": "Verbinding verbroken. Opnieuw verbinden...",
             "dismiss": "Afwijzen",
-            "intergration_starting": "Start {integration}, niet alles is beschikbaar totdat het voltooid is.",
+            "intergration_starting": "{integration} starten, niet alles is beschikbaar totdat het voltooid is.",
             "service_call_failed": "Kan service {service} niet aanroepen",
             "started": "Home Assistant is gestart!",
             "starting": "Home Assistant is aan het opstarten. Tijdens het opstarten is niet alles beschikbaar.",
@@ -1773,7 +1773,7 @@
                             "disable_hook_error_msg": "Kan webhook niet uitschakelen:",
                             "info": "Alles wat is geconfigureerd om door een webhook te worden geactiveerd, kan een openbaar toegankelijke URL krijgen zodat u gegevens overal naar Home Assistant kunt terugsturen, zonder uw exemplaar aan internet bloot te stellen.",
                             "link_learn_more": "Meer informatie over het maken van door webhook aangedreven automatiseringen.",
-                            "loading": "Laden ...",
+                            "loading": "Laden...",
                             "manage": "Beheer",
                             "no_hooks_yet": "Het lijkt erop dat je nog geen webhooks hebt. Ga aan de slag door het configureren van een ",
                             "no_hooks_yet_link_automation": "webhook automatisering",
@@ -1967,7 +1967,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Er is nog geen {name} toegevoegd met dit apparaat. U kunt er één toevoegen door op de + knop hierboven te klikken.",
+                    "add_prompt": "Er zijn nog geen {name} toegevoegd met dit apparaat. U kunt er één toevoegen door op de + knop hierboven te klikken.",
                     "automation": {
                         "actions": {
                             "caption": "Wanneer iets wordt getriggerd...",
@@ -2285,7 +2285,7 @@
                     "rename_input_label": "Invoernaam",
                     "search": "Zoek integraties"
                 },
-                "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
+                "introduction": "Hier kunt u uw componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "logs": {
                     "caption": "Logboek",
                     "clear": "Wis",
@@ -2301,7 +2301,7 @@
                         "warning": "WAARSCHUWING"
                     },
                     "load_full_log": "Laad volledige Home Assistant logboek",
-                    "loading_log": "Foutenlogboek laden ...",
+                    "loading_log": "Foutenlogboek laden...",
                     "multiple_messages": "bericht kwam voor het eerst om {time} en verschijnt {counter} keer",
                     "no_errors": "Er zijn geen fouten gemeld",
                     "no_issues": "Er zijn geen problemen!",

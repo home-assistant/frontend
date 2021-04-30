@@ -77,9 +77,7 @@ class OZWNodeDashboard extends LitElement {
         .tabs=${ozwNodeTabs(this.ozwInstance, this.nodeId)}
       >
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
-          <div slot="header">
-            Node Management
-          </div>
+          <div slot="header">Node Management</div>
 
           <div slot="introduction">
             View the status of a node and manage its configuration.

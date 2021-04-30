@@ -61,7 +61,7 @@ export const fetchHassioSnapshotInfo = async (
 ): Promise<HassioSnapshotDetail> => {
   if (hass) {
     if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-      return await hass.callWS({
+      return hass.callWS({
         type: "supervisor/api",
         endpoint: `/snapshots/${snapshot}/info`,
         method: "get",
@@ -163,5 +163,5 @@ export const uploadSnapshot = async (
   } else if (resp.status !== 200) {
     throw new Error(`${resp.status} ${resp.statusText}`);
   }
-  return await resp.json();
+  return resp.json();
 };

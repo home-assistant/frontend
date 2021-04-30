@@ -136,15 +136,14 @@ export const reconfigureNode = (
   hass: HomeAssistant,
   ieeeAddress: string,
   callbackFunction: (message: ClusterConfigurationEvent) => void
-) => {
-  return hass.connection.subscribeMessage(
+) =>
+  hass.connection.subscribeMessage(
     (message: ClusterConfigurationEvent) => callbackFunction(message),
     {
       type: "zha/devices/reconfigure",
       ieee: ieeeAddress,
     }
   );
-};
 
 export const refreshTopology = (hass: HomeAssistant): Promise<void> =>
   hass.callWS({
@@ -240,12 +239,11 @@ export const unbindDeviceFromGroup = (
 export const readAttributeValue = (
   hass: HomeAssistant,
   data: ReadAttributeServiceData
-): Promise<string> => {
-  return hass.callWS({
+): Promise<string> =>
+  hass.callWS({
     ...data,
     type: "zha/devices/clusters/attributes/value",
   });
-};
 
 export const fetchCommandsForCluster = (
   hass: HomeAssistant,

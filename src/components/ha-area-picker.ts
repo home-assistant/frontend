@@ -391,11 +391,9 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _area = memoizeOne((areaId: string):
-    | AreaRegistryEntry
-    | undefined => {
-    return this._areas?.find((area) => area.area_id === areaId);
-  });
+  private _area = memoizeOne((areaId: string): AreaRegistryEntry | undefined =>
+    this._areas?.find((area) => area.area_id === areaId)
+  );
 
   private _clearValue(ev: Event) {
     ev.stopPropagation();

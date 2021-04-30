@@ -17,9 +17,8 @@ export const hex2rgb = (hex: string): [number, number, number] => {
   ];
 };
 
-export const rgb2hex = (rgb: [number, number, number]): string => {
-  return `#${rgb_hex(rgb[0])}${rgb_hex(rgb[1])}${rgb_hex(rgb[2])}`;
-};
+export const rgb2hex = (rgb: [number, number, number]): string =>
+  `#${rgb_hex(rgb[0])}${rgb_hex(rgb[1])}${rgb_hex(rgb[2])}`;
 
 // Conversion between LAB, XYZ and RGB from https://github.com/gka/chroma.js
 // Copyright (c) 2011-2019, Gregor Aisch
@@ -49,13 +48,10 @@ const xyz_lab = (t: number) => {
   return t / t2 + t0;
 };
 
-const xyz_rgb = (r: number) => {
-  return 255 * (r <= 0.00304 ? 12.92 * r : 1.055 * r ** (1 / 2.4) - 0.055);
-};
+const xyz_rgb = (r: number) =>
+  255 * (r <= 0.00304 ? 12.92 * r : 1.055 * r ** (1 / 2.4) - 0.055);
 
-const lab_xyz = (t: number) => {
-  return t > t1 ? t * t * t : t2 * (t - t0);
-};
+const lab_xyz = (t: number) => (t > t1 ? t * t * t : t2 * (t - t0));
 
 // Conversions between RGB and LAB
 
@@ -114,6 +110,5 @@ export const rgb2hsv = (
   return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
 };
 
-export const rgb2hs = (rgb: [number, number, number]): [number, number] => {
-  return rgb2hsv(rgb).slice(0, 2) as [number, number];
-};
+export const rgb2hs = (rgb: [number, number, number]): [number, number] =>
+  rgb2hsv(rgb).slice(0, 2) as [number, number];

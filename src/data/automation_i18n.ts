@@ -1,8 +1,7 @@
 import { Trigger, Condition } from "./automation";
 
-export const describeTrigger = (trigger: Trigger) => {
-  return `${trigger.platform} trigger`;
-};
+export const describeTrigger = (trigger: Trigger) =>
+  `${trigger.platform} trigger`;
 
 export const describeCondition = (condition: Condition) => {
   if (condition.alias) {

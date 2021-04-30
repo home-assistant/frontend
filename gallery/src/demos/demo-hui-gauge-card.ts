@@ -129,4 +129,8 @@ class DemoGaugeEntity extends LitElement {
   }
 }
 
-customElements.define("demo-hui-gauge-card", DemoGaugeEntity);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-gauge-card": DemoGaugeEntity;
+  }
+}

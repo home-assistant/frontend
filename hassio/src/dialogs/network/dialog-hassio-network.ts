@@ -47,7 +47,8 @@ import { HassioNetworkDialogParams } from "./show-dialog-network";
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
 @customElement("dialog-hassio-network")
-export class DialogHassioNetwork extends LitElement
+export class DialogHassioNetwork
+  extends LitElement
   implements HassDialog<HassioNetworkDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -76,9 +77,9 @@ export class DialogHassioNetwork extends LitElement
     this._dirty = false;
     this._curTabIndex = 0;
     this.supervisor = params.supervisor;
-    this._interfaces = params.supervisor.network.interfaces.sort((a, b) => {
-      return a.primary > b.primary ? -1 : 1;
-    });
+    this._interfaces = params.supervisor.network.interfaces.sort((a, b) =>
+      a.primary > b.primary ? -1 : 1
+    );
     this._interface = { ...this._interfaces[this._curTabIndex] };
 
     await this.updateComplete;

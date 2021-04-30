@@ -78,9 +78,9 @@ export const showConfirmationDialog = (
   element: HTMLElement,
   dialogParams: ConfirmationDialogParams
 ) =>
-  showDialogHelper(element, dialogParams, { confirmation: true }) as Promise<
-    boolean
-  >;
+  showDialogHelper(element, dialogParams, {
+    confirmation: true,
+  }) as Promise<boolean>;
 
 export const showPromptDialog = (
   element: HTMLElement,

@@ -147,4 +147,8 @@ class DemoPictureElements extends LitElement {
   }
 }
 
-customElements.define("demo-hui-picture-elements-card", DemoPictureElements);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-picture-elements-card": DemoPictureElements;
+  }
+}

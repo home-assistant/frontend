@@ -35,12 +35,10 @@ export class ZHAClustersDataTable extends LitElement {
   private _clusters = memoizeOne((clusters: Cluster[]) => {
     let outputClusters: ClusterRowData[] = clusters;
 
-    outputClusters = outputClusters.map((cluster) => {
-      return {
-        ...cluster,
-        cluster_id: cluster.endpoint_id + "-" + cluster.id,
-      };
-    });
+    outputClusters = outputClusters.map((cluster) => ({
+      ...cluster,
+      cluster_id: cluster.endpoint_id + "-" + cluster.id,
+    }));
 
     return outputClusters;
   });
@@ -65,9 +63,7 @@ export class ZHAClustersDataTable extends LitElement {
             },
             id: {
               title: "ID",
-              template: (id: number) => {
-                return html` ${formatAsPaddedHex(id)} `;
-              },
+              template: (id: number) => html` ${formatAsPaddedHex(id)} `,
               sortable: true,
               width: "15%",
             },

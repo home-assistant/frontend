@@ -40,7 +40,8 @@ const cardConfigStruct = object({
 const includeDomains = ["sensor"];
 
 @customElement("hui-sensor-card-editor")
-export class HuiSensorCardEditor extends LitElement
+export class HuiSensorCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -141,9 +142,7 @@ export class HuiSensorCardEditor extends LitElement
               slot="dropdown-content"
               .selected=${graphs.indexOf(this._graph)}
             >
-              ${graphs.map((graph) => {
-                return html`<paper-item>${graph}</paper-item>`;
-              })}
+              ${graphs.map((graph) => html`<paper-item>${graph}</paper-item>`)}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>

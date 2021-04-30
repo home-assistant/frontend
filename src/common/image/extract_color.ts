@@ -119,6 +119,7 @@ export const extractColors = (url: string, downsampleColors = 16) =>
     colorCount: downsampleColors,
   })
     .getPalette()
-    .then(({ foreground, background }) => {
-      return { background: background!, foreground: foreground! };
-    });
+    .then(({ foreground, background }) => ({
+      background: background!,
+      foreground: foreground!,
+    }));

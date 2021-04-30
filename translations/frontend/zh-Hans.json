@@ -561,8 +561,11 @@
             },
             "light": {
                 "brightness": "亮度",
+                "cold_white_value": "冷白亮度",
+                "color_brightness": "色彩亮度",
                 "color_temperature": "色温",
                 "effect": "效果",
+                "warm_white_value": "暖白亮度",
                 "white_value": "白度值"
             },
             "lock": {
@@ -1194,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "重新配置设备"
+                "attribute": "属性",
+                "battery_device_warning": "开始重新配置之前，需要唤醒电池供电的设备。有关如何唤醒设备的说明，请参阅设备说明书。",
+                "bind_header": "绑定",
+                "button_hide": "隐藏详细信息",
+                "button_show": "显示详细信息",
+                "cluster_header": "簇",
+                "configuration_complete": "设备重新配置完成。",
+                "configuration_failed": "设备重新配置失败。日志中会有更多信息。",
+                "configuring_alt": "正在配置",
+                "heading": "重新配置设备",
+                "in_progress": "设备正在重新配置。可能需要一段时间。",
+                "introduction": "重新配置 Zigbee 网络上的设备。如果设备功能不正常，请使用此功能。",
+                "min_max_change": "min/max/change",
+                "reporting_header": "上报",
+                "run_in_background": "您可以关闭此对话框，重新配置将在后台继续进行。",
+                "start_reconfiguration": "开始重新配置"
             }
         },
         "duration": {
@@ -1257,7 +1275,8 @@
                     "caption": "区域注册表",
                     "data_table": {
                         "area": "区域",
-                        "devices": "设备"
+                        "devices": "设备",
+                        "entities": "实体"
                     },
                     "delete": {
                         "confirmation_text": "此区域中的所有设备都将取消分配。",
@@ -1269,8 +1288,10 @@
                         "create": "创建",
                         "default_name": "新建区域",
                         "delete": "删除",
+                        "linked_entities_caption": "实体",
                         "name": "名称",
                         "name_required": "名称为必填项",
+                        "no_linked_entities": "此区域下没有实体。",
                         "unknown_error": "未知错误",
                         "update": "更新"
                     },
@@ -2921,7 +2942,12 @@
                         "node_status": "节点状态",
                         "zwave_info": "Z-Wave 信息"
                     },
+                    "logs": {
+                        "log_level": "日志级别",
+                        "title": "Z-Wave JS 日志"
+                    },
                     "navigation": {
+                        "logs": "日志",
                         "network": "网络"
                     },
                     "network_status": {
@@ -2947,6 +2973,16 @@
                         "awake": "唤醒",
                         "dead": "断线",
                         "unknown": "未知"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "开始重新协商之前，需要唤醒电池供电的设备。有关如何唤醒设备的说明，请参阅设备说明书。",
+                        "in_progress": "设备正在重新协商。可能需要一段时间。",
+                        "interview_complete": "设备协商完成。",
+                        "interview_failed": "设备协商失败。日志中会有更多信息。",
+                        "introduction": "重新协商 Z-Wave 网络上的设备。如果设备功能缺失或不正常，请使用此功能。",
+                        "run_in_background": "您可以关闭此对话框，协商将在后台继续进行。",
+                        "start_reinterview": "开始重新协商",
+                        "title": "重新协商 Z-Wave 设备"
                     },
                     "remove_node": {
                         "cancel_exclusion": "取消 exclusion",

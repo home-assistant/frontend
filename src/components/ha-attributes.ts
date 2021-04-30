@@ -36,12 +36,8 @@ class HaAttributes extends LitElement {
         ).map(
           (attribute) => html`
             <div class="data-entry">
-              <div class="key">
-                ${formatAttributeName(attribute)}
-              </div>
-              <div class="value">
-                ${this.formatAttribute(attribute)}
-              </div>
+              <div class="key">${formatAttributeName(attribute)}</div>
+              <div class="value">${this.formatAttribute(attribute)}</div>
             </div>
           `
         )}
@@ -92,9 +88,9 @@ class HaAttributes extends LitElement {
     if (!this.stateObj) {
       return [];
     }
-    return Object.keys(this.stateObj.attributes).filter((key) => {
-      return filtersArray.indexOf(key) === -1;
-    });
+    return Object.keys(this.stateObj.attributes).filter(
+      (key) => filtersArray.indexOf(key) === -1
+    );
   }
 
   private formatAttribute(attribute: string): string | TemplateResult {

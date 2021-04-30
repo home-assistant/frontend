@@ -207,9 +207,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                   : ""}
               </div>
 
-              <div class="controls">
-                ${buttons}
-              </div>
+              <div class="controls">${buttons}</div>
             </div>
           `
         : ""}

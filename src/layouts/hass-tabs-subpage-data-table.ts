@@ -197,9 +197,7 @@ export class HaTabsSubpageDataTable extends LitElement {
           ? html`
               <div slot="header">
                 <slot name="header">
-                  <div class="search-toolbar">
-                    ${headerToolbar}
-                  </div>
+                  <div class="search-toolbar">${headerToolbar}</div>
                 </slot>
               </div>
             `
@@ -220,9 +218,7 @@ export class HaTabsSubpageDataTable extends LitElement {
             ? html`
                 <div slot="header">
                   <slot name="header">
-                    <div class="table-header">
-                      ${headerToolbar}
-                    </div>
+                    <div class="table-header">${headerToolbar}</div>
                   </slot>
                 </div>
               `

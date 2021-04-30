@@ -41,15 +41,17 @@ export class HaFormSelect extends LitElement implements HaFormElement {
           .selected=${this.data}
           @selected-item-changed=${this._valueChanged}
         >
-          ${// TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
-          // @ts-ignore
-          this.schema.options!.map(
-            (item: string | [string, string]) => html`
-              <paper-item .itemValue=${this._optionValue(item)}>
-                ${this._optionLabel(item)}
-              </paper-item>
-            `
-          )}
+          ${
+            // TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
+            // @ts-ignore
+            this.schema.options!.map(
+              (item: string | [string, string]) => html`
+                <paper-item .itemValue=${this._optionValue(item)}>
+                  ${this._optionLabel(item)}
+                </paper-item>
+              `
+            )
+          }
         </paper-listbox>
       </ha-paper-dropdown-menu>
     `;

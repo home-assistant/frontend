@@ -1291,7 +1291,7 @@
                         "linked_entities_caption": "Объекты",
                         "name": "Название",
                         "name_required": "Укажите название помещения",
-                        "no_linked_entities": "С этим помещением не связаны никакие объекты.",
+                        "no_linked_entities": "Не найдено связей с объектами",
                         "unknown_error": "Неизвестная ошибка.",
                         "update": "Обновить"
                     },
@@ -2111,7 +2111,7 @@
                     "show": "Показать"
                 },
                 "hassio": {
-                    "button": "Настроить"
+                    "button": "Настройки"
                 },
                 "header": "Настройка Home Assistant",
                 "helpers": {

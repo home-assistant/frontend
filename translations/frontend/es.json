@@ -1197,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Reconfigurando el dispositivo"
+                "attribute": "Atributo",
+                "battery_device_warning": "Antes de iniciar el proceso de reconfiguración, deberás despertar los dispositivos que funcionan con batería. Consulta el manual de tu dispositivo para obtener instrucciones sobre cómo despertar el dispositivo.",
+                "bind_header": "Emparejamiento",
+                "button_hide": "Ocultar detalles",
+                "button_show": "Mostrar detalles",
+                "cluster_header": "Clúster",
+                "configuration_complete": "Reconfiguración del dispositivo completada.",
+                "configuration_failed": "Error en la reconfiguración del dispositivo. Es posible que haya información adicional disponible en los registros.",
+                "configuring_alt": "Configurando",
+                "heading": "Reconfigurando el dispositivo",
+                "in_progress": "El dispositivo se está reconfigurando. Esto puede llevar algún tiempo.",
+                "introduction": "Reconfigura un dispositivo en tu red Zigbee. Utiliza esta función si tu dispositivo no funciona correctamente.",
+                "min_max_change": "min/max/cambio",
+                "reporting_header": "Informes",
+                "run_in_background": "Puedes cerrar este cuadro de diálogo y la reconfiguración continuará en segundo plano.",
+                "start_reconfiguration": "Iniciar reconfiguración"
             }
         },
         "duration": {
@@ -1260,7 +1275,8 @@
                     "caption": "Áreas",
                     "data_table": {
                         "area": "Área",
-                        "devices": "Dispositivos"
+                        "devices": "Dispositivos",
+                        "entities": "Entidades"
                     },
                     "delete": {
                         "confirmation_text": "Todos los dispositivos en esta área quedarán sin asignar.",
@@ -1272,8 +1288,10 @@
                         "create": "Crear",
                         "default_name": "Área Nueva",
                         "delete": "Eliminar",
+                        "linked_entities_caption": "Entidades",
                         "name": "Nombre",
                         "name_required": "Se requiere el nombre",
+                        "no_linked_entities": "No hay entidades vinculadas a este área.",
                         "unknown_error": "Error desconocido",
                         "update": "Actualizar"
                     },
@@ -2924,7 +2942,12 @@
                         "node_status": "Estado del Nodo",
                         "zwave_info": "Información de Z-Wave"
                     },
+                    "logs": {
+                        "log_level": "Nivel de registro",
+                        "title": "Registros de Z-Wave JS"
+                    },
                     "navigation": {
+                        "logs": "Registros",
                         "network": "Red"
                     },
                     "network_status": {

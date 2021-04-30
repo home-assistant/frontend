@@ -181,9 +181,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         ${this._headerElement
-          ? html`<div class="header-footer header">
-              ${this._headerElement}
-            </div>`
+          ? html`<div class="header-footer header">${this._headerElement}</div>`
           : ""}
         ${!this._config.title && !this._showHeaderToggle && !this._config.icon
           ? ""
@@ -219,9 +217,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         </div>
 
         ${this._footerElement
-          ? html`<div class="header-footer footer">
-              ${this._footerElement}
-            </div>`
+          ? html`<div class="header-footer footer">${this._footerElement}</div>`
           : ""}
       </ha-card>
     `;

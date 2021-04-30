@@ -29,7 +29,8 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-logbook-card-editor")
-export class HuiLogbookCardEditor extends LitElement
+export class HuiLogbookCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

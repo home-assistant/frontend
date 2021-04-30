@@ -27,8 +27,8 @@ export class HuiInputListEditor extends LitElement {
     }
 
     return html`
-      ${this.value.map((listEntry, index) => {
-        return html`
+      ${this.value.map(
+        (listEntry, index) => html`
           <paper-input
             label="${this.inputLabel}"
             .value=${listEntry}
@@ -45,8 +45,8 @@ export class HuiInputListEditor extends LitElement {
               >Clear</ha-icon-button
             ></paper-input
           >
-        `;
-      })}
+        `
+      )}
       <paper-input
         label="${this.inputLabel}"
         @change=${this._addEntry}
