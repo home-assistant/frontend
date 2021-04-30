@@ -143,6 +143,15 @@ const CONFIGS = [
     entity: light.kitchen_lights
     `,
   },
+  {
+    heading: "Size for single card",
+    config: `
+- type: grid
+  cards:
+  - type: entity
+    entity: light.kitchen_lights
+    `,
+  },
 
   {
     heading: "Vertical Stack",

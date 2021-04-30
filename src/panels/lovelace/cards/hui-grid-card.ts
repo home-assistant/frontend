@@ -25,7 +25,9 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
     if (this.square) {
       const rowHeight = SQUARE_ROW_HEIGHTS_BY_COLUMNS[this.columns] || 1;
       return (
-        (this._cards.length / this.columns) * rowHeight +
+        (this._cards.length < this.columns
+          ? rowHeight
+          : (this._cards.length / this.columns) * rowHeight) +
         (this._config.title ? 1 : 0)
       );
     }
