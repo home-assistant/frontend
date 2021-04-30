@@ -39,7 +39,7 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
@@ -139,7 +139,7 @@ export class HaIntegrationCard extends LitElement {
 
   private _renderGroupedIntegration(): TemplateResult {
     return html`
-      <paper-listbox>
+      <paper-listbox class="ha-scrollbar">
         ${this.items.map(
           (item) =>
             html`<paper-item
@@ -586,6 +586,7 @@ export class HaIntegrationCard extends LitElement {
   static get styles(): CSSResult[] {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         ha-card {
           display: flex;
