@@ -1197,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "重新設定裝置"
+                "attribute": "屬性",
+                "battery_device_warning": "電池供電裝置必須喚醒以開始重新程序。請參考您的裝置手冊以了解如何喚醒裝置。",
+                "bind_header": "綁定中",
+                "button_hide": "隱藏詳細資訊",
+                "button_show": "顯示詳細資訊",
+                "cluster_header": "叢集",
+                "configuration_complete": "裝置設定完成。",
+                "configuration_failed": "裝置重新設定失敗。日誌中可能包含其他相關資訊。",
+                "configuring_alt": "設定中",
+                "heading": "重新設定裝置",
+                "in_progress": "裝置正在設定，可能需要一點時間。",
+                "introduction": "重新設定 Zigbee 網路中的裝置。假如功能不正確時，請使用此選項。",
+                "min_max_change": "最低/最高/變更",
+                "reporting_header": "回報中",
+                "run_in_background": "可以關閉此對話框、重新設定將於背景繼續執行。",
+                "start_reconfiguration": "開始重新設定"
             }
         },
         "duration": {
@@ -1260,7 +1275,8 @@
                     "caption": "分區",
                     "data_table": {
                         "area": "分區",
-                        "devices": "裝置"
+                        "devices": "裝置",
+                        "entities": "實體"
                     },
                     "delete": {
                         "confirmation_text": "所有該分區所屬裝置都將變成未指派狀態。",
@@ -1272,8 +1288,10 @@
                         "create": "建立",
                         "default_name": "新分區",
                         "delete": "刪除",
+                        "linked_entities_caption": "實體",
                         "name": "名稱",
                         "name_required": "必須輸入名稱",
+                        "no_linked_entities": "此區域未設定任何裝置。",
                         "unknown_error": "未知錯誤",
                         "update": "更新"
                     },
@@ -2924,7 +2942,12 @@
                         "node_status": "節點狀態",
                         "zwave_info": "Z-Wave 資訊"
                     },
+                    "logs": {
+                        "log_level": "日誌記錄等級",
+                        "title": "Z-Wave JS 日誌"
+                    },
                     "navigation": {
+                        "logs": "日誌",
                         "network": "網路"
                     },
                     "network_status": {

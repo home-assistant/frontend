@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "Jasność",
+                "cold_white_value": "Jasność zimnej bieli",
+                "color_brightness": "Jasność koloru",
                 "color_temperature": "Temperatura barwy",
                 "effect": "Efekt",
-                "white_value": "Wartość bieli"
+                "warm_white_value": "Jasność ciepłej bieli",
+                "white_value": "Jasność bieli"
             },
             "lock": {
                 "code": "Kod",
@@ -886,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Dokumentacja integracji",
                 "required": "To pole jest wymagane",
                 "service_data": "Dane usługi",
                 "target": "Cele",
@@ -1193,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Ponowne konfigurowanie urządzenia"
+                "attribute": "Atrybut",
+                "battery_device_warning": "Przed rozpoczęciem ponownej konfiguracji, urządzenia zasilane bateryjnie muszą zostać wybudzone. Zapoznaj się z instrukcją obsługi urządzenia, aby uzyskać informacje dotyczące wybudzania.",
+                "bind_header": "Wiązanie",
+                "button_hide": "Ukryj szczegóły",
+                "button_show": "Pokaż szczegóły",
+                "cluster_header": "Klaster",
+                "configuration_complete": "Ponowna konfiguracja urządzenia zakończona.",
+                "configuration_failed": "Ponowna konfiguracja urządzenia nie powiodła się. Dodatkowe informacje mogą być dostępne w logach.",
+                "configuring_alt": "Konfigurowanie",
+                "heading": "Ponowne konfigurowanie urządzenia",
+                "in_progress": "Urządzenie jest ponownie konfigurowane. To może zająć trochę czasu.",
+                "introduction": "Skonfiguruj ponownie urządzenie w sieci Zigbee. Użyj tej funkcji, jeśli urządzenie nie działa poprawnie.",
+                "min_max_change": "min/max/zmiana",
+                "reporting_header": "Raportowanie",
+                "run_in_background": "Możesz zamknąć to okno, a ponowna konfiguracja będzie kontynuowane w tle.",
+                "start_reconfiguration": "Rozpocznij konfigurację urządzenia"
             }
         },
         "duration": {
@@ -1256,7 +1275,8 @@
                     "caption": "Obszary",
                     "data_table": {
                         "area": "Obszar",
-                        "devices": "Urządzenia"
+                        "devices": "Urządzenia",
+                        "entities": "Encje"
                     },
                     "delete": {
                         "confirmation_text": "Wszystkie urządzenia z tego obszaru pozostaną bez przypisanego obszaru.",
@@ -1268,8 +1288,10 @@
                         "create": "Utwórz",
                         "default_name": "Nowy obszar",
                         "delete": "Usuń",
+                        "linked_entities_caption": "Encje",
                         "name": "Nazwa",
                         "name_required": "Nazwa jest wymagana",
+                        "no_linked_entities": "Brak encji powiązanych z tym obszarem.",
                         "unknown_error": "Nieznany błąd",
                         "update": "Aktualizuj"
                     },
@@ -2787,6 +2809,15 @@
                         "manufacturer_code_override": "Zastąpienie kodu producenta",
                         "value": "Wartość"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Skróty",
+                        "update_button": "Zaktualizuj konfigurację",
+                        "zha_options": {
+                            "default_light_transition": "Domyślny czas efektu przejścia dla światła (w sekundach)",
+                            "enable_identify_on_join": "Włącz efekt identyfikacji, gdy urządzenia dołączają do sieci",
+                            "title": "Opcje ogólne"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Konfigurowanie zakończone",
                         "CONFIGURED_status_text": "Inicjalizacja",
@@ -2911,7 +2942,12 @@
                         "node_status": "Stan węzła",
                         "zwave_info": "Informacje Z-Wave"
                     },
+                    "logs": {
+                        "log_level": "Poziom loga",
+                        "title": "Logi Z-Wave JS"
+                    },
                     "navigation": {
+                        "logs": "Logi",
                         "network": "Sieć"
                     },
                     "network_status": {
@@ -2926,6 +2962,9 @@
                         "header": "Konfiguracja urządzenia Z-Wave",
                         "introduction": "Zarządzaj i dostosuj specyficznymi parametrami konfiguracyjnymi dla wybranego urządzenia (nody)",
                         "parameter_is_read_only": "Ten parametr jest tylko do odczytu.",
+                        "set_param_accepted": "Parametr został zaktualizowany.",
+                        "set_param_error": "Wystąpił błąd.",
+                        "set_param_queued": "Zmiana parametru została umieszczona w kolejce i zostanie zaktualizowana po wybudzeniu urządzenia.",
                         "zwave_js_device_database": "Baza danych urządzeń Z-Wave JS"
                     },
                     "node_status": {
@@ -2934,6 +2973,16 @@
                         "awake": "wybudzony",
                         "dead": "martwy",
                         "unknown": "nieznany"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Przed rozpoczęciem odpytywania, urządzenia zasilane bateryjnie muszą zostać wybudzone. Zapoznaj się z instrukcją obsługi urządzenia, aby uzyskać informacje dotyczące wybudzania.",
+                        "in_progress": "Urządzenie jest odpytywane. To może zająć trochę czasu.",
+                        "interview_complete": "Odpytywanie urządzenia zakończone.",
+                        "interview_failed": "Odpytywanie urządzenia nie powiodło się. Dodatkowe informacje mogą być dostępne w logach.",
+                        "introduction": "Odpytaj urządzenie w swojej sieci Z-Wave. Użyj tej funkcji, jeśli Twoje urządzenie nie działa lub działa nieprawidłowo.",
+                        "run_in_background": "Możesz zamknąć to okno, a odpytywanie będzie kontynuowane w tle.",
+                        "start_reinterview": "Rozpocznij ponowne odpytywanie",
+                        "title": "Ponowne odpytywanie urządzenia Z-Wave"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Anuluj usuwanie węzła",
@@ -3085,8 +3134,8 @@
                         "attributes": "Atrybuty",
                         "copy_id": "Skopiuj ID do schowka",
                         "current_entities": "Bieżące encje",
-                        "description1": "Ustaw stany encji urządzeń Home Assistanta.",
-                        "description2": "Nie wpłynie to na rzeczywiste urządzenia.",
+                        "description1": "Ustaw aktualne stany encji urządzeń Home Assistanta.",
+                        "description2": "Jeśli encja należy do urządzenia, nie nastąpi żadna komunikacja z urządzeniem.",
                         "entity": "Encja",
                         "filter_attributes": "filtr atrybutów",
                         "filter_entities": "Filtr encji",
@@ -3458,7 +3507,7 @@
                         "duplicate": "Duplikuj kartę",
                         "edit": "Edytuj",
                         "header": "Konfiguracja karty",
-                        "move": "Przenieś",
+                        "move": "Przenieś do widoku",
                         "move_after": "Przesuń kartę za",
                         "move_before": "Przesuń kartę przed",
                         "options": "Więcej opcji",

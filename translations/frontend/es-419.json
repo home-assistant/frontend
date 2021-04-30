@@ -3725,7 +3725,7 @@
                     "working": "Por favor, espere"
                 },
                 "initializing": "Inicializando",
-                "logging_in_to_with": "Iniciando sesión en ** {locationName} ** con ** {authProviderName} **.",
+                "logging_in_to_with": "Iniciando sesión en **{locationName}** con **{authProviderName}**.",
                 "logging_in_with": "Iniciando sesión con **{authProviderName}**.",
                 "pick_auth_provider": "O inicia sesión con"
             },

@@ -1198,6 +1198,7 @@
             },
             "zha_reconfigure_device": {
                 "attribute": "Atribut",
+                "battery_device_warning": "Hauràs de despertar els dispositius amb bateria abans d'iniciar el procés de reconfiguració. Consulta el manual del dispositiu per saber els passos per a despertar-lo.",
                 "bind_header": "Vinculació",
                 "button_hide": "Amaga els detalls",
                 "button_show": "Mostra els detalls",
@@ -1207,7 +1208,9 @@
                 "configuring_alt": "Configurant",
                 "heading": "S'està reconfigurant el dispositiu",
                 "in_progress": "El dispositiu s'està reconfigurant. Això pot trigar una estona.",
+                "introduction": "Reconfigura un dispositiu de la xarxa Zigbee. Fes-ho si el dispositiu no funciona correctament.",
                 "min_max_change": "min/max/canvi",
+                "reporting_header": "Informant",
                 "run_in_background": "Pots tancar aquest diàleg, la reconfiguració continuarà en segon pla.",
                 "start_reconfiguration": "Inicia la reconfiguració"
             }
@@ -2972,9 +2975,12 @@
                         "unknown": "Desconegut"
                     },
                     "reinterview_node": {
+                        "battery_device_warning": "Hauràs de despertar els dispositius amb bateria abans d'iniciar el procés de consulta. Fes un cop d'ull al manual del dispositiu per saber com despertar-lo.",
                         "in_progress": "S'està consultant el dispositiu. Això pot trigar una estona.",
                         "interview_complete": "Consulta del dispositiu completada.",
                         "interview_failed": "Ha fallat la consulta del dispositiu. Pots trobar informació addicional als registres.",
+                        "introduction": "Torna a consultar un dispositiu de la xarxa Zigbee. Fes-ho si el dispositiu no funciona correctament.",
+                        "run_in_background": "Pots tancar aquest diàleg, la consulta continuarà en segon pla.",
                         "start_reinterview": "Torna a iniciar consulta",
                         "title": "Torna a consultar un dispositiu Z-Wave"
                     },
