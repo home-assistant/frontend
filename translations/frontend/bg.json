@@ -1105,7 +1105,18 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Преконфигуриране на устройство"
+                "attribute": "Атрибут",
+                "bind_header": "Обвързване",
+                "button_hide": "Скрийте детайлите",
+                "button_show": "Покажи детайли",
+                "cluster_header": "Клъстер",
+                "configuration_complete": "Преконфигурирането на устройството завърши.",
+                "configuration_failed": "Преконфигурирането на устройството не бе успешно. Допълнителна информация може да бъде налична в дневниците.",
+                "heading": "Преконфигуриране на устройство",
+                "in_progress": "Устройството се преконфигурира. Това може да отнеме известно време.",
+                "min_max_change": "мин/макс/промяна",
+                "reporting_header": "Отчитане",
+                "start_reconfiguration": "Стартиране на преконфигуриране"
             }
         },
         "duration": {
@@ -1966,12 +1977,12 @@
                     }
                 },
                 "info": {
-                    "built_using": "Изграден с използване на",
+                    "built_using": "Изграден с използването на",
                     "caption": "Информация",
                     "copy_github": "За GitHub",
                     "description": "Версия, състояние на системата и връзки към документация",
                     "documentation": "Документация",
-                    "frontend": "Интерфейс",
+                    "frontend": "интерфейс",
                     "frontend_version": "Версия на интерфейса: {version} - {type}",
                     "home_assistant_logo": "Лого на Home Assistant",
                     "icons_by": "Икони от",
@@ -1979,7 +1990,7 @@
                     "license": "Публикувано под лиценза Apache 2.0",
                     "path_configuration": "Път към configuration.yaml: {path}",
                     "server": "сървър",
-                    "source": "Източник:",
+                    "source": "Изходен код:",
                     "system_health": {
                         "manage": "Управление",
                         "more_info": "повече информация"
@@ -2056,7 +2067,7 @@
                         "show": "Покажи",
                         "show_disabled": "Показване на деактивираните интеграции"
                     },
-                    "discovered": "Открити",
+                    "discovered": "Открит",
                     "home_assistant_website": "Уебсайт на Home Assistant",
                     "ignore": {
                         "confirm_ignore": "Наистина ли не искате да настроите тази интеграция? Можете да отмените това, като кликнете върху „Показване на игнорирани интеграции“ в менюто горе вдясно."
@@ -2140,16 +2151,20 @@
                     "resources": {
                         "cant_edit_yaml": "Използвате Lovelace в YAML режим, следователно не можете да управлявате ресурсите си чрез потребителския интерфейс. Управлявайте ги в configuration.yaml.",
                         "caption": "Ресурси",
+                        "confirm_delete": "Сигурни ли сте, че искате да изтриете този ресурс?",
                         "detail": {
                             "create": "Създаване",
                             "delete": "Изтриване",
                             "dismiss": "Затвори",
+                            "new_resource": "Добавяне на нов ресурс",
+                            "type": "Тип на ресурса",
                             "update": "Актуализиране",
                             "url": "URL",
                             "url_error_msg": "URL е задължително поле",
                             "warning_header": "Бъдете предпазливи!"
                         },
                         "picker": {
+                            "add_resource": "Добавяне на ресурс",
                             "headers": {
                                 "type": "Тип",
                                 "url": "URL"
@@ -2564,6 +2579,7 @@
                         "node_status": "Състояние на възела"
                     },
                     "navigation": {
+                        "logs": "Логове",
                         "network": "Мрежа"
                     },
                     "network_status": {
