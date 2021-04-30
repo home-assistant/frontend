@@ -61,6 +61,9 @@ const nameAsDomainEntry = createConfigEntry("ESPHome");
 const longNameEntry = createConfigEntry(
   "Entry with a super long name that is going to the next line"
 );
+const longNonBreakingNameEntry = createConfigEntry(
+  "EntryWithASuperLongNameThatDoesNotBreak"
+);
 const configPanelEntry = createConfigEntry("Config Panel", {
   domain: "mqtt",
   localized_domain_name: "MQTT",
@@ -141,6 +144,7 @@ const configEntries: Array<{
   { items: [optionsFlowEntry] },
   { items: [nameAsDomainEntry] },
   { items: [longNameEntry] },
+  { items: [longNonBreakingNameEntry] },
   { items: [setupErrorEntry] },
   { items: [migrationErrorEntry] },
   { items: [setupRetryEntry] },
@@ -154,6 +158,7 @@ const configEntries: Array<{
       setupErrorEntry,
       migrationErrorEntry,
       longNameEntry,
+      longNonBreakingNameEntry,
       setupRetryEntry,
       failedUnloadEntry,
       notLoadedEntry,
