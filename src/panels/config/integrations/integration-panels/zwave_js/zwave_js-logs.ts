@@ -50,6 +50,11 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
         } else {
           this._textarea!.value += `${log.message}\n`;
         }
+      }).then((unsub) => {
+        this._textarea!.value += `${this.hass.localize(
+          "ui.panel.config.zwave_js.logs.subscribed_to_logs"
+        )}\n`;
+        return unsub;
       }),
     ];
   }
