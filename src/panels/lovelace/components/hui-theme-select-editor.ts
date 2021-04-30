@@ -46,9 +46,10 @@ export class HuiThemeSelectEditor extends LitElement {
           >
           ${Object.keys(this.hass!.themes.themes)
             .sort()
-            .map((theme) => {
-              return html` <paper-item theme=${theme}>${theme}</paper-item> `;
-            })}
+            .map(
+              (theme) =>
+                html` <paper-item theme=${theme}>${theme}</paper-item> `
+            )}
         </paper-listbox>
       </paper-dropdown-menu>
     `;

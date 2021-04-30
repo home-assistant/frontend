@@ -280,8 +280,7 @@ export const weatherSVGStyles = css`
 const getWeatherStateSVG = (
   state: string,
   nightTime?: boolean
-): SVGTemplateResult => {
-  return svg`
+): SVGTemplateResult => svg`
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 17 17"
@@ -416,7 +415,6 @@ const getWeatherStateSVG = (
       : ""
   }
   </svg>`;
-};
 
 export const getWeatherStateIcon = (
   state: string,

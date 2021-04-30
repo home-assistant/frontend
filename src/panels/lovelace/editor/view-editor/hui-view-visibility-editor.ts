@@ -44,9 +44,9 @@ export class HuiViewVisibilityEditor extends LitElement {
 
   @internalProperty() private _visible!: boolean | ShowViewConfig[];
 
-  private _sortedUsers = memoizeOne((users: User[]) => {
-    return users.sort((a, b) => compare(a.name, b.name));
-  });
+  private _sortedUsers = memoizeOne((users: User[]) =>
+    users.sort((a, b) => compare(a.name, b.name))
+  );
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -107,11 +107,9 @@ export class HuiViewVisibilityEditor extends LitElement {
     if (typeof this._visible === "boolean") {
       const lastValue = this._visible as boolean;
       if (lastValue) {
-        newVisible = this._users.map((u) => {
-          return {
-            user: u.id,
-          };
-        });
+        newVisible = this._users.map((u) => ({
+          user: u.id,
+        }));
       }
     } else {
       newVisible = [...this._visible];

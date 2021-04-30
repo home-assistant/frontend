@@ -52,34 +52,32 @@ export class HaConfigLovelaceRescources extends LitElement {
   @internalProperty() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
-    (_language): DataTableColumnContainer => {
-      return {
-        url: {
-          title: this.hass.localize(
-            "ui.panel.config.lovelace.resources.picker.headers.url"
-          ),
-          sortable: true,
-          filterable: true,
-          direction: "asc",
-          grows: true,
-          forceLTR: true,
-        },
-        type: {
-          title: this.hass.localize(
-            "ui.panel.config.lovelace.resources.picker.headers.type"
-          ),
-          sortable: true,
-          filterable: true,
-          width: "30%",
-          template: (type) =>
-            html`
-              ${this.hass.localize(
-                `ui.panel.config.lovelace.resources.types.${type}`
-              ) || type}
-            `,
-        },
-      };
-    }
+    (_language): DataTableColumnContainer => ({
+      url: {
+        title: this.hass.localize(
+          "ui.panel.config.lovelace.resources.picker.headers.url"
+        ),
+        sortable: true,
+        filterable: true,
+        direction: "asc",
+        grows: true,
+        forceLTR: true,
+      },
+      type: {
+        title: this.hass.localize(
+          "ui.panel.config.lovelace.resources.picker.headers.type"
+        ),
+        sortable: true,
+        filterable: true,
+        width: "30%",
+        template: (type) =>
+          html`
+            ${this.hass.localize(
+              `ui.panel.config.lovelace.resources.types.${type}`
+            ) || type}
+          `,
+      },
+    })
   );
 
   protected render(): TemplateResult {

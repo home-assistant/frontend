@@ -142,11 +142,7 @@ export class ZHAGroupPage extends LitElement {
                       >
                     </a>`
                 )
-              : html`
-                  <paper-item>
-                    This group has no members
-                  </paper-item>
-                `}
+              : html` <paper-item> This group has no members </paper-item> `}
           </ha-card>
           ${this.group.members.length
             ? html`
@@ -237,13 +233,12 @@ export class ZHAGroupPage extends LitElement {
   private _filterDevices() {
     // filter the groupable devices so we only show devices that aren't already in the group
     this._filteredDeviceEndpoints = this.deviceEndpoints.filter(
-      (deviceEndpoint) => {
-        return !this.group!.members.some(
+      (deviceEndpoint) =>
+        !this.group!.members.some(
           (member) =>
             member.device.ieee === deviceEndpoint.device.ieee &&
             member.endpoint_id === deviceEndpoint.endpoint_id
-        );
-      }
+        )
     );
   }
 

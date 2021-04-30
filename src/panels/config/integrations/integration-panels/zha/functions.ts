@@ -23,8 +23,7 @@ export const sortZHAGroups = (a: ZHAGroup, b: ZHAGroup): number => {
   return nameA.localeCompare(nameb);
 };
 
-export const computeClusterKey = (cluster: Cluster): string => {
-  return `${cluster.name} (Endpoint id: ${
+export const computeClusterKey = (cluster: Cluster): string =>
+  `${cluster.name} (Endpoint id: ${
     cluster.endpoint_id
   }, Id: ${formatAsPaddedHex(cluster.id)}, Type: ${cluster.type})`;
-};

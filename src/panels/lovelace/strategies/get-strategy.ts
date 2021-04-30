@@ -1,3 +1,4 @@
+import { PropertyPart } from "lit-html";
 import { LovelaceConfig, LovelaceViewConfig } from "../../../data/lovelace";
 import { AsyncReturnType, HomeAssistant } from "../../../types";
 import { OriginalStatesStrategy } from "./original-states-strategy";
@@ -77,6 +78,7 @@ const generateStrategy = async <T extends keyof GenerateMethods>(
 
   try {
     const strategy = (await getLovelaceStrategy(strategyType)) as any;
+    // eslint-disable-next-line @typescript-eslint/return-await
     return await strategy[generateMethod](info);
   } catch (err) {
     if (err.message !== "timeout") {

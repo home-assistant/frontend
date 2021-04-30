@@ -222,9 +222,9 @@ export class ZHAGroupBindingControl extends LitElement {
 
     this._clustersToBind = [];
     for (const clusterIndex of this._selectedClusters) {
-      const selectedCluster = this._clusters.find((cluster) => {
-        return clusterIndex === cluster.endpoint_id + "-" + cluster.id;
-      });
+      const selectedCluster = this._clusters.find(
+        (cluster) => clusterIndex === cluster.endpoint_id + "-" + cluster.id
+      );
       this._clustersToBind.push(selectedCluster!);
     }
   }
@@ -236,12 +236,8 @@ export class ZHAGroupBindingControl extends LitElement {
         this.selectedDevice!.ieee
       );
       this._clusters = this._clusters
-        .filter((cluster) => {
-          return cluster.type.toLowerCase() === "out";
-        })
-        .sort((a, b) => {
-          return a.name.localeCompare(b.name);
-        });
+        .filter((cluster) => cluster.type.toLowerCase() === "out")
+        .sort((a, b) => a.name.localeCompare(b.name));
     }
   }
 

@@ -21,9 +21,8 @@ export const subscribeRenderTemplate = (
     variables?: Record<string, unknown>;
     timeout?: number;
   }
-): Promise<UnsubscribeFunc> => {
-  return conn.subscribeMessage((msg: RenderTemplateResult) => onChange(msg), {
+): Promise<UnsubscribeFunc> =>
+  conn.subscribeMessage((msg: RenderTemplateResult) => onChange(msg), {
     type: "render_template",
     ...params,
   });
-};

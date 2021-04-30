@@ -117,9 +117,7 @@ export class ZHAClusters extends LitElement {
         this.hass,
         this.selectedDevice!.ieee
       );
-      this._clusters.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
+      this._clusters.sort((a, b) => a.name.localeCompare(b.name));
     }
   }
 

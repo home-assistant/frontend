@@ -212,19 +212,17 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         );
       }
 
-      const outputDevices = inputDevices.map((device) => {
-        return {
-          id: device.id,
-          name: computeDeviceName(
-            device,
-            this.hass,
-            deviceEntityLookup[device.id]
-          ),
-          area: device.area_id
-            ? areaLookup[device.area_id].name
-            : this.hass.localize("ui.components.device-picker.no_area"),
-        };
-      });
+      const outputDevices = inputDevices.map((device) => ({
+        id: device.id,
+        name: computeDeviceName(
+          device,
+          this.hass,
+          deviceEntityLookup[device.id]
+        ),
+        area: device.area_id
+          ? areaLookup[device.area_id].name
+          : this.hass.localize("ui.components.device-picker.no_area"),
+      }));
       if (!outputDevices.length) {
         return [
           {

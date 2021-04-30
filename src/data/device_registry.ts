@@ -48,14 +48,11 @@ export const computeDeviceName = (
   device: DeviceRegistryEntry,
   hass: HomeAssistant,
   entities?: EntityRegistryEntry[] | string[]
-) => {
-  return (
-    device.name_by_user ||
-    device.name ||
-    (entities && fallbackDeviceName(hass, entities)) ||
-    hass.localize("ui.panel.config.devices.unnamed_device")
-  );
-};
+) =>
+  device.name_by_user ||
+  device.name ||
+  (entities && fallbackDeviceName(hass, entities)) ||
+  hass.localize("ui.panel.config.devices.unnamed_device");
 
 export const devicesInArea = (devices: DeviceRegistryEntry[], areaId: string) =>
   devices.filter((device) => device.area_id === areaId);

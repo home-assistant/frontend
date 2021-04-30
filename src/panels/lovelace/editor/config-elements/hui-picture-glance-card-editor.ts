@@ -47,7 +47,8 @@ const cardConfigStruct = object({
 const includeDomains = ["camera"];
 
 @customElement("hui-picture-glance-card-editor")
-export class HuiPictureGlanceCardEditor extends LitElement
+export class HuiPictureGlanceCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -163,9 +164,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
               slot="dropdown-content"
               .selected="${views.indexOf(this._camera_view)}"
             >
-              ${views.map((view) => {
-                return html` <paper-item>${view}</paper-item> `;
-              })}
+              ${views.map((view) => html` <paper-item>${view}</paper-item> `)}
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-input
