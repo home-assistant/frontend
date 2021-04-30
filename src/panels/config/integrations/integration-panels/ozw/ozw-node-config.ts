@@ -152,9 +152,7 @@ class OZWNodeConfig extends LitElement {
                               "ui.panel.config.ozw.node_config.wakeup_help"
                             )}
                           </span>
-                          <p>
-                            ${this._metadata.metadata.WakeupHelp}
-                          </p>
+                          <p>${this._metadata.metadata.WakeupHelp}</p>
                         </div>
                       </ha-card>
                     `

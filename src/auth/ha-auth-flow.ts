@@ -38,11 +38,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   @internalProperty() private _errorMessage?: string;
 
   protected render() {
-    return html`
-      <form>
-        ${this._renderForm()}
-      </form>
-    `;
+    return html` <form>${this._renderForm()}</form> `;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {

@@ -37,9 +37,11 @@ jobs:
       - name: Build resources
         run: ./node_modules/.bin/gulp gen-icons-json build-translations gather-gallery-demos
       - name: Run eslint
-        run: ./node_modules/.bin/eslint '{**/src,src}/**/*.{js,ts,html}' --ignore-path .gitignore
+        run: yarn run lint:eslint
       - name: Run tsc
-        run: ./node_modules/.bin/tsc
+        run: yarn run lint:types
+      - name: Run prettier
+        run: yarn run lint:prettier
   test:
     runs-on: ubuntu-latest
     steps:

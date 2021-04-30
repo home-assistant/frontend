@@ -68,11 +68,7 @@ export class HaIntegrationHeader extends LitElement {
     }
 
     return html`
-      ${!this.banner
-        ? ""
-        : html`<div class="banner">
-            ${this.banner}
-          </div>`}
+      ${!this.banner ? "" : html`<div class="banner">${this.banner}</div>`}
       <slot name="above-header"></slot>
       <div class="header">
         <img

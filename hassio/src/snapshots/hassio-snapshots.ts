@@ -132,9 +132,7 @@ class HassioSnapshots extends LitElement {
         </ha-button-menu>
 
         <div class="content">
-          <h1>
-            ${this.supervisor.localize("snapshot.create_snapshot")}
-          </h1>
+          <h1>${this.supervisor.localize("snapshot.create_snapshot")}</h1>
           <p class="description">
             ${this.supervisor.localize("snapshot.description")}
           </p>

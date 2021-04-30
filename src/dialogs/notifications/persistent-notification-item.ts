@@ -29,9 +29,7 @@ export class HuiPersistentNotificationItem extends LitElement {
 
     return html`
       <notification-item-template>
-        <span slot="header">
-          ${this.notification.title}
-        </span>
+        <span slot="header"> ${this.notification.title} </span>
 
         <ha-markdown
           breaks

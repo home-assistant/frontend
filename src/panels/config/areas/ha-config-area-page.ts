@@ -136,13 +136,7 @@ class HaConfigAreaPage extends LitElement {
         .tabs=${configSections.integrations}
         .route=${this.route}
       >
-        ${this.narrow
-          ? html`
-              <span slot="header">
-                ${area.name}
-              </span>
-            `
-          : ""}
+        ${this.narrow ? html` <span slot="header"> ${area.name} </span> ` : ""}
 
         <ha-icon-button
           slot="toolbar-icon"

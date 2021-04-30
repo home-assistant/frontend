@@ -29,7 +29,8 @@ const cardConfigStruct = object({
 const includeDomains = ["plant"];
 
 @customElement("hui-plant-status-card-editor")
-export class HuiPlantStatusCardEditor extends LitElement
+export class HuiPlantStatusCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

@@ -40,7 +40,8 @@ const cardConfigStruct = object({
 const includeDomains = ["weather"];
 
 @customElement("hui-weather-forecast-card-editor")
-export class HuiWeatherForecastCardEditor extends LitElement
+export class HuiWeatherForecastCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

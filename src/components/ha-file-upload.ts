@@ -79,9 +79,7 @@ export class HaFileUpload extends LitElement {
                   dragged: this._drag,
                 })}
               >
-                <label for="input" slot="label">
-                  ${this.label}
-                </label>
+                <label for="input" slot="label"> ${this.label} </label>
                 <iron-input slot="input">
                   <input
                     id="input"

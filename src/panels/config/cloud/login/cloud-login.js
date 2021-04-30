@@ -94,9 +94,7 @@ class CloudLogin extends LocalizeMixin(
           <ha-config-section is-wide="[[isWide]]">
             <span slot="header">Home Assistant Cloud</span>
             <div slot="introduction">
-              <p>
-                [[localize('ui.panel.config.cloud.login.introduction')]]
-              </p>
+              <p>[[localize('ui.panel.config.cloud.login.introduction')]]</p>
               <p>
                 [[localize('ui.panel.config.cloud.login.introduction2')]]
                 <a
@@ -107,9 +105,7 @@ class CloudLogin extends LocalizeMixin(
                   Nabu&nbsp;Casa,&nbsp;Inc</a
                 >[[localize('ui.panel.config.cloud.login.introduction2a')]]
               </p>
-              <p>
-                [[localize('ui.panel.config.cloud.login.introduction3')]]
-              </p>
+              <p>[[localize('ui.panel.config.cloud.login.introduction3')]]</p>
               <p>
                 <a
                   href="https://www.nabucasa.com"
