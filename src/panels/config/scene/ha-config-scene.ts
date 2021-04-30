@@ -51,11 +51,12 @@ class HaConfigScene extends HassRouterPage {
     }
   }, 10);
 
-  private _getScenes = memoizeOne((states: HassEntities): SceneEntity[] => {
-    return Object.values(states).filter(
-      (entity) => computeStateDomain(entity) === "scene"
-    ) as SceneEntity[];
-  });
+  private _getScenes = memoizeOne(
+    (states: HassEntities): SceneEntity[] =>
+      Object.values(states).filter(
+        (entity) => computeStateDomain(entity) === "scene"
+      ) as SceneEntity[]
+  );
 
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;

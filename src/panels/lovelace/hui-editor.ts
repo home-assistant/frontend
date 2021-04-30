@@ -182,9 +182,7 @@ class LovelaceFullConfigEditor extends LitElement {
   private _yamlChanged() {
     this._changed = undoDepth(this.yamlEditor.codemirror!.state) > 0;
     if (this._changed && !window.onbeforeunload) {
-      window.onbeforeunload = () => {
-        return true;
-      };
+      window.onbeforeunload = () => true;
     } else if (!this._changed && window.onbeforeunload) {
       window.onbeforeunload = null;
     }

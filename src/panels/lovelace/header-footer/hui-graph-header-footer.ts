@@ -24,7 +24,8 @@ const MINUTE = 60000;
 const HOUR = MINUTE * 60;
 
 @customElement("hui-graph-header-footer")
-export class HuiGraphHeaderFooter extends LitElement
+export class HuiGraphHeaderFooter
+  extends LitElement
   implements LovelaceHeaderFooter {
   public static async getConfigElement(): Promise<LovelaceHeaderFooterEditor> {
     await import("../editor/config-elements/hui-graph-footer-editor");
@@ -38,12 +39,9 @@ export class HuiGraphHeaderFooter extends LitElement
   ): GraphHeaderFooterConfig {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
-    const entityFilter = (stateObj: HassEntity): boolean => {
-      return (
-        !isNaN(Number(stateObj.state)) &&
-        !!stateObj.attributes.unit_of_measurement
-      );
-    };
+    const entityFilter = (stateObj: HassEntity): boolean =>
+      !isNaN(Number(stateObj.state)) &&
+      !!stateObj.attributes.unit_of_measurement;
 
     const foundEntities = findEntities(
       hass,
@@ -112,9 +110,7 @@ export class HuiGraphHeaderFooter extends LitElement
     if (!this._coordinates.length) {
       return html`
         <div class="container">
-          <div class="info">
-            No state history found.
-          </div>
+          <div class="info">No state history found.</div>
         </div>
       `;
     }

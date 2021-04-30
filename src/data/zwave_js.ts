@@ -162,8 +162,8 @@ export const reinterviewNode = (
   entry_id: string,
   node_id: number,
   callbackFunction: (message: ZWaveJSRefreshNodeStatusMessage) => void
-): Promise<UnsubscribeFunc> => {
-  return hass.connection.subscribeMessage(
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
     (message: any) => callbackFunction(message),
     {
       type: "zwave_js/refresh_node_info",
@@ -171,7 +171,6 @@ export const reinterviewNode = (
       node_id: node_id,
     }
   );
-};
 
 export const getIdentifiersFromDevice = (
   device: DeviceRegistryEntry

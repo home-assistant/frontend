@@ -20,7 +20,8 @@ import { LovelaceHeaderFooter } from "../types";
 import { PictureHeaderFooterConfig } from "./types";
 
 @customElement("hui-picture-header-footer")
-export class HuiPictureHeaderFooter extends LitElement
+export class HuiPictureHeaderFooter
+  extends LitElement
   implements LovelaceHeaderFooter {
   public static getStubConfig(): Record<string, unknown> {
     return {

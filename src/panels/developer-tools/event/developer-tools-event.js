@@ -86,9 +86,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
               required
               value="{{eventType}}"
             ></paper-input>
-            <p>
-              [[localize( 'ui.panel.developer-tools.tabs.events.data' )]]
-            </p>
+            <p>[[localize( 'ui.panel.developer-tools.tabs.events.data' )]]</p>
           </div>
           <div class="code-editor">
             <ha-code-editor

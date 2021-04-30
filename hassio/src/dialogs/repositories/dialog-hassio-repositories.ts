@@ -87,8 +87,8 @@ class HassioRepositoriesDialog extends LitElement {
         ${this._error ? html`<div class="error">${this._error}</div>` : ""}
         <div class="form">
           ${repositories.length
-            ? repositories.map((repo) => {
-                return html`
+            ? repositories.map(
+                (repo) => html`
                   <paper-item class="option">
                     <paper-item-body three-line>
                       <div>${repo.name}</div>
@@ -105,13 +105,9 @@ class HassioRepositoriesDialog extends LitElement {
                       <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
                     </mwc-icon-button>
                   </paper-item>
-                `;
-              })
-            : html`
-                <paper-item>
-                  No repositories
-                </paper-item>
-              `}
+                `
+              )
+            : html` <paper-item> No repositories </paper-item> `}
           <div class="layout horizontal bottom">
             <paper-input
               class="flex-auto"
@@ -207,9 +203,7 @@ class HassioRepositoriesDialog extends LitElement {
     }
     this._prosessing = true;
     const repositories = this._filteredRepositories(this._repositories!);
-    const newRepositories = repositories.map((repo) => {
-      return repo.source;
-    });
+    const newRepositories = repositories.map((repo) => repo.source);
     newRepositories.push(input.value);
 
     try {
@@ -228,19 +222,13 @@ class HassioRepositoriesDialog extends LitElement {
   private async _removeRepository(ev: Event) {
     const slug = (ev.currentTarget as any).slug;
     const repositories = this._filteredRepositories(this._repositories!);
-    const repository = repositories.find((repo) => {
-      return repo.slug === slug;
-    });
+    const repository = repositories.find((repo) => repo.slug === slug);
     if (!repository) {
       return;
     }
     const newRepositories = repositories
-      .map((repo) => {
-        return repo.source;
-      })
-      .filter((repo) => {
-        return repo !== repository.source;
-      });
+      .map((repo) => repo.source)
+      .filter((repo) => repo !== repository.source);
 
     try {
       await setSupervisorOption(this.hass, {

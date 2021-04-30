@@ -65,8 +65,8 @@ export class HuiEntityEditor extends LitElement {
         ${guard([this.entities, this._renderEmptySortable], () =>
           this._renderEmptySortable
             ? ""
-            : this.entities!.map((entityConf, index) => {
-                return html`
+            : this.entities!.map(
+                (entityConf, index) => html`
                   <div class="entity" data-entity-id=${entityConf.entity}>
                     <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                     <ha-entity-picker
@@ -77,8 +77,8 @@ export class HuiEntityEditor extends LitElement {
                       allow-custom-entity
                     ></ha-entity-picker>
                   </div>
-                `;
-              })
+                `
+              )
         )}
       </div>
       <ha-entity-picker

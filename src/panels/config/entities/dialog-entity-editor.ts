@@ -148,9 +148,7 @@ export class DialogEntityEditor extends LitElement {
             </mwc-tab>
           </mwc-tab-bar>
         </div>
-        <div class="wrapper">
-          ${cache(this._renderTab())}
-        </div>
+        <div class="wrapper">${cache(this._renderTab())}</div>
       </ha-dialog>
     `;
   }

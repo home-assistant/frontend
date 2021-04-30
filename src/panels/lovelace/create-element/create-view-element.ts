@@ -14,11 +14,10 @@ const LAZY_LOAD_LAYOUTS = {
 
 export const createViewElement = (
   config: LovelaceViewConfig
-): LovelaceViewElement | HuiErrorCard => {
-  return createLovelaceElement(
+): LovelaceViewElement | HuiErrorCard =>
+  createLovelaceElement(
     "view",
     config,
     ALWAYS_LOADED_LAYOUTS,
     LAZY_LOAD_LAYOUTS
   );
-};

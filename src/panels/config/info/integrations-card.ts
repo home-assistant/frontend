@@ -35,15 +35,15 @@ class IntegrationsCard extends LitElement {
     [domain: string]: IntegrationSetup;
   };
 
-  private _sortedIntegrations = memoizeOne((components: string[]) => {
-    return Array.from(
+  private _sortedIntegrations = memoizeOne((components: string[]) =>
+    Array.from(
       new Set(
         components.map((comp) =>
           comp.includes(".") ? comp.split(".")[1] : comp
         )
       )
-    ).sort();
-  });
+    ).sort()
+  );
 
   firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -120,12 +120,8 @@ class IntegrationsCard extends LitElement {
                     ${this.narrow
                       ? ""
                       : html`
-                          <td>
-                            ${docLink}
-                          </td>
-                          <td>
-                            ${issueLink}
-                          </td>
+                          <td>${docLink}</td>
+                          <td>${issueLink}</td>
                           <td class="setup">
                             ${setupSeconds ? html`${setupSeconds}s` : ""}
                           </td>

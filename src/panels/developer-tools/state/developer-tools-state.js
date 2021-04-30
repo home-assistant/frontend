@@ -220,9 +220,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 ></ha-svg-icon>
                 <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
               </td>
-              <td>
-                [[entity.state]]
-              </td>
+              <td>[[entity.state]]</td>
               <template
                 is="dom-if"
                 if="[[computeShowAttributes(narrow, _showAttributes)]]"

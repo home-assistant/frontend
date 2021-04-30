@@ -97,9 +97,7 @@ class HassioHostInfo extends LitElement {
                   <span slot="heading">
                     ${this.supervisor.localize("system.host.ip_address")}
                   </span>
-                  <span slot="description">
-                    ${primaryIpAddress}
-                  </span>
+                  <span slot="description"> ${primaryIpAddress} </span>
                   <mwc-button
                     .label=${this.supervisor.localize("system.host.change")}
                     @click=${this._changeNetworkClicked}

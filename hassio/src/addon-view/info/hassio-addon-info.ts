@@ -566,9 +566,7 @@ class HassioAddonInfo extends LitElement {
                       <span slot="heading">
                         ${this.supervisor.localize("addon.dashboard.hostname")}
                       </span>
-                      <code slot="description">
-                        ${this.addon.hostname}
-                      </code>
+                      <code slot="description"> ${this.addon.hostname} </code>
                     </ha-settings-row>
                     ${metrics.map(
                       (metric) =>
@@ -997,7 +995,7 @@ class HassioAddonInfo extends LitElement {
         addons: [this.addon.slug],
         homeassistant: false,
       },
-      updateHandler: async () => await this._updateAddon(),
+      updateHandler: async () => this._updateAddon(),
     });
   }
 

@@ -88,9 +88,7 @@ export class HaDateRangePicker extends LitElement {
             >
               <mwc-list @action=${this._setDateRange} activatable>
                 ${Object.keys(this.ranges).map(
-                  (name) => html`<mwc-list-item>
-                    ${name}
-                  </mwc-list-item>`
+                  (name) => html`<mwc-list-item> ${name} </mwc-list-item>`
                 )}
               </mwc-list>
             </div>`

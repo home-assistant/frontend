@@ -357,9 +357,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 ${!this.narrow
                   ? html`
                       <ha-card
-                        ><div class="card-header">
-                          ${this._config?.alias}
-                        </div>
+                        ><div class="card-header">${this._config?.alias}</div>
                         <div
                           class="card-actions layout horizontal justified center"
                         >

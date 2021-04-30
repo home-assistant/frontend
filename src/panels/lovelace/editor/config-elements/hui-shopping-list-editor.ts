@@ -25,7 +25,8 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-shopping-list-card-editor")
-export class HuiShoppingListEditor extends LitElement
+export class HuiShoppingListEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

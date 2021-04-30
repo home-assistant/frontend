@@ -485,9 +485,7 @@ export class HaDataTable extends LitElement {
       data: DataTableRowData[],
       columns: SortableColumnContainer,
       filter: string
-    ): Promise<DataTableRowData[]> => {
-      return filterData(data, columns, filter);
-    }
+    ): Promise<DataTableRowData[]> => filterData(data, columns, filter)
   );
 
   private _handleHeaderClick(ev: Event) {

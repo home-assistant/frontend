@@ -41,9 +41,7 @@ class HaConfigDashboard extends LitElement {
       .narrow=${this.narrow}
       .isWide=${this.isWide}
     >
-      <div slot="header">
-        ${this.hass.localize("ui.panel.config.header")}
-      </div>
+      <div slot="header">${this.hass.localize("ui.panel.config.header")}</div>
 
       <div slot="introduction">
         ${this.hass.localize("ui.panel.config.introduction")}

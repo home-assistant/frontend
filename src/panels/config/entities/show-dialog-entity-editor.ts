@@ -10,13 +10,12 @@ export interface EntityRegistryDetailDialogParams {
 
 export const loadEntityEditorDialog = () => import("./dialog-entity-editor");
 
-const getDialog = () => {
-  return document
+const getDialog = () =>
+  document
     .querySelector("home-assistant")!
     .shadowRoot!.querySelector("dialog-entity-editor") as
     | DialogEntityEditor
     | undefined;
-};
 
 export const showEntityEditorDialog = (
   element: HTMLElement,

@@ -56,13 +56,13 @@ class HassioCardContent extends LitElement {
             ></ha-svg-icon>
           `}
       <div>
-        <div class="title">
-          ${this.title}
-        </div>
+        <div class="title">${this.title}</div>
         <div class="addition">
           ${this.description}
-          ${/* treat as available when undefined */
-          this.available === false ? " (Not available)" : ""}
+          ${
+            /* treat as available when undefined */
+            this.available === false ? " (Not available)" : ""
+          }
           ${this.datetime
             ? html`
                 <ha-relative-time

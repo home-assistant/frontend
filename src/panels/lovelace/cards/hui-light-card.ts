@@ -158,11 +158,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                     )}
                   </div>
                 `
-              : html`
-                  <div class="brightness">
-                    %
-                  </div>
-                `}
+              : html` <div class="brightness">%</div> `}
             ${this._config.name || computeStateName(stateObj)}
           </div>
         </div>

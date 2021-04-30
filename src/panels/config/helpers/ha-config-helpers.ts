@@ -67,11 +67,7 @@ export class HaConfigHelpers extends LitElement {
             html`
               ${name}
               ${narrow
-                ? html`
-                    <div class="secondary">
-                      ${item.entity_id}
-                    </div>
-                  `
+                ? html` <div class="secondary">${item.entity_id}</div> `
                 : ""}
             `,
         },
@@ -124,18 +120,16 @@ export class HaConfigHelpers extends LitElement {
     }
   );
 
-  private _getItems = memoize((stateItems: HassEntity[]) => {
-    return stateItems.map((state) => {
-      return {
-        id: state.entity_id,
-        icon: state.attributes.icon,
-        name: state.attributes.friendly_name || "",
-        entity_id: state.entity_id,
-        editable: state.attributes.editable,
-        type: computeStateDomain(state),
-      };
-    });
-  });
+  private _getItems = memoize((stateItems: HassEntity[]) =>
+    stateItems.map((state) => ({
+      id: state.entity_id,
+      icon: state.attributes.icon,
+      name: state.attributes.friendly_name || "",
+      entity_id: state.entity_id,
+      editable: state.attributes.editable,
+      type: computeStateDomain(state),
+    }))
+  );
 
   protected render(): TemplateResult {
     if (!this.hass || this._stateItems === undefined) {

@@ -43,9 +43,7 @@ export class ZwaveValues extends LitElement {
               >
                 ${this.values.map(
                   (item) => html`
-                    <paper-item>
-                      ${this._computeCaption(item)}
-                    </paper-item>
+                    <paper-item> ${this._computeCaption(item)} </paper-item>
                   `
                 )}
               </paper-listbox>

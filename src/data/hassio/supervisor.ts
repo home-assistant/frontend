@@ -128,7 +128,7 @@ export const fetchHassioHomeAssistantInfo = async (
   hass: HomeAssistant
 ): Promise<HassioHomeAssistantInfo> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/core/info",
       method: "get",
@@ -147,7 +147,7 @@ export const fetchHassioSupervisorInfo = async (
   hass: HomeAssistant
 ): Promise<HassioSupervisorInfo> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/supervisor/info",
       method: "get",
@@ -166,7 +166,7 @@ export const fetchHassioInfo = async (
   hass: HomeAssistant
 ): Promise<HassioInfo> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/info",
       method: "get",
@@ -178,12 +178,8 @@ export const fetchHassioInfo = async (
   );
 };
 
-export const fetchHassioLogs = async (
-  hass: HomeAssistant,
-  provider: string
-) => {
-  return hass.callApi<string>("GET", `hassio/${provider}/logs`);
-};
+export const fetchHassioLogs = async (hass: HomeAssistant, provider: string) =>
+  hass.callApi<string>("GET", `hassio/${provider}/logs`);
 
 export const setSupervisorOption = async (
   hass: HomeAssistant,
