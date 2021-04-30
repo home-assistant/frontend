@@ -1,4 +1,3 @@
-import { PropertyPart } from "lit-html";
 import { LovelaceConfig, LovelaceViewConfig } from "../../../data/lovelace";
 import { AsyncReturnType, HomeAssistant } from "../../../types";
 import { OriginalStatesStrategy } from "./original-states-strategy";
