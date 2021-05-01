@@ -1209,7 +1209,7 @@
                 "heading": "Apparaat opnieuw configureren",
                 "in_progress": "Het apparaat wordt opnieuw geconfigureerd. Dit kan wat tijd kosten.",
                 "introduction": "Herconfigureer een apparaat op je Zigbee netwerk. Gebruik deze functie als uw apparaat niet correct functioneert.",
-                "min_max_change": "mix/max/verander",
+                "min_max_change": "min/max/verandering",
                 "reporting_header": "Rapporteren",
                 "run_in_background": "U kunt dit dialoogvenster sluiten en de herconfiguratie wordt op de achtergrond voortgezet.",
                 "start_reconfiguration": "Start herconfiguratie"
@@ -2249,7 +2249,7 @@
                     },
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
-                    "confirm_new": "Wil je {integration} instellen?",
+                    "confirm_new": "Wilt u {integration} instellen?",
                     "description": "Beheer integraties met services of apparaten",
                     "details": "Integratiedetails",
                     "disable": {
@@ -2875,7 +2875,7 @@
                     "configured_in_yaml": "Zones die via configuration.yaml zijn geconfigureerd kunnen niet worden bewerkt in de gebruikers",
                     "confirm_delete": "Weet je zeker dat je deze zone wilt verwijderen?",
                     "create_zone": "Creëer Zone",
-                    "description": "Beheer de zones waarin je personen wilt volgen",
+                    "description": "Beheer de zones waarin u personen wilt volgen",
                     "detail": {
                         "create": "Aanmaken",
                         "delete": "Verwijder",
