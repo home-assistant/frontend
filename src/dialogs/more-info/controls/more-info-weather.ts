@@ -206,8 +206,8 @@ class MoreInfoWeather extends LitElement {
                   <div class="temp">
                     ${this._showValue(item.temperature)
                       ? `${formatNumber(item.temperature, this.hass.locale)}
-                    ${getWeatherUnit(this.hass, "temperature")}`
-                      : ""}
+                        ${getWeatherUnit(this.hass, "temperature")}`
+                      : "—"}
                   </div>
                 </div>
               `
