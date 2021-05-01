@@ -115,7 +115,7 @@
     "js-yaml": "^3.13.1",
     "leaflet": "^1.4.0",
     "leaflet-draw": "^1.0.4",
-    "lit-element": "^2.4.0",
+    "lit-element": "^2.5.0",
     "lit-html": "^1.4.0",
     "lit-virtualizer": "^0.4.2",
     "marked": "2.0.0",
@@ -242,7 +242,7 @@
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "@polymer/polymer": "3.1.0",
     "lit-html": "1.4.0",
-    "lit-element": "2.4.0"
+    "lit-element": "2.5.0"
   },
   "main": "src/home-assistant.js",
   "husky": {
