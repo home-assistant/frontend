@@ -187,6 +187,7 @@ class MoreInfoWeather extends LitElement {
                             this.hass.locale
                           )}
                         </div>
+                        <div class="templow">—</div>
                       `
                     : ""}
                   ${this._showValue(item.templow)
