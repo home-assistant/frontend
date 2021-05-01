@@ -65,7 +65,7 @@ class IntegrationsCard extends LitElement {
                     <th></th>
                     <th></th>`
                 : ""}
-              <th>Setup time</th>
+              <th>${this.hass.localize("ui.panel.config.info.setup_time")}</th>
             </tr>
           </thead>
           <tbody>
@@ -113,7 +113,7 @@ class IntegrationsCard extends LitElement {
                       ${this.narrow
                         ? html`<div class="mobile-row">
                             <div>${docLink} ${issueLink}</div>
-                            ${setupSeconds ? html`${setupSeconds}s` : ""}
+                            ${setupSeconds ? html`${setupSeconds} s` : ""}
                           </div>`
                         : ""}
                     </td>
@@ -123,7 +123,7 @@ class IntegrationsCard extends LitElement {
                           <td>${docLink}</td>
                           <td>${issueLink}</td>
                           <td class="setup">
-                            ${setupSeconds ? html`${setupSeconds}s` : ""}
+                            ${setupSeconds ? html`${setupSeconds} s` : ""}
                           </td>
                         `}
                   </tr>
@@ -169,6 +169,7 @@ class IntegrationsCard extends LitElement {
       }
       td.setup {
         text-align: right;
+        white-space: nowrap;
       }
       th {
         text-align: right;

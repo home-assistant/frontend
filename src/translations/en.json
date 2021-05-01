@@ -1039,6 +1039,7 @@
           "integrations": "Integrations",
           "documentation": "Documentation",
           "issues": "Issues",
+          "setup_time": "Setup time",
           "system_health": {
             "manage": "Manage",
             "more_info": "more info"
