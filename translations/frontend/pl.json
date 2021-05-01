@@ -439,8 +439,8 @@
                 "used_space": "Zajęte miejsce"
             },
             "log": {
-                "get_logs": "Nie udało się pobrać dzienników od {provider} {error}",
-                "log_provider": "Dostawca dziennika"
+                "get_logs": "Nie udało się pobrać logów od {provider} {error}",
+                "log_provider": "Dostawca logów"
             },
             "supervisor": {
                 "beta_backup": "Przed aktywacją tej funkcji upewnij się, że masz kopie zapasowe swoich danych.",
@@ -2296,9 +2296,9 @@
                     "level": {
                         "critical": "KRYTYCZNE",
                         "debug": "DEBUG",
-                        "error": "BŁĄD",
+                        "error": "BŁĘDY",
                         "info": "INFO",
-                        "warning": "OSTRZEŻENIE"
+                        "warning": "OSTRZEŻENIA"
                     },
                     "load_full_log": "Wczytaj cały log Home Assistanta",
                     "loading_log": "Wczytywanie loga błędów…",
