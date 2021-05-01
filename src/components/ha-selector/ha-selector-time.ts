@@ -18,9 +18,9 @@ export class HaTimeSelector extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
-  private _useAmPmMem = memoizeOne((locale: FrontendLocaleData): boolean => {
-    return useAmPm(locale);
-  });
+  private _useAmPmMem = memoizeOne((locale: FrontendLocaleData): boolean =>
+    useAmPm(locale)
+  );
 
   protected render() {
     const useAMPM = this._useAmPmMem(this.hass.locale);
