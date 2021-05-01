@@ -13,6 +13,7 @@ import { HomeAssistant } from "../../types";
 import "../../components/ha-settings-row";
 import { TimeFormat } from "../../data/translation";
 import { fireEvent } from "../../common/dom/fire_event";
+import { formatTime } from "../../common/datetime/format_time";
 
 @customElement("ha-pick-time-format-row")
 class TimeFormatRow extends LitElement {
@@ -21,6 +22,7 @@ class TimeFormatRow extends LitElement {
   @property() public narrow!: boolean;
 
   protected render(): TemplateResult {
+    const date = new Date();
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
@@ -43,13 +45,17 @@ class TimeFormatRow extends LitElement {
             attr-for-selected="format"
           >
             ${Object.values(TimeFormat).map((format) => {
-              return html` <paper-item .format=${format}>
-                <paper-item-body>
-                  <div>
-                    ${this.hass.localize(
-                      `ui.panel.profile.time_format.formats.${format}`
-                    )}
-                  </div>
+              const formattedTime = formatTime(date, {
+                ...this.hass.locale,
+                time_format: format,
+              });
+              const value = this.hass.localize(
+                `ui.panel.profile.time_format.formats.${format}`
+              );
+              return html` <paper-item .format=${format} .label=${value}>
+                <paper-item-body two-line>
+                  <div>${value}</div>
+                  <div secondary>${formattedTime}</div>
                 </paper-item-body>
               </paper-item>`;
             })}

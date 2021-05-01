@@ -215,7 +215,7 @@ export const provideHass = (
     locale: {
       language: localLanguage,
       number_format: NumberFormat.language,
-      time_format: TimeFormat.system,
+      time_format: TimeFormat.language,
     },
     resources: null as any,
     localize: () => "",

@@ -45,7 +45,7 @@ class NumberFormatRow extends LitElement {
           >
             ${Object.values(NumberFormat).map((format) => {
               const formattedNumber = formatNumber(1234567.89, {
-                language: this.hass.locale.language,
+                ...this.hass.locale,
                 number_format: format,
               });
               const value = this.hass.localize(
@@ -53,7 +53,7 @@ class NumberFormatRow extends LitElement {
               );
               const twoLine = value.slice(value.length - 2) !== "89"; // Display explicit number formats on one line
               return html`
-                <paper-item .format=${format}>
+                <paper-item .format=${format} .label=${value}>
                   <paper-item-body ?two-line=${twoLine}>
                     <div>${value}</div>
                     ${twoLine

@@ -1,7 +1,7 @@
 import { format } from "fecha";
 import { FrontendLocaleData } from "../../data/translation";
 import { toLocaleStringSupportsOptions } from "./check_options_support";
-import { useAmPm } from "./format_time";
+import { useAmPm } from "./use_am_pm";
 
 export const formatDateTime = toLocaleStringSupportsOptions
   ? (dateObj: Date, locale: FrontendLocaleData) =>

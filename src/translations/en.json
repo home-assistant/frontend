@@ -3210,6 +3210,7 @@
           "dropdown_label": "Time format",
           "description": "Choose how times are formatted.",
           "formats": {
+            "language": "Auto (use language setting)",
             "system": "Use system locale",
             "12": "12 hours (AM/PM)",
             "24": "24 hours"

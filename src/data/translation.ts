@@ -11,6 +11,7 @@ export enum NumberFormat {
 }
 
 export enum TimeFormat {
+  language = "language",
   system = "system",
   am_pm = "12",
   twenty_four = "24",

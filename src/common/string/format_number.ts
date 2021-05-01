@@ -9,7 +9,7 @@ import { FrontendLocaleData, NumberFormat } from "../../data/translation";
  */
 export const formatNumber = (
   num: string | number,
-  locale?: Partial<FrontendLocaleData>,
+  locale?: FrontendLocaleData,
   options?: Intl.NumberFormatOptions
 ): string => {
   let format: string | string[] | undefined;

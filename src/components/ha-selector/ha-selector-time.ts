@@ -1,5 +1,5 @@
 import { customElement, html, LitElement, property } from "lit-element";
-import { useAmPm } from "../../common/datetime/format_time";
+import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { TimeSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
@@ -48,7 +48,7 @@ export class HaTimeSelector extends LitElement {
 
   private _timeChanged(ev) {
     let value = ev.target.value;
-    const useAMPM = useAmPm(this.hass.locale);
+    const useAMPM = this._useAmPmMem(this.hass.locale);
     let hours = Number(ev.target.hour || 0);
     if (value && useAMPM) {
       if (ev.target.amPm === "PM") {
