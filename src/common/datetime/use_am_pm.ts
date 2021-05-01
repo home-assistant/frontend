@@ -1,13 +1,13 @@
 import { FrontendLocaleData, TimeFormat } from "../../data/translation";
 
 export const useAmPm = (locale: FrontendLocaleData): boolean => {
-  if (locale.time_format === TimeFormat.language) {
-    const test = new Date().toLocaleString(locale.language);
-    return test.includes("AM") || test.includes("PM");
-  }
-
-  if (locale.time_format === TimeFormat.system) {
-    const test = new Date().toLocaleString();
+  if (
+    locale.time_format === TimeFormat.language ||
+    locale.time_format === TimeFormat.system
+  ) {
+    const testLanguage =
+      locale.time_format === TimeFormat.language ? locale.language : undefined;
+    const test = new Date().toLocaleString(testLanguage);
     return test.includes("AM") || test.includes("PM");
   }
 
