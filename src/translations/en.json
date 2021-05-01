@@ -2649,7 +2649,8 @@
           },
           "logs": {
             "title": "Z-Wave JS Logs",
-            "log_level": "Log Level"
+            "log_level": "Log Level",
+            "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages..."
           }
         }
       },
