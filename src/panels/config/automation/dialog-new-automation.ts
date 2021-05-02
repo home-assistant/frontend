@@ -11,6 +11,7 @@ import {
 } from "lit-element";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
@@ -33,9 +34,13 @@ class DialogNewAutomation extends LitElement {
     this._opened = true;
   }
 
-  public closeDialog(): void {
+  public async closeDialog(): Promise<void> {
+    if (!this._opened) {
+      return;
+    }
     this._opened = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
+    await nextRender();
   }
 
   protected render(): TemplateResult {
@@ -106,23 +111,25 @@ class DialogNewAutomation extends LitElement {
     `;
   }
 
-  private _thingTalk() {
-    this.closeDialog();
+  private async _thingTalk() {
+    const input = this.shadowRoot!.querySelector("paper-input")!
+      .value as string;
+    await this.closeDialog();
     showThingtalkDialog(this, {
       callback: (config: Partial<AutomationConfig> | undefined) =>
         showAutomationEditor(this, config),
-      input: this.shadowRoot!.querySelector("paper-input")!.value as string,
+      input,
     });
   }
 
-  private _blueprintPicked(ev: CustomEvent) {
+  private async _blueprintPicked(ev: CustomEvent) {
+    await this.closeDialog();
     showAutomationEditor(this, { use_blueprint: { path: ev.detail.value } });
-    this.closeDialog();
   }
 
-  private _blank() {
+  private async _blank() {
+    await this.closeDialog();
     showAutomationEditor(this);
-    this.closeDialog();
   }
 
   static get styles(): CSSResult[] {

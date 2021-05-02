@@ -108,11 +108,9 @@ class HaBluePrintPicker extends LitElement {
         min-width: 200px;
         display: block;
       }
-      paper-listbox {
-        min-width: 200px;
-      }
       paper-item {
         cursor: pointer;
+        min-width: 200px;
       }
     `;
   }
