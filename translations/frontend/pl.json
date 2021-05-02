@@ -2160,6 +2160,7 @@
                     "license": "Opublikowany na licencji Apache 2.0",
                     "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
                     "server": "serwer",
+                    "setup_time": "Ustawienia czasu",
                     "source": "Źródło:",
                     "system_health_error": "Komponent kondycji systemu nie jest wczytany. Dodaj 'system_health:' do pliku configuration.yaml",
                     "system_health": {
@@ -2944,6 +2945,7 @@
                     },
                     "logs": {
                         "log_level": "Poziom loga",
+                        "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS ...",
                         "title": "Logi Z-Wave JS"
                     },
                     "navigation": {

@@ -1258,7 +1258,7 @@
         "notification_toast": {
             "connection_lost": "Соединение потеряно. Повторное подключение...",
             "dismiss": "Закрыть",
-            "intergration_starting": "Запуск {integration}, пока что не всё может быть доступно.",
+            "intergration_starting": "{integration} загружается, пока что не всё может быть доступно.",
             "service_call_failed": "Не удалось вызвать службу {service}.",
             "started": "Home Assistant работает!",
             "starting": "Home Assistant запускается, пока что не всё может быть доступно.",
@@ -2182,7 +2182,7 @@
                         "configure": "Настроить",
                         "delete": "Удалить",
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
-                        "depends_on_cloud": "Зависящие от облачных сервисов",
+                        "depends_on_cloud": "Зависит от облачных сервисов",
                         "device_unavailable": "Устройство недоступно",
                         "devices": "{count, plural,\n  one {устройств:}\n  other {устройств:}\n} {count}",
                         "disable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить деактивацию этой интеграции.",
