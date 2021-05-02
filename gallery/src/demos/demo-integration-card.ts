@@ -86,7 +86,8 @@ const setupRetryReasonEntry = createConfigEntry("Setup Retry", {
 });
 const setupRetryReasonMissingKeyEntry = createConfigEntry("Setup Retry", {
   state: "setup_retry",
-  reason: "resolve_error",
+  reason:
+    "HTTPSConnectionpool: Max retries exceeded with NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x9eedfc10>: Failed to establish a new connection: [Errno 113] Host is unreachable')",
 });
 const failedUnloadEntry = createConfigEntry("Failed Unload", {
   state: "failed_unload",
