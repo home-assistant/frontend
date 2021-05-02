@@ -13,6 +13,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/dialog/ha-paper-dialog";
 import "../../../../components/ha-circular-progress";
 import type { AutomationConfig } from "../../../../data/automation";
@@ -65,6 +66,15 @@ class DialogThingtalk extends LitElement {
       await this.updateComplete;
       this._generate();
     }
+  }
+
+  public closeDialog() {
+    this._placeholders = undefined;
+    if (this._input) {
+      this._input.value = null;
+    }
+    this._opened = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
@@ -225,25 +235,17 @@ class DialogThingtalk extends LitElement {
 
   private _sendConfig(input, config) {
     this._params!.callback({ alias: input, ...config });
-    this._closeDialog();
+    this.closeDialog();
   }
 
   private _skip() {
     this._params!.callback(undefined);
-    this._closeDialog();
-  }
-
-  private _closeDialog() {
-    this._placeholders = undefined;
-    if (this._input) {
-      this._input.value = null;
-    }
-    this._opened = false;
+    this.closeDialog();
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!ev.detail.value) {
-      this._closeDialog();
+      this.closeDialog();
     }
   }
 
