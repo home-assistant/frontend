@@ -131,6 +131,7 @@ export class HaIntegrationHeader extends LitElement {
       height: 40px;
     }
     .header .info {
+      flex: 1;
       align-self: center;
     }
     .header .info div {
