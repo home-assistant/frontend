@@ -15,17 +15,21 @@ import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-dialog";
+import { createCloseHeading } from "../../../components/ha-dialog";
 import {
   AutomationConfig,
   showAutomationEditor,
 } from "../../../data/automation";
+import {
+  HassDialog,
+  replaceDialog,
+} from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showThingtalkDialog } from "./thingtalk/show-dialog-thingtalk";
 
 @customElement("ha-dialog-new-automation")
-class DialogNewAutomation extends LitElement {
+class DialogNewAutomation extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @internalProperty() private _opened = false;
@@ -34,13 +38,9 @@ class DialogNewAutomation extends LitElement {
     this._opened = true;
   }
 
-  public async closeDialog(): Promise<void> {
-    if (!this._opened) {
-      return;
-    }
+  public closeDialog(): void {
     this._opened = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
-    await nextRender();
   }
 
   protected render(): TemplateResult {
@@ -51,8 +51,9 @@ class DialogNewAutomation extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${this.hass.localize(
-          "ui.panel.config.automation.dialog_new.header"
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.automation.dialog_new.header")
         )}
       >
         <div>
@@ -111,24 +112,25 @@ class DialogNewAutomation extends LitElement {
     `;
   }
 
-  private async _thingTalk() {
-    const input = this.shadowRoot!.querySelector("paper-input")!
-      .value as string;
-    await this.closeDialog();
+  private _thingTalk() {
+    replaceDialog();
     showThingtalkDialog(this, {
       callback: (config: Partial<AutomationConfig> | undefined) =>
         showAutomationEditor(this, config),
-      input,
+      input: this.shadowRoot!.querySelector("paper-input")!.value as string,
     });
+    this.closeDialog();
   }
 
   private async _blueprintPicked(ev: CustomEvent) {
-    await this.closeDialog();
+    this.closeDialog();
+    await nextRender();
     showAutomationEditor(this, { use_blueprint: { path: ev.detail.value } });
   }
 
   private async _blank() {
-    await this.closeDialog();
+    this.closeDialog();
+    await nextRender();
     showAutomationEditor(this);
   }
 
