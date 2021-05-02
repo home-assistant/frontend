@@ -10,7 +10,9 @@ import {
 } from "lit-element";
 import { until } from "lit-html/directives/until";
 import checkValidDate from "../common/datetime/check_valid_date";
+import { formatDate } from "../common/datetime/format_date";
 import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
+import { isDate } from "../common/string/is_date";
 import { isTimestamp } from "../common/string/is_timestamp";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
@@ -143,6 +145,14 @@ class HaAttributes extends LitElement {
         const date = new Date(value);
         if (checkValidDate(date)) {
           return formatDateTimeWithSeconds(date, this.hass.locale);
+        }
+      }
+
+      // Date handling
+      if (isDate(value)) {
+        const date = new Date(value);
+        if (checkValidDate(date)) {
+          return formatDate(date, this.hass.locale);
         }
       }
     }
