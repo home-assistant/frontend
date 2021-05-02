@@ -2160,6 +2160,7 @@
                     "license": "Publicat amb la llicència Apache 2.0",
                     "path_configuration": "Ruta al fitxer configuration.yaml: {path}",
                     "server": "servidor",
+                    "setup_time": "Temps de configuració",
                     "source": "Font:",
                     "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml",
                     "system_health": {
@@ -2944,6 +2945,7 @@
                     },
                     "logs": {
                         "log_level": "Nivell dels registres",
+                        "subscribed_to_logs": "Subscrit a missatges de registre Z-Wave JS...",
                         "title": "Registres de Z-Wave JS"
                     },
                     "navigation": {

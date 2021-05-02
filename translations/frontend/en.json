@@ -2160,6 +2160,7 @@
                     "license": "Published under the Apache 2.0 license",
                     "path_configuration": "Path to configuration.yaml: {path}",
                     "server": "server",
+                    "setup_time": "Setup time",
                     "source": "Source:",
                     "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
                     "system_health": {
@@ -2944,6 +2945,7 @@
                     },
                     "logs": {
                         "log_level": "Log Level",
+                        "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
                         "title": "Z-Wave JS Logs"
                     },
                     "navigation": {
