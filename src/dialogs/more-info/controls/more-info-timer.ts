@@ -25,6 +25,7 @@ class MoreInfoTimer extends LitElement {
 
     return html`
       <ha-attributes
+        .hass=${this.hass}
         .stateObj=${this.stateObj}
         extra-filters="remaining"
       ></ha-attributes>

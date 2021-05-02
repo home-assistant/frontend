@@ -9,15 +9,21 @@ import {
   TemplateResult,
 } from "lit-element";
 import { until } from "lit-html/directives/until";
+import checkValidDate from "../common/datetime/check_valid_date";
+import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
+import { isTimestamp } from "../common/string/is_timestamp";
+import { haStyle } from "../resources/styles";
+import { HomeAssistant } from "../types";
 import hassAttributeUtil, {
   formatAttributeName,
 } from "../util/hass-attributes-util";
-import { haStyle } from "../resources/styles";
 
 let jsYamlPromise: Promise<typeof import("js-yaml")>;
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   @property({ attribute: "extra-filters" }) public extraFilters?: string;
@@ -105,6 +111,7 @@ class HaAttributes extends LitElement {
     if (value === null) {
       return "-";
     }
+
     // YAML handling
     if (
       (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
@@ -116,19 +123,30 @@ class HaAttributes extends LitElement {
       const yaml = jsYamlPromise.then((jsYaml) => jsYaml.safeDump(value));
       return html` <pre>${until(yaml, "")}</pre> `;
     }
-    // URL handling
-    if (typeof value === "string" && value.startsWith("http")) {
-      try {
-        // If invalid URL, exception will be raised
-        const url = new URL(value);
-        if (url.protocol === "http:" || url.protocol === "https:")
-          return html`<a target="_blank" rel="noreferrer" href="${value}"
-            >${value}</a
-          >`;
-      } catch (_) {
-        // Nothing to do here
+
+    if (typeof value === "string") {
+      // URL handling
+      if (value.startsWith("http")) {
+        try {
+          // If invalid URL, exception will be raised
+          const url = new URL(value);
+          if (url.protocol === "http:" || url.protocol === "https:")
+            return html`<a target="_blank" rel="noreferrer" href="${value}"
+              >${value}</a
+            >`;
+        } catch (_) {
+          // Nothing to do here
+        }
+      }
+      // Timestamp handling
+      if (isTimestamp(value)) {
+        const date = new Date(value);
+        if (checkValidDate(date)) {
+          return formatDateTimeWithSeconds(date, this.hass.locale);
+        }
       }
     }
+
     return Array.isArray(value) ? value.join(", ") : value;
   }
 }
