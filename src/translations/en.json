@@ -2191,6 +2191,7 @@
             "dismiss": "Dismiss dialog",
             "finish": "Finish",
             "submit": "Submit",
+            "next": "Next",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
             "created_config": "Created configuration for {name}.",
