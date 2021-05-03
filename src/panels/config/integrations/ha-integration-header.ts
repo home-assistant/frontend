@@ -147,7 +147,7 @@ export class HaIntegrationHeader extends LitElement {
       margin-top: 16px;
       margin-right: 2px;
       font-weight: 400;
-      line-break: anywhere;
+      word-break: break-word;
       color: var(--primary-text-color);
     }
     .secondary {
