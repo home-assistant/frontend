@@ -1744,12 +1744,18 @@
                         "nabu_casa_account": "Nabu Casa konto",
                         "not_connected": "Pole ühendatud",
                         "remote": {
-                            "access_is_being_prepared": "Kaugjuurdepääs on ettevalmistamisel. Teavitame teid, kui see on valmis.",
+                            "access_is_being_prepared": "Kaugjuurdepääsu seadistatakse. Teavitame kui see on saadaval.",
                             "certificate_info": "Sertifikaadi teave",
+                            "connected": "Ühendatud",
                             "info": "Home Assistant Cloud pakub turvalist kaugühendust Home Assistantiga kodust eemal olles.",
                             "instance_is_available": "Teie Home Assistant on saadaval aadressil",
                             "instance_will_be_available": "Teie Home Assistanti aadressiks saab",
                             "link_learn_how_it_works": "Loe kuidas see töötab",
+                            "not_connected": "Ühendus puudub",
+                            "remote_enabled": {
+                                "caption": "Ühendu automaatselt",
+                                "description": "Lubage see valik, et Home Assistantt oleks alati eemalt kättesaadav."
+                            },
                             "title": "Kaugjuhtimine"
                         },
                         "sign_out": "Logi välja",
@@ -2160,6 +2166,7 @@
                     "license": "Avaldatud Apache 2.0 litsentsi alusel",
                     "path_configuration": "configuration.yaml asukoht: {path}",
                     "server": "server",
+                    "setup_time": "Kellaaja suvandid",
                     "source": "Allikas:",
                     "system_health_error": "Süsteemi seisundi komponenti ei laadita. Lisage \"system_health:\" configuration.yaml",
                     "system_health": {
@@ -2944,6 +2951,7 @@
                     },
                     "logs": {
                         "log_level": "Logimise tase",
+                        "subscribed_to_logs": "Z-Wave JS Logi sõnumite tellimine...",
                         "title": "Z-Wave JS logid"
                     },
                     "navigation": {
