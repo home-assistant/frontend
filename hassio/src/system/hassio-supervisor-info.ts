@@ -264,9 +264,7 @@ class HassioSupervisorInfo extends LitElement {
         title: this.supervisor.localize("system.supervisor.warning"),
         text: html`${this.supervisor.localize("system.supervisor.beta_warning")}
           <br />
-          <b>
-            ${this.supervisor.localize("system.supervisor.beta_backup")}
-          </b>
+          <b> ${this.supervisor.localize("system.supervisor.beta_backup")} </b>
           <br /><br />
           ${this.supervisor.localize("system.supervisor.beta_release_items")}
           <ul>

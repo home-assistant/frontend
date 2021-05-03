@@ -112,7 +112,7 @@ export interface ChooseActionChoice {
 
 export interface ChooseAction {
   alias?: string;
-  choose: ChooseActionChoice[] | null;
+  choose: ChooseActionChoice | ChooseActionChoice[] | null;
   default?: Action | Action[];
 }
 

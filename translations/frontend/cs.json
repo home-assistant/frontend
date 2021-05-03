@@ -1243,7 +1243,8 @@
             "service_call_failed": "Službu {service} se nepodařilo zavolat.",
             "started": "Home Assistant je spuštěn!",
             "starting": "Home Assistant se spouští, ne všechno bude k dispozici, dokud nebude spuštění dokončeno.",
-            "triggered": "Spuštěno {name}"
+            "triggered": "Spuštěno {name}",
+            "wrapping_up_startup": "Home Assistant se spouští, vše ještě nemusí být dostupné"
         },
         "panel": {
             "config": {
@@ -1255,7 +1256,8 @@
                     "caption": "Oblasti",
                     "data_table": {
                         "area": "Oblast",
-                        "devices": "Zařízení"
+                        "devices": "Zařízení",
+                        "entities": "Entity"
                     },
                     "delete": {
                         "confirmation_text": "Všechna zařízení v této oblasti budou nastavena jako nepřiřazena.",
@@ -1267,8 +1269,10 @@
                         "create": "VYTVOŘIT",
                         "default_name": "Nová oblast",
                         "delete": "Odstranit",
+                        "linked_entities_caption": "Entity",
                         "name": "Název",
                         "name_required": "Název je povinný",
+                        "no_linked_entities": "S touto oblastí nejsou spojeny žádné entity.",
                         "unknown_error": "Neznámá chyba",
                         "update": "Aktualizovat"
                     },
@@ -2184,7 +2188,6 @@
                         "no_area": "Žádná oblast",
                         "not_loaded": "Nenačteno",
                         "options": "Možnosti",
-                        "provided_by_custom_component": "Poskytováno vlastní komponentou",
                         "provided_by_custom_integration": "Poskytováno vlastní integrací",
                         "reload": "Nově načíst",
                         "reload_confirm": "Integrace byla nově načtena",

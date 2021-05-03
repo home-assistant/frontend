@@ -32,6 +32,7 @@ import { registerServiceWorker } from "../util/register-service-worker";
 import "./onboarding-create-user";
 import "./onboarding-loading";
 import "./onboarding-analytics";
+import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 
 type OnboardingEvent =
   | {
@@ -136,6 +137,19 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
     if (window.innerWidth > 450) {
       import("./particles");
+    }
+    if (matchMedia("(prefers-color-scheme: dark)").matches) {
+      applyThemesOnElement(
+        document.documentElement,
+        {
+          default_theme: "default",
+          default_dark_theme: null,
+          themes: {},
+          darkMode: false,
+        },
+        "default",
+        { dark: true }
+      );
     }
   }
 

@@ -106,6 +106,9 @@
         },
         "errors": {
             "supervisor": {
+                "ask": "मदद के लिए पूछें",
+                "observer": "प्रेक्षक (Observer) की जाँच करें",
+                "reboot": "मशीन पुनः आरंभ करने का प्रयास करें",
                 "system_health": "उप्करन के स्वस्थ्य कि जाँच करे"
             }
         },
@@ -167,12 +170,15 @@
                     "picker": {
                         "headers": {
                             "name": "नाम"
-                        }
+                        },
+                        "no_automations": "हमें कोई AUTOMATION नहीं मिला"
                     }
                 },
                 "cloud": {
                     "account": {
                         "google": {
+                            "enable_ha_skill": "Home Assistant Cloud कौशल सक्रिय करे Google Assistant के लिय",
+                            "not_configured_title": "Google Assistant सक्रिय नहीं है",
                             "title": "Google Assistant"
                         },
                         "thank_you_note": "होम असिस्टेंट क्लाउड का हिस्सा बनने के लिए धन्यवाद। यह आप जैसे लोगों की वजह से है कि हम हर किसी के लिए एक शानदार होम ऑटोमेशन अनुभव बनाने में सक्षम हैं। धन्यवाद!"
@@ -201,8 +207,16 @@
                     "section": {
                         "core": {
                             "analytics": {
+                                "learn_more": "हम आपके जानकारी को कैसे संसाधित करते हैं",
                                 "preference": {
+                                    "diagnostics": {
+                                        "description": "अप्रत्याशित त्रुटि होने पर क्रैश रिपोर्ट साझा करें"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "नाम, संस्करण और क्षमताएं"
+                                    },
                                     "usage": {
+                                        "description": "नाम और संस्करण जानकारी",
                                         "title": "उप्योग किये एकीकरण"
                                     }
                                 }
@@ -226,7 +240,9 @@
                             "failed_unload": "खाली करने मे असफल",
                             "loaded": "तैयार",
                             "migration_error": "प्रवसन दोष",
-                            "not_loaded": "तैयार नहीं हैं"
+                            "not_loaded": "तैयार नहीं हैं",
+                            "setup_error": "एकीकरण करने में विफल",
+                            "setup_retry": "एकीकरण के लिय पुन: प्रयास जारी है"
                         },
                         "system_options": "सिस्टम विकल्प"
                     },
@@ -238,7 +254,15 @@
                 "introduction": "In questa schermata è possibile configurare Home Assistant e i suoi componenti. Non è ancora possibile configurare tutto tramite l'interfaccia, ma ci stiamo lavorando.",
                 "logs": {
                     "custom_integration": "िशेष एकीकरण",
-                    "error_from_custom_integration": "ये दोश िशेष एकीकरण की वजह से है"
+                    "error_from_custom_integration": "ये दोश िशेष एकीकरण की वजह से है",
+                    "level": {
+                        "critical": "अभिलेख स्तर CRITICAL",
+                        "debug": "अभिलेख स्तर DEBUG",
+                        "error": "अभिलेख स्तर ERROR",
+                        "info": "अभिलेख स्तर INFO",
+                        "warning": "अभिलेख स्तर WARNING"
+                    },
+                    "no_errors": "कोई त्रुटी नहीं बताई गई है"
                 },
                 "mqtt": {
                     "title": "MQTT"
@@ -248,11 +272,17 @@
                         "unknown": "अनजान"
                     }
                 },
+                "scene": {
+                    "picker": {
+                        "no_scenes": "हमें कोई SCENE नहीं मिला"
+                    }
+                },
                 "script": {
                     "picker": {
                         "headers": {
                             "name": "नाम"
-                        }
+                        },
+                        "no_scripts": "हमें कोई SCRIPT नहीं मिला"
                     }
                 },
                 "users": {

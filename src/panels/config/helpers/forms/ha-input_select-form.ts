@@ -92,8 +92,8 @@ class HaInputSelectForm extends LitElement {
           "ui.dialogs.helper_settings.input_select.options"
         )}:
         ${this._options.length
-          ? this._options.map((option, index) => {
-              return html`
+          ? this._options.map(
+              (option, index) => html`
                 <paper-item class="option">
                   <paper-item-body> ${option} </paper-item-body>
                   <ha-icon-button
@@ -105,8 +105,8 @@ class HaInputSelectForm extends LitElement {
                     icon="hass:delete"
                   ></ha-icon-button>
                 </paper-item>
-              `;
-            })
+              `
+            )
           : html`
               <paper-item>
                 ${this.hass!.localize(

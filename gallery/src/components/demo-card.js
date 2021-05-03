@@ -15,6 +15,10 @@ class DemoCard extends PolymerElement {
           margin: 0 0 20px;
           color: var(--primary-color);
         }
+        h2 small {
+          font-size: 0.5em;
+          color: var(--primary-text-color);
+        }
         #card {
           max-width: 400px;
           width: 100vw;
@@ -34,7 +38,12 @@ class DemoCard extends PolymerElement {
           }
         }
       </style>
-      <h2>[[config.heading]]</h2>
+      <h2>
+        [[config.heading]]
+        <template is="dom-if" if="[[_size]]">
+          <small>(size [[_size]])</small>
+        </template>
+      </h2>
       <div class="root">
         <div id="card"></div>
         <template is="dom-if" if="[[showConfig]]">
@@ -55,6 +64,9 @@ class DemoCard extends PolymerElement {
         observer: "_configChanged",
       },
       showConfig: Boolean,
+      _size: {
+        type: Number,
+      },
     };
   }
 
@@ -70,6 +82,17 @@ class DemoCard extends PolymerElement {
 
     const el = this._createCardElement(safeLoad(config.config)[0]);
     card.appendChild(el);
+    this._getSize(el);
+  }
+
+  async _getSize(el) {
+    await customElements.whenDefined(el.localName);
+
+    if (!("getCardSize" in el)) {
+      this._size = undefined;
+      return;
+    }
+    this._size = await el.getCardSize();
   }
 
   _createCardElement(cardConfig) {

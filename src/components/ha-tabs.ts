@@ -5,9 +5,9 @@ import type { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
 import { customElement } from "lit-element";
 import { Constructor } from "../types";
 
-const PaperTabs = customElements.get("paper-tabs") as Constructor<
-  PaperTabsElement
->;
+const PaperTabs = customElements.get(
+  "paper-tabs"
+) as Constructor<PaperTabsElement>;
 
 let subTemplate: HTMLTemplateElement;
 

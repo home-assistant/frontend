@@ -16,6 +16,7 @@ export interface ConfigEntry {
   supports_options: boolean;
   supports_unload: boolean;
   disabled_by: "user" | null;
+  reason: string | null;
 }
 
 export interface ConfigEntryMutableParams {

@@ -2156,8 +2156,11 @@
                     "caption": "Integraciones",
                     "config_entry": {
                         "area": "En {area}",
+                        "check_the_logs": "Compruebe los registros",
+                        "configure": "Configurar",
                         "delete": "Eliminar",
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta integración?",
+                        "depends_on_cloud": "Depende de la nube",
                         "device_unavailable": "Dispositivo no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
                         "disable_restart_confirm": "Reinicie Home Assistant para terminar de deshabilitar esta integración",
@@ -2180,14 +2183,23 @@
                         "logs": "Registros",
                         "manuf": "por {manufacturer}",
                         "no_area": "Ninguna área",
-                        "not_loaded": "No se ha cargado, consulte en {logs_link}",
+                        "not_loaded": "No cargado",
                         "options": "Opciones",
+                        "provided_by_custom_integration": "Proporcionado por una integración personalizada",
                         "reload": "Recargar",
                         "reload_confirm": "La integración se recargó",
                         "reload_restart_confirm": "Reinicie Home Assistant para terminar de recargar esta integración",
                         "rename": "Renombrar",
                         "restart_confirm": "Reinicie Home Assistant para terminar de eliminar esta integración.",
                         "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
+                        "state": {
+                            "failed_unload": "No se pudo descargar",
+                            "loaded": "Cargado",
+                            "migration_error": "Error de migración",
+                            "not_loaded": "No cargado",
+                            "setup_error": "No se pudo configurar",
+                            "setup_retry": "Reintentando configurar"
+                        },
                         "system_options": "Opciones de Sistema",
                         "unnamed_entry": "Entrada sin nombre"
                     },
@@ -2255,8 +2267,10 @@
                 "logs": {
                     "caption": "Registros",
                     "clear": "Limpiar",
+                    "custom_integration": "integración personalizada",
                     "description": "Ver los registros de Home Assistant",
                     "details": "Detalles del registro ({level})",
+                    "error_from_custom_integration": "Este error se originó en una integración personalizada.",
                     "level": {
                         "critical": "CRÍTICO",
                         "debug": "DEPURAR",
@@ -2636,7 +2650,7 @@
                             "script": "Recargar scripts",
                             "smtp": "Recargar servicios de notificación SMTP",
                             "statistics": "Recargar entidades de estadísticas",
-                            "telegram": "Recargar servicios de notificación de telegram",
+                            "telegram": "Recargar servicios de notificación de Telegram",
                             "template": "Recargar las entidades de plantilla",
                             "trend": "Recargar entidades de tendencia",
                             "universal": "Recargar entidades de reproductor multimedia universal",
@@ -3711,7 +3725,7 @@
                     "working": "Por favor, espere"
                 },
                 "initializing": "Inicializando",
-                "logging_in_to_with": "Iniciando sesión en ** {locationName} ** con ** {authProviderName} **.",
+                "logging_in_to_with": "Iniciando sesión en **{locationName}** con **{authProviderName}**.",
                 "logging_in_with": "Iniciando sesión con **{authProviderName}**.",
                 "pick_auth_provider": "O inicia sesión con"
             },

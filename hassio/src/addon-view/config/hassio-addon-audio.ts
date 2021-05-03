@@ -69,13 +69,13 @@ class HassioAddonAudio extends LitElement {
               .selected=${this._selectedInput!}
             >
               ${this._inputDevices &&
-              this._inputDevices.map((item) => {
-                return html`
+              this._inputDevices.map(
+                (item) => html`
                   <paper-item device=${item.device || ""}>
                     ${item.name}
                   </paper-item>
-                `;
-              })}
+                `
+              )}
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-dropdown-menu
@@ -90,13 +90,13 @@ class HassioAddonAudio extends LitElement {
               .selected=${this._selectedOutput!}
             >
               ${this._outputDevices &&
-              this._outputDevices.map((item) => {
-                return html`
+              this._outputDevices.map(
+                (item) => html`
                   <paper-item device=${item.device || ""}
                     >${item.name}</paper-item
                   >
-                `;
-              })}
+                `
+              )}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>

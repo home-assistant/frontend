@@ -749,6 +749,9 @@
                 "label": "Bild",
                 "unsupported_format": "Net ënnerstëtzte Format, wiel e JPEG, PNG oder GIF Bild."
             },
+            "related-filter-menu": {
+                "filter_by_entity": "Der Entitéit no filteren"
+            },
             "related-items": {
                 "area": "Beräich",
                 "automation": "Deel vun de folgenden Automatismen",
@@ -1055,6 +1058,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Numm vum Apparat änneren"
                 }
+            },
+            "zha_reconfigure_device": {
+                "heading": "Apparat frësch konfiguréieren"
             }
         },
         "duration": {
@@ -1075,6 +1081,10 @@
                 "key_wrong_type": "De Wäert fir \"{key}\" ass net vum visuelle Editeur ënnerstëtzt. Mir ënnerstëtzen ({type_correct}) mee mir kruuten ({type_wrong}).",
                 "no_template_editor_support": "Modeller net ënnerstëtzt am Visuellen Editeur",
                 "no_type_provided": "Keen Typ uginn."
+            },
+            "supervisor": {
+                "ask": "No Hëllef froen",
+                "system_health": "System Zoustand iwwerpréiwen"
             }
         },
         "login-form": {
@@ -1889,6 +1899,9 @@
                     "filtering_by": "Filteren anhand vun",
                     "show": "Uweisen"
                 },
+                "hassio": {
+                    "button": "Astellen"
+                },
                 "header": "Home Assistant astellen",
                 "helpers": {
                     "caption": "Helper",
@@ -1954,8 +1967,11 @@
                     "caption": "Integratiounen",
                     "config_entry": {
                         "area": "An {area}",
+                        "check_the_logs": "Logs iwwerpréifen",
+                        "configure": "Astellen",
                         "delete": "Läschen",
                         "delete_confirm": "Sécher fir dës Integratioun ze läsche?",
+                        "depends_on_cloud": "Cloud ofhängeg",
                         "device_unavailable": "Apparat net erreechbar",
                         "devices": "{count} {count, plural,\n  one {Apparat}\n  other {Apparaten}\n}",
                         "disable": {
@@ -1973,12 +1989,21 @@
                         "hub": "Verbonnen via",
                         "manuf": "vun {manufacturer}",
                         "no_area": "Kee Beräich",
+                        "not_loaded": "Net gelueden",
                         "options": "Optiounen",
                         "reload": "Nei lueden",
                         "reload_confirm": "Integratioun gouf frësch gelueden",
                         "reload_restart_confirm": "Start Home Assistant nei fir dës Integratioun fäerdeg ze lueden",
                         "rename": "Ëmbenennen",
                         "restart_confirm": "Start Home Assistant nei fir dës Integratioun ze läschen",
+                        "state": {
+                            "failed_unload": "Feeler beim entlueden",
+                            "loaded": "Gelueden",
+                            "migration_error": "Feeler bei der Migratioun",
+                            "not_loaded": "Net gelueden",
+                            "setup_error": "Feeler beim ariichten",
+                            "setup_retry": "Probéiert nach emol anzeriichten"
+                        },
                         "system_options": "System Optiounen",
                         "unnamed_entry": "Entrée ouni Numm"
                     },
@@ -2038,6 +2063,11 @@
                     "clear": "Läschen",
                     "description": "Home Assistant Logbicher ukucken",
                     "details": "Detailler vum Log ({level})",
+                    "level": {
+                        "error": "FEELER",
+                        "info": "INFO",
+                        "warning": "WARNUNG"
+                    },
                     "load_full_log": "Kompletten Home Assistant Log lueden",
                     "loading_log": "Feeler Log gëtt gelueden...",
                     "multiple_messages": "Noriicht als éischt opgetrueden um {time} a säit deem {counter} mol opgetrueden",
@@ -3446,6 +3476,9 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Nächst"
+                },
                 "core-config": {
                     "button_detect": "Entdecken",
                     "finish": "Nächst",
@@ -3455,12 +3488,14 @@
                     "location_name": "Numm vun denger Home Assistant Installatioun",
                     "location_name_default": "Doheem"
                 },
+                "finish": "Ofschléissen",
                 "integration": {
                     "finish": "Ofschléissen",
                     "intro": "Apparaten a Servicë ginn am Home Assistant als Integratioune representéiert. Dir kënnt si elo astellen, oder méi spéit vun der Konfiguratioun's Säit aus.",
                     "more_integrations": "Méi"
                 },
                 "intro": "Sidd Dir prett fir Äert Heem interessant ze maachen, Är Privatsphär ze garantéieren an enger weltwäiter Gemeinschaft bei ze trieden?",
+                "next": "Nächst",
                 "restore": {
                     "description": "Alternativ kanns Du aus engem fréiere Snapshot restauréieren.",
                     "hide_log": "Komplette Log verstoppen",

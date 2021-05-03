@@ -36,7 +36,8 @@ const cardConfigStruct = object({
 const includeDomains = ["sensor"];
 
 @customElement("hui-gauge-card-editor")
-export class HuiGaugeCardEditor extends LitElement
+export class HuiGaugeCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
@@ -112,7 +113,7 @@ export class HuiGaugeCardEditor extends LitElement
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .value=${this._unit}
-          configValue="unit"
+          .configValue=${"unit"}
           @value-changed=${this._valueChanged}
         ></paper-input>
         <hui-theme-select-editor

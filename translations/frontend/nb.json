@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "Lysstyrke",
+                "cold_white_value": "Kald hvit lysstyrke",
+                "color_brightness": "Farge lysstyrke",
                 "color_temperature": "Fargetemperatur",
                 "effect": "Effekt",
-                "white_value": "Hvit verdi"
+                "warm_white_value": "Varm hvit lysstyrke",
+                "white_value": "Hvit lysstyrke"
             },
             "lock": {
                 "code": "Kode",
@@ -707,7 +710,7 @@
                     "text": "Fyll inn navnet på det nye området.",
                     "title": "Legg til nytt område"
                 },
-                "add_new": "Legg til nytt område ...",
+                "add_new": "Legg til nytt område...",
                 "area": "Område",
                 "clear": "Tøm",
                 "no_areas": "Du har ingen områder",
@@ -886,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Dokumentasjon for integrering",
                 "required": "Dette feltet er påkrevd",
                 "service_data": "Tjenestedata",
                 "target": "Mål",
@@ -1125,7 +1129,7 @@
                         "input_text": "Inngangstekster",
                         "min_max": "Min/maks enheter",
                         "mqtt": "Manuelt konfigurerte MQTT-enheter",
-                        "person": "Mennesker",
+                        "person": "Personer",
                         "ping": "Ping binære sensorenheter",
                         "reload": "{domain}",
                         "rest": "Rest enheter og varsle tjenester",
@@ -1193,7 +1197,13 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Konfigurerer enheten på nytt"
+                "attribute": "Attributt",
+                "button_hide": "Skjul detaljer",
+                "button_show": "Vis detaljer",
+                "configuring_alt": "Konfigurerer",
+                "heading": "Konfigurerer enheten på nytt",
+                "reporting_header": "Rapportering",
+                "start_reconfiguration": "Start rekonfigurasjon"
             }
         },
         "duration": {
@@ -1237,7 +1247,7 @@
             "title": "Varsler"
         },
         "notification_toast": {
-            "connection_lost": "Forbindelsen ble brutt. Kobler til på nytt...",
+            "connection_lost": "Forbindelse mistet. Koble til igjen...",
             "dismiss": "Avvis",
             "intergration_starting": "Starter {integration}. Ikke alt er tilgjengelig før lasting er ferdig.",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
@@ -1256,7 +1266,8 @@
                     "caption": "Områder",
                     "data_table": {
                         "area": "Område",
-                        "devices": "Enheter"
+                        "devices": "Enheter",
+                        "entities": "Entiteter"
                     },
                     "delete": {
                         "confirmation_text": "Alle enheter som tilhører dette området vil ikke bli tildelt.",
@@ -1268,6 +1279,7 @@
                         "create": "Opprett",
                         "default_name": "Nytt område",
                         "delete": "Slett",
+                        "linked_entities_caption": "Entiteter",
                         "name": "Navn",
                         "name_required": "Navn er påkrevd",
                         "unknown_error": "Ukjent feil",
@@ -1724,10 +1736,15 @@
                         "remote": {
                             "access_is_being_prepared": "Ekstern tilgang forberedes. Vi vil varsle deg når den er klar.",
                             "certificate_info": "Sertifikatinformasjon",
+                            "connected": "Tilkoblet",
                             "info": "Home Assistant Cloud gir en sikker ekstern tilkobling til forekomsten din mens du er borte fra hjemmet.",
                             "instance_is_available": "Din forekomst er tilgjengelig på",
                             "instance_will_be_available": "Din forekomst vil være tilgjengelig på",
                             "link_learn_how_it_works": "Lær hvordan det fungerer",
+                            "not_connected": "Ikke tilkoblet",
+                            "remote_enabled": {
+                                "caption": "Koble til automatisk"
+                            },
                             "title": "Fjernkontroll"
                         },
                         "sign_out": "Logg ut",
@@ -1751,7 +1768,7 @@
                             "disable_hook_error_msg": "Kan ikke deaktivere webhook:",
                             "info": "Alt som er konfigurert til å utløses av en webhook, kan gis en offentlig tilgjengelig URL-adresse for å tillate deg å sende data tilbake til Home Assistent fra hvor som helst, uten å utsette forekomsten din for Internett.",
                             "link_learn_more": "Finn ut mer om hvordan du oppretter webhook-drevne automasjoner.",
-                            "loading": "Laster inn ...",
+                            "loading": "Laster inn...",
                             "manage": "Administrer",
                             "no_hooks_yet": "Ser ut som du ikke har noen webhook'er ennå. Kom i gang ved å konfigurere en ",
                             "no_hooks_yet_link_automation": "webhook-automasjon",
@@ -2156,8 +2173,11 @@
                     "caption": "Integrasjoner",
                     "config_entry": {
                         "area": "I {area}",
+                        "check_the_logs": "Kontroller loggene",
+                        "configure": "Konfigurer",
                         "delete": "Slett",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
+                        "depends_on_cloud": "Avhenger av skyen",
                         "device_unavailable": "Enheten er utilgjengelig",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
                         "disable_restart_confirm": "Start Home Assistant på nytt for å fullføre deaktiveringen av denne integreringen",
@@ -2180,14 +2200,23 @@
                         "logs": "Logger",
                         "manuf": "av {manufacturer}",
                         "no_area": "Intet område",
-                        "not_loaded": "Ikke lastet inn, sjekk {logs_link}",
+                        "not_loaded": "Ikke lastet",
                         "options": "Alternativer",
+                        "provided_by_custom_integration": "Levert av en tilpasset integrasjon",
                         "reload": "Last inn på nytt",
                         "reload_confirm": "Integrasjonen ble lastet på nytt",
                         "reload_restart_confirm": "Start Home Assistant på nytt for å fullføre omlastingen av denne integrasjonen",
                         "rename": "Gi nytt navn",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
                         "services": "{count} {count, plural,\n  one {tjeneste}\n  other {tjenester}\n}",
+                        "state": {
+                            "failed_unload": "Kan ikke laste ut",
+                            "loaded": "Lastet",
+                            "migration_error": "Migrasjonsfeil",
+                            "not_loaded": "Ikke lastet",
+                            "setup_error": "Kunne ikke konfigurere",
+                            "setup_retry": "Prøver på nytt oppsett"
+                        },
                         "system_options": "Systemalternativer",
                         "unnamed_entry": "Ikke navngitt oppføring"
                     },
@@ -2267,7 +2296,7 @@
                         "warning": "ADVARSEL"
                     },
                     "load_full_log": "Last inn fullstendig Home Assistant logg",
-                    "loading_log": "Laster inn feillogg ...",
+                    "loading_log": "Laster inn feillogg...",
                     "multiple_messages": "meldingen oppstod først ved {time} og vist {counter} ganger",
                     "no_errors": "Ingen feil er rapportert",
                     "no_issues": "Det er ingen nye problemer!",
@@ -2629,7 +2658,7 @@
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "min_max": "Min/maks enheter",
                             "mqtt": "Manuelt konfigurerte MQTT-enheter",
-                            "person": "Mennesker",
+                            "person": "Personer",
                             "ping": "Ping binære sensorenheter",
                             "reload": "{domain}",
                             "rest": "Rest enheter og varsle tjenester",
@@ -2648,7 +2677,7 @@
                             "confirm_restart": "Er du sikker på at du vil starte Home Assistant på nytt?",
                             "confirm_stop": "Er du sikker på at du vil stoppe Home Assistant?",
                             "heading": "Serveradministrasjon",
-                            "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
+                            "introduction": "Kontroller Home Assistant-serveren ... fra Home Assistant.",
                             "restart": "Omstart",
                             "stop": "Stopp"
                         },
@@ -2775,6 +2804,15 @@
                         "manufacturer_code_override": "Overstyring av produsentkode",
                         "value": "Verdi"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Snarveier",
+                        "update_button": "Oppdater konfigurasjon",
+                        "zha_options": {
+                            "default_light_transition": "Standard overgangstid for lys (sekunder)",
+                            "enable_identify_on_join": "Aktiver identifiseringseffekt når enheter blir med i nettverket",
+                            "title": "Globale alternativer"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Konfigurasjonen er fullført",
                         "CONFIGURED_status_text": "Initialiserer",
@@ -2900,6 +2938,7 @@
                         "zwave_info": "Z-Wave Informasjon"
                     },
                     "navigation": {
+                        "logs": "Logger",
                         "network": "Nettverk"
                     },
                     "network_status": {
@@ -2914,6 +2953,9 @@
                         "header": "Z-Wave enhetskonfigurasjon",
                         "introduction": "Administrer og juster enhets (node) spesifikke konfigurasjonsparametere for den valgte enheten",
                         "parameter_is_read_only": "Denne parameteren er skrivebeskyttet.",
+                        "set_param_accepted": "Parameteren er oppdatert.",
+                        "set_param_error": "Det oppstod en feil.",
+                        "set_param_queued": "Parameterendringen har blitt satt i kø, og vil bli oppdatert når enheten våkner.",
                         "zwave_js_device_database": "Z-Wave JS Device Database"
                     },
                     "node_status": {
@@ -2922,6 +2964,16 @@
                         "awake": "Våken",
                         "dead": "Død",
                         "unknown": "Ukjent"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Du må vekke batteridrevne enheter før du begynner på nytt intervju. Se enhetens håndbok for instruksjoner om hvordan du vekker enheten.",
+                        "in_progress": "Enheten blir intervjuet. Dette kan ta litt tid.",
+                        "interview_complete": "Enhetsintervjuet er fullført.",
+                        "interview_failed": "Enhetsintervjuet mislyktes. Ytterligere informasjon kan være tilgjengelig i loggene.",
+                        "introduction": "Intervju en enhet på nytt på Z-Wave-nettverket. Bruk denne funksjonen hvis enheten mangler eller ikke har feil funksjonalitet.",
+                        "run_in_background": "Du kan lukke denne dialogen, og intervjuet fortsetter i bakgrunnen.",
+                        "start_reinterview": "Start Re-intervju",
+                        "title": "Intervju en Z-Wave-enhet på nytt"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Avbryt ekskludering",
@@ -3041,12 +3093,12 @@
                         "count_listeners": " ({count} lyttere)",
                         "data": "Hendelsedata (YAML, valgfritt)",
                         "description": "Send ut en hendelse på hendelsesbussen",
-                        "documentation": "Hendelsedokumentasjon.",
+                        "documentation": "Dokumentasjon for hendelser",
                         "event_fired": "Hendelse {name} utført",
                         "fire_event": "Utfør hendelse",
                         "listen_to_events": "Lytt til hendelser",
                         "listening_to": "Lytte til",
-                        "notification_event_fired": "Hendelse {type} vellykket utløst!",
+                        "notification_event_fired": "Arrangementet {type} vellykket!",
                         "start_listening": "Begynn å lytte",
                         "stop_listening": "Stopp lytting",
                         "subscribe_to": "Hendelse for å abonnere på",
@@ -3073,8 +3125,8 @@
                         "attributes": "Attributter",
                         "copy_id": "Kopier ID til utklippstavlen",
                         "current_entities": "Gjeldende entiteter",
-                        "description1": "Angi representasjonen av en enhet i Home Assistant.",
-                        "description2": "Dette vil ikke kommunisere med den faktiske enheten.",
+                        "description1": "Angi gjeldende tilstandsrepresentasjon for en enhet i Home Assistant.",
+                        "description2": "Hvis enheten tilhører en enhet, vil det ikke være noen faktisk kommunikasjon med den enheten.",
                         "entity": "Entitet",
                         "filter_attributes": "Filtrere attributter",
                         "filter_entities": "Filtrere entiteter",
@@ -3446,7 +3498,7 @@
                         "duplicate": "Dupliser kort",
                         "edit": "Rediger",
                         "header": "Kortkonfigurasjon",
-                        "move": "Flytt til visning",
+                        "move": "Gå til visning",
                         "move_after": "Flytt kortet etter",
                         "move_before": "Flytt kortet før",
                         "options": "Flere alternativer",

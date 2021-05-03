@@ -51,7 +51,7 @@ export class CloudGooglePref extends LitElement {
           <p>
             ${this.hass.localize("ui.panel.config.cloud.account.google.info")}
           </p>
-          ${!this.cloudStatus.google_registered
+          ${google_enabled && !this.cloudStatus.google_registered
             ? html`
                 <h3 class="warning">
                   ${this.hass.localize(

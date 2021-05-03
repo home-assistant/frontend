@@ -64,14 +64,12 @@ class HaScriptPicker extends LitElement {
             filteredScripts!.includes(script.entity_id)
           )
         : scripts
-      ).map((script) => {
-        return {
-          ...script,
-          name: computeStateName(script),
-          icon: stateIcon(script),
-          last_triggered: script.attributes.last_triggered || undefined,
-        };
-      });
+      ).map((script) => ({
+        ...script,
+        name: computeStateName(script),
+        icon: stateIcon(script),
+        last_triggered: script.attributes.last_triggered || undefined,
+      }));
     }
   );
 

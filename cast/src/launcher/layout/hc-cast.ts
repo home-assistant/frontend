@@ -54,9 +54,7 @@ class HcCast extends LitElement {
     const error =
       this.castManager.castState === "NO_DEVICES_AVAILABLE"
         ? html`
-            <p>
-              There were no suitable Chromecast devices to cast to found.
-            </p>
+            <p>There were no suitable Chromecast devices to cast to found.</p>
           `
         : undefined;
 

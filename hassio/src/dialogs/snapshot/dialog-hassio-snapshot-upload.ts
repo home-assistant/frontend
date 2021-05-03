@@ -18,7 +18,8 @@ import "../../components/hassio-upload-snapshot";
 import { HassioSnapshotUploadDialogParams } from "./show-dialog-snapshot-upload";
 
 @customElement("dialog-hassio-snapshot-upload")
-export class DialogHassioSnapshotUpload extends LitElement
+export class DialogHassioSnapshotUpload
+  extends LitElement
   implements HassDialog<HassioSnapshotUploadDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -57,9 +58,7 @@ export class DialogHassioSnapshotUpload extends LitElement
       >
         <div slot="heading">
           <ha-header-bar>
-            <span slot="title">
-              Upload snapshot
-            </span>
+            <span slot="title"> Upload snapshot </span>
             <mwc-icon-button slot="actionItems" dialogAction="cancel">
               <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
             </mwc-icon-button>

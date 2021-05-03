@@ -180,4 +180,8 @@ class DemoHuiMediaControlCard extends LitElement {
   }
 }
 
-customElements.define("demo-hui-media-control-card", DemoHuiMediaControlCard);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-media-control-card": DemoHuiMediaControlCard;
+  }
+}

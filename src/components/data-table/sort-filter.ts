@@ -1,13 +1,13 @@
-import { wrap } from "comlink";
-import type { api } from "./sort_filter_worker";
+import { Remote, wrap } from "comlink";
+import type { Api } from "./sort_filter_worker";
 
-type FilterDataType = api["filterData"];
+type FilterDataType = Api["filterData"];
 type FilterDataParamTypes = Parameters<FilterDataType>;
 
-type SortDataType = api["sortData"];
+type SortDataType = Api["sortData"];
 type SortDataParamTypes = Parameters<SortDataType>;
 
-let worker: any | undefined;
+let worker: Remote<Api> | undefined;
 
 export const filterData = async (
   data: FilterDataParamTypes[0],
@@ -18,7 +18,7 @@ export const filterData = async (
     worker = wrap(new Worker(new URL("./sort_filter_worker", import.meta.url)));
   }
 
-  return await worker.filterData(data, columns, filter);
+  return worker.filterData(data, columns, filter);
 };
 
 export const sortData = async (
@@ -31,5 +31,5 @@ export const sortData = async (
     worker = wrap(new Worker(new URL("./sort_filter_worker", import.meta.url)));
   }
 
-  return await worker.sortData(data, columns, direction, sortColumn);
+  return worker.sortData(data, columns, direction, sortColumn);
 };

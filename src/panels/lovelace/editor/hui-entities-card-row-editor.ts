@@ -75,8 +75,8 @@ export class HuiEntitiesCardRowEditor extends LitElement {
         ${guard([this.entities, this._renderEmptySortable], () =>
           this._renderEmptySortable
             ? ""
-            : this.entities!.map((entityConf, index) => {
-                return html`
+            : this.entities!.map(
+                (entityConf, index) => html`
                   <div class="entity">
                     <ha-svg-icon class="handle" .path=${mdiDrag}></ha-svg-icon>
                     ${entityConf.type
@@ -127,8 +127,8 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                       <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
                     </mwc-icon-button>
                   </div>
-                `;
-              })
+                `
+              )
         )}
       </div>
       <ha-entity-picker

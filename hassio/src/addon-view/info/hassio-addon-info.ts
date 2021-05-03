@@ -242,14 +242,18 @@ class HassioAddonInfo extends LitElement {
               ? html`
                   Current version: ${this.addon.version}
                   <div class="changelog" @click=${this._openChangelog}>
-                    (<span class="changelog-link">${
-                      this.supervisor.localize("addon.dashboard.changelog")}</span
+                    (<span class="changelog-link"
+                      >${this.supervisor.localize(
+                        "addon.dashboard.changelog"
+                      )}</span
                     >)
                   </div>
                 `
-              : html`<span class="changelog-link" @click=${this._openChangelog}>${
-                  this.supervisor.localize("addon.dashboard.changelog")
-                }</span>`}
+              : html`<span class="changelog-link" @click=${this._openChangelog}
+                  >${this.supervisor.localize(
+                    "addon.dashboard.changelog"
+                  )}</span
+                >`}
           </div>
 
           <div class="description light-color">
@@ -257,13 +261,9 @@ class HassioAddonInfo extends LitElement {
             ${this.supervisor.localize(
               "addon.dashboard.visit_addon_page",
               "name",
-              html`<a
-                href="${this.addon.url!}"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.addon.name}
-              </a>`
+              html`<a href="${this.addon.url!}" target="_blank" rel="noreferrer"
+                >${this.addon.name}</a
+              >`
             )}
           </div>
           <div class="addon-container">
@@ -562,9 +562,7 @@ class HassioAddonInfo extends LitElement {
                       <span slot="heading">
                         ${this.supervisor.localize("addon.dashboard.hostname")}
                       </span>
-                      <code slot="description">
-                        ${this.addon.hostname}
-                      </code>
+                      <code slot="description"> ${this.addon.hostname} </code>
                     </ha-settings-row>
                     ${metrics.map(
                       (metric) =>
@@ -993,7 +991,7 @@ class HassioAddonInfo extends LitElement {
         addons: [this.addon.slug],
         homeassistant: false,
       },
-      updateHandler: async () => await this._updateAddon(),
+      updateHandler: async () => this._updateAddon(),
     });
   }
 

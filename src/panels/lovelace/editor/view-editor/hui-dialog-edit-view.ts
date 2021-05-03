@@ -128,14 +128,14 @@ export class HuiDialogEditView extends LitElement {
                     `
                   : ""}
                 <div class="preview-badges">
-                  ${this._badges.map((badgeConfig) => {
-                    return html`
+                  ${this._badges.map(
+                    (badgeConfig) => html`
                       <hui-badge-preview
                         .hass=${this.hass}
                         .config=${badgeConfig}
                       ></hui-badge-preview>
-                    `;
-                  })}
+                    `
+                  )}
                 </div>
               `
             : ""}
@@ -168,9 +168,7 @@ export class HuiDialogEditView extends LitElement {
         .heading=${true}
       >
         <div slot="heading">
-          <h2>
-            ${this._viewConfigTitle}
-          </h2>
+          <h2>${this._viewConfigTitle}</h2>
           <paper-tabs
             scrollable
             hide-scroll-buttons

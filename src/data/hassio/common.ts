@@ -21,13 +21,12 @@ export interface HassioStats {
 export const hassioApiResultExtractor = <T>(response: HassioResponse<T>) =>
   response.data;
 
-export const extractApiErrorMessage = (error: any): string => {
-  return typeof error === "object"
+export const extractApiErrorMessage = (error: any): string =>
+  typeof error === "object"
     ? typeof error.body === "object"
       ? error.body.message || "Unknown error, see supervisor logs"
       : error.body || error.message || "Unknown error, see supervisor logs"
     : error;
-};
 
 const ignoredStatusCodes = new Set([502, 503, 504]);
 
@@ -51,7 +50,7 @@ export const fetchHassioStats = async (
   container: string
 ): Promise<HassioStats> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: `/${container}/stats`,
       method: "get",

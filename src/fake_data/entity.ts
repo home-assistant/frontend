@@ -81,9 +81,27 @@ class LightEntity extends Entity {
 
     if (service === "turn_on") {
       // eslint-disable-next-line
-      let { brightness, hs_color, brightness_pct } = data;
-      brightness = (255 * brightness_pct) / 100;
-      this.update("on", { ...this.attributes, brightness, hs_color });
+      let { hs_color, brightness_pct, rgb_color, color_temp } = data;
+      const attrs = { ...this.attributes };
+      if (brightness_pct) {
+        attrs.brightness = (255 * brightness_pct) / 100;
+      } else if (!attrs.brightness) {
+        attrs.brightness = 255;
+      }
+      if (hs_color) {
+        attrs.color_mode = "hs";
+        attrs.hs_color = hs_color;
+      }
+      if (rgb_color) {
+        attrs.color_mode = "rgb";
+        attrs.rgb_color = rgb_color;
+      }
+      if (color_temp) {
+        attrs.color_mode = "color_temp";
+        attrs.color_temp = color_temp;
+        delete attrs.rgb_color;
+      }
+      this.update("on", attrs);
     } else if (service === "turn_off") {
       this.update("off");
     } else if (service === "toggle") {

@@ -49,7 +49,8 @@ const actions = [
 ];
 
 @customElement("hui-button-card-editor")
-export class HuiButtonCardEditor extends LitElement
+export class HuiButtonCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

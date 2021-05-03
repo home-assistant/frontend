@@ -24,7 +24,8 @@ const cardConfigStruct = object({
 const includeDomains = ["media_player"];
 
 @customElement("hui-media-control-card-editor")
-export class HuiMediaControlCardEditor extends LitElement
+export class HuiMediaControlCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

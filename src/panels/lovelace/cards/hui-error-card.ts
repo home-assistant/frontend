@@ -31,11 +31,18 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
+    let dumped: string | undefined;
+
+    if (this._config.origConfig) {
+      try {
+        dumped = safeDump(this._config.origConfig);
+      } catch (err) {
+        dumped = `[Error dumping ${this._config.origConfig}]`;
+      }
+    }
+
     return html`
-      ${this._config.error}
-      ${this._config.origConfig
-        ? html`<pre>${safeDump(this._config.origConfig)}</pre>`
-        : ""}
+      ${this._config.error}${dumped ? html`<pre>${dumped}</pre>` : ""}
     `;
   }
 

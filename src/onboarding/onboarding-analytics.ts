@@ -32,13 +32,9 @@ class OnboardingAnalytics extends LitElement {
   protected render(): TemplateResult {
     return html`
       <p>
-        ${this.hass.localize(
-          "ui.panel.config.core.section.core.analytics.introduction",
-          "link",
-          html`<a href="https://analytics.home-assistant.io" target="_blank"
-            >analytics.home-assistant.io</a
-          >`
-        )}
+        Share anonymized information from your installation to help make Home
+        Assistant better and help us convince manufacturers to add local control
+        and privacy-focused features.
       </p>
       <ha-analytics
         @analytics-preferences-changed=${this._preferencesChanged}

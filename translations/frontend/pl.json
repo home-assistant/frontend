@@ -439,8 +439,8 @@
                 "used_space": "Zajęte miejsce"
             },
             "log": {
-                "get_logs": "Nie udało się pobrać dzienników od {provider} {error}",
-                "log_provider": "Dostawca dziennika"
+                "get_logs": "Nie udało się pobrać logów od {provider} {error}",
+                "log_provider": "Dostawca logów"
             },
             "supervisor": {
                 "beta_backup": "Przed aktywacją tej funkcji upewnij się, że masz kopie zapasowe swoich danych.",
@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "Jasność",
+                "cold_white_value": "Jasność zimnej bieli",
+                "color_brightness": "Jasność koloru",
                 "color_temperature": "Temperatura barwy",
                 "effect": "Efekt",
-                "white_value": "Wartość bieli"
+                "warm_white_value": "Jasność ciepłej bieli",
+                "white_value": "Jasność bieli"
             },
             "lock": {
                 "code": "Kod",
@@ -667,7 +670,7 @@
             "enable": "Włącz",
             "error_required": "To pole jest wymagane",
             "leave": "Wyjdź",
-            "loading": "Ładowanie",
+            "loading": "Wczytywanie",
             "menu": "Menu",
             "next": "Dalej",
             "no": "Nie",
@@ -694,7 +697,7 @@
                         "title": "Błąd podczas pobierania dodatków"
                     },
                     "no_supervisor": {
-                        "description": "Nie znaleziono Supervisora, więc nie można załadować dodatków.",
+                        "description": "Nie znaleziono Supervisora, więc nie można wczytać dodatków.",
                         "title": "Brak Supervisora"
                     }
                 }
@@ -758,7 +761,7 @@
             },
             "history_charts": {
                 "history_disabled": "Integracja historia wyłączona",
-                "loading_history": "Ładowanie historii...",
+                "loading_history": "Wczytywanie historii...",
                 "no_history_found": "Nie znaleziono historii."
             },
             "logbook": {
@@ -886,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Dokumentacja integracji",
                 "required": "To pole jest wymagane",
                 "service_data": "Dane usługi",
                 "target": "Cele",
@@ -1001,7 +1005,7 @@
                     "pattern": "Wyrażenie regularne do sprawdzania poprawności po stronie klienta",
                     "text": "Pole tekstowe"
                 },
-                "platform_not_loaded": "Komponent {platform} nie jest załadowany, dodaj go do swojej konfiguracji dodając 'default_config:' lub ''{platform}:''.",
+                "platform_not_loaded": "Komponent {platform} nie jest wczytany, dodaj go do swojej konfiguracji dodając 'default_config:' lub ''{platform}:''.",
                 "required_error_msg": "To pole jest wymagane",
                 "timer": {
                     "duration": "Czas"
@@ -1193,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Ponowne konfigurowanie urządzenia"
+                "attribute": "Atrybut",
+                "battery_device_warning": "Przed rozpoczęciem ponownej konfiguracji, urządzenia zasilane bateryjnie muszą zostać wybudzone. Zapoznaj się z instrukcją obsługi urządzenia, aby uzyskać informacje dotyczące wybudzania.",
+                "bind_header": "Wiązanie",
+                "button_hide": "Ukryj szczegóły",
+                "button_show": "Pokaż szczegóły",
+                "cluster_header": "Klaster",
+                "configuration_complete": "Ponowna konfiguracja urządzenia zakończona.",
+                "configuration_failed": "Ponowna konfiguracja urządzenia nie powiodła się. Dodatkowe informacje mogą być dostępne w logach.",
+                "configuring_alt": "Konfigurowanie",
+                "heading": "Ponowne konfigurowanie urządzenia",
+                "in_progress": "Urządzenie jest ponownie konfigurowane. To może zająć trochę czasu.",
+                "introduction": "Skonfiguruj ponownie urządzenie w sieci Zigbee. Użyj tej funkcji, jeśli urządzenie nie działa poprawnie.",
+                "min_max_change": "min/max/zmiana",
+                "reporting_header": "Raportowanie",
+                "run_in_background": "Możesz zamknąć to okno, a ponowna konfiguracja będzie kontynuowane w tle.",
+                "start_reconfiguration": "Rozpocznij konfigurację urządzenia"
             }
         },
         "duration": {
@@ -1220,7 +1239,7 @@
                 "observer": "Sprawdź obserwatora",
                 "reboot": "Spróbuj ponownie uruchomić hosta",
                 "system_health": "Sprawdź kondycję systemu",
-                "title": "Nie można załadować panelu Supervisora!",
+                "title": "Nie można wczytać panelu Supervisora!",
                 "wait": "Jeśli właśnie uruchomiłeś system, upewnij się, że dałeś Supervisorowi wystarczająco dużo czasu na start."
             }
         },
@@ -1256,7 +1275,8 @@
                     "caption": "Obszary",
                     "data_table": {
                         "area": "Obszar",
-                        "devices": "Urządzenia"
+                        "devices": "Urządzenia",
+                        "entities": "Encje"
                     },
                     "delete": {
                         "confirmation_text": "Wszystkie urządzenia z tego obszaru pozostaną bez przypisanego obszaru.",
@@ -1268,8 +1288,10 @@
                         "create": "Utwórz",
                         "default_name": "Nowy obszar",
                         "delete": "Usuń",
+                        "linked_entities_caption": "Encje",
                         "name": "Nazwa",
                         "name_required": "Nazwa jest wymagana",
+                        "no_linked_entities": "Brak encji powiązanych z tym obszarem.",
                         "unknown_error": "Nieznany błąd",
                         "update": "Aktualizuj"
                     },
@@ -1481,7 +1503,7 @@
                         "enable_disable": "Włącz/wyłącz automatyzację",
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
                         "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne",
-                        "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no})",
+                        "load_error_unknown": "Wystąpił błąd podczas wczytywania automatyzacji ({err_no})",
                         "max": {
                             "parallel": "Maksymalna liczba równoległych uruchomień",
                             "queued": "Długość kolejki"
@@ -1873,15 +1895,15 @@
                         "core": {
                             "analytics": {
                                 "documentation": "Zanim to włączysz, odwiedź stronę z dokumentacją analityczną {link}, aby zrozumieć, co wysyłasz i jak to jest przechowywane.",
-                                "header": "Analityka",
+                                "header": "Dane analityczne",
                                 "instance_id": "Identyfikator instancji: {huuid}",
                                 "introduction": "Udostępnij informacje o instalacji, aby ulepszyć Home Assistant i pomóż nam przekonać producentów do dodania lokalnych funkcji sterowania i prywatności.",
                                 "learn_more": "Jak przetwarzamy Twoje dane",
-                                "needs_base": "Aby ta opcja była dostępna, musisz włączyć podstawowe analityki",
+                                "needs_base": "Aby ta opcja była dostępna, musisz włączyć podstawowe dane analityczne",
                                 "preference": {
                                     "base": {
                                         "description": "Identyfikator instancji, wersja i typ instalacji.",
-                                        "title": "Podstawowe analityki"
+                                        "title": "Podstawowe dane analityczne"
                                     },
                                     "diagnostics": {
                                         "description": "Udostępniaj raporty o awariach, gdy wystąpią nieoczekiwane błędy.",
@@ -2138,8 +2160,9 @@
                     "license": "Opublikowany na licencji Apache 2.0",
                     "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
                     "server": "serwer",
+                    "setup_time": "Ustawienia czasu",
                     "source": "Źródło:",
-                    "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml",
+                    "system_health_error": "Komponent kondycji systemu nie jest wczytany. Dodaj 'system_health:' do pliku configuration.yaml",
                     "system_health": {
                         "manage": "Zarządzaj",
                         "more_info": "więcej info"
@@ -2160,7 +2183,7 @@
                         "configure": "Konfiguruj",
                         "delete": "Usuń",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
-                        "depends_on_cloud": "Zależy od chmury",
+                        "depends_on_cloud": "Zależny od chmury",
                         "device_unavailable": "Urządzenie niedostępne",
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
                         "disable_restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć wyłączanie tej integracji",
@@ -2183,9 +2206,8 @@
                         "logs": "logi",
                         "manuf": "producent: {manufacturer}",
                         "no_area": "brak",
-                        "not_loaded": "Nie załadowano",
+                        "not_loaded": "Nie wczytano",
                         "options": "Opcje",
-                        "provided_by_custom_component": "Dostarczone przez niestandardowy komponent",
                         "provided_by_custom_integration": "Dostarczone przez niestandardowy komponent",
                         "reload": "Wczytaj ponownie",
                         "reload_confirm": "Integracja została ponownie wczytana",
@@ -2194,11 +2216,11 @@
                         "restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć usuwanie tej integracji",
                         "services": "{count} {count, plural,\n  one {usługa}\n  few {usługi}\n  many {usług}\n  other {usług}\n}",
                         "state": {
-                            "failed_unload": "Nie udało się rozładować",
-                            "loaded": "Załadowano",
+                            "failed_unload": "Błąd usuwania",
+                            "loaded": "Wczytano",
                             "migration_error": "Błąd migracji",
-                            "not_loaded": "Nie załadowano",
-                            "setup_error": "Nie udało się skonfigurować",
+                            "not_loaded": "Nie wczytano",
+                            "setup_error": "Błąd konfiguracji",
                             "setup_retry": "Próbuję ponownie skonfigurować"
                         },
                         "system_options": "Opcje systemowe",
@@ -2219,7 +2241,7 @@
                         "finish": "Zakończ",
                         "loading_first_time": "Proszę czekać, trwa instalowanie integracji...",
                         "not_all_required_fields": "Nie wszystkie wymagane pola są wypełnione.",
-                        "not_loaded": "Nie udało się załadować integracji, spróbuj ponownie uruchomić Home Assistanta.",
+                        "not_loaded": "Nie udało się wczytać integracji, spróbuj ponownie uruchomić Home Assistanta.",
                         "pick_flow_step": {
                             "new_flow": "Nie, skonfiguruj inną instancję integracji {integration}",
                             "title": "Odkryliśmy je, chcesz je skonfigurować?"
@@ -2275,12 +2297,12 @@
                     "level": {
                         "critical": "KRYTYCZNE",
                         "debug": "DEBUG",
-                        "error": "BŁĄD",
+                        "error": "BŁĘDY",
                         "info": "INFO",
-                        "warning": "OSTRZEŻENIE"
+                        "warning": "OSTRZEŻENIA"
                     },
-                    "load_full_log": "Załaduj cały log Home Assistanta",
-                    "loading_log": "Ładowanie loga błędów…",
+                    "load_full_log": "Wczytaj cały log Home Assistanta",
+                    "loading_log": "Wczytywanie loga błędów…",
                     "multiple_messages": "wiadomość pojawiła się po raz pierwszy {time} i powtarzała się {counter} razy",
                     "no_errors": "Nie zgłoszono żadnych błędów",
                     "no_issues": "Nie ma nowych problemów!",
@@ -2439,7 +2461,7 @@
                     },
                     "node_query_stages": {
                         "associations": "Odświeżanie grup skojarzeń i członkostwa",
-                        "cacheload": "Ładowanie informacji z pliku pamięci podręcznej OpenZWave. Węzły baterii pozostaną na tym etapie, dopóki węzeł się nie wybudzi.",
+                        "cacheload": "Wczytywanie informacji z pliku pamięci podręcznej OpenZWave. Węzły baterii pozostaną na tym etapie, dopóki węzeł się nie wybudzi.",
                         "complete": "Proces odpytywania jest zakończony",
                         "configuration": "Pobieranie wartości konfiguracyjnych z węzła",
                         "dynamic": "Pobieranie często zmieniających się wartości z węzła",
@@ -2547,7 +2569,7 @@
                         "icon": "Ikona",
                         "introduction": "Użyj scen, aby ożywić swój dom.",
                         "load_error_not_editable": "Tylko sceny zdefiniowane w pliku scenes.yaml są edytowalne",
-                        "load_error_unknown": "Błąd ładowania sceny ({err_no})",
+                        "load_error_unknown": "Błąd wczytywania sceny ({err_no})",
                         "name": "Nazwa",
                         "save": "Zapisz",
                         "unsaved_confirm": "Masz niezapisane zmiany. Na pewno chcesz wyjść?"
@@ -2788,6 +2810,15 @@
                         "manufacturer_code_override": "Zastąpienie kodu producenta",
                         "value": "Wartość"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Skróty",
+                        "update_button": "Zaktualizuj konfigurację",
+                        "zha_options": {
+                            "default_light_transition": "Domyślny czas efektu przejścia dla światła (w sekundach)",
+                            "enable_identify_on_join": "Włącz efekt identyfikacji, gdy urządzenia dołączają do sieci",
+                            "title": "Opcje ogólne"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Konfigurowanie zakończone",
                         "CONFIGURED_status_text": "Inicjalizacja",
@@ -2912,7 +2943,13 @@
                         "node_status": "Stan węzła",
                         "zwave_info": "Informacje Z-Wave"
                     },
+                    "logs": {
+                        "log_level": "Poziom loga",
+                        "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS ...",
+                        "title": "Logi Z-Wave JS"
+                    },
                     "navigation": {
+                        "logs": "Logi",
                         "network": "Sieć"
                     },
                     "network_status": {
@@ -2927,6 +2964,9 @@
                         "header": "Konfiguracja urządzenia Z-Wave",
                         "introduction": "Zarządzaj i dostosuj specyficznymi parametrami konfiguracyjnymi dla wybranego urządzenia (nody)",
                         "parameter_is_read_only": "Ten parametr jest tylko do odczytu.",
+                        "set_param_accepted": "Parametr został zaktualizowany.",
+                        "set_param_error": "Wystąpił błąd.",
+                        "set_param_queued": "Zmiana parametru została umieszczona w kolejce i zostanie zaktualizowana po wybudzeniu urządzenia.",
                         "zwave_js_device_database": "Baza danych urządzeń Z-Wave JS"
                     },
                     "node_status": {
@@ -2935,6 +2975,16 @@
                         "awake": "wybudzony",
                         "dead": "martwy",
                         "unknown": "nieznany"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Przed rozpoczęciem odpytywania, urządzenia zasilane bateryjnie muszą zostać wybudzone. Zapoznaj się z instrukcją obsługi urządzenia, aby uzyskać informacje dotyczące wybudzania.",
+                        "in_progress": "Urządzenie jest odpytywane. To może zająć trochę czasu.",
+                        "interview_complete": "Odpytywanie urządzenia zakończone.",
+                        "interview_failed": "Odpytywanie urządzenia nie powiodło się. Dodatkowe informacje mogą być dostępne w logach.",
+                        "introduction": "Odpytaj urządzenie w swojej sieci Z-Wave. Użyj tej funkcji, jeśli Twoje urządzenie nie działa lub działa nieprawidłowo.",
+                        "run_in_background": "Możesz zamknąć to okno, a odpytywanie będzie kontynuowane w tle.",
+                        "start_reinterview": "Rozpocznij ponowne odpytywanie",
+                        "title": "Ponowne odpytywanie urządzenia Z-Wave"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Anuluj usuwanie węzła",
@@ -3086,8 +3136,8 @@
                         "attributes": "Atrybuty",
                         "copy_id": "Skopiuj ID do schowka",
                         "current_entities": "Bieżące encje",
-                        "description1": "Ustaw stany encji urządzeń Home Assistanta.",
-                        "description2": "Nie wpłynie to na rzeczywiste urządzenia.",
+                        "description1": "Ustaw aktualne stany encji urządzeń Home Assistanta.",
+                        "description2": "Jeśli encja należy do urządzenia, nie nastąpi żadna komunikacja z urządzeniem.",
                         "entity": "Encja",
                         "filter_attributes": "filtr atrybutów",
                         "filter_entities": "Filtr encji",
@@ -3126,7 +3176,7 @@
                     "observer": "Sprawdź obserwatora",
                     "reboot": "Spróbuj ponownie uruchomić hosta",
                     "system_health": "Sprawdź kondycję systemu",
-                    "title": "Nie można załadować panelu Supervisora!",
+                    "title": "Nie można wczytać panelu Supervisora!",
                     "wait": "Jeśli właśnie uruchomiłeś system, upewnij się, że dałeś Supervisorowi wystarczająco dużo czasu na start."
                 }
             },
@@ -3180,7 +3230,7 @@
                         "url": "Otwórz okno do {url_path}"
                     },
                     "safe-mode": {
-                        "description": "Podczas ładowania konfiguracji Home Assistant napotkał problemy i działa teraz w trybie awaryjnym. Zajrzyj do loga, aby sprawdzić, co poszło nie tak.",
+                        "description": "Podczas wczytywania konfiguracji Home Assistant napotkał problemy i działa teraz w trybie awaryjnym. Zajrzyj do loga, aby sprawdzić, co poszło nie tak.",
                         "header": "Tryb awaryjny aktywny"
                     },
                     "shopping-list": {
@@ -3459,7 +3509,7 @@
                         "duplicate": "Duplikuj kartę",
                         "edit": "Edytuj",
                         "header": "Konfiguracja karty",
-                        "move": "Przenieś",
+                        "move": "Przenieś do widoku",
                         "move_after": "Przesuń kartę za",
                         "move_before": "Przesuń kartę przed",
                         "options": "Więcej opcji",
@@ -3535,7 +3585,7 @@
                         "error_remove": "Nie można usunąć konfiguracji: {error}",
                         "error_save_yaml": "Nie można zapisać YAML: {error}",
                         "header": "Edytuj konfigurację",
-                        "lovelace_changed": "Konfiguracja Lovelace została zaktualizowana, czy chcesz załadować zaktualizowaną konfigurację do edytora i stracić obecne zmiany?",
+                        "lovelace_changed": "Konfiguracja Lovelace została zaktualizowana, czy chcesz wczytać zaktualizowaną konfigurację do edytora i stracić obecne zmiany?",
                         "reload": "Wczytaj ponownie",
                         "resources_moved": "Zasoby nie powinny być już dodawane do konfiguracji Lovelace, można je dodawać w panelu konfiguracji Lovelace.",
                         "save": "Zapisz",

@@ -46,9 +46,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   ): GaugeCardConfig {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
-    const entityFilter = (stateObj: HassEntity): boolean => {
-      return !isNaN(Number(stateObj.state));
-    };
+    const entityFilter = (stateObj: HassEntity): boolean =>
+      !isNaN(Number(stateObj.state));
 
     const foundEntities = findEntities(
       hass,

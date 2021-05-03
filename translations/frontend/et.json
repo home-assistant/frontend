@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "Heledus",
+                "cold_white_value": "Külma valguse heledus",
+                "color_brightness": "Värvilise valguse heledus",
                 "color_temperature": "Värvustemperatuur",
                 "effect": "Efekt",
-                "white_value": "Valge väärtus"
+                "warm_white_value": "Sooja valguse heledus",
+                "white_value": "Valge valguse heledus"
             },
             "lock": {
                 "code": "Kood",
@@ -886,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Sidumise teave",
                 "required": "See väli on nõutav",
                 "service_data": "Teenuse andmed",
                 "target": "Eesmärgid",
@@ -1193,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Seadme sätete muutmine"
+                "attribute": "Atribuut",
+                "battery_device_warning": "Patareitoitel seadmed peavad olema ärkvel, et neid taasseadistada. Seadme äratamiseks vaata oma seadme kasutusjuhendit.",
+                "bind_header": "Sidumine",
+                "button_hide": "Peida üksikasjad",
+                "button_show": "Kuva üksikasjad",
+                "cluster_header": "Kobar",
+                "configuration_complete": "Seadme ümberseadistamine on lõpule viidud.",
+                "configuration_failed": "Seadme ümberseadistamine nurjus. Lisateavet võib saada logidest.",
+                "configuring_alt": "Seadistan",
+                "heading": "Seadme sätete muutmine",
+                "in_progress": "Seadet muudetakse ümber. See võib võtta aega.",
+                "introduction": "Seadista uuesti seadet  Zigbee võrgus. Kasuta seda funktsiooni kui seadmel on puuduv või vale funktsionaalsus.",
+                "min_max_change": "min/max/muutus",
+                "reporting_header": "Aruandlus",
+                "run_in_background": "Saad selle dialoogi sulgeda ja ümberseadistamine jätkub taustal.",
+                "start_reconfiguration": "Alusta ümberseadistamist"
             }
         },
         "duration": {
@@ -1256,7 +1275,8 @@
                     "caption": "Alade register",
                     "data_table": {
                         "area": "Ala",
-                        "devices": "Seadmed"
+                        "devices": "Seadmed",
+                        "entities": "Olemid"
                     },
                     "delete": {
                         "confirmation_text": "Kõik sellele ala seadmed jäävad peremehetuks.",
@@ -1268,8 +1288,10 @@
                         "create": "LOO",
                         "default_name": "Uus ala",
                         "delete": "KUSTUTA",
+                        "linked_entities_caption": "Olemid",
                         "name": "Nimi",
                         "name_required": "Nimi on kohustuslik",
+                        "no_linked_entities": "Selle alaga pole seotud ühtegi olemit.",
                         "unknown_error": "Tundmatu viga",
                         "update": "UUENDA"
                     },
@@ -1722,12 +1744,18 @@
                         "nabu_casa_account": "Nabu Casa konto",
                         "not_connected": "Pole ühendatud",
                         "remote": {
-                            "access_is_being_prepared": "Kaugjuurdepääs on ettevalmistamisel. Teavitame teid, kui see on valmis.",
+                            "access_is_being_prepared": "Kaugjuurdepääsu seadistatakse. Teavitame kui see on saadaval.",
                             "certificate_info": "Sertifikaadi teave",
+                            "connected": "Ühendatud",
                             "info": "Home Assistant Cloud pakub turvalist kaugühendust Home Assistantiga kodust eemal olles.",
                             "instance_is_available": "Teie Home Assistant on saadaval aadressil",
                             "instance_will_be_available": "Teie Home Assistanti aadressiks saab",
                             "link_learn_how_it_works": "Loe kuidas see töötab",
+                            "not_connected": "Ühendus puudub",
+                            "remote_enabled": {
+                                "caption": "Ühendu automaatselt",
+                                "description": "Lubage see valik, et Home Assistantt oleks alati eemalt kättesaadav."
+                            },
                             "title": "Kaugjuhtimine"
                         },
                         "sign_out": "Logi välja",
@@ -2138,6 +2166,7 @@
                     "license": "Avaldatud Apache 2.0 litsentsi alusel",
                     "path_configuration": "configuration.yaml asukoht: {path}",
                     "server": "server",
+                    "setup_time": "Kellaaja suvandid",
                     "source": "Allikas:",
                     "system_health_error": "Süsteemi seisundi komponenti ei laadita. Lisage \"system_health:\" configuration.yaml",
                     "system_health": {
@@ -2185,7 +2214,6 @@
                         "no_area": "Ala puudub",
                         "not_loaded": "Pole laaditud",
                         "options": "Valikud",
-                        "provided_by_custom_component": "Saadaval välise osise abil",
                         "provided_by_custom_integration": "Saadaval välise sidumise kaudu",
                         "reload": "Taaslae",
                         "reload_confirm": "Sidumine on taaslaetud",
@@ -2788,6 +2816,15 @@
                         "manufacturer_code_override": "Tootja koodi alistamine",
                         "value": "Väärtus"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Otseteed",
+                        "update_button": "Seadete värskendamine",
+                        "zha_options": {
+                            "default_light_transition": "Valguse vaikeülemineku aeg (sekundites)",
+                            "enable_identify_on_join": "Luba tuvastamise efekt kui seadmed liituvad võrguga",
+                            "title": "Üldised valikud"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Seadistamine on lõpetatud",
                         "CONFIGURED_status_text": "Lähtestan",
@@ -2912,7 +2949,13 @@
                         "node_status": "Sõlme olek",
                         "zwave_info": "Z-Wave teave"
                     },
+                    "logs": {
+                        "log_level": "Logimise tase",
+                        "subscribed_to_logs": "Z-Wave JS Logi sõnumite tellimine...",
+                        "title": "Z-Wave JS logid"
+                    },
                     "navigation": {
+                        "logs": "Logid",
                         "network": "Võrk"
                     },
                     "network_status": {
@@ -2927,6 +2970,9 @@
                         "header": "Z-Wave seadme häälestamine",
                         "introduction": "Valitud seadme (sõlme) spetsiifiliste seadistuste haldamine ja muutmine",
                         "parameter_is_read_only": "See parameeter on kirjutuskaitstud.",
+                        "set_param_accepted": "Parameeter on uuendatud.",
+                        "set_param_error": "Ilmnes tõrge.",
+                        "set_param_queued": "Parameetri uuendamine on ootel ja seda värskendatakse seadme ärkamisel.",
                         "zwave_js_device_database": "Z-Wave JS seadmete andmebaas"
                     },
                     "node_status": {
@@ -2935,6 +2981,16 @@
                         "awake": "Ärkvel",
                         "dead": "Kadunud",
                         "unknown": "Teadmata"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Patareitoitel seadmed peavad olema ärkvel, et neid küsitleda. Seadme äratamiseks vaata oma seadme kasutusjuhendit.",
+                        "in_progress": "Seadet küsitletakse. See võib võtta aega.",
+                        "interview_complete": "Seadme küsitlemine on lõpetatud.",
+                        "interview_failed": "Seadme küsitlemine nurjus. Lisateave võib olla kättesaadav logides.",
+                        "introduction": "Küsitle uuesti seadet  Z-Wave-võrgus. Kasuta seda funktsiooni kui seadmel on puuduv või vale funktsionaalsus.",
+                        "run_in_background": "Saad selle dialoogi sulgeda ja küsitlus jätkub taustal.",
+                        "start_reinterview": "Alusta küsitlust uuesti",
+                        "title": "Z-Wave seadme taasküsitlemine"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Tühista välistamine",
@@ -3086,8 +3142,8 @@
                         "attributes": "Atribuudid",
                         "copy_id": "Kopeeri ID lõikepuhvrisse",
                         "current_entities": "Praegused olemid",
-                        "description1": "Seadke seadme esitus Home Assistendis.",
-                        "description2": "See ei suhtle tegeliku seadmega.",
+                        "description1": "Sea seadme oleku esitus Home Assistendis.",
+                        "description2": "Kui olem kuulub seadmele siis selle seadmega tegelikku suhtlust ei toimu.",
                         "entity": "Olem",
                         "filter_attributes": "Filtreeri atribuute",
                         "filter_entities": "Filtreeri olemeid",

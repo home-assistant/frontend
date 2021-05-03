@@ -561,9 +561,12 @@
             },
             "light": {
                 "brightness": "亮度",
+                "cold_white_value": "冷白亮度",
+                "color_brightness": "色彩亮度",
                 "color_temperature": "色溫",
                 "effect": "場景",
-                "white_value": "白色值"
+                "warm_white_value": "暖白亮度",
+                "white_value": "白亮度"
             },
             "lock": {
                 "code": "密碼",
@@ -886,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "整合文件",
                 "required": "必填欄位",
                 "service_data": "服務資料",
                 "target": "目標",
@@ -1193,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "重新設定裝置"
+                "attribute": "屬性",
+                "battery_device_warning": "電池供電裝置必須喚醒以開始重新程序。請參考您的裝置手冊以了解如何喚醒裝置。",
+                "bind_header": "綁定中",
+                "button_hide": "隱藏詳細資訊",
+                "button_show": "顯示詳細資訊",
+                "cluster_header": "叢集",
+                "configuration_complete": "裝置設定完成。",
+                "configuration_failed": "裝置重新設定失敗。日誌中可能包含其他相關資訊。",
+                "configuring_alt": "設定中",
+                "heading": "重新設定裝置",
+                "in_progress": "裝置正在設定，可能需要一點時間。",
+                "introduction": "重新設定 Zigbee 網路中的裝置。假如功能不正確時，請使用此選項。",
+                "min_max_change": "最低/最高/變更",
+                "reporting_header": "回報中",
+                "run_in_background": "可以關閉此對話框、重新設定將於背景繼續執行。",
+                "start_reconfiguration": "開始重新設定"
             }
         },
         "duration": {
@@ -1256,7 +1275,8 @@
                     "caption": "分區",
                     "data_table": {
                         "area": "分區",
-                        "devices": "裝置"
+                        "devices": "裝置",
+                        "entities": "實體"
                     },
                     "delete": {
                         "confirmation_text": "所有該分區所屬裝置都將變成未指派狀態。",
@@ -1268,8 +1288,10 @@
                         "create": "建立",
                         "default_name": "新分區",
                         "delete": "刪除",
+                        "linked_entities_caption": "實體",
                         "name": "名稱",
                         "name_required": "必須輸入名稱",
+                        "no_linked_entities": "此區域未設定任何裝置。",
                         "unknown_error": "未知錯誤",
                         "update": "更新"
                     },
@@ -2138,6 +2160,7 @@
                     "license": "依據 Apache 2.0 授權許可發行",
                     "path_configuration": "configuration.yaml 路徑：{path}",
                     "server": "伺服器",
+                    "setup_time": "設定時間",
                     "source": "來源：",
                     "system_health_error": "系統健康元件未載入。請於 configuration.yaml 內加入「system_health:」",
                     "system_health": {
@@ -2185,7 +2208,6 @@
                         "no_area": "無分區",
                         "not_loaded": "未載入",
                         "options": "選項",
-                        "provided_by_custom_component": "由自訂元件提供",
                         "provided_by_custom_integration": "由自訂整合提供",
                         "reload": "重新載入",
                         "reload_confirm": "整合已重新載入",
@@ -2199,7 +2221,7 @@
                             "migration_error": "遷移錯誤",
                             "not_loaded": "未載入",
                             "setup_error": "設定失敗",
-                            "setup_retry": "重新設定中"
+                            "setup_retry": "重試設定中"
                         },
                         "system_options": "系統選項",
                         "unnamed_entry": "未命名實體"
@@ -2661,7 +2683,7 @@
                             "confirm_restart": "確定要重啟 Home Assistant 嗎？",
                             "confirm_stop": "確定要停止 Home Assistant 嗎？",
                             "heading": "服務器管理",
-                            "introduction": "由 Home Assistant，控制 Home Assistant 伺服器。",
+                            "introduction": "使用 Home Assistant、於離家時遠端控制 Home Assistant 伺服器。",
                             "restart": "重啟",
                             "stop": "停止"
                         },
@@ -2788,6 +2810,15 @@
                         "manufacturer_code_override": "製造商代碼覆寫",
                         "value": "數值"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "捷徑",
+                        "update_button": "更新設定",
+                        "zha_options": {
+                            "default_light_transition": "預設燈光轉換時間（秒）",
+                            "enable_identify_on_join": "當裝置加入網路時、開啟識別效果",
+                            "title": "Global 選項"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "設定完成",
                         "CONFIGURED_status_text": "初始化中",
@@ -2912,7 +2943,13 @@
                         "node_status": "節點狀態",
                         "zwave_info": "Z-Wave 資訊"
                     },
+                    "logs": {
+                        "log_level": "日誌記錄等級",
+                        "subscribed_to_logs": "訂閱 Z-Wave JS 日誌訊息...",
+                        "title": "Z-Wave JS 日誌"
+                    },
                     "navigation": {
+                        "logs": "日誌",
                         "network": "網路"
                     },
                     "network_status": {
@@ -2927,6 +2964,9 @@
                         "header": "Z-Wave 裝置設定",
                         "introduction": "管理與調整所選擇裝置 (節點) 之特定設定參數",
                         "parameter_is_read_only": "此參數為唯讀。",
+                        "set_param_accepted": "參數已更新。",
+                        "set_param_error": "發生錯誤。",
+                        "set_param_queued": "參數變更已排序、將會於裝置喚醒時更新。",
                         "zwave_js_device_database": "Z-Wave JS 裝置資料庫"
                     },
                     "node_status": {
@@ -2935,6 +2975,16 @@
                         "awake": "喚醒",
                         "dead": "失效",
                         "unknown": "未知"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "電池供電裝置必須先喚醒以重新探訪。請參考您的裝置手冊以了解如何喚醒裝置。",
+                        "in_progress": "正在探訪裝置，可能需要一點時間。",
+                        "interview_complete": "裝置探訪完成。",
+                        "interview_failed": "裝置探訪失敗。日誌中可能包含其他相關資訊。",
+                        "introduction": "重新探訪 Z-Wave 網路中的裝置。假如裝置缺少、或者功能不正確時，請使用此選項。",
+                        "run_in_background": "可以關閉此對話框、探訪將於背景繼續執行。",
+                        "start_reinterview": "開始重新探訪",
+                        "title": "重新探訪 Z-Wave 裝置"
                     },
                     "remove_node": {
                         "cancel_exclusion": "取消排除",
@@ -3086,8 +3136,8 @@
                         "attributes": "屬性",
                         "copy_id": "複製 ID 至剪貼簿",
                         "current_entities": "目前實體",
-                        "description1": "設定 Home Assistant 裝置代表。",
-                        "description2": "將不會與實際裝置進行通訊。",
+                        "description1": "設定 Home Assistant 實體目前狀態。",
+                        "description2": "假如實體屬於裝置，將不會與實際裝置進行通訊。",
                         "entity": "實體",
                         "filter_attributes": "屬性篩選器",
                         "filter_entities": "實體篩選器",

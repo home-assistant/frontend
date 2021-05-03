@@ -26,7 +26,8 @@ import { configElementStyle } from "./config-elements-style";
 const includeDomains = ["sensor"];
 
 @customElement("hui-graph-footer-editor")
-export class HuiGraphFooterEditor extends LitElement
+export class HuiGraphFooterEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

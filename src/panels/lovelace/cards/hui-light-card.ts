@@ -18,11 +18,10 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
-import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
-import { LightEntity, SUPPORT_BRIGHTNESS } from "../../../data/light";
+import { LightEntity, lightSupportsDimming } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -121,17 +120,14 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 @value-changing=${this._dragEvent}
                 @value-changed=${this._setBrightness}
                 style=${styleMap({
-                  visibility: supportsFeature(stateObj, SUPPORT_BRIGHTNESS)
+                  visibility: lightSupportsDimming(stateObj)
                     ? "visible"
                     : "hidden",
                 })}
               ></round-slider>
               <ha-icon-button
                 class="light-button ${classMap({
-                  "slider-center": supportsFeature(
-                    stateObj,
-                    SUPPORT_BRIGHTNESS
-                  ),
+                  "slider-center": lightSupportsDimming(stateObj),
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"
@@ -162,11 +158,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                     )}
                   </div>
                 `
-              : html`
-                  <div class="brightness">
-                    %
-                  </div>
-                `}
+              : html` <div class="brightness">%</div> `}
             ${this._config.name || computeStateName(stateObj)}
           </div>
         </div>
@@ -244,14 +236,12 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   private _computeColor(stateObj: LightEntity): string {
-    if (stateObj.state === "off" || !stateObj.attributes.hs_color) {
+    if (stateObj.state === "off") {
       return "";
     }
-    const [hue, sat] = stateObj.attributes.hs_color;
-    if (sat <= 10) {
-      return "";
-    }
-    return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
+    return stateObj.attributes.rgb_color
+      ? `rgb(${stateObj.attributes.rgb_color.join(",")})`
+      : "";
   }
 
   private _handleAction(ev: ActionHandlerEvent) {

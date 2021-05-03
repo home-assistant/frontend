@@ -99,12 +99,8 @@ export class StateBadge extends LitElement {
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
       } else if (stateObj.state === "on") {
-        if (stateObj.attributes.hs_color && this.stateColor !== false) {
-          const hue = stateObj.attributes.hs_color[0];
-          const sat = stateObj.attributes.hs_color[1];
-          if (sat > 10) {
-            iconStyle.color = `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
-          }
+        if (this.stateColor !== false && stateObj.attributes.rgb_color) {
+          iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
         }
         if (stateObj.attributes.brightness && this.stateColor !== false) {
           const brightness = stateObj.attributes.brightness;

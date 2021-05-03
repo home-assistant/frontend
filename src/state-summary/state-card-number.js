@@ -43,9 +43,7 @@ class StateCardNumber extends mixinBehaviors(
           on-click="stopPropagation"
         >
         </paper-input>
-        <div class="state">
-          [[stateObj.attributes.unit_of_measurement]]
-        </div>
+        <div class="state">[[stateObj.attributes.unit_of_measurement]]</div>
       </div>
     `;
   }

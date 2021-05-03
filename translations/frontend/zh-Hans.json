@@ -561,8 +561,11 @@
             },
             "light": {
                 "brightness": "亮度",
+                "cold_white_value": "冷白亮度",
+                "color_brightness": "色彩亮度",
                 "color_temperature": "色温",
                 "effect": "效果",
+                "warm_white_value": "暖白亮度",
                 "white_value": "白度值"
             },
             "lock": {
@@ -886,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "集成文档",
                 "required": "此字段为必填字段",
                 "service_data": "服务数据",
                 "target": "目标",
@@ -1193,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "重新配置设备"
+                "attribute": "属性",
+                "battery_device_warning": "开始重新配置之前，需要唤醒电池供电的设备。有关如何唤醒设备的说明，请参阅设备说明书。",
+                "bind_header": "绑定",
+                "button_hide": "隐藏详细信息",
+                "button_show": "显示详细信息",
+                "cluster_header": "簇",
+                "configuration_complete": "设备重新配置完成。",
+                "configuration_failed": "设备重新配置失败。日志中会有更多信息。",
+                "configuring_alt": "正在配置",
+                "heading": "重新配置设备",
+                "in_progress": "设备正在重新配置。可能需要一段时间。",
+                "introduction": "重新配置 Zigbee 网络上的设备。如果设备功能不正常，请使用此功能。",
+                "min_max_change": "min/max/change",
+                "reporting_header": "上报",
+                "run_in_background": "您可以关闭此对话框，重新配置将在后台继续进行。",
+                "start_reconfiguration": "开始重新配置"
             }
         },
         "duration": {
@@ -1256,7 +1275,8 @@
                     "caption": "区域注册表",
                     "data_table": {
                         "area": "区域",
-                        "devices": "设备"
+                        "devices": "设备",
+                        "entities": "实体"
                     },
                     "delete": {
                         "confirmation_text": "此区域中的所有设备都将取消分配。",
@@ -1268,8 +1288,10 @@
                         "create": "创建",
                         "default_name": "新建区域",
                         "delete": "删除",
+                        "linked_entities_caption": "实体",
                         "name": "名称",
                         "name_required": "名称为必填项",
+                        "no_linked_entities": "此区域下没有实体。",
                         "unknown_error": "未知错误",
                         "update": "更新"
                     },
@@ -1724,10 +1746,16 @@
                         "remote": {
                             "access_is_being_prepared": "正在准备远程访问。准备就绪后，我们会通知您。",
                             "certificate_info": "证书信息",
+                            "connected": "已连接",
                             "info": "Home Assistant Cloud可以在您不在家时为您的实例提供安全的远程连接。",
                             "instance_is_available": "您的实例在以下位置可用",
                             "instance_will_be_available": "您的实例将在以下位置可用",
                             "link_learn_how_it_works": "了解其工作原理",
+                            "not_connected": "未连接",
+                            "remote_enabled": {
+                                "caption": "自动连接",
+                                "description": "要使 Home Assistant 始终可以远程访问，请启用此选项。"
+                            },
                             "title": "远程控制"
                         },
                         "sign_out": "退出",
@@ -2138,6 +2166,7 @@
                     "license": "根据 Apache 2.0 许可发布",
                     "path_configuration": "configuration.yaml 路径：{path}",
                     "server": "服务器",
+                    "setup_time": "安装时间",
                     "source": "源：",
                     "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
                     "system_health": {
@@ -2157,7 +2186,7 @@
                     "config_entry": {
                         "area": "位于：{area}",
                         "check_the_logs": "检查日志",
-                        "configure": "配置",
+                        "configure": "选项",
                         "delete": "删除",
                         "delete_confirm": "您确定要删除此集成吗？",
                         "depends_on_cloud": "取决于云端",
@@ -2185,7 +2214,6 @@
                         "no_area": "没有区域",
                         "not_loaded": "未加载",
                         "options": "选项",
-                        "provided_by_custom_component": "由自定义组件提供",
                         "provided_by_custom_integration": "由自定义集成提供",
                         "reload": "重载",
                         "reload_confirm": "集成已重新加载",
@@ -2788,6 +2816,15 @@
                         "manufacturer_code_override": "制造商代码覆盖",
                         "value": "值"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "捷径",
+                        "update_button": "更新配置",
+                        "zha_options": {
+                            "default_light_transition": "默认灯光过渡时长（秒）",
+                            "enable_identify_on_join": "设备加入网络时启用识别效果",
+                            "title": "全局选项"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "配置完成",
                         "CONFIGURED_status_text": "正在初始化",
@@ -2912,7 +2949,13 @@
                         "node_status": "节点状态",
                         "zwave_info": "Z-Wave 信息"
                     },
+                    "logs": {
+                        "log_level": "日志级别",
+                        "subscribed_to_logs": "已订阅 Z-Wave JS 日志消息...",
+                        "title": "Z-Wave JS 日志"
+                    },
                     "navigation": {
+                        "logs": "日志",
                         "network": "网络"
                     },
                     "network_status": {
@@ -2927,6 +2970,9 @@
                         "header": "Z-Wave 设备配置",
                         "introduction": "管理并调整所选设备（节点）的具体配置参数。",
                         "parameter_is_read_only": "此参数为只读。",
+                        "set_param_accepted": "参数已更新。",
+                        "set_param_error": "发生错误。",
+                        "set_param_queued": "参数更改操作已加入队列，将在设备唤醒时更新。",
                         "zwave_js_device_database": "Z-Wave JS 设备数据库"
                     },
                     "node_status": {
@@ -2935,6 +2981,16 @@
                         "awake": "唤醒",
                         "dead": "断线",
                         "unknown": "未知"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "开始重新协商之前，需要唤醒电池供电的设备。有关如何唤醒设备的说明，请参阅设备说明书。",
+                        "in_progress": "设备正在重新协商。可能需要一段时间。",
+                        "interview_complete": "设备协商完成。",
+                        "interview_failed": "设备协商失败。日志中会有更多信息。",
+                        "introduction": "重新协商 Z-Wave 网络上的设备。如果设备功能缺失或不正常，请使用此功能。",
+                        "run_in_background": "您可以关闭此对话框，协商将在后台继续进行。",
+                        "start_reinterview": "开始重新协商",
+                        "title": "重新协商 Z-Wave 设备"
                     },
                     "remove_node": {
                         "cancel_exclusion": "取消 exclusion",

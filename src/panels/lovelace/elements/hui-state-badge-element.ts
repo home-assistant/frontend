@@ -21,7 +21,8 @@ import "../components/hui-warning-element";
 import { LovelaceElement, StateBadgeElementConfig } from "./types";
 
 @customElement("hui-state-badge-element")
-export class HuiStateBadgeElement extends LitElement
+export class HuiStateBadgeElement
+  extends LitElement
   implements LovelaceElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

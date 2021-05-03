@@ -63,9 +63,7 @@ export class SystemLogCard extends LitElement {
                       (item, idx) => html`
                         <paper-item @click=${this._openLog} .logItem=${item}>
                           <paper-item-body two-line>
-                            <div class="row">
-                              ${item.message[0]}
-                            </div>
+                            <div class="row">${item.message[0]}</div>
                             <div secondary>
                               ${formatSystemLogTime(
                                 item.timestamp,

@@ -301,14 +301,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   private _computeColor(stateObj: HassEntity | LightEntity): string {
-    if (!stateObj.attributes.hs_color || !this._config?.state_color) {
-      return "";
+    if (this._config?.state_color && stateObj.attributes.rgb_color) {
+      return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
     }
-    const [hue, sat] = stateObj.attributes.hs_color;
-    if (sat <= 10) {
-      return "";
-    }
-    return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
+    return "";
   }
 
   private _handleAction(ev: ActionHandlerEvent) {

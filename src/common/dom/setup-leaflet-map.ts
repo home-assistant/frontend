@@ -48,8 +48,8 @@ export const replaceTileLayer = (
 const createTileLayer = (
   leaflet: LeafletModuleType,
   darkMode: boolean
-): TileLayer => {
-  return leaflet.tileLayer(
+): TileLayer =>
+  leaflet.tileLayer(
     `https://{s}.basemaps.cartocdn.com/${
       darkMode ? "dark_all" : "light_all"
     }/{z}/{x}/{y}${leaflet.Browser.retina ? "@2x.png" : ".png"}`,
@@ -61,4 +61,3 @@ const createTileLayer = (
       maxZoom: 20,
     }
   );
-};

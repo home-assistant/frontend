@@ -39,7 +39,7 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
@@ -139,7 +139,7 @@ export class HaIntegrationCard extends LitElement {
 
   private _renderGroupedIntegration(): TemplateResult {
     return html`
-      <paper-listbox>
+      <paper-listbox class="ha-scrollbar">
         ${this.items.map(
           (item) =>
             html`<paper-item
@@ -199,25 +199,34 @@ export class HaIntegrationCard extends LitElement {
       stateText = [
         `ui.panel.config.integrations.config_entry.state.${item.state}`,
       ];
-      stateTextExtra = html`
-        <br />
-        <a href="/config/logs"
-          >${this.hass.localize(
-            "ui.panel.config.integrations.config_entry.check_the_logs"
-          )}</a
-        >
-      `;
+      if (item.reason) {
+        this.hass.loadBackendTranslation("config", item.domain);
+        stateTextExtra = html`:
+        ${this.hass.localize(
+          `component.${item.domain}.config.error.${item.reason}`
+        ) || item.reason}`;
+      } else {
+        stateTextExtra = html`
+          <br />
+          <a href="/config/logs"
+            >${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.check_the_logs"
+            )}</a
+          >
+        `;
+      }
     }
 
     return html`
+      ${stateText
+        ? html`
+            <div class="message">
+              <ha-svg-icon .path=${mdiAlertCircle}></ha-svg-icon>
+              <div>${this.hass.localize(...stateText)}${stateTextExtra}</div>
+            </div>
+          `
+        : ""}
       <div class="content">
-        ${stateText
-          ? html`
-              <div class="message">
-                ${this.hass.localize(...stateText)}${stateTextExtra}
-              </div>
-            `
-          : ""}
         ${devices.length || services.length || entities.length
           ? html`
               <div>
@@ -575,6 +584,7 @@ export class HaIntegrationCard extends LitElement {
   static get styles(): CSSResult[] {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         ha-card {
           display: flex;
@@ -619,7 +629,23 @@ export class HaIntegrationCard extends LitElement {
         .message {
           font-weight: bold;
           padding-bottom: 16px;
+          display: flex;
+          margin-left: 40px;
+        }
+        .message ha-svg-icon {
           color: var(--state-message-color);
+        }
+        .message div {
+          flex: 1;
+          margin-left: 8px;
+          padding-top: 2px;
+          padding-right: 2px;
+          overflow-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 7;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .content {

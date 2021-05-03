@@ -186,7 +186,7 @@ const CONFIGS = [
       name:
     - light.kitchen_lights
     - entity: lock.kitchen_door
-      name: 
+      name:
     - light.ceiling_lights
     `,
   },
@@ -194,7 +194,7 @@ const CONFIGS = [
     heading: "Custom tap action",
     config: `
 - type: glance
-  columns: 4  
+  columns: 4
   entities:
     - entity: lock.kitchen_door
       name: Custom
@@ -232,4 +232,8 @@ class DemoGlanceEntity extends LitElement {
   }
 }
 
-customElements.define("demo-hui-glance-card", DemoGlanceEntity);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-glance-card": DemoGlanceEntity;
+  }
+}

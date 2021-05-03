@@ -86,9 +86,7 @@ class HassioAddonStore extends LitElement {
         main-page
         supervisor
       >
-        <span slot="header">
-          ${this.supervisor.localize("panel.store")}
-        </span>
+        <span slot="header"> ${this.supervisor.localize("panel.store")} </span>
         <ha-button-menu
           corner="BOTTOM_START"
           slot="toolbar-icon"
@@ -154,8 +152,8 @@ class HassioAddonStore extends LitElement {
       repositories: HassioAddonRepository[],
       addons: HassioAddonInfo[],
       filter?: string
-    ) => {
-      return repositories.sort(sortRepos).map((repo) => {
+    ) =>
+      repositories.sort(sortRepos).map((repo) => {
         const filteredAddons = addons.filter(
           (addon) => addon.repository === repo.slug
         );
@@ -171,8 +169,7 @@ class HassioAddonStore extends LitElement {
               ></hassio-addon-repository>
             `
           : html``;
-      });
-    }
+      })
   );
 
   private _handleAction(ev: CustomEvent<ActionDetail>) {

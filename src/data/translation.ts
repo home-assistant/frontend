@@ -25,6 +25,7 @@ export type TranslationCategory =
   | "title"
   | "state"
   | "config"
+  | "config_panel"
   | "options"
   | "device_automation"
   | "mfa_setup"

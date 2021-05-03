@@ -86,70 +86,63 @@ export const LocalStorage = (
   storageKey?: string,
   property?: boolean,
   propertyOptions?: PropertyDeclaration
-): any => {
-  return (clsElement: ClassElement) => {
-    const key = String(clsElement.key);
-    storageKey = storageKey || String(clsElement.key);
-    const initVal = clsElement.initializer
-      ? clsElement.initializer()
-      : undefined;
+): any => (clsElement: ClassElement) => {
+  const key = String(clsElement.key);
+  storageKey = storageKey || String(clsElement.key);
+  const initVal = clsElement.initializer ? clsElement.initializer() : undefined;
 
-    storage.addFromStorage(storageKey);
+  storage.addFromStorage(storageKey);
 
-    const subscribe = (el: UpdatingElement): UnsubscribeFunc =>
-      storage.subscribeChanges(storageKey!, (oldValue) => {
-        el.requestUpdate(clsElement.key, oldValue);
-      });
+  const subscribe = (el: UpdatingElement): UnsubscribeFunc =>
+    storage.subscribeChanges(storageKey!, (oldValue) => {
+      el.requestUpdate(clsElement.key, oldValue);
+    });
 
-    const getValue = (): any => {
-      return storage.hasKey(storageKey!)
-        ? storage.getValue(storageKey!)
-        : initVal;
-    };
+  const getValue = (): any =>
+    storage.hasKey(storageKey!) ? storage.getValue(storageKey!) : initVal;
 
-    const setValue = (el: UpdatingElement, value: any) => {
-      let oldValue: unknown | undefined;
-      if (property) {
-        oldValue = getValue();
-      }
-      storage.setValue(storageKey!, value);
-      if (property) {
-        el.requestUpdate(clsElement.key, oldValue);
-      }
-    };
+  const setValue = (el: UpdatingElement, value: any) => {
+    let oldValue: unknown | undefined;
+    if (property) {
+      oldValue = getValue();
+    }
+    storage.setValue(storageKey!, value);
+    if (property) {
+      el.requestUpdate(clsElement.key, oldValue);
+    }
+  };
 
-    return {
-      kind: "method",
-      placement: "prototype",
-      key: clsElement.key,
-      descriptor: {
-        set(this: UpdatingElement, value: unknown) {
-          setValue(this, value);
-        },
-        get() {
-          return getValue();
-        },
-        enumerable: true,
-        configurable: true,
+  return {
+    kind: "method",
+    placement: "prototype",
+    key: clsElement.key,
+    descriptor: {
+      set(this: UpdatingElement, value: unknown) {
+        setValue(this, value);
       },
-      finisher(cls: typeof UpdatingElement) {
-        if (property) {
-          const connectedCallback = cls.prototype.connectedCallback;
-          const disconnectedCallback = cls.prototype.disconnectedCallback;
-          cls.prototype.connectedCallback = function () {
-            connectedCallback.call(this);
-            this[`__unbsubLocalStorage${key}`] = subscribe(this);
-          };
-          cls.prototype.disconnectedCallback = function () {
-            disconnectedCallback.call(this);
-            this[`__unbsubLocalStorage${key}`]();
-          };
-          cls.createProperty(clsElement.key, {
-            noAccessor: true,
-            ...propertyOptions,
-          });
-        }
+      get() {
+        return getValue();
       },
-    };
+      enumerable: true,
+      configurable: true,
+    },
+    finisher(cls: typeof UpdatingElement) {
+      if (property) {
+        const connectedCallback = cls.prototype.connectedCallback;
+        const disconnectedCallback = cls.prototype.disconnectedCallback;
+        cls.prototype.connectedCallback = function () {
+          connectedCallback.call(this);
+          this[`__unbsubLocalStorage${key}`] = subscribe(this);
+        };
+        cls.prototype.disconnectedCallback = function () {
+          disconnectedCallback.call(this);
+          this[`__unbsubLocalStorage${key}`]();
+        };
+        cls.createProperty(clsElement.key, {
+          noAccessor: true,
+          ...propertyOptions,
+        });
+      }
+    },
   };
 };

@@ -561,8 +561,11 @@
             },
             "light": {
                 "brightness": "Helderheid",
+                "cold_white_value": "Koud wit helderheid",
+                "color_brightness": "Kleurhelderheid",
                 "color_temperature": "Kleurtemperatuur",
                 "effect": "Effect",
+                "warm_white_value": "Warm wit helderheid",
                 "white_value": "Witwaarde"
             },
             "lock": {
@@ -707,7 +710,7 @@
                     "text": "Geef de naam op van het nieuwe gebied.",
                     "title": "Gebied toevoegen"
                 },
-                "add_new": "Gebied toevoegen...",
+                "add_new": "Nieuw gebied toevoegen...",
                 "area": "Gebied",
                 "clear": "Wis",
                 "no_areas": "Je hebt geen gebieden",
@@ -886,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Integratiedocumentatie",
                 "required": "Dit veld is verplicht",
                 "service_data": "Service data",
                 "target": "Doelen",
@@ -1193,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Apparaat opnieuw configureren"
+                "attribute": "Attribuut",
+                "battery_device_warning": "U moet apparaten met een batterij wekken voordat u het herconfiguratieproces start. Raadpleeg de handleiding van uw toestel voor instructies over hoe u het toestel kunt wekken.",
+                "bind_header": "Binding",
+                "button_hide": "Details verbergen",
+                "button_show": "Details weergeven",
+                "cluster_header": "Cluster",
+                "configuration_complete": "Herconfiguratie van apparaat voltooid.",
+                "configuration_failed": "De herconfiguratie van het apparaat is mislukt. Mogelijk is er aanvullende informatie beschikbaar in de logboeken.",
+                "configuring_alt": "Configureren",
+                "heading": "Apparaat opnieuw configureren",
+                "in_progress": "Het apparaat wordt opnieuw geconfigureerd. Dit kan wat tijd kosten.",
+                "introduction": "Herconfigureer een apparaat op je Zigbee netwerk. Gebruik deze functie als uw apparaat niet correct functioneert.",
+                "min_max_change": "min/max/verandering",
+                "reporting_header": "Rapporteren",
+                "run_in_background": "U kunt dit dialoogvenster sluiten en de herconfiguratie wordt op de achtergrond voortgezet.",
+                "start_reconfiguration": "Start herconfiguratie"
             }
         },
         "duration": {
@@ -1239,7 +1258,7 @@
         "notification_toast": {
             "connection_lost": "Verbinding verbroken. Opnieuw verbinden...",
             "dismiss": "Afwijzen",
-            "intergration_starting": "Start {integration}, niet alles is beschikbaar totdat het voltooid is.",
+            "intergration_starting": "{integration} starten, niet alles is beschikbaar totdat het voltooid is.",
             "service_call_failed": "Kan service {service} niet aanroepen",
             "started": "Home Assistant is gestart!",
             "starting": "Home Assistant is aan het opstarten. Tijdens het opstarten is niet alles beschikbaar.",
@@ -1256,7 +1275,8 @@
                     "caption": "Gebieden",
                     "data_table": {
                         "area": "Gebied",
-                        "devices": "Apparaten"
+                        "devices": "Apparaten",
+                        "entities": "Entiteiten"
                     },
                     "delete": {
                         "confirmation_text": "Alle apparaten in dit gebied zullen niet meer toegewezen zijn.",
@@ -1268,8 +1288,10 @@
                         "create": "Aanmaken",
                         "default_name": "Nieuw Gebied",
                         "delete": "Verwijderen",
+                        "linked_entities_caption": "Entiteiten",
                         "name": "Naam",
                         "name_required": "Naam is vereist",
+                        "no_linked_entities": "Er zijn geen entiteiten gekoppeld aan dit gebied.",
                         "unknown_error": "Onbekende fout",
                         "update": "Bijwerken"
                     },
@@ -1751,7 +1773,7 @@
                             "disable_hook_error_msg": "Kan webhook niet uitschakelen:",
                             "info": "Alles wat is geconfigureerd om door een webhook te worden geactiveerd, kan een openbaar toegankelijke URL krijgen zodat u gegevens overal naar Home Assistant kunt terugsturen, zonder uw exemplaar aan internet bloot te stellen.",
                             "link_learn_more": "Meer informatie over het maken van door webhook aangedreven automatiseringen.",
-                            "loading": "Laden ...",
+                            "loading": "Laden...",
                             "manage": "Beheer",
                             "no_hooks_yet": "Het lijkt erop dat je nog geen webhooks hebt. Ga aan de slag door het configureren van een ",
                             "no_hooks_yet_link_automation": "webhook automatisering",
@@ -1945,7 +1967,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Er is nog geen {name} toegevoegd met dit apparaat. U kunt er één toevoegen door op de + knop hierboven te klikken.",
+                    "add_prompt": "Er zijn nog geen {name} toegevoegd met dit apparaat. U kunt er één toevoegen door op de + knop hierboven te klikken.",
                     "automation": {
                         "actions": {
                             "caption": "Wanneer iets wordt getriggerd...",
@@ -2138,6 +2160,7 @@
                     "license": "Gepubliceerd onder de Apache 2.0-licentie",
                     "path_configuration": "Pad naar configuration.yaml: {path}",
                     "server": "Server",
+                    "setup_time": "Setup tijd",
                     "source": "Bron:",
                     "system_health_error": "De systeemstatus component is niet geladen. Voeg ' system_health: ' toe aan het configuratiebestand.",
                     "system_health": {
@@ -2183,9 +2206,8 @@
                         "logs": "logs",
                         "manuf": "door {manufacturer}",
                         "no_area": "Geen Gebied",
-                        "not_loaded": "Niet geladen, controleer de {logs_link}",
+                        "not_loaded": "Niet geladen",
                         "options": "Opties",
-                        "provided_by_custom_component": "Geleverd door een aangepaste component",
                         "provided_by_custom_integration": "Geleverd door een aangepaste integratie",
                         "reload": "Herlaad",
                         "reload_confirm": "De integratie is opnieuw geladen",
@@ -2228,7 +2250,7 @@
                     },
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
-                    "confirm_new": "Wil je {integration} instellen?",
+                    "confirm_new": "Wilt u {integration} instellen?",
                     "description": "Beheer integraties met services of apparaten",
                     "details": "Integratiedetails",
                     "disable": {
@@ -2264,7 +2286,7 @@
                     "rename_input_label": "Invoernaam",
                     "search": "Zoek integraties"
                 },
-                "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
+                "introduction": "Hier kunt u uw componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "logs": {
                     "caption": "Logboek",
                     "clear": "Wis",
@@ -2280,7 +2302,7 @@
                         "warning": "WAARSCHUWING"
                     },
                     "load_full_log": "Laad volledige Home Assistant logboek",
-                    "loading_log": "Foutenlogboek laden ...",
+                    "loading_log": "Foutenlogboek laden...",
                     "multiple_messages": "bericht kwam voor het eerst om {time} en verschijnt {counter} keer",
                     "no_errors": "Er zijn geen fouten gemeld",
                     "no_issues": "Er zijn geen problemen!",
@@ -2788,6 +2810,15 @@
                         "manufacturer_code_override": "Fabrikant Code Override",
                         "value": "Waarde"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Snelkoppelingen",
+                        "update_button": "Update configuratie",
+                        "zha_options": {
+                            "default_light_transition": "Standaard licht transitietijd (seconden)",
+                            "enable_identify_on_join": "Schakel het identificatie-effect in wanneer apparaten in het netwerk komen",
+                            "title": "Globale opties"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuratie voltooid",
                         "CONFIGURED_status_text": "Initialiseren",
@@ -2845,7 +2876,7 @@
                     "configured_in_yaml": "Zones die via configuration.yaml zijn geconfigureerd kunnen niet worden bewerkt in de gebruikers",
                     "confirm_delete": "Weet je zeker dat je deze zone wilt verwijderen?",
                     "create_zone": "Creëer Zone",
-                    "description": "Beheer de zones waarin je personen wilt volgen",
+                    "description": "Beheer de zones waarin u personen wilt volgen",
                     "detail": {
                         "create": "Aanmaken",
                         "delete": "Verwijder",
@@ -2912,7 +2943,13 @@
                         "node_status": "Knooppuntstatus",
                         "zwave_info": "Z-Wave info"
                     },
+                    "logs": {
+                        "log_level": "Log niveau",
+                        "subscribed_to_logs": "Geabonneerd op Z-Wave JS log berichten ...",
+                        "title": "Z-Wave JS Logs"
+                    },
                     "navigation": {
+                        "logs": "Logs",
                         "network": "Netwerk"
                     },
                     "network_status": {
@@ -2927,6 +2964,9 @@
                         "header": "Z-Wave apparaatconfiguratie",
                         "introduction": "Beheren en aanpassen van apparaat (node) specifieke configuratieparameters voor het geselecteerde apparaat",
                         "parameter_is_read_only": "Deze parameter is alleen-lezen.",
+                        "set_param_accepted": "De parameter is bijgewerkt.",
+                        "set_param_error": "Er is een fout opgetreden.",
+                        "set_param_queued": "De parameterwijziging is in een wachtrij geplaatst, en zal worden bijgewerkt wanneer het apparaat wakker wordt.",
                         "zwave_js_device_database": "Z-Wave JS Apparaat Database"
                     },
                     "node_status": {
@@ -3054,7 +3094,7 @@
                         "count_listeners": " ({count} luisteraars)",
                         "data": "Gebeurtenis data (YAML, optioneel)",
                         "description": "Start een evenement op de Home Assistant-gebeurtenisbus",
-                        "documentation": "Gebeurtenissen documentatie.",
+                        "documentation": "Gebeurtenissen documentatie",
                         "event_fired": "Gebeurtenis {name} uitgevoerd",
                         "fire_event": "Gebeurtenis uitvoeren",
                         "listen_to_events": "Luisteren naar gebeurtenissen",
@@ -3086,8 +3126,8 @@
                         "attributes": "Attributen",
                         "copy_id": "Kopieer ID naar klembord",
                         "current_entities": "Huidige entiteiten",
-                        "description1": "Stelt de weergave van een apparaat in Home Assistant in.",
-                        "description2": "Er vindt geen communicatie met het daadwerkelijke apparaat plaats.",
+                        "description1": "Stelt de weergave van een entiteit in Home Assistant in.",
+                        "description2": "Als de entiteit tot een apparaat behoort, dan is er geen daadwerkelijke communicatie met dat apparaat.",
                         "entity": "Entiteit",
                         "filter_attributes": "Filter attributen",
                         "filter_entities": "Filter entiteiten",
@@ -3459,7 +3499,7 @@
                         "duplicate": "Dupliceer kaart",
                         "edit": "Bewerken",
                         "header": "Kaart configuratie",
-                        "move": "Verplaatsen",
+                        "move": "Verplaats naar weergave",
                         "move_after": "Verplaats kaart na",
                         "move_before": "Verplaats kaart voor",
                         "options": "Meer opties",

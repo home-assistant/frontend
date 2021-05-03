@@ -76,9 +76,7 @@ export class HuiEntityPickerTable extends LitElement {
             ${name}
             ${narrow
               ? html`
-                  <div class="secondary">
-                    ${entity.stateObj.entity_id}
-                  </div>
+                  <div class="secondary">${entity.stateObj.entity_id}</div>
                 `
               : ""}
           </div>

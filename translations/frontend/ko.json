@@ -561,8 +561,11 @@
             },
             "light": {
                 "brightness": "밝기",
+                "cold_white_value": "주광색 밝기",
+                "color_brightness": "색상 밝기",
                 "color_temperature": "색온도",
                 "effect": "효과",
+                "warm_white_value": "전구색 밝기",
                 "white_value": "흰색 값"
             },
             "lock": {
@@ -886,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "통합구성요소 설명서",
                 "required": "이 입력란은 필수 요소입니다",
                 "service_data": "서비스 데이터",
                 "target": "대상",
@@ -1193,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "기기 재구성 중"
+                "attribute": "속성",
+                "battery_device_warning": "재구성하기 전에 배터리 전원 장치의 절전 모드를 해제해야 합니다. 절전 모드를 해제하는 방법은 기기 설명서를 참조하십시오.",
+                "bind_header": "묶기",
+                "button_hide": "세부 정보 숨기기",
+                "button_show": "세부 정보 표시",
+                "cluster_header": "클러스터",
+                "configuration_complete": "장치 재구성이 완료되었습니다.",
+                "configuration_failed": "장치 재구성에 실패했습니다. 로그에서 정보를 확인할 수 있습니다.",
+                "configuring_alt": "구성",
+                "heading": "기기 재구성 중",
+                "in_progress": "장치가 재구성 중입니다. 시간이 좀 걸릴 수 있습니다.",
+                "introduction": "Zigbee 네트워크에서 장치를 재구성합니다. 장치가 올바르게 작동하지 않는 경우에 이 기능을 사용하십시오.",
+                "min_max_change": "최소/최대/변경",
+                "reporting_header": "보고",
+                "run_in_background": "이 대화 상자를 닫을 수 있으며 재구성은 백그라운드에서 계속됩니다.",
+                "start_reconfiguration": "재구성 시작"
             }
         },
         "duration": {
@@ -1256,7 +1275,8 @@
                     "caption": "영역",
                     "data_table": {
                         "area": "영역",
-                        "devices": "기기"
+                        "devices": "기기",
+                        "entities": "구성요소"
                     },
                     "delete": {
                         "confirmation_text": "이 영역에 속한 모든 기기가 할당 해제됩니다.",
@@ -1268,8 +1288,10 @@
                         "create": "만들기",
                         "default_name": "새로운 영역",
                         "delete": "삭제하기",
+                        "linked_entities_caption": "구성요소",
                         "name": "이름",
                         "name_required": "이름은 필수 요소입니다",
+                        "no_linked_entities": "이 영역에 등록된 구성요소가 없습니다.",
                         "unknown_error": "알 수 없는 오류",
                         "update": "업데이트"
                     },
@@ -2785,6 +2807,14 @@
                         "manufacturer_code_override": "제조업체 코드 재정의",
                         "value": "값"
                     },
+                    "configuration_page": {
+                        "update_button": "구성 업데이트",
+                        "zha_options": {
+                            "default_light_transition": "조명 전환 시간 기본 값(초)",
+                            "enable_identify_on_join": "장치가 네트워크에 연결될 때 식별 효과 활성화",
+                            "title": "전역 옵션"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "구성이 완료되었습니다",
                         "CONFIGURED_status_text": "초기화 중",
@@ -2909,7 +2939,12 @@
                         "node_status": "노드 상태",
                         "zwave_info": "Z-Wave 정보"
                     },
+                    "logs": {
+                        "log_level": "로그 레벨",
+                        "title": "Z-Wave JS 로그"
+                    },
                     "navigation": {
+                        "logs": "로그",
                         "network": "네트워크"
                     },
                     "network_status": {
@@ -2924,6 +2959,9 @@
                         "header": "Z-Wave 기기 구성",
                         "introduction": "선택한 기기(노드)의 매개 변수를 관리하고 조정합니다.",
                         "parameter_is_read_only": "이 매개 변수는 읽기 전용입니다.",
+                        "set_param_accepted": "매개 변수가 업데이트되었습니다.",
+                        "set_param_error": "오류가 발생했습니다.",
+                        "set_param_queued": "장치의 절전모드가 해제되면 매개 변수가 업데이트됩니다.",
                         "zwave_js_device_database": "Z-Wave JS 기기 데이터베이스"
                     },
                     "node_status": {
@@ -2932,6 +2970,16 @@
                         "awake": "절전해제",
                         "dead": "사용불가",
                         "unknown": "알 수 없음"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "재인터뷰를 시작하기 전에 배터리 전원 장치의 절전 모드를 해제해야 합니다. 절전 모드를 해제하는 방법은 기기 설명서를 참조하십시오.",
+                        "in_progress": "장치가 인터뷰중입니다. 시간이 좀 걸릴 수 있습니다.",
+                        "interview_complete": "장치 인터뷰가 완료되었습니다.",
+                        "interview_failed": "장치 인터뷰에 실패했습니다. 로그에서 정보를 확인할 수 있습니다.",
+                        "introduction": "Z-Wave 네트워크 상의 장치를 다시 인터뷰합니다. 장치가 사라지거나 오동작할 경우에 이 기능을 사용하십시오.",
+                        "run_in_background": "이 대화 상자를 닫을 수 있으며 인터뷰는 백그라운드에서 계속됩니다.",
+                        "start_reinterview": "재인터뷰 시작",
+                        "title": "Z-Wave 장치 재인터뷰"
                     },
                     "remove_node": {
                         "cancel_exclusion": "제외 취소하기",

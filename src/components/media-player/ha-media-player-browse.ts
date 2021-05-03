@@ -122,9 +122,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         });
       } else {
         return html`
-          <div class="container">
-            ${this._renderError(this._error)}
-          </div>
+          <div class="container">${this._renderError(this._error)}</div>
         `;
       }
     }
@@ -202,13 +200,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                   `
                 : ""}
               <h1 class="title">${currentItem.title}</h1>
-              ${subtitle
-                ? html`
-                    <h2 class="subtitle">
-                      ${subtitle}
-                    </h2>
-                  `
-                : ""}
+              ${subtitle ? html` <h2 class="subtitle">${subtitle}</h2> ` : ""}
             </div>
             ${currentItem.can_play && (!currentItem.thumbnail || !this._narrow)
               ? html`
@@ -247,9 +239,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       <div class="content" @scroll=${this._scroll} @touchmove=${this._scroll}>
         ${this._error
           ? html`
-              <div class="container">
-                ${this._renderError(this._error)}
-              </div>
+              <div class="container">${this._renderError(this._error)}</div>
             `
           : currentItem.children?.length
           ? childrenMediaClass.layout === "grid"

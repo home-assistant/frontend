@@ -239,4 +239,8 @@ class DemoEntities extends LitElement {
   }
 }
 
-customElements.define("demo-hui-entities-card", DemoEntities);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-entities-card": DemoEntities;
+  }
+}

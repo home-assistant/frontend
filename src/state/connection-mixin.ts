@@ -78,10 +78,10 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               service,
               serviceData,
               target
-            )) as Promise<ServiceCallResponse>;
+            )) as ServiceCallResponse;
           } catch (err) {
             if (
-              err.error.code === ERR_CONNECTION_LOST &&
+              err.error?.code === ERR_CONNECTION_LOST &&
               serviceCallWillDisconnect(domain, service)
             ) {
               throw err;

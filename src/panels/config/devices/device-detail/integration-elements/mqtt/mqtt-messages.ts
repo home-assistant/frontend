@@ -80,9 +80,7 @@ class MQTTMessages extends LitElement {
       <ul class="message-with-topic">
         ${this._showTopic ? html` <li>Topic: <code>${topic}</code></li> ` : ""}
         <li>QoS: ${message.qos}${message.retain ? ", Retained" : ""}</li>
-        <li>
-          Payload: ${this._renderSinglePayload(message)}
-        </li>
+        <li>Payload: ${this._renderSinglePayload(message)}</li>
       </ul>
     `;
   }

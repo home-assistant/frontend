@@ -64,9 +64,7 @@ class HaPanelDevMqtt extends LitElement {
                 @value-changed=${this._handleTopic}
               ></paper-input>
 
-              <p>
-                ${this.hass.localize("ui.panel.config.mqtt.payload")}
-              </p>
+              <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
               <ha-code-editor
                 mode="jinja2"
                 .value="${this.payload}"

@@ -106,7 +106,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this.yamlEditor.value = safeDump(this.lovelace!.config);
+    this.yamlEditor.value = safeDump(this.lovelace!.rawConfig);
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -115,8 +115,8 @@ class LovelaceFullConfigEditor extends LitElement {
       !this._saving &&
       oldLovelace &&
       this.lovelace &&
-      oldLovelace.config !== this.lovelace.config &&
-      !deepEqual(oldLovelace.config, this.lovelace.config)
+      oldLovelace.rawConfig !== this.lovelace.rawConfig &&
+      !deepEqual(oldLovelace.rawConfig, this.lovelace.rawConfig)
     ) {
       showToast(this, {
         message: this.hass!.localize(
@@ -124,7 +124,7 @@ class LovelaceFullConfigEditor extends LitElement {
         ),
         action: {
           action: () => {
-            this.yamlEditor.value = safeDump(this.lovelace!.config);
+            this.yamlEditor.value = safeDump(this.lovelace!.rawConfig);
           },
           text: this.hass!.localize(
             "ui.panel.lovelace.editor.raw_editor.reload"
@@ -182,9 +182,7 @@ class LovelaceFullConfigEditor extends LitElement {
   private _yamlChanged() {
     this._changed = undoDepth(this.yamlEditor.codemirror!.state) > 0;
     if (this._changed && !window.onbeforeunload) {
-      window.onbeforeunload = () => {
-        return true;
-      };
+      window.onbeforeunload = () => true;
     } else if (!this._changed && window.onbeforeunload) {
       window.onbeforeunload = null;
     }

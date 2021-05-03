@@ -64,12 +64,8 @@ export abstract class HaDeviceAutomationPicker<
   private _createNoAutomation: (deviceId?: string) => T;
 
   constructor(
-    localizeDeviceAutomation: HaDeviceAutomationPicker<
-      T
-    >["_localizeDeviceAutomation"],
-    fetchDeviceAutomations: HaDeviceAutomationPicker<
-      T
-    >["_fetchDeviceAutomations"],
+    localizeDeviceAutomation: HaDeviceAutomationPicker<T>["_localizeDeviceAutomation"],
+    fetchDeviceAutomations: HaDeviceAutomationPicker<T>["_fetchDeviceAutomations"],
     createNoAutomation: HaDeviceAutomationPicker<T>["_createNoAutomation"]
   ) {
     super();

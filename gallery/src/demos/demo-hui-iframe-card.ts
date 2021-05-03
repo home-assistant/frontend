@@ -42,4 +42,8 @@ class DemoIframe extends LitElement {
   }
 }
 
-customElements.define("demo-hui-iframe-card", DemoIframe);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-iframe-card": DemoIframe;
+  }
+}

@@ -21,6 +21,7 @@
         "logbook": "יומן אירועים",
         "mailbox": "תיבת דואר",
         "map": "מפה",
+        "media_browser": "סייר המדיה",
         "profile": "פרופיל",
         "shopping_list": "רשימת קניות",
         "states": "ראשי"
@@ -104,14 +105,37 @@
     "supervisor": {
         "addon": {
             "dashboard": {
+                "action_error": {
+                    "get_changelog": "קבלת יומן שינויים של התוסף נכשלה",
+                    "validate_config": "אימות תצורת התוסף נכשל"
+                },
                 "not_available_version": "אתה מפעיל את Home Assistant {core_version_installed} , כדי לעדכן לגרסה זו של התוסף אתה זקוק לפחות לגרסה {core_version_needed} של Home Assistant",
                 "visit_addon_page": "בקר בדף {name} לפרטים נוספים"
+            },
+            "documentation": {
+                "get_documentation": "קבלת תיעוד התוסף נכשלה, {error}"
+            },
+            "logs": {
+                "get_logs": "קבלת יומני התוסף נכשלה, {error}"
             }
         },
         "common": {
             "cancel": "בטל",
             "close": "סגור",
-            "save": "שמור"
+            "description": "תיאור",
+            "error": {
+                "unknown": "בעיה לא ידועה"
+            },
+            "failed_to_restart_name": "אתחול {name} נכשל.",
+            "failed_to_update_name": "עדכון {name} נכשל.",
+            "learn_more": "למד עוד",
+            "new_version_available": "גרסה חדשה זמינה",
+            "no": "לא",
+            "refresh": "רענן",
+            "reload": "טען מחדש",
+            "reset_defaults": "אפס לברירות מחדל",
+            "save": "שמור",
+            "yes": "כן"
         },
         "confirm": {
             "update": {
@@ -169,32 +193,93 @@
             "error_addon_not_found": "התוסף לא נמצא"
         },
         "snapshot": {
+            "addons": "תוספים",
+            "available_snapshots": "גיבויים זמינים",
+            "could_not_create": "לא ניתן ליצור גיבוי",
+            "create": "צור",
+            "create_blocked_not_running": "יצירת גיבוי אינה אפשרית כרגע מכיוון שהמערכת במצב {state} .",
+            "create_snapshot": "צור גיבוי",
+            "enter_password": "נא הזן סיסמה.",
             "folder": {
                 "addons/local": "תוספות מקומיות",
+                "homeassistant": "תצורת Home Assistant",
                 "media": "תוכן",
                 "share": "שיתוף",
                 "ssl": "SSL"
-            }
+            },
+            "folders": "תיקיות",
+            "full_snapshot": "גיבוי מלא",
+            "name": "שם",
+            "no_snapshots": "אין לך גיבויים כרגע.",
+            "partial_snapshot": "גיבוי חלקי",
+            "password": "סיסמה",
+            "password_protected": "מוגן באמצעות סיסמה",
+            "password_protection": "הגנה באמצעות סיסמה",
+            "security": "אבטחה",
+            "type": "סוּג",
+            "upload_snapshot": "טען גיבוי"
         },
         "system": {
+            "host": {
+                "change_hostname": "שנה שם מכונה",
+                "confirm_reboot": "האם אתה בטוח שאתה מעוניין לאתחל שרת מארח?",
+                "confirm_shutdown": "האם אתה בטוח שאתה מעוניין לכבות שרת מארח?",
+                "docker_version": "גרסת Docker",
+                "failed_to_get_hardware_list": "קבלת רשימת החומרה נכשלה",
+                "failed_to_import_from_usb": "ייבוא מ- USB נכשל",
+                "failed_to_reboot": "אתחול המכונה נכשל",
+                "failed_to_set_hostname": "הגדרת שם המכונה נכשלה",
+                "failed_to_shutdown": "כיבוי המכונה נכשל",
+                "hardware": "חומרה",
+                "hostname": "שם מכונה",
+                "import_from_usb": "יבא מרכיב USB",
+                "ip_address": "כתובת IP",
+                "new_hostname": "אנא הזן שם מכונה חדש:",
+                "operating_system": "מערכת הפעלה",
+                "reboot_host": "אתחל שרת",
+                "shutdown_host": "כבה שרת מארח",
+                "used_space": "שטח בשימוש"
+            },
             "supervisor": {
                 "beta_backup": "ודא שיש לך גיבויים של הנתונים לפני הפעלת תכונה זו.",
                 "beta_join_confirm": "האם אתה רוצה להצטרף לערוץ הבטא?",
                 "beta_release_items": "זה כולל גרסאות בטא עבור:",
                 "beta_warning": "גרסאות בטא מיועדות לבודקים ומאמצים מוקדמים ויכולות להכיל שינויי קוד לא יציבים",
+                "channel": "עָרוּץ",
+                "join_beta_action": "הצטרף לערוץ בטא",
+                "join_beta_description": "קבל עדכוני בטא עבור Home Assistant, Supervisor ומערכת ההפעלה",
+                "leave_beta_action": "עזוב את ערוץ הבטא",
+                "leave_beta_description": "קבל עדכונים יציבים עבור Home Assistant, Supervisor ומערכת ההפעלה",
                 "reload_supervisor": "טען מחדש את ה Supervisor",
+                "share_diagnostics": "שתף מידע אבחוני",
+                "share_diagnostics_description": "שתף דוחות קריסה ומידע אבחוני.",
                 "share_diagonstics_description": "האם ברצונך לשתף באופן אוטומטי דוחות קריסה ומידע אבחון כאשר ה Supervisor נתקל בשגיאות בלתי צפויות? {line_break} זה יאפשר לנו לתקן את הבעיות, המידע נגיש רק לצוות הליבה של Home Assistant ולא ישותף עם אחרים. {line_break} הנתונים אינם כוללים מידע פרטי/רגיש ובאפשרותך להפוך מידע זה ללא זמין בהגדרות בכל עת שתרצה.",
                 "share_diagonstics_title": "עזור לשפר את Home Assistant",
+                "unhealthy_description": "הפעלת התקנה לא בריאה תגרום לבעיות. להלן רשימת הבעיות שנמצאו בהתקנה שלך, לחץ על הקישורים כדי ללמוד כיצד תוכל לפתור את הבעיות.",
                 "unhealthy_reason": {
+                    "docker": "סביבת ה- Docker אינה פועלת כראוי",
+                    "privileged": "ל Supervisor אין הרשאות",
+                    "setup": "הגדרת ה Supervisor נכשלה",
+                    "supervisor": "עדכון ה Supervisor לא הצליח",
                     "untrusted": "זוהה תוכן לא מהימן"
                 },
+                "unhealthy_title": "ההתקנה שלך אינה תקינה",
+                "unsupported_description": "למטה רשימת נושאים שנימצאו במהלך ההתקנה, לחץ על קישור על מנת ללמוד איך לפתור את הנושא",
                 "unsupported_reason": {
                     "apparmor": "AppArmor אינו זמין במחשב המארח",
                     "container": "ה Container ידוע כבעייתי",
                     "content-trust": "אימות אמון תוכן מושבת",
                     "dbus": "DBUS",
-                    "docker_configuration": "תצורת Docker"
+                    "docker_configuration": "תצורת Docker",
+                    "docker_version": "גרסת Docker",
+                    "job_conditions": "התעלם מתנאי ה Job",
+                    "lxc": "LXC",
+                    "network_manager": "מנהל רשת",
+                    "os": "מערכת הפעלה",
+                    "privileged": "ל Supervisor אין הרשאות",
+                    "systemd": "Systemd"
                 },
+                "update_supervisor": "עדכן את ה Supervisor",
                 "warning": "אזהרה"
             }
         }
@@ -398,6 +483,9 @@
                 "today": "היום"
             },
             "data-table": {
+                "clear": "נקה",
+                "filtering_by": "סינון לפי",
+                "hidden": "{number} חבוי",
                 "no-data": "אין נתונים",
                 "search": "חיפוש"
             },
@@ -505,11 +593,11 @@
                 },
                 "never": "אף פעם לא",
                 "past_duration": {
-                    "day": "לפני {count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "day": "לפני {count} {count, plural,\n  one {יום}\n  other {ימים}\n}",
                     "hour": "לפני {count} {count, plural,\n  one {שעה}\n  other {שעות}\n}",
-                    "minute": "לפני {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-                    "second": "לפני {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-                    "week": "לפני {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
+                    "minute": "לפני {count} {count, plural,\n  one {דקה}\n  other {דקות}\n}",
+                    "second": "לפני {count} {count, plural,\n  one {שניה}\n  other {שניות}\n}",
+                    "week": "לפני {count} {count, plural,\n  one {שבוע}\n  other {שבועות}\n}"
                 }
             },
             "service-control": {
@@ -685,6 +773,11 @@
                         "perform_action": "{action} שרת",
                         "restart": "הפעל מחדש",
                         "stop": "עצור"
+                    },
+                    "types": {
+                        "navigation": "ניווט",
+                        "reload": "טען מחדש",
+                        "server_control": "שרת"
                     }
                 },
                 "filter_placeholder": "מסנן ישויות"
@@ -1137,6 +1230,8 @@
                         "unsupported_blueprint": "שרטוט זה לא נתמך",
                         "url": "כתובת URL של השרטוט"
                     },
+                    "caption": "שרטוטים",
+                    "description": "ניהול שרטוטים",
                     "overview": {
                         "add_blueprint": "יבוא שרטוט",
                         "confirm_delete_text": "האם אתה בטוח שברצונך למחוק שרטוט זה?",
@@ -1596,10 +1691,20 @@
                     "caption": "אינטגרציות",
                     "config_entry": {
                         "area": "ב-{area}",
+                        "check_the_logs": "בדוק את היומנים",
+                        "configure": "הגדר",
                         "delete": "מחק",
                         "delete_confirm": "האם אתה בטוח שברצונך למחוק אינטגרציה זו?",
+                        "depends_on_cloud": "תלוי בענן",
                         "device_unavailable": "מכשיר אינו זמין",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+                        "disable": {
+                            "disabled_by": {
+                                "device": "מכשיר",
+                                "integration": "אינטגרציה",
+                                "user": "משתמש"
+                            }
+                        },
                         "documentation": "תיעוד",
                         "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
                         "entity_unavailable": "ישות לא זמינה",
@@ -1610,8 +1715,17 @@
                         "no_area": "ללא אזור",
                         "not_loaded": "לא נטען, בדוק את {logs_link}",
                         "options": "אפשרויות",
+                        "provided_by_custom_integration": "מסופק על ידי אינטגרציה מותאמת אישית",
                         "rename": "שנה שם",
                         "restart_confirm": "הפעל מחדש את Home Assistant כדי להשלים את הסרת האינטגרציה",
+                        "state": {
+                            "failed_unload": "ביטול הטעינה נכשל",
+                            "loaded": "טעון",
+                            "migration_error": "שגיאת המרה",
+                            "not_loaded": "לא טעון",
+                            "setup_error": "ההגדרה נכשלה",
+                            "setup_retry": "מנסה להגדיר מחדש"
+                        },
                         "system_options": "אפשרויות מערכת",
                         "unnamed_entry": "ערך ללא שם"
                     },
@@ -1635,6 +1749,9 @@
                     "configured": "הוגדר",
                     "description": "ניהול והגדרת אינטגרציות",
                     "details": "פרטי האינטגרציה",
+                    "disable": {
+                        "show": "הצג"
+                    },
                     "discovered": "זוהו",
                     "home_assistant_website": "אתר Home Assistant",
                     "ignore": {
@@ -1665,8 +1782,10 @@
                 "logs": {
                     "caption": "יומנים",
                     "clear": "נקה",
+                    "custom_integration": "אינטגרציה מותאמת אישית",
                     "description": "צפה ביומני Home Assistant",
                     "details": "פרטי יומן האירועים ({level})",
+                    "error_from_custom_integration": "מקור השגיאה הזו הוא אינטגרציה מותאמת אישית.",
                     "level": {
                         "critical": "CRITICAL",
                         "debug": "DEBUG",
@@ -2185,6 +2304,7 @@
                     "node_config": {
                         "attribution": "פרמטרים ותיאורי תצורת המכשיר מסופקים על ידי {device_database}",
                         "battery_device_notice": "התקני סוללה חייבים להיות ערים כדי לעדכן את תצורתם. נא עיין במדריך למשתמש לקבלת הוראות כיצד להעיר את ההתקן.",
+                        "error_device_not_found": "ההתקן לא נמצא",
                         "header": "תצורת מכשיר Z-Wave",
                         "introduction": "נהל והתאם פרמטרי תצורה ספציפיים למכשיר (צומת) עבור ההתקן שנבחר",
                         "parameter_is_read_only": "פרמטר זה מוגדר לקריאה בלבד.",
@@ -2311,6 +2431,7 @@
                         "column_parameter": "פרמטר",
                         "description": "כלי הפיתוח של השירותים מאפשר לך לקרוא לכל שירות ב Home Assistant.",
                         "fill_example_data": "מלא נתונים לדוגמה",
+                        "no_template_ui_support": "ממשק המשתמש אינו תומך בתבניות, עדיין תוכל להשתמש בעורך ה YAML.",
                         "title": "שירותים"
                     },
                     "states": {
@@ -2673,7 +2794,7 @@
                         "delete": "מחק תצוגה",
                         "edit": "ערוך תצוגה",
                         "header": "הצג הגדרות",
-                        "header_name": "{name} הצג את תצורת",
+                        "header_name": "הצג את תצורת {name}",
                         "move_left": "הזז את התצוגה שמאלה",
                         "move_right": "הזז את התצוגה ימינה",
                         "tab_badges": "תגים",
@@ -3036,13 +3157,17 @@
                     "header": "מודלי אימות מרובה גורמים"
                 },
                 "number_format": {
+                    "description": "בחר כיצד מוצגים מספרים.",
+                    "dropdown_label": "פורמט מספר",
                     "formats": {
                         "comma_decimal": "1,234,567.89",
                         "decimal_comma": "1.234.567,89",
+                        "language": "אוטומטי (השתמש בהגדרות השפה)",
                         "none": "לא נבחר",
                         "space_comma": "1 234 567,89",
                         "system": "השתמש ב System Locale"
-                    }
+                    },
+                    "header": "פורמט מספר"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

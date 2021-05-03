@@ -30,9 +30,7 @@ class MQTTDiscoveryPayload extends LitElement {
         ${this.summary}
       </div>
       ${this._open
-        ? html` <div class="payload">
-            ${this._renderPayload()}
-          </div>`
+        ? html` <div class="payload">${this._renderPayload()}</div>`
         : ""}
     `;
   }
