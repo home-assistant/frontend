@@ -640,6 +640,12 @@ export class HaIntegrationCard extends LitElement {
           margin-left: 8px;
           padding-top: 2px;
           padding-right: 2px;
+          overflow-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 7;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .content {

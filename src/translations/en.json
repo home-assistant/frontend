@@ -1039,6 +1039,7 @@
           "integrations": "Integrations",
           "documentation": "Documentation",
           "issues": "Issues",
+          "setup_time": "Setup time",
           "system_health": {
             "manage": "Manage",
             "more_info": "more info"
@@ -1793,10 +1794,16 @@
             },
             "remote": {
               "title": "Remote Control",
-              "access_is_being_prepared": "Remote access is being prepared. We will notify you when it's ready.",
+              "connected": "Connected",
+              "not_connected": "Not Connected",
+              "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
               "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
               "instance_is_available": "Your instance is available at",
               "instance_will_be_available": "Your instance will be available at",
+              "remote_enabled": {
+                "caption": "Automatically connect",
+                "description": "Enable this option to make sure that your Home Assistant instance is always remotely accessible."
+              },
               "link_learn_how_it_works": "Learn how it works",
               "certificate_info": "Certificate Info"
             },
@@ -2184,6 +2191,7 @@
             "dismiss": "Dismiss dialog",
             "finish": "Finish",
             "submit": "Submit",
+            "next": "Next",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
             "created_config": "Created configuration for {name}.",
@@ -2648,7 +2656,8 @@
           },
           "logs": {
             "title": "Z-Wave JS Logs",
-            "log_level": "Log Level"
+            "log_level": "Log Level",
+            "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages..."
           }
         }
       },

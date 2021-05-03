@@ -459,7 +459,7 @@
                 "ram_usage": "Использование ОЗУ",
                 "reload_supervisor": "Перезагрузить Supervisor",
                 "share_diagnostics": "Отправлять данные для диагностики",
-                "share_diagnostics_description": "Автоматически отправлять отчеты о сбоях и диагностическую информацию",
+                "share_diagnostics_description": "Автоматически отправлять отчеты о сбоях и диагностическую информацию.",
                 "share_diagonstics_description": "Хотели бы Вы автоматически отправлять отчеты о сбоях и другую диагностическую информацию, когда Supervisor обнаруживает неожиданные ошибки? {line_break} Это позволит разработчикам получать необходимые данные для решения проблем. Данные не будут содержать никакой личной или конфиденциальной информации и будут доступны только основной команде Home Assistant. {line_break} Вы сможете отменить отправку данных в настройках в любое время.",
                 "share_diagonstics_title": "Помогите улучшить Home Assistant",
                 "unhealthy_description": "Запуск неработоспособной системы может вызвать проблемы. Ниже приведен список проблем, обнаруженных при установке. Перейдите по ссылкам, чтобы узнать, как их решить.",
@@ -1258,7 +1258,7 @@
         "notification_toast": {
             "connection_lost": "Соединение потеряно. Повторное подключение...",
             "dismiss": "Закрыть",
-            "intergration_starting": "Запуск {integration}, пока что не всё может быть доступно.",
+            "intergration_starting": "{integration} запускается, пока что не всё может быть доступно.",
             "service_call_failed": "Не удалось вызвать службу {service}.",
             "started": "Home Assistant работает!",
             "starting": "Home Assistant запускается, пока что не всё может быть доступно.",
@@ -1510,7 +1510,7 @@
                         },
                         "modes": {
                             "description": "Режим управляет тем, что происходит при срабатывании автоматизации, когда действия еще выполняются с предыдущего триггера. Ознакомьтесь с {documentation_link} для получения дополнительной информации.",
-                            "documentation": "инструкциями",
+                            "documentation": "документацией",
                             "label": "Режим",
                             "parallel": "Параллельный",
                             "queued": "Очередь",
@@ -1746,10 +1746,16 @@
                         "remote": {
                             "access_is_being_prepared": "Удалённый доступ подготавливается. Мы сообщим Вам, когда он будет готов.",
                             "certificate_info": "Информация о сертификате",
+                            "connected": "Подключено",
                             "info": "Home Assistant Cloud обеспечивает безопасное подключение к Вашему серверу, даже если Вы находитесь вдали от дома.",
                             "instance_is_available": "Ваш Home Assistant доступен по адресу",
                             "instance_will_be_available": "Ваш Home Assistant будет доступен по адресу",
                             "link_learn_how_it_works": "Узнайте, как это работает",
+                            "not_connected": "Не подключено",
+                            "remote_enabled": {
+                                "caption": "Подключаться автоматически",
+                                "description": "Включите этот параметр, чтобы всегда иметь удалённый доступ к Вашему Home Assistant."
+                            },
                             "title": "Удалённый доступ"
                         },
                         "sign_out": "Выйти",
@@ -1813,7 +1819,7 @@
                         "info_disable_webhook": "Если Вы больше не хотите использовать этот Webhook, Вы можете",
                         "link_disable_webhook": "отключить его.",
                         "managed_by_integration": "Этот Webhook управляется интеграцией и не может быть отключен.",
-                        "view_documentation": "Инструкции",
+                        "view_documentation": "Документация",
                         "webhook_for": "Webhook для {name}"
                     },
                     "forgot_password": {
@@ -2160,6 +2166,7 @@
                     "license": "Опубликовано под лицензией Apache 2.0",
                     "path_configuration": "Путь к configuration.yaml: {path}",
                     "server": "сервер",
+                    "setup_time": "Время запуска",
                     "source": "Исходный код:",
                     "system_health_error": "Компонент System Health не загружен. Добавьте 'system_health:' в файл configuration.yaml.",
                     "system_health": {
@@ -2182,7 +2189,7 @@
                         "configure": "Настроить",
                         "delete": "Удалить",
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
-                        "depends_on_cloud": "Зависящие от облачных сервисов",
+                        "depends_on_cloud": "Зависит от облачных сервисов",
                         "device_unavailable": "Устройство недоступно",
                         "devices": "{count, plural,\n  one {устройств:}\n  other {устройств:}\n} {count}",
                         "disable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить деактивацию этой интеграции.",
@@ -2612,7 +2619,7 @@
                         },
                         "modes": {
                             "description": "Режим управляет тем, что происходит при выполнении скрипта, когда он всё ещё выполняются с предыдущего вызова. Ознакомьтесь с {documentation_link} для получения дополнительной информации.",
-                            "documentation": "инструкциями",
+                            "documentation": "документацией",
                             "label": "Режим",
                             "parallel": "Параллельный",
                             "queued": "Очередь",
@@ -2944,6 +2951,7 @@
                     },
                     "logs": {
                         "log_level": "Уровень",
+                        "subscribed_to_logs": "Подписано на сообщения журнала Z-Wave JS...",
                         "title": "Журналы Z-Wave JS"
                     },
                     "navigation": {

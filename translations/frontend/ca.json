@@ -1744,12 +1744,18 @@
                         "nabu_casa_account": "Compte Nabu Casa",
                         "not_connected": "No connectat",
                         "remote": {
-                            "access_is_being_prepared": "S'està preparant l'accés remot. T'avisarem quan estigui a punt.",
+                            "access_is_being_prepared": "S'està preparant el control remot. T'avisarem quan estigui a punt.",
                             "certificate_info": "Informació del certificat",
+                            "connected": "Connectat",
                             "info": "Home Assistant Cloud t'ofereix una connexió remota i segura amb la teva instància mentre siguis fora de casa",
                             "instance_is_available": "La teva instància està disponible a",
                             "instance_will_be_available": "La teva instància estarà disponible a",
                             "link_learn_how_it_works": "Informació sobre com funciona",
+                            "not_connected": "No connectat",
+                            "remote_enabled": {
+                                "caption": "Connexió automàtica",
+                                "description": "Activa aquesta opció per assegurar-te que la teva instància de Home Assistant sempre sigui accessible de forma remota."
+                            },
                             "title": "Control remot"
                         },
                         "sign_out": "Tanca sessió",
@@ -2160,6 +2166,7 @@
                     "license": "Publicat amb la llicència Apache 2.0",
                     "path_configuration": "Ruta al fitxer configuration.yaml: {path}",
                     "server": "servidor",
+                    "setup_time": "Temps de configuració",
                     "source": "Font:",
                     "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml",
                     "system_health": {
@@ -2944,6 +2951,7 @@
                     },
                     "logs": {
                         "log_level": "Nivell dels registres",
+                        "subscribed_to_logs": "Subscrit a missatges de registre Z-Wave JS...",
                         "title": "Registres de Z-Wave JS"
                     },
                     "navigation": {
