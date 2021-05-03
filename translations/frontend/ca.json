@@ -1744,12 +1744,18 @@
                         "nabu_casa_account": "Compte Nabu Casa",
                         "not_connected": "No connectat",
                         "remote": {
-                            "access_is_being_prepared": "S'està preparant l'accés remot. T'avisarem quan estigui a punt.",
+                            "access_is_being_prepared": "S'està preparant el control remot. T'avisarem quan estigui a punt.",
                             "certificate_info": "Informació del certificat",
+                            "connected": "Connectat",
                             "info": "Home Assistant Cloud t'ofereix una connexió remota i segura amb la teva instància mentre siguis fora de casa",
                             "instance_is_available": "La teva instància està disponible a",
                             "instance_will_be_available": "La teva instància estarà disponible a",
                             "link_learn_how_it_works": "Informació sobre com funciona",
+                            "not_connected": "No connectat",
+                            "remote_enabled": {
+                                "caption": "Connexió automàtica",
+                                "description": "Activa aquesta opció per assegurar-te que la teva instància de Home Assistant sempre sigui accessible de forma remota."
+                            },
                             "title": "Control remot"
                         },
                         "sign_out": "Tanca sessió",

@@ -2160,6 +2160,7 @@
                     "license": "Gepubliceerd onder de Apache 2.0-licentie",
                     "path_configuration": "Pad naar configuration.yaml: {path}",
                     "server": "Server",
+                    "setup_time": "Setup tijd",
                     "source": "Bron:",
                     "system_health_error": "De systeemstatus component is niet geladen. Voeg ' system_health: ' toe aan het configuratiebestand.",
                     "system_health": {
@@ -2942,7 +2943,13 @@
                         "node_status": "Knooppuntstatus",
                         "zwave_info": "Z-Wave info"
                     },
+                    "logs": {
+                        "log_level": "Log niveau",
+                        "subscribed_to_logs": "Geabonneerd op Z-Wave JS log berichten ...",
+                        "title": "Z-Wave JS Logs"
+                    },
                     "navigation": {
+                        "logs": "Logs",
                         "network": "Netwerk"
                     },
                     "network_status": {
