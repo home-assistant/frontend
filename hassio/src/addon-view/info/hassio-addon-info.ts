@@ -261,13 +261,9 @@ class HassioAddonInfo extends LitElement {
             ${this.supervisor.localize(
               "addon.dashboard.visit_addon_page",
               "name",
-              html`<a
-                href="${this.addon.url!}"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.addon.name}
-              </a>`
+              html`<a href="${this.addon.url!}" target="_blank" rel="noreferrer"
+                >${this.addon.name}</a
+              >`
             )}
           </div>
           <div class="addon-container">

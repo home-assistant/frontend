@@ -2160,6 +2160,7 @@
                     "license": "依據 Apache 2.0 授權許可發行",
                     "path_configuration": "configuration.yaml 路徑：{path}",
                     "server": "伺服器",
+                    "setup_time": "設定時間",
                     "source": "來源：",
                     "system_health_error": "系統健康元件未載入。請於 configuration.yaml 內加入「system_health:」",
                     "system_health": {
@@ -2944,6 +2945,7 @@
                     },
                     "logs": {
                         "log_level": "日誌記錄等級",
+                        "subscribed_to_logs": "訂閱 Z-Wave JS 日誌訊息...",
                         "title": "Z-Wave JS 日誌"
                     },
                     "navigation": {

@@ -2942,7 +2942,12 @@
                         "node_status": "Stato del Nodo",
                         "zwave_info": "Informazioni Z-Wave"
                     },
+                    "logs": {
+                        "log_level": "Livello di registro",
+                        "title": "Registri Z-Wave JS"
+                    },
                     "navigation": {
+                        "logs": "Registri",
                         "network": "Rete"
                     },
                     "network_status": {

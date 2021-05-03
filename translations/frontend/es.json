@@ -1746,10 +1746,16 @@
                         "remote": {
                             "access_is_being_prepared": "Se está preparando el acceso remoto. Te avisaremos cuando esté listo.",
                             "certificate_info": "Información del certificado",
+                            "connected": "Conectado",
                             "info": "Home Assistant Cloud proporciona una conexión remota segura a tu instancia mientras estás fuera de casa.",
                             "instance_is_available": "Tu instancia está disponible en",
                             "instance_will_be_available": "Tu instancia estará disponible en",
                             "link_learn_how_it_works": "Aprende cómo funciona",
+                            "not_connected": "No conectado",
+                            "remote_enabled": {
+                                "caption": "Conectar automáticamente",
+                                "description": "Habilite esta opción para asegurarse de que la instancia de Home Assistant siempre es accesible de forma remota."
+                            },
                             "title": "Control remoto"
                         },
                         "sign_out": "Cerrar sesión",
@@ -2160,6 +2166,7 @@
                     "license": "Publicado bajo la licencia Apache 2.0",
                     "path_configuration": "Ruta a configuration.yaml: {path}",
                     "server": "servidor",
+                    "setup_time": "Tiempo de configuración",
                     "source": "Fuente:",
                     "system_health_error": "El componente Estado del Sistema no está cargado. Añade 'system_health:' a configuration.yaml",
                     "system_health": {
@@ -2944,6 +2951,7 @@
                     },
                     "logs": {
                         "log_level": "Nivel de registro",
+                        "subscribed_to_logs": "Suscrito a los mensajes de registro de Z-Wave JS...",
                         "title": "Registros de Z-Wave JS"
                     },
                     "navigation": {

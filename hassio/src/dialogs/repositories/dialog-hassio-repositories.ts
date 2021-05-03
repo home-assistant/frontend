@@ -43,7 +43,7 @@ class HassioRepositoriesDialog extends LitElement {
 
   @internalProperty() private _opened = false;
 
-  @internalProperty() private _prosessing = false;
+  @internalProperty() private _processing = false;
 
   @internalProperty() private _error?: string;
 
@@ -119,8 +119,11 @@ class HassioRepositoriesDialog extends LitElement {
               @keydown=${this._handleKeyAdd}
             ></paper-input>
             <mwc-button @click=${this._addRepository}>
-              ${this._prosessing
-                ? html`<ha-circular-progress active></ha-circular-progress>`
+              ${this._processing
+                ? html`<ha-circular-progress
+                    active
+                    size="small"
+                  ></ha-circular-progress>`
                 : this._dialogParams!.supervisor.localize(
                     "dialog.repositories.add"
                   )}
@@ -201,7 +204,7 @@ class HassioRepositoriesDialog extends LitElement {
     if (!input || !input.value) {
       return;
     }
-    this._prosessing = true;
+    this._processing = true;
     const repositories = this._filteredRepositories(this._repositories!);
     const newRepositories = repositories.map((repo) => repo.source);
     newRepositories.push(input.value);
@@ -216,7 +219,7 @@ class HassioRepositoriesDialog extends LitElement {
     } catch (err) {
       this._error = extractApiErrorMessage(err);
     }
-    this._prosessing = false;
+    this._processing = false;
   }
 
   private async _removeRepository(ev: Event) {
