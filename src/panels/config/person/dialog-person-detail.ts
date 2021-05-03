@@ -386,6 +386,7 @@ class DialogPersonDetail extends LitElement {
       ) {
         await updateUser(this.hass!, this._userId!, {
           name: this._name.trim(),
+          is_active: this._user?.is_owner ? true : undefined,
           group_ids: [
             this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER,
           ],
