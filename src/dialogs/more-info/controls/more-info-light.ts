@@ -126,7 +126,6 @@ class MoreInfoLight extends LitElement {
                       @change=${this._ctSliderChanged}
                       pin
                     ></ha-labeled-slider>
-                    <hr></hr>
                   `
                 : ""}
               ${supportsColor && (!supportsTemp || this._mode === "color")
@@ -147,72 +146,66 @@ class MoreInfoLight extends LitElement {
                         class="segmentationButton"
                       ></ha-icon-button>
                     </div>
-                    
-                    ${
-                      supportsRgbw || supportsRgbww
-                        ? html`<ha-labeled-slider
+
+                    ${supportsRgbw || supportsRgbww
+                      ? html`<ha-labeled-slider
+                          .caption=${this.hass.localize(
+                            "ui.card.light.color_brightness"
+                          )}
+                          icon="hass:brightness-7"
+                          max="100"
+                          .value=${this._colorBrightnessSliderValue ?? 100}
+                          @change=${this._colorBrightnessSliderChanged}
+                          pin
+                        ></ha-labeled-slider>`
+                      : ""}
+                    ${supportsRgbw
+                      ? html`
+                          <ha-labeled-slider
                             .caption=${this.hass.localize(
-                              "ui.card.light.color_brightness"
+                              "ui.card.light.white_value"
                             )}
-                            icon="hass:brightness-7"
+                            icon="hass:file-word-box"
                             max="100"
-                            .value=${this._colorBrightnessSliderValue ?? 100}
-                            @change=${this._colorBrightnessSliderChanged}
+                            .name=${"wv"}
+                            .value=${this._wvSliderValue}
+                            @change=${this._wvSliderChanged}
                             pin
-                          ></ha-labeled-slider>`
-                        : ""
-                    }
-                    ${
-                      supportsRgbw
-                        ? html`
-                            <ha-labeled-slider
-                              .caption=${this.hass.localize(
-                                "ui.card.light.white_value"
-                              )}
-                              icon="hass:file-word-box"
-                              max="100"
-                              .name=${"wv"}
-                              .value=${this._wvSliderValue}
-                              @change=${this._wvSliderChanged}
-                              pin
-                            ></ha-labeled-slider>
-                          `
-                        : ""
-                    }
-                    ${
-                      supportsRgbww
-                        ? html`
-                            <ha-labeled-slider
-                              .caption=${this.hass.localize(
-                                "ui.card.light.cold_white_value"
-                              )}
-                              icon="hass:file-word-box-outline"
-                              max="100"
-                              .name=${"cw"}
-                              .value=${this._cwSliderValue}
-                              @change=${this._wvSliderChanged}
-                              pin
-                            ></ha-labeled-slider>
-                            <ha-labeled-slider
-                              .caption=${this.hass.localize(
-                                "ui.card.light.warm_white_value"
-                              )}
-                              icon="hass:file-word-box"
-                              max="100"
-                              .name=${"ww"}
-                              .value=${this._wwSliderValue}
-                              @change=${this._wvSliderChanged}
-                              pin
-                            ></ha-labeled-slider>
-                          `
-                        : ""
-                    }
-                    <hr></hr>
+                          ></ha-labeled-slider>
+                        `
+                      : ""}
+                    ${supportsRgbww
+                      ? html`
+                          <ha-labeled-slider
+                            .caption=${this.hass.localize(
+                              "ui.card.light.cold_white_value"
+                            )}
+                            icon="hass:file-word-box-outline"
+                            max="100"
+                            .name=${"cw"}
+                            .value=${this._cwSliderValue}
+                            @change=${this._wvSliderChanged}
+                            pin
+                          ></ha-labeled-slider>
+                          <ha-labeled-slider
+                            .caption=${this.hass.localize(
+                              "ui.card.light.warm_white_value"
+                            )}
+                            icon="hass:file-word-box"
+                            max="100"
+                            .name=${"ww"}
+                            .value=${this._wwSliderValue}
+                            @change=${this._wvSliderChanged}
+                            pin
+                          ></ha-labeled-slider>
+                        `
+                      : ""}
                   `
                 : ""}
               ${supportsFeature(this.stateObj, SUPPORT_EFFECT) &&
               this.stateObj!.attributes.effect_list?.length
                 ? html`
+                    <hr></hr>
                     <ha-paper-dropdown-menu
                       .label=${this.hass.localize("ui.card.light.effect")}
                     >
