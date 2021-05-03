@@ -276,18 +276,9 @@ class HassioAddonConfig extends LitElement {
     this._error = undefined;
 
     try {
-      const response = await setHassioAddonOption(this.hass, this.addon.slug, {
+      await setHassioAddonOption(this.hass, this.addon.slug, {
         options: this._yamlMode ? this._editor?.value : this._options,
       });
-
-      if (response.result === "error") {
-        this._error = this.supervisor.localize(
-          "addon.failed_to_save",
-          "error",
-          extractApiErrorMessage(response)
-        );
-        eventdata.success = false;
-      }
 
       this._configHasChanged = false;
       if (this.addon?.state === "started") {
