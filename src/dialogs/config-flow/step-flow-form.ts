@@ -82,9 +82,13 @@ class StepFlowForm extends LitElement {
                 <mwc-button
                   @click=${this._submitStep}
                   .disabled=${!allRequiredInfoFilledIn}
-                  >${this.hass.localize(
-                    "ui.panel.config.integrations.config_flow.submit"
-                  )}
+                  >${this.step.last_step === false
+                    ? this.hass.localize(
+                        "ui.panel.config.integrations.config_flow.next"
+                      )
+                    : this.hass.localize(
+                        "ui.panel.config.integrations.config_flow.submit"
+                      )}
                 </mwc-button>
 
                 ${!allRequiredInfoFilledIn
