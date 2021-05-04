@@ -261,6 +261,7 @@ class MoreInfoLight extends LitElement {
       }
 
       let brightnessAdjust = 100;
+      this._brightnessAdjusted = undefined;
       if (
         stateObj.attributes.color_mode === LightColorModes.RGB &&
         !lightSupportsColorMode(stateObj, LightColorModes.RGBWW) &&
@@ -271,8 +272,6 @@ class MoreInfoLight extends LitElement {
           this._brightnessAdjusted = maxVal;
           brightnessAdjust = (this._brightnessAdjusted / 255) * 100;
         }
-      } else {
-        this._brightnessAdjusted = undefined;
       }
       this._brightnessSliderValue = Math.round(
         (stateObj.attributes.brightness * brightnessAdjust) / 255
@@ -422,7 +421,7 @@ class MoreInfoLight extends LitElement {
       255,
     ]) as [number, number, number];
 
-    this._setRgbColor(
+    this._setRgbWColor(
       this._adjustColorBrightness(
         // first normalize the value
         this._colorBrightnessSliderValue
@@ -464,7 +463,7 @@ class MoreInfoLight extends LitElement {
     return rgbColor;
   }
 
-  private _setRgbColor(rgbColor: [number, number, number]) {
+  private _setRgbWColor(rgbColor: [number, number, number]) {
     if (lightSupportsColorMode(this.stateObj!, LightColorModes.RGBWW)) {
       const rgbww_color: [number, number, number, number, number] = this
         .stateObj!.attributes.rgbww_color
@@ -490,12 +489,17 @@ class MoreInfoLight extends LitElement {
    * Called when a new color has been picked.
    * should be throttled with the 'throttle=' attribute of the color picker
    */
-  private _colorPicked(ev: CustomEvent) {
+  private _colorPicked(
+    ev: CustomEvent<{
+      hs: { h: number; s: number };
+      rgb: { r: number; g: number; b: number };
+    }>
+  ) {
     if (
       lightSupportsColorMode(this.stateObj!, LightColorModes.RGBWW) ||
       lightSupportsColorMode(this.stateObj!, LightColorModes.RGBW)
     ) {
-      this._setRgbColor(
+      this._setRgbWColor(
         this._colorBrightnessSliderValue
           ? this._adjustColorBrightness(
               [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b],
@@ -504,10 +508,10 @@ class MoreInfoLight extends LitElement {
           : [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b]
       );
     } else if (lightSupportsColorMode(this.stateObj!, LightColorModes.RGB)) {
-      const rgb_color = [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b] as [
-        number,
-        number,
-        number
+      const rgb_color: [number, number, number] = [
+        ev.detail.rgb.r,
+        ev.detail.rgb.g,
+        ev.detail.rgb.b,
       ];
       if (this._brightnessAdjusted) {
         this.hass.callService("light", "turn_on", {
