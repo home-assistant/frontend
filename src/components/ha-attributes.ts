@@ -27,13 +27,19 @@ class HaAttributes extends LitElement {
       return html``;
     }
 
+    const attributes = this.computeDisplayAttributes(
+      Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
+        this.extraFilters ? this.extraFilters.split(",") : []
+      )
+    );
+    if (attributes.length === 0) {
+      return html``;
+    }
+
     return html`
+      <hr />
       <div>
-        ${this.computeDisplayAttributes(
-          Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
-            this.extraFilters ? this.extraFilters.split(",") : []
-          )
-        ).map(
+        ${attributes.map(
           (attribute) => html`
             <div class="data-entry">
               <div class="key">${formatAttributeName(attribute)}</div>
@@ -79,6 +85,11 @@ class HaAttributes extends LitElement {
           margin: 0px;
           overflow-wrap: break-word;
           white-space: pre-line;
+        }
+        hr {
+          border-color: var(--divider-color);
+          border-bottom: none;
+          margin: 8px 0;
         }
       `,
     ];
