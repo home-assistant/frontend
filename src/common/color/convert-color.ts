@@ -110,5 +110,19 @@ export const rgb2hsv = (
   return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
 };
 
+export const hsv2rgb = (
+  hsv: [number, number, number]
+): [number, number, number] => {
+  const [h, s, v] = hsv;
+  const f = (n: number) => {
+    const k = (n + h / 60) % 6;
+    return v - v * s * Math.max(Math.min(k, 4 - k, 1), 0);
+  };
+  return [f(5), f(3), f(1)];
+};
+
 export const rgb2hs = (rgb: [number, number, number]): [number, number] =>
   rgb2hsv(rgb).slice(0, 2) as [number, number];
+
+export const hs2rgb = (hs: [number, number]): [number, number, number] =>
+  hsv2rgb([hs[0], hs[1], 255]);
