@@ -2246,6 +2246,7 @@
                         },
                         "finish": "Finalitza",
                         "loading_first_time": "Espera mentre s'instal·la la integració",
+                        "next": "Següent",
                         "not_all_required_fields": "No s'han omplert tots els camps obligatoris.",
                         "not_loaded": "No s'ha pogut carregar la integració, prova de reiniciar Home Assistant.",
                         "pick_flow_step": {

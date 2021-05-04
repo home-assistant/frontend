@@ -2246,6 +2246,7 @@
                         },
                         "finish": "Lõpeta",
                         "loading_first_time": "Palun oodake kuni sidumist paigaldatakse",
+                        "next": "Järgmine",
                         "not_all_required_fields": "Kõik nõutavad väljad pole täidetud.",
                         "not_loaded": "Sidumist ei õnnestunud laadida. Proovi taaskäivitada Home Assistant.",
                         "pick_flow_step": {
