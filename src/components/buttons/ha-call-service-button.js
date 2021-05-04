@@ -70,7 +70,12 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
           eventData.success = true;
         },
         function (err) {
-          if (err?.error?.message && err.error.message === "Connection lost") {
+          if (
+            el.domain === "homeassistant" &&
+            ["restart", "stop"].includes(el.service) &&
+            err?.error?.message &&
+            err.error.message === "Connection lost"
+          ) {
             // We expect the service call to fail with 'Connection lost' when we restart or stop
             el.$.progress.actionSuccess();
             eventData.success = true;
