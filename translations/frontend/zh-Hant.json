@@ -1744,12 +1744,18 @@
                         "nabu_casa_account": "Nabu Casa 帳號",
                         "not_connected": "未連線",
                         "remote": {
-                            "access_is_being_prepared": "遠端登入準備中，會於就緒時通知您。",
+                            "access_is_being_prepared": "遠端控制準備中，會於就緒時通知您。",
                             "certificate_info": "認證資訊",
+                            "connected": "已連線",
                             "info": "Home Assistant Cloud 雲服務提供您離家時、遠端加密連線控制。",
                             "instance_is_available": "您的裝置可透過下方連結使用",
                             "instance_will_be_available": "您的裝置將可透過下方連結使用",
                             "link_learn_how_it_works": "了解如何運作",
+                            "not_connected": "未連線",
+                            "remote_enabled": {
+                                "caption": "自動連線",
+                                "description": "開啟此選項以確定 Home Assistant 保持遠端存取功能。"
+                            },
                             "title": "遠端控制"
                         },
                         "sign_out": "登出",

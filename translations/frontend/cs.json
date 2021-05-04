@@ -561,9 +561,10 @@
             },
             "light": {
                 "brightness": "Jas",
+                "color_brightness": "Jas barev",
                 "color_temperature": "Teplota barvy",
                 "effect": "Efekt",
-                "white_value": "Hodnota bílé"
+                "white_value": "Jas bílé"
             },
             "lock": {
                 "code": "Kód",
@@ -886,6 +887,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Dokumentace integrace",
                 "required": "Toto pole je povinné",
                 "service_data": "Data služby",
                 "target": "Cíle",
@@ -1727,10 +1729,15 @@
                         "remote": {
                             "access_is_being_prepared": "Připravuje se vzdálený přístup. Až bude připraven, dáme vám vědět.",
                             "certificate_info": "Informace o certifikátu",
+                            "connected": "Připojeno",
                             "info": "Home Assistant Cloud poskytuje zabezpečené vzdálené připojení k vaší instanci zatímco jste mimo domov.",
                             "instance_is_available": "Vaše instance je k dispozici na ",
                             "instance_will_be_available": "Vaše instance bude k dispozici na",
                             "link_learn_how_it_works": "Zjistěte, jak to funguje",
+                            "not_connected": "Nepřipojeno",
+                            "remote_enabled": {
+                                "caption": "Automaticky se připojit"
+                            },
                             "title": "Vzdálené ovládání"
                         },
                         "sign_out": "Odhlásit se",
@@ -2790,6 +2797,9 @@
                         "manufacturer_code_override": "Přepsání kódu výrobce",
                         "value": "Hodnota"
                     },
+                    "configuration_page": {
+                        "update_button": "Aktualizovat nastavení"
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Nastavení dokončeno",
                         "CONFIGURED_status_text": "Inicializuji",
@@ -3089,7 +3099,6 @@
                         "copy_id": "Zkopírovat ID do schránky",
                         "current_entities": "Současné entity",
                         "description1": "Nastavte stav zařízení v Home Assistant.",
-                        "description2": "Stav skutečného zařízení se nezmění.",
                         "entity": "Entita",
                         "filter_attributes": "Filtrovat atributy",
                         "filter_entities": "Filtrovat entity",

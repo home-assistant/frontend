@@ -1746,10 +1746,16 @@
                         "remote": {
                             "access_is_being_prepared": "Trwa przygotowywanie dostępu zdalnego. Powiadomimy Cię, gdy będzie gotowy.",
                             "certificate_info": "Informacje o certyfikacie",
+                            "connected": "Połączono",
                             "info": "Chmura Home Assistant umożliwia bezpieczny zdalny dostęp do instancji Home Assistanta z dala od domu.",
                             "instance_is_available": "Twoja instancja jest dostępna pod adresem",
                             "instance_will_be_available": "Twoja instancja będzie dostępna pod adresem",
                             "link_learn_how_it_works": "Dowiedz się, jak to działa",
+                            "not_connected": "Brak połączenia",
+                            "remote_enabled": {
+                                "caption": "Połącz automatycznie",
+                                "description": "Włącz tę opcję, aby mieć pewność, że ta instancja Home Assistant jest zawsze dostępna zdalnie."
+                            },
                             "title": "Dostęp zdalny"
                         },
                         "sign_out": "Wyloguj",
@@ -2240,6 +2246,7 @@
                         },
                         "finish": "Zakończ",
                         "loading_first_time": "Proszę czekać, trwa instalowanie integracji...",
+                        "next": "Dalej",
                         "not_all_required_fields": "Nie wszystkie wymagane pola są wypełnione.",
                         "not_loaded": "Nie udało się wczytać integracji, spróbuj ponownie uruchomić Home Assistanta.",
                         "pick_flow_step": {

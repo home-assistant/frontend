@@ -710,7 +710,7 @@
                     "text": "Gib den Namen des neuen Bereichs ein.",
                     "title": "Neuen Bereich hinzufügen"
                 },
-                "add_new": "Neuen Bereich hinzufügen...",
+                "add_new": "Neuen Bereich hinzufügen",
                 "area": "Bereich",
                 "clear": "Löschen",
                 "no_areas": "Du hast keine Bereiche",
@@ -1746,10 +1746,16 @@
                         "remote": {
                             "access_is_being_prepared": "Der Fernzugriff wird vorbereitet. Wir werden dich benachrichtigen, wenn alles fertig ist.",
                             "certificate_info": "Zertifikatsinformationen",
+                            "connected": "Verbunden",
                             "info": "Home Assistant Cloud bietet eine sichere Remote-Verbindung zu Ihrer Instanz, wenn Sie nicht zu Hause sind.",
                             "instance_is_available": "Deine Instanz ist verfügbar unter",
                             "instance_will_be_available": "Deine Instanz wird verfügbar sein unter",
                             "link_learn_how_it_works": "Lerne, wie es funktioniert",
+                            "not_connected": "Nicht verbunden",
+                            "remote_enabled": {
+                                "caption": "Automatisch verbinden",
+                                "description": "Aktiviere diese Option um sicherzustellen dass deine Home Assistant Instanz immer aus der Ferne erreichbar ist."
+                            },
                             "title": "Fernsteuerung"
                         },
                         "sign_out": "Abmelden",
@@ -2160,7 +2166,7 @@
                     "license": "Veröffentlicht unter der Apache 2.0 Lizenz",
                     "path_configuration": "Pfad zu configuration.yaml: {path}",
                     "server": "Server",
-                    "setup_time": "Installationszeit",
+                    "setup_time": "Setup-Dauer",
                     "source": "Quelle:",
                     "system_health_error": "System Health-Komponente wird nicht geladen. Füge 'system_health:' zu configuration.yaml hinzu",
                     "system_health": {
@@ -2206,7 +2212,7 @@
                         "logs": "Logs",
                         "manuf": "von {manufacturer}",
                         "no_area": "Kein Bereich",
-                        "not_loaded": "Nicht geladen, prüfe die {logs_link}",
+                        "not_loaded": "Nicht geladen",
                         "options": "Optionen",
                         "provided_by_custom_integration": "Bereitgestellt durch eine benutzerdefinierte Integration",
                         "reload": "Neu laden",

@@ -102,7 +102,7 @@ class MoreInfoLight extends LitElement {
           : ""}
         ${this.stateObj.state === "on"
           ? html`
-              ${supportsTemp || supportsColor ? html`<hr></hr>` : ""}
+              ${supportsTemp || supportsColor ? html`<hr />` : ""}
               ${supportsTemp && supportsColor
                 ? html`<ha-button-toggle-group
                     fullWidth
@@ -126,7 +126,6 @@ class MoreInfoLight extends LitElement {
                       @change=${this._ctSliderChanged}
                       pin
                     ></ha-labeled-slider>
-                    <hr></hr>
                   `
                 : ""}
               ${supportsColor && (!supportsTemp || this._mode === "color")
@@ -147,72 +146,66 @@ class MoreInfoLight extends LitElement {
                         class="segmentationButton"
                       ></ha-icon-button>
                     </div>
-                    
-                    ${
-                      supportsRgbw || supportsRgbww
-                        ? html`<ha-labeled-slider
+
+                    ${supportsRgbw || supportsRgbww
+                      ? html`<ha-labeled-slider
+                          .caption=${this.hass.localize(
+                            "ui.card.light.color_brightness"
+                          )}
+                          icon="hass:brightness-7"
+                          max="100"
+                          .value=${this._colorBrightnessSliderValue ?? 100}
+                          @change=${this._colorBrightnessSliderChanged}
+                          pin
+                        ></ha-labeled-slider>`
+                      : ""}
+                    ${supportsRgbw
+                      ? html`
+                          <ha-labeled-slider
                             .caption=${this.hass.localize(
-                              "ui.card.light.color_brightness"
+                              "ui.card.light.white_value"
                             )}
-                            icon="hass:brightness-7"
+                            icon="hass:file-word-box"
                             max="100"
-                            .value=${this._colorBrightnessSliderValue ?? 100}
-                            @change=${this._colorBrightnessSliderChanged}
+                            .name=${"wv"}
+                            .value=${this._wvSliderValue}
+                            @change=${this._wvSliderChanged}
                             pin
-                          ></ha-labeled-slider>`
-                        : ""
-                    }
-                    ${
-                      supportsRgbw
-                        ? html`
-                            <ha-labeled-slider
-                              .caption=${this.hass.localize(
-                                "ui.card.light.white_value"
-                              )}
-                              icon="hass:file-word-box"
-                              max="100"
-                              .name=${"wv"}
-                              .value=${this._wvSliderValue}
-                              @change=${this._wvSliderChanged}
-                              pin
-                            ></ha-labeled-slider>
-                          `
-                        : ""
-                    }
-                    ${
-                      supportsRgbww
-                        ? html`
-                            <ha-labeled-slider
-                              .caption=${this.hass.localize(
-                                "ui.card.light.cold_white_value"
-                              )}
-                              icon="hass:file-word-box-outline"
-                              max="100"
-                              .name=${"cw"}
-                              .value=${this._cwSliderValue}
-                              @change=${this._wvSliderChanged}
-                              pin
-                            ></ha-labeled-slider>
-                            <ha-labeled-slider
-                              .caption=${this.hass.localize(
-                                "ui.card.light.warm_white_value"
-                              )}
-                              icon="hass:file-word-box"
-                              max="100"
-                              .name=${"ww"}
-                              .value=${this._wwSliderValue}
-                              @change=${this._wvSliderChanged}
-                              pin
-                            ></ha-labeled-slider>
-                          `
-                        : ""
-                    }
-                    <hr></hr>
+                          ></ha-labeled-slider>
+                        `
+                      : ""}
+                    ${supportsRgbww
+                      ? html`
+                          <ha-labeled-slider
+                            .caption=${this.hass.localize(
+                              "ui.card.light.cold_white_value"
+                            )}
+                            icon="hass:file-word-box-outline"
+                            max="100"
+                            .name=${"cw"}
+                            .value=${this._cwSliderValue}
+                            @change=${this._wvSliderChanged}
+                            pin
+                          ></ha-labeled-slider>
+                          <ha-labeled-slider
+                            .caption=${this.hass.localize(
+                              "ui.card.light.warm_white_value"
+                            )}
+                            icon="hass:file-word-box"
+                            max="100"
+                            .name=${"ww"}
+                            .value=${this._wwSliderValue}
+                            @change=${this._wvSliderChanged}
+                            pin
+                          ></ha-labeled-slider>
+                        `
+                      : ""}
                   `
                 : ""}
               ${supportsFeature(this.stateObj, SUPPORT_EFFECT) &&
               this.stateObj!.attributes.effect_list?.length
                 ? html`
+                    <hr />
                     <ha-paper-dropdown-menu
                       .label=${this.hass.localize("ui.card.light.effect")}
                     >
@@ -261,6 +254,7 @@ class MoreInfoLight extends LitElement {
       }
 
       let brightnessAdjust = 100;
+      this._brightnessAdjusted = undefined;
       if (
         stateObj.attributes.color_mode === LightColorModes.RGB &&
         !lightSupportsColorMode(stateObj, LightColorModes.RGBWW) &&
@@ -271,8 +265,6 @@ class MoreInfoLight extends LitElement {
           this._brightnessAdjusted = maxVal;
           brightnessAdjust = (this._brightnessAdjusted / 255) * 100;
         }
-      } else {
-        this._brightnessAdjusted = undefined;
       }
       this._brightnessSliderValue = Math.round(
         (stateObj.attributes.brightness * brightnessAdjust) / 255
@@ -422,7 +414,7 @@ class MoreInfoLight extends LitElement {
       255,
     ]) as [number, number, number];
 
-    this._setRgbColor(
+    this._setRgbWColor(
       this._adjustColorBrightness(
         // first normalize the value
         this._colorBrightnessSliderValue
@@ -464,7 +456,7 @@ class MoreInfoLight extends LitElement {
     return rgbColor;
   }
 
-  private _setRgbColor(rgbColor: [number, number, number]) {
+  private _setRgbWColor(rgbColor: [number, number, number]) {
     if (lightSupportsColorMode(this.stateObj!, LightColorModes.RGBWW)) {
       const rgbww_color: [number, number, number, number, number] = this
         .stateObj!.attributes.rgbww_color
@@ -490,12 +482,17 @@ class MoreInfoLight extends LitElement {
    * Called when a new color has been picked.
    * should be throttled with the 'throttle=' attribute of the color picker
    */
-  private _colorPicked(ev: CustomEvent) {
+  private _colorPicked(
+    ev: CustomEvent<{
+      hs: { h: number; s: number };
+      rgb: { r: number; g: number; b: number };
+    }>
+  ) {
     if (
       lightSupportsColorMode(this.stateObj!, LightColorModes.RGBWW) ||
       lightSupportsColorMode(this.stateObj!, LightColorModes.RGBW)
     ) {
-      this._setRgbColor(
+      this._setRgbWColor(
         this._colorBrightnessSliderValue
           ? this._adjustColorBrightness(
               [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b],
@@ -504,10 +501,10 @@ class MoreInfoLight extends LitElement {
           : [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b]
       );
     } else if (lightSupportsColorMode(this.stateObj!, LightColorModes.RGB)) {
-      const rgb_color = [ev.detail.rgb.r, ev.detail.rgb.g, ev.detail.rgb.b] as [
-        number,
-        number,
-        number
+      const rgb_color: [number, number, number] = [
+        ev.detail.rgb.r,
+        ev.detail.rgb.g,
+        ev.detail.rgb.b,
       ];
       if (this._brightnessAdjusted) {
         this.hass.callService("light", "turn_on", {
@@ -567,7 +564,7 @@ class MoreInfoLight extends LitElement {
       }
 
       ha-button-toggle-group {
-        margin: 8px 0px;
+        margin-bottom: 8px;
       }
 
       ha-color-picker {
@@ -592,7 +589,7 @@ class MoreInfoLight extends LitElement {
       hr {
         border-color: var(--divider-color);
         border-bottom: none;
-        margin: 8px 0;
+        margin: 16px 0;
       }
     `;
   }
