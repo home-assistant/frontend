@@ -6,7 +6,7 @@ on:
       - published
 
 env:
-  WHEELS_TAG: 3.7-alpine3.11
+  WHEELS_TAG: 3.8-alpine3.12
   PYTHON_VERSION: 3.7
   NODE_VERSION: 12.1
 
