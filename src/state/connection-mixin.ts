@@ -84,7 +84,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               err.error?.code === ERR_CONNECTION_LOST &&
               serviceCallWillDisconnect(domain, service)
             ) {
-              throw err;
+              return;
             }
             if (__DEV__) {
               // eslint-disable-next-line no-console
