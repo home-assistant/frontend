@@ -560,7 +560,7 @@ class MoreInfoLight extends LitElement {
       }
 
       ha-button-toggle-group {
-        margin: 8px 0px;
+        margin-bottom: 8px;
       }
 
       ha-color-picker {
