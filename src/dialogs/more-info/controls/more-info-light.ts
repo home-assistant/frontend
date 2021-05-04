@@ -102,7 +102,7 @@ class MoreInfoLight extends LitElement {
           : ""}
         ${this.stateObj.state === "on"
           ? html`
-              ${supportsTemp || supportsColor ? html`<hr></hr>` : ""}
+              ${supportsTemp || supportsColor ? html`<hr />` : ""}
               ${supportsTemp && supportsColor
                 ? html`<ha-button-toggle-group
                     fullWidth
@@ -205,7 +205,7 @@ class MoreInfoLight extends LitElement {
               ${supportsFeature(this.stateObj, SUPPORT_EFFECT) &&
               this.stateObj!.attributes.effect_list?.length
                 ? html`
-                    <hr></hr>
+                    <hr />
                     <ha-paper-dropdown-menu
                       .label=${this.hass.localize("ui.card.light.effect")}
                     >
@@ -560,7 +560,7 @@ class MoreInfoLight extends LitElement {
       }
 
       ha-button-toggle-group {
-        margin: 8px 0px;
+        margin-bottom: 8px;
       }
 
       ha-color-picker {
@@ -585,7 +585,7 @@ class MoreInfoLight extends LitElement {
       hr {
         border-color: var(--divider-color);
         border-bottom: none;
-        margin: 8px 0;
+        margin: 16px 0;
       }
     `;
   }
