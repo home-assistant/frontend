@@ -1198,11 +1198,20 @@
             },
             "zha_reconfigure_device": {
                 "attribute": "Attributt",
+                "battery_device_warning": "Du må vekke batteridrevne enheter før du starter omkonfigureringsprosessen. Se enhetens håndbok for instruksjoner om hvordan du vekker enheten.",
+                "bind_header": "Bindende",
                 "button_hide": "Skjul detaljer",
                 "button_show": "Vis detaljer",
+                "cluster_header": "Klynge",
+                "configuration_complete": "Enhetskonfigurering fullført.",
+                "configuration_failed": "Enhetskonfigurasjonen mislyktes. Ytterligere informasjon kan være tilgjengelig i loggene.",
                 "configuring_alt": "Konfigurerer",
                 "heading": "Konfigurerer enheten på nytt",
+                "in_progress": "Enheten konfigureres på nytt. Dette kan ta litt tid.",
+                "introduction": "Konfigurer en enhet på nytt på Zigbee-nettverket. Bruk denne funksjonen hvis enheten ikke fungerer som den skal.",
+                "min_max_change": "min./maks./endring",
                 "reporting_header": "Rapportering",
+                "run_in_background": "Du kan lukke denne dialogen, og omkonfigurasjonen vil fortsette i bakgrunnen.",
                 "start_reconfiguration": "Start rekonfigurasjon"
             }
         },
@@ -1282,6 +1291,7 @@
                         "linked_entities_caption": "Entiteter",
                         "name": "Navn",
                         "name_required": "Navn er påkrevd",
+                        "no_linked_entities": "Det er ingen enheter knyttet til dette området.",
                         "unknown_error": "Ukjent feil",
                         "update": "Oppdater"
                     },
@@ -1734,7 +1744,7 @@
                         "nabu_casa_account": "Nabu Casa konto",
                         "not_connected": "Ikke tilkoblet",
                         "remote": {
-                            "access_is_being_prepared": "Ekstern tilgang forberedes. Vi vil varsle deg når den er klar.",
+                            "access_is_being_prepared": "Fjernkontroll forberedes. Vi vil varsle deg når den er klar.",
                             "certificate_info": "Sertifikatinformasjon",
                             "connected": "Tilkoblet",
                             "info": "Home Assistant Cloud gir en sikker ekstern tilkobling til forekomsten din mens du er borte fra hjemmet.",
@@ -1743,7 +1753,8 @@
                             "link_learn_how_it_works": "Lær hvordan det fungerer",
                             "not_connected": "Ikke tilkoblet",
                             "remote_enabled": {
-                                "caption": "Koble til automatisk"
+                                "caption": "Koble til automatisk",
+                                "description": "Aktiver dette alternativet for å sikre at Home Assistant-forekomsten alltid er eksternt tilgjengelig."
                             },
                             "title": "Fjernkontroll"
                         },
@@ -2155,6 +2166,7 @@
                     "license": "Publisert under Apache 2.0-lisensen",
                     "path_configuration": "Bane til configuration.yaml: {path}",
                     "server": "core",
+                    "setup_time": "Oppsettstid",
                     "source": "Kilder:",
                     "system_health_error": "System tilstand komponenten er ikke lastet inn. Legg til 'system_health:' i configuration.yaml",
                     "system_health": {
@@ -2936,6 +2948,11 @@
                         "node_ready": "Node klar",
                         "node_status": "Node status",
                         "zwave_info": "Z-Wave Informasjon"
+                    },
+                    "logs": {
+                        "log_level": "Loggnivå",
+                        "subscribed_to_logs": "Abonnerer på Z-Wave JS-loggmeldinger ...",
+                        "title": "Z-Wave JS-logger"
                     },
                     "navigation": {
                         "logs": "Logger",
