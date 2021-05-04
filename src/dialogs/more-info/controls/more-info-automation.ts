@@ -65,7 +65,7 @@ class MoreInfoAutomation extends LitElement {
       hr {
         border-color: var(--divider-color);
         border-bottom: none;
-        margin: 8px 0;
+        margin: 16px 0;
       }
     `;
   }
