@@ -203,7 +203,7 @@ export const setHassioAddonOption = async (
     return response;
   }
 
-  return await hass.callApi<HassioResponse<any>>(
+  return hass.callApi<HassioResponse<any>>(
     "POST",
     `hassio/addons/${slug}/options`,
     data
