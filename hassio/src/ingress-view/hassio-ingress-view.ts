@@ -103,7 +103,7 @@ class HassioIngressView extends LitElement {
         if (!addonInfo.ingress) {
           await showAlertDialog(this, {
             text: this.supervisor.localize("my.error_addon_no_ingress"),
-            title: requestedAddon,
+            title: addonInfo.name,
           });
           history.back();
         } else {
@@ -111,7 +111,6 @@ class HassioIngressView extends LitElement {
         }
       }
     }
-    this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
 
   protected updated(changedProps: PropertyValues) {
