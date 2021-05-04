@@ -4,13 +4,14 @@ import { FrontendLocaleData } from "../../data/translation";
 import { toLocaleTimeStringSupportsOptions } from "./check_options_support";
 import { useAmPm } from "./use_am_pm";
 
-const formatTimeMem = memoizeOne((locale: FrontendLocaleData) => {
-  return new Intl.DateTimeFormat(locale.language, {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: useAmPm(locale),
-  });
-});
+const formatTimeMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(locale.language, {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: useAmPm(locale),
+    })
+);
 
 export const formatTime = toLocaleTimeStringSupportsOptions
   ? (dateObj: Date, locale: FrontendLocaleData) =>
@@ -18,14 +19,15 @@ export const formatTime = toLocaleTimeStringSupportsOptions
   : (dateObj: Date, locale: FrontendLocaleData) =>
       format(dateObj, "shortTime" + useAmPm(locale) ? " A" : "");
 
-const formatTimeWithSecondsMem = memoizeOne((locale: FrontendLocaleData) => {
-  return new Intl.DateTimeFormat(locale.language, {
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: useAmPm(locale),
-  });
-});
+const formatTimeWithSecondsMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(locale.language, {
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: useAmPm(locale),
+    })
+);
 
 export const formatTimeWithSeconds = toLocaleTimeStringSupportsOptions
   ? (dateObj: Date, locale: FrontendLocaleData) =>
@@ -33,14 +35,15 @@ export const formatTimeWithSeconds = toLocaleTimeStringSupportsOptions
   : (dateObj: Date, locale: FrontendLocaleData) =>
       format(dateObj, "mediumTime" + useAmPm(locale) ? " A" : "");
 
-const formatTimeWeekdayMem = memoizeOne((locale: FrontendLocaleData) => {
-  return new Intl.DateTimeFormat(locale.language, {
-    weekday: "long",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: useAmPm(locale),
-  });
-});
+const formatTimeWeekdayMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(locale.language, {
+      weekday: "long",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: useAmPm(locale),
+    })
+);
 
 export const formatTimeWeekday = toLocaleTimeStringSupportsOptions
   ? (dateObj: Date, locale: FrontendLocaleData) =>
