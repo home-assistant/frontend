@@ -69,10 +69,16 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
           el.$.progress.actionSuccess();
           eventData.success = true;
         },
-        function () {
+        function (err) {
+          if (err?.error?.message && err.error.message === "Connection lost") {
+            // We expect the service call to fail with 'Connection lost' when we restart or stop
+            el.$.progress.actionSuccess();
+            eventData.success = true;
+          } else {
+            el.$.progress.actionError();
+            eventData.success = false;
+          }
           el.progress = false;
-          el.$.progress.actionError();
-          eventData.success = false;
         }
       )
       .then(function () {
