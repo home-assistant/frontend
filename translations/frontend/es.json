@@ -1744,7 +1744,7 @@
                         "nabu_casa_account": "Cuenta Nabu Casa",
                         "not_connected": "No conectado",
                         "remote": {
-                            "access_is_being_prepared": "Se está preparando el acceso remoto. Te avisaremos cuando esté listo.",
+                            "access_is_being_prepared": "Se está preparando el control remoto. Te avisaremos cuando esté listo.",
                             "certificate_info": "Información del certificado",
                             "connected": "Conectado",
                             "info": "Home Assistant Cloud proporciona una conexión remota segura a tu instancia mientras estás fuera de casa.",
@@ -1754,7 +1754,7 @@
                             "not_connected": "No conectado",
                             "remote_enabled": {
                                 "caption": "Conectar automáticamente",
-                                "description": "Habilite esta opción para asegurarse de que la instancia de Home Assistant siempre es accesible de forma remota."
+                                "description": "Habilita esta opción para asegurarte de que tu instancia de Home Assistant está siempre accesible de forma remota."
                             },
                             "title": "Control remoto"
                         },
@@ -2246,6 +2246,7 @@
                         },
                         "finish": "Terminar",
                         "loading_first_time": "Por favor, espera mientras la integración está siendo instalada",
+                        "next": "Siguiente",
                         "not_all_required_fields": "No se han completado todos los campos requeridos.",
                         "not_loaded": "La integración no se ha podido cargar, intenta reiniciar Home Assistant.",
                         "pick_flow_step": {

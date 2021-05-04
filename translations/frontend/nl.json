@@ -1208,7 +1208,7 @@
                 "configuring_alt": "Configureren",
                 "heading": "Apparaat opnieuw configureren",
                 "in_progress": "Het apparaat wordt opnieuw geconfigureerd. Dit kan wat tijd kosten.",
-                "introduction": "Herconfigureer een apparaat op je Zigbee netwerk. Gebruik deze functie als uw apparaat niet correct functioneert.",
+                "introduction": "Herconfigureer een apparaat op uw Zigbee netwerk. Gebruik deze functie als uw apparaat niet correct functioneert.",
                 "min_max_change": "min/max/verandering",
                 "reporting_header": "Rapporteren",
                 "run_in_background": "U kunt dit dialoogvenster sluiten en de herconfiguratie wordt op de achtergrond voortgezet.",
@@ -1746,10 +1746,16 @@
                         "remote": {
                             "access_is_being_prepared": "Toegang op afstand wordt voorbereid. We zullen u op de hoogte brengen wanneer het klaar is.",
                             "certificate_info": "Certificaatinfo",
+                            "connected": "Verbonden",
                             "info": "Home Assistant Cloud biedt een veilige externe verbinding met uw exemplaar terwijl u niet thuis bent.",
                             "instance_is_available": "Uw exemplaar is beschikbaar op",
                             "instance_will_be_available": "Uw exemplaar zal beschikbaar zijn op",
                             "link_learn_how_it_works": "Leer hoe het werkt",
+                            "not_connected": "Niet verbonden",
+                            "remote_enabled": {
+                                "caption": "Automatisch verbinden",
+                                "description": "Schakel deze optie in om ervoor te zorgen dat uw Home Assistant instantie altijd op afstand toegankelijk is."
+                            },
                             "title": "Afstand Bediening"
                         },
                         "sign_out": "Afmelden",
@@ -1855,7 +1861,7 @@
                         "password": "Wachtwoord",
                         "password_error_msg": "Wachtwoorden moeten uit ten minste 8 tekens bestaan",
                         "sign_in": "Aanmelden",
-                        "start_trial": "Start je gratis proefperiode van 1 maand",
+                        "start_trial": "Start uw gratis proefperiode van 1 maand",
                         "title": "Cloud aanmelding",
                         "trial_info": "Geen betalingsinformatie nodig"
                     },
@@ -1868,7 +1874,7 @@
                         "feature_google_home": "Integratie met Google Assistent",
                         "feature_remote_control": "Beheer van Home Assistant van buitenaf",
                         "feature_webhook_apps": "Eenvoudige integratie met webhook gebaseerde apps zoals OwnTracks",
-                        "headline": "Start je gratis proefperiode",
+                        "headline": "Start uw gratis proefperiode",
                         "information": "Maak een account om uw gratis proefperiode van een maand te starten met Home Assistant Cloud. Geen betalingsinformatie nodig.",
                         "information2": "De proefversie geeft u toegang tot alle voordelen van Home Assistant Cloud, waaronder:",
                         "information3": "Deze service wordt uitgevoerd door onze partner",
@@ -2240,6 +2246,7 @@
                         },
                         "finish": "Voltooien",
                         "loading_first_time": "Even geduld a.u.b. terwijl de integratie wordt geïnstalleerd",
+                        "next": "Volgende",
                         "not_all_required_fields": "Niet alle verplichte velden zijn ingevuld.",
                         "not_loaded": "De integratie kan niet worden geladen, probeer Home Assistant opnieuw te starten.",
                         "pick_flow_step": {
@@ -2275,7 +2282,7 @@
                     "integration": "integratie",
                     "integration_not_found": "Integratie niet gevonden.",
                     "new": "Stel een nieuwe integratie in",
-                    "no_integrations": "Het lijkt erop dat je nog geen integraties hebt geconfigureerd. Klik op de knop hieronder om uw eerste integratie toe te voegen!",
+                    "no_integrations": "Het lijkt erop dat u nog geen integraties heeft geconfigureerd. Klik op de knop hieronder om uw eerste integratie toe te voegen!",
                     "none": "Er is nog niets geconfigureerd",
                     "none_found": "Geen integraties gevonden",
                     "none_found_detail": "Pas uw zoekcriteria aan.",
@@ -2683,7 +2690,7 @@
                             "confirm_restart": "Weet je zeker dat je Home Assistant opnieuw wilt starten?",
                             "confirm_stop": "Weet je zeker dat je Home Assistant wilt afsluiten?",
                             "heading": "Serverbeheer",
-                            "introduction": "Beheer je Home Assistant-server... vanuit Home Assistant.",
+                            "introduction": "Beheer uw Home Assistant-server... vanuit Home Assistant.",
                             "restart": "Herstarten",
                             "stop": "Stop"
                         },
