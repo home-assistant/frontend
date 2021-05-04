@@ -26,6 +26,7 @@ class MoreInfoAutomation extends LitElement {
     }
 
     return html`
+      <hr />
       <div class="flex">
         <div>${this.hass.localize("ui.card.automation.last_triggered")}:</div>
         <ha-relative-time
@@ -60,6 +61,11 @@ class MoreInfoAutomation extends LitElement {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
+      }
+      hr {
+        border-color: var(--divider-color);
+        border-bottom: none;
+        margin: 16px 0;
       }
     `;
   }
