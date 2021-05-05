@@ -404,6 +404,7 @@ class MoreInfoLight extends LitElement {
       return;
     }
 
+    const oldValue = this._colorBrightnessSliderValue;
     this._colorBrightnessSliderValue = value;
 
     value = (value * 255) / 100;
@@ -417,12 +418,8 @@ class MoreInfoLight extends LitElement {
     this._setRgbWColor(
       this._adjustColorBrightness(
         // first normalize the value
-        this._colorBrightnessSliderValue
-          ? this._adjustColorBrightness(
-              rgb,
-              (this._colorBrightnessSliderValue * 255) / 100,
-              true
-            )
+        oldValue
+          ? this._adjustColorBrightness(rgb, (oldValue * 255) / 100, true)
           : rgb,
         value
       )
