@@ -410,7 +410,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             const attributeValue = value.attributes[key];
 
             if (
-              attributeValue !== null &&
+              attributeValue !== undefined &&
               JSON.stringify(attributeValue).toLowerCase().includes(valueFilter)
             ) {
               return true;
