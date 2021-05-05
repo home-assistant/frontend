@@ -1746,10 +1746,16 @@
                         "remote": {
                             "access_is_being_prepared": "È in fase di preparazione l'accesso remoto. Ti avviseremo quando sarà pronto.",
                             "certificate_info": "Informazioni sul certificato",
+                            "connected": "Connesso",
                             "info": "Home Assistant Cloud fornisce una connessione remota sicura alla tua istanza mentre sei fuori casa.",
                             "instance_is_available": "La tua istanza è disponibile su",
                             "instance_will_be_available": "La tua istanza sarà disponibile su",
                             "link_learn_how_it_works": "Scopri come funziona",
+                            "not_connected": "Non Connesso",
+                            "remote_enabled": {
+                                "caption": "Collegati automaticamente",
+                                "description": "Abilita questa opzione per assicurarti che la tua istanza di Home Assistant sia sempre accessibile da remoto."
+                            },
                             "title": "Telecomando"
                         },
                         "sign_out": "Esci",
@@ -2160,6 +2166,7 @@
                     "license": "Pubblicato sotto la licenza Apache 2.0",
                     "path_configuration": "Percorso del file configuration.yaml: {path}",
                     "server": "server",
+                    "setup_time": "Tempo di preparazione",
                     "source": "Sorgenti:",
                     "system_health_error": "Il componente System Health non è caricato. Aggiungere 'system_health:' a configuration.yaml",
                     "system_health": {
@@ -2239,6 +2246,7 @@
                         },
                         "finish": "Finito",
                         "loading_first_time": "Si prega di attendere durante l'installazione dell'integrazione",
+                        "next": "Prossimo",
                         "not_all_required_fields": "Non tutti i campi obbligatori sono compilati.",
                         "not_loaded": "L'integrazione non può essere caricata, prova a riavviare Home Assistant.",
                         "pick_flow_step": {
@@ -2944,6 +2952,7 @@
                     },
                     "logs": {
                         "log_level": "Livello di registro",
+                        "subscribed_to_logs": "Sottoscrizione al registro dei messaggi di Z-Wave JS ...",
                         "title": "Registri Z-Wave JS"
                     },
                     "navigation": {

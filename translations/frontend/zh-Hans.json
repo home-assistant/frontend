@@ -2246,6 +2246,7 @@
                         },
                         "finish": "完成",
                         "loading_first_time": "正在安装集成，请稍候",
+                        "next": "下一步",
                         "not_all_required_fields": "请填写所有必填字段",
                         "not_loaded": "集成未能加载，请尝试重启 Home Assistant。",
                         "pick_flow_step": {

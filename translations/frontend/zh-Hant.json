@@ -2246,6 +2246,7 @@
                         },
                         "finish": "完成",
                         "loading_first_time": "請稍候、正在安裝整合",
+                        "next": "下一步",
                         "not_all_required_fields": "所有所需欄位都需要填寫。",
                         "not_loaded": "整合無法載入，請重啟 Home Assistant。",
                         "pick_flow_step": {

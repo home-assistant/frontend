@@ -2983,6 +2983,10 @@
                         "dead": "Onbereikbaar",
                         "unknown": "Onbekend"
                     },
+                    "reinterview_node": {
+                        "interview_complete": "Apparaat interview voltooid.",
+                        "interview_failed": "Het apparaat interview is mislukt. Aanvullende informatie is mogelijk beschikbaar in de logboeken."
+                    },
                     "remove_node": {
                         "cancel_exclusion": "Uitsluiting annuleren",
                         "controller_in_exclusion_mode": "Uw Z-Wave controller bevindt zich nu in de uitsluitingsmodus.",
