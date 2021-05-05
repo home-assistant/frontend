@@ -154,7 +154,7 @@ class MoreInfoLight extends LitElement {
                           )}
                           icon="hass:brightness-7"
                           max="100"
-                          .value=${this._colorBrightnessSliderValue ?? 100}
+                          .value=${this._colorBrightnessSliderValue}
                           @change=${this._colorBrightnessSliderChanged}
                           pin
                         ></ha-labeled-slider>`
@@ -282,16 +282,10 @@ class MoreInfoLight extends LitElement {
         stateObj.attributes.color_mode === LightColorModes.RGBWW
           ? Math.round((stateObj.attributes.rgbww_color[4] * 100) / 255)
           : undefined;
-      this._colorBrightnessSliderValue =
-        stateObj.attributes.color_mode === LightColorModes.RGBWW ||
-        stateObj.attributes.color_mode === LightColorModes.RGBW ||
-        stateObj.attributes.color_mode === LightColorModes.RGB
-          ? Math.round(
-              (Math.max(...getLightCurrentModeRgbColor(stateObj).slice(0, 3)) *
-                100) /
-                255
-            )
-          : undefined;
+      this._colorBrightnessSliderValue = Math.round(
+        (Math.max(...getLightCurrentModeRgbColor(stateObj).slice(0, 3)) * 100) /
+          255
+      );
 
       this._colorPickerColor = getLightCurrentModeRgbColor(stateObj).slice(
         0,
