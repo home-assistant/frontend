@@ -191,6 +191,10 @@ class HassioAddonDashboard extends LitElement {
   }
 
   private async _apiCalled(ev): Promise<void> {
+    if (!ev.detail.success) {
+      return;
+    }
+
     const pathSplit: string[] = ev.detail.path?.split("/");
 
     if (!pathSplit || pathSplit.length === 0) {

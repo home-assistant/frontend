@@ -262,6 +262,11 @@ class HassioAddonConfig extends LitElement {
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
     const button = ev.currentTarget as any;
+    const eventdata = {
+      success: true,
+      response: undefined,
+      path: "options",
+    };
     button.progress = true;
 
     this._error = undefined;
@@ -272,23 +277,19 @@ class HassioAddonConfig extends LitElement {
       });
 
       this._configHasChanged = false;
-      const eventdata = {
-        success: true,
-        response: undefined,
-        path: "options",
-      };
-      fireEvent(this, "hass-api-called", eventdata);
       if (this.addon?.state === "started") {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err) {
       this._error = this.supervisor.localize(
-        "addon.configuration.options.failed_to_save",
+        "addon.failed_to_save",
         "error",
         extractApiErrorMessage(err)
       );
+      eventdata.success = false;
     }
     button.progress = false;
+    fireEvent(this, "hass-api-called", eventdata);
   }
 
   static get styles(): CSSResult[] {
