@@ -142,7 +142,8 @@ class HassioSnapshotDialog extends LitElement {
                   this._restoreHass = (ev.target as PaperCheckboxElement).checked!;
                 }}"
               >
-                Home Assistant ${this._snapshot.homeassistant}
+                Home Assistant
+                <span class="version">(${this._snapshot.homeassistant})</span>
               </paper-checkbox>`
           : ""}
         ${this._folders.length
@@ -181,6 +182,7 @@ class HassioSnapshotDialog extends LitElement {
                         )}"
                     >
                       ${item.name}
+                      <span class="version">(${item.version})</span>
                     </paper-checkbox>
                   `
                 )}
@@ -267,6 +269,9 @@ class HassioSnapshotDialog extends LitElement {
         }
         .no-margin-top {
           margin-top: 0;
+        }
+        span.version {
+          color: var(--secondary-text-color);
         }
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);

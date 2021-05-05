@@ -3878,6 +3878,7 @@
       "upload_snapshot": "Upload snapshot",
       "create_snapshot": "Create snapshot",
       "create": "Create",
+      "created": "Created",
       "name": "Name",
       "type": "Type",
       "security": "Security",
