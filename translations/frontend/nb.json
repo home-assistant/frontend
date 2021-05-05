@@ -2246,6 +2246,7 @@
                         },
                         "finish": "Fullfør",
                         "loading_first_time": "Vennligst vent mens integrasjonen installeres",
+                        "next": "Neste",
                         "not_all_required_fields": "Ikke alle obligatoriske felt er fylt ut.",
                         "not_loaded": "Integrasjonen kunne ikke lastes, prøv å starte Home Assistant på nytt.",
                         "pick_flow_step": {
