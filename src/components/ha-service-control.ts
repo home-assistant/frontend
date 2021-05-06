@@ -134,7 +134,6 @@ export class HaServiceControl extends LitElement {
       service?: string,
       serviceDomains?: HassServices
     ): ExtHassService | undefined => {
-      console.log(service, serviceDomains);
       if (!service || !serviceDomains) {
         return undefined;
       }
