@@ -66,43 +66,40 @@ export class HassioSnapshots extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
-    if (this.hass) {
+    if (this.hass && this.isConnected) {
       this.refreshData();
     }
     this._firstUpdatedCalled = true;
   }
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer => {
-      const collums: Record<string, any> = {
-        name: {
-          title: this.supervisor?.localize("snapshot.name"),
-          sortable: true,
-          filterable: true,
-          grows: true,
-          template: (entry: string, snapshot: HassioSnapshot) =>
-            entry || snapshot.slug,
-        },
-      };
-      if (!narrow) {
-        collums.date = {
-          title: this.supervisor?.localize("snapshot.created"),
-          width: "15%",
-          direction: "desc",
-          sortable: true,
-          template: (entry: string) =>
-            relativeTime(new Date(entry), this.hass.localize),
-        };
-        collums.type = {
-          title: this.supervisor?.localize("snapshot.type"),
-          width: "15%",
-          sortable: true,
-          template: (entry: string) =>
-            entry === "partial" ? "Partial" : "Full",
-        };
-      }
-      return collums;
-    }
+    (narrow: boolean): DataTableColumnContainer => ({
+      name: {
+        title: this.supervisor?.localize("snapshot.name") || "",
+        sortable: true,
+        filterable: true,
+        grows: true,
+        template: (entry: string, snapshot: any) => entry || snapshot.slug,
+      },
+      date: {
+        title: this.supervisor?.localize("snapshot.created") || "",
+        width: "15%",
+        direction: "desc",
+        hidden: narrow,
+        filterable: true,
+        sortable: true,
+        template: (entry: string) =>
+          relativeTime(new Date(entry), this.hass.localize),
+      },
+      type: {
+        title: this.supervisor?.localize("snapshot.type") || "",
+        width: "15%",
+        hidden: narrow,
+        filterable: true,
+        sortable: true,
+        template: (entry: string) => (entry === "partial" ? "Partial" : "Full"),
+      },
+    })
   );
 
   protected render(): TemplateResult {
@@ -114,6 +111,8 @@ export class HassioSnapshots extends LitElement {
         .tabs=${supervisorTabs}
         .hass=${this.hass}
         .localizeFunc=${this.supervisor.localize}
+        .searchLabel=${this.supervisor.localize("common.search")}
+        .noDataText=${this.supervisor.localize("common.no_data")}
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.narrow)}

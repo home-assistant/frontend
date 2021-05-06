@@ -3,9 +3,6 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
-import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
 import {
   css,
   CSSResult,
@@ -16,9 +13,15 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { formatDate } from "../../../../src/common/datetime/format_date";
+import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { compare } from "../../../../src/common/string/compare";
 import "../../../../src/components/buttons/ha-progress-button";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-formfield";
+import "../../../../src/components/ha-radio";
+import type { HaRadio } from "../../../../src/components/ha-radio";
+import "../../../../src/components/ha-settings-row";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   createHassioFullSnapshot,
@@ -29,7 +32,11 @@ import {
 } from "../../../../src/data/hassio/snapshot";
 import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { PolymerChangedEvent } from "../../../../src/polymer-types";
-import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
+import {
+  haStyle,
+  haStyleDialog,
+  haStyleScrollbar,
+} from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { HassioCreateSnapshotDialogParams } from "./show-dialog-hassio-create-snapshot";
 
@@ -69,7 +76,7 @@ class HassioCreateSnapshotDialog extends LitElement {
 
   @internalProperty() private _error = "";
 
-  public async showDialog(params: HassioCreateSnapshotDialogParams) {
+  public showDialog(params: HassioCreateSnapshotDialogParams) {
     this._dialogParams = params;
     this._addonList = this._dialogParams.supervisor.supervisor.addons
       .map((addon) => ({
@@ -81,8 +88,9 @@ class HassioCreateSnapshotDialog extends LitElement {
       .sort((a, b) => compare(a.name, b.name));
   }
 
-  private _closeDialog() {
+  public closeDialog() {
     this._dialogParams = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
@@ -91,95 +99,130 @@ class HassioCreateSnapshotDialog extends LitElement {
     }
     return html`
       <ha-dialog
+        class="ha-scrollbar"
         open
-        @closing=${this._closeDialog}
+        @closing=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
           this._dialogParams.supervisor.localize("snapshot.create_snapshot")
         )}
       >
-        <paper-input
-          name="snapshotName"
-          .label=${this._dialogParams.supervisor.localize("snapshot.name")}
-          .value=${this._snapshotName}
-          @value-changed=${this._handleTextValueChanged}
-        >
-        </paper-input>
-        ${this._dialogParams.supervisor.localize("snapshot.type")}:
-        <paper-radio-group
-          name="snapshotType"
-          type="${this._dialogParams.supervisor.localize("snapshot.type")}"
-          .selected=${this._snapshotType}
-          @selected-changed=${this._handleRadioValueChanged}
-        >
-          <paper-radio-button name="full">
-            ${this._dialogParams.supervisor.localize("snapshot.full_snapshot")}
-          </paper-radio-button>
-          <paper-radio-button name="partial">
-            ${this._dialogParams.supervisor.localize(
-              "snapshot.partial_snapshot"
-            )}
-          </paper-radio-button>
-        </paper-radio-group>
-        ${this._snapshotType === "full"
-          ? undefined
-          : html`
-              ${this._dialogParams.supervisor.localize("snapshot.folders")}:
-              ${this._folderList.map(
-                (folder, idx) => html`
-                  <paper-checkbox
-                    .idx=${idx}
-                    .checked=${folder.checked}
-                    @checked-changed=${this._folderChecked}
-                  >
-                    ${this._dialogParams!.supervisor.localize(
-                      `snapshot.folder.${folder.slug}`
-                    )}
-                  </paper-checkbox>
-                `
+        <div class="content">
+          <paper-input
+            name="snapshotName"
+            .label=${this._dialogParams.supervisor.localize("snapshot.name")}
+            .value=${this._snapshotName}
+            @value-changed=${this._handleTextValueChanged}
+          >
+          </paper-input>
+          <div class="snapshot-types">
+            <div>
+              ${this._dialogParams.supervisor.localize("snapshot.type")}:
+            </div>
+            <ha-formfield
+              .label=${this._dialogParams.supervisor.localize(
+                "snapshot.full_snapshot"
               )}
-              ${this._dialogParams.supervisor.localize("snapshot.addons")}:
-              ${this._addonList.map(
-                (addon, idx) => html`
-                  <paper-checkbox
-                    .idx=${idx}
-                    .checked=${addon.checked}
-                    @checked-changed=${this._addonChecked}
-                  >
-                    ${addon.name}
-                    <span class="version">(${addon.version})</span>
-                  </paper-checkbox>
-                `
-              )}
-            `}
-        ${this._dialogParams.supervisor.localize("snapshot.security")}:
-        <paper-checkbox
-          name="snapshotHasPassword"
-          .checked=${this._snapshotHasPassword}
-          @checked-changed=${this._handleCheckboxValueChanged}
-        >
-          ${this._dialogParams.supervisor.localize(
-            "snapshot.password_protection"
-          )}
-        </paper-checkbox>
-        ${this._snapshotHasPassword
-          ? html`
-              <paper-input
-                .label=${this._dialogParams.supervisor.localize(
-                  "snapshot.password"
-                )}
-                type="password"
-                name="snapshotPassword"
-                .value=${this._snapshotPassword}
-                @value-changed=${this._handleTextValueChanged}
+            >
+              <ha-radio
+                @change=${this._handleRadioValueChanged}
+                value="full"
+                name="snapshotType"
+                .checked=${this._snapshotType === "full"}
               >
-              </paper-input>
-            `
-          : undefined}
-        ${this._error !== ""
-          ? html` <p class="error">${this._error}</p> `
-          : undefined}
-        <mwc-button slot="secondaryAction" @click=${this._closeDialog}>
+              </ha-radio>
+            </ha-formfield>
+            <ha-formfield
+              .label=${this._dialogParams.supervisor.localize(
+                "snapshot.partial_snapshot"
+              )}
+            >
+              <ha-radio
+                @change=${this._handleRadioValueChanged}
+                value="partial"
+                name="snapshotType"
+                .checked=${this._snapshotType === "partial"}
+              >
+              </ha-radio>
+            </ha-formfield>
+          </div>
+
+          ${this._snapshotType === "full"
+            ? undefined
+            : html`
+                ${this._dialogParams.supervisor.localize("snapshot.folders")}:
+                <div class="checkbox-section">
+                  ${this._folderList.map(
+                    (folder, idx) => html`
+                      <div class="checkbox-line">
+                        <ha-checkbox
+                          .idx=${idx}
+                          .checked=${folder.checked}
+                          @change=${this._folderChecked}
+                          slot="prefix"
+                        >
+                        </ha-checkbox>
+                        <span>
+                          ${this._dialogParams!.supervisor.localize(
+                            `snapshot.folder.${folder.slug}`
+                          )}
+                        </span>
+                      </div>
+                    `
+                  )}
+                </div>
+
+                ${this._dialogParams.supervisor.localize("snapshot.addons")}:
+                <div class="checkbox-section">
+                  ${this._addonList.map(
+                    (addon, idx) => html`
+                      <div class="checkbox-line">
+                        <ha-checkbox
+                          .idx=${idx}
+                          .checked=${addon.checked}
+                          @change=${this._addonChecked}
+                          slot="prefix"
+                        >
+                        </ha-checkbox>
+                        <span>
+                          ${addon.name}<span class="version">
+                            (${addon.version})
+                          </span>
+                        </span>
+                      </div>
+                    `
+                  )}
+                </div>
+              `}
+          ${this._dialogParams.supervisor.localize("snapshot.security")}:
+          <paper-checkbox
+            name="snapshotHasPassword"
+            .checked=${this._snapshotHasPassword}
+            @checked-changed=${this._handleCheckboxValueChanged}
+          >
+            ${this._dialogParams.supervisor.localize(
+              "snapshot.password_protection"
+            )}
+          </paper-checkbox>
+          ${this._snapshotHasPassword
+            ? html`
+                <paper-input
+                  .label=${this._dialogParams.supervisor.localize(
+                    "snapshot.password"
+                  )}
+                  type="password"
+                  name="snapshotPassword"
+                  .value=${this._snapshotPassword}
+                  @value-changed=${this._handleTextValueChanged}
+                >
+                </paper-input>
+              `
+            : undefined}
+          ${this._error !== ""
+            ? html` <p class="error">${this._error}</p> `
+            : undefined}
+        </div>
+        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
           ${this._dialogParams.supervisor.localize("common.close")}
         </mwc-button>
         <ha-progress-button slot="primaryAction" @click=${this._createSnapshot}>
@@ -199,9 +242,9 @@ class HassioCreateSnapshotDialog extends LitElement {
     this[`_${input.name}`] = input.checked;
   }
 
-  private _handleRadioValueChanged(ev: PolymerChangedEvent<string>) {
-    const input = ev.currentTarget as PaperRadioGroupElement;
-    this[`_${input.getAttribute("name")}`] = ev.detail.value;
+  private _handleRadioValueChanged(ev: CustomEvent) {
+    const input = ev.currentTarget as HaRadio;
+    this[`_${input.name}`] = input.value;
   }
 
   private _folderChecked(ev) {
@@ -242,14 +285,7 @@ class HassioCreateSnapshotDialog extends LitElement {
       button.progress = false;
       return;
     }
-    const name =
-      this._snapshotName ||
-      new Date().toLocaleDateString(navigator.language, {
-        weekday: "long",
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
+    const name = this._snapshotName || formatDate(new Date(), this.hass.locale);
 
     try {
       if (this._snapshotType === "full") {
@@ -275,7 +311,7 @@ class HassioCreateSnapshotDialog extends LitElement {
       }
 
       this._dialogParams!.onCreate();
-      this._closeDialog();
+      this.closeDialog();
     } catch (err) {
       this._error = extractApiErrorMessage(err);
     }
@@ -286,6 +322,7 @@ class HassioCreateSnapshotDialog extends LitElement {
     return [
       haStyle,
       haStyleDialog,
+      haStyleScrollbar,
       css`
         paper-checkbox {
           display: block;
@@ -308,6 +345,13 @@ class HassioCreateSnapshotDialog extends LitElement {
         }
         span.version {
           color: var(--secondary-text-color);
+        }
+        .checkbox-section {
+          display: grid;
+        }
+        .checkbox-line {
+          display: inline-flex;
+          align-items: center;
         }
       `,
     ];
