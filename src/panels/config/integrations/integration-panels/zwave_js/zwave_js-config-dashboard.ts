@@ -57,7 +57,7 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   @state() private _icon = mdiCircle;
 
-  @internalProperty() private _dataCollectionOptIn?: boolean;
+  @state() private _dataCollectionOptIn?: boolean;
 
   protected firstUpdated() {
     if (this.hass) {

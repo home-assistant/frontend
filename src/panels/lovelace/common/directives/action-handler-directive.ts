@@ -1,6 +1,7 @@
 /* eslint-disable max-classes-per-file */
 import "@material/mwc-ripple";
 import type { Ripple } from "@material/mwc-ripple";
+import { noChange } from "lit-html";
 import {
   AttributePart,
   directive,
@@ -262,7 +263,8 @@ export const actionHandlerBind = (
 export const actionHandler = directive(
   class extends Directive {
     update(part: AttributePart, [options]: DirectiveParameters<this>) {
-      actionHandlerBind(part.element, options);
+      actionHandlerBind(part.element as ActionHandlerElement, options);
+      return noChange;
     }
 
     render(_options?: ActionHandlerOptions) {}

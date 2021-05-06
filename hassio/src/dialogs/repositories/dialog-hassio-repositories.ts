@@ -43,7 +43,7 @@ class HassioRepositoriesDialog extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _prosessing = false;
+  @state() private _processing = false;
 
   @state() private _error?: string;
 

@@ -51,7 +51,7 @@ export class HaServiceControl extends LitElement {
     data?: Record<string, any>;
   };
 
-  @internalProperty() private _value!: this["value"];
+  @state() private _value!: this["value"];
 
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 

@@ -1,8 +1,9 @@
+import { noChange } from "lit-html";
 import {
+  ChildPart,
   Directive,
   directive,
   DirectiveParameters,
-  ElementPart,
   PartInfo,
   PartType,
   // eslint-disable-next-line import/extensions
@@ -10,36 +11,37 @@ import {
 
 export const dynamicElement = directive(
   class extends Directive {
+    private _element?: HTMLElement;
+
     constructor(partInfo: PartInfo) {
       super(partInfo);
-      if (partInfo.type !== PartType.ELEMENT) {
+      if (partInfo.type !== PartType.CHILD) {
         throw new Error(
           "dynamicElementDirective can only be used in content bindings"
         );
       }
     }
 
-    update(part: ElementPart, [tag, properties]: DirectiveParameters<this>) {
-      const element = part.element as HTMLElement | undefined;
-      if (tag === element?.localName) {
+    update(_part: ChildPart, [tag, properties]: DirectiveParameters<this>) {
+      if (this._element && this._element.localName === tag) {
         if (properties) {
           Object.entries(properties).forEach(([key, value]) => {
-            element![key] = value;
+            this._element![key] = value;
           });
         }
-        return;
+        return noChange;
       }
-      this.render(tag, properties);
+      return this.render(tag, properties);
     }
 
     render(tag: string, properties?: Record<string, any>): HTMLElement {
-      const element = document.createElement(tag);
+      this._element = document.createElement(tag);
       if (properties) {
         Object.entries(properties).forEach(([key, value]) => {
-          element![key] = value;
+          this._element![key] = value;
         });
       }
-      return element;
+      return this._element;
     }
   }
 );
