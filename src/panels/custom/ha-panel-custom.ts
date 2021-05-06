@@ -26,6 +26,10 @@ export class HaPanelCustom extends ReactiveElement {
 
   private _setProperties?: (props: Record<string, unknown>) => void | undefined;
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   // Since navigate fires events on `window`, we need to expose this as a function
   // to allow custom panels to forward their location changes to the main window
   // instead of their iframe window.

@@ -45,6 +45,10 @@ class EntityFilterBadge extends ReactiveElement implements LovelaceBadge {
     this._config = config;
   }
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   protected shouldUpdate(changedProperties: PropertyValues): boolean {
     if (
       changedProperties.has("_config") ||

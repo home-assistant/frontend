@@ -12,6 +12,10 @@ class MoreInfoContent extends ReactiveElement {
 
   private _detachedChild?: ChildNode;
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   // This is not a lit element, but an updating element, so we implement update
   protected update(changedProps: PropertyValues): void {
     super.update(changedProps);

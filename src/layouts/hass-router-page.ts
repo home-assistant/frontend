@@ -72,6 +72,10 @@ export class HassRouterPage extends ReactiveElement {
         };
   });
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   protected update(changedProps: PropertyValues) {
     super.update(changedProps);
 

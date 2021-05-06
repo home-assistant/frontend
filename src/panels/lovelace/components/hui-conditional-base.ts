@@ -23,6 +23,10 @@ export class HuiConditionalBase extends ReactiveElement {
 
   protected _element?: LovelaceCard | LovelaceRow;
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   protected validateConfig(
     config: ConditionalCardConfig | ConditionalRowConfig
   ): void {

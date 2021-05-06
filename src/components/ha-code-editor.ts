@@ -62,6 +62,14 @@ export class HaCodeEditor extends ReactiveElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    // Lit 2.0 will create the shadowRoot for us, and adopt the styles, check if it was created
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: "open" }).innerHTML = `<style>
+      :host(.error-state) div.cm-wrap .cm-gutters {
+        border-color: var(--error-state-color, red);
+      }
+    </style>`;
+    }
     if (!this.codemirror) {
       return;
     }
@@ -118,14 +126,6 @@ export class HaCodeEditor extends ReactiveElement {
   private async _load(): Promise<void> {
     this._loadedCodeMirror = await loadCodeMirror();
 
-    const shadowRoot = this.attachShadow({ mode: "open" });
-
-    shadowRoot!.innerHTML = `<style>
-      :host(.error-state) div.cm-wrap .cm-gutters {
-        border-color: var(--error-state-color, red);
-      }
-    </style>`;
-
     this.codemirror = new this._loadedCodeMirror.EditorView({
       state: this._loadedCodeMirror.EditorState.create({
         doc: this._value,
@@ -157,8 +157,8 @@ export class HaCodeEditor extends ReactiveElement {
           ),
         ],
       }),
-      root: shadowRoot,
-      parent: shadowRoot,
+      root: this.shadowRoot!,
+      parent: this.shadowRoot!,
     });
   }
 
@@ -178,6 +178,7 @@ export class HaCodeEditor extends ReactiveElement {
     fireEvent(this, "value-changed", { value: this._value });
   }
 
+  // Only Lit 2.0 will use this
   static get styles(): CSSResultGroup {
     return css`
       :host(.error-state) div.cm-wrap .cm-gutters {

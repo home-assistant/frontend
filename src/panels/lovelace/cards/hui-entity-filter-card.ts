@@ -87,6 +87,10 @@ class EntityFilterCard extends ReactiveElement implements LovelaceCard {
     this._element = this._createCardElement(this._baseCardConfig);
   }
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (this._element) {
       this._element.hass = this.hass;

@@ -89,6 +89,10 @@ export class HUIView extends ReactiveElement {
     return element;
   }
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 

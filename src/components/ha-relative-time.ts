@@ -27,6 +27,10 @@ class HaRelativeTime extends ReactiveElement {
     }
   }
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._updateRelative();

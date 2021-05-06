@@ -28,6 +28,10 @@ export class HuiCardPreview extends ReactiveElement {
     });
   }
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   protected update(changedProperties: PropertyValues) {
     super.update(changedProperties);
 
