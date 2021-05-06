@@ -19,4 +19,4 @@ const isEntityIdOrAll = (value: string): boolean => {
 };
 
 export const entityIdOrAll = () =>
-  refine(string(), "entity id (domain.entity or all)", isEntityIdOrAll);
+  refine(string(), "entity ID (domain.entity or all)", isEntityIdOrAll);
