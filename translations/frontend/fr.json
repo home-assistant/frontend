@@ -1263,7 +1263,7 @@
             "started": "Home Assistant a démarré !",
             "starting": "Home Assistant est en cours de démarrage, tout ne sera pas disponible tant qu’il n’aura pas terminé.",
             "triggered": "{name} déclenché",
-            "wrapping_up_startup": "En terminant le démarrage, tout ne sera pas disponible tant qu'il ne sera pas terminé."
+            "wrapping_up_startup": "Finalisation du démarrage, tout ne sera pas disponible tant qu'il ne sera pas terminé."
         },
         "panel": {
             "config": {
@@ -1746,10 +1746,16 @@
                         "remote": {
                             "access_is_being_prepared": "L'accès à distance est en préparation. Nous vous informerons quand ce sera prêt.",
                             "certificate_info": "Informations sur le certificat",
+                            "connected": "Connecté",
                             "info": "Home Assistant Cloud fournit une connexion à distance sécurisée à votre instance lorsque vous n'êtes pas chez vous.",
                             "instance_is_available": "Votre instance est disponible à l'adresse",
                             "instance_will_be_available": "Votre instance sera disponible sur",
                             "link_learn_how_it_works": "Apprenez comment ça marche",
+                            "not_connected": "Non connecté",
+                            "remote_enabled": {
+                                "caption": "Se connecter automatiquement",
+                                "description": "Activez cette option pour vous assurer que votre instance de Home Assistant est toujours accessible à distance."
+                            },
                             "title": "Contrôle à distance"
                         },
                         "sign_out": "Déconnexion",
@@ -2240,6 +2246,7 @@
                         },
                         "finish": "Terminer",
                         "loading_first_time": "Veuillez patienter pendant que l'intégration est en cours d'installation",
+                        "next": "Suivant",
                         "not_all_required_fields": "Tous les champs obligatoires ne sont pas renseignés.",
                         "not_loaded": "Cette intégration ne peut être chargée, essayez de redémarrer Home Assistant",
                         "pick_flow_step": {

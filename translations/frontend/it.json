@@ -1744,7 +1744,7 @@
                         "nabu_casa_account": "Account Nabu Casa",
                         "not_connected": "Non Connesso",
                         "remote": {
-                            "access_is_being_prepared": "È in fase di preparazione l'accesso remoto. Ti avviseremo quando sarà pronto.",
+                            "access_is_being_prepared": "Il controllo remoto è in fase di preparazione. Ti avviseremo quando sarà pronto.",
                             "certificate_info": "Informazioni sul certificato",
                             "connected": "Connesso",
                             "info": "Home Assistant Cloud fornisce una connessione remota sicura alla tua istanza mentre sei fuori casa.",
