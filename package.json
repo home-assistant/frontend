@@ -144,7 +144,7 @@
     "workbox-precaching": "^6.1.5",
     "workbox-routing": "^6.1.5",
     "workbox-strategies": "^6.1.5",
-    "xss": "^1.0.6"
+    "xss": "^1.0.9"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
