@@ -13,6 +13,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import { UNIT_C } from "../../../common/const";
 import "../../../components/ha-card";
 import "../../../components/map/ha-location-editor";
@@ -62,7 +63,11 @@ class ConfigCoreForm extends LitElement {
             <ha-location-editor
               class="flex"
               .hass=${this.hass}
-              .location=${this._locationValue}
+              .location=${this._locationValue(
+                this._location,
+                this.hass.config.latitude,
+                this.hass.config.longitude
+              )}
               @change=${this._locationChanged}
             ></ha-location-editor>
           </div>
@@ -165,11 +170,9 @@ class ConfigCoreForm extends LitElement {
     input.inputElement.appendChild(createTimezoneListEl());
   }
 
-  private get _locationValue() {
-    return this._location !== undefined
-      ? this._location
-      : [Number(this.hass.config.latitude), Number(this.hass.config.longitude)];
-  }
+  private _locationValue = memoizeOne(
+    (location, lat, lng) => location || [Number(lat), Number(lng)]
+  );
 
   private get _elevationValue() {
     return this._elevation !== undefined
@@ -209,7 +212,11 @@ class ConfigCoreForm extends LitElement {
   private async _save() {
     this._working = true;
     try {
-      const location = this._locationValue;
+      const location = this._locationValue(
+        this._location,
+        this.hass.config.latitude,
+        this.hass.config.longitude
+      );
       await saveCoreConfig(this.hass, {
         latitude: location[0],
         longitude: location[1],
