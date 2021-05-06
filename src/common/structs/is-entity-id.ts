@@ -8,7 +8,7 @@ const isEntityId = (value: string): boolean => {
 };
 
 export const entityId = () =>
-  refine(string(), "entity id (domain.entity)", isEntityId);
+  refine(string(), "entity ID (domain.entity)", isEntityId);
 
 const isEntityIdOrAll = (value: string): boolean => {
   if (value === "all") {
