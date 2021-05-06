@@ -1,6 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-checkbox/paper-checkbox";
-import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
@@ -17,6 +15,8 @@ import { formatDate } from "../../../../src/common/datetime/format_date";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { compare } from "../../../../src/common/string/compare";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-checkbox";
+import type { HaCheckbox } from "../../../../src/components/ha-checkbox";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-radio";
@@ -237,9 +237,9 @@ class HassioCreateSnapshotDialog extends LitElement {
     this[`_${input.name}`] = ev.detail.value;
   }
 
-  private _handleCheckboxValueChanged(ev) {
-    const input = ev.currentTarget as PaperCheckboxElement;
-    this[`_${input.name}`] = input.checked;
+  private _handleCheckboxValueChanged(ev: CustomEvent) {
+    const input = ev.currentTarget as HaCheckbox;
+    this._snapshotHasPassword = input.checked;
   }
 
   private _handleRadioValueChanged(ev: CustomEvent) {
