@@ -252,7 +252,13 @@
   },
   "lint-staged": {
     "linters": {
-      "*.{js,ts,json,css,md}": [
+      "*.ts": "bash -c tsc",
+      "*.{js,ts}": [
+        "eslint --fix",
+        "prettier --write",
+        "git add"
+      ],
+      "*.{json,css,md,html}": [
         "prettier --write",
         "git add"
       ]
