@@ -115,13 +115,17 @@ class MoreInfoCamera extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      :host {
+        display: block;
+        position: relative;
+      }
       paper-checkbox {
         position: absolute;
         top: 0;
         right: 0;
         background-color: var(--secondary-background-color);
         padding: 5px;
-        border-bottom-left-radius: 6px;
+        border-bottom-left-radius: 4px;
       }
     `;
   }
