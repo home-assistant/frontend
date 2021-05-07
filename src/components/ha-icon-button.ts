@@ -18,9 +18,10 @@ export class HaIconButton extends LitElement {
 
   @property({ type: String }) label = "";
 
-  protected createRenderRoot() {
-    return this.attachShadow({ mode: "open", delegatesFocus: true });
-  }
+  static shadowRootOptions: ShadowRootInit = {
+    mode: "open",
+    delegatesFocus: true,
+  };
 
   protected render(): TemplateResult {
     return html`
