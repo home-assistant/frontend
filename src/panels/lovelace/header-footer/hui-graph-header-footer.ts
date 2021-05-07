@@ -11,6 +11,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-circular-progress";
+import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -24,8 +25,7 @@ const MINUTE = 60000;
 const HOUR = MINUTE * 60;
 
 @customElement("hui-graph-header-footer")
-export class HuiGraphHeaderFooter
-  extends LitElement
+export class HuiGraphHeaderFooter extends LitElement
   implements LovelaceHeaderFooter {
   public static async getConfigElement(): Promise<LovelaceHeaderFooterEditor> {
     await import("../editor/config-elements/hui-graph-footer-editor");
@@ -190,12 +190,21 @@ export class HuiGraphHeaderFooter
       this._stateHistory!.push(...stateHistory[0]);
     }
 
+    const limits =
+      this._config!.limits === undefined &&
+      this._stateHistory?.some(
+        (entity) => entity.attributes?.unit_of_measurement === "%"
+      )
+        ? { min: 0, max: 100 }
+        : this._config!.limits;
+
     this._coordinates =
       coordinates(
         this._stateHistory,
         this._config!.hours_to_show!,
         500,
-        this._config!.detail!
+        this._config!.detail!,
+        limits
       ) || [];
 
     this._date = endTime;

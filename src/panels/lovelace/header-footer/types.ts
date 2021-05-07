@@ -15,6 +15,10 @@ export interface GraphHeaderFooterConfig extends LovelaceHeaderFooterConfig {
   entity: string;
   detail?: number;
   hours_to_show?: number;
+  limits?: {
+    min: number;
+    max: number;
+  };
 }
 
 export interface PictureHeaderFooterConfig extends LovelaceHeaderFooterConfig {
