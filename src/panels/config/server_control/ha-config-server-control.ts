@@ -4,10 +4,10 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -35,9 +35,9 @@ export class HaConfigServerControl extends LitElement {
 
   @property() public showAdvanced!: boolean;
 
-  @internalProperty() private _validating = false;
+  @state() private _validating = false;
 
-  @internalProperty() private _reloadableDomains: string[] = [];
+  @state() private _reloadableDomains: string[] = [];
 
   private _validateLog = "";
 
@@ -242,7 +242,7 @@ export class HaConfigServerControl extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

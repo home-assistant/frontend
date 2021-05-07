@@ -10,10 +10,10 @@ import {
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -52,9 +52,9 @@ class HaSceneDashboard extends LitElement {
 
   @property() private _activeFilters?: string[];
 
-  @internalProperty() private _filteredScenes?: string[] | null;
+  @state() private _filteredScenes?: string[] | null;
 
-  @internalProperty() private _filterValue?;
+  @state() private _filterValue?;
 
   private _scenes = memoizeOne(
     (scenes: SceneEntity[], filteredScenes?: string[] | null) => {
@@ -252,7 +252,7 @@ class HaSceneDashboard extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

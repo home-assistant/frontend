@@ -6,9 +6,9 @@ import "@polymer/paper-item/paper-item-body";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -46,9 +46,9 @@ class HaPanelProfile extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private _refreshTokens?: RefreshToken[];
+  @state() private _refreshTokens?: RefreshToken[];
 
-  @internalProperty() private _coreUserData?: CoreFrontendUserData | null;
+  @state() private _coreUserData?: CoreFrontendUserData | null;
 
   private _unsubCoreData?: UnsubscribeFunc;
 
@@ -228,7 +228,7 @@ class HaPanelProfile extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

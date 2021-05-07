@@ -2,10 +2,10 @@ import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCircle, mdiCloseCircle } from "@mdi/js";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -44,13 +44,13 @@ class OZWNetworkDashboard extends LitElement {
 
   @property() public ozwInstance?: number;
 
-  @internalProperty() private _network?: OZWInstance;
+  @state() private _network?: OZWInstance;
 
-  @internalProperty() private _statistics?: OZWNetworkStatistics;
+  @state() private _statistics?: OZWNetworkStatistics;
 
-  @internalProperty() private _status = "unknown";
+  @state() private _status = "unknown";
 
-  @internalProperty() private _icon = mdiCircle;
+  @state() private _icon = mdiCircle;
 
   protected firstUpdated() {
     if (!this.ozwInstance) {
@@ -172,7 +172,7 @@ class OZWNetworkDashboard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

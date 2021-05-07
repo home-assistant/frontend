@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -17,7 +17,7 @@ import { getPath } from "../common/graph/get-path";
 export class HuiGraphBase extends LitElement {
   @property() public coordinates?: any;
 
-  @internalProperty() private _path?: string;
+  @state() private _path?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -59,7 +59,7 @@ export class HuiGraphBase extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

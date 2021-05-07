@@ -1,7 +1,7 @@
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -23,7 +23,7 @@ export class HuiButtonsHeaderFooter
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public getCardSize(): number {
     return 3;

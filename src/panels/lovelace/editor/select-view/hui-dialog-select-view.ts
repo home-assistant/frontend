@@ -1,10 +1,10 @@
 import "@polymer/paper-item/paper-item";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
 } from "lit-element";
@@ -27,13 +27,13 @@ import type { SelectViewDialogParams } from "./show-select-view-dialog";
 export class HuiDialogSelectView extends LitElement {
   public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: SelectViewDialogParams;
+  @state() private _params?: SelectViewDialogParams;
 
-  @internalProperty() private _dashboards: LovelaceDashboard[] = [];
+  @state() private _dashboards: LovelaceDashboard[] = [];
 
-  @internalProperty() private _urlPath?: string | null;
+  @state() private _urlPath?: string | null;
 
-  @internalProperty() private _config?: LovelaceConfig;
+  @state() private _config?: LovelaceConfig;
 
   public showDialog(params: SelectViewDialogParams): void {
     this._config = params.lovelaceConfig;
@@ -138,7 +138,7 @@ export class HuiDialogSelectView extends LitElement {
     this.closeDialog();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

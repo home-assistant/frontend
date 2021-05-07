@@ -3,10 +3,10 @@ import "@polymer/paper-input/paper-input";
 import { HassEvent } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -20,11 +20,11 @@ import { HomeAssistant } from "../../../types";
 class EventSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _eventType = "";
+  @state() private _eventType = "";
 
-  @internalProperty() private _subscribed?: () => void;
+  @state() private _subscribed?: () => void;
 
-  @internalProperty() private _events: Array<{
+  @state() private _events: Array<{
     id: number;
     event: HassEvent;
   }> = [];
@@ -118,7 +118,7 @@ class EventSubscribeCard extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       form {
         display: block;

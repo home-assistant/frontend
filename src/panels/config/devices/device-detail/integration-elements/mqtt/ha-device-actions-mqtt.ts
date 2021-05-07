@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -46,7 +46,7 @@ export class HaDeviceActionsMqtt extends LitElement {
     await showMQTTDeviceDebugInfoDialog(this, { device });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -2,7 +2,7 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -49,7 +49,7 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-checkbox {
         display: block;

@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
 } from "lit-element";
@@ -27,7 +27,7 @@ export const createErrorBadgeConfig = (error) => ({
 export class HuiErrorBadge extends LitElement implements LovelaceBadge {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ErrorBadgeConfig;
+  @state() private _config?: ErrorBadgeConfig;
 
   public setConfig(config: ErrorBadgeConfig): void {
     this._config = config;
@@ -47,7 +47,7 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         --ha-label-badge-color: var(--label-badge-red, #fce588);

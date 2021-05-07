@@ -13,9 +13,9 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -85,15 +85,15 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @internalProperty() private _config?: AutomationConfig;
+  @state() private _config?: AutomationConfig;
 
-  @internalProperty() private _dirty = false;
+  @state() private _dirty = false;
 
-  @internalProperty() private _errors?: string;
+  @state() private _errors?: string;
 
-  @internalProperty() private _entityId?: string;
+  @state() private _entityId?: string;
 
-  @internalProperty() private _mode: "gui" | "yaml" = "gui";
+  @state() private _mode: "gui" | "yaml" = "gui";
 
   @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
 
@@ -519,7 +519,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._saveAutomation();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

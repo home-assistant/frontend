@@ -1,14 +1,21 @@
-import { customElement, property, UpdatingElement } from "lit-element";
+import { customElement, property, ReactiveElement } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 
 @customElement("ha-markdown-element")
-class HaMarkdownElement extends UpdatingElement {
+class HaMarkdownElement extends ReactiveElement {
   @property() public content?;
 
   @property({ type: Boolean }) public allowSvg = false;
 
   @property({ type: Boolean }) public breaks = false;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: "open" });
+    }
+  }
 
   protected update(changedProps) {
     super.update(changedProps);
@@ -18,7 +25,7 @@ class HaMarkdownElement extends UpdatingElement {
   }
 
   private async _render() {
-    this.innerHTML = await renderMarkdown(
+    this.shadowRoot!.innerHTML = await renderMarkdown(
       this.content,
       {
         breaks: this.breaks,
@@ -32,10 +39,8 @@ class HaMarkdownElement extends UpdatingElement {
     this._resize();
 
     const walker = document.createTreeWalker(
-      this,
-      1 /* SHOW_ELEMENT */,
-      null,
-      false
+      this.shadowRoot!,
+      1 /* SHOW_ELEMENT */
     );
 
     while (walker.nextNode()) {

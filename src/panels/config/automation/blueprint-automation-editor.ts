@@ -4,9 +4,9 @@ import "@polymer/paper-input/paper-textarea";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
-  internalProperty,
+  state,
   LitElement,
   property,
 } from "lit-element";
@@ -44,7 +44,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
 
   @property() public stateObj?: HassEntity;
 
-  @internalProperty() private _blueprints?: Blueprints;
+  @state() private _blueprints?: Blueprints;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -270,7 +270,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

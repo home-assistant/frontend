@@ -6,7 +6,7 @@ import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -165,7 +165,7 @@ class HaEntityAttributePicker extends LitElement {
     }, 0);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .suffix {
         display: flex;

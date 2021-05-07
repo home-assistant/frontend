@@ -1,7 +1,7 @@
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   property,
   TemplateResult,
 } from "lit-element";
@@ -21,7 +21,7 @@ import "./hc-lovelace";
 class HcDemo extends HassElement {
   @property({ attribute: false }) public lovelacePath!: string;
 
-  @internalProperty() private _lovelaceConfig?: LovelaceConfig;
+  @state() private _lovelaceConfig?: LovelaceConfig;
 
   protected render(): TemplateResult {
     if (!this._lovelaceConfig) {

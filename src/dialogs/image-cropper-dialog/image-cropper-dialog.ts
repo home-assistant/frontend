@@ -4,10 +4,10 @@ import Cropper from "cropperjs";
 import cropperCss from "cropperjs/dist/cropper.css";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -25,9 +25,9 @@ import { HaImageCropperDialogParams } from "./show-image-cropper-dialog";
 export class HaImagecropperDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: HaImageCropperDialogParams;
+  @state() private _params?: HaImageCropperDialogParams;
 
-  @internalProperty() private _open = false;
+  @state() private _open = false;
 
   @query("img", true) private _image!: HTMLImageElement;
 
@@ -104,7 +104,7 @@ export class HaImagecropperDialog extends LitElement {
     );
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

@@ -5,7 +5,7 @@ import { mdiDotsVertical } from "@mdi/js";
 import { safeDump } from "js-yaml";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -415,7 +415,7 @@ class HassioHostInfo extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

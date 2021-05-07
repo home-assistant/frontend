@@ -2,10 +2,10 @@ import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -25,9 +25,9 @@ class HaPanelDevMqtt extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private topic = "";
+  @state() private topic = "";
 
-  @internalProperty() private payload = "";
+  @state() private payload = "";
 
   private inited = false;
 
@@ -123,7 +123,7 @@ class HaPanelDevMqtt extends LitElement {
     showOptionsFlowDialog(this, configEntry!);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

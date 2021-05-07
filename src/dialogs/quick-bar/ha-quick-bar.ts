@@ -15,7 +15,7 @@ import {
   css,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -87,19 +87,19 @@ type BaseNavigationCommand = Pick<
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _commandItems?: CommandItem[];
+  @state() private _commandItems?: CommandItem[];
 
-  @internalProperty() private _entityItems?: EntityItem[];
+  @state() private _entityItems?: EntityItem[];
 
-  @internalProperty() private _filter = "";
+  @state() private _filter = "";
 
-  @internalProperty() private _search = "";
+  @state() private _search = "";
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _commandMode = false;
+  @state() private _commandMode = false;
 
-  @internalProperty() private _done = false;
+  @state() private _done = false;
 
   @query("paper-input", false) private _filterInputField?: HTMLElement;
 

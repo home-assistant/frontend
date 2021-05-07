@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -62,13 +62,13 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public _events: CalendarEvent[] = [];
 
-  @internalProperty() private _config?: CalendarCardConfig;
+  @state() private _config?: CalendarCardConfig;
 
-  @internalProperty() private _calendars: Calendar[] = [];
+  @state() private _calendars: Calendar[] = [];
 
-  @internalProperty() private _narrow = false;
+  @state() private _narrow = false;
 
-  @internalProperty() private _veryNarrow = false;
+  @state() private _veryNarrow = false;
 
   @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
 
@@ -204,7 +204,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     this._resizeObserver.observe(card);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         position: relative;

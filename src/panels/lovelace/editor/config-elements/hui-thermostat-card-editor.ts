@@ -1,9 +1,9 @@
 import "@polymer/paper-input/paper-input";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -33,7 +33,7 @@ export class HuiThermostatCardEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ThermostatCardConfig;
+  @state() private _config?: ThermostatCardConfig;
 
   public setConfig(config: ThermostatCardConfig): void {
     assert(config, cardConfigStruct);
@@ -112,7 +112,7 @@ export class HuiThermostatCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

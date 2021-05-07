@@ -1,9 +1,9 @@
 import { mdiPlus } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -37,10 +37,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     LovelaceCard | HuiErrorCard
   > = [];
 
-  @internalProperty() private _card?:
-    | LovelaceCard
-    | HuiWarning
-    | HuiCardOptions;
+  @state() private _card?: LovelaceCard | HuiWarning | HuiCardOptions;
 
   public setConfig(_config: LovelaceViewConfig): void {}
 
@@ -138,7 +135,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

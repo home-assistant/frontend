@@ -4,8 +4,8 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import {
   css,
-  CSSResult,
-  internalProperty,
+  CSSResultGroup,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -58,7 +58,7 @@ class HassioAddonStore extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @internalProperty() private _filter?: string;
+  @state() private _filter?: string;
 
   public async refreshData() {
     await reloadHassioAddons(this.hass);
@@ -218,7 +218,7 @@ class HassioAddonStore extends LitElement {
     this._filter = e.detail.value;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       hassio-addon-repository {
         margin-top: 24px;

@@ -1,9 +1,9 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -33,7 +33,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @internalProperty() private _action!: ServiceAction;
+  @state() private _action!: ServiceAction;
 
   public static get defaultConfig() {
     return { service: "", data: {} };
@@ -86,7 +86,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-service-control {
         display: block;

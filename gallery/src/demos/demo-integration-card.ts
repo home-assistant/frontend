@@ -2,7 +2,7 @@ import {
   customElement,
   html,
   css,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
   property,
@@ -220,9 +220,9 @@ const createDeviceRegistryEntries = (
 export class DemoIntegrationCard extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
 
-  @internalProperty() isCustomIntegration = false;
+  @state() isCustomIntegration = false;
 
-  @internalProperty() isCloud = false;
+  @state() isCloud = false;
 
   protected render(): TemplateResult {
     if (!this.hass) {

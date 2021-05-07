@@ -5,10 +5,10 @@ import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbo
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -80,21 +80,21 @@ class HassioSnapshotDialog extends LitElement {
 
   @property({ attribute: false }) public supervisor?: Supervisor;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _onboarding = false;
+  @state() private _onboarding = false;
 
-  @internalProperty() private _snapshot?: HassioSnapshotDetail;
+  @state() private _snapshot?: HassioSnapshotDetail;
 
-  @internalProperty() private _folders!: FolderItem[];
+  @state() private _folders!: FolderItem[];
 
-  @internalProperty() private _addons!: AddonItem[];
+  @state() private _addons!: AddonItem[];
 
-  @internalProperty() private _dialogParams?: HassioSnapshotDialogParams;
+  @state() private _dialogParams?: HassioSnapshotDialogParams;
 
-  @internalProperty() private _snapshotPassword!: string;
+  @state() private _snapshotPassword!: string;
 
-  @internalProperty() private _restoreHass = true;
+  @state() private _restoreHass = true;
 
   public async showDialog(params: HassioSnapshotDialogParams) {
     this._snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
@@ -235,7 +235,7 @@ class HassioSnapshotDialog extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

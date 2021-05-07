@@ -1,8 +1,8 @@
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -17,7 +17,7 @@ import { ZHADeviceZigbeeInfoDialogParams } from "./show-dialog-zha-device-zigbee
 class DialogZHADeviceZigbeeInfo extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _signature: any;
+  @state() private _signature: any;
 
   public async showDialog(
     params: ZHADeviceZigbeeInfoDialogParams
@@ -59,7 +59,7 @@ class DialogZHADeviceZigbeeInfo extends LitElement {
     this._signature = undefined;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyleDialog;
   }
 }

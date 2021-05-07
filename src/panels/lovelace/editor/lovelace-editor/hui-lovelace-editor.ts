@@ -1,6 +1,6 @@
 import "@polymer/paper-input/paper-input";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -72,7 +72,7 @@ export class HuiLovelaceEditor extends LitElement {
     fireEvent(this, "lovelace-config-changed", { config: newConfig });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

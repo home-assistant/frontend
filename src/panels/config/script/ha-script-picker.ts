@@ -9,10 +9,10 @@ import {
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -50,9 +50,9 @@ class HaScriptPicker extends LitElement {
 
   @property() private _activeFilters?: string[];
 
-  @internalProperty() private _filteredScripts?: string[] | null;
+  @state() private _filteredScripts?: string[] | null;
 
-  @internalProperty() private _filterValue?;
+  @state() private _filterValue?;
 
   private _scripts = memoizeOne(
     (scripts: HassEntity[], filteredScripts?: string[] | null) => {
@@ -268,7 +268,7 @@ class HaScriptPicker extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

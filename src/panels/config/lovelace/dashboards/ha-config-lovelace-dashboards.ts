@@ -3,7 +3,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -46,7 +46,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _dashboards: LovelaceDashboard[] = [];
+  @state() private _dashboards: LovelaceDashboard[] = [];
 
   private _columns = memoize(
     (narrow: boolean, _language, dashboards): DataTableColumnContainer => {

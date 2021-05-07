@@ -6,7 +6,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -203,7 +203,7 @@ class MoreInfoMediaPlayer extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-icon-button[action="turn_off"],
       ha-icon-button[action="turn_on"],

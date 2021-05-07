@@ -2,13 +2,13 @@ import {
   customElement,
   property,
   PropertyValues,
-  UpdatingElement,
+  ReactiveElement,
 } from "lit-element";
 import relativeTime from "../common/datetime/relative_time";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-relative-time")
-class HaRelativeTime extends UpdatingElement {
+class HaRelativeTime extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public datetime?: string | Date;
@@ -25,6 +25,10 @@ class HaRelativeTime extends UpdatingElement {
     if (this.datetime) {
       this._startInterval();
     }
+  }
+
+  protected createRenderRoot() {
+    return this;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {

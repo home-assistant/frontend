@@ -4,9 +4,9 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -27,9 +27,9 @@ export class HaPickThemeRow extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() _themes: string[] = [];
+  @state() _themes: string[] = [];
 
-  @internalProperty() _selectedTheme = 0;
+  @state() _selectedTheme = 0;
 
   protected render(): TemplateResult {
     const hasThemes =
@@ -208,7 +208,7 @@ export class HaPickThemeRow extends LitElement {
     fireEvent(this, "settheme", { theme });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

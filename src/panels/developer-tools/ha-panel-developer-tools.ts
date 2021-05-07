@@ -3,7 +3,7 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-tabs/paper-tab";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -94,7 +94,7 @@ class PanelDeveloperTools extends LitElement {
     return this.route.path.substr(1);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

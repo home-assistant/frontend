@@ -8,10 +8,10 @@ import {
 } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -59,7 +59,7 @@ class CloudAlexa extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private _entities?: AlexaEntity[];
+  @state() private _entities?: AlexaEntity[];
 
   @property()
   private _entityConfigs: CloudPreferences["alexa_entity_configs"] = {};
@@ -440,7 +440,7 @@ class CloudAlexa extends LitElement {
     );
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

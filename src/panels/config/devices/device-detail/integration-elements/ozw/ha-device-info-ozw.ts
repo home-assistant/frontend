@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -31,7 +31,7 @@ export class HaDeviceInfoOzw extends LitElement {
   @property()
   private ozw_instance = 1;
 
-  @internalProperty() private _ozwDevice?: OZWDevice;
+  @state() private _ozwDevice?: OZWDevice;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
@@ -85,7 +85,7 @@ export class HaDeviceInfoOzw extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

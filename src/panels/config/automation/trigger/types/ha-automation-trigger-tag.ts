@@ -2,7 +2,7 @@ import "@polymer/paper-input/paper-input";
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -19,7 +19,7 @@ export class HaTagTrigger extends LitElement implements TriggerElement {
 
   @property() public trigger!: TagTrigger;
 
-  @internalProperty() private _tags: Tag[] = [];
+  @state() private _tags: Tag[] = [];
 
   public static get defaultConfig() {
     return { tag_id: "" };

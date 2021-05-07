@@ -1,4 +1,4 @@
-import { css, CSSResult } from "lit-element";
+import { css, CSSResultGroup } from "lit-element";
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
 import { GridCardConfig } from "./types";
@@ -64,7 +64,7 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
     this.toggleAttribute("square", this.square);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       super.sharedStyles,
       css`

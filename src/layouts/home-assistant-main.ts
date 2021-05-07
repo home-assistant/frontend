@@ -4,10 +4,10 @@ import "@polymer/app-layout/app-drawer/app-drawer";
 import type { AppDrawerElement } from "@polymer/app-layout/app-drawer/app-drawer";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -46,7 +46,7 @@ class HomeAssistantMain extends LitElement {
 
   @property({ type: Boolean }) public narrow?: boolean;
 
-  @internalProperty() private _sidebarEditMode = false;
+  @state() private _sidebarEditMode = false;
 
   protected render(): TemplateResult {
     const hass = this.hass;
@@ -186,7 +186,7 @@ class HomeAssistantMain extends LitElement {
     return this.shadowRoot!.querySelector("app-drawer-layout")!;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         color: var(--primary-text-color);

@@ -7,7 +7,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { mdiAlertCircle, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -581,7 +581,7 @@ export class HaIntegrationCard extends LitElement {
     fireEvent(this, "entry-updated", { entry: newEntry });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleScrollbar,

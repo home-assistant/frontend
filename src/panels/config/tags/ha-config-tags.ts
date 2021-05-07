@@ -9,7 +9,7 @@ import {
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -57,9 +57,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @internalProperty() private _tags: Tag[] = [];
+  @state() private _tags: Tag[] = [];
 
-  @internalProperty() private _canWriteTags = false;
+  @state() private _canWriteTags = false;
 
   private _columns = memoizeOne(
     (

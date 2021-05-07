@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -110,13 +110,13 @@ export class EntityRegistrySettingsHelper extends LitElement {
 
   @property() public entry!: ExtEntityRegistryEntry;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _item?: Helper | null;
+  @state() private _item?: Helper | null;
 
-  @internalProperty() private _submitting?: boolean;
+  @state() private _submitting?: boolean;
 
-  @internalProperty() private _componentLoaded?: boolean;
+  @state() private _componentLoaded?: boolean;
 
   @query("ha-registry-basic-editor")
   private _registryEditor?: HaEntityRegistryBasicEditor;
@@ -242,7 +242,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
 } from "lit-element";
@@ -15,7 +15,7 @@ import { DividerConfig, LovelaceRow } from "../entity-rows/types";
 class HuiDividerRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: DividerConfig;
+  @state() private _config?: DividerConfig;
 
   public setConfig(config): void {
     if (!config) {
@@ -33,7 +33,7 @@ class HuiDividerRow extends LitElement implements LovelaceRow {
     return html`<div style=${styleMap(this._config.style)}></div>`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         height: 1px;

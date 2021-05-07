@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
   property,
@@ -80,7 +80,7 @@ class HaConfigCustomize extends LitElement {
     this._selectedEntityId = routeSegments.length > 1 ? routeSegments[1] : "";
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

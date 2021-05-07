@@ -4,7 +4,7 @@ import { ripple } from "@material/mwc-ripple/ripple-directive";
 import "./ha-icon";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -44,7 +44,7 @@ export class HaChip extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ${unsafeCSS(chipStyles)}
       .mdc-chip {

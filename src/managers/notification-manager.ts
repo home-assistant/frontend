@@ -1,9 +1,9 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -29,9 +29,9 @@ export interface ToastActionParams {
 class NotificationManager extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _action?: ToastActionParams;
+  @state() private _action?: ToastActionParams;
 
-  @internalProperty() private _noCancelOnOutsideClick = false;
+  @state() private _noCancelOnOutsideClick = false;
 
   @query("ha-toast") private _toast!: HaToast;
 
@@ -80,7 +80,7 @@ class NotificationManager extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-toast {
         display: flex;

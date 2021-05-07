@@ -3,10 +3,10 @@ import "@polymer/paper-item/paper-item-body";
 import Fuse from "fuse.js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -46,7 +46,7 @@ class StepFlowPickHandler extends LitElement {
 
   @property() public showAdvanced?: boolean;
 
-  @internalProperty() private _filter?: string;
+  @state() private _filter?: string;
 
   private _width?: number;
 
@@ -175,7 +175,7 @@ class StepFlowPickHandler extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`

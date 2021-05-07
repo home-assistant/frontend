@@ -4,10 +4,10 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -29,17 +29,17 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 class DialogImportBlueprint extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?;
+  @state() private _params?;
 
-  @internalProperty() private _importing = false;
+  @state() private _importing = false;
 
-  @internalProperty() private _saving = false;
+  @state() private _saving = false;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _result?: BlueprintImportResult;
+  @state() private _result?: BlueprintImportResult;
 
-  @internalProperty() private _url?: string;
+  @state() private _url?: string;
 
   @query("#input") private _input?: PaperInputElement;
 
@@ -221,7 +221,7 @@ class DialogImportBlueprint extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyleDialog;
   }
 }

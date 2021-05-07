@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -28,7 +28,7 @@ export class HaFormConstant extends LitElement implements HaFormElement {
     return html`<span class="label">${this.label}</span>: ${this.schema.value}`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

@@ -1,10 +1,4 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { customElement, html, state, LitElement, property } from "lit-element";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/device/ha-device-picker";
@@ -24,9 +18,9 @@ export class HaDeviceTrigger extends LitElement {
 
   @property({ type: Object }) public trigger!: DeviceTrigger;
 
-  @internalProperty() private _deviceId?: string;
+  @state() private _deviceId?: string;
 
-  @internalProperty() private _capabilities?: DeviceCapabilities;
+  @state() private _capabilities?: DeviceCapabilities;
 
   private _origTrigger?: DeviceTrigger;
 

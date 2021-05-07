@@ -1,8 +1,8 @@
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -29,13 +29,13 @@ import "@material/mwc-button/mwc-button";
 export class DialogDeviceAutomation extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _triggers: DeviceTrigger[] = [];
+  @state() private _triggers: DeviceTrigger[] = [];
 
-  @internalProperty() private _conditions: DeviceCondition[] = [];
+  @state() private _conditions: DeviceCondition[] = [];
 
-  @internalProperty() private _actions: DeviceAction[] = [];
+  @state() private _actions: DeviceAction[] = [];
 
-  @internalProperty() private _params?: DeviceAutomationDialogParams;
+  @state() private _params?: DeviceAutomationDialogParams;
 
   public async showDialog(params: DeviceAutomationDialogParams): Promise<void> {
     this._params = params;
@@ -140,7 +140,7 @@ export class DialogDeviceAutomation extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyleDialog;
   }
 }

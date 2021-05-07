@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -23,7 +23,7 @@ import { ActionRowConfig, LovelaceRow } from "./types";
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _config?: ActionRowConfig;
+  @state() private _config?: ActionRowConfig;
 
   public setConfig(config: ActionRowConfig): void {
     if (!config) {
@@ -65,7 +65,7 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       mwc-button {
         margin-right: -0.57em;

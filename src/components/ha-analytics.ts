@@ -1,7 +1,7 @@
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -151,7 +151,7 @@ export class HaAnalytics extends LitElement {
     fireEvent(this, "analytics-preferences-changed", { preferences });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

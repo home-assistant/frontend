@@ -6,7 +6,7 @@ import {
   css,
   property,
   TemplateResult,
-  internalProperty,
+  state,
 } from "lit-element";
 import { buttonLinkStyle } from "../../resources/styles";
 import "../ha-svg-icon";
@@ -23,7 +23,7 @@ export class HaTimeline extends LitElement {
 
   @property({ attribute: false }) public moreItems?: TemplateResult[];
 
-  @internalProperty() private _showMore = false;
+  @state() private _showMore = false;
 
   protected render() {
     return html`

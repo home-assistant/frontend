@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -26,7 +26,7 @@ import { LovelaceElement, StateLabelElementConfig } from "./types";
 class HuiStateLabelElement extends LitElement implements LovelaceElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: StateLabelElementConfig;
+  @state() private _config?: StateLabelElementConfig;
 
   public setConfig(config: StateLabelElementConfig): void {
     if (!config.entity) {
@@ -95,7 +95,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         cursor: pointer;

@@ -1,10 +1,10 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -30,7 +30,7 @@ export class HuiShoppingListEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ShoppingListCardConfig;
+  @state() private _config?: ShoppingListCardConfig;
 
   public setConfig(config: ShoppingListCardConfig): void {
     assert(config, cardConfigStruct);
@@ -104,7 +104,7 @@ export class HuiShoppingListEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .error {
         color: var(--error-color);

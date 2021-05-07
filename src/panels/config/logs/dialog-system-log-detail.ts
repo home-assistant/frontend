@@ -3,9 +3,9 @@ import { mdiClose, mdiContentCopy, mdiPackageVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -34,9 +34,9 @@ import { formatSystemLogTime } from "./util";
 class DialogSystemLogDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: SystemLogDetailDialogParams;
+  @state() private _params?: SystemLogDetailDialogParams;
 
-  @internalProperty() private _manifest?: IntegrationManifest;
+  @state() private _manifest?: IntegrationManifest;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
@@ -197,7 +197,7 @@ class DialogSystemLogDetail extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

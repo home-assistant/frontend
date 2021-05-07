@@ -1,9 +1,9 @@
 import "@polymer/paper-input/paper-input";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -34,7 +34,7 @@ export class HuiPlantStatusCardEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PlantStatusCardConfig;
+  @state() private _config?: PlantStatusCardConfig;
 
   public setConfig(config: PlantStatusCardConfig): void {
     assert(config, cardConfigStruct);
@@ -115,7 +115,7 @@ export class HuiPlantStatusCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

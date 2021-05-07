@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -92,7 +92,7 @@ export class HaNumberSelector extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

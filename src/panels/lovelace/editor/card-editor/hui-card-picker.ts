@@ -3,10 +3,10 @@ import "@material/mwc-tab/mwc-tab";
 import Fuse from "fuse.js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -50,17 +50,17 @@ interface CardElement {
 export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _cards: CardElement[] = [];
+  @state() private _cards: CardElement[] = [];
 
   public lovelace?: LovelaceConfig;
 
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
-  @internalProperty() private _filter = "";
+  @state() private _filter = "";
 
-  @internalProperty() private _width?: number;
+  @state() private _width?: number;
 
-  @internalProperty() private _height?: number;
+  @state() private _height?: number;
 
   private _unusedEntities?: string[];
 
@@ -333,7 +333,7 @@ export class HuiCardPicker extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         search-input {

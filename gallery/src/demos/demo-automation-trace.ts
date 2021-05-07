@@ -4,7 +4,7 @@ import {
   css,
   LitElement,
   TemplateResult,
-  internalProperty,
+  state,
   property,
 } from "lit-element";
 import "../../../src/components/ha-card";
@@ -22,7 +22,7 @@ const traces: DemoTrace[] = [basicTrace, motionLightTrace];
 export class DemoAutomationTrace extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
 
-  @internalProperty() private _selected = {};
+  @state() private _selected = {};
 
   protected render(): TemplateResult {
     if (!this.hass) {

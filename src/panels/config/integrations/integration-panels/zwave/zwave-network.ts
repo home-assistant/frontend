@@ -1,10 +1,10 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -35,11 +35,11 @@ export class ZwaveNetwork extends LitElement {
 
   @property() public isWide!: boolean;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
-  @internalProperty() private _networkStatus?: ZWaveNetworkStatus;
+  @state() private _networkStatus?: ZWaveNetworkStatus;
 
-  @internalProperty() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
+  @state() private _unsubs: Array<Promise<UnsubscribeFunc>> = [];
 
   public disconnectedCallback(): void {
     this._unsubscribe();
@@ -239,7 +239,7 @@ export class ZwaveNetwork extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

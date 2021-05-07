@@ -3,10 +3,10 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -34,17 +34,17 @@ import { UserDetailDialogParams } from "./show-dialog-user-detail";
 class DialogUserDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _isAdmin?: boolean;
+  @state() private _isAdmin?: boolean;
 
-  @internalProperty() private _isActive?: boolean;
+  @state() private _isActive?: boolean;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: UserDetailDialogParams;
+  @state() private _params?: UserDetailDialogParams;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
   public async showDialog(params: UserDetailDialogParams): Promise<void> {
     this._params = params;
@@ -295,7 +295,7 @@ class DialogUserDetail extends LitElement {
     this._params = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

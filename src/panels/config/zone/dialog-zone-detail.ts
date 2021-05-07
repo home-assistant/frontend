@@ -2,9 +2,9 @@ import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -30,23 +30,23 @@ import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 class DialogZoneDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _icon!: string;
+  @state() private _icon!: string;
 
-  @internalProperty() private _latitude!: number;
+  @state() private _latitude!: number;
 
-  @internalProperty() private _longitude!: number;
+  @state() private _longitude!: number;
 
-  @internalProperty() private _passive!: boolean;
+  @state() private _passive!: boolean;
 
-  @internalProperty() private _radius!: number;
+  @state() private _radius!: number;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: ZoneDetailDialogParams;
+  @state() private _params?: ZoneDetailDialogParams;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
   public showDialog(params: ZoneDetailDialogParams): void {
     this._params = params;
@@ -282,7 +282,7 @@ class DialogZoneDetail extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

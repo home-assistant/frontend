@@ -6,9 +6,9 @@ import { mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -48,7 +48,7 @@ const sortKeys = (a: string, b: string) => {
 class SystemHealthCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _info?: SystemHealthInfo;
+  @state() private _info?: SystemHealthInfo;
 
   protected render(): TemplateResult {
     if (!this.hass) {
@@ -260,7 +260,7 @@ class SystemHealthCard extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       table {
         width: 100%;

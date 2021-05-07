@@ -1,12 +1,12 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
   property,
-  internalProperty,
+  state,
   PropertyValues,
   TemplateResult,
 } from "lit-element";
@@ -25,7 +25,7 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 class HuiNumberEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   private _loaded?: boolean;
 
@@ -120,7 +120,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .flex {
         display: flex;

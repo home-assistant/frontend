@@ -2,10 +2,10 @@ import { mdiDotsVertical } from "@mdi/js";
 import "@thomasloven/round-slider";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -60,7 +60,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: LightCardConfig;
+  @state() private _config?: LightCardConfig;
 
   private _brightnessTimout?: number;
 
@@ -254,7 +254,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;

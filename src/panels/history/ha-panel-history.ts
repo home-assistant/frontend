@@ -1,12 +1,6 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import {
-  css,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { css, state, LitElement, property, PropertyValues } from "lit-element";
 import { html } from "lit-html";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
@@ -37,7 +31,7 @@ class HaPanelHistory extends LitElement {
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
-  @internalProperty() private _ranges?: DateRangePickerRanges;
+  @state() private _ranges?: DateRangePickerRanges;
 
   public constructor() {
     super();
