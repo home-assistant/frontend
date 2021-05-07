@@ -300,80 +300,73 @@ export class HaIntegrationCard extends LitElement {
               `
             : ""}
         </div>
-        ${!this.manifest
-          ? ""
-          : html`
-              <ha-button-menu corner="BOTTOM_START">
-                <mwc-icon-button
-                  .title=${this.hass.localize("ui.common.menu")}
-                  .label=${this.hass.localize("ui.common.overflow_menu")}
-                  slot="trigger"
-                >
-                  <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-                </mwc-icon-button>
-                <mwc-list-item @request-selected="${this._editEntryName}">
+        <ha-button-menu corner="BOTTOM_START">
+          <mwc-icon-button
+            .title=${this.hass.localize("ui.common.menu")}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            slot="trigger"
+          >
+            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-list-item @request-selected="${this._editEntryName}">
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.rename"
+            )}
+          </mwc-list-item>
+          <mwc-list-item @request-selected="${this._handleSystemOptions}">
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.system_options"
+            )}
+          </mwc-list-item>
+          ${this.manifest
+            ? html` <a
+                href=${this.manifest.documentation}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <mwc-list-item hasMeta>
                   ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.rename"
-                  )}
+                    "ui.panel.config.integrations.config_entry.documentation"
+                  )}<ha-svg-icon
+                    slot="meta"
+                    .path=${mdiOpenInNew}
+                  ></ha-svg-icon>
                 </mwc-list-item>
-                <mwc-list-item @request-selected="${this._handleSystemOptions}">
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.system_options"
-                  )}
-                </mwc-list-item>
-
-                <a
-                  href=${this.manifest.documentation}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <mwc-list-item hasMeta>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.documentation"
-                    )}<ha-svg-icon
-                      slot="meta"
-                      .path=${mdiOpenInNew}
-                    ></ha-svg-icon>
-                  </mwc-list-item>
-                </a>
-                ${!item.disabled_by &&
-                item.state === "loaded" &&
-                item.supports_unload &&
-                item.source !== "system"
-                  ? html`<mwc-list-item
-                      @request-selected="${this._handleReload}"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.reload"
-                      )}
-                    </mwc-list-item>`
-                  : ""}
-                ${item.disabled_by === "user"
-                  ? html`<mwc-list-item
-                      @request-selected="${this._handleEnable}"
-                    >
-                      ${this.hass.localize("ui.common.enable")}
-                    </mwc-list-item>`
-                  : item.source !== "system"
-                  ? html`<mwc-list-item
-                      class="warning"
-                      @request-selected="${this._handleDisable}"
-                    >
-                      ${this.hass.localize("ui.common.disable")}
-                    </mwc-list-item>`
-                  : ""}
-                ${item.source !== "system"
-                  ? html`<mwc-list-item
-                      class="warning"
-                      @request-selected="${this._handleDelete}"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.delete"
-                      )}
-                    </mwc-list-item>`
-                  : ""}
-              </ha-button-menu>
-            `}
+              </a>`
+            : ""}
+          ${!item.disabled_by &&
+          item.state === "loaded" &&
+          item.supports_unload &&
+          item.source !== "system"
+            ? html`<mwc-list-item @request-selected="${this._handleReload}">
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.reload"
+                )}
+              </mwc-list-item>`
+            : ""}
+          ${item.disabled_by === "user"
+            ? html`<mwc-list-item @request-selected="${this._handleEnable}">
+                ${this.hass.localize("ui.common.enable")}
+              </mwc-list-item>`
+            : item.source !== "system"
+            ? html`<mwc-list-item
+                class="warning"
+                @request-selected="${this._handleDisable}"
+              >
+                ${this.hass.localize("ui.common.disable")}
+              </mwc-list-item>`
+            : ""}
+          ${item.source !== "system"
+            ? html`<mwc-list-item
+                class="warning"
+                @request-selected="${this._handleDelete}"
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.delete"
+                )}
+              </mwc-list-item>`
+            : ""}
+        </ha-button-menu>
       </div>
     `;
   }
