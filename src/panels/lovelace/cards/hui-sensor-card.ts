@@ -55,6 +55,7 @@ class HuiSensorCard extends HuiEntityCard {
         entity: config.entity,
         detail: detail || 1,
         hours_to_show: hours_to_show || 24,
+        limits: config.limits!,
       };
 
       entityCardConfig.footer = footerConfig;
