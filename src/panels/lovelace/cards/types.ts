@@ -287,8 +287,8 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   theme?: string;
   hours_to_show?: number;
   limits?: {
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
   };
 }
 
