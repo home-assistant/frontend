@@ -2786,10 +2786,10 @@
     "@types/koa-compose" "*"
     "@types/node" "*"
 
-"@types/leaflet-draw@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@types/leaflet-draw/-/leaflet-draw-1.0.1.tgz#66e0c2c8b93b23487f836a8d65a769b98aa0bc5b"
-  integrity sha512-/urwtXkpvv7rtre5A6plvXHSUDmFvDrwqpQRKseBCC2bIhIhBtMDf+plqQmi0vhvSk0Pqgk8qH1rtC8EVxPdmg==
+"@types/leaflet-draw@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@types/leaflet-draw/-/leaflet-draw-1.0.3.tgz#73a003bf1def575c7cfd3205fa48d26bd0dc4273"
+  integrity sha512-ayNnO40vafd1Do3h7v0++toEzcO1CEjtFBqPunF3695WU0OTPzJ82XUQcd4MlYTuPSP3OsZm5ni361tgmcjxNw==
   dependencies:
     "@types/leaflet" "*"
 
@@ -2800,10 +2800,10 @@
   dependencies:
     "@types/geojson" "*"
 
-"@types/leaflet@^1.4.3":
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.4.3.tgz#62638cb73770eeaed40222042afbcc7b495f0cc4"
-  integrity sha512-jFRBSsPHi1EwQSwrN0cOJLdPhwOZsRl4IMxvm/2ShLh0YM5GfCtQXCzsrv8RE7DWL+AykXdYSAd9bFLWbZT4CQ==
+"@types/leaflet@^1.7.0":
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.7.0.tgz#3700fb5d29a8214fbd496565b08ec28e40cee808"
+  integrity sha512-ltv5jR+VjKSMtoDkxH61Rsbo0zLU7iqyOXpVPkAX4F+79fg2eymC7t0msWsfNaEZO1FGTIQATCCCQe+ijWoicg==
   dependencies:
     "@types/geojson" "*"
 
@@ -8598,10 +8598,10 @@ leaflet-draw@^1.0.4:
   resolved "https://registry.yarnpkg.com/leaflet-draw/-/leaflet-draw-1.0.4.tgz#45be92f378ed253e7202fdeda1fcc71885198d46"
   integrity sha512-rsQ6saQO5ST5Aj6XRFylr5zvarWgzWnrg46zQ1MEOEIHsppdC/8hnN8qMoFvACsPvTioAuysya/TVtog15tyAQ==
 
-leaflet@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.4.0.tgz#d5f56eeb2aa32787c24011e8be4c77e362ae171b"
-  integrity sha512-x9j9tGY1+PDLN9pcWTx9/y6C5nezoTMB8BLK5jTakx+H7bPlnbCHfi9Hjg+Qt36sgDz/cb9lrSpNQXmk45Tvhw==
+leaflet@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.7.1.tgz#10d684916edfe1bf41d688a3b97127c0322a2a19"
+  integrity sha512-/xwPEBidtg69Q3HlqPdU3DnrXQOvQU/CCHA1tcDQVzOwm91YMYaILjNp7L4Eaw5Z4sOYdbBz6koWyibppd8Zqw==
 
 leven@^3.1.0:
   version "3.1.0"
