@@ -3814,7 +3814,6 @@
         "reload_supervisor": "Reload Supervisor",
         "warning": "WARNING",
         "search": "Search",
-        "no_data": "No data",
         "beta_warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
         "beta_backup": "Make sure you have backups of your data before you activate this feature.",
         "beta_release_items": "This includes beta releases for:",

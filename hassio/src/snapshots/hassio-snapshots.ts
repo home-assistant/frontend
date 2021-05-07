@@ -111,8 +111,8 @@ export class HassioSnapshots extends LitElement {
         .tabs=${supervisorTabs}
         .hass=${this.hass}
         .localizeFunc=${this.supervisor.localize}
-        .searchLabel=${this.supervisor.localize("common.search")}
-        .noDataText=${this.supervisor.localize("common.no_data")}
+        .searchLabel=${this.supervisor.localize("search")}
+        .noDataText=${this.supervisor.localize("snapshot.no_snapshots")}
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.narrow)}
