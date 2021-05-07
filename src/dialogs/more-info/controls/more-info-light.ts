@@ -369,7 +369,13 @@ class MoreInfoLight extends LitElement {
       return;
     }
 
-    this._wvSliderValue = wv;
+    if (name === "wv") {
+      this._wvSliderValue = wv;
+    } else if (name === "cw") {
+      this._cwSliderValue = wv;
+    } else if (name === "ww") {
+      this._wwSliderValue = wv;
+    }
 
     wv = Math.min(255, Math.round((wv * 255) / 100));
 
