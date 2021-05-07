@@ -43,6 +43,12 @@ const REDIRECTS: Redirects = {
       addon: "string",
     },
   },
+  supervisor_ingress: {
+    redirect: "/hassio/ingress",
+    params: {
+      addon: "string",
+    },
+  },
   supervisor_add_addon_repository: {
     redirect: "/hassio/store",
     params: {
