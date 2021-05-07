@@ -183,7 +183,7 @@
                 "text": "האם ברצונך לאתחל את התוסף עם השינויים שלך?"
             },
             "update": {
-                "create_snapshot": "צור נקודת גיבוי עבור {name}",
+                "create_snapshot": "צור נקודת גיבוי עבור {name} לפני העדכון",
                 "snapshot": "נקודת גיבוי",
                 "snapshotting": "יוצר נקודת גיבוי עבור {name}",
                 "updating": "מעדכן את {name} לגרסה {version}"
