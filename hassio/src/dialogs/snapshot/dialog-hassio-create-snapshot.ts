@@ -270,7 +270,7 @@ class HassioCreateSnapshotDialog extends LitElement {
 
   private async _createSnapshot(ev: CustomEvent): Promise<void> {
     if (this._dialogParams!.supervisor.info.state !== "running") {
-      await showAlertDialog(this, {
+     showAlertDialog(this, {
         title: this._dialogParams!.supervisor.localize(
           "snapshot.could_not_create"
         ),
@@ -280,7 +280,8 @@ class HassioCreateSnapshotDialog extends LitElement {
           this._dialogParams!.supervisor.info.state
         ),
       });
-    }
+    return;
+   }
     const button = ev.currentTarget as any;
     button.progress = true;
 
