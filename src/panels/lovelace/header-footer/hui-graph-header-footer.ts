@@ -11,7 +11,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import "../../../components/ha-circular-progress";
-import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
