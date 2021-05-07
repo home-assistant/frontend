@@ -9,6 +9,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -141,7 +142,7 @@ class DialogZoneDetail extends LitElement {
             <ha-location-editor
               class="flex"
               .hass=${this.hass}
-              .location=${this._locationValue}
+              .location=${this._locationValue(this._latitude, this._longitude)}
               .radius=${this._radius}
               .radiusColor=${this._passive
                 ? passiveRadiusColor
@@ -228,9 +229,7 @@ class DialogZoneDetail extends LitElement {
     `;
   }
 
-  private get _locationValue() {
-    return [Number(this._latitude), Number(this._longitude)];
-  }
+  private _locationValue = memoizeOne((lat, lng) => [Number(lat), Number(lng)]);
 
   private _locationChanged(ev) {
     [this._latitude, this._longitude] = ev.currentTarget.location;

@@ -286,12 +286,11 @@ export class HaLocationsEditor extends LitElement {
           [location.latitude, location.longitude],
           options
         )
-          .addEventListener(
-            "dragend",
-            // @ts-ignore
-            (ev: DragEndEvent) => this._updateLocation(ev)
+          .addEventListener("dragend", (ev: DragEndEvent) =>
+            this._updateLocation(ev)
           )
           .addEventListener(
+            // @ts-ignore
             "click",
             // @ts-ignore
             (ev: MouseEvent) => this._markerClicked(ev)
