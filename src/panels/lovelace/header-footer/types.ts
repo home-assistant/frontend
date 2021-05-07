@@ -16,8 +16,8 @@ export interface GraphHeaderFooterConfig extends LovelaceHeaderFooterConfig {
   detail?: number;
   hours_to_show?: number;
   limits?: {
-    min: number;
-    max: number;
+    min?: number;
+    max?: number;
   };
 }
 
