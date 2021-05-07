@@ -43,6 +43,17 @@ interface CheckboxItem {
   version?: string;
 }
 
+const folderList = () => [
+  {
+    slug: "homeassistant",
+    checked: true,
+  },
+  { slug: "ssl", checked: true },
+  { slug: "share", checked: true },
+  { slug: "media", checked: true },
+  { slug: "addons/local", checked: true },
+];
+
 @customElement("dialog-hassio-create-snapshot")
 class HassioCreateSnapshotDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -59,16 +70,7 @@ class HassioCreateSnapshotDialog extends LitElement {
 
   @internalProperty() private _addonList: CheckboxItem[] = [];
 
-  @internalProperty() private _folderList: CheckboxItem[] = [
-    {
-      slug: "homeassistant",
-      checked: true,
-    },
-    { slug: "ssl", checked: true },
-    { slug: "share", checked: true },
-    { slug: "media", checked: true },
-    { slug: "addons/local", checked: true },
-  ];
+  @internalProperty() private _folderList: CheckboxItem[] = folderList();
 
   @internalProperty() private _error = "";
 
@@ -82,6 +84,12 @@ class HassioCreateSnapshotDialog extends LitElement {
         checked: true,
       }))
       .sort((a, b) => compare(a.name, b.name));
+    this._snapshotType = "full";
+    this._error = "";
+    this._folderList = folderList();
+    this._snapshotHasPassword = false;
+    this._snapshotPassword = "";
+    this._snapshotName = "";
   }
 
   public closeDialog() {
@@ -270,7 +278,7 @@ class HassioCreateSnapshotDialog extends LitElement {
 
   private async _createSnapshot(ev: CustomEvent): Promise<void> {
     if (this._dialogParams!.supervisor.info.state !== "running") {
-     showAlertDialog(this, {
+      showAlertDialog(this, {
         title: this._dialogParams!.supervisor.localize(
           "snapshot.could_not_create"
         ),
@@ -280,8 +288,8 @@ class HassioCreateSnapshotDialog extends LitElement {
           this._dialogParams!.supervisor.info.state
         ),
       });
-    return;
-   }
+      return;
+    }
     const button = ev.currentTarget as any;
     button.progress = true;
 
