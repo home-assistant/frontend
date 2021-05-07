@@ -58,7 +58,7 @@ export const coordinates = (
   hours: number,
   width: number,
   detail: number,
-  limits?: { min: number; max: number }
+  limits?: { min?: number; max?: number }
 ): number[][] | undefined => {
   history.forEach((item) => {
     item.state = Number(item.state);
