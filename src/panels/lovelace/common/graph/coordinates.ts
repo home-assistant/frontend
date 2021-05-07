@@ -65,12 +65,14 @@ export const coordinates = (
   });
   history = history.filter((item) => !Number.isNaN(item.state));
 
-  const min = limits?.min !== undefined
-    ? limits.min
-    : Math.min(...history.map((item) => item.state));
-  const max = limits?.max !== undefined
-    ? limits.max
-    : Math.max(...history.map((item) => item.state));
+  const min =
+    limits?.min !== undefined
+      ? limits.min
+      : Math.min(...history.map((item) => item.state));
+  const max =
+    limits?.max !== undefined
+      ? limits.max
+      : Math.max(...history.map((item) => item.state));
   const now = new Date().getTime();
 
   const reduce = (res, item, point) => {
