@@ -8,7 +8,7 @@ import { stateMoreInfoType } from "./state_more_info_control";
 class MoreInfoContent extends UpdatingElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   private _detachedChild?: ChildNode;
 
@@ -54,3 +54,9 @@ class MoreInfoContent extends UpdatingElement {
 }
 
 customElements.define("more-info-content", MoreInfoContent);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "more-info-content": MoreInfoContent;
+  }
+}
