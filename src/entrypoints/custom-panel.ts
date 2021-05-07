@@ -10,6 +10,7 @@ import { createCustomPanelElement } from "../util/custom-panel/create-custom-pan
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
 import { baseEntrypointStyles } from "../resources/styles";
+import { CSSResult } from "lit-element";
 
 declare global {
   interface Window {
@@ -101,7 +102,7 @@ function initialize(
         }
 
         const errorStyle = document.createElement("style");
-        errorStyle.innerHTML = baseEntrypointStyles.cssText;
+        errorStyle.innerHTML = (baseEntrypointStyles as CSSResult).cssText;
         document.body.appendChild(errorStyle);
 
         errorScreen.hass = properties.hass;

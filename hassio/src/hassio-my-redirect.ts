@@ -1,7 +1,7 @@
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -59,7 +59,7 @@ class HassioMyRedirect extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @internalProperty() public _error?: TemplateResult | string;
+  @state() public _error?: TemplateResult | string;
 
   connectedCallback() {
     super.connectedCallback();

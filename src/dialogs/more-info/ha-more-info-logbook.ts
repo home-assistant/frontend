@@ -2,7 +2,7 @@ import {
   css,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -26,11 +26,11 @@ export class MoreInfoLogbook extends LitElement {
 
   @property() public entityId!: string;
 
-  @internalProperty() private _logbookEntries?: LogbookEntry[];
+  @state() private _logbookEntries?: LogbookEntry[];
 
-  @internalProperty() private _traceContexts?: TraceContexts;
+  @state() private _traceContexts?: TraceContexts;
 
-  @internalProperty() private _persons = {};
+  @state() private _persons = {};
 
   private _lastLogbookDate?: Date;
 

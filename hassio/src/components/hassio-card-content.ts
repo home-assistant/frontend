@@ -1,7 +1,7 @@
 import { mdiHelpCircle } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -77,7 +77,7 @@ class HassioCardContent extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon {
         margin-right: 24px;

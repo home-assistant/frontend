@@ -2,10 +2,10 @@ import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -24,7 +24,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 export class HuiDialogEditLovelace extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _lovelace?: Lovelace;
+  @state() private _lovelace?: Lovelace;
 
   private _config?: LovelaceConfig;
 
@@ -135,7 +135,7 @@ export class HuiDialogEditLovelace extends LitElement {
     return JSON.stringify(this._config) !== JSON.stringify(lovelaceConfig);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

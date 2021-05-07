@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -22,7 +22,7 @@ import { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
 class HuiAttributeRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: AttributeRowConfig;
+  @state() private _config?: AttributeRowConfig;
 
   public setConfig(config: AttributeRowConfig): void {
     if (!config) {
@@ -81,7 +81,7 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         text-align: right;

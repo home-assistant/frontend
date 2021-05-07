@@ -1,10 +1,10 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -52,9 +52,9 @@ const cardConfigStruct = object({
 export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: MapCardConfig;
+  @state() private _config?: MapCardConfig;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public setConfig(config: MapCardConfig): void {
     assert(config, cardConfigStruct);
@@ -223,7 +223,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

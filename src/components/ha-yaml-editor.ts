@@ -2,7 +2,7 @@ import { safeDump, safeLoad } from "js-yaml";
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -32,7 +32,7 @@ export class HaYamlEditor extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() private _yaml = "";
+  @state() private _yaml = "";
 
   public setValue(value): void {
     try {

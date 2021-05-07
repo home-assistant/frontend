@@ -1,9 +1,9 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
-  internalProperty,
+  state,
   LitElement,
   property,
 } from "lit-element";
@@ -26,21 +26,21 @@ let instance = 0;
 class HaMfaModuleSetupFlow extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @internalProperty() private _dialogClosedCallback?: (params: {
+  @state() private _dialogClosedCallback?: (params: {
     flowFinished: boolean;
   }) => void;
 
-  @internalProperty() private _instance?: number;
+  @state() private _instance?: number;
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _stepData: any = {};
+  @state() private _stepData: any = {};
 
-  @internalProperty() private _step?: DataEntryFlowStep;
+  @state() private _step?: DataEntryFlowStep;
 
-  @internalProperty() private _errorMessage?: string;
+  @state() private _errorMessage?: string;
 
   public showDialog({ continueFlowId, mfaModuleId, dialogClosedCallback }) {
     this._instance = instance++;
@@ -151,7 +151,7 @@ class HaMfaModuleSetupFlow extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -50,7 +50,7 @@ class MoreInfoAutomation extends LitElement {
     triggerAutomationActions(this.hass, this.stateObj!.entity_id);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .flex {
         display: flex;

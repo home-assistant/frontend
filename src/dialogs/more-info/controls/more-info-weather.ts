@@ -22,7 +22,7 @@ import {
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   LitElement,
   property,
@@ -224,7 +224,7 @@ class MoreInfoWeather extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon {
         color: var(--paper-item-icon-color);

@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import { mdiPlus } from "@mdi/js";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -144,7 +144,7 @@ export class ZHAGroupsDashboard extends LitElement {
     navigate(this, `/config/zha/group/${groupId}`);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

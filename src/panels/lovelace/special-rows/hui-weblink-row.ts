@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
 } from "lit-element";
@@ -16,7 +16,7 @@ import { LovelaceRow, WeblinkConfig } from "../entity-rows/types";
 class HuiWeblinkRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: WeblinkConfig;
+  @state() private _config?: WeblinkConfig;
 
   public setConfig(config: WeblinkConfig): void {
     if (!config || !config.url) {
@@ -48,7 +48,7 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         display: flex;

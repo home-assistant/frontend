@@ -1,10 +1,10 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -31,7 +31,7 @@ export class HuiGraphFooterEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GraphHeaderFooterConfig;
+  @state() private _config?: GraphHeaderFooterConfig;
 
   public setConfig(config: GraphHeaderFooterConfig): void {
     assert(config, graphHeaderFooterConfigStruct);
@@ -145,7 +145,7 @@ export class HuiGraphFooterEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

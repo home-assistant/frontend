@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -66,7 +66,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PictureGlanceCardConfig;
+  @state() private _config?: PictureGlanceCardConfig;
 
   private _entitiesDialog?: PictureGlanceEntityConfig[];
 
@@ -287,7 +287,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     handleAction(this, this.hass!, config, ev.detail.action!);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         position: relative;

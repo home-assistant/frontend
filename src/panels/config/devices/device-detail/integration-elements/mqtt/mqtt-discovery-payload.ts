@@ -1,10 +1,10 @@
 import { safeDump } from "js-yaml";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -19,7 +19,7 @@ class MQTTDiscoveryPayload extends LitElement {
 
   @property() public summary!: string;
 
-  @internalProperty() private _open = false;
+  @state() private _open = false;
 
   protected render(): TemplateResult {
     return html`
@@ -48,7 +48,7 @@ class MQTTDiscoveryPayload extends LitElement {
     this._open = !this._open;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .expander {
         cursor: pointer;

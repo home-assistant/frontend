@@ -2,7 +2,7 @@ import "../components/ha-card";
 import "@material/mwc-button";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -112,7 +112,7 @@ class SupervisorErrorScreen extends LitElement {
     );
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

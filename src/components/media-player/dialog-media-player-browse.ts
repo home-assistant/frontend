@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -23,15 +23,15 @@ import { MediaPlayerBrowseDialogParams } from "./show-media-browser-dialog";
 class DialogMediaPlayerBrowse extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _entityId!: string;
+  @state() private _entityId!: string;
 
-  @internalProperty() private _mediaContentId?: string;
+  @state() private _mediaContentId?: string;
 
-  @internalProperty() private _mediaContentType?: string;
+  @state() private _mediaContentType?: string;
 
-  @internalProperty() private _action?: MediaPlayerBrowseAction;
+  @state() private _action?: MediaPlayerBrowseAction;
 
-  @internalProperty() private _params?: MediaPlayerBrowseDialogParams;
+  @state() private _params?: MediaPlayerBrowseDialogParams;
 
   public showDialog(params: MediaPlayerBrowseDialogParams): void {
     this._params = params;
@@ -81,7 +81,7 @@ class DialogMediaPlayerBrowse extends LitElement {
     }
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

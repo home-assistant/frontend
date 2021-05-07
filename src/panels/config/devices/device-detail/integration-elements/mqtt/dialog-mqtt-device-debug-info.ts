@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
 } from "lit-element";
@@ -29,13 +29,13 @@ import { MQTTDeviceDebugInfoDialogParams } from "./show-dialog-mqtt-device-debug
 class DialogMQTTDeviceDebugInfo extends LitElement {
   public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: MQTTDeviceDebugInfoDialogParams;
+  @state() private _params?: MQTTDeviceDebugInfoDialogParams;
 
-  @internalProperty() private _debugInfo?: MQTTDeviceDebugInfo;
+  @state() private _debugInfo?: MQTTDeviceDebugInfo;
 
-  @internalProperty() private _showAsYaml = true;
+  @state() private _showAsYaml = true;
 
-  @internalProperty() private _showDeserialized = true;
+  @state() private _showDeserialized = true;
 
   public async showDialog(
     params: MQTTDeviceDebugInfoDialogParams
@@ -219,7 +219,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

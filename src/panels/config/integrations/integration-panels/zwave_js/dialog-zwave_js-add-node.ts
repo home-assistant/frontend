@@ -3,12 +3,12 @@ import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-formfield";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
   property,
-  internalProperty,
+  state,
   TemplateResult,
   css,
 } from "lit-element";
@@ -28,13 +28,13 @@ export interface ZWaveJSAddNodeDevice {
 class DialogZWaveJSAddNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private entry_id?: string;
+  @state() private entry_id?: string;
 
-  @internalProperty() private _use_secure_inclusion = false;
+  @state() private _use_secure_inclusion = false;
 
-  @internalProperty() private _status = "";
+  @state() private _status = "";
 
-  @internalProperty() private _device?: ZWaveJSAddNodeDevice;
+  @state() private _device?: ZWaveJSAddNodeDevice;
 
   private _addNodeTimeoutHandle?: number;
 
@@ -252,7 +252,7 @@ class DialogZWaveJSAddNode extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

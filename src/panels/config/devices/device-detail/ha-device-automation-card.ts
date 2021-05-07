@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
   property,
@@ -86,7 +86,7 @@ export abstract class HaDeviceAutomationCard<
     showAutomationEditor(this, data);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       h3 {
         color: var(--primary-text-color);

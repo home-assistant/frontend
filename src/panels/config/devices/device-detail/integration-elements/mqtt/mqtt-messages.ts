@@ -1,10 +1,10 @@
 import { safeDump } from "js-yaml";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -28,11 +28,11 @@ class MQTTMessages extends LitElement {
 
   @property() public summary!: string;
 
-  @internalProperty() private _open = false;
+  @state() private _open = false;
 
-  @internalProperty() private _payloadsJson = new WeakMap();
+  @state() private _payloadsJson = new WeakMap();
 
-  @internalProperty() private _showTopic = false;
+  @state() private _showTopic = false;
 
   protected firstUpdated(): void {
     this.messages.forEach((message) => {
@@ -133,7 +133,7 @@ class MQTTMessages extends LitElement {
     this._open = !this._open;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .expander {
         cursor: pointer;

@@ -7,10 +7,10 @@ import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
 } from "lit-element";
@@ -87,7 +87,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property() public trigger!: Trigger;
 
-  @internalProperty() private _yamlMode = false;
+  @state() private _yamlMode = false;
 
   protected render() {
     const selected = OPTIONS.indexOf(this.trigger.platform);
@@ -240,7 +240,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

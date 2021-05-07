@@ -1,10 +1,10 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -34,9 +34,9 @@ import { LocalStorage } from "../../../../common/decorators/local-storage";
 export class DialogTryTts extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _loadingExample = false;
+  @state() private _loadingExample = false;
 
-  @internalProperty() private _params?: TryTtsDialogParams;
+  @state() private _params?: TryTtsDialogParams;
 
   @query("#target") private _targetInput?: PaperListboxElement;
 
@@ -189,7 +189,7 @@ export class DialogTryTts extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

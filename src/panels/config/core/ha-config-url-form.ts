@@ -3,10 +3,10 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -20,13 +20,13 @@ import type { HomeAssistant } from "../../../types";
 class ConfigUrlForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _working = false;
+  @state() private _working = false;
 
-  @internalProperty() private _external_url?: string;
+  @state() private _external_url?: string;
 
-  @internalProperty() private _internal_url?: string;
+  @state() private _internal_url?: string;
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
@@ -135,7 +135,7 @@ class ConfigUrlForm extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .row {
         display: flex;

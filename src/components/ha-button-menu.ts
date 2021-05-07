@@ -2,7 +2,7 @@ import "@material/mwc-menu";
 import type { Corner, Menu } from "@material/mwc-menu";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -53,7 +53,7 @@ export class HaButtonMenu extends LitElement {
     this._menu!.show();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-block;

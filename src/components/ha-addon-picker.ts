@@ -1,7 +1,7 @@
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -51,7 +51,7 @@ class HaAddonPicker extends LitElement {
 
   @property() public value = "";
 
-  @internalProperty() private _addons?: HassioAddonInfo[];
+  @state() private _addons?: HassioAddonInfo[];
 
   @property({ type: Boolean }) public disabled = false;
 

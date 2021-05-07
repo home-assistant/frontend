@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import { mdiAlert, mdiCheck } from "@mdi/js";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -46,7 +46,7 @@ class OZWNetworkNodes extends LitElement {
 
   @property() public ozwInstance = 0;
 
-  @internalProperty() private _nodes: OZWDevice[] = [];
+  @state() private _nodes: OZWDevice[] = [];
 
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer => ({
@@ -127,7 +127,7 @@ class OZWNetworkNodes extends LitElement {
     navigate(this, `/config/ozw/network/${this.ozwInstance}/node/${nodeId}`);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

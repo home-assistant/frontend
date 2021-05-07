@@ -2,7 +2,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -89,7 +89,7 @@ class StateInfo extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         min-width: 120px;

@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   eventOptions,
   html,
@@ -254,7 +254,7 @@ class HaLogbook extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleScrollbar,

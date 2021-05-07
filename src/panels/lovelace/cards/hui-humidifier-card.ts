@@ -2,10 +2,10 @@ import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -54,9 +54,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: HumidifierCardConfig;
+  @state() private _config?: HumidifierCardConfig;
 
-  @internalProperty() private _setHum?: number;
+  @state() private _setHum?: number;
 
   public getCardSize(): number {
     return 6;
@@ -268,7 +268,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

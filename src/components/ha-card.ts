@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -14,7 +14,7 @@ export class HaCard extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public outlined = false;
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         background: var(

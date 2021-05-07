@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -26,7 +26,7 @@ import { LovelaceElement, StateIconElementConfig } from "./types";
 export class HuiStateIconElement extends LitElement implements LovelaceElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: StateIconElementConfig;
+  @state() private _config?: StateIconElementConfig;
 
   public setConfig(config: StateIconElementConfig): void {
     if (!config.entity) {
@@ -77,7 +77,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         cursor: pointer;

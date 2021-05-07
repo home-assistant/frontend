@@ -1,9 +1,9 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -26,7 +26,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass!: MockHomeAssistant;
 
-  @internalProperty() private _switching?: boolean;
+  @state() private _switching?: boolean;
 
   private _hidden = localStorage.hide_demo_card;
 
@@ -113,7 +113,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         a {

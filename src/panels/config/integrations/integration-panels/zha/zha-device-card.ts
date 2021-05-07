@@ -3,12 +3,12 @@ import "@polymer/paper-listbox/paper-listbox";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
   property,
-  internalProperty,
+  state,
   TemplateResult,
 } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -43,7 +43,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow?: boolean;
 
-  @internalProperty() private _entities: EntityRegistryEntry[] = [];
+  @state() private _entities: EntityRegistryEntry[] = [];
 
   private _deviceEntities = memoizeOne(
     (
@@ -206,7 +206,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

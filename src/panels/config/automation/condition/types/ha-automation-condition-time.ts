@@ -2,10 +2,10 @@ import { Radio } from "@material/mwc-radio";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
 } from "lit-element";
@@ -43,9 +43,9 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
 
   @property({ attribute: false }) public condition!: TimeCondition;
 
-  @internalProperty() private _inputModeBefore?: boolean;
+  @state() private _inputModeBefore?: boolean;
 
-  @internalProperty() private _inputModeAfter?: boolean;
+  @state() private _inputModeAfter?: boolean;
 
   public static get defaultConfig() {
     return {};
@@ -210,7 +210,7 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .weekday-toggle {
         display: flex;

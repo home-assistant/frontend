@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -86,7 +86,7 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

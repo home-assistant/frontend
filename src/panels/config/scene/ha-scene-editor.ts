@@ -5,10 +5,10 @@ import "@polymer/paper-item/paper-item-body";
 import { HassEvent } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -89,29 +89,29 @@ export class HaSceneEditor extends SubscribeMixin(
 
   @property() public showAdvanced!: boolean;
 
-  @internalProperty() private _dirty = false;
+  @state() private _dirty = false;
 
-  @internalProperty() private _errors?: string;
+  @state() private _errors?: string;
 
-  @internalProperty() private _config?: SceneConfig;
+  @state() private _config?: SceneConfig;
 
-  @internalProperty() private _entities: string[] = [];
+  @state() private _entities: string[] = [];
 
-  @internalProperty() private _devices: string[] = [];
+  @state() private _devices: string[] = [];
 
-  @internalProperty()
+  @state()
   private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
-  @internalProperty()
+  @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
-  @internalProperty() private _scene?: SceneEntity;
+  @state() private _scene?: SceneEntity;
 
   private _storedStates: SceneEntities = {};
 
   private _unsubscribeEvents?: () => void;
 
-  @internalProperty() private _deviceEntityLookup: DeviceEntitiesLookup = {};
+  @state() private _deviceEntityLookup: DeviceEntitiesLookup = {};
 
   private _activateContextId?: string;
 
@@ -686,9 +686,9 @@ export class HaSceneEditor extends SubscribeMixin(
   private _calculateStates(): SceneEntities {
     const output: SceneEntities = {};
     this._entities.forEach((entityId) => {
-      const state = this._getCurrentState(entityId);
-      if (state) {
-        output[entityId] = state;
+      const entityState = this._getCurrentState(entityId);
+      if (entityState) {
+        output[entityId] = entityState;
       }
     });
     return output;
@@ -698,11 +698,11 @@ export class HaSceneEditor extends SubscribeMixin(
     if (entityId in this._storedStates) {
       return;
     }
-    const state = this._getCurrentState(entityId);
-    if (!state) {
+    const entityState = this._getCurrentState(entityId);
+    if (!entityState) {
       return;
     }
-    this._storedStates[entityId] = state;
+    this._storedStates[entityId] = entityState;
   }
 
   private _getCurrentState(entityId: string) {
@@ -736,7 +736,7 @@ export class HaSceneEditor extends SubscribeMixin(
     this._saveScene();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -16,10 +16,10 @@ import "@polymer/paper-radio-group/paper-radio-group";
 import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -69,19 +69,19 @@ class HassioSnapshots extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _snapshotName = "";
+  @state() private _snapshotName = "";
 
-  @internalProperty() private _snapshotPassword = "";
+  @state() private _snapshotPassword = "";
 
-  @internalProperty() private _snapshotHasPassword = false;
+  @state() private _snapshotHasPassword = false;
 
-  @internalProperty() private _snapshotType: HassioSnapshot["type"] = "full";
+  @state() private _snapshotType: HassioSnapshot["type"] = "full";
 
-  @internalProperty() private _snapshots?: HassioSnapshot[] = [];
+  @state() private _snapshots?: HassioSnapshot[] = [];
 
-  @internalProperty() private _addonList: CheckboxItem[] = [];
+  @state() private _addonList: CheckboxItem[] = [];
 
-  @internalProperty() private _folderList: CheckboxItem[] = [
+  @state() private _folderList: CheckboxItem[] = [
     {
       slug: "homeassistant",
       checked: true,
@@ -92,7 +92,7 @@ class HassioSnapshots extends LitElement {
     { slug: "addons/local", checked: true },
   ];
 
-  @internalProperty() private _error = "";
+  @state() private _error = "";
 
   public async refreshData() {
     await reloadHassioSnapshots(this.hass);
@@ -428,7 +428,7 @@ class HassioSnapshots extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

@@ -2,10 +2,10 @@ import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -28,17 +28,17 @@ class DialogTagDetail
   implements HassDialog<TagDetailDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _id?: string;
+  @state() private _id?: string;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: TagDetailDialogParams;
+  @state() private _params?: TagDetailDialogParams;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
-  @internalProperty() private _qrCode?: TemplateResult;
+  @state() private _qrCode?: TemplateResult;
 
   public showDialog(params: TagDetailDialogParams): void {
     this._params = params;
@@ -252,7 +252,7 @@ class DialogTagDetail
     this._qrCode = html`<img src=${canvas.toDataURL()}></img>`;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

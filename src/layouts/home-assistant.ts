@@ -1,10 +1,5 @@
 import "@polymer/app-route/app-location";
-import {
-  customElement,
-  html,
-  internalProperty,
-  PropertyValues,
-} from "lit-element";
+import { customElement, html, state, PropertyValues } from "lit-element";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
@@ -21,11 +16,11 @@ import "./home-assistant-main";
 
 @customElement("home-assistant")
 export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
-  @internalProperty() private _route?: Route;
+  @state() private _route?: Route;
 
-  @internalProperty() private _error = false;
+  @state() private _error = false;
 
-  @internalProperty() private _panelUrl?: string;
+  @state() private _panelUrl?: string;
 
   private _haVersion?: string;
 

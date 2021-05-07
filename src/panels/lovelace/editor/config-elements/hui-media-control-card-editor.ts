@@ -1,7 +1,7 @@
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -29,7 +29,7 @@ export class HuiMediaControlCardEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: MediaControlCardConfig;
+  @state() private _config?: MediaControlCardConfig;
 
   public setConfig(config: MediaControlCardConfig): void {
     assert(config, cardConfigStruct);

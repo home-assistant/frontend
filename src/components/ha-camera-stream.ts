@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -39,9 +39,9 @@ class HaCameraStream extends LitElement {
 
   // We keep track if we should force MJPEG with a string
   // that way it automatically resets if we change entity.
-  @internalProperty() private _forceMJPEG?: string;
+  @state() private _forceMJPEG?: string;
 
-  @internalProperty() private _url?: string;
+  @state() private _url?: string;
 
   protected render(): TemplateResult {
     if (!this.stateObj) {
@@ -113,7 +113,7 @@ class HaCameraStream extends LitElement {
     fireEvent(this, "iron-resize");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host,
       img {

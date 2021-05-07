@@ -6,7 +6,7 @@ import {
   html,
   LitElement,
   property,
-  internalProperty,
+  state,
   TemplateResult,
   css,
 } from "lit-element";
@@ -23,13 +23,13 @@ import { reinterviewNode } from "../../../../../data/zwave_js";
 class DialogZWaveJSReinterviewNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private entry_id?: string;
+  @state() private entry_id?: string;
 
-  @internalProperty() private node_id?: number;
+  @state() private node_id?: number;
 
-  @internalProperty() private _status?: string;
+  @state() private _status?: string;
 
-  @internalProperty() private _stages?: string[];
+  @state() private _stages?: string[];
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 

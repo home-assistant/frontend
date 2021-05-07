@@ -1,7 +1,7 @@
 import "./ha-circular-progress";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -98,7 +98,7 @@ class StateHistoryCharts extends LitElement {
     return !this.isLoadingData && historyDataEmpty;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

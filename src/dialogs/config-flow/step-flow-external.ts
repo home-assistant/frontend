@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -48,7 +48,7 @@ class StepFlowExternal extends LitElement {
     window.open(this.step.url);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`

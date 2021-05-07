@@ -1,7 +1,7 @@
 import "@material/mwc-switch";
 import type { Switch } from "@material/mwc-switch";
 import { style } from "@material/mwc-switch/mwc-switch-css";
-import { css, CSSResult, customElement, property } from "lit-element";
+import { css, CSSResultGroup, customElement, property } from "lit-element";
 import { forwardHaptic } from "../data/haptics";
 import { Constructor } from "../types";
 
@@ -27,7 +27,7 @@ export class HaSwitch extends MwcSwitch {
     });
   }
 
-  protected static get styles(): CSSResult[] {
+  protected static get styles(): CSSResultGroup {
     return [
       style,
       css`

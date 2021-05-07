@@ -5,10 +5,10 @@ import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/iron-autogrow-textarea/iron-autogrow-textarea";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -53,15 +53,15 @@ class HassioAddonConfig extends LitElement {
 
   @property({ type: Boolean }) private _valid = true;
 
-  @internalProperty() private _canShowSchema = false;
+  @state() private _canShowSchema = false;
 
-  @internalProperty() private _showOptional = false;
+  @state() private _showOptional = false;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _options?: Record<string, unknown>;
+  @state() private _options?: Record<string, unknown>;
 
-  @internalProperty() private _yamlMode = false;
+  @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
@@ -292,7 +292,7 @@ class HassioAddonConfig extends LitElement {
     fireEvent(this, "hass-api-called", eventdata);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

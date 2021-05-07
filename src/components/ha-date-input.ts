@@ -1,7 +1,7 @@
 import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker-light";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -134,7 +134,7 @@ export class HaDateInput extends LitElement {
     return true;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-input {
         width: 110px;

@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -45,13 +45,13 @@ class OZWNodeConfig extends LitElement {
 
   @property() public nodeId?;
 
-  @internalProperty() private _node?: OZWDevice;
+  @state() private _node?: OZWDevice;
 
-  @internalProperty() private _metadata?: OZWDeviceMetaDataResponse;
+  @state() private _metadata?: OZWDeviceMetaDataResponse;
 
-  @internalProperty() private _config?: OZWDeviceConfig[];
+  @state() private _config?: OZWDeviceConfig[];
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   protected firstUpdated() {
     if (!this.ozwInstance) {
@@ -221,7 +221,7 @@ class OZWNodeConfig extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

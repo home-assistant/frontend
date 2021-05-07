@@ -2,10 +2,10 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -41,27 +41,27 @@ class MoreInfoLight extends LitElement {
 
   @property({ attribute: false }) public stateObj?: LightEntity;
 
-  @internalProperty() private _brightnessSliderValue = 0;
+  @state() private _brightnessSliderValue = 0;
 
-  @internalProperty() private _ctSliderValue?: number;
+  @state() private _ctSliderValue?: number;
 
-  @internalProperty() private _cwSliderValue?: number;
+  @state() private _cwSliderValue?: number;
 
-  @internalProperty() private _wwSliderValue?: number;
+  @state() private _wwSliderValue?: number;
 
-  @internalProperty() private _wvSliderValue?: number;
+  @state() private _wvSliderValue?: number;
 
-  @internalProperty() private _colorBrightnessSliderValue?: number;
+  @state() private _colorBrightnessSliderValue?: number;
 
-  @internalProperty() private _brightnessAdjusted?: number;
+  @state() private _brightnessAdjusted?: number;
 
-  @internalProperty() private _hueSegments = 24;
+  @state() private _hueSegments = 24;
 
-  @internalProperty() private _saturationSegments = 8;
+  @state() private _saturationSegments = 8;
 
-  @internalProperty() private _colorPickerColor?: [number, number, number];
+  @state() private _colorPickerColor?: [number, number, number];
 
-  @internalProperty() private _mode?: "color" | LightColorModes.COLOR_TEMP;
+  @state() private _mode?: "color" | LightColorModes.COLOR_TEMP;
 
   protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
@@ -539,7 +539,7 @@ class MoreInfoLight extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .content {
         display: flex;

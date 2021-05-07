@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -27,13 +27,13 @@ export class HaDeviceInfoZWaveJS extends LitElement {
 
   @property() public device!: DeviceRegistryEntry;
 
-  @internalProperty() private _entryId?: string;
+  @state() private _entryId?: string;
 
-  @internalProperty() private _nodeId?: number;
+  @state() private _nodeId?: number;
 
-  @internalProperty() private _homeId?: string;
+  @state() private _homeId?: string;
 
-  @internalProperty() private _node?: ZWaveJSNode;
+  @state() private _node?: ZWaveJSNode;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
@@ -95,7 +95,7 @@ export class HaDeviceInfoZWaveJS extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

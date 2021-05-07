@@ -1,10 +1,10 @@
 import { mdiMenu } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -33,7 +33,7 @@ class HassioIngressView extends LitElement {
 
   @property() public ingressPanel = false;
 
-  @internalProperty() private _addon?: HassioAddonDetails;
+  @state() private _addon?: HassioAddonDetails;
 
   @property({ type: Boolean })
   public narrow = false;
@@ -162,7 +162,7 @@ class HassioIngressView extends LitElement {
     fireEvent(this, "hass-toggle-menu");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       iframe {
         display: block;

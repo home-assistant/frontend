@@ -2,13 +2,7 @@ import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-} from "lit-element";
+import { css, CSSResultGroup, html, state, LitElement } from "lit-element";
 import "../../../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -22,7 +16,7 @@ const inputLabel = "Public URL – Click to copy to clipboard";
 export class DialogManageCloudhook extends LitElement {
   protected hass?: HomeAssistant;
 
-  @internalProperty() private _params?: WebhookDialogParams;
+  @state() private _params?: WebhookDialogParams;
 
   public async showDialog(params: WebhookDialogParams) {
     this._params = params;
@@ -148,7 +142,7 @@ export class DialogManageCloudhook extends LitElement {
     this._paperInput.label = inputLabel;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

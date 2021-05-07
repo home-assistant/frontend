@@ -2,10 +2,10 @@ import "@material/mwc-button/mwc-button";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
 } from "lit-element";
@@ -48,13 +48,13 @@ class HaPanelDevTemplate extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _rendering = false;
+  @state() private _rendering = false;
 
-  @internalProperty() private _templateResult?: RenderTemplateResult;
+  @state() private _templateResult?: RenderTemplateResult;
 
-  @internalProperty() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+  @state() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
   private _template = "";
 
@@ -240,7 +240,7 @@ class HaPanelDevTemplate extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

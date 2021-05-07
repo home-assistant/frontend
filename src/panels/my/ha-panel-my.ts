@@ -1,10 +1,4 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { customElement, html, state, LitElement, property } from "lit-element";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import { navigate } from "../../common/navigate";
 import { HomeAssistant, Route } from "../../types";
@@ -167,7 +161,7 @@ class HaPanelMy extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() public _error?: string;
+  @state() public _error?: string;
 
   connectedCallback() {
     super.connectedCallback();

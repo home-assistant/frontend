@@ -1,8 +1,8 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -32,7 +32,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
 
   @property() protected _cards?: LovelaceCard[];
 
-  @internalProperty() protected _config?: T;
+  @state() protected _config?: T;
 
   public getCardSize(): number | Promise<number> {
     return 1;
@@ -81,7 +81,7 @@ export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
     `;
   }
 
-  static get sharedStyles(): CSSResult {
+  static get sharedStyles(): CSSResultGroup {
     return css`
       .card-header {
         color: var(--ha-card-header-color, --primary-text-color);
