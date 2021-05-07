@@ -22,6 +22,7 @@ import {
   union,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { entityId } from "../../../../common/structs/is-entity-id";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
@@ -49,6 +50,7 @@ import { configElementStyle } from "./config-elements-style";
 const cardConfigStruct = object({
   type: string(),
   title: optional(union([string(), boolean()])),
+  entity: optional(entityId()),
   theme: optional(string()),
   show_header_toggle: optional(boolean()),
   state_color: optional(boolean()),

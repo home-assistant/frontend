@@ -20,7 +20,7 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { HistoryGraphCardConfig } from "../../cards/types";
-import { EntityId } from "../../../../common/structs/is-entity-id";
+import { entityId } from "../../../../common/structs/is-entity-id";
 import "../../components/hui-entity-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
@@ -30,10 +30,10 @@ import { configElementStyle } from "./config-elements-style";
 
 const entitiesConfigStruct = union([
   object({
-    entity: EntityId,
+    entity: entityId(),
     name: optional(string()),
   }),
-  EntityId,
+  entityId(),
 ]);
 
 const cardConfigStruct = object({

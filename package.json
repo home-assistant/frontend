@@ -129,7 +129,7 @@
     "resize-observer-polyfill": "^1.5.1",
     "roboto-fontface": "^0.10.0",
     "sortablejs": "^1.10.2",
-    "superstruct": "^0.10.13",
+    "superstruct": "^0.15.2",
     "tinykeys": "^1.1.1",
     "tsparticles": "^1.19.2",
     "unfetch": "^4.1.0",

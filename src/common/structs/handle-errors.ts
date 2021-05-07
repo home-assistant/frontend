@@ -27,6 +27,20 @@ export const handleStructError = (
           failure.path.join(".")
         )
       );
+    } else if (failure.type === "union") {
+      continue;
+    } else if (failure.type === "enums") {
+      warnings.push(
+        hass.localize(
+          "ui.errors.config.key_wrong_type",
+          "key",
+          failure.path.join("."),
+          "type_correct",
+          failure.message.replace("Expected ", "").split(", ")[0],
+          "type_wrong",
+          JSON.stringify(failure.value)
+        )
+      );
     } else {
       warnings.push(
         hass.localize(
@@ -34,7 +48,7 @@ export const handleStructError = (
           "key",
           failure.path.join("."),
           "type_correct",
-          failure.type,
+          failure.refinement || failure.type,
           "type_wrong",
           JSON.stringify(failure.value)
         )
