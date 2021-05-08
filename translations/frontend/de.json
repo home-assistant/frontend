@@ -2246,6 +2246,7 @@
                         },
                         "finish": "Fertig",
                         "loading_first_time": "Bitte warten, während die Integration installiert wird",
+                        "next": "Weiter",
                         "not_all_required_fields": "Nicht alle Pflichtfelder sind ausgefüllt.",
                         "not_loaded": "Die Integration konnte nicht geladen werden. Versuche Home Assistant neu zu starten.",
                         "pick_flow_step": {
