@@ -2952,7 +2952,7 @@
                     },
                     "logs": {
                         "log_level": "Poziom loga",
-                        "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS ...",
+                        "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS...",
                         "title": "Logi Z-Wave JS"
                     },
                     "navigation": {
