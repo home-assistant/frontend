@@ -3975,12 +3975,12 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
-                    "created_at": "Created at {date}",
+                    "created_at": "Created {date}",
                     "current_token_tooltip": "Unable to delete current refresh token",
                     "delete_failed": "Failed to delete the refresh token.",
                     "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
                     "header": "Refresh Tokens",
-                    "last_used": "Last used at {date} from {location}",
+                    "last_used": "Last used {date} from {location}",
                     "not_used": "Has never been used",
                     "token_title": "Refresh token for {clientId}"
                 },

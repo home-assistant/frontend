@@ -3826,7 +3826,7 @@
                         "required_fields": "Vyplňte všechna povinná pole"
                     },
                     "intro": "Začněme tím, že vytvoříme uživatelský účet.",
-                    "required_field": "Povinný"
+                    "required_field": "Povinné"
                 }
             },
             "profile": {
@@ -3840,7 +3840,7 @@
                     "current_password": "Současné heslo",
                     "error_new_is_old": "Nové heslo se musí lišit od aktuálního hesla",
                     "error_new_mismatch": "Zadaná nová hesla se neshodují",
-                    "error_required": "Povinný",
+                    "error_required": "Povinné",
                     "header": "Změnit heslo",
                     "new_password": "Nové heslo",
                     "submit": "Odeslat",
