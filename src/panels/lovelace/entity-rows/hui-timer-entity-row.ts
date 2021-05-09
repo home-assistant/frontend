@@ -126,14 +126,17 @@ class HuiTimerEntityRow extends LitElement {
 
     if (stateObj.state === "idle" || this._timeRemaining === 0) {
       return (
-        this.hass!.localize(`state.timer.${stateObj.state}`) || stateObj.state
+        this.hass!.localize(`component.timer.state._.${stateObj.state}`) ||
+        stateObj.state
       );
     }
 
     let display = secondsToDuration(this._timeRemaining || 0);
 
     if (stateObj.state === "paused") {
-      display += ` (${this.hass!.localize("state.timer.paused")})`;
+      display += ` (${this.hass!.localize(
+        `component.timer.state._.${stateObj.state}`
+      )})`;
     }
 
     return display;
