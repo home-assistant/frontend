@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Viga",
+            "error_addon_no_ingress": "Valitud lisandmoodul ei toeta ingressi",
             "error_addon_not_found": "Lisandmoodulit ei leitud",
             "faq_link": "KKK viide",
             "not_supported": "pole toetatud"
