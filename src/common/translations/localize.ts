@@ -3,7 +3,6 @@ import IntlMessageFormat from "intl-messageformat";
 import { Resources } from "../../types";
 
 export type LocalizeFunc = (key: string, ...args: any[]) => string;
-
 interface FormatType {
   [format: string]: any;
 }
@@ -82,7 +81,9 @@ export const computeLocalize = async (
     }
 
     const messageKey = key + translatedValue;
-    let translatedMessage = cache._localizationCache[messageKey];
+    let translatedMessage = cache._localizationCache[messageKey] as
+      | IntlMessageFormat
+      | undefined;
 
     if (!translatedMessage) {
       translatedMessage = new IntlMessageFormat(
@@ -93,37 +94,19 @@ export const computeLocalize = async (
       cache._localizationCache[messageKey] = translatedMessage;
     }
 
-    const argObject = {};
-    for (let i = 0; i < args.length; i += 2) {
-      argObject[args[i]] = args[i + 1];
+    let argObject = {};
+    if (args[0] && typeof args[0] === "object") {
+      argObject = args[0];
+    } else {
+      for (let i = 0; i < args.length; i += 2) {
+        argObject[args[i]] = args[i + 1];
+      }
     }
 
     try {
-      return translatedMessage.format(argObject);
+      return translatedMessage.format<string>(argObject) as string;
     } catch (err) {
       return "Translation " + err;
     }
   };
-};
-
-/**
- * Silly helper function that converts an object of placeholders to array so we
- * can convert it back to an object again inside the localize func.
- * @param localize
- * @param key
- * @param placeholders
- */
-export const localizeKey = (
-  localize: LocalizeFunc,
-  key: string,
-  placeholders?: Record<string, string>
-) => {
-  const args: [string, ...string[]] = [key];
-  if (placeholders) {
-    Object.keys(placeholders).forEach((placeholderKey) => {
-      args.push(placeholderKey);
-      args.push(placeholders[placeholderKey]);
-    });
-  }
-  return localize(...args);
 };
