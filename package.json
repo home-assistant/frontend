@@ -108,7 +108,7 @@
     "fecha": "^4.2.0",
     "fuse.js": "^6.0.0",
     "google-timezones-json": "^1.0.2",
-    "hls.js": "^1.0.1",
+    "hls.js": "^1.0.3",
     "home-assistant-js-websocket": "^5.9.0",
     "idb-keyval": "^3.2.0",
     "intl-messageformat": "^8.3.9",
