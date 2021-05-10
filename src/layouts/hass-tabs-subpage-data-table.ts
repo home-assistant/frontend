@@ -11,6 +11,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/data-table/ha-data-table";
@@ -34,6 +35,8 @@ declare global {
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
   @property({ type: Boolean }) public isWide = false;
 
@@ -185,6 +188,7 @@ export class HaTabsSubpageDataTable extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.localizeFunc}
         .narrow=${this.narrow}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
