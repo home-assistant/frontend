@@ -15,6 +15,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { formatDateTime } from "../common/datetime/format_date_time";
+import { useAmPm } from "../common/datetime/use_am_pm";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import { HomeAssistant } from "../types";
 import "./date-range-picker";
@@ -44,7 +45,7 @@ export class HaDateRangePicker extends LitElement {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
       if (!oldHass || oldHass.locale !== this.hass.locale) {
-        this._hour24format = this._compute24hourFormat();
+        this._hour24format = !useAmPm(this.hass.locale);
         this._rtlDirection = computeRTLDirection(this.hass);
       }
     }
@@ -105,16 +106,6 @@ export class HaDateRangePicker extends LitElement {
         </div>
       </date-range-picker>
     `;
-  }
-
-  private _compute24hourFormat() {
-    return (
-      new Intl.DateTimeFormat(this.hass.language, {
-        hour: "numeric",
-      })
-        .formatToParts(new Date(2020, 0, 1, 13))
-        .find((part) => part.type === "hour")!.value.length === 2
-    );
   }
 
   private _setDateRange(ev: CustomEvent<ActionDetail>) {
