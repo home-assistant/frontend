@@ -73,7 +73,7 @@ class StateInfo extends LitElement {
                 </div>
               </paper-tooltip>
             </div>`
-          : html`<div class="extra-info"><slot> </slot></div>`}
+          : html`<div class="extra-info"><slot></slot></div>`}
       </div>`;
   }
 
@@ -106,6 +106,10 @@ class StateInfo extends LitElement {
 
       .info {
         margin-left: 56px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
       }
 
       :host([rtl]) .info {
