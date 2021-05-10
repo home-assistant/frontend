@@ -2,12 +2,7 @@ import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiPlus } from "@mdi/js";
-import "@polymer/paper-checkbox/paper-checkbox";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
 import {
-  css,
   CSSResultGroup,
   customElement,
   html,
@@ -215,27 +210,7 @@ export class HassioSnapshots extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [
-      haStyle,
-      hassioStyle,
-      css`
-        paper-radio-group {
-          display: block;
-        }
-        paper-radio-button {
-          padding: 0 0 2px 2px;
-        }
-        paper-radio-button,
-        paper-checkbox,
-        paper-input[type="password"] {
-          display: block;
-          margin: 4px 0 4px 48px;
-        }
-        .pointer {
-          cursor: pointer;
-        }
-      `,
-    ];
+    return [haStyle, hassioStyle];
   }
 }
 
