@@ -13,6 +13,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { formatDateTime } from "../../../../src/common/datetime/format_date_time";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-svg-icon";
@@ -132,7 +133,7 @@ class HassioSnapshotDialog extends LitElement {
             ? "Full snapshot"
             : "Partial snapshot"}
           (${this._computeSize})<br />
-          ${this._formatDatetime(this._snapshot.date)}
+          ${formatDateTime(new Date(this._snapshot.date), this.hass.locale)}
         </div>
         ${this._snapshot.homeassistant
           ? html`<div>Home Assistant:</div>
@@ -142,7 +143,8 @@ class HassioSnapshotDialog extends LitElement {
                   this._restoreHass = (ev.target as PaperCheckboxElement).checked!;
                 }}"
               >
-                Home Assistant ${this._snapshot.homeassistant}
+                Home Assistant
+                <span class="version">(${this._snapshot.homeassistant})</span>
               </paper-checkbox>`
           : ""}
         ${this._folders.length
@@ -181,6 +183,7 @@ class HassioSnapshotDialog extends LitElement {
                         )}"
                     >
                       ${item.name}
+                      <span class="version">(${item.version})</span>
                     </paper-checkbox>
                   `
                 )}
@@ -267,6 +270,9 @@ class HassioSnapshotDialog extends LitElement {
         }
         .no-margin-top {
           margin-top: 0;
+        }
+        span.version {
+          color: var(--secondary-text-color);
         }
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);
@@ -497,17 +503,6 @@ class HassioSnapshotDialog extends LitElement {
 
   private get _computeSize() {
     return Math.ceil(this._snapshot!.size * 10) / 10 + " MB";
-  }
-
-  private _formatDatetime(datetime) {
-    return new Date(datetime).toLocaleDateString(navigator.language, {
-      weekday: "long",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    });
   }
 
   private _closeDialog() {
