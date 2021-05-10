@@ -6,7 +6,7 @@ import {
   CSSResult,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -58,21 +58,21 @@ const folderList = () => [
 class HassioCreateSnapshotDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _snapshotName = "";
+  @state() private _snapshotName = "";
 
-  @internalProperty() private _snapshotPassword = "";
+  @state() private _snapshotPassword = "";
 
-  @internalProperty() private _snapshotHasPassword = false;
+  @state() private _snapshotHasPassword = false;
 
-  @internalProperty() private _snapshotType: HassioSnapshot["type"] = "full";
+  @state() private _snapshotType: HassioSnapshot["type"] = "full";
 
-  @internalProperty() private _dialogParams?: HassioCreateSnapshotDialogParams;
+  @state() private _dialogParams?: HassioCreateSnapshotDialogParams;
 
-  @internalProperty() private _addonList: CheckboxItem[] = [];
+  @state() private _addonList: CheckboxItem[] = [];
 
-  @internalProperty() private _folderList: CheckboxItem[] = folderList();
+  @state() private _folderList: CheckboxItem[] = folderList();
 
-  @internalProperty() private _error = "";
+  @state() private _error = "";
 
   public showDialog(params: HassioCreateSnapshotDialogParams) {
     this._dialogParams = params;
