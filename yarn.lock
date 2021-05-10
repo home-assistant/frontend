@@ -4635,6 +4635,14 @@ chart.js@~2.8.0:
     chartjs-color "^2.1.0"
     moment "^2.10.2"
 
+chart.js@~2.9.4:
+  version "2.9.4"
+  resolved "https://registry.yarnpkg.com/chart.js/-/chart.js-2.9.4.tgz#0827f9563faffb2dc5c06562f8eb10337d5b9684"
+  integrity sha512-B07aAzxcrikjAPyV+01j7BmOpxtQETxTSlQ26BEYJ+3iUkbNKaOJ/nDbT6JjyqYxseM0ON12COHYdU2cTIjC7A==
+  dependencies:
+    chartjs-color "^2.1.0"
+    moment "^2.10.2"
+
 chartjs-chart-timeline@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/chartjs-chart-timeline/-/chartjs-chart-timeline-0.3.0.tgz#0cd07ad4380d05104162382006d52a02e581decf"
