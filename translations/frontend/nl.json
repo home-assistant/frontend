@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Er is een onbekende fout opgetreden",
+            "error_addon_no_ingress": "De gevraagde add-on ondersteunt geen ingress",
             "error_addon_not_found": "Invoegtoepassing niet gevonden",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
