@@ -164,9 +164,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
-                ${this.hass.localize(
-                  "ui.panel.config.zwave_js.add_node.cancel_inclusion"
-                )}
+                ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
               </mwc-button>
             `
           : ``}
