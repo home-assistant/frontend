@@ -2,13 +2,14 @@ import { HassEntity } from "home-assistant-js-websocket";
 import {
   customElement,
   html,
-  state,
   LitElement,
   property,
   PropertyValues,
+  state,
   TemplateResult,
 } from "lit-element";
 import secondsToDuration from "../../../common/datetime/seconds_to_duration";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { timerTimeRemaining } from "../../../common/entity/timer_time_remaining";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -125,17 +126,20 @@ class HuiTimerEntityRow extends LitElement {
     }
 
     if (stateObj.state === "idle" || this._timeRemaining === 0) {
-      return (
-        this.hass!.localize(`component.timer.state._.${stateObj.state}`) ||
-        stateObj.state
+      return computeStateDisplay(
+        this.hass!.localize,
+        stateObj,
+        this.hass!.locale
       );
     }
 
     let display = secondsToDuration(this._timeRemaining || 0);
 
     if (stateObj.state === "paused") {
-      display += ` (${this.hass!.localize(
-        `component.timer.state._.${stateObj.state}`
+      display += ` (${computeStateDisplay(
+        this.hass!.localize,
+        stateObj,
+        this.hass!.locale
       )})`;
     }
 

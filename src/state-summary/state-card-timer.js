@@ -5,6 +5,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 import { timerTimeRemaining } from "../common/entity/timer_time_remaining";
 import "../components/entity/state-info";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 
 class StateCardTimer extends PolymerElement {
   static get template() {
@@ -18,6 +19,7 @@ class StateCardTimer extends PolymerElement {
           margin-left: 16px;
           text-align: right;
           line-height: 40px;
+          white-space: nowrap;
         }
       </style>
 
@@ -90,10 +92,29 @@ class StateCardTimer extends PolymerElement {
     this.timeRemaining = timerTimeRemaining(stateObj);
   }
 
-  _displayState(time, stateObj) {
-    return time
-      ? secondsToDuration(time)
-      : this.hass.localize(`state.timer.${stateObj.state}`) || stateObj.state;
+  _displayState(timeRemaining, stateObj) {
+    if (!stateObj) {
+      return null;
+    }
+
+    if (stateObj.state === "idle" || timeRemaining === 0) {
+      return computeStateDisplay(
+        this.hass.localize,
+        stateObj,
+        this.hass.locale
+      );
+    }
+
+    let display = secondsToDuration(timeRemaining || 0);
+
+    if (stateObj.state === "paused") {
+      display +=
+        " (" +
+        computeStateDisplay(this.hass.localize, stateObj, this.hass.locale) +
+        ")";
+    }
+
+    return display;
   }
 }
 customElements.define("state-card-timer", StateCardTimer);
