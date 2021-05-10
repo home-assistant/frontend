@@ -3975,12 +3975,12 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "¿Estás seguro de que quieres eliminar el token de actualización para {name}?",
-                    "created_at": "Creado el {date}",
+                    "created_at": "Creado {date}",
                     "current_token_tooltip": "No se puede eliminar el token actual",
                     "delete_failed": "Error al eliminar el token de acceso.",
                     "description": "Cada token de actualización representa un acceso de sesión. Los tokens de actualización se eliminarán automáticamente al cerrar la sesión. Los siguientes tokens de actualización están actualmente activos para tu cuenta.",
                     "header": "Actualizar tokens",
-                    "last_used": "Último uso el {date} desde {location}",
+                    "last_used": "Último uso {date} desde {location}",
                     "not_used": "Nunca ha sido usado",
                     "token_title": "Actualizar token para {clientId}"
                 },

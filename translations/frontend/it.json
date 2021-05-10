@@ -770,7 +770,7 @@
                 "by_service": "dal servizio",
                 "entries_not_found": "Non sono state trovate voci nel registro.",
                 "messages": {
-                    "became_unavailable": "non è più disponibile",
+                    "became_unavailable": "è diventato non disponibile",
                     "changed_to_state": "cambiato in {state}",
                     "cleared_device_class": "sgombro (nessun {device_class} rilevato)",
                     "detected_device_class": "rilevato {device_class}",
