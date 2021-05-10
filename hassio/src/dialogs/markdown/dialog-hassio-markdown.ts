@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -23,7 +23,7 @@ class HassioMarkdownDialog extends LitElement {
 
   @property() public content!: string;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
   public showDialog(params: HassioMarkdownDialogParams) {
     this.title = params.title;
@@ -50,7 +50,7 @@ class HassioMarkdownDialog extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       hassioStyle,

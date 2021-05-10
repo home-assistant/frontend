@@ -2,10 +2,10 @@ import "@material/mwc-icon-button";
 import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -41,9 +41,9 @@ export class HuiEntitiesCardRowEditor extends LitElement {
 
   @property() protected label?: string;
 
-  @internalProperty() private _attached = false;
+  @state() private _attached = false;
 
-  @internalProperty() private _renderEmptySortable = false;
+  @state() private _renderEmptySortable = false;
 
   private _sortable?: Sortable;
 
@@ -250,7 +250,7 @@ export class HuiEntitiesCardRowEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       sortableStyles,
       css`

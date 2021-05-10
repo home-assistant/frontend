@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import { mdiHomeAssistant } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -233,7 +233,7 @@ export class HassioUpdate extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

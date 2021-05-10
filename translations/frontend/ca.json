@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "S'ha produït un error desconegut",
+            "error_addon_no_ingress": "El complement sol·licitat no admet ingress",
             "error_addon_not_found": "No s'ha trobat el complement",
             "faq_link": "Preguntes freqüents de My Home Assistant",
             "not_supported": "La instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
@@ -3974,7 +3975,7 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "Estàs segur que vols eliminar el token d'actualització per a {name}?",
-                    "created_at": "Creat el {date}",
+                    "created_at": "Creat {date}",
                     "current_token_tooltip": "No s'ha pogut eliminar el token d'autenticació d'actualització.",
                     "delete_failed": "No s'ha pogut eliminar el token d'autenticació d'actualització.",
                     "description": "Cada token d'autenticació d'actualització representa un inici de sessió diferent. Els tokens d'autenticació d'actualització s'eliminaran automàticament quan tanquis la sessió. A sota hi ha una llista de tokens d'autenticació d'actualització que estan actius actualment al teu compte.",

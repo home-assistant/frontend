@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -57,19 +57,19 @@ export class HaAutomationTrace extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @internalProperty() private _entityId?: string;
+  @state() private _entityId?: string;
 
-  @internalProperty() private _traces?: AutomationTrace[];
+  @state() private _traces?: AutomationTrace[];
 
-  @internalProperty() private _runId?: string;
+  @state() private _runId?: string;
 
-  @internalProperty() private _selected?: NodeInfo;
+  @state() private _selected?: NodeInfo;
 
-  @internalProperty() private _trace?: AutomationTraceExtended;
+  @state() private _trace?: AutomationTraceExtended;
 
-  @internalProperty() private _logbookEntries?: LogbookEntry[];
+  @state() private _logbookEntries?: LogbookEntry[];
 
-  @internalProperty() private _view:
+  @state() private _view:
     | "details"
     | "config"
     | "timeline"
@@ -450,7 +450,7 @@ export class HaAutomationTrace extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       traceTabStyles,

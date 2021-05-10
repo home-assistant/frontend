@@ -4,10 +4,10 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -44,7 +44,7 @@ class OZWConfigDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @internalProperty() private _instances?: OZWInstance[];
+  @state() private _instances?: OZWInstance[];
 
   protected firstUpdated() {
     this._fetchData();
@@ -159,7 +159,7 @@ class OZWConfigDashboard extends LitElement {
     }
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

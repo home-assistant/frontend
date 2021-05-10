@@ -10,7 +10,7 @@ import {
 } from "leaflet";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -271,7 +271,7 @@ class LocationEditor extends LitElement {
     (this._locationMarker as Circle).setStyle({ color: this.radiusColor });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

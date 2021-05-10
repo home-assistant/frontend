@@ -3261,8 +3261,8 @@
           "header": "Refresh Tokens",
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
           "token_title": "Refresh token for {clientId}",
-          "created_at": "Created at {date}",
-          "last_used": "Last used at {date} from {location}",
+          "created_at": "Created {date}",
+          "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
           "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
           "delete_failed": "Failed to delete the refresh token.",
@@ -3786,7 +3786,8 @@
       "not_supported": "[%key:ui::panel::my::not_supported%]",
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "error": "[%key:ui::panel::my::error%]",
-      "error_addon_not_found": "Add-on not found"
+      "error_addon_not_found": "Add-on not found",
+      "error_addon_no_ingress": "The requested add-on does not support ingress"
     },
     "system": {
       "log": {

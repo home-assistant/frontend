@@ -1256,7 +1256,7 @@
             "title": "Varsler"
         },
         "notification_toast": {
-            "connection_lost": "Forbindelse mistet. Koble til igjen...",
+            "connection_lost": "Mistet forbindelsen. Kobler til på nytt...",
             "dismiss": "Avvis",
             "intergration_starting": "Starter {integration}. Ikke alt er tilgjengelig før lasting er ferdig.",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
@@ -3130,7 +3130,7 @@
                         "column_description": "Beskrivelse",
                         "column_example": "Eksempel",
                         "column_parameter": "",
-                        "description": "Service utviklingsverktøyet lar deg tilkalle alle tilgjengelige tjenester i Home Assistant.",
+                        "description": "Tjenesteutviklingsverktøyet lar deg tilkalle alle tilgjengelige tjenester i Home Assistant.",
                         "fill_example_data": "Fyll ut eksempeldata",
                         "no_template_ui_support": "Brukergrensesnittet støtter ikke maler, du kan fortsatt bruke YAML-redigereren.",
                         "title": "Tjenester",
@@ -3143,8 +3143,8 @@
                         "attributes": "Attributter",
                         "copy_id": "Kopier ID til utklippstavlen",
                         "current_entities": "Gjeldende entiteter",
-                        "description1": "Angi gjeldende tilstandsrepresentasjon for en enhet i Home Assistant.",
-                        "description2": "Hvis enheten tilhører en enhet, vil det ikke være noen faktisk kommunikasjon med den enheten.",
+                        "description1": "Angi gjeldende tilstandsrepresentasjon for en entitet i Home Assistant.",
+                        "description2": "Hvis entiteten tilhører en enhet, vil det ikke være noen faktisk kommunikasjon med den enheten.",
                         "entity": "Entitet",
                         "filter_attributes": "Filtrere attributter",
                         "filter_entities": "Filtrere entiteter",

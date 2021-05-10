@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Si è verificato un errore sconosciuto",
+            "error_addon_no_ingress": "Il componente aggiuntivo richiesto non supporta l'ingresso",
             "error_addon_not_found": "Componente aggiuntivo non trovato",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "Questo reindirizzamento non è supportato dall'istanza di Home Assistant. Controlla il {link} per i reindirizzamenti supportati e la versione in cui sono stati introdotti."
@@ -769,7 +770,7 @@
                 "by_service": "dal servizio",
                 "entries_not_found": "Non sono state trovate voci nel registro.",
                 "messages": {
-                    "became_unavailable": "non è più disponibile",
+                    "became_unavailable": "è diventato non disponibile",
                     "changed_to_state": "cambiato in {state}",
                     "cleared_device_class": "sgombro (nessun {device_class} rilevato)",
                     "detected_device_class": "rilevato {device_class}",
@@ -1744,7 +1745,7 @@
                         "nabu_casa_account": "Account Nabu Casa",
                         "not_connected": "Non Connesso",
                         "remote": {
-                            "access_is_being_prepared": "È in fase di preparazione l'accesso remoto. Ti avviseremo quando sarà pronto.",
+                            "access_is_being_prepared": "Il controllo remoto è in fase di preparazione. Ti avviseremo quando sarà pronto.",
                             "certificate_info": "Informazioni sul certificato",
                             "connected": "Connesso",
                             "info": "Home Assistant Cloud fornisce una connessione remota sicura alla tua istanza mentre sei fuori casa.",
@@ -3979,7 +3980,7 @@
                     "delete_failed": "Impossibile eliminare il token di aggiornamento.",
                     "description": "Ogni token di aggiornamento rappresenta una sessione di accesso. I token di aggiornamento verranno rimossi automaticamente quando si fa clic su Disconnetti. I seguenti token di aggiornamento sono attualmente attivi per il tuo account.",
                     "header": "Token di aggiornamento",
-                    "last_used": "Utilizzato l'ultima volta il {date} da {location}",
+                    "last_used": "Ultimo utilizzo del {date} da {location}",
                     "not_used": "Non è mai stato usato",
                     "token_title": "Token di aggiornamento per {clientId}"
                 },

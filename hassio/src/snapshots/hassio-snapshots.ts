@@ -2,13 +2,19 @@ import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiPlus } from "@mdi/js";
+import "@polymer/paper-checkbox/paper-checkbox";
+import "@polymer/paper-input/paper-input";
+import "@polymer/paper-radio-button/paper-radio-button";
+import "@polymer/paper-radio-group/paper-radio-group";
 import {
-  CSSResult,
+  css,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
   property,
   PropertyValues,
+  state,
   TemplateResult,
 } from "lit-element";
 import memoizeOne from "memoize-one";
@@ -35,12 +41,13 @@ import { showHassioCreateSnapshotDialog } from "../dialogs/snapshot/show-dialog-
 import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
 import { showSnapshotUploadDialog } from "../dialogs/snapshot/show-dialog-snapshot-upload";
 import { supervisorTabs } from "../hassio-tabs";
+import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-snapshots")
 export class HassioSnapshots extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public supervisor?: Supervisor;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ type: Object }) public route!: Route;
 
@@ -48,9 +55,9 @@ export class HassioSnapshots extends LitElement {
 
   @property({ type: Boolean }) public isWide!: boolean;
 
-  @property({ attribute: false }) public _snapshots: HassioSnapshot[] = [];
-
   private _firstUpdatedCalled = false;
+
+  @state() private _snapshots?: HassioSnapshot[] = [];
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -207,8 +214,28 @@ export class HassioSnapshots extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
-    return haStyle;
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      hassioStyle,
+      css`
+        paper-radio-group {
+          display: block;
+        }
+        paper-radio-button {
+          padding: 0 0 2px 2px;
+        }
+        paper-radio-button,
+        paper-checkbox,
+        paper-input[type="password"] {
+          display: block;
+          margin: 4px 0 4px 48px;
+        }
+        .pointer {
+          cursor: pointer;
+        }
+      `,
+    ];
   }
 }
 

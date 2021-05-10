@@ -1,9 +1,9 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -32,7 +32,7 @@ export class HaEntityToggle extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() private _isOn = false;
+  @state() private _isOn = false;
 
   protected render(): TemplateResult {
     if (!this.stateObj) {
@@ -148,7 +148,7 @@ export class HaEntityToggle extends LitElement {
     }, 2000);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         white-space: nowrap;

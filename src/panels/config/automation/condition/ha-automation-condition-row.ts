@@ -4,10 +4,10 @@ import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
 } from "lit-element";
@@ -56,7 +56,7 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @property() public condition!: Condition;
 
-  @internalProperty() private _yamlMode = false;
+  @state() private _yamlMode = false;
 
   protected render() {
     if (!this.condition) {
@@ -135,7 +135,7 @@ export default class HaAutomationConditionRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

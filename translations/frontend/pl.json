@@ -287,7 +287,7 @@
             "reset_defaults": "Przywróć domyślne",
             "reset_options": "Resetuj opcje",
             "restart": "Uruchom ponownie",
-            "restart_name": "Uruchom ponownie {name}",
+            "restart_name": "Uruchom ponownie",
             "running_version": "Aktualnie używasz wersji {version}",
             "save": "Zapisz",
             "show_more": "Pokaż więcej informacji na ten temat",
@@ -303,7 +303,7 @@
             },
             "restart": {
                 "text": "Czy na pewno chcesz ponownie uruchomić {name}?",
-                "title": "Uruchom ponownie {name}"
+                "title": "Uruchom ponownie"
             },
             "update": {
                 "text": "Czy na pewno chcesz zaktualizować {name} do wersji {version}?",
@@ -434,8 +434,8 @@
                 "ip_address": "Adres IP",
                 "new_hostname": "Wprowadź nową nazwę hosta:",
                 "operating_system": "System operacyjny",
-                "reboot_host": "Uruchom ponownie hosta",
-                "shutdown_host": "Zamknij hosta",
+                "reboot_host": "Uruchom ponownie",
+                "shutdown_host": "Wyłącz",
                 "used_space": "Zajęte miejsce"
             },
             "log": {
@@ -457,7 +457,7 @@
                 "leave_beta_action": "Opuść kanał beta",
                 "leave_beta_description": "Pobieraj stabilne aktualizacje dla Home Assistanta, Supervisora i hosta",
                 "ram_usage": "Zużycie pamięci przez Supervisora",
-                "reload_supervisor": "Wczytaj ponownie Supervisor",
+                "reload_supervisor": "Wczytaj ponownie",
                 "share_diagnostics": "Udostępnij dane diagnostyczne",
                 "share_diagnostics_description": "Udostępniaj raporty o awariach i informacje diagnostyczne.",
                 "share_diagonstics_description": "Czy chcesz automatycznie udostępniać raporty o awariach i informacje diagnostyczne, gdy Supervisor napotka nieoczekiwane błędy? {line_break} Pozwoli nam to rozwiązać problemy, informacje są dostępne tylko dla głównego zespołu Home Assistant Core i nie będą udostępniane innym. {line_break} Dane nie zawierają żadnych prywatnych/wrażliwych informacji i możesz to wyłączyć w ustawieniach w dowolnym momencie.",
@@ -2166,7 +2166,7 @@
                     "license": "Opublikowany na licencji Apache 2.0",
                     "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
                     "server": "serwer",
-                    "setup_time": "Ustawienia czasu",
+                    "setup_time": "Czas konfiguracji",
                     "source": "Źródło:",
                     "system_health_error": "Komponent kondycji systemu nie jest wczytany. Dodaj 'system_health:' do pliku configuration.yaml",
                     "system_health": {
@@ -2952,7 +2952,7 @@
                     },
                     "logs": {
                         "log_level": "Poziom loga",
-                        "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS ...",
+                        "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS...",
                         "title": "Logi Z-Wave JS"
                     },
                     "navigation": {

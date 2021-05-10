@@ -2,10 +2,10 @@ import { mdiHelpCircle } from "@mdi/js";
 import deepFreeze from "deep-freeze";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -55,26 +55,26 @@ export class HuiDialogEditCard
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
-  @internalProperty() private _params?: EditCardDialogParams;
+  @state() private _params?: EditCardDialogParams;
 
-  @internalProperty() private _cardConfig?: LovelaceCardConfig;
+  @state() private _cardConfig?: LovelaceCardConfig;
 
-  @internalProperty() private _viewConfig!: LovelaceViewConfig;
+  @state() private _viewConfig!: LovelaceViewConfig;
 
-  @internalProperty() private _saving = false;
+  @state() private _saving = false;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _guiModeAvailable? = true;
+  @state() private _guiModeAvailable? = true;
 
   @query("hui-card-element-editor")
   private _cardEditorEl?: HuiCardElementEditor;
 
-  @internalProperty() private _GUImode = true;
+  @state() private _GUImode = true;
 
-  @internalProperty() private _documentationURL?: string;
+  @state() private _documentationURL?: string;
 
-  @internalProperty() private _dirty = false;
+  @state() private _dirty = false;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
@@ -353,7 +353,7 @@ export class HuiDialogEditCard
     this.closeDialog();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

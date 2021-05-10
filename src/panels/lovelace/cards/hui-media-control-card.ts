@@ -4,10 +4,10 @@ import "@polymer/paper-progress/paper-progress";
 import type { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -75,21 +75,21 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _config?: MediaControlCardConfig;
+  @state() private _config?: MediaControlCardConfig;
 
-  @internalProperty() private _foregroundColor?: string;
+  @state() private _foregroundColor?: string;
 
-  @internalProperty() private _backgroundColor?: string;
+  @state() private _backgroundColor?: string;
 
-  @internalProperty() private _narrow = false;
+  @state() private _narrow = false;
 
-  @internalProperty() private _veryNarrow = false;
+  @state() private _veryNarrow = false;
 
-  @internalProperty() private _cardHeight = 0;
+  @state() private _cardHeight = 0;
 
   @query("paper-progress") private _progressBar?: PaperProgressElement;
 
-  @internalProperty() private _marqueeActive = false;
+  @state() private _marqueeActive = false;
 
   private _progressInterval?: number;
 
@@ -172,17 +172,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       width: `${this._cardHeight}px`,
     };
 
-    const state = stateObj.state;
+    const entityState = stateObj.state;
 
-    const isOffState = state === "off";
+    const isOffState = entityState === "off";
     const isUnavailable =
-      UNAVAILABLE_STATES.includes(state) ||
-      (state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
+      UNAVAILABLE_STATES.includes(entityState) ||
+      (entityState === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
     const controls = computeMediaControls(stateObj);
     const showControls =
       controls &&
-      (!this._veryNarrow || isOffState || state === "idle" || state === "on");
+      (!this._veryNarrow ||
+        isOffState ||
+        entityState === "idle" ||
+        entityState === "on");
 
     const mediaDescription = computeMediaDescription(stateObj);
 
@@ -552,7 +555,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         overflow: hidden;

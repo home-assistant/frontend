@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -77,7 +77,7 @@ export default class HaAutomationTrigger extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-automation-trigger-row,
       ha-card {

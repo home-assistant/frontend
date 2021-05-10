@@ -1,10 +1,5 @@
 import { Collection, UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { state, LitElement, property, PropertyValues } from "lit-element";
 import { atLeastVersion } from "../../src/common/config/version";
 import { computeLocalize } from "../../src/common/translations/localize";
 import { fetchHassioAddonsInfo } from "../../src/data/hassio/addon";
@@ -46,14 +41,11 @@ export class SupervisorBaseElement extends urlSyncMixin(
     localize: () => "",
   };
 
-  @internalProperty() private _unsubs: Record<string, UnsubscribeFunc> = {};
+  @state() private _unsubs: Record<string, UnsubscribeFunc> = {};
 
-  @internalProperty() private _collections: Record<
-    string,
-    Collection<unknown>
-  > = {};
+  @state() private _collections: Record<string, Collection<unknown>> = {};
 
-  @internalProperty() private _language = "en";
+  @state() private _language = "en";
 
   public connectedCallback(): void {
     super.connectedCallback();

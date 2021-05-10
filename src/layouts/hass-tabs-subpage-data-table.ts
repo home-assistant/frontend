@@ -3,7 +3,7 @@ import { mdiFilterVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -242,7 +242,7 @@ export class HaTabsSubpageDataTable extends LitElement {
     fireEvent(this, "clear-filter");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-data-table {
         width: 100%;

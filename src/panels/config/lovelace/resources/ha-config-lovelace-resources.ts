@@ -6,7 +6,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -49,7 +49,7 @@ export class HaConfigLovelaceRescources extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _resources: LovelaceResource[] = [];
+  @state() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
     (_language): DataTableColumnContainer => ({

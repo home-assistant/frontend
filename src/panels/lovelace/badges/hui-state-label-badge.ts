@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -59,7 +59,7 @@ export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-state-label-badge:focus {
         outline: none;

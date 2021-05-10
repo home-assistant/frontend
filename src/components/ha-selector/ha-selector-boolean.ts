@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -39,7 +39,7 @@ export class HaBooleanSelector extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-formfield {
         width: 100%;

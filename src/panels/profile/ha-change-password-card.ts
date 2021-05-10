@@ -3,10 +3,10 @@ import "@polymer/paper-dialog/paper-dialog";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -21,17 +21,17 @@ import type { HomeAssistant } from "../../types";
 class HaChangePasswordCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
-  @internalProperty() private _statusMsg?: string;
+  @state() private _statusMsg?: string;
 
-  @internalProperty() private _errorMsg?: string;
+  @state() private _errorMsg?: string;
 
-  @internalProperty() private _currentPassword?: string;
+  @state() private _currentPassword?: string;
 
-  @internalProperty() private _password?: string;
+  @state() private _password?: string;
 
-  @internalProperty() private _passwordConfirm?: string;
+  @state() private _passwordConfirm?: string;
 
   protected render(): TemplateResult {
     return html`
@@ -170,7 +170,7 @@ class HaChangePasswordCard extends LitElement {
     this._passwordConfirm = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

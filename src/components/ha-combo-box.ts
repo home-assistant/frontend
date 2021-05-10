@@ -7,10 +7,10 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -70,7 +70,7 @@ export class HaComboBox extends LitElement {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
-  @internalProperty() private _opened?: boolean;
+  @state() private _opened?: boolean;
 
   @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
 
@@ -167,7 +167,7 @@ export class HaComboBox extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-input > mwc-icon-button {
         --mdc-icon-button-size: 24px;

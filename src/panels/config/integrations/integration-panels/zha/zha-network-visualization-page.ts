@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -47,19 +47,19 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @query("#visualization", true)
   private _visualization?: HTMLElement;
 
-  @internalProperty()
+  @state()
   private _devices: Map<string, ZHADevice> = new Map();
 
-  @internalProperty()
+  @state()
   private _devicesByDeviceId: Map<string, ZHADevice> = new Map();
 
-  @internalProperty()
+  @state()
   private _nodes: Node[] = [];
 
-  @internalProperty()
+  @state()
   private _network?: Network;
 
-  @internalProperty()
+  @state()
   private _filter?: string;
 
   private _autoZoom = true;
@@ -361,7 +361,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._autoZoom = (ev.target as HaCheckbox).checked;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         .header {

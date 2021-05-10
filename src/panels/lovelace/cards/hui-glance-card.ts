@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -64,7 +64,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GlanceCardConfig;
+  @state() private _config?: GlanceCardConfig;
 
   private _configEntities?: GlanceConfigEntity[];
 
@@ -184,7 +184,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;

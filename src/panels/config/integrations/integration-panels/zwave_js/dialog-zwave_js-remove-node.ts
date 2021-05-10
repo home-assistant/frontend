@@ -1,11 +1,11 @@
 import "@material/mwc-button/mwc-button";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
   property,
-  internalProperty,
+  state,
   TemplateResult,
   css,
 } from "lit-element";
@@ -27,11 +27,11 @@ export interface ZWaveJSRemovedNode {
 class DialogZWaveJSRemoveNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private entry_id?: string;
+  @state() private entry_id?: string;
 
-  @internalProperty() private _status = "";
+  @state() private _status = "";
 
-  @internalProperty() private _node?: ZWaveJSRemovedNode;
+  @state() private _node?: ZWaveJSRemovedNode;
 
   private _removeNodeTimeoutHandle?: number;
 
@@ -213,7 +213,7 @@ class DialogZWaveJSRemoveNode extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

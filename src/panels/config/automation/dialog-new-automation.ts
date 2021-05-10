@@ -1,33 +1,38 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { nextRender } from "../../../common/util/render-status";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-dialog";
+import { createCloseHeading } from "../../../components/ha-dialog";
 import {
   AutomationConfig,
   showAutomationEditor,
 } from "../../../data/automation";
+import {
+  HassDialog,
+  replaceDialog,
+} from "../../../dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showThingtalkDialog } from "./thingtalk/show-dialog-thingtalk";
 
 @customElement("ha-dialog-new-automation")
-class DialogNewAutomation extends LitElement {
+class DialogNewAutomation extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
   public showDialog(): void {
     this._opened = true;
@@ -46,8 +51,9 @@ class DialogNewAutomation extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${this.hass.localize(
-          "ui.panel.config.automation.dialog_new.header"
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.automation.dialog_new.header")
         )}
       >
         <div>
@@ -107,25 +113,28 @@ class DialogNewAutomation extends LitElement {
   }
 
   private _thingTalk() {
-    this.closeDialog();
+    replaceDialog();
     showThingtalkDialog(this, {
       callback: (config: Partial<AutomationConfig> | undefined) =>
         showAutomationEditor(this, config),
       input: this.shadowRoot!.querySelector("paper-input")!.value as string,
     });
+    this.closeDialog();
   }
 
-  private _blueprintPicked(ev: CustomEvent) {
+  private async _blueprintPicked(ev: CustomEvent) {
+    this.closeDialog();
+    await nextRender();
     showAutomationEditor(this, { use_blueprint: { path: ev.detail.value } });
-    this.closeDialog();
   }
 
-  private _blank() {
+  private async _blank() {
+    this.closeDialog();
+    await nextRender();
     showAutomationEditor(this);
-    this.closeDialog();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

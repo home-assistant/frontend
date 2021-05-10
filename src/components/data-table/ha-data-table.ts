@@ -1,11 +1,11 @@
 import deepClone from "deep-clone-simple";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   eventOptions,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -119,21 +119,21 @@ export class HaDataTable extends LitElement {
 
   @property({ type: String }) public filter = "";
 
-  @internalProperty() private _filterable = false;
+  @state() private _filterable = false;
 
-  @internalProperty() private _filter = "";
+  @state() private _filter = "";
 
-  @internalProperty() private _sortColumn?: string;
+  @state() private _sortColumn?: string;
 
-  @internalProperty() private _sortDirection: SortingDirection = null;
+  @state() private _sortDirection: SortingDirection = null;
 
-  @internalProperty() private _filteredData: DataTableRowData[] = [];
+  @state() private _filteredData: DataTableRowData[] = [];
 
-  @internalProperty() private _headerHeight = 0;
+  @state() private _headerHeight = 0;
 
   @query("slot[name='header']") private _header!: HTMLSlotElement;
 
-  @internalProperty() private _items: DataTableRowData[] = [];
+  @state() private _items: DataTableRowData[] = [];
 
   private _checkableRowsCount?: number;
 
@@ -574,7 +574,7 @@ export class HaDataTable extends LitElement {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
       css`

@@ -2,7 +2,7 @@ import "@material/mwc-button/mwc-button";
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -53,7 +53,7 @@ export class HuiStartingCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

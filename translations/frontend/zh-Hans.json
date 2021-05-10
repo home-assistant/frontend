@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "发生未知错误",
+            "error_addon_no_ingress": "请求的加载项不支持 ingress",
             "error_addon_not_found": "未找到加载项",
             "faq_link": "我的 Home Assistant 常见问题",
             "not_supported": "您的 Home Assistant 不支持此重定向。请查阅{link}以获取受支持的重定向及其引入的版本。"

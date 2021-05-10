@@ -3,11 +3,11 @@ import "@material/mwc-ripple/mwc-ripple";
 import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   eventOptions,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   queryAsync,
@@ -27,7 +27,7 @@ export class HaTab extends LitElement {
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
-  @internalProperty() private _shouldRenderRipple = false;
+  @state() private _shouldRenderRipple = false;
 
   protected render(): TemplateResult {
     return html`
@@ -92,7 +92,7 @@ export class HaTab extends LitElement {
     this._rippleHandlers.endFocus();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         padding: 0 32px;

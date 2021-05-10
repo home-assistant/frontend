@@ -1,10 +1,10 @@
 import { mdiMenu } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -12,14 +12,17 @@ import {
 } from "lit-element";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
+import { extractSearchParam } from "../../../src/common/url/search-params";
 import {
   fetchHassioAddonInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import {
   createHassioSession,
   validateHassioSession,
 } from "../../../src/data/hassio/ingress";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
@@ -29,11 +32,13 @@ import { HomeAssistant, Route } from "../../../src/types";
 class HassioIngressView extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @property() public route!: Route;
 
   @property() public ingressPanel = false;
 
-  @internalProperty() private _addon?: HassioAddonDetails;
+  @state() private _addon?: HassioAddonDetails;
 
   @property({ type: Boolean })
   public narrow = false;
@@ -78,6 +83,34 @@ class HassioIngressView extends LitElement {
           </div>
           ${iframe}`
       : iframe}`;
+  }
+
+  protected async firstUpdated(): Promise<void> {
+    if (this.route.path === "") {
+      const requestedAddon = extractSearchParam("addon");
+      let addonInfo: HassioAddonDetails;
+      if (requestedAddon) {
+        try {
+          addonInfo = await fetchHassioAddonInfo(this.hass, requestedAddon);
+        } catch (err) {
+          await showAlertDialog(this, {
+            text: extractApiErrorMessage(err),
+            title: requestedAddon,
+          });
+          history.back();
+          return;
+        }
+        if (!addonInfo.ingress) {
+          await showAlertDialog(this, {
+            text: this.supervisor.localize("my.error_addon_no_ingress"),
+            title: addonInfo.name,
+          });
+          history.back();
+        } else {
+          navigate(this, `/hassio/ingress/${addonInfo.slug}`, true);
+        }
+      }
+    }
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -162,7 +195,7 @@ class HassioIngressView extends LitElement {
     fireEvent(this, "hass-toggle-menu");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       iframe {
         display: block;

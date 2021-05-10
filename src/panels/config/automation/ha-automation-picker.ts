@@ -9,10 +9,10 @@ import {
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -56,9 +56,9 @@ class HaAutomationPicker extends LitElement {
 
   @property() private _activeFilters?: string[];
 
-  @internalProperty() private _filteredAutomations?: string[] | null;
+  @state() private _filteredAutomations?: string[] | null;
 
-  @internalProperty() private _filterValue?;
+  @state() private _filterValue?;
 
   private _automations = memoizeOne(
     (
@@ -335,7 +335,7 @@ class HaAutomationPicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

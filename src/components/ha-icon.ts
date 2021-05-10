@@ -1,10 +1,10 @@
 import "@polymer/iron-icon/iron-icon";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -45,11 +45,11 @@ const cachedIcons: Record<string, string> = {};
 export class HaIcon extends LitElement {
   @property() public icon?: string;
 
-  @internalProperty() private _path?: string;
+  @state() private _path?: string;
 
-  @internalProperty() private _viewBox?;
+  @state() private _viewBox?;
 
-  @internalProperty() private _legacy = false;
+  @state() private _legacy = false;
 
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("icon")) {
@@ -161,7 +161,7 @@ export class HaIcon extends LitElement {
     cachedIcons[iconName] = iconPack[iconName];
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         fill: currentcolor;

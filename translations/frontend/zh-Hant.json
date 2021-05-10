@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "發生未知錯誤",
+            "error_addon_no_ingress": "所要求的附加元件不支援 ingress",
             "error_addon_not_found": "找不到附加元件",
             "faq_link": "Home Assistant 常見問答集",
             "not_supported": "Home Assistant 不支援此重新導向。點選 {link} 獲取支援之重新導向與版本。"

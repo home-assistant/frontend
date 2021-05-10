@@ -3,9 +3,9 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -47,9 +47,9 @@ class HaConfigPerson extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _storageItems?: Person[];
+  @state() private _storageItems?: Person[];
 
-  @internalProperty() private _configItems?: Person[];
+  @state() private _configItems?: Person[];
 
   private _usersLoad?: Promise<User[]>;
 
@@ -265,7 +265,7 @@ class HaConfigPerson extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

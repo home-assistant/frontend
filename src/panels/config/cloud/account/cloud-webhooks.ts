@@ -2,10 +2,10 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -34,13 +34,13 @@ export class CloudWebhooks extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private _cloudHooks?: {
+  @state() private _cloudHooks?: {
     [webhookId: string]: CloudWebhook;
   };
 
-  @internalProperty() private _localHooks?: Webhook[];
+  @state() private _localHooks?: Webhook[];
 
-  @internalProperty() private _progress: string[] = [];
+  @state() private _progress: string[] = [];
 
   public connectedCallback() {
     super.connectedCallback();
@@ -208,7 +208,7 @@ export class CloudWebhooks extends LitElement {
       : [];
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

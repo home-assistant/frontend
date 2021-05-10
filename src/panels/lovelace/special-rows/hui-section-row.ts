@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
 } from "lit-element";
@@ -15,7 +15,7 @@ import { LovelaceRow, SectionConfig } from "../entity-rows/types";
 class HuiSectionRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: SectionConfig;
+  @state() private _config?: SectionConfig;
 
   public setConfig(config: SectionConfig): void {
     if (!config) {
@@ -38,7 +38,7 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .label {
         color: var(--section-header-text-color, var(--primary-text-color));

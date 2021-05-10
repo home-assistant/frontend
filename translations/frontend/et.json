@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Viga",
+            "error_addon_no_ingress": "Valitud lisandmoodul ei toeta ingressi",
             "error_addon_not_found": "Lisandmoodulit ei leitud",
             "faq_link": "KKK viide",
             "not_supported": "pole toetatud"
@@ -2166,7 +2167,7 @@
                     "license": "Avaldatud Apache 2.0 litsentsi alusel",
                     "path_configuration": "configuration.yaml asukoht: {path}",
                     "server": "server",
-                    "setup_time": "Kellaaja suvandid",
+                    "setup_time": "Käivitusaeg",
                     "source": "Allikas:",
                     "system_health_error": "Süsteemi seisundi komponenti ei laadita. Lisage \"system_health:\" configuration.yaml",
                     "system_health": {

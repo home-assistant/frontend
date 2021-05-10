@@ -4,10 +4,10 @@ import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -68,15 +68,13 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _searchParms = new URLSearchParams(
-    window.location.search
-  );
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
-  @internalProperty() private _showDisabled = false;
+  @state() private _showDisabled = false;
 
-  @internalProperty() private _filter = "";
+  @state() private _filter = "";
 
-  @internalProperty() private _numHiddenDevices = 0;
+  @state() private _numHiddenDevices = 0;
 
   private _activeFilters = memoizeOne(
     (
@@ -468,7 +466,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     this._showDisabled = true;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         ha-button-menu {

@@ -1,10 +1,10 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -41,7 +41,7 @@ export class HuiGaugeCardEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GaugeCardConfig;
+  @state() private _config?: GaugeCardConfig;
 
   public setConfig(config: GaugeCardConfig): void {
     assert(config, cardConfigStruct);
@@ -197,7 +197,7 @@ export class HuiGaugeCardEditor
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

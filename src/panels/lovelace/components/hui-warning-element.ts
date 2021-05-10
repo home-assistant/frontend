@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -17,7 +17,7 @@ export class HuiWarningElement extends LitElement {
     return html` <ha-icon icon="hass:alert" .title=${this.label}></ha-icon> `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-icon {
         color: #fce588;

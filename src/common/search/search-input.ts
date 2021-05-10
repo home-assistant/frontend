@@ -3,7 +3,7 @@ import { mdiClose, mdiMagnify } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   LitElement,
   property,
@@ -80,7 +80,7 @@ class SearchInput extends LitElement {
     this._filterChanged("");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon,
       mwc-icon-button {

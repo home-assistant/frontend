@@ -1,10 +1,10 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -62,7 +62,7 @@ export class HuiGraphHeaderFooter
 
   @property() protected _config?: GraphHeaderFooterConfig;
 
-  @internalProperty() private _coordinates?: number[][];
+  @state() private _coordinates?: number[][];
 
   private _date?: Date;
 
@@ -190,19 +190,28 @@ export class HuiGraphHeaderFooter
       this._stateHistory!.push(...stateHistory[0]);
     }
 
+    const limits =
+      this._config!.limits === undefined &&
+      this._stateHistory?.some(
+        (entity) => entity.attributes?.unit_of_measurement === "%"
+      )
+        ? { min: 0, max: 100 }
+        : this._config!.limits;
+
     this._coordinates =
       coordinates(
         this._stateHistory,
         this._config!.hours_to_show!,
         500,
-        this._config!.detail!
+        this._config!.detail!,
+        limits
       ) || [];
 
     this._date = endTime;
     this._fetching = false;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-circular-progress {
         position: absolute;

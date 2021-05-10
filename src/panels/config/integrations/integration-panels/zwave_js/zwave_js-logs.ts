@@ -6,7 +6,7 @@ import {
   customElement,
   LitElement,
   CSSResultArray,
-  internalProperty,
+  state,
   query,
 } from "lit-element";
 import "@polymer/paper-listbox/paper-listbox";
@@ -33,7 +33,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   @property() public configEntryId!: string;
 
-  @internalProperty() private _logConfig?: ZWaveJSLogConfig;
+  @state() private _logConfig?: ZWaveJSLogConfig;
 
   @query("textarea", true) private _textarea?: HTMLTextAreaElement;
 

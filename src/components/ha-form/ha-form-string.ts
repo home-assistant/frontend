@@ -3,10 +3,10 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -31,7 +31,7 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @internalProperty() private _unmaskedPassword = false;
+  @state() private _unmaskedPassword = false;
 
   @query("paper-input") private _input?: HTMLElement;
 
@@ -104,7 +104,7 @@ export class HaFormString extends LitElement implements HaFormElement {
     return "text";
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       mwc-icon-button {
         --mdc-icon-button-size: 24px;

@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -62,7 +62,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityCardConfig;
+  @state() private _config?: EntityCardConfig;
 
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
@@ -185,7 +185,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;

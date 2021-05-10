@@ -5,10 +5,10 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { safeDump, safeLoad } from "js-yaml";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -47,9 +47,9 @@ class LovelaceFullConfigEditor extends LitElement {
 
   @property() public closeEditor?: () => void;
 
-  @internalProperty() private _saving?: boolean;
+  @state() private _saving?: boolean;
 
-  @internalProperty() private _changed?: boolean;
+  @state() private _changed?: boolean;
 
   protected render(): TemplateResult | void {
     return html`
@@ -136,7 +136,7 @@ class LovelaceFullConfigEditor extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

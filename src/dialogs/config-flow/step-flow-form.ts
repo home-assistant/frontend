@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -183,7 +183,7 @@ class StepFlowForm extends LitElement {
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`

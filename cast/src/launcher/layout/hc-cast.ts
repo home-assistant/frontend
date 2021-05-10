@@ -3,12 +3,12 @@ import "@polymer/paper-listbox/paper-listbox";
 import { Auth, Connection } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
   property,
-  internalProperty,
+  state,
   TemplateResult,
 } from "lit-element";
 import { CastManager } from "../../../../src/cast/cast_manager";
@@ -42,9 +42,9 @@ class HcCast extends LitElement {
 
   @property() public castManager!: CastManager;
 
-  @internalProperty() private askWrite = false;
+  @state() private askWrite = false;
 
-  @internalProperty() private lovelaceConfig?: LovelaceConfig | null;
+  @state() private lovelaceConfig?: LovelaceConfig | null;
 
   protected render(): TemplateResult {
     if (this.lovelaceConfig === undefined) {
@@ -204,7 +204,7 @@ class HcCast extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .center-item {
         display: flex;

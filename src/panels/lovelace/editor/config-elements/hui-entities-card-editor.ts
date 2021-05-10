@@ -4,10 +4,10 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -22,6 +22,7 @@ import {
   union,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { entityId } from "../../../../common/structs/is-entity-id";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
@@ -49,6 +50,7 @@ import { configElementStyle } from "./config-elements-style";
 const cardConfigStruct = object({
   type: string(),
   title: optional(union([string(), boolean()])),
+  entity: optional(entityId()),
   theme: optional(string()),
   show_header_toggle: optional(boolean()),
   state_color: optional(boolean()),
@@ -63,11 +65,11 @@ export class HuiEntitiesCardEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntitiesCardConfig;
+  @state() private _config?: EntitiesCardConfig;
 
-  @internalProperty() private _configEntities?: LovelaceRowConfig[];
+  @state() private _configEntities?: LovelaceRowConfig[];
 
-  @internalProperty() private _subElementEditorConfig?: SubElementEditorConfig;
+  @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   public setConfig(config: EntitiesCardConfig): void {
     assert(config, cardConfigStruct);
@@ -268,7 +270,7 @@ export class HuiEntitiesCardEditor
     this._subElementEditorConfig = undefined;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

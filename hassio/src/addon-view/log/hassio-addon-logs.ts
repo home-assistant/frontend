@@ -1,10 +1,10 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -29,9 +29,9 @@ class HassioAddonLogs extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _content?: string;
+  @state() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -59,7 +59,7 @@ class HassioAddonLogs extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

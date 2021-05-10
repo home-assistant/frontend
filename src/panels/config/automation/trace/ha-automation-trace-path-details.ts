@@ -1,10 +1,10 @@
 import { safeDump } from "js-yaml";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -40,10 +40,7 @@ export class HaAutomationTracePathDetails extends LitElement {
 
   @property() public trackedNodes!: Record<string, any>;
 
-  @internalProperty() private _view:
-    | "config"
-    | "changed_variables"
-    | "logbook" = "config";
+  @state() private _view: "config" | "changed_variables" | "logbook" = "config";
 
   protected render(): TemplateResult {
     return html`
@@ -254,7 +251,7 @@ ${safeDump(trace.changed_variables).trimRight()}</pre
     this._view = ev.target.view;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       traceTabStyles,
       css`

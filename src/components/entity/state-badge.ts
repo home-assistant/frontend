@@ -1,9 +1,9 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -32,7 +32,7 @@ export class StateBadge extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
-  @internalProperty() private _iconStyle: { [name: string]: string } = {};
+  @state() private _iconStyle: { [name: string]: string } = {};
 
   protected render(): TemplateResult {
     const stateObj = this.stateObj;
@@ -128,7 +128,7 @@ export class StateBadge extends LitElement {
     Object.assign(this.style, hostStyle);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         position: relative;

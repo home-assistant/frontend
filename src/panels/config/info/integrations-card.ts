@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -27,11 +27,11 @@ class IntegrationsCard extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @internalProperty() private _manifests?: {
+  @state() private _manifests?: {
     [domain: string]: IntegrationManifest;
   };
 
-  @internalProperty() private _setups?: {
+  @state() private _setups?: {
     [domain: string]: IntegrationSetup;
   };
 
@@ -152,7 +152,7 @@ class IntegrationsCard extends LitElement {
     this._setups = setups;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       table {
         width: 100%;

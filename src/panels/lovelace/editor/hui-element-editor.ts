@@ -2,9 +2,9 @@ import "@material/mwc-button";
 import { safeDump, safeLoad } from "js-yaml";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -55,25 +55,25 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @internalProperty() private _yaml?: string;
+  @state() private _yaml?: string;
 
-  @internalProperty() private _config?: T;
+  @state() private _config?: T;
 
-  @internalProperty() private _configElement?: LovelaceGenericElementEditor;
+  @state() private _configElement?: LovelaceGenericElementEditor;
 
-  @internalProperty() private _configElementType?: string;
+  @state() private _configElementType?: string;
 
-  @internalProperty() private _guiMode = true;
+  @state() private _guiMode = true;
 
   // Error: Configuration broken - do not save
-  @internalProperty() private _errors?: string[];
+  @state() private _errors?: string[];
 
   // Warning: GUI editor can't handle configuration - ok to save
-  @internalProperty() private _warnings?: string[];
+  @state() private _warnings?: string[];
 
-  @internalProperty() private _guiSupported?: boolean;
+  @state() private _guiSupported?: boolean;
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
   @query("ha-code-editor") _yamlEditor?: HaCodeEditor;
 
@@ -351,7 +351,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
     ev.stopPropagation();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

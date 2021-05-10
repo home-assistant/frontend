@@ -2,10 +2,10 @@ import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -23,9 +23,9 @@ import { DialogBoxParams } from "./show-dialog-box";
 class DialogBox extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: DialogBoxParams;
+  @state() private _params?: DialogBoxParams;
 
-  @internalProperty() private _value?: string;
+  @state() private _value?: string;
 
   public async showDialog(params: DialogBoxParams): Promise<void> {
     this._params = params;
@@ -154,7 +154,7 @@ class DialogBox extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

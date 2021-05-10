@@ -3,7 +3,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
   property,
@@ -171,7 +171,7 @@ class MoreInfoHumidifier extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         color: var(--primary-text-color);

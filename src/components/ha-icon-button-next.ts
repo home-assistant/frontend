@@ -3,7 +3,7 @@ import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -19,7 +19,7 @@ export class HaIconButtonNext extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() private _icon = mdiChevronRight;
+  @state() private _icon = mdiChevronRight;
 
   public connectedCallback() {
     super.connectedCallback();

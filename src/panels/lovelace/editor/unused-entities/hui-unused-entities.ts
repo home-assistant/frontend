@@ -1,10 +1,10 @@
 import { mdiPlus } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -33,9 +33,9 @@ export class HuiUnusedEntities extends LitElement {
 
   @property({ type: Boolean }) public narrow?: boolean;
 
-  @internalProperty() private _unusedEntities: string[] = [];
+  @state() private _unusedEntities: string[] = [];
 
-  @internalProperty() private _selectedEntities: string[] = [];
+  @state() private _selectedEntities: string[] = [];
 
   private get _config(): LovelaceConfig {
     return this.lovelace.config;
@@ -153,7 +153,7 @@ export class HuiUnusedEntities extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         background: var(--lovelace-background);

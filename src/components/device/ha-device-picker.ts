@@ -3,10 +3,10 @@ import "@polymer/paper-item/paper-item-body";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -111,7 +111,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
-  @internalProperty() private _opened?: boolean;
+  @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
 
@@ -326,7 +326,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     }, 0);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-input > mwc-icon-button {
         --mdc-icon-button-size: 24px;

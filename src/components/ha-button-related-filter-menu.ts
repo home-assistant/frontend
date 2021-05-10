@@ -3,10 +3,10 @@ import type { Corner } from "@material/mwc-menu";
 import { mdiFilterVariant } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -59,7 +59,7 @@ export class HaRelatedFilterButtonMenu extends LitElement {
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
 
-  @internalProperty() private _open = false;
+  @state() private _open = false;
 
   protected render(): TemplateResult {
     return html`
@@ -175,7 +175,7 @@ export class HaRelatedFilterButtonMenu extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-block;

@@ -1,8 +1,8 @@
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -44,7 +44,7 @@ export class HuiCalendarCardEditor
 
   @property({ attribute: false }) private _config?: CalendarCardConfig;
 
-  @internalProperty() private _configEntities?: string[];
+  @state() private _configEntities?: string[];
 
   public setConfig(config: CalendarCardConfig): void {
     assert(config, cardConfigStruct);
@@ -176,7 +176,7 @@ export class HuiCalendarCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

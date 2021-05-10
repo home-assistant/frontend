@@ -1,10 +1,10 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -35,7 +35,7 @@ export class HuiViewEditor extends LitElement {
 
   @property() public isNew!: boolean;
 
-  @internalProperty() private _config!: LovelaceViewConfig;
+  @state() private _config!: LovelaceViewConfig;
 
   private _suggestedPath = false;
 
@@ -181,7 +181,7 @@ export class HuiViewEditor extends LitElement {
     fireEvent(this, "view-config-changed", { config });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

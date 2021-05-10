@@ -4,10 +4,10 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -46,16 +46,16 @@ export class HaVoiceCommandDialog extends LitElement {
 
   @property() public results: Results | null = null;
 
-  @internalProperty() private _conversation: Message[] = [
+  @state() private _conversation: Message[] = [
     {
       who: "hass",
       text: "",
     },
   ];
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _agentInfo?: AgentInfo;
+  @state() private _agentInfo?: AgentInfo;
 
   @query("#messages", true) private messages!: PaperDialogScrollableElement;
 
@@ -360,7 +360,7 @@ export class HaVoiceCommandDialog extends LitElement {
     return `message ${message.who} ${message.error ? " error" : ""}`;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

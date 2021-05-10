@@ -1,9 +1,9 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -29,13 +29,13 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   @property() public oauth2State?: string;
 
-  @internalProperty() private _state: State = "loading";
+  @state() private _state: State = "loading";
 
-  @internalProperty() private _stepData: any = {};
+  @state() private _stepData: any = {};
 
-  @internalProperty() private _step?: DataEntryFlowStep;
+  @state() private _step?: DataEntryFlowStep;
 
-  @internalProperty() private _errorMessage?: string;
+  @state() private _errorMessage?: string;
 
   protected render() {
     return html` <form>${this._renderForm()}</form> `;
@@ -313,7 +313,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         /* So we can set min-height to avoid jumping during loading */
