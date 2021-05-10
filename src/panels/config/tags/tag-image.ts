@@ -1,7 +1,7 @@
 import { mdiNfcVariant } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -52,7 +52,7 @@ export class HaTagImage extends LitElement {
     </div>`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .image {
         height: 100%;

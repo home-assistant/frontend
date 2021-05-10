@@ -8,10 +8,10 @@ import { mdiClose } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -47,38 +47,39 @@ import { HassioNetworkDialogParams } from "./show-dialog-network";
 const IP_VERSIONS = ["ipv4", "ipv6"];
 
 @customElement("dialog-hassio-network")
-export class DialogHassioNetwork extends LitElement
+export class DialogHassioNetwork
+  extends LitElement
   implements HassDialog<HassioNetworkDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _accessPoints?: AccessPoints;
+  @state() private _accessPoints?: AccessPoints;
 
-  @internalProperty() private _curTabIndex = 0;
+  @state() private _curTabIndex = 0;
 
-  @internalProperty() private _dirty = false;
+  @state() private _dirty = false;
 
-  @internalProperty() private _interface?: NetworkInterface;
+  @state() private _interface?: NetworkInterface;
 
-  @internalProperty() private _interfaces!: NetworkInterface[];
+  @state() private _interfaces!: NetworkInterface[];
 
-  @internalProperty() private _params?: HassioNetworkDialogParams;
+  @state() private _params?: HassioNetworkDialogParams;
 
-  @internalProperty() private _processing = false;
+  @state() private _processing = false;
 
-  @internalProperty() private _scanning = false;
+  @state() private _scanning = false;
 
-  @internalProperty() private _wifiConfiguration?: WifiConfiguration;
+  @state() private _wifiConfiguration?: WifiConfiguration;
 
   public async showDialog(params: HassioNetworkDialogParams): Promise<void> {
     this._params = params;
     this._dirty = false;
     this._curTabIndex = 0;
     this.supervisor = params.supervisor;
-    this._interfaces = params.supervisor.network.interfaces.sort((a, b) => {
-      return a.primary > b.primary ? -1 : 1;
-    });
+    this._interfaces = params.supervisor.network.interfaces.sort((a, b) =>
+      a.primary > b.primary ? -1 : 1
+    );
     this._interface = { ...this._interfaces[this._curTabIndex] };
 
     await this.updateComplete;
@@ -542,7 +543,7 @@ export class DialogHassioNetwork extends LitElement
     this._wifiConfiguration![id] = value;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

@@ -1,7 +1,7 @@
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -43,6 +43,12 @@ const REDIRECTS: Redirects = {
       addon: "string",
     },
   },
+  supervisor_ingress: {
+    redirect: "/hassio/ingress",
+    params: {
+      addon: "string",
+    },
+  },
   supervisor_add_addon_repository: {
     redirect: "/hassio/store",
     params: {
@@ -59,7 +65,7 @@ class HassioMyRedirect extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @internalProperty() public _error?: TemplateResult | string;
+  @state() public _error?: TemplateResult | string;
 
   connectedCallback() {
     super.connectedCallback();

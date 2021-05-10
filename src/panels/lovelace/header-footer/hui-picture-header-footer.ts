@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -20,7 +20,8 @@ import { LovelaceHeaderFooter } from "../types";
 import { PictureHeaderFooterConfig } from "./types";
 
 @customElement("hui-picture-header-footer")
-export class HuiPictureHeaderFooter extends LitElement
+export class HuiPictureHeaderFooter
+  extends LitElement
   implements LovelaceHeaderFooter {
   public static getStubConfig(): Record<string, unknown> {
     return {
@@ -79,7 +80,7 @@ export class HuiPictureHeaderFooter extends LitElement
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       img.clickable {
         cursor: pointer;

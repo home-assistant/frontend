@@ -3,7 +3,7 @@ import "@polymer/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -89,7 +89,7 @@ class StepFlowPickFlow extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`

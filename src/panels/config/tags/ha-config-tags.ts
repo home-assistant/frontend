@@ -9,7 +9,7 @@ import {
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -57,9 +57,9 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @internalProperty() private _tags: Tag[] = [];
+  @state() private _tags: Tag[] = [];
 
-  @internalProperty() private _canWriteTags = false;
+  @state() private _canWriteTags = false;
 
   private _columns = memoizeOne(
     (
@@ -149,17 +149,15 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     }
   );
 
-  private _data = memoizeOne((tags: Tag[]): TagRowData[] => {
-    return tags.map((tag) => {
-      return {
-        ...tag,
-        display_name: tag.name || tag.id,
-        last_scanned_datetime: tag.last_scanned
-          ? new Date(tag.last_scanned)
-          : null,
-      };
-    });
-  });
+  private _data = memoizeOne((tags: Tag[]): TagRowData[] =>
+    tags.map((tag) => ({
+      ...tag,
+      display_name: tag.name || tag.id,
+      last_scanned_datetime: tag.last_scanned
+        ? new Date(tag.last_scanned)
+        : null,
+    }))
+  );
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);

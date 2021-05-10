@@ -1,10 +1,10 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -23,9 +23,9 @@ class HaInputBooleanForm extends LitElement {
 
   private _item?: InputBoolean;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _icon!: string;
+  @state() private _icon!: string;
 
   set item(item: InputBoolean) {
     this._item = item;
@@ -100,7 +100,7 @@ class HaInputBooleanForm extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

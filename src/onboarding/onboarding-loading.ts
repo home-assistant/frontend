@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -13,7 +13,7 @@ class OnboardingLoading extends LitElement {
     return html` <div class="loader"></div> `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       /* MIT License (MIT). Copyright (c) 2014 Luke Haas */
       .loader,

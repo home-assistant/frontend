@@ -1,7 +1,7 @@
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -12,15 +12,14 @@ import { HomeAssistant } from "../../../types";
 export const createEntityNotFoundWarning = (
   hass: HomeAssistant,
   entityId: string
-) => {
-  return hass.config.state !== STATE_NOT_RUNNING
+) =>
+  hass.config.state !== STATE_NOT_RUNNING
     ? hass.localize(
         "ui.panel.lovelace.warning.entity_not_found",
         "entity",
         entityId || "[empty]"
       )
     : hass.localize("ui.panel.lovelace.warning.starting");
-};
 
 @customElement("hui-warning")
 export class HuiWarning extends LitElement {
@@ -28,7 +27,7 @@ export class HuiWarning extends LitElement {
     return html` <slot></slot> `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

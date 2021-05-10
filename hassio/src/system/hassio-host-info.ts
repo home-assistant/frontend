@@ -5,7 +5,7 @@ import { mdiDotsVertical } from "@mdi/js";
 import { safeDump } from "js-yaml";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -97,9 +97,7 @@ class HassioHostInfo extends LitElement {
                   <span slot="heading">
                     ${this.supervisor.localize("system.host.ip_address")}
                   </span>
-                  <span slot="description">
-                    ${primaryIpAddress}
-                  </span>
+                  <span slot="description"> ${primaryIpAddress} </span>
                   <mwc-button
                     .label=${this.supervisor.localize("system.host.change")}
                     @click=${this._changeNetworkClicked}
@@ -417,7 +415,7 @@ class HassioHostInfo extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

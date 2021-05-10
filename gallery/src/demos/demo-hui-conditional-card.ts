@@ -75,4 +75,8 @@ class DemoConditional extends LitElement {
   }
 }
 
-customElements.define("demo-hui-conditional-card", DemoConditional);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-conditional-card": DemoConditional;
+  }
+}

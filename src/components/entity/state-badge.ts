@@ -1,9 +1,9 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -15,7 +15,6 @@ import { computeActiveState } from "../../common/entity/compute_active_state";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateIcon } from "../../common/entity/state_icon";
 import { iconColorCSS } from "../../common/style/icon_color_css";
-import { getLightRgbColor, LightEntity } from "../../data/light";
 import type { HomeAssistant } from "../../types";
 import "../ha-icon";
 
@@ -33,7 +32,7 @@ export class StateBadge extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
-  @internalProperty() private _iconStyle: { [name: string]: string } = {};
+  @state() private _iconStyle: { [name: string]: string } = {};
 
   protected render(): TemplateResult {
     const stateObj = this.stateObj;
@@ -100,14 +99,8 @@ export class StateBadge extends LitElement {
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
       } else if (stateObj.state === "on") {
-        if (
-          computeStateDomain(stateObj) === "light" &&
-          this.stateColor !== false
-        ) {
-          const rgb = getLightRgbColor(stateObj as LightEntity);
-          if (rgb) {
-            iconStyle.color = `rgb(${rgb.slice(0, 3).join(",")})`;
-          }
+        if (this.stateColor !== false && stateObj.attributes.rgb_color) {
+          iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
         }
         if (stateObj.attributes.brightness && this.stateColor !== false) {
           const brightness = stateObj.attributes.brightness;
@@ -135,7 +128,7 @@ export class StateBadge extends LitElement {
     Object.assign(this.style, hostStyle);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         position: relative;

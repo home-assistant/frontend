@@ -8,7 +8,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -43,7 +43,7 @@ export class HaConfigHelpers extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _stateItems: HassEntity[] = [];
+  @state() private _stateItems: HassEntity[] = [];
 
   private _columns = memoize(
     (narrow, _language): DataTableColumnContainer => {
@@ -67,11 +67,7 @@ export class HaConfigHelpers extends LitElement {
             html`
               ${name}
               ${narrow
-                ? html`
-                    <div class="secondary">
-                      ${item.entity_id}
-                    </div>
-                  `
+                ? html` <div class="secondary">${item.entity_id}</div> `
                 : ""}
             `,
         },
@@ -124,18 +120,16 @@ export class HaConfigHelpers extends LitElement {
     }
   );
 
-  private _getItems = memoize((stateItems: HassEntity[]) => {
-    return stateItems.map((state) => {
-      return {
-        id: state.entity_id,
-        icon: state.attributes.icon,
-        name: state.attributes.friendly_name || "",
-        entity_id: state.entity_id,
-        editable: state.attributes.editable,
-        type: computeStateDomain(state),
-      };
-    });
-  });
+  private _getItems = memoize((stateItems: HassEntity[]) =>
+    stateItems.map((entityState) => ({
+      id: entityState.entity_id,
+      icon: entityState.attributes.icon,
+      name: entityState.attributes.friendly_name || "",
+      entity_id: entityState.entity_id,
+      editable: entityState.attributes.editable,
+      type: computeStateDomain(entityState),
+    }))
+  );
 
   protected render(): TemplateResult {
     if (!this.hass || this._stateItems === undefined) {

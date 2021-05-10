@@ -6,7 +6,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -55,13 +55,11 @@ export class HuiActionEditor extends LitElement {
   }
 
   private _serviceAction = memoizeOne(
-    (config: CallServiceActionConfig): ServiceAction => {
-      return {
-        service: this._service,
-        data: config.service_data,
-        target: config.target,
-      };
-    }
+    (config: CallServiceActionConfig): ServiceAction => ({
+      service: this._service,
+      data: config.service_data,
+      target: config.target,
+    })
   );
 
   protected render(): TemplateResult {
@@ -86,15 +84,15 @@ export class HuiActionEditor extends LitElement {
                 "ui.panel.lovelace.editor.action-editor.actions.default_action"
               )}</paper-item
             >
-            ${this.actions.map((action) => {
-              return html`
+            ${this.actions.map(
+              (action) => html`
                 <paper-item .value=${action}
                   >${this.hass!.localize(
                     `ui.panel.lovelace.editor.action-editor.actions.${action}`
                   )}</paper-item
                 >
-              `;
-            })}
+              `
+            )}
           </paper-listbox>
         </paper-dropdown-menu>
         ${this.tooltipText
@@ -211,7 +209,7 @@ export class HuiActionEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .dropdown {
         display: flex;

@@ -1,8 +1,8 @@
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -40,11 +40,12 @@ const cardConfigStruct = object({
 const includeDomains = ["weather"];
 
 @customElement("hui-weather-forecast-card-editor")
-export class HuiWeatherForecastCardEditor extends LitElement
+export class HuiWeatherForecastCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: WeatherForecastCardConfig;
+  @state() private _config?: WeatherForecastCardConfig;
 
   public setConfig(config: WeatherForecastCardConfig): void {
     assert(config, cardConfigStruct);
@@ -162,7 +163,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

@@ -1,9 +1,9 @@
 import { mdiPlus } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -61,7 +61,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ attribute: false }) public badges: LovelaceBadge[] = [];
 
-  @internalProperty() private _columns?: number;
+  @state() private _columns?: number;
 
   private _createColumnsIteration = 0;
 
@@ -185,7 +185,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     // Calculate the size of every card and determine in what column it should go
     for (const [index, el] of this.cards.entries()) {
       if (tillNextRender === undefined) {
-        // eslint-disable-next-line no-loop-func
+        // eslint-disable-next-line @typescript-eslint/no-loop-func
         tillNextRender = nextRender().then(() => {
           tillNextRender = undefined;
           start = undefined;
@@ -260,7 +260,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     );
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

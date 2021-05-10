@@ -4,8 +4,8 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import {
   css,
-  CSSResult,
-  internalProperty,
+  CSSResultGroup,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -58,7 +58,7 @@ class HassioAddonStore extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @internalProperty() private _filter?: string;
+  @state() private _filter?: string;
 
   public async refreshData() {
     await reloadHassioAddons(this.hass);
@@ -86,9 +86,7 @@ class HassioAddonStore extends LitElement {
         main-page
         supervisor
       >
-        <span slot="header">
-          ${this.supervisor.localize("panel.store")}
-        </span>
+        <span slot="header"> ${this.supervisor.localize("panel.store")} </span>
         <ha-button-menu
           corner="BOTTOM_START"
           slot="toolbar-icon"
@@ -154,8 +152,8 @@ class HassioAddonStore extends LitElement {
       repositories: HassioAddonRepository[],
       addons: HassioAddonInfo[],
       filter?: string
-    ) => {
-      return repositories.sort(sortRepos).map((repo) => {
+    ) =>
+      repositories.sort(sortRepos).map((repo) => {
         const filteredAddons = addons.filter(
           (addon) => addon.repository === repo.slug
         );
@@ -171,8 +169,7 @@ class HassioAddonStore extends LitElement {
               ></hassio-addon-repository>
             `
           : html``;
-      });
-    }
+      })
   );
 
   private _handleAction(ev: CustomEvent<ActionDetail>) {
@@ -221,7 +218,7 @@ class HassioAddonStore extends LitElement {
     this._filter = e.detail.value;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       hassio-addon-repository {
         margin-top: 24px;

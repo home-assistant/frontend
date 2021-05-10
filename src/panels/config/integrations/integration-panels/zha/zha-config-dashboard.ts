@@ -4,7 +4,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -63,6 +63,7 @@ class ZHAConfigDashboard extends LitElement {
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     if (this.hass) {
+      this.hass.loadBackendTranslation("config_panel", "zha", false);
       this._fetchConfiguration();
     }
   }
@@ -108,7 +109,7 @@ class ZHAConfigDashboard extends LitElement {
           ? Object.entries(this._configuration.schemas).map(
               ([section, schema]) => html` <ha-card
                 header=${this.hass.localize(
-                  `ui.panel.config.zha.configuration_page.${section}.title`
+                  `component.zha.config_panel.${section}.title`
                 )}
               >
                 <div class="card-content">
@@ -164,12 +165,11 @@ class ZHAConfigDashboard extends LitElement {
   private _computeLabelCallback(localize, section: string) {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
-      localize(
-        `ui.panel.config.zha.configuration_page.${section}.${schema.name}`
-      ) || schema.name;
+      localize(`component.zha.config_panel.${section}.${schema.name}`) ||
+      schema.name;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -6,10 +6,10 @@ import {
 } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -52,7 +52,7 @@ class HassioAddonDashboard extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() _error?: string;
+  @state() _error?: string;
 
   private _computeTail = memoizeOne((route: Route) => {
     const dividerPos = route.path.indexOf("/", 1);
@@ -133,7 +133,7 @@ class HassioAddonDashboard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,
@@ -191,6 +191,10 @@ class HassioAddonDashboard extends LitElement {
   }
 
   private async _apiCalled(ev): Promise<void> {
+    if (!ev.detail.success) {
+      return;
+    }
+
     const pathSplit: string[] = ev.detail.path?.split("/");
 
     if (!pathSplit || pathSplit.length === 0) {

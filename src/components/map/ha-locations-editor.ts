@@ -10,7 +10,7 @@ import {
 } from "leaflet";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -286,12 +286,11 @@ export class HaLocationsEditor extends LitElement {
           [location.latitude, location.longitude],
           options
         )
-          .addEventListener(
-            "dragend",
-            // @ts-ignore
-            (ev: DragEndEvent) => this._updateLocation(ev)
+          .addEventListener("dragend", (ev: DragEndEvent) =>
+            this._updateLocation(ev)
           )
           .addEventListener(
+            // @ts-ignore
             "click",
             // @ts-ignore
             (ev: MouseEvent) => this._markerClicked(ev)
@@ -304,7 +303,7 @@ export class HaLocationsEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

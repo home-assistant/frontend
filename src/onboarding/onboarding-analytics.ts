@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -23,9 +23,9 @@ class OnboardingAnalytics extends LitElement {
 
   @property() public localize!: LocalizeFunc;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _analyticsDetails: Analytics = {
+  @state() private _analyticsDetails: Analytics = {
     preferences: {},
   };
 
@@ -85,7 +85,7 @@ class OnboardingAnalytics extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .error {
         color: var(--error-color);

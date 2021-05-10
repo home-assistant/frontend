@@ -3,10 +3,10 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -38,9 +38,9 @@ export class ZHAAddGroupPage extends LitElement {
 
   @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @internalProperty() private _processingAdd = false;
+  @state() private _processingAdd = false;
 
-  @internalProperty() private _groupName = "";
+  @state() private _groupName = "";
 
   @query("zha-device-endpoint-data-table", true)
   private _zhaDevicesDataTable!: ZHADeviceEndpointDataTable;
@@ -155,7 +155,7 @@ export class ZHAAddGroupPage extends LitElement {
     this._groupName = target.value || "";
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         .header {

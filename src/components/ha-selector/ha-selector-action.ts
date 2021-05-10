@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -31,7 +31,7 @@ export class HaActionSelector extends LitElement {
     ></ha-automation-action>`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-automation-action {
         display: block;

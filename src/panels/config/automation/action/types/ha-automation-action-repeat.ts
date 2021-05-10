@@ -1,7 +1,12 @@
 import "@polymer/paper-input/paper-input";
 import type { PaperListboxElement } from "@polymer/paper-listbox";
 import "@polymer/paper-listbox/paper-listbox";
-import { CSSResult, customElement, LitElement, property } from "lit-element";
+import {
+  CSSResultGroup,
+  customElement,
+  LitElement,
+  property,
+} from "lit-element";
 import { html } from "lit-html";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import {
@@ -19,9 +24,7 @@ import { ActionElement } from "../ha-automation-action-row";
 
 const OPTIONS = ["count", "while", "until"];
 
-const getType = (action) => {
-  return OPTIONS.find((option) => option in action);
-};
+const getType = (action) => OPTIONS.find((option) => option in action);
 
 @customElement("ha-automation-action-repeat")
 export class HaRepeatAction extends LitElement implements ActionElement {
@@ -167,7 +170,7 @@ export class HaRepeatAction extends LitElement implements ActionElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

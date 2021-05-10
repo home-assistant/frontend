@@ -3,7 +3,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -58,8 +58,8 @@ export class HaConfigAreasDashboard extends LitElement {
       areas: AreaRegistryEntry[],
       devices: DeviceRegistryEntry[],
       entities: EntityRegistryEntry[]
-    ) => {
-      return areas.map((area) => {
+    ) =>
+      areas.map((area) => {
         const devicesInArea = new Set();
 
         for (const device of devices) {
@@ -85,8 +85,7 @@ export class HaConfigAreasDashboard extends LitElement {
           devices: devicesInArea.size,
           entities: entitiesInArea,
         };
-      });
-    }
+      })
   );
 
   private _columns = memoizeOne(
@@ -211,7 +210,7 @@ export class HaConfigAreasDashboard extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       hass-loading-screen {
         --app-header-background-color: var(--sidebar-background-color);

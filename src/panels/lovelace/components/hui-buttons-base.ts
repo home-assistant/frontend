@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -82,7 +82,7 @@ export class HuiButtonsBase extends LitElement {
     handleAction(this, this._hass!, config, ev.detail.action!);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

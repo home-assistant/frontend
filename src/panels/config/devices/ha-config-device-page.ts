@@ -1,10 +1,10 @@
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -75,7 +75,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _related?: RelatedResult;
+  @state() private _related?: RelatedResult;
 
   private _device = memoizeOne(
     (
@@ -99,9 +99,10 @@ export class HaConfigDevicePage extends LitElement {
     ): EntityRegistryStateEntry[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
-        .map((entity) => {
-          return { ...entity, stateName: this._computeEntityName(entity) };
-        })
+        .map((entity) => ({
+          ...entity,
+          stateName: this._computeEntityName(entity),
+        }))
         .sort((ent1, ent2) =>
           compare(
             ent1.stateName || `zzz${ent1.entity_id}`,
@@ -322,28 +323,28 @@ export class HaConfigDevicePage extends LitElement {
                       </h1>
                       ${this._related?.automation?.length
                         ? this._related.automation.map((automation) => {
-                            const state = this.hass.states[automation];
-                            return state
+                            const entityState = this.hass.states[automation];
+                            return entityState
                               ? html`
                                   <div>
                                     <a
                                       href=${ifDefined(
-                                        state.attributes.id
-                                          ? `/config/automation/edit/${state.attributes.id}`
+                                        entityState.attributes.id
+                                          ? `/config/automation/edit/${entityState.attributes.id}`
                                           : undefined
                                       )}
                                     >
                                       <paper-item
-                                        .automation=${state}
-                                        .disabled=${!state.attributes.id}
+                                        .automation=${entityState}
+                                        .disabled=${!entityState.attributes.id}
                                       >
                                         <paper-item-body>
-                                          ${computeStateName(state)}
+                                          ${computeStateName(entityState)}
                                         </paper-item-body>
                                         <ha-icon-next></ha-icon-next>
                                       </paper-item>
                                     </a>
-                                    ${!state.attributes.id
+                                    ${!entityState.attributes.id
                                       ? html`
                                           <paper-tooltip animation-delay="0">
                                             ${this.hass.localize(
@@ -401,28 +402,29 @@ export class HaConfigDevicePage extends LitElement {
                         ${
                           this._related?.scene?.length
                             ? this._related.scene.map((scene) => {
-                                const state = this.hass.states[scene];
-                                return state
+                                const entityState = this.hass.states[scene];
+                                return entityState
                                   ? html`
                                       <div>
                                         <a
                                           href=${ifDefined(
-                                            state.attributes.id
-                                              ? `/config/scene/edit/${state.attributes.id}`
+                                            entityState.attributes.id
+                                              ? `/config/scene/edit/${entityState.attributes.id}`
                                               : undefined
                                           )}
                                         >
                                           <paper-item
-                                            .scene=${state}
-                                            .disabled=${!state.attributes.id}
+                                            .scene=${entityState}
+                                            .disabled=${!entityState.attributes
+                                              .id}
                                           >
                                             <paper-item-body>
-                                              ${computeStateName(state)}
+                                              ${computeStateName(entityState)}
                                             </paper-item-body>
                                             <ha-icon-next></ha-icon-next>
                                           </paper-item>
                                         </a>
-                                        ${!state.attributes.id
+                                        ${!entityState.attributes.id
                                           ? html`
                                               <paper-tooltip
                                                 animation-delay="0"
@@ -477,15 +479,15 @@ export class HaConfigDevicePage extends LitElement {
                         </h1>
                         ${this._related?.script?.length
                           ? this._related.script.map((script) => {
-                              const state = this.hass.states[script];
-                              return state
+                              const entityState = this.hass.states[script];
+                              return entityState
                                 ? html`
                                     <a
-                                      href=${`/config/script/edit/${state.entity_id}`}
+                                      href=${`/config/script/edit/${entityState.entity_id}`}
                                     >
                                       <paper-item .script=${script}>
                                         <paper-item-body>
-                                          ${computeStateName(state)}
+                                          ${computeStateName(entityState)}
                                         </paper-item-body>
                                         <ha-icon-next></ha-icon-next>
                                       </paper-item>
@@ -518,8 +520,8 @@ export class HaConfigDevicePage extends LitElement {
     if (entity.name) {
       return entity.name;
     }
-    const state = this.hass.states[entity.entity_id];
-    return state ? computeStateName(state) : null;
+    const entityState = this.hass.states[entity.entity_id];
+    return entityState ? computeStateName(entityState) : null;
   }
 
   private _onImageLoad(ev) {
@@ -747,7 +749,7 @@ export class HaConfigDevicePage extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

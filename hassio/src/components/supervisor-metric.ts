@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -23,13 +23,9 @@ class SupervisorMetric extends LitElement {
   protected render(): TemplateResult {
     const roundedValue = roundWithOneDecimal(this.value);
     return html`<ha-settings-row>
-      <span slot="heading">
-        ${this.description}
-      </span>
+      <span slot="heading"> ${this.description} </span>
       <div slot="description" .title=${this.tooltip ?? ""}>
-        <span class="value">
-          ${roundedValue} %
-        </span>
+        <span class="value"> ${roundedValue} % </span>
         <ha-bar
           class="${classMap({
             "target-warning": roundedValue > 50,
@@ -41,7 +37,7 @@ class SupervisorMetric extends LitElement {
     </ha-settings-row>`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-settings-row {
         padding: 0;

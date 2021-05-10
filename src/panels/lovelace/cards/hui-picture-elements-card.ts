@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -22,7 +22,7 @@ import { PictureElementsCardConfig } from "./types";
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _elements?: LovelaceElement[];
+  @state() private _elements?: LovelaceElement[];
 
   public static getStubConfig(
     hass: HomeAssistant,
@@ -54,7 +54,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @internalProperty() private _config?: PictureElementsCardConfig;
+  @state() private _config?: PictureElementsCardConfig;
 
   public getCardSize(): number {
     return 4;
@@ -138,7 +138,7 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       #root {
         position: relative;

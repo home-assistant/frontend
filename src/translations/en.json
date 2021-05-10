@@ -1039,6 +1039,7 @@
           "integrations": "Integrations",
           "documentation": "Documentation",
           "issues": "Issues",
+          "setup_time": "Setup time",
           "system_health": {
             "manage": "Manage",
             "more_info": "more info"
@@ -1793,10 +1794,16 @@
             },
             "remote": {
               "title": "Remote Control",
-              "access_is_being_prepared": "Remote access is being prepared. We will notify you when it's ready.",
+              "connected": "Connected",
+              "not_connected": "Not Connected",
+              "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
               "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
               "instance_is_available": "Your instance is available at",
               "instance_will_be_available": "Your instance will be available at",
+              "remote_enabled": {
+                "caption": "Automatically connect",
+                "description": "Enable this option to make sure that your Home Assistant instance is always remotely accessible."
+              },
               "link_learn_how_it_works": "Learn how it works",
               "certificate_info": "Certificate Info"
             },
@@ -2184,6 +2191,7 @@
             "dismiss": "Dismiss dialog",
             "finish": "Finish",
             "submit": "Submit",
+            "next": "Next",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
             "created_config": "Created configuration for {name}.",
@@ -2382,12 +2390,7 @@
           },
           "configuration_page": {
             "shortcuts_title": "Shortcuts",
-            "update_button": "Update Configuration",
-            "zha_options": {
-              "title": "Global Options",
-              "enable_identify_on_join": "Enable identify effect when devices join the network",
-              "default_light_transition": "Default light transition time (seconds)"
-            }
+            "update_button": "Update Configuration"
           },
           "add_device_page": {
             "spinner": "Searching for ZHA Zigbee devices...",
@@ -2653,7 +2656,8 @@
           },
           "logs": {
             "title": "Z-Wave JS Logs",
-            "log_level": "Log Level"
+            "log_level": "Log Level",
+            "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages..."
           }
         }
       },
@@ -3268,8 +3272,8 @@
           "header": "Refresh Tokens",
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
           "token_title": "Refresh token for {clientId}",
-          "created_at": "Created at {date}",
-          "last_used": "Last used at {date} from {location}",
+          "created_at": "Created {date}",
+          "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
           "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
           "delete_failed": "Failed to delete the refresh token.",
@@ -3793,7 +3797,8 @@
       "not_supported": "[%key:ui::panel::my::not_supported%]",
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "error": "[%key:ui::panel::my::error%]",
-      "error_addon_not_found": "Add-on not found"
+      "error_addon_not_found": "Add-on not found",
+      "error_addon_no_ingress": "The requested add-on does not support ingress"
     },
     "system": {
       "log": {
@@ -3820,6 +3825,7 @@
         "share_diagnostics_description": "Share crash reports and diagnostic information.",
         "reload_supervisor": "Reload Supervisor",
         "warning": "WARNING",
+        "search": "Search",
         "beta_warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
         "beta_backup": "Make sure you have backups of your data before you activate this feature.",
         "beta_release_items": "This includes beta releases for:",
@@ -3885,6 +3891,7 @@
       "upload_snapshot": "Upload snapshot",
       "create_snapshot": "Create snapshot",
       "create": "Create",
+      "created": "Created",
       "name": "Name",
       "type": "Type",
       "security": "Security",

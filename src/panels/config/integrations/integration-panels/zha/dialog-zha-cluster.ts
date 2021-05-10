@@ -1,8 +1,8 @@
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -33,13 +33,13 @@ import "./zha-group-binding";
 class DialogZHACluster extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _device?: ZHADevice;
+  @state() private _device?: ZHADevice;
 
-  @internalProperty() private _selectedCluster?: Cluster;
+  @state() private _selectedCluster?: Cluster;
 
-  @internalProperty() private _bindableDevices: ZHADevice[] = [];
+  @state() private _bindableDevices: ZHADevice[] = [];
 
-  @internalProperty() private _groups: ZHAGroup[] = [];
+  @state() private _groups: ZHAGroup[] = [];
 
   public async showDialog(
     params: ZHADeviceZigbeeInfoDialogParams
@@ -132,7 +132,7 @@ class DialogZHACluster extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyleDialog;
   }
 }

@@ -1,11 +1,15 @@
 import { mdiHelpCircle } from "@mdi/js";
-import { HassService, HassServiceTarget } from "home-assistant-js-websocket";
+import {
+  HassService,
+  HassServices,
+  HassServiceTarget,
+} from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -51,13 +55,13 @@ export class HaServiceControl extends LitElement {
     data?: Record<string, any>;
   };
 
-  @internalProperty() private _value!: this["value"];
+  @state() private _value!: this["value"];
 
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
   @property({ type: Boolean }) public showAdvanced?: boolean;
 
-  @internalProperty() private _checkedKeys = new Set();
+  @state() private _checkedKeys = new Set();
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -73,7 +77,10 @@ export class HaServiceControl extends LitElement {
       this._checkedKeys = new Set();
     }
 
-    const serviceData = this._getServiceInfo(this.value?.service);
+    const serviceData = this._getServiceInfo(
+      this.value?.service,
+      this.hass.services
+    );
 
     if (
       serviceData &&
@@ -122,42 +129,45 @@ export class HaServiceControl extends LitElement {
     return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
   });
 
-  private _getServiceInfo = memoizeOne((service?: string):
-    | ExtHassService
-    | undefined => {
-    if (!service) {
-      return undefined;
-    }
-    const domain = computeDomain(service);
-    const serviceName = computeObjectId(service);
-    const serviceDomains = this.hass.services;
-    if (!(domain in serviceDomains)) {
-      return undefined;
-    }
-    if (!(serviceName in serviceDomains[domain])) {
-      return undefined;
-    }
+  private _getServiceInfo = memoizeOne(
+    (
+      service?: string,
+      serviceDomains?: HassServices
+    ): ExtHassService | undefined => {
+      if (!service || !serviceDomains) {
+        return undefined;
+      }
+      const domain = computeDomain(service);
+      const serviceName = computeObjectId(service);
+      if (!(domain in serviceDomains)) {
+        return undefined;
+      }
+      if (!(serviceName in serviceDomains[domain])) {
+        return undefined;
+      }
 
-    const fields = Object.entries(
-      serviceDomains[domain][serviceName].fields
-    ).map(([key, value]) => {
-      return {
+      const fields = Object.entries(
+        serviceDomains[domain][serviceName].fields
+      ).map(([key, value]) => ({
         key,
         ...value,
         selector: value.selector as Selector | undefined,
+      }));
+      return {
+        ...serviceDomains[domain][serviceName],
+        fields,
+        hasSelector: fields.length
+          ? fields.filter((field) => field.selector).map((field) => field.key)
+          : [],
       };
-    });
-    return {
-      ...serviceDomains[domain][serviceName],
-      fields,
-      hasSelector: fields.length
-        ? fields.filter((field) => field.selector).map((field) => field.key)
-        : [],
-    };
-  });
+    }
+  );
 
   protected render() {
-    const serviceData = this._getServiceInfo(this._value?.service);
+    const serviceData = this._getServiceInfo(
+      this._value?.service,
+      this.hass.services
+    );
 
     const shouldRenderServiceDataYaml =
       (serviceData?.fields.length && !serviceData.hasSelector.length) ||
@@ -397,7 +407,7 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-settings-row {
         padding: var(--service-control-padding, 0 16px);

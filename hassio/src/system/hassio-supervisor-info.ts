@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -67,7 +67,7 @@ class HassioSupervisorInfo extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _metrics?: HassioStats;
+  @state() private _metrics?: HassioStats;
 
   protected render(): TemplateResult | void {
     const metrics = [
@@ -264,9 +264,7 @@ class HassioSupervisorInfo extends LitElement {
         title: this.supervisor.localize("system.supervisor.warning"),
         text: html`${this.supervisor.localize("system.supervisor.beta_warning")}
           <br />
-          <b>
-            ${this.supervisor.localize("system.supervisor.beta_backup")}
-          </b>
+          <b> ${this.supervisor.localize("system.supervisor.beta_backup")} </b>
           <br /><br />
           ${this.supervisor.localize("system.supervisor.beta_release_items")}
           <ul>
@@ -506,7 +504,7 @@ class HassioSupervisorInfo extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

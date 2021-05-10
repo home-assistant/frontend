@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Se ha producido un error desconocido",
+            "error_addon_no_ingress": "El complemento solicitado no admite la entrada",
             "error_addon_not_found": "Complemento no encontrado",
             "faq_link": "Preguntas frecuentes sobre mi Home Assistant",
             "not_supported": "Esta redirección no es compatible con tu instancia de Home Assistant. Consulta el {link} para conocer las redirecciones admitidas y la versión en la que se introdujeron."
@@ -1197,7 +1198,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Reconfigurando el dispositivo"
+                "attribute": "Atributo",
+                "battery_device_warning": "Antes de iniciar el proceso de reconfiguración, deberás despertar los dispositivos que funcionan con batería. Consulta el manual de tu dispositivo para obtener instrucciones sobre cómo despertar el dispositivo.",
+                "bind_header": "Emparejamiento",
+                "button_hide": "Ocultar detalles",
+                "button_show": "Mostrar detalles",
+                "cluster_header": "Clúster",
+                "configuration_complete": "Reconfiguración del dispositivo completada.",
+                "configuration_failed": "Error en la reconfiguración del dispositivo. Es posible que haya información adicional disponible en los registros.",
+                "configuring_alt": "Configurando",
+                "heading": "Reconfigurando el dispositivo",
+                "in_progress": "El dispositivo se está reconfigurando. Esto puede llevar algún tiempo.",
+                "introduction": "Reconfigura un dispositivo en tu red Zigbee. Utiliza esta función si tu dispositivo no funciona correctamente.",
+                "min_max_change": "min/max/cambio",
+                "reporting_header": "Informes",
+                "run_in_background": "Puedes cerrar este cuadro de diálogo y la reconfiguración continuará en segundo plano.",
+                "start_reconfiguration": "Iniciar reconfiguración"
             }
         },
         "duration": {
@@ -1260,7 +1276,8 @@
                     "caption": "Áreas",
                     "data_table": {
                         "area": "Área",
-                        "devices": "Dispositivos"
+                        "devices": "Dispositivos",
+                        "entities": "Entidades"
                     },
                     "delete": {
                         "confirmation_text": "Todos los dispositivos en esta área quedarán sin asignar.",
@@ -1272,8 +1289,10 @@
                         "create": "Crear",
                         "default_name": "Área Nueva",
                         "delete": "Eliminar",
+                        "linked_entities_caption": "Entidades",
                         "name": "Nombre",
                         "name_required": "Se requiere el nombre",
+                        "no_linked_entities": "No hay entidades vinculadas a este área.",
                         "unknown_error": "Error desconocido",
                         "update": "Actualizar"
                     },
@@ -1726,12 +1745,18 @@
                         "nabu_casa_account": "Cuenta Nabu Casa",
                         "not_connected": "No conectado",
                         "remote": {
-                            "access_is_being_prepared": "Se está preparando el acceso remoto. Te avisaremos cuando esté listo.",
+                            "access_is_being_prepared": "Se está preparando el control remoto. Te avisaremos cuando esté listo.",
                             "certificate_info": "Información del certificado",
+                            "connected": "Conectado",
                             "info": "Home Assistant Cloud proporciona una conexión remota segura a tu instancia mientras estás fuera de casa.",
                             "instance_is_available": "Tu instancia está disponible en",
                             "instance_will_be_available": "Tu instancia estará disponible en",
                             "link_learn_how_it_works": "Aprende cómo funciona",
+                            "not_connected": "No conectado",
+                            "remote_enabled": {
+                                "caption": "Conectar automáticamente",
+                                "description": "Habilita esta opción para asegurarte de que tu instancia de Home Assistant está siempre accesible de forma remota."
+                            },
                             "title": "Control remoto"
                         },
                         "sign_out": "Cerrar sesión",
@@ -2142,6 +2167,7 @@
                     "license": "Publicado bajo la licencia Apache 2.0",
                     "path_configuration": "Ruta a configuration.yaml: {path}",
                     "server": "servidor",
+                    "setup_time": "Tiempo de configuración",
                     "source": "Fuente:",
                     "system_health_error": "El componente Estado del Sistema no está cargado. Añade 'system_health:' a configuration.yaml",
                     "system_health": {
@@ -2221,6 +2247,7 @@
                         },
                         "finish": "Terminar",
                         "loading_first_time": "Por favor, espera mientras la integración está siendo instalada",
+                        "next": "Siguiente",
                         "not_all_required_fields": "No se han completado todos los campos requeridos.",
                         "not_loaded": "La integración no se ha podido cargar, intenta reiniciar Home Assistant.",
                         "pick_flow_step": {
@@ -2924,7 +2951,13 @@
                         "node_status": "Estado del Nodo",
                         "zwave_info": "Información de Z-Wave"
                     },
+                    "logs": {
+                        "log_level": "Nivel de registro",
+                        "subscribed_to_logs": "Suscrito a los mensajes de registro de Z-Wave JS...",
+                        "title": "Registros de Z-Wave JS"
+                    },
                     "navigation": {
+                        "logs": "Registros",
                         "network": "Red"
                     },
                     "network_status": {
@@ -3942,12 +3975,12 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "¿Estás seguro de que quieres eliminar el token de actualización para {name}?",
-                    "created_at": "Creado el {date}",
+                    "created_at": "Creado {date}",
                     "current_token_tooltip": "No se puede eliminar el token actual",
                     "delete_failed": "Error al eliminar el token de acceso.",
                     "description": "Cada token de actualización representa un acceso de sesión. Los tokens de actualización se eliminarán automáticamente al cerrar la sesión. Los siguientes tokens de actualización están actualmente activos para tu cuenta.",
                     "header": "Actualizar tokens",
-                    "last_used": "Último uso el {date} desde {location}",
+                    "last_used": "Último uso {date} desde {location}",
                     "not_used": "Nunca ha sido usado",
                     "token_title": "Actualizar token para {clientId}"
                 },

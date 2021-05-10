@@ -3,7 +3,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -21,7 +21,7 @@ class HaPickDashboardRow extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private _dashboards: LovelaceDashboard[] = [];
+  @state() private _dashboards: LovelaceDashboard[] = [];
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);

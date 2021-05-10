@@ -3,10 +3,10 @@ import "@polymer/paper-input/paper-input";
 import { genClientId } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -23,17 +23,17 @@ class OnboardingCreateUser extends LitElement {
 
   @property() public language!: string;
 
-  @internalProperty() private _name = "";
+  @state() private _name = "";
 
-  @internalProperty() private _username = "";
+  @state() private _username = "";
 
-  @internalProperty() private _password = "";
+  @state() private _password = "";
 
-  @internalProperty() private _passwordConfirm = "";
+  @state() private _passwordConfirm = "";
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
-  @internalProperty() private _errorMsg?: string = undefined;
+  @state() private _errorMsg?: string = undefined;
 
   protected render(): TemplateResult {
     return html`
@@ -199,7 +199,7 @@ class OnboardingCreateUser extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .error {
         color: red;

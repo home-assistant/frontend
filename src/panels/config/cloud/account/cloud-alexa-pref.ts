@@ -1,9 +1,9 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -21,7 +21,7 @@ export class CloudAlexaPref extends LitElement {
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  @internalProperty() private _syncing = false;
+  @state() private _syncing = false;
 
   protected render(): TemplateResult {
     if (!this.cloudStatus) {
@@ -161,7 +161,7 @@ export class CloudAlexaPref extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -55,13 +55,13 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: LogbookCardConfig;
+  @state() private _config?: LogbookCardConfig;
 
-  @internalProperty() private _logbookEntries?: LogbookEntry[];
+  @state() private _logbookEntries?: LogbookEntry[];
 
-  @internalProperty() private _persons = {};
+  @state() private _persons = {};
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   private _lastLogbookDate?: Date;
 
@@ -266,7 +266,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       css`
         ha-card {

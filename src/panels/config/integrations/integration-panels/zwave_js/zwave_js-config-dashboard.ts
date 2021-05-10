@@ -3,10 +3,10 @@ import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiCheckCircle, mdiCircle, mdiRefresh } from "@mdi/js";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -49,15 +49,15 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   @property() public configEntryId?: string;
 
-  @internalProperty() private _network?: ZWaveJSNetwork;
+  @state() private _network?: ZWaveJSNetwork;
 
-  @internalProperty() private _nodes?: ZWaveJSNode[];
+  @state() private _nodes?: ZWaveJSNode[];
 
-  @internalProperty() private _status = "unknown";
+  @state() private _status = "unknown";
 
-  @internalProperty() private _icon = mdiCircle;
+  @state() private _icon = mdiCircle;
 
-  @internalProperty() private _dataCollectionOptIn?: boolean;
+  @state() private _dataCollectionOptIn?: boolean;
 
   protected firstUpdated() {
     if (this.hass) {
@@ -328,7 +328,7 @@ class ZWaveJSConfigDashboard extends LitElement {
     this.shadowRoot!.removeChild(a);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

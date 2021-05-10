@@ -1,11 +1,11 @@
 import "@material/mwc-ripple";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   eventOptions,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -62,7 +62,7 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public rtl = false;
 
-  @internalProperty() private _activeTab?: PageNavigation;
+  @state() private _activeTab?: PageNavigation;
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
@@ -201,7 +201,7 @@ class HassTabsSubpage extends LitElement {
     history.back();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

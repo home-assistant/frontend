@@ -5,10 +5,10 @@ import { mdiClose, mdiTune } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -47,18 +47,15 @@ interface Tab {
 export class DialogEntityEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: EntityRegistryDetailDialogParams;
+  @state() private _params?: EntityRegistryDetailDialogParams;
 
-  @internalProperty() private _entry?:
-    | EntityRegistryEntry
-    | ExtEntityRegistryEntry
-    | null;
+  @state() private _entry?: EntityRegistryEntry | ExtEntityRegistryEntry | null;
 
-  @internalProperty() private _curTab = "tab-settings";
+  @state() private _curTab = "tab-settings";
 
-  @internalProperty() private _extraTabs: Tabs = {};
+  @state() private _extraTabs: Tabs = {};
 
-  @internalProperty() private _settingsElementTag?: string;
+  @state() private _settingsElementTag?: string;
 
   private _curTabIndex = 0;
 
@@ -148,9 +145,7 @@ export class DialogEntityEditor extends LitElement {
             </mwc-tab>
           </mwc-tab-bar>
         </div>
-        <div class="wrapper">
-          ${cache(this._renderTab())}
-        </div>
+        <div class="wrapper">${cache(this._renderTab())}</div>
       </ha-dialog>
     `;
   }
@@ -258,7 +253,7 @@ export class DialogEntityEditor extends LitElement {
     this.closeDialog();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Er is een onbekende fout opgetreden",
+            "error_addon_no_ingress": "De gevraagde add-on ondersteunt geen ingress",
             "error_addon_not_found": "Invoegtoepassing niet gevonden",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
@@ -1208,8 +1209,8 @@
                 "configuring_alt": "Configureren",
                 "heading": "Apparaat opnieuw configureren",
                 "in_progress": "Het apparaat wordt opnieuw geconfigureerd. Dit kan wat tijd kosten.",
-                "introduction": "Herconfigureer een apparaat op je Zigbee netwerk. Gebruik deze functie als uw apparaat niet correct functioneert.",
-                "min_max_change": "mix/max/verander",
+                "introduction": "Herconfigureer een apparaat op uw Zigbee netwerk. Gebruik deze functie als uw apparaat niet correct functioneert.",
+                "min_max_change": "min/max/verandering",
                 "reporting_header": "Rapporteren",
                 "run_in_background": "U kunt dit dialoogvenster sluiten en de herconfiguratie wordt op de achtergrond voortgezet.",
                 "start_reconfiguration": "Start herconfiguratie"
@@ -1258,7 +1259,7 @@
         "notification_toast": {
             "connection_lost": "Verbinding verbroken. Opnieuw verbinden...",
             "dismiss": "Afwijzen",
-            "intergration_starting": "Start {integration}, niet alles is beschikbaar totdat het voltooid is.",
+            "intergration_starting": "{integration} starten, niet alles is beschikbaar totdat het voltooid is.",
             "service_call_failed": "Kan service {service} niet aanroepen",
             "started": "Home Assistant is gestart!",
             "starting": "Home Assistant is aan het opstarten. Tijdens het opstarten is niet alles beschikbaar.",
@@ -1746,10 +1747,16 @@
                         "remote": {
                             "access_is_being_prepared": "Toegang op afstand wordt voorbereid. We zullen u op de hoogte brengen wanneer het klaar is.",
                             "certificate_info": "Certificaatinfo",
+                            "connected": "Verbonden",
                             "info": "Home Assistant Cloud biedt een veilige externe verbinding met uw exemplaar terwijl u niet thuis bent.",
                             "instance_is_available": "Uw exemplaar is beschikbaar op",
                             "instance_will_be_available": "Uw exemplaar zal beschikbaar zijn op",
                             "link_learn_how_it_works": "Leer hoe het werkt",
+                            "not_connected": "Niet verbonden",
+                            "remote_enabled": {
+                                "caption": "Automatisch verbinden",
+                                "description": "Schakel deze optie in om ervoor te zorgen dat uw Home Assistant instantie altijd op afstand toegankelijk is."
+                            },
                             "title": "Afstand Bediening"
                         },
                         "sign_out": "Afmelden",
@@ -1773,7 +1780,7 @@
                             "disable_hook_error_msg": "Kan webhook niet uitschakelen:",
                             "info": "Alles wat is geconfigureerd om door een webhook te worden geactiveerd, kan een openbaar toegankelijke URL krijgen zodat u gegevens overal naar Home Assistant kunt terugsturen, zonder uw exemplaar aan internet bloot te stellen.",
                             "link_learn_more": "Meer informatie over het maken van door webhook aangedreven automatiseringen.",
-                            "loading": "Laden ...",
+                            "loading": "Laden...",
                             "manage": "Beheer",
                             "no_hooks_yet": "Het lijkt erop dat je nog geen webhooks hebt. Ga aan de slag door het configureren van een ",
                             "no_hooks_yet_link_automation": "webhook automatisering",
@@ -1855,7 +1862,7 @@
                         "password": "Wachtwoord",
                         "password_error_msg": "Wachtwoorden moeten uit ten minste 8 tekens bestaan",
                         "sign_in": "Aanmelden",
-                        "start_trial": "Start je gratis proefperiode van 1 maand",
+                        "start_trial": "Start uw gratis proefperiode van 1 maand",
                         "title": "Cloud aanmelding",
                         "trial_info": "Geen betalingsinformatie nodig"
                     },
@@ -1868,7 +1875,7 @@
                         "feature_google_home": "Integratie met Google Assistent",
                         "feature_remote_control": "Beheer van Home Assistant van buitenaf",
                         "feature_webhook_apps": "Eenvoudige integratie met webhook gebaseerde apps zoals OwnTracks",
-                        "headline": "Start je gratis proefperiode",
+                        "headline": "Start uw gratis proefperiode",
                         "information": "Maak een account om uw gratis proefperiode van een maand te starten met Home Assistant Cloud. Geen betalingsinformatie nodig.",
                         "information2": "De proefversie geeft u toegang tot alle voordelen van Home Assistant Cloud, waaronder:",
                         "information3": "Deze service wordt uitgevoerd door onze partner",
@@ -1967,7 +1974,7 @@
                     }
                 },
                 "devices": {
-                    "add_prompt": "Er is nog geen {name} toegevoegd met dit apparaat. U kunt er één toevoegen door op de + knop hierboven te klikken.",
+                    "add_prompt": "Er zijn nog geen {name} toegevoegd met dit apparaat. U kunt er één toevoegen door op de + knop hierboven te klikken.",
                     "automation": {
                         "actions": {
                             "caption": "Wanneer iets wordt getriggerd...",
@@ -2160,6 +2167,7 @@
                     "license": "Gepubliceerd onder de Apache 2.0-licentie",
                     "path_configuration": "Pad naar configuration.yaml: {path}",
                     "server": "Server",
+                    "setup_time": "Setup tijd",
                     "source": "Bron:",
                     "system_health_error": "De systeemstatus component is niet geladen. Voeg ' system_health: ' toe aan het configuratiebestand.",
                     "system_health": {
@@ -2239,6 +2247,7 @@
                         },
                         "finish": "Voltooien",
                         "loading_first_time": "Even geduld a.u.b. terwijl de integratie wordt geïnstalleerd",
+                        "next": "Volgende",
                         "not_all_required_fields": "Niet alle verplichte velden zijn ingevuld.",
                         "not_loaded": "De integratie kan niet worden geladen, probeer Home Assistant opnieuw te starten.",
                         "pick_flow_step": {
@@ -2249,7 +2258,7 @@
                     },
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
-                    "confirm_new": "Wil je {integration} instellen?",
+                    "confirm_new": "Wilt u {integration} instellen?",
                     "description": "Beheer integraties met services of apparaten",
                     "details": "Integratiedetails",
                     "disable": {
@@ -2274,7 +2283,7 @@
                     "integration": "integratie",
                     "integration_not_found": "Integratie niet gevonden.",
                     "new": "Stel een nieuwe integratie in",
-                    "no_integrations": "Het lijkt erop dat je nog geen integraties hebt geconfigureerd. Klik op de knop hieronder om uw eerste integratie toe te voegen!",
+                    "no_integrations": "Het lijkt erop dat u nog geen integraties heeft geconfigureerd. Klik op de knop hieronder om uw eerste integratie toe te voegen!",
                     "none": "Er is nog niets geconfigureerd",
                     "none_found": "Geen integraties gevonden",
                     "none_found_detail": "Pas uw zoekcriteria aan.",
@@ -2285,7 +2294,7 @@
                     "rename_input_label": "Invoernaam",
                     "search": "Zoek integraties"
                 },
-                "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
+                "introduction": "Hier kunt u uw componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "logs": {
                     "caption": "Logboek",
                     "clear": "Wis",
@@ -2301,7 +2310,7 @@
                         "warning": "WAARSCHUWING"
                     },
                     "load_full_log": "Laad volledige Home Assistant logboek",
-                    "loading_log": "Foutenlogboek laden ...",
+                    "loading_log": "Foutenlogboek laden...",
                     "multiple_messages": "bericht kwam voor het eerst om {time} en verschijnt {counter} keer",
                     "no_errors": "Er zijn geen fouten gemeld",
                     "no_issues": "Er zijn geen problemen!",
@@ -2682,7 +2691,7 @@
                             "confirm_restart": "Weet je zeker dat je Home Assistant opnieuw wilt starten?",
                             "confirm_stop": "Weet je zeker dat je Home Assistant wilt afsluiten?",
                             "heading": "Serverbeheer",
-                            "introduction": "Beheer je Home Assistant-server... vanuit Home Assistant.",
+                            "introduction": "Beheer uw Home Assistant-server... vanuit Home Assistant.",
                             "restart": "Herstarten",
                             "stop": "Stop"
                         },
@@ -2875,7 +2884,7 @@
                     "configured_in_yaml": "Zones die via configuration.yaml zijn geconfigureerd kunnen niet worden bewerkt in de gebruikers",
                     "confirm_delete": "Weet je zeker dat je deze zone wilt verwijderen?",
                     "create_zone": "Creëer Zone",
-                    "description": "Beheer de zones waarin je personen wilt volgen",
+                    "description": "Beheer de zones waarin u personen wilt volgen",
                     "detail": {
                         "create": "Aanmaken",
                         "delete": "Verwijder",
@@ -2942,7 +2951,13 @@
                         "node_status": "Knooppuntstatus",
                         "zwave_info": "Z-Wave info"
                     },
+                    "logs": {
+                        "log_level": "Log niveau",
+                        "subscribed_to_logs": "Geabonneerd op Z-Wave JS log berichten ...",
+                        "title": "Z-Wave JS Logs"
+                    },
                     "navigation": {
+                        "logs": "Logs",
                         "network": "Netwerk"
                     },
                     "network_status": {
@@ -2968,6 +2983,10 @@
                         "awake": "Wakker",
                         "dead": "Onbereikbaar",
                         "unknown": "Onbekend"
+                    },
+                    "reinterview_node": {
+                        "interview_complete": "Apparaat interview voltooid.",
+                        "interview_failed": "Het apparaat interview is mislukt. Aanvullende informatie is mogelijk beschikbaar in de logboeken."
                     },
                     "remove_node": {
                         "cancel_exclusion": "Uitsluiting annuleren",

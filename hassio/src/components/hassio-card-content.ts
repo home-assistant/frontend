@@ -1,7 +1,7 @@
 import { mdiHelpCircle } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -56,13 +56,13 @@ class HassioCardContent extends LitElement {
             ></ha-svg-icon>
           `}
       <div>
-        <div class="title">
-          ${this.title}
-        </div>
+        <div class="title">${this.title}</div>
         <div class="addition">
           ${this.description}
-          ${/* treat as available when undefined */
-          this.available === false ? " (Not available)" : ""}
+          ${
+            /* treat as available when undefined */
+            this.available === false ? " (Not available)" : ""
+          }
           ${this.datetime
             ? html`
                 <ha-relative-time
@@ -77,7 +77,7 @@ class HassioCardContent extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon {
         margin-right: 24px;

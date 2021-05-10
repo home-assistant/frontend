@@ -4,10 +4,10 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -41,15 +41,15 @@ const detectResourceType = (url: string) => {
 export class DialogLovelaceResourceDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: LovelaceResourceDetailsDialogParams;
+  @state() private _params?: LovelaceResourceDetailsDialogParams;
 
-  @internalProperty() private _url!: LovelaceResource["url"];
+  @state() private _url!: LovelaceResource["url"];
 
-  @internalProperty() private _type?: LovelaceResource["type"];
+  @state() private _type?: LovelaceResource["type"];
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
   public async showDialog(
     params: LovelaceResourceDetailsDialogParams
@@ -236,7 +236,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
     this._params = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

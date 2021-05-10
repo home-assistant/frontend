@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -57,19 +57,19 @@ export class HaAutomationTrace extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @internalProperty() private _entityId?: string;
+  @state() private _entityId?: string;
 
-  @internalProperty() private _traces?: AutomationTrace[];
+  @state() private _traces?: AutomationTrace[];
 
-  @internalProperty() private _runId?: string;
+  @state() private _runId?: string;
 
-  @internalProperty() private _selected?: NodeInfo;
+  @state() private _selected?: NodeInfo;
 
-  @internalProperty() private _trace?: AutomationTraceExtended;
+  @state() private _trace?: AutomationTraceExtended;
 
-  @internalProperty() private _logbookEntries?: LogbookEntry[];
+  @state() private _logbookEntries?: LogbookEntry[];
 
-  @internalProperty() private _view:
+  @state() private _view:
     | "details"
     | "config"
     | "timeline"
@@ -90,12 +90,8 @@ export class HaAutomationTrace extends LitElement {
     let devButtons: TemplateResult | string = "";
     if (__DEV__) {
       devButtons = html`<div style="position: absolute; right: 0;">
-        <button @click=${this._importTrace}>
-          Import trace
-        </button>
-        <button @click=${this._loadLocalStorageTrace}>
-          Load stored trace
-        </button>
+        <button @click=${this._importTrace}>Import trace</button>
+        <button @click=${this._loadLocalStorageTrace}>Load stored trace</button>
       </div>`;
     }
 
@@ -121,12 +117,8 @@ export class HaAutomationTrace extends LitElement {
         .tabs=${configSections.automation}
       >
         ${this.narrow
-          ? html`<span slot="header">
-                ${title}
-              </span>
-              <div slot="toolbar-icon">
-                ${actionButtons}
-              </div>`
+          ? html`<span slot="header"> ${title} </span>
+              <div slot="toolbar-icon">${actionButtons}</div>`
           : ""}
         <div class="toolbar">
           ${!this.narrow
@@ -158,12 +150,12 @@ export class HaAutomationTrace extends LitElement {
                       this._traces,
                       (trace) => trace.run_id,
                       (trace) =>
-                        html`<option value=${trace.run_id}
-                          >${formatDateTimeWithSeconds(
+                        html`<option value=${trace.run_id}>
+                          ${formatDateTimeWithSeconds(
                             new Date(trace.timestamp.start),
                             this.hass.locale
-                          )}</option
-                        >`
+                          )}
+                        </option>`
                     )}
                   </select>
                   <mwc-icon-button
@@ -458,7 +450,7 @@ export class HaAutomationTrace extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       traceTabStyles,

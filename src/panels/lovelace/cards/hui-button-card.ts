@@ -4,11 +4,11 @@ import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   eventOptions,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -28,7 +28,7 @@ import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
-import { getLightRgbColor, LightEntity } from "../../../data/light";
+import { LightEntity } from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -71,11 +71,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ButtonCardConfig;
+  @state() private _config?: ButtonCardConfig;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
-  @internalProperty() private _shouldRenderRipple = false;
+  @state() private _shouldRenderRipple = false;
 
   public getCardSize(): number {
     return (
@@ -247,7 +247,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     this._rippleHandlers.endFocus();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         cursor: pointer;
@@ -301,14 +301,10 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   private _computeColor(stateObj: HassEntity | LightEntity): string {
-    if (
-      !this._config?.state_color ||
-      computeStateDomain(stateObj) !== "light"
-    ) {
-      return "";
+    if (this._config?.state_color && stateObj.attributes.rgb_color) {
+      return `rgb(${stateObj.attributes.rgb_color.join(",")})`;
     }
-    const rgb = getLightRgbColor(stateObj as LightEntity);
-    return rgb ? `rgb(${rgb.slice(0, 3).join(",")})` : "";
+    return "";
   }
 
   private _handleAction(ev: ActionHandlerEvent) {

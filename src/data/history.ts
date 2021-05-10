@@ -88,14 +88,13 @@ export const fetchDate = (
   startTime: Date,
   endTime: Date,
   entityId
-): Promise<HassEntity[][]> => {
-  return hass.callApi(
+): Promise<HassEntity[][]> =>
+  hass.callApi(
     "GET",
     `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}&minimal_response${
       entityId ? `&filter_entity_id=${entityId}` : ``
     }`
   );
-};
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
   obj1.state === obj2.state &&

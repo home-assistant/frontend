@@ -1,10 +1,12 @@
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
 import {
   customElement,
-  internalProperty,
+  state,
   property,
   PropertyValues,
-  UpdatingElement,
+  ReactiveElement,
+  css,
+  CSSResultGroup,
 } from "lit-element";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
@@ -24,7 +26,7 @@ const saveKeyBinding: KeyBinding = {
 };
 
 @customElement("ha-code-editor")
-export class HaCodeEditor extends UpdatingElement {
+export class HaCodeEditor extends ReactiveElement {
   public codemirror?: EditorView;
 
   @property() public mode = "yaml";
@@ -35,7 +37,7 @@ export class HaCodeEditor extends UpdatingElement {
 
   @property() public error = false;
 
-  @internalProperty() private _value = "";
+  @state() private _value = "";
 
   private _loadedCodeMirror?: typeof import("../resources/codemirror");
 
@@ -60,6 +62,14 @@ export class HaCodeEditor extends UpdatingElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    // Lit 2.0 will create the shadowRoot for us, and adopt the styles, check if it was created
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: "open" }).innerHTML = `<style>
+      :host(.error-state) div.cm-wrap .cm-gutters {
+        border-color: var(--error-state-color, red);
+      }
+    </style>`;
+    }
     if (!this.codemirror) {
       return;
     }
@@ -116,18 +126,6 @@ export class HaCodeEditor extends UpdatingElement {
   private async _load(): Promise<void> {
     this._loadedCodeMirror = await loadCodeMirror();
 
-    const shadowRoot = this.attachShadow({ mode: "open" });
-
-    shadowRoot!.innerHTML = `<style>
-      :host(.error-state) div.cm-wrap .cm-gutters {
-        border-color: var(--error-state-color, red);
-      }
-    </style>`;
-
-    const container = document.createElement("span");
-
-    shadowRoot.appendChild(container);
-
     this.codemirror = new this._loadedCodeMirror.EditorView({
       state: this._loadedCodeMirror.EditorState.create({
         doc: this._value,
@@ -159,8 +157,8 @@ export class HaCodeEditor extends UpdatingElement {
           ),
         ],
       }),
-      root: shadowRoot,
-      parent: container,
+      root: this.shadowRoot!,
+      parent: this.shadowRoot!,
     });
   }
 
@@ -178,6 +176,15 @@ export class HaCodeEditor extends UpdatingElement {
     }
     this._value = newValue;
     fireEvent(this, "value-changed", { value: this._value });
+  }
+
+  // Only Lit 2.0 will use this
+  static get styles(): CSSResultGroup {
+    return css`
+      :host(.error-state) div.cm-wrap .cm-gutters {
+        border-color: var(--error-state-color, red);
+      }
+    `;
   }
 }
 

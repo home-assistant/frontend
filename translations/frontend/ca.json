@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "S'ha produït un error desconegut",
+            "error_addon_no_ingress": "El complement sol·licitat no admet ingress",
             "error_addon_not_found": "No s'ha trobat el complement",
             "faq_link": "Preguntes freqüents de My Home Assistant",
             "not_supported": "La instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
@@ -1198,6 +1199,7 @@
             },
             "zha_reconfigure_device": {
                 "attribute": "Atribut",
+                "battery_device_warning": "Hauràs de despertar els dispositius amb bateria abans d'iniciar el procés de reconfiguració. Consulta el manual del dispositiu per saber els passos per a despertar-lo.",
                 "bind_header": "Vinculació",
                 "button_hide": "Amaga els detalls",
                 "button_show": "Mostra els detalls",
@@ -1207,7 +1209,9 @@
                 "configuring_alt": "Configurant",
                 "heading": "S'està reconfigurant el dispositiu",
                 "in_progress": "El dispositiu s'està reconfigurant. Això pot trigar una estona.",
+                "introduction": "Reconfigura un dispositiu de la xarxa Zigbee. Fes-ho si el dispositiu no funciona correctament.",
                 "min_max_change": "min/max/canvi",
+                "reporting_header": "Informant",
                 "run_in_background": "Pots tancar aquest diàleg, la reconfiguració continuarà en segon pla.",
                 "start_reconfiguration": "Inicia la reconfiguració"
             }
@@ -1741,12 +1745,18 @@
                         "nabu_casa_account": "Compte Nabu Casa",
                         "not_connected": "No connectat",
                         "remote": {
-                            "access_is_being_prepared": "S'està preparant l'accés remot. T'avisarem quan estigui a punt.",
+                            "access_is_being_prepared": "S'està preparant el control remot. T'avisarem quan estigui a punt.",
                             "certificate_info": "Informació del certificat",
+                            "connected": "Connectat",
                             "info": "Home Assistant Cloud t'ofereix una connexió remota i segura amb la teva instància mentre siguis fora de casa",
                             "instance_is_available": "La teva instància està disponible a",
                             "instance_will_be_available": "La teva instància estarà disponible a",
                             "link_learn_how_it_works": "Informació sobre com funciona",
+                            "not_connected": "No connectat",
+                            "remote_enabled": {
+                                "caption": "Connexió automàtica",
+                                "description": "Activa aquesta opció per assegurar-te que la teva instància de Home Assistant sempre sigui accessible de forma remota."
+                            },
                             "title": "Control remot"
                         },
                         "sign_out": "Tanca sessió",
@@ -2157,6 +2167,7 @@
                     "license": "Publicat amb la llicència Apache 2.0",
                     "path_configuration": "Ruta al fitxer configuration.yaml: {path}",
                     "server": "servidor",
+                    "setup_time": "Temps de configuració",
                     "source": "Font:",
                     "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml",
                     "system_health": {
@@ -2236,6 +2247,7 @@
                         },
                         "finish": "Finalitza",
                         "loading_first_time": "Espera mentre s'instal·la la integració",
+                        "next": "Següent",
                         "not_all_required_fields": "No s'han omplert tots els camps obligatoris.",
                         "not_loaded": "No s'ha pogut carregar la integració, prova de reiniciar Home Assistant.",
                         "pick_flow_step": {
@@ -2941,6 +2953,7 @@
                     },
                     "logs": {
                         "log_level": "Nivell dels registres",
+                        "subscribed_to_logs": "Subscrit a missatges de registre Z-Wave JS...",
                         "title": "Registres de Z-Wave JS"
                     },
                     "navigation": {
@@ -2972,9 +2985,12 @@
                         "unknown": "Desconegut"
                     },
                     "reinterview_node": {
+                        "battery_device_warning": "Hauràs de despertar els dispositius amb bateria abans d'iniciar el procés de consulta. Fes un cop d'ull al manual del dispositiu per saber com despertar-lo.",
                         "in_progress": "S'està consultant el dispositiu. Això pot trigar una estona.",
                         "interview_complete": "Consulta del dispositiu completada.",
                         "interview_failed": "Ha fallat la consulta del dispositiu. Pots trobar informació addicional als registres.",
+                        "introduction": "Torna a consultar un dispositiu de la xarxa Zigbee. Fes-ho si el dispositiu no funciona correctament.",
+                        "run_in_background": "Pots tancar aquest diàleg, la consulta continuarà en segon pla.",
                         "start_reinterview": "Torna a iniciar consulta",
                         "title": "Torna a consultar un dispositiu Z-Wave"
                     },
@@ -3959,7 +3975,7 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "Estàs segur que vols eliminar el token d'actualització per a {name}?",
-                    "created_at": "Creat el {date}",
+                    "created_at": "Creat {date}",
                     "current_token_tooltip": "No s'ha pogut eliminar el token d'autenticació d'actualització.",
                     "delete_failed": "No s'ha pogut eliminar el token d'autenticació d'actualització.",
                     "description": "Cada token d'autenticació d'actualització representa un inici de sessió diferent. Els tokens d'autenticació d'actualització s'eliminaran automàticament quan tanquis la sessió. A sota hi ha una llista de tokens d'autenticació d'actualització que estan actius actualment al teu compte.",

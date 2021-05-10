@@ -2,10 +2,10 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -70,7 +70,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: AlarmPanelCardConfig;
+  @state() private _config?: AlarmPanelCardConfig;
 
   @query("#alarmCode") private _input?: PaperInputElement;
 
@@ -172,17 +172,17 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           ${(stateObj.state === "disarmed"
             ? this._config.states!
             : ["disarm"]
-          ).map((state) => {
-            return html`
+          ).map(
+            (stateAction) => html`
               <mwc-button
-                .action="${state}"
+                .action="${stateAction}"
                 @click="${this._handleActionClick}"
                 outlined
               >
-                ${this._actionDisplay(state)}
+                ${this._actionDisplay(stateAction)}
               </mwc-button>
-            `;
-          })}
+            `
+          )}
         </div>
         ${!stateObj.attributes.code_format
           ? html``
@@ -200,8 +200,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           ? html``
           : html`
               <div id="keypad">
-                ${BUTTONS.map((value) => {
-                  return value === ""
+                ${BUTTONS.map((value) =>
+                  value === ""
                     ? html` <mwc-button disabled></mwc-button> `
                     : html`
                         <mwc-button
@@ -218,30 +218,30 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                               )
                             : value}
                         </mwc-button>
-                      `;
-                })}
+                      `
+                )}
               </div>
             `}
       </ha-card>
     `;
   }
 
-  private _stateIconLabel(state: string): string {
-    const stateLabel = state.split("_").pop();
+  private _stateIconLabel(entityState: string): string {
+    const stateLabel = entityState.split("_").pop();
     return stateLabel === "disarmed" ||
       stateLabel === "triggered" ||
       !stateLabel
       ? ""
-      : this._stateDisplay(state);
+      : this._stateDisplay(entityState);
   }
 
-  private _actionDisplay(state: string): string {
-    return this.hass!.localize(`ui.card.alarm_control_panel.${state}`);
+  private _actionDisplay(entityState: string): string {
+    return this.hass!.localize(`ui.card.alarm_control_panel.${entityState}`);
   }
 
-  private _stateDisplay(state: string): string {
+  private _stateDisplay(entityState: string): string {
     return this.hass!.localize(
-      `component.alarm_control_panel.state._.${state}`
+      `component.alarm_control_panel.state._.${entityState}`
     );
   }
 
@@ -269,7 +269,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         padding-bottom: 16px;

@@ -1129,7 +1129,7 @@
                         "input_text": "Inngangstekster",
                         "min_max": "Min/maks enheter",
                         "mqtt": "Manuelt konfigurerte MQTT-enheter",
-                        "person": "Mennesker",
+                        "person": "Personer",
                         "ping": "Ping binære sensorenheter",
                         "reload": "{domain}",
                         "rest": "Rest enheter og varsle tjenester",
@@ -1197,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Konfigurerer enheten på nytt"
+                "attribute": "Attributt",
+                "battery_device_warning": "Du må vekke batteridrevne enheter før du starter omkonfigureringsprosessen. Se enhetens håndbok for instruksjoner om hvordan du vekker enheten.",
+                "bind_header": "Bindende",
+                "button_hide": "Skjul detaljer",
+                "button_show": "Vis detaljer",
+                "cluster_header": "Klynge",
+                "configuration_complete": "Enhetskonfigurering fullført.",
+                "configuration_failed": "Enhetskonfigurasjonen mislyktes. Ytterligere informasjon kan være tilgjengelig i loggene.",
+                "configuring_alt": "Konfigurerer",
+                "heading": "Konfigurerer enheten på nytt",
+                "in_progress": "Enheten konfigureres på nytt. Dette kan ta litt tid.",
+                "introduction": "Konfigurer en enhet på nytt på Zigbee-nettverket. Bruk denne funksjonen hvis enheten ikke fungerer som den skal.",
+                "min_max_change": "min./maks./endring",
+                "reporting_header": "Rapportering",
+                "run_in_background": "Du kan lukke denne dialogen, og omkonfigurasjonen vil fortsette i bakgrunnen.",
+                "start_reconfiguration": "Start rekonfigurasjon"
             }
         },
         "duration": {
@@ -1241,7 +1256,7 @@
             "title": "Varsler"
         },
         "notification_toast": {
-            "connection_lost": "Forbindelse mistet. Koble til igjen...",
+            "connection_lost": "Mistet forbindelsen. Kobler til på nytt...",
             "dismiss": "Avvis",
             "intergration_starting": "Starter {integration}. Ikke alt er tilgjengelig før lasting er ferdig.",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
@@ -1260,7 +1275,8 @@
                     "caption": "Områder",
                     "data_table": {
                         "area": "Område",
-                        "devices": "Enheter"
+                        "devices": "Enheter",
+                        "entities": "Entiteter"
                     },
                     "delete": {
                         "confirmation_text": "Alle enheter som tilhører dette området vil ikke bli tildelt.",
@@ -1272,8 +1288,10 @@
                         "create": "Opprett",
                         "default_name": "Nytt område",
                         "delete": "Slett",
+                        "linked_entities_caption": "Entiteter",
                         "name": "Navn",
                         "name_required": "Navn er påkrevd",
+                        "no_linked_entities": "Det er ingen enheter knyttet til dette området.",
                         "unknown_error": "Ukjent feil",
                         "update": "Oppdater"
                     },
@@ -1726,12 +1744,18 @@
                         "nabu_casa_account": "Nabu Casa konto",
                         "not_connected": "Ikke tilkoblet",
                         "remote": {
-                            "access_is_being_prepared": "Ekstern tilgang forberedes. Vi vil varsle deg når den er klar.",
+                            "access_is_being_prepared": "Fjernkontroll forberedes. Vi vil varsle deg når den er klar.",
                             "certificate_info": "Sertifikatinformasjon",
+                            "connected": "Tilkoblet",
                             "info": "Home Assistant Cloud gir en sikker ekstern tilkobling til forekomsten din mens du er borte fra hjemmet.",
                             "instance_is_available": "Din forekomst er tilgjengelig på",
                             "instance_will_be_available": "Din forekomst vil være tilgjengelig på",
                             "link_learn_how_it_works": "Lær hvordan det fungerer",
+                            "not_connected": "Ikke tilkoblet",
+                            "remote_enabled": {
+                                "caption": "Koble til automatisk",
+                                "description": "Aktiver dette alternativet for å sikre at Home Assistant-forekomsten alltid er eksternt tilgjengelig."
+                            },
                             "title": "Fjernkontroll"
                         },
                         "sign_out": "Logg ut",
@@ -2142,6 +2166,7 @@
                     "license": "Publisert under Apache 2.0-lisensen",
                     "path_configuration": "Bane til configuration.yaml: {path}",
                     "server": "core",
+                    "setup_time": "Oppsettstid",
                     "source": "Kilder:",
                     "system_health_error": "System tilstand komponenten er ikke lastet inn. Legg til 'system_health:' i configuration.yaml",
                     "system_health": {
@@ -2221,6 +2246,7 @@
                         },
                         "finish": "Fullfør",
                         "loading_first_time": "Vennligst vent mens integrasjonen installeres",
+                        "next": "Neste",
                         "not_all_required_fields": "Ikke alle obligatoriske felt er fylt ut.",
                         "not_loaded": "Integrasjonen kunne ikke lastes, prøv å starte Home Assistant på nytt.",
                         "pick_flow_step": {
@@ -2645,7 +2671,7 @@
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "min_max": "Min/maks enheter",
                             "mqtt": "Manuelt konfigurerte MQTT-enheter",
-                            "person": "Mennesker",
+                            "person": "Personer",
                             "ping": "Ping binære sensorenheter",
                             "reload": "{domain}",
                             "rest": "Rest enheter og varsle tjenester",
@@ -2924,7 +2950,13 @@
                         "node_status": "Node status",
                         "zwave_info": "Z-Wave Informasjon"
                     },
+                    "logs": {
+                        "log_level": "Loggnivå",
+                        "subscribed_to_logs": "Abonnerer på Z-Wave JS-loggmeldinger ...",
+                        "title": "Z-Wave JS-logger"
+                    },
                     "navigation": {
+                        "logs": "Logger",
                         "network": "Nettverk"
                     },
                     "network_status": {
@@ -3098,7 +3130,7 @@
                         "column_description": "Beskrivelse",
                         "column_example": "Eksempel",
                         "column_parameter": "",
-                        "description": "Service utviklingsverktøyet lar deg tilkalle alle tilgjengelige tjenester i Home Assistant.",
+                        "description": "Tjenesteutviklingsverktøyet lar deg tilkalle alle tilgjengelige tjenester i Home Assistant.",
                         "fill_example_data": "Fyll ut eksempeldata",
                         "no_template_ui_support": "Brukergrensesnittet støtter ikke maler, du kan fortsatt bruke YAML-redigereren.",
                         "title": "Tjenester",
@@ -3111,8 +3143,8 @@
                         "attributes": "Attributter",
                         "copy_id": "Kopier ID til utklippstavlen",
                         "current_entities": "Gjeldende entiteter",
-                        "description1": "Angi gjeldende tilstandsrepresentasjon for en enhet i Home Assistant.",
-                        "description2": "Hvis enheten tilhører en enhet, vil det ikke være noen faktisk kommunikasjon med den enheten.",
+                        "description1": "Angi gjeldende tilstandsrepresentasjon for en entitet i Home Assistant.",
+                        "description2": "Hvis entiteten tilhører en enhet, vil det ikke være noen faktisk kommunikasjon med den enheten.",
                         "entity": "Entitet",
                         "filter_attributes": "Filtrere attributter",
                         "filter_entities": "Filtrere entiteter",

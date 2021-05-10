@@ -2,7 +2,7 @@ import {
   customElement,
   html,
   css,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
   property,
@@ -61,6 +61,9 @@ const nameAsDomainEntry = createConfigEntry("ESPHome");
 const longNameEntry = createConfigEntry(
   "Entry with a super long name that is going to the next line"
 );
+const longNonBreakingNameEntry = createConfigEntry(
+  "EntryWithASuperLongNameThatDoesNotBreak"
+);
 const configPanelEntry = createConfigEntry("Config Panel", {
   domain: "mqtt",
   localized_domain_name: "MQTT",
@@ -83,7 +86,8 @@ const setupRetryReasonEntry = createConfigEntry("Setup Retry", {
 });
 const setupRetryReasonMissingKeyEntry = createConfigEntry("Setup Retry", {
   state: "setup_retry",
-  reason: "resolve_error",
+  reason:
+    "HTTPSConnectionpool: Max retries exceeded with NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x9eedfc10>: Failed to establish a new connection: [Errno 113] Host is unreachable')",
 });
 const failedUnloadEntry = createConfigEntry("Failed Unload", {
   state: "failed_unload",
@@ -141,6 +145,7 @@ const configEntries: Array<{
   { items: [optionsFlowEntry] },
   { items: [nameAsDomainEntry] },
   { items: [longNameEntry] },
+  { items: [longNonBreakingNameEntry] },
   { items: [setupErrorEntry] },
   { items: [migrationErrorEntry] },
   { items: [setupRetryEntry] },
@@ -154,6 +159,7 @@ const configEntries: Array<{
       setupErrorEntry,
       migrationErrorEntry,
       longNameEntry,
+      longNonBreakingNameEntry,
       setupRetryEntry,
       failedUnloadEntry,
       notLoadedEntry,
@@ -214,9 +220,9 @@ const createDeviceRegistryEntries = (
 export class DemoIntegrationCard extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
 
-  @internalProperty() isCustomIntegration = false;
+  @state() isCustomIntegration = false;
 
-  @internalProperty() isCloud = false;
+  @state() isCloud = false;
 
   protected render(): TemplateResult {
     if (!this.hass) {

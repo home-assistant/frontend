@@ -5,14 +5,15 @@ import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbo
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
 } from "lit-element";
+import { formatDateTime } from "../../../../src/common/datetime/format_date_time";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-svg-icon";
@@ -53,14 +54,13 @@ const _computeFolders = (folders) => {
   return list;
 };
 
-const _computeAddons = (addons) => {
-  return addons.map((addon) => ({
+const _computeAddons = (addons) =>
+  addons.map((addon) => ({
     slug: addon.slug,
     name: addon.name,
     version: addon.version,
     checked: true,
   }));
-};
 
 interface AddonItem {
   slug: string;
@@ -81,21 +81,21 @@ class HassioSnapshotDialog extends LitElement {
 
   @property({ attribute: false }) public supervisor?: Supervisor;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _onboarding = false;
+  @state() private _onboarding = false;
 
-  @internalProperty() private _snapshot?: HassioSnapshotDetail;
+  @state() private _snapshot?: HassioSnapshotDetail;
 
-  @internalProperty() private _folders!: FolderItem[];
+  @state() private _folders!: FolderItem[];
 
-  @internalProperty() private _addons!: AddonItem[];
+  @state() private _addons!: AddonItem[];
 
-  @internalProperty() private _dialogParams?: HassioSnapshotDialogParams;
+  @state() private _dialogParams?: HassioSnapshotDialogParams;
 
-  @internalProperty() private _snapshotPassword!: string;
+  @state() private _snapshotPassword!: string;
 
-  @internalProperty() private _restoreHass = true;
+  @state() private _restoreHass = true;
 
   public async showDialog(params: HassioSnapshotDialogParams) {
     this._snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
@@ -122,9 +122,7 @@ class HassioSnapshotDialog extends LitElement {
       <ha-dialog open @closing=${this._closeDialog} .heading=${true}>
         <div slot="heading">
           <ha-header-bar>
-            <span slot="title">
-              ${this._computeName}
-            </span>
+            <span slot="title"> ${this._computeName} </span>
             <mwc-icon-button slot="actionItems" dialogAction="cancel">
               <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
             </mwc-icon-button>
@@ -135,7 +133,7 @@ class HassioSnapshotDialog extends LitElement {
             ? "Full snapshot"
             : "Partial snapshot"}
           (${this._computeSize})<br />
-          ${this._formatDatetime(this._snapshot.date)}
+          ${formatDateTime(new Date(this._snapshot.date), this.hass.locale)}
         </div>
         ${this._snapshot.homeassistant
           ? html`<div>Home Assistant:</div>
@@ -145,15 +143,16 @@ class HassioSnapshotDialog extends LitElement {
                   this._restoreHass = (ev.target as PaperCheckboxElement).checked!;
                 }}"
               >
-                Home Assistant ${this._snapshot.homeassistant}
+                Home Assistant
+                <span class="version">(${this._snapshot.homeassistant})</span>
               </paper-checkbox>`
           : ""}
         ${this._folders.length
           ? html`
               <div>Folders:</div>
               <paper-dialog-scrollable class="no-margin-top">
-                ${this._folders.map((item) => {
-                  return html`
+                ${this._folders.map(
+                  (item) => html`
                     <paper-checkbox
                       .checked=${item.checked}
                       @change="${(ev: Event) =>
@@ -164,8 +163,8 @@ class HassioSnapshotDialog extends LitElement {
                     >
                       ${item.name}
                     </paper-checkbox>
-                  `;
-                })}
+                  `
+                )}
               </paper-dialog-scrollable>
             `
           : ""}
@@ -173,8 +172,8 @@ class HassioSnapshotDialog extends LitElement {
           ? html`
               <div>Add-on:</div>
               <paper-dialog-scrollable class="no-margin-top">
-                ${this._addons.map((item) => {
-                  return html`
+                ${this._addons.map(
+                  (item) => html`
                     <paper-checkbox
                       .checked=${item.checked}
                       @change="${(ev: Event) =>
@@ -184,9 +183,10 @@ class HassioSnapshotDialog extends LitElement {
                         )}"
                     >
                       ${item.name}
+                      <span class="version">(${item.version})</span>
                     </paper-checkbox>
-                  `;
-                })}
+                  `
+                )}
               </paper-dialog-scrollable>
             `
           : ""}
@@ -238,7 +238,7 @@ class HassioSnapshotDialog extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,
@@ -270,6 +270,9 @@ class HassioSnapshotDialog extends LitElement {
         }
         .no-margin-top {
           margin-top: 0;
+        }
+        span.version {
+          color: var(--secondary-text-color);
         }
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);
@@ -500,17 +503,6 @@ class HassioSnapshotDialog extends LitElement {
 
   private get _computeSize() {
     return Math.ceil(this._snapshot!.size * 10) / 10 + " MB";
-  }
-
-  private _formatDatetime(datetime) {
-    return new Date(datetime).toLocaleDateString(navigator.language, {
-      weekday: "long",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    });
   }
 
   private _closeDialog() {

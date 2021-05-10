@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -22,11 +22,11 @@ class HaTimerForm extends LitElement {
 
   private _item?: Timer;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _icon!: string;
+  @state() private _icon!: string;
 
-  @internalProperty() private _duration!: string | number | DurationDict;
+  @state() private _duration!: string | number | DurationDict;
 
   set item(item: Timer) {
     this._item = item;
@@ -111,7 +111,7 @@ class HaTimerForm extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

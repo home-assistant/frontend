@@ -5,10 +5,10 @@ import { mdiDelete } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -39,15 +39,15 @@ class HassioRegistriesDialog extends LitElement {
     username: string;
   }[];
 
-  @internalProperty() private _registry?: string;
+  @state() private _registry?: string;
 
-  @internalProperty() private _username?: string;
+  @state() private _username?: string;
 
-  @internalProperty() private _password?: string;
+  @state() private _password?: string;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _addingRegistry = false;
+  @state() private _addingRegistry = false;
 
   protected render(): TemplateResult {
     return html`
@@ -108,8 +108,8 @@ class HassioRegistriesDialog extends LitElement {
                 </mwc-button>
               `
             : html`${this._registries?.length
-                  ? this._registries.map((entry) => {
-                      return html`
+                  ? this._registries.map(
+                      (entry) => html`
                         <mwc-list-item class="option" hasMeta twoline>
                           <span>${entry.registry}</span>
                           <span slot="secondary"
@@ -129,8 +129,8 @@ class HassioRegistriesDialog extends LitElement {
                             <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
                           </mwc-icon-button>
                         </mwc-list-item>
-                      `;
-                    })
+                      `
+                    )
                   : html`
                       <mwc-list-item>
                         <span
@@ -220,7 +220,7 @@ class HassioRegistriesDialog extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

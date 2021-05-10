@@ -3,10 +3,10 @@ import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -74,9 +74,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ThermostatCardConfig;
+  @state() private _config?: ThermostatCardConfig;
 
-  @internalProperty() private _setTemp?: number | number[];
+  @state() private _setTemp?: number | number[];
 
   @query("ha-card") private _card?: HaCard;
 
@@ -250,9 +250,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             <div id="slider">
               ${slider}
               <div id="slider-center">
-                <div id="temperature">
-                  ${currentTemperature} ${setValues}
-                </div>
+                <div id="temperature">${currentTemperature} ${setValues}</div>
               </div>
             </div>
           </div>
@@ -423,7 +421,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

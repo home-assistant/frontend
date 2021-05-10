@@ -3,7 +3,7 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
   property,
@@ -51,7 +51,7 @@ export class CloudGooglePref extends LitElement {
           <p>
             ${this.hass.localize("ui.panel.config.cloud.account.google.info")}
           </p>
-          ${!this.cloudStatus.google_registered
+          ${google_enabled && !this.cloudStatus.google_registered
             ? html`
                 <h3 class="warning">
                   ${this.hass.localize(
@@ -220,7 +220,7 @@ export class CloudGooglePref extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

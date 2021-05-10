@@ -1,10 +1,10 @@
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -34,13 +34,13 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
 
   @property() public itemId!: string;
 
-  @internalProperty() private _entries?: ConfigEntry[];
+  @state() private _entries?: ConfigEntry[];
 
-  @internalProperty() private _devices?: DeviceRegistryEntry[];
+  @state() private _devices?: DeviceRegistryEntry[];
 
-  @internalProperty() private _areas?: AreaRegistryEntry[];
+  @state() private _areas?: AreaRegistryEntry[];
 
-  @internalProperty() private _related?: RelatedResult;
+  @state() private _related?: RelatedResult;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -303,7 +303,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
     fireEvent(this, "hass-more-info", { entityId });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

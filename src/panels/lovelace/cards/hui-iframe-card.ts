@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -84,7 +84,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host([ispanel]) ha-card {
         width: 100%;

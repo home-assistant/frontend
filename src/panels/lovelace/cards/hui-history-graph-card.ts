@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -36,9 +36,9 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _stateHistory?: HistoryResult;
+  @state() private _stateHistory?: HistoryResult;
 
-  @internalProperty() private _config?: HistoryGraphCardConfig;
+  @state() private _config?: HistoryGraphCardConfig;
 
   private _configEntities?: EntityConfig[];
 
@@ -169,7 +169,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;

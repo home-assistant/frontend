@@ -2,7 +2,7 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -75,7 +75,7 @@ export class StateCardDisplay extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

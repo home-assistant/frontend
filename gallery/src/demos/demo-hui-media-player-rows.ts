@@ -77,4 +77,8 @@ class DemoHuiMediaPlayerRow extends LitElement {
   }
 }
 
-customElements.define("demo-hui-media-player-row", DemoHuiMediaPlayerRow);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-media-player-row": DemoHuiMediaPlayerRow;
+  }
+}

@@ -4,9 +4,9 @@ import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -33,11 +33,11 @@ export abstract class HaDeviceAutomationPicker<
 
   @property() public value?: T;
 
-  @internalProperty() private _automations: T[] = [];
+  @state() private _automations: T[] = [];
 
   // Trigger an empty render so we start with a clean DOM.
   // paper-listbox does not like changing things around.
-  @internalProperty() private _renderEmpty = false;
+  @state() private _renderEmpty = false;
 
   protected get NO_AUTOMATION_TEXT() {
     return this.hass.localize(
@@ -64,12 +64,8 @@ export abstract class HaDeviceAutomationPicker<
   private _createNoAutomation: (deviceId?: string) => T;
 
   constructor(
-    localizeDeviceAutomation: HaDeviceAutomationPicker<
-      T
-    >["_localizeDeviceAutomation"],
-    fetchDeviceAutomations: HaDeviceAutomationPicker<
-      T
-    >["_fetchDeviceAutomations"],
+    localizeDeviceAutomation: HaDeviceAutomationPicker<T>["_localizeDeviceAutomation"],
+    fetchDeviceAutomations: HaDeviceAutomationPicker<T>["_fetchDeviceAutomations"],
     createNoAutomation: HaDeviceAutomationPicker<T>["_createNoAutomation"]
   ) {
     super();
@@ -192,7 +188,7 @@ export abstract class HaDeviceAutomationPicker<
     fireEvent(this, "value-changed", { value: automation });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-paper-dropdown-menu {
         width: 100%;

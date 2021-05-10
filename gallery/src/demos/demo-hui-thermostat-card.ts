@@ -96,4 +96,8 @@ class DemoThermostatEntity extends LitElement {
   }
 }
 
-customElements.define("demo-hui-thermostat-card", DemoThermostatEntity);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-thermostat-card": DemoThermostatEntity;
+  }
+}

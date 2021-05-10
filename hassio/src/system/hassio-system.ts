@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -39,9 +39,7 @@ class HassioSystem extends LitElement {
         main-page
         supervisor
       >
-        <span slot="header">
-          ${this.supervisor.localize("panel.system")}
-        </span>
+        <span slot="header"> ${this.supervisor.localize("panel.system")} </span>
         <div class="content">
           <div class="card-group">
             <hassio-core-info
@@ -66,7 +64,7 @@ class HassioSystem extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

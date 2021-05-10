@@ -7,7 +7,7 @@ import {
   css,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -21,9 +21,9 @@ import type { HomeAssistant } from "../../../types";
 class ConfigNameForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _working = false;
+  @state() private _working = false;
 
-  @internalProperty() private _name!: ConfigUpdateValues["location_name"];
+  @state() private _name!: ConfigUpdateValues["location_name"];
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(

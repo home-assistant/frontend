@@ -5,10 +5,10 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -30,11 +30,11 @@ class HaInputSelectForm extends LitElement {
 
   private _item?: InputSelect;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _icon!: string;
+  @state() private _icon!: string;
 
-  @internalProperty() private _options: string[] = [];
+  @state() private _options: string[] = [];
 
   @query("#option_input", true) private _optionInput?: PaperInputElement;
 
@@ -92,8 +92,8 @@ class HaInputSelectForm extends LitElement {
           "ui.dialogs.helper_settings.input_select.options"
         )}:
         ${this._options.length
-          ? this._options.map((option, index) => {
-              return html`
+          ? this._options.map(
+              (option, index) => html`
                 <paper-item class="option">
                   <paper-item-body> ${option} </paper-item-body>
                   <ha-icon-button
@@ -105,8 +105,8 @@ class HaInputSelectForm extends LitElement {
                     icon="hass:delete"
                   ></ha-icon-button>
                 </paper-item>
-              `;
-            })
+              `
+            )
           : html`
               <paper-item>
                 ${this.hass!.localize(
@@ -190,7 +190,7 @@ class HaInputSelectForm extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

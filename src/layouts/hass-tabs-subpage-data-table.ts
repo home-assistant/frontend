@@ -3,7 +3,7 @@ import { mdiFilterVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -11,6 +11,7 @@ import {
   query,
   TemplateResult,
 } from "lit-element";
+import { LocalizeFunc } from "../common/translations/localize";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/data-table/ha-data-table";
@@ -34,6 +35,8 @@ declare global {
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
 
   @property({ type: Boolean }) public isWide = false;
 
@@ -185,6 +188,7 @@ export class HaTabsSubpageDataTable extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.localizeFunc}
         .narrow=${this.narrow}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
@@ -197,9 +201,7 @@ export class HaTabsSubpageDataTable extends LitElement {
           ? html`
               <div slot="header">
                 <slot name="header">
-                  <div class="search-toolbar">
-                    ${headerToolbar}
-                  </div>
+                  <div class="search-toolbar">${headerToolbar}</div>
                 </slot>
               </div>
             `
@@ -220,9 +222,7 @@ export class HaTabsSubpageDataTable extends LitElement {
             ? html`
                 <div slot="header">
                   <slot name="header">
-                    <div class="table-header">
-                      ${headerToolbar}
-                    </div>
+                    <div class="table-header">${headerToolbar}</div>
                   </slot>
                 </div>
               `
@@ -242,7 +242,7 @@ export class HaTabsSubpageDataTable extends LitElement {
     fireEvent(this, "clear-filter");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-data-table {
         width: 100%;

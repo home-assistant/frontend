@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import { mdiHomeAssistant } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -40,9 +40,8 @@ import { HomeAssistant } from "../../../src/types";
 import { showDialogSupervisorUpdate } from "../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../resources/hassio-style";
 
-const computeVersion = (key: string, version: string): string => {
-  return key === "os" ? version : `${key}-${version}`;
-};
+const computeVersion = (key: string, version: string): string =>
+  key === "os" ? version : `${key}-${version}`;
 
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
@@ -50,11 +49,12 @@ export class HassioUpdate extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  private _pendingUpdates = memoizeOne((supervisor: Supervisor): number => {
-    return Object.keys(supervisor).filter(
-      (value) => supervisor[value].update_available
-    ).length;
-  });
+  private _pendingUpdates = memoizeOne(
+    (supervisor: Supervisor): number =>
+      Object.keys(supervisor).filter(
+        (value) => supervisor[value].update_available
+      ).length
+  );
 
   protected render(): TemplateResult {
     if (!this.supervisor) {
@@ -233,7 +233,7 @@ export class HassioUpdate extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

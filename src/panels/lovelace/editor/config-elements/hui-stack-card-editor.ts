@@ -3,10 +3,10 @@ import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -32,19 +32,20 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-stack-card-editor")
-export class HuiStackCardEditor extends LitElement
+export class HuiStackCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @internalProperty() protected _config?: StackCardConfig;
+  @state() protected _config?: StackCardConfig;
 
-  @internalProperty() protected _selectedCard = 0;
+  @state() protected _selectedCard = 0;
 
-  @internalProperty() protected _GUImode = true;
+  @state() protected _GUImode = true;
 
-  @internalProperty() protected _guiModeAvailable? = true;
+  @state() protected _guiModeAvailable? = true;
 
   @query("hui-card-element-editor")
   protected _cardEditorEl?: HuiCardElementEditor;
@@ -73,13 +74,9 @@ export class HuiStackCardEditor extends LitElement
             scrollable
             @iron-activate=${this._handleSelectedCard}
           >
-            ${this._config.cards.map((_card, i) => {
-              return html`
-                <paper-tab>
-                  ${i + 1}
-                </paper-tab>
-              `;
-            })}
+            ${this._config.cards.map(
+              (_card, i) => html` <paper-tab> ${i + 1} </paper-tab> `
+            )}
           </paper-tabs>
           <paper-tabs
             id="add-card"
@@ -239,7 +236,7 @@ export class HuiStackCardEditor extends LitElement
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

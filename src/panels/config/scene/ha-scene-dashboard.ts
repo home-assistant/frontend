@@ -10,10 +10,10 @@ import {
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -52,9 +52,9 @@ class HaSceneDashboard extends LitElement {
 
   @property() private _activeFilters?: string[];
 
-  @internalProperty() private _filteredScenes?: string[] | null;
+  @state() private _filteredScenes?: string[] | null;
 
-  @internalProperty() private _filterValue?;
+  @state() private _filterValue?;
 
   private _scenes = memoizeOne(
     (scenes: SceneEntity[], filteredScenes?: string[] | null) => {
@@ -64,99 +64,93 @@ class HaSceneDashboard extends LitElement {
       return (filteredScenes
         ? scenes.filter((scene) => filteredScenes!.includes(scene.entity_id))
         : scenes
-      ).map((scene) => {
-        return {
-          ...scene,
-          name: computeStateName(scene),
-          icon: stateIcon(scene),
-        };
-      });
+      ).map((scene) => ({
+        ...scene,
+        name: computeStateName(scene),
+        icon: stateIcon(scene),
+      }));
     }
   );
 
   private _columns = memoizeOne(
-    (_language): DataTableColumnContainer => {
-      return {
-        activate: {
-          title: "",
-          type: "icon-button",
-          template: (_toggle, scene) =>
-            html`
-              <mwc-icon-button
-                .scene=${scene}
-                title="${this.hass.localize(
-                  "ui.panel.config.scene.picker.activate_scene"
-                )}"
-                @click=${(ev: Event) => this._activateScene(ev)}
-              >
-                <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
-              </mwc-icon-button>
-            `,
-        },
-        icon: {
-          title: "",
-          type: "icon",
-          template: (icon) => html` <ha-icon .icon=${icon}></ha-icon> `,
-        },
-        name: {
-          title: this.hass.localize(
-            "ui.panel.config.scene.picker.headers.name"
-          ),
-          sortable: true,
-          filterable: true,
-          direction: "asc",
-          grows: true,
-        },
-        info: {
-          title: "",
-          type: "icon-button",
-          template: (_info, scene) => html`
+    (_language): DataTableColumnContainer => ({
+      activate: {
+        title: "",
+        type: "icon-button",
+        template: (_toggle, scene) =>
+          html`
             <mwc-icon-button
               .scene=${scene}
-              @click=${this._showInfo}
               title="${this.hass.localize(
-                "ui.panel.config.scene.picker.show_info_scene"
+                "ui.panel.config.scene.picker.activate_scene"
               )}"
+              @click=${(ev: Event) => this._activateScene(ev)}
             >
-              <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
+              <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
             </mwc-icon-button>
           `,
-        },
-        edit: {
-          title: "",
-          type: "icon-button",
-          template: (_info, scene: any) => html`
-            <a
-              href=${ifDefined(
-                scene.attributes.id
-                  ? `/config/scene/edit/${scene.attributes.id}`
-                  : undefined
-              )}
+      },
+      icon: {
+        title: "",
+        type: "icon",
+        template: (icon) => html` <ha-icon .icon=${icon}></ha-icon> `,
+      },
+      name: {
+        title: this.hass.localize("ui.panel.config.scene.picker.headers.name"),
+        sortable: true,
+        filterable: true,
+        direction: "asc",
+        grows: true,
+      },
+      info: {
+        title: "",
+        type: "icon-button",
+        template: (_info, scene) => html`
+          <mwc-icon-button
+            .scene=${scene}
+            @click=${this._showInfo}
+            title="${this.hass.localize(
+              "ui.panel.config.scene.picker.show_info_scene"
+            )}"
+          >
+            <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
+          </mwc-icon-button>
+        `,
+      },
+      edit: {
+        title: "",
+        type: "icon-button",
+        template: (_info, scene: any) => html`
+          <a
+            href=${ifDefined(
+              scene.attributes.id
+                ? `/config/scene/edit/${scene.attributes.id}`
+                : undefined
+            )}
+          >
+            <mwc-icon-button
+              .disabled=${!scene.attributes.id}
+              title="${this.hass.localize(
+                "ui.panel.config.scene.picker.edit_scene"
+              )}"
             >
-              <mwc-icon-button
-                .disabled=${!scene.attributes.id}
-                title="${this.hass.localize(
-                  "ui.panel.config.scene.picker.edit_scene"
-                )}"
-              >
-                <ha-svg-icon
-                  .path=${scene.attributes.id ? mdiPencil : mdiPencilOff}
-                ></ha-svg-icon>
-              </mwc-icon-button>
-            </a>
-            ${!scene.attributes.id
-              ? html`
-                  <paper-tooltip animation-delay="0" position="left">
-                    ${this.hass.localize(
-                      "ui.panel.config.scene.picker.only_editable"
-                    )}
-                  </paper-tooltip>
-                `
-              : ""}
-          `,
-        },
-      };
-    }
+              <ha-svg-icon
+                .path=${scene.attributes.id ? mdiPencil : mdiPencilOff}
+              ></ha-svg-icon>
+            </mwc-icon-button>
+          </a>
+          ${!scene.attributes.id
+            ? html`
+                <paper-tooltip animation-delay="0" position="left">
+                  ${this.hass.localize(
+                    "ui.panel.config.scene.picker.only_editable"
+                  )}
+                </paper-tooltip>
+              `
+            : ""}
+        `,
+      },
+    })
   );
 
   protected render(): TemplateResult {
@@ -258,7 +252,7 @@ class HaSceneDashboard extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

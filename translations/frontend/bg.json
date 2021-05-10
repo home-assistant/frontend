@@ -887,7 +887,7 @@
                     "enabled_description": "Изключените обекти няма да бъдат добавени в Home Assistant.",
                     "enabled_label": "Активирай обекта",
                     "enabled_restart_confirm": "Рестартирайте Home Assistant, за да завършите активирането на обектите",
-                    "entity_id": "ID на обект",
+                    "entity_id": "ID на обекта",
                     "icon": "Икона",
                     "icon_error": "Иконите трябва да са във формат „prefix: iconname“, напр. mdi:home",
                     "name": "Име",
@@ -1080,8 +1080,8 @@
                     "add": "Добавете устройства чрез това устройство",
                     "clusters": "Управление на клъстери",
                     "device_children": "Преглед на дъщерни",
-                    "reconfigure": "Преконфигуриране на устройство",
-                    "remove": "Премахване на устройство",
+                    "reconfigure": "Преконфигуриране на устройството",
+                    "remove": "Премахване на устройството",
                     "zigbee_information": "Подпис на Zigbee устройството"
                 },
                 "confirmations": {
@@ -1105,7 +1105,19 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Преконфигуриране на устройство"
+                "attribute": "Атрибут",
+                "bind_header": "Обвързване",
+                "button_hide": "Скрийте детайлите",
+                "button_show": "Покажи детайли",
+                "cluster_header": "Клъстер",
+                "configuration_complete": "Преконфигурирането на устройството завърши.",
+                "configuration_failed": "Преконфигурирането на устройството не бе успешно. Допълнителна информация може да бъде налична в дневниците.",
+                "heading": "Преконфигуриране на устройство",
+                "in_progress": "Устройството се преконфигурира. Това може да отнеме известно време.",
+                "min_max_change": "мин/макс/промяна",
+                "reporting_header": "Отчитане",
+                "run_in_background": "Можете да затворите този диалогов прозорец и преконфигурирането ще продължи във фонов режим.",
+                "start_reconfiguration": "Стартиране на преконфигуриране"
             }
         },
         "duration": {
@@ -1159,7 +1171,8 @@
                     "caption": "Области",
                     "data_table": {
                         "area": "Област",
-                        "devices": "Устройства"
+                        "devices": "Устройства",
+                        "entities": "Обекти"
                     },
                     "delete": {
                         "confirmation_text": "Всички устройства в тази област ще станат неназначени.",
@@ -1170,6 +1183,7 @@
                         "create": "Създаване",
                         "default_name": "Нова област",
                         "delete": "Изтриване",
+                        "linked_entities_caption": "Обекти",
                         "name": "Име",
                         "name_required": "Името е задължително",
                         "unknown_error": "Неизвестна грешка",
@@ -1598,7 +1612,7 @@
                         },
                         "integrations": "Интеграции",
                         "integrations_introduction": "Интеграциите за Home Assistant Cloud ви позволяват свързването с услуги в облака, без да се налага да излагате публично своя Home Assistant в интернет.",
-                        "integrations_introduction2": "Проверете уебсайта за",
+                        "integrations_introduction2": "Проверете уебсайта за ",
                         "integrations_link_all_features": "всички налични функции",
                         "manage_account": "Управление на акаунта",
                         "nabu_casa_account": "Акаунт в Nabu Casa",
@@ -1606,10 +1620,15 @@
                         "remote": {
                             "access_is_being_prepared": "Подготвя се отдалечен достъп. Ще ви уведомим, когато е готов.",
                             "certificate_info": "Информация за сертификата",
+                            "connected": "Свързан",
                             "info": "Home Assistant Cloud осигурява сигурна отдалечена връзка с вашата инсталация, докато сте извън дома.",
                             "instance_is_available": "Вашата инсталация е налична на",
                             "instance_will_be_available": "Вашата инсталация ще е налична на",
                             "link_learn_how_it_works": "Научете как работи",
+                            "not_connected": "Не е свързан",
+                            "remote_enabled": {
+                                "caption": "Автоматично свързване"
+                            },
                             "title": "Дистанционен контрол"
                         },
                         "sign_out": "Отписване",
@@ -1807,6 +1826,7 @@
                     }
                 },
                 "devices": {
+                    "add_prompt": "Все още не са добавени {name} с това устройство. Можете да добавите, като кликнете върху бутона + по-горе.",
                     "automation": {
                         "actions": {
                             "caption": "Когато нещо се задейства...",
@@ -1966,12 +1986,12 @@
                     }
                 },
                 "info": {
-                    "built_using": "Изграден с използване на",
+                    "built_using": "Изграден с използването на",
                     "caption": "Информация",
                     "copy_github": "За GitHub",
                     "description": "Версия, състояние на системата и връзки към документация",
                     "documentation": "Документация",
-                    "frontend": "Интерфейс",
+                    "frontend": "интерфейс",
                     "frontend_version": "Версия на интерфейса: {version} - {type}",
                     "home_assistant_logo": "Лого на Home Assistant",
                     "icons_by": "Икони от",
@@ -1979,7 +1999,7 @@
                     "license": "Публикувано под лиценза Apache 2.0",
                     "path_configuration": "Път към configuration.yaml: {path}",
                     "server": "сървър",
-                    "source": "Източник:",
+                    "source": "Изходен код:",
                     "system_health": {
                         "manage": "Управление",
                         "more_info": "повече информация"
@@ -2001,7 +2021,7 @@
                         "disable_restart_confirm": "Рестартирайте Home Assistant за да завършите деактивирането на тази интеграция",
                         "disable": {
                             "disable_confirm": "Наистина ли искате да забраните този конфигурационен запис? Устройствата и обекти му ще бъдат деактивирани.",
-                            "disabled": "Деактивиран",
+                            "disabled": "Деактивирана",
                             "disabled_by": {
                                 "device": "устройство",
                                 "integration": "интеграция",
@@ -2043,6 +2063,7 @@
                             "open_site": "Отваряне на уеб сайт"
                         },
                         "loading_first_time": "Моля, изчакайте, докато се инсталира интеграцията",
+                        "next": "Следващ",
                         "not_all_required_fields": "Не всички задължителни полета са попълнени.",
                         "not_loaded": "Интеграцията не можа да бъде заредена, опитайте да рестартирате Home Assistant."
                     },
@@ -2056,10 +2077,16 @@
                         "show": "Покажи",
                         "show_disabled": "Показване на деактивираните интеграции"
                     },
-                    "discovered": "Открити",
-                    "home_assistant_website": "Уебсайт на Home Assistant",
+                    "discovered": "Открита",
+                    "home_assistant_website": "уебсайта на Home Assistant",
                     "ignore": {
-                        "confirm_ignore": "Наистина ли не искате да настроите тази интеграция? Можете да отмените това, като кликнете върху „Показване на игнорирани интеграции“ в менюто горе вдясно."
+                        "confirm_delete_ignore_title": "Да се спре ли игнорирането на {name}?",
+                        "confirm_ignore": "Наистина ли не искате да настроите тази интеграция? Можете да отмените това, като кликнете върху „Показване на игнорирани интеграции“ в менюто горе вдясно.",
+                        "hide_ignored": "Скриване на игнорираните интеграции",
+                        "ignore": "Игнорирайте",
+                        "ignored": "Игнорирана",
+                        "show_ignored": "Показване на игнорираните интеграции",
+                        "stop_ignore": "Спрете да игнорирате"
                     },
                     "integration": "интеграция",
                     "integration_not_found": "Не е намерена интеграция.",
@@ -2140,16 +2167,20 @@
                     "resources": {
                         "cant_edit_yaml": "Използвате Lovelace в YAML режим, следователно не можете да управлявате ресурсите си чрез потребителския интерфейс. Управлявайте ги в configuration.yaml.",
                         "caption": "Ресурси",
+                        "confirm_delete": "Сигурни ли сте, че искате да изтриете този ресурс?",
                         "detail": {
                             "create": "Създаване",
                             "delete": "Изтриване",
                             "dismiss": "Затвори",
+                            "new_resource": "Добавяне на нов ресурс",
+                            "type": "Тип на ресурса",
                             "update": "Актуализиране",
                             "url": "URL",
                             "url_error_msg": "URL е задължително поле",
                             "warning_header": "Бъдете предпазливи!"
                         },
                         "picker": {
+                            "add_resource": "Добавяне на ресурс",
                             "headers": {
                                 "type": "Тип",
                                 "url": "URL"
@@ -2564,6 +2595,7 @@
                         "node_status": "Състояние на възела"
                     },
                     "navigation": {
+                        "logs": "Логове",
                         "network": "Мрежа"
                     },
                     "network_status": {

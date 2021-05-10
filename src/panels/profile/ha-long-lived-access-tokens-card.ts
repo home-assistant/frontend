@@ -3,7 +3,7 @@ import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -173,7 +173,7 @@ class HaLongLivedTokens extends LitElement {
     }
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

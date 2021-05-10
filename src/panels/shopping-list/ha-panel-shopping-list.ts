@@ -3,10 +3,10 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -29,7 +29,7 @@ class PanelShoppingList extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
-  @internalProperty() private _card!: LovelaceCard | HuiErrorCard;
+  @state() private _card!: LovelaceCard | HuiErrorCard;
 
   private _conversation = memoizeOne((_components) =>
     isComponentLoaded(this.hass, "conversation")
@@ -75,9 +75,7 @@ class PanelShoppingList extends LitElement {
           </app-toolbar>
         </app-header>
         <div id="columns">
-          <div class="column">
-            ${this._card}
-          </div>
+          <div class="column">${this._card}</div>
         </div>
       </ha-app-layout>
     `;
@@ -87,7 +85,7 @@ class PanelShoppingList extends LitElement {
     showVoiceCommandDialog(this);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

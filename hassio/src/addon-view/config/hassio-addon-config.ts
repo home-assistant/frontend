@@ -5,10 +5,10 @@ import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/iron-autogrow-textarea/iron-autogrow-textarea";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -53,31 +53,27 @@ class HassioAddonConfig extends LitElement {
 
   @property({ type: Boolean }) private _valid = true;
 
-  @internalProperty() private _canShowSchema = false;
+  @state() private _canShowSchema = false;
 
-  @internalProperty() private _showOptional = false;
+  @state() private _showOptional = false;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _options?: Record<string, unknown>;
+  @state() private _options?: Record<string, unknown>;
 
-  @internalProperty() private _yamlMode = false;
+  @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _editor?: HaYamlEditor;
 
-  public computeLabel = (entry: HaFormSchema): string => {
-    return (
-      this.addon.translations[this.hass.language]?.configuration?.[entry.name]
-        ?.name ||
-      this.addon.translations.en?.configuration?.[entry.name].name ||
-      entry.name
-    );
-  };
+  public computeLabel = (entry: HaFormSchema): string =>
+    this.addon.translations[this.hass.language]?.configuration?.[entry.name]
+      ?.name ||
+    this.addon.translations.en?.configuration?.[entry.name].name ||
+    entry.name;
 
   private _filteredShchema = memoizeOne(
-    (options: Record<string, unknown>, schema: HaFormSchema[]) => {
-      return schema.filter((entry) => entry.name in options || entry.required);
-    }
+    (options: Record<string, unknown>, schema: HaFormSchema[]) =>
+      schema.filter((entry) => entry.name in options || entry.required)
   );
 
   protected render(): TemplateResult {
@@ -266,6 +262,11 @@ class HassioAddonConfig extends LitElement {
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
     const button = ev.currentTarget as any;
+    const eventdata = {
+      success: true,
+      response: undefined,
+      path: "options",
+    };
     button.progress = true;
 
     this._error = undefined;
@@ -276,26 +277,22 @@ class HassioAddonConfig extends LitElement {
       });
 
       this._configHasChanged = false;
-      const eventdata = {
-        success: true,
-        response: undefined,
-        path: "options",
-      };
-      fireEvent(this, "hass-api-called", eventdata);
       if (this.addon?.state === "started") {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
     } catch (err) {
       this._error = this.supervisor.localize(
-        "addon.configuration.options.failed_to_save",
+        "addon.failed_to_save",
         "error",
         extractApiErrorMessage(err)
       );
+      eventdata.success = false;
     }
     button.progress = false;
+    fireEvent(this, "hass-api-called", eventdata);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

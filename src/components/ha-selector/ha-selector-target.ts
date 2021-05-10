@@ -10,10 +10,10 @@ import {
 } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
 } from "lit-element";
@@ -38,9 +38,9 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
 
   @property() public label?: string;
 
-  @internalProperty() private _entityPlaformLookup?: Record<string, string>;
+  @state() private _entityPlaformLookup?: Record<string, string>;
 
-  @internalProperty() private _configEntries?: ConfigEntry[];
+  @state() private _configEntries?: ConfigEntry[];
 
   @property({ type: Boolean }) public disabled = false;
 
@@ -153,7 +153,7 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     );
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-target-picker {
         display: block;

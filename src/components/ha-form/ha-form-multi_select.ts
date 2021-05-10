@@ -6,10 +6,10 @@ import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-ripple/paper-ripple";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -33,7 +33,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @internalProperty() private _init = false;
+  @state() private _init = false;
 
   @query("paper-menu-button", true) private _input?: HTMLElement;
 
@@ -80,20 +80,22 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
           @selected-items-changed=${this._valueChanged}
           @iron-select=${this._onSelect}
         >
-          ${// TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
-          // @ts-ignore
-          options.map((item: string | [string, string]) => {
-            const value = this._optionValue(item);
-            return html`
-              <paper-icon-item .itemValue=${value}>
-                <paper-checkbox
-                  .checked=${data.includes(value)}
-                  slot="item-icon"
-                ></paper-checkbox>
-                ${this._optionLabel(item)}
-              </paper-icon-item>
-            `;
-          })}
+          ${
+            // TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
+            // @ts-ignore
+            options.map((item: string | [string, string]) => {
+              const value = this._optionValue(item);
+              return html`
+                <paper-icon-item .itemValue=${value}>
+                  <paper-checkbox
+                    .checked=${data.includes(value)}
+                    slot="item-icon"
+                  ></paper-checkbox>
+                  ${this._optionLabel(item)}
+                </paper-icon-item>
+              `;
+            })
+          }
         </paper-listbox>
       </paper-menu-button>
     `;
@@ -138,7 +140,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     );
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-menu-button {
         display: block;

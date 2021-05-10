@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -76,9 +76,7 @@ export class HuiEntityPickerTable extends LitElement {
             ${name}
             ${narrow
               ? html`
-                  <div class="secondary">
-                    ${entity.stateObj.entity_id}
-                  </div>
+                  <div class="secondary">${entity.stateObj.entity_id}</div>
                 `
               : ""}
           </div>
@@ -138,7 +136,7 @@ export class HuiEntityPickerTable extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-data-table {
         --data-table-border-width: 0;

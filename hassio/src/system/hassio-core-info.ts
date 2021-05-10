@@ -2,10 +2,10 @@ import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -39,7 +39,7 @@ class HassioCoreInfo extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _metrics?: HassioStats;
+  @state() private _metrics?: HassioStats;
 
   protected render(): TemplateResult | void {
     const metrics = [
@@ -178,7 +178,7 @@ class HassioCoreInfo extends LitElement {
         folders: ["homeassistant"],
         homeassistant: true,
       },
-      updateHandler: async () => await this._updateCore(),
+      updateHandler: async () => this._updateCore(),
     });
   }
 
@@ -189,7 +189,7 @@ class HassioCoreInfo extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -27,8 +27,8 @@ export class HuiInputListEditor extends LitElement {
     }
 
     return html`
-      ${this.value.map((listEntry, index) => {
-        return html`
+      ${this.value.map(
+        (listEntry, index) => html`
           <paper-input
             label="${this.inputLabel}"
             .value=${listEntry}
@@ -45,8 +45,8 @@ export class HuiInputListEditor extends LitElement {
               >Clear</ha-icon-button
             ></paper-input
           >
-        `;
-      })}
+        `
+      )}
       <paper-input
         label="${this.inputLabel}"
         @change=${this._addEntry}
@@ -97,7 +97,7 @@ export class HuiInputListEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-icon-button {
         --mdc-icon-button-size: 24px;

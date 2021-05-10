@@ -1,9 +1,9 @@
 import "@polymer/paper-input/paper-input";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -24,11 +24,12 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-iframe-card-editor")
-export class HuiIframeCardEditor extends LitElement
+export class HuiIframeCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: IframeCardConfig;
+  @state() private _config?: IframeCardConfig;
 
   public setConfig(config: IframeCardConfig): void {
     assert(config, cardConfigStruct);
@@ -111,7 +112,7 @@ export class HuiIframeCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

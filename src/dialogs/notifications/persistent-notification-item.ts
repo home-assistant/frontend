@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -29,9 +29,7 @@ export class HuiPersistentNotificationItem extends LitElement {
 
     return html`
       <notification-item-template>
-        <span slot="header">
-          ${this.notification.title}
-        </span>
+        <span slot="header"> ${this.notification.title} </span>
 
         <ha-markdown
           breaks
@@ -59,7 +57,7 @@ export class HuiPersistentNotificationItem extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .time {
         display: flex;

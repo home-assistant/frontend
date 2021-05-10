@@ -2,10 +2,10 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -40,13 +40,13 @@ export class HuiViewVisibilityEditor extends LitElement {
 
   @property() public _config!: LovelaceViewConfig;
 
-  @internalProperty() private _users!: User[];
+  @state() private _users!: User[];
 
-  @internalProperty() private _visible!: boolean | ShowViewConfig[];
+  @state() private _visible!: boolean | ShowViewConfig[];
 
-  private _sortedUsers = memoizeOne((users: User[]) => {
-    return users.sort((a, b) => compare(a.name, b.name));
-  });
+  private _sortedUsers = memoizeOne((users: User[]) =>
+    users.sort((a, b) => compare(a.name, b.name))
+  );
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -107,11 +107,9 @@ export class HuiViewVisibilityEditor extends LitElement {
     if (typeof this._visible === "boolean") {
       const lastValue = this._visible as boolean;
       if (lastValue) {
-        newVisible = this._users.map((u) => {
-          return {
-            user: u.id,
-          };
-        });
+        newVisible = this._users.map((u) => ({
+          user: u.id,
+        }));
       }
     } else {
       newVisible = [...this._visible];
@@ -136,7 +134,7 @@ export class HuiViewVisibilityEditor extends LitElement {
     fireEvent(this, "view-visibility-changed", { visible: this._visible });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

@@ -52,4 +52,8 @@ export class DemoPlantEntity extends LitElement {
   }
 }
 
-customElements.define("demo-hui-plant-card", DemoPlantEntity);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-plant-card": DemoPlantEntity;
+  }
+}

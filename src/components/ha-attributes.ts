@@ -1,7 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -27,21 +27,23 @@ class HaAttributes extends LitElement {
       return html``;
     }
 
+    const attributes = this.computeDisplayAttributes(
+      Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
+        this.extraFilters ? this.extraFilters.split(",") : []
+      )
+    );
+    if (attributes.length === 0) {
+      return html``;
+    }
+
     return html`
+      <hr />
       <div>
-        ${this.computeDisplayAttributes(
-          Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
-            this.extraFilters ? this.extraFilters.split(",") : []
-          )
-        ).map(
+        ${attributes.map(
           (attribute) => html`
             <div class="data-entry">
-              <div class="key">
-                ${formatAttributeName(attribute)}
-              </div>
-              <div class="value">
-                ${this.formatAttribute(attribute)}
-              </div>
+              <div class="key">${formatAttributeName(attribute)}</div>
+              <div class="value">${this.formatAttribute(attribute)}</div>
             </div>
           `
         )}
@@ -56,7 +58,7 @@ class HaAttributes extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
@@ -84,6 +86,11 @@ class HaAttributes extends LitElement {
           overflow-wrap: break-word;
           white-space: pre-line;
         }
+        hr {
+          border-color: var(--divider-color);
+          border-bottom: none;
+          margin: 16px 0;
+        }
       `,
     ];
   }
@@ -92,9 +99,9 @@ class HaAttributes extends LitElement {
     if (!this.stateObj) {
       return [];
     }
-    return Object.keys(this.stateObj.attributes).filter((key) => {
-      return filtersArray.indexOf(key) === -1;
-    });
+    return Object.keys(this.stateObj.attributes).filter(
+      (key) => filtersArray.indexOf(key) === -1
+    );
   }
 
   private formatAttribute(attribute: string): string | TemplateResult {

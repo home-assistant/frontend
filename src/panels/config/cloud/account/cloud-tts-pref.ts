@@ -4,10 +4,10 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -35,9 +35,9 @@ export class CloudTTSPref extends LitElement {
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  @internalProperty() private savingPreferences = false;
+  @state() private savingPreferences = false;
 
-  @internalProperty() private ttsInfo?: CloudTTSInfo;
+  @state() private ttsInfo?: CloudTTSInfo;
 
   protected render(): TemplateResult {
     if (!this.cloudStatus) {
@@ -231,7 +231,7 @@ export class CloudTTSPref extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

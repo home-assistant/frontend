@@ -1275,7 +1275,8 @@
                     "caption": "영역",
                     "data_table": {
                         "area": "영역",
-                        "devices": "기기"
+                        "devices": "기기",
+                        "entities": "구성요소"
                     },
                     "delete": {
                         "confirmation_text": "이 영역에 속한 모든 기기가 할당 해제됩니다.",
@@ -1287,8 +1288,10 @@
                         "create": "만들기",
                         "default_name": "새로운 영역",
                         "delete": "삭제하기",
+                        "linked_entities_caption": "구성요소",
                         "name": "이름",
                         "name_required": "이름은 필수 요소입니다",
+                        "no_linked_entities": "이 영역에 등록된 구성요소가 없습니다.",
                         "unknown_error": "알 수 없는 오류",
                         "update": "업데이트"
                     },
@@ -1743,10 +1746,16 @@
                         "remote": {
                             "access_is_being_prepared": "원격 접속이 준비 중입니다. 준비가 되면 알려드리겠습니다.",
                             "certificate_info": "인증서 정보",
+                            "connected": "연결됨",
                             "info": "Home Assistant Cloud는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다.",
                             "instance_is_available": "구성요소는 다음의 주소에서 사용할 수 있습니다.",
                             "instance_will_be_available": "토글을 활성화하여 다음의 주소에서 구성요소를 사용해보세요.",
                             "link_learn_how_it_works": "작동 방식에 대해 알아보기",
+                            "not_connected": "연결되지 않음",
+                            "remote_enabled": {
+                                "caption": "자동 연결",
+                                "description": "이 옵션을 활성화하면 Home Assistant 인스턴스에 항상 원격으로 액세스 할 수 있습니다."
+                            },
                             "title": "원격 제어"
                         },
                         "sign_out": "로그 아웃",
@@ -2157,6 +2166,7 @@
                     "license": "Apache 2.0 License에 따라 게시",
                     "path_configuration": "configuration.yaml의 위치: {path}",
                     "server": "서버",
+                    "setup_time": "설정 시간",
                     "source": "소스:",
                     "system_health_error": "시스템 상태보기 구성요소가 로드되지 않았습니다. configuration.yaml에 'system_health:'를 추가해주세요.",
                     "system_health": {
@@ -2234,6 +2244,7 @@
                         },
                         "finish": "완료",
                         "loading_first_time": "통합 구성요소가 설치되는 동안 기다려주세요",
+                        "next": "다음",
                         "not_all_required_fields": "필수 입력란이 모두 채워지지 않았습니다.",
                         "not_loaded": "통합 구성요소를 불러올 수 없습니다. Home Assistant를 다시 시작해주세요.",
                         "pick_flow_step": {
@@ -2808,6 +2819,7 @@
                         "update_button": "구성 업데이트",
                         "zha_options": {
                             "default_light_transition": "조명 전환 시간 기본 값(초)",
+                            "enable_identify_on_join": "장치가 네트워크에 연결될 때 식별 효과 활성화",
                             "title": "전역 옵션"
                         }
                     },
@@ -2935,7 +2947,12 @@
                         "node_status": "노드 상태",
                         "zwave_info": "Z-Wave 정보"
                     },
+                    "logs": {
+                        "log_level": "로그 레벨",
+                        "title": "Z-Wave JS 로그"
+                    },
                     "navigation": {
+                        "logs": "로그",
                         "network": "네트워크"
                     },
                     "network_status": {

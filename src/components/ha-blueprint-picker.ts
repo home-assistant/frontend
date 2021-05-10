@@ -3,7 +3,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -98,7 +98,7 @@ class HaBluePrintPicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-block;
@@ -108,11 +108,9 @@ class HaBluePrintPicker extends LitElement {
         min-width: 200px;
         display: block;
       }
-      paper-listbox {
-        min-width: 200px;
-      }
       paper-item {
         cursor: pointer;
+        min-width: 200px;
       }
     `;
   }

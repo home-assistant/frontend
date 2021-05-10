@@ -1,10 +1,4 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { customElement, html, state, LitElement, property } from "lit-element";
 import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
 import { DeviceRegistryEntry } from "../../data/device_registry";
 import { DeviceSelector } from "../../data/selector";
@@ -21,7 +15,7 @@ export class HaDeviceSelector extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() public _configEntries?: ConfigEntry[];
+  @state() public _configEntries?: ConfigEntry[];
 
   @property({ type: Boolean }) public disabled = false;
 

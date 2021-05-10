@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -20,11 +20,12 @@ import { getHeaderFooterStubConfig } from "./get-headerfooter-stub-config";
 import type { CreateHeaderFooterDialogParams } from "./show-create-headerfooter-dialog";
 
 @customElement("hui-dialog-create-headerfooter")
-export class HuiCreateDialogHeaderFooter extends LitElement
+export class HuiCreateDialogHeaderFooter
+  extends LitElement
   implements HassDialog<CreateHeaderFooterDialogParams> {
   @property({ attribute: false }) protected hass!: HomeAssistant;
 
-  @internalProperty() private _params?: CreateHeaderFooterDialogParams;
+  @state() private _params?: CreateHeaderFooterDialogParams;
 
   public async showDialog(
     params: CreateHeaderFooterDialogParams
@@ -116,7 +117,7 @@ export class HuiCreateDialogHeaderFooter extends LitElement
     this.closeDialog();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

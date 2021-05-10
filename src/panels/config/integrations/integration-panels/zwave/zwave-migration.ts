@@ -6,12 +6,12 @@ import "../../../../../components/ha-circular-progress";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
   property,
-  internalProperty,
+  state,
   TemplateResult,
 } from "lit-element";
 import "../../../../../components/buttons/ha-call-api-button";
@@ -51,19 +51,19 @@ export class ZwaveMigration extends LitElement {
 
   @property({ type: Boolean }) public isWide!: boolean;
 
-  @internalProperty() private _networkStatus?: ZWaveNetworkStatus;
+  @state() private _networkStatus?: ZWaveNetworkStatus;
 
-  @internalProperty() private _step = 0;
+  @state() private _step = 0;
 
-  @internalProperty() private _stoppingNetwork = false;
+  @state() private _stoppingNetwork = false;
 
-  @internalProperty() private _migrationConfig?: ZWaveMigrationConfig;
+  @state() private _migrationConfig?: ZWaveMigrationConfig;
 
-  @internalProperty() private _migrationData?: OZWMigrationData;
+  @state() private _migrationData?: OZWMigrationData;
 
-  @internalProperty() private _migratedZwaveEntities?: string[];
+  @state() private _migratedZwaveEntities?: string[];
 
-  @internalProperty() private _deviceNameLookup: { [id: string]: string } = {};
+  @state() private _deviceNameLookup: { [id: string]: string } = {};
 
   private _unsub?: Promise<UnsubscribeFunc>;
 
@@ -180,9 +180,7 @@ export class ZwaveMigration extends LitElement {
                   ? html`
                       <ha-card class="content" header="Set up OZWDaemon">
                         <div class="card-content">
-                          <p>
-                            Now it's time to set up the OZW integration.
-                          </p>
+                          <p>Now it's time to set up the OZW integration.</p>
                           ${isComponentLoaded(this.hass, "hassio")
                             ? html`
                                 <p>
@@ -463,7 +461,7 @@ export class ZwaveMigration extends LitElement {
     this._networkStatus = await fetchNetworkStatus(this.hass!);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

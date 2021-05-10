@@ -6,7 +6,7 @@ import { mdiCalendar } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -88,9 +88,7 @@ export class HaDateRangePicker extends LitElement {
             >
               <mwc-list @action=${this._setDateRange} activatable>
                 ${Object.keys(this.ranges).map(
-                  (name) => html`<mwc-list-item>
-                    ${name}
-                  </mwc-list-item>`
+                  (name) => html`<mwc-list-item> ${name} </mwc-list-item>`
                 )}
               </mwc-list>
             </div>`
@@ -148,7 +146,7 @@ export class HaDateRangePicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon {
         margin-right: 8px;

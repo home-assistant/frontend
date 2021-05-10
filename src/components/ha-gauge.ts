@@ -1,7 +1,7 @@
 import {
   css,
   customElement,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -34,9 +34,9 @@ export class Gauge extends LitElement {
 
   @property() public label = "";
 
-  @internalProperty() private _angle = 0;
+  @state() private _angle = 0;
 
-  @internalProperty() private _updated = false;
+  @state() private _updated = false;
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);

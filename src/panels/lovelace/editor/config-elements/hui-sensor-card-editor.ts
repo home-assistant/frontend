@@ -3,10 +3,10 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -40,11 +40,12 @@ const cardConfigStruct = object({
 const includeDomains = ["sensor"];
 
 @customElement("hui-sensor-card-editor")
-export class HuiSensorCardEditor extends LitElement
+export class HuiSensorCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: SensorCardConfig;
+  @state() private _config?: SensorCardConfig;
 
   public setConfig(config: SensorCardConfig): void {
     assert(config, cardConfigStruct);
@@ -141,9 +142,7 @@ export class HuiSensorCardEditor extends LitElement
               slot="dropdown-content"
               .selected=${graphs.indexOf(this._graph)}
             >
-              ${graphs.map((graph) => {
-                return html`<paper-item>${graph}</paper-item>`;
-              })}
+              ${graphs.map((graph) => html`<paper-item>${graph}</paper-item>`)}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
@@ -239,7 +238,7 @@ export class HuiSensorCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

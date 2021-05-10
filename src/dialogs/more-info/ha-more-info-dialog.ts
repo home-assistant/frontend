@@ -7,7 +7,7 @@ import {
   css,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
 } from "lit-element";
@@ -58,9 +58,9 @@ export class MoreInfoDialog extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
-  @internalProperty() private _entityId?: string | null;
+  @state() private _entityId?: string | null;
 
-  @internalProperty() private _currTabIndex = 0;
+  @state() private _currTabIndex = 0;
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;

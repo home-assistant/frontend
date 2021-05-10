@@ -56,7 +56,7 @@ export const fetchNetworkInfo = async (
   hass: HomeAssistant
 ): Promise<NetworkInfo> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/network/info",
       method: "get",
@@ -99,7 +99,7 @@ export const accesspointScan = async (
   network_interface: string
 ): Promise<AccessPoints> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: `/network/interface/${network_interface}/accesspoints`,
       method: "get",

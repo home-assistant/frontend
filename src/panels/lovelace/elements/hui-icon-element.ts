@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
 } from "lit-element";
@@ -21,7 +21,7 @@ import { IconElementConfig, LovelaceElement } from "./types";
 export class HuiIconElement extends LitElement implements LovelaceElement {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: IconElementConfig;
+  @state() private _config?: IconElementConfig;
 
   public setConfig(config: IconElementConfig): void {
     if (!config.icon) {
@@ -56,7 +56,7 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         cursor: pointer;

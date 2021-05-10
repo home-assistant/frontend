@@ -560,6 +560,8 @@
             },
             "light": {
                 "brightness": "Lysstyrke",
+                "cold_white_value": "kold hvid lysstyrke",
+                "color_brightness": "Farvetemperatur",
                 "color_temperature": "Farvetemperatur",
                 "effect": "Effekt",
                 "white_value": "Hvidværdi"
@@ -1182,6 +1184,22 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Skift enhedsnavn"
                 }
+            },
+            "zha_reconfigure_device": {
+                "attribute": "Attribut",
+                "battery_device_warning": "Du er nødt til at tænde for batteridrevne enheder før du stater konfigurationen. Læs mere i manualen til din enhed for at få mere information",
+                "bind_header": "Binding",
+                "button_hide": "Skjul detaljer",
+                "button_show": "Vis detaljer",
+                "configuration_complete": "Konfiguration af enheden er færdig",
+                "configuration_failed": "konfuguration af enheden fejlede.  Yderligere information kam findes i logfilerne  ",
+                "configuring_alt": "Konfigurerer",
+                "in_progress": "Enheden rekonfigureres. Dette kan tage noget tid",
+                "introduction": "Konfigurer en enhed på dit Zigbee netværk. Brug denne mulighed hvos din enhed ikke virker korrekt",
+                "min_max_change": "Min/maks/ændre",
+                "reporting_header": "Rapportering",
+                "run_in_background": "Du kan lukke denne dialogboks.Konfigurationen fortsætter i baggrunden",
+                "start_reconfiguration": "Start konfiguration"
             }
         },
         "duration": {
@@ -1234,7 +1252,8 @@
                     "caption": "Områder",
                     "data_table": {
                         "area": "Område",
-                        "devices": "Enheder"
+                        "devices": "Enheder",
+                        "entities": "Entiteter"
                     },
                     "delete": {
                         "confirmation_text": "Alle enheder i dette område vil blive utildelte.",
@@ -1246,8 +1265,10 @@
                         "create": "Opret",
                         "default_name": "Nyt område",
                         "delete": "Slet",
+                        "linked_entities_caption": "Entiteter",
                         "name": "Navn",
                         "name_required": "Navn er påkrævet",
+                        "no_linked_entities": "Der er ingen entiteter forbundet til dette område",
                         "unknown_error": "Ukendt fejl",
                         "update": "Opdater"
                     },
@@ -1700,10 +1721,16 @@
                         "remote": {
                             "access_is_being_prepared": "Fjernadgang forberedes. Vi giver dig besked, når den er klar.",
                             "certificate_info": "Certifikatoplysninger",
+                            "connected": "Tilsluttet",
                             "info": "Home Assistant Cloud leverer en sikker fjernforbindelse til din instans, når du er væk fra hjemmet.",
                             "instance_is_available": "Din instans er tilgængelig på",
                             "instance_will_be_available": "Din instans vil være tilgængelig på",
                             "link_learn_how_it_works": "Lær hvordan det fungerer",
+                            "not_connected": "Ikke tilsluttet",
+                            "remote_enabled": {
+                                "caption": "Forbind automatisk",
+                                "description": "Slå denne indstilling til for at sikre din Home Assistant applikation er tilgængelig udefra "
+                            },
                             "title": "Fjernadgang"
                         },
                         "sign_out": "Log ud",
@@ -2081,6 +2108,7 @@
                     "license": "Udgivet under Apache 2.0-licensen",
                     "path_configuration": "Sti til 'configuration.yaml': {path}",
                     "server": "server",
+                    "setup_time": "Opsætningstid",
                     "source": "Kilde:",
                     "system_health_error": "System Health-komponenten er ikke indlæst. Føj 'system_health:' til 'config.yaml'",
                     "system_health": {
@@ -2146,6 +2174,7 @@
                         },
                         "finish": "Afslut",
                         "loading_first_time": "Vent mens integrationen installeres",
+                        "next": "Næste",
                         "not_all_required_fields": "Ikke alle påkrævede felter er udfyldt.",
                         "pick_flow_step": {
                             "new_flow": "Nej, konfigurer en anden forekomst af {integration}",
@@ -2830,6 +2859,10 @@
                         "node_status": "Nodestatus",
                         "zwave_info": "Z-Wave-info"
                     },
+                    "logs": {
+                        "log_level": "Log niveau",
+                        "subscribed_to_logs": "Abboner på Z-Wave JS Log beskeder"
+                    },
                     "navigation": {
                         "network": "Netværk"
                     },
@@ -2845,6 +2878,8 @@
                         "header": "Konfiguration af Z-Wave-enhed",
                         "introduction": "Administrer og juster enheds (node) specifikke konfigurationsparametre for den valgte enhed",
                         "parameter_is_read_only": "Denne parameter er skrivebeskyttet.",
+                        "set_param_error": "Der opstod en fejl",
+                        "set_param_queued": "Parameterændringen er sat i kø, og vil blive udført når enheden vågner",
                         "zwave_js_device_database": "Z-Wave JS-enhedsdatabasen"
                     },
                     "node_status": {
@@ -2853,6 +2888,9 @@
                         "awake": "Vågen",
                         "dead": "Død",
                         "unknown": "Ukendt"
+                    },
+                    "reinterview_node": {
+                        "interview_complete": "Enhedsinformationsudveksling er færdig"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Annuller udelukkelse",

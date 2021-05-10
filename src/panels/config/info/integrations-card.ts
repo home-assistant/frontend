@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -27,23 +27,23 @@ class IntegrationsCard extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @internalProperty() private _manifests?: {
+  @state() private _manifests?: {
     [domain: string]: IntegrationManifest;
   };
 
-  @internalProperty() private _setups?: {
+  @state() private _setups?: {
     [domain: string]: IntegrationSetup;
   };
 
-  private _sortedIntegrations = memoizeOne((components: string[]) => {
-    return Array.from(
+  private _sortedIntegrations = memoizeOne((components: string[]) =>
+    Array.from(
       new Set(
         components.map((comp) =>
           comp.includes(".") ? comp.split(".")[1] : comp
         )
       )
-    ).sort();
-  });
+    ).sort()
+  );
 
   firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -65,7 +65,7 @@ class IntegrationsCard extends LitElement {
                     <th></th>
                     <th></th>`
                 : ""}
-              <th>Setup time</th>
+              <th>${this.hass.localize("ui.panel.config.info.setup_time")}</th>
             </tr>
           </thead>
           <tbody>
@@ -113,21 +113,17 @@ class IntegrationsCard extends LitElement {
                       ${this.narrow
                         ? html`<div class="mobile-row">
                             <div>${docLink} ${issueLink}</div>
-                            ${setupSeconds ? html`${setupSeconds}s` : ""}
+                            ${setupSeconds ? html`${setupSeconds} s` : ""}
                           </div>`
                         : ""}
                     </td>
                     ${this.narrow
                       ? ""
                       : html`
-                          <td>
-                            ${docLink}
-                          </td>
-                          <td>
-                            ${issueLink}
-                          </td>
+                          <td>${docLink}</td>
+                          <td>${issueLink}</td>
                           <td class="setup">
-                            ${setupSeconds ? html`${setupSeconds}s` : ""}
+                            ${setupSeconds ? html`${setupSeconds} s` : ""}
                           </td>
                         `}
                   </tr>
@@ -156,7 +152,7 @@ class IntegrationsCard extends LitElement {
     this._setups = setups;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       table {
         width: 100%;
@@ -173,6 +169,7 @@ class IntegrationsCard extends LitElement {
       }
       td.setup {
         text-align: right;
+        white-space: nowrap;
       }
       th {
         text-align: right;

@@ -1,9 +1,9 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -15,7 +15,7 @@ import { HomeAssistant } from "../../../types";
 class ErrorLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _errorHTML!: TemplateResult[] | string;
+  @state() private _errorHTML!: TemplateResult[] | string;
 
   protected render(): TemplateResult {
     return html`
@@ -27,9 +27,7 @@ class ErrorLogCard extends LitElement {
                   icon="hass:refresh"
                   @click=${this._refreshErrorLog}
                 ></ha-icon-button>
-                <div class="card-content error-log">
-                  ${this._errorHTML}
-                </div>
+                <div class="card-content error-log">${this._errorHTML}</div>
               </ha-card>
             `
           : html`
@@ -49,7 +47,7 @@ class ErrorLogCard extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .error-log-intro {
         text-align: center;

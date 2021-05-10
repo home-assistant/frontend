@@ -3,10 +3,10 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -23,7 +23,7 @@ export class ZwaveValues extends LitElement {
 
   @property() public values: ZWaveValue[] = [];
 
-  @internalProperty() private _selectedValue = -1;
+  @state() private _selectedValue = -1;
 
   protected render(): TemplateResult {
     return html`
@@ -43,9 +43,7 @@ export class ZwaveValues extends LitElement {
               >
                 ${this.values.map(
                   (item) => html`
-                    <paper-item>
-                      ${this._computeCaption(item)}
-                    </paper-item>
+                    <paper-item> ${this._computeCaption(item)} </paper-item>
                   `
                 )}
               </paper-listbox>
@@ -56,7 +54,7 @@ export class ZwaveValues extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

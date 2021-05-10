@@ -4,10 +4,10 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -61,11 +61,11 @@ class HassioSupervisorLog extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _selectedLogProvider = "supervisor";
+  @state() private _selectedLogProvider = "supervisor";
 
-  @internalProperty() private _content?: string;
+  @state() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -87,13 +87,13 @@ class HassioSupervisorLog extends LitElement {
                   attr-for-selected="provider"
                   .selected=${this._selectedLogProvider}
                 >
-                  ${logProviders.map((provider) => {
-                    return html`
+                  ${logProviders.map(
+                    (provider) => html`
                       <paper-item provider=${provider.key}>
                         ${provider.name}
                       </paper-item>
-                    `;
-                  })}
+                    `
+                  )}
                 </paper-listbox>
               </paper-dropdown-menu>
             `
@@ -146,7 +146,7 @@ class HassioSupervisorLog extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

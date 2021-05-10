@@ -3,10 +3,10 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -47,13 +47,14 @@ const cardConfigStruct = object({
 const includeDomains = ["camera"];
 
 @customElement("hui-picture-glance-card-editor")
-export class HuiPictureGlanceCardEditor extends LitElement
+export class HuiPictureGlanceCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PictureGlanceCardConfig;
+  @state() private _config?: PictureGlanceCardConfig;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public setConfig(config: PictureGlanceCardConfig): void {
     assert(config, cardConfigStruct);
@@ -163,9 +164,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
               slot="dropdown-content"
               .selected="${views.indexOf(this._camera_view)}"
             >
-              ${views.map((view) => {
-                return html` <paper-item>${view}</paper-item> `;
-              })}
+              ${views.map((view) => html` <paper-item>${view}</paper-item> `)}
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-input
@@ -261,7 +260,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

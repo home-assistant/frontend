@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import { mdiAlert, mdiCheck } from "@mdi/js";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -46,55 +46,51 @@ class OZWNetworkNodes extends LitElement {
 
   @property() public ozwInstance = 0;
 
-  @internalProperty() private _nodes: OZWDevice[] = [];
+  @state() private _nodes: OZWDevice[] = [];
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer => {
-      return {
-        node_id: {
-          title: this.hass.localize("ui.panel.config.ozw.nodes_table.id"),
-          sortable: true,
-          type: "numeric",
-          width: "72px",
-          filterable: true,
-          direction: "asc",
-        },
-        node_product_name: {
-          title: this.hass.localize("ui.panel.config.ozw.nodes_table.model"),
-          sortable: true,
-          width: narrow ? "75%" : "25%",
-        },
-        node_manufacturer_name: {
-          title: this.hass.localize(
-            "ui.panel.config.ozw.nodes_table.manufacturer"
-          ),
-          sortable: true,
-          hidden: narrow,
-          width: "25%",
-        },
-        node_query_stage: {
-          title: this.hass.localize(
-            "ui.panel.config.ozw.nodes_table.query_stage"
-          ),
-          sortable: true,
-          width: narrow ? "25%" : "15%",
-        },
-        is_zwave_plus: {
-          title: this.hass.localize(
-            "ui.panel.config.ozw.nodes_table.zwave_plus"
-          ),
-          hidden: narrow,
-          template: (value: boolean) =>
-            value ? html` <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
-        },
-        is_failed: {
-          title: this.hass.localize("ui.panel.config.ozw.nodes_table.failed"),
-          hidden: narrow,
-          template: (value: boolean) =>
-            value ? html` <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>` : "",
-        },
-      };
-    }
+    (narrow: boolean): DataTableColumnContainer => ({
+      node_id: {
+        title: this.hass.localize("ui.panel.config.ozw.nodes_table.id"),
+        sortable: true,
+        type: "numeric",
+        width: "72px",
+        filterable: true,
+        direction: "asc",
+      },
+      node_product_name: {
+        title: this.hass.localize("ui.panel.config.ozw.nodes_table.model"),
+        sortable: true,
+        width: narrow ? "75%" : "25%",
+      },
+      node_manufacturer_name: {
+        title: this.hass.localize(
+          "ui.panel.config.ozw.nodes_table.manufacturer"
+        ),
+        sortable: true,
+        hidden: narrow,
+        width: "25%",
+      },
+      node_query_stage: {
+        title: this.hass.localize(
+          "ui.panel.config.ozw.nodes_table.query_stage"
+        ),
+        sortable: true,
+        width: narrow ? "25%" : "15%",
+      },
+      is_zwave_plus: {
+        title: this.hass.localize("ui.panel.config.ozw.nodes_table.zwave_plus"),
+        hidden: narrow,
+        template: (value: boolean) =>
+          value ? html` <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
+      },
+      is_failed: {
+        title: this.hass.localize("ui.panel.config.ozw.nodes_table.failed"),
+        hidden: narrow,
+        template: (value: boolean) =>
+          value ? html` <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>` : "",
+      },
+    })
   );
 
   protected firstUpdated() {
@@ -131,7 +127,7 @@ class OZWNetworkNodes extends LitElement {
     navigate(this, `/config/ozw/network/${this.ozwInstance}/node/${nodeId}`);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

@@ -3,10 +3,10 @@ import "@polymer/paper-item/paper-item-body";
 import Fuse from "fuse.js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -46,7 +46,7 @@ class StepFlowPickHandler extends LitElement {
 
   @property() public showAdvanced?: boolean;
 
-  @internalProperty() private _filter?: string;
+  @state() private _filter?: string;
 
   private _width?: number;
 
@@ -54,12 +54,10 @@ class StepFlowPickHandler extends LitElement {
 
   private _getHandlers = memoizeOne(
     (h: string[], filter?: string, _localize?: LocalizeFunc) => {
-      const handlers: HandlerObj[] = h.map((handler) => {
-        return {
-          name: domainToName(this.hass.localize, handler),
-          slug: handler,
-        };
-      });
+      const handlers: HandlerObj[] = h.map((handler) => ({
+        name: domainToName(this.hass.localize, handler),
+        slug: handler,
+      }));
 
       if (filter) {
         const options: Fuse.IFuseOptions<HandlerObj> = {
@@ -113,9 +111,7 @@ class StepFlowPickHandler extends LitElement {
                   referrerpolicy="no-referrer"
                 />
 
-                <paper-item-body>
-                  ${handler.name}
-                </paper-item-body>
+                <paper-item-body> ${handler.name} </paper-item-body>
                 <ha-icon-next></ha-icon-next>
               </paper-icon-item>
             `
@@ -179,7 +175,7 @@ class StepFlowPickHandler extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`

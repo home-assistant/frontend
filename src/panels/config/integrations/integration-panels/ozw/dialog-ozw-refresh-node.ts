@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -26,17 +26,17 @@ import { OZWRefreshNodeDialogParams } from "./show-dialog-ozw-refresh-node";
 class DialogOZWRefreshNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _node_id?: number;
+  @state() private _node_id?: number;
 
-  @internalProperty() private _ozw_instance = 1;
+  @state() private _ozw_instance = 1;
 
-  @internalProperty() private _nodeMetaData?: OZWDeviceMetaData;
+  @state() private _nodeMetaData?: OZWDeviceMetaData;
 
-  @internalProperty() private _node?: OZWDevice;
+  @state() private _node?: OZWDevice;
 
-  @internalProperty() private _active = false;
+  @state() private _active = false;
 
-  @internalProperty() private _complete = false;
+  @state() private _complete = false;
 
   private _refreshDevicesTimeoutHandle?: number;
 
@@ -234,7 +234,7 @@ class DialogOZWRefreshNode extends LitElement {
     this._node = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

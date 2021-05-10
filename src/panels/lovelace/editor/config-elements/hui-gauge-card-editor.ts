@@ -1,10 +1,10 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -36,11 +36,12 @@ const cardConfigStruct = object({
 const includeDomains = ["sensor"];
 
 @customElement("hui-gauge-card-editor")
-export class HuiGaugeCardEditor extends LitElement
+export class HuiGaugeCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GaugeCardConfig;
+  @state() private _config?: GaugeCardConfig;
 
   public setConfig(config: GaugeCardConfig): void {
     assert(config, cardConfigStruct);
@@ -196,7 +197,7 @@ export class HuiGaugeCardEditor extends LitElement
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

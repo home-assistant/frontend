@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -74,7 +74,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: WeatherForecastCardConfig;
+  @state() private _config?: WeatherForecastCardConfig;
 
   @property({ type: Boolean, reflect: true, attribute: "veryverynarrow" })
   private _veryVeryNarrow = false;
@@ -390,7 +390,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     this._veryVeryNarrow = card.offsetWidth < 245;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       weatherSVGStyles,
       css`
@@ -502,6 +502,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           padding-top: 4px;
           padding-bottom: 4px;
           display: flex;
+          justify-content: center;
         }
 
         .forecast-image-icon > * {

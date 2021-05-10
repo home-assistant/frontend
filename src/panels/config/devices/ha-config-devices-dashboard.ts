@@ -4,10 +4,10 @@ import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -68,15 +68,13 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _searchParms = new URLSearchParams(
-    window.location.search
-  );
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
-  @internalProperty() private _showDisabled = false;
+  @state() private _showDisabled = false;
 
-  @internalProperty() private _filter = "";
+  @state() private _filter = "";
 
-  @internalProperty() private _numHiddenDevices = 0;
+  @state() private _numHiddenDevices = 0;
 
   private _activeFilters = memoizeOne(
     (
@@ -179,33 +177,31 @@ export class HaConfigDeviceDashboard extends LitElement {
         outputDevices = outputDevices.filter((device) => !device.disabled_by);
       }
 
-      outputDevices = outputDevices.map((device) => {
-        return {
-          ...device,
-          name: computeDeviceName(
-            device,
-            this.hass,
-            deviceEntityLookup[device.id]
-          ),
-          model: device.model || "<unknown>",
-          manufacturer: device.manufacturer || "<unknown>",
-          area: device.area_id ? areaLookup[device.area_id].name : undefined,
-          integration: device.config_entries.length
-            ? device.config_entries
-                .filter((entId) => entId in entryLookup)
-                .map(
-                  (entId) =>
-                    localize(`component.${entryLookup[entId].domain}.title`) ||
-                    entryLookup[entId].domain
-                )
-                .join(", ")
-            : "No integration",
-          battery_entity: [
-            this._batteryEntity(device.id, deviceEntityLookup),
-            this._batteryChargingEntity(device.id, deviceEntityLookup),
-          ],
-        };
-      });
+      outputDevices = outputDevices.map((device) => ({
+        ...device,
+        name: computeDeviceName(
+          device,
+          this.hass,
+          deviceEntityLookup[device.id]
+        ),
+        model: device.model || "<unknown>",
+        manufacturer: device.manufacturer || "<unknown>",
+        area: device.area_id ? areaLookup[device.area_id].name : undefined,
+        integration: device.config_entries.length
+          ? device.config_entries
+              .filter((entId) => entId in entryLookup)
+              .map(
+                (entId) =>
+                  localize(`component.${entryLookup[entId].domain}.title`) ||
+                  entryLookup[entId].domain
+              )
+              .join(", ")
+          : "No integration",
+        battery_entity: [
+          this._batteryEntity(device.id, deviceEntityLookup),
+          this._batteryChargingEntity(device.id, deviceEntityLookup),
+        ],
+      }));
 
       this._numHiddenDevices = startLength - outputDevices.length;
       return { devicesOutput: outputDevices, filteredDomains: filterDomains };
@@ -224,14 +220,12 @@ export class HaConfigDeviceDashboard extends LitElement {
               filterable: true,
               direction: "asc",
               grows: true,
-              template: (name, device: DataTableRowData) => {
-                return html`
-                  ${name}
-                  <div class="secondary">
-                    ${device.area} | ${device.integration}
-                  </div>
-                `;
-              },
+              template: (name, device: DataTableRowData) => html`
+                ${name}
+                <div class="secondary">
+                  ${device.area} | ${device.integration}
+                </div>
+              `,
             },
           }
         : {
@@ -472,7 +466,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     this._showDisabled = true;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         ha-button-menu {

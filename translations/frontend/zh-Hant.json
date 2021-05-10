@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "發生未知錯誤",
+            "error_addon_no_ingress": "所要求的附加元件不支援 ingress",
             "error_addon_not_found": "找不到附加元件",
             "faq_link": "Home Assistant 常見問答集",
             "not_supported": "Home Assistant 不支援此重新導向。點選 {link} 獲取支援之重新導向與版本。"
@@ -1197,7 +1198,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "重新設定裝置"
+                "attribute": "屬性",
+                "battery_device_warning": "電池供電裝置必須喚醒以開始重新程序。請參考您的裝置手冊以了解如何喚醒裝置。",
+                "bind_header": "綁定中",
+                "button_hide": "隱藏詳細資訊",
+                "button_show": "顯示詳細資訊",
+                "cluster_header": "叢集",
+                "configuration_complete": "裝置設定完成。",
+                "configuration_failed": "裝置重新設定失敗。日誌中可能包含其他相關資訊。",
+                "configuring_alt": "設定中",
+                "heading": "重新設定裝置",
+                "in_progress": "裝置正在設定，可能需要一點時間。",
+                "introduction": "重新設定 Zigbee 網路中的裝置。假如功能不正確時，請使用此選項。",
+                "min_max_change": "最低/最高/變更",
+                "reporting_header": "回報中",
+                "run_in_background": "可以關閉此對話框、重新設定將於背景繼續執行。",
+                "start_reconfiguration": "開始重新設定"
             }
         },
         "duration": {
@@ -1260,7 +1276,8 @@
                     "caption": "分區",
                     "data_table": {
                         "area": "分區",
-                        "devices": "裝置"
+                        "devices": "裝置",
+                        "entities": "實體"
                     },
                     "delete": {
                         "confirmation_text": "所有該分區所屬裝置都將變成未指派狀態。",
@@ -1272,8 +1289,10 @@
                         "create": "建立",
                         "default_name": "新分區",
                         "delete": "刪除",
+                        "linked_entities_caption": "實體",
                         "name": "名稱",
                         "name_required": "必須輸入名稱",
+                        "no_linked_entities": "此區域未設定任何裝置。",
                         "unknown_error": "未知錯誤",
                         "update": "更新"
                     },
@@ -1726,12 +1745,18 @@
                         "nabu_casa_account": "Nabu Casa 帳號",
                         "not_connected": "未連線",
                         "remote": {
-                            "access_is_being_prepared": "遠端登入準備中，會於就緒時通知您。",
+                            "access_is_being_prepared": "遠端控制準備中，會於就緒時通知您。",
                             "certificate_info": "認證資訊",
+                            "connected": "已連線",
                             "info": "Home Assistant Cloud 雲服務提供您離家時、遠端加密連線控制。",
                             "instance_is_available": "您的裝置可透過下方連結使用",
                             "instance_will_be_available": "您的裝置將可透過下方連結使用",
                             "link_learn_how_it_works": "了解如何運作",
+                            "not_connected": "未連線",
+                            "remote_enabled": {
+                                "caption": "自動連線",
+                                "description": "開啟此選項以確定 Home Assistant 保持遠端存取功能。"
+                            },
                             "title": "遠端控制"
                         },
                         "sign_out": "登出",
@@ -2142,6 +2167,7 @@
                     "license": "依據 Apache 2.0 授權許可發行",
                     "path_configuration": "configuration.yaml 路徑：{path}",
                     "server": "伺服器",
+                    "setup_time": "設定時間",
                     "source": "來源：",
                     "system_health_error": "系統健康元件未載入。請於 configuration.yaml 內加入「system_health:」",
                     "system_health": {
@@ -2221,6 +2247,7 @@
                         },
                         "finish": "完成",
                         "loading_first_time": "請稍候、正在安裝整合",
+                        "next": "下一步",
                         "not_all_required_fields": "所有所需欄位都需要填寫。",
                         "not_loaded": "整合無法載入，請重啟 Home Assistant。",
                         "pick_flow_step": {
@@ -2924,7 +2951,13 @@
                         "node_status": "節點狀態",
                         "zwave_info": "Z-Wave 資訊"
                     },
+                    "logs": {
+                        "log_level": "日誌記錄等級",
+                        "subscribed_to_logs": "訂閱 Z-Wave JS 日誌訊息...",
+                        "title": "Z-Wave JS 日誌"
+                    },
                     "navigation": {
+                        "logs": "日誌",
                         "network": "網路"
                     },
                     "network_status": {

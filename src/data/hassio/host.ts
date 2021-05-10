@@ -28,7 +28,7 @@ export const fetchHassioHostInfo = async (
   hass: HomeAssistant
 ): Promise<HassioHostInfo> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/host/info",
       method: "get",
@@ -46,7 +46,7 @@ export const fetchHassioHassOsInfo = async (
   hass: HomeAssistant
 ): Promise<HassioHassOSInfo> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/os/info",
       method: "get",
@@ -63,7 +63,7 @@ export const fetchHassioHassOsInfo = async (
 
 export const rebootHost = async (hass: HomeAssistant) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/host/reboot",
       method: "post",
@@ -76,7 +76,7 @@ export const rebootHost = async (hass: HomeAssistant) => {
 
 export const shutdownHost = async (hass: HomeAssistant) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/host/shutdown",
       method: "post",
@@ -89,7 +89,7 @@ export const shutdownHost = async (hass: HomeAssistant) => {
 
 export const updateOS = async (hass: HomeAssistant) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/os/update",
       method: "post",
@@ -102,7 +102,7 @@ export const updateOS = async (hass: HomeAssistant) => {
 
 export const configSyncOS = async (hass: HomeAssistant) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/os/config/sync",
       method: "post",
@@ -115,7 +115,7 @@ export const configSyncOS = async (hass: HomeAssistant) => {
 
 export const changeHostOptions = async (hass: HomeAssistant, options: any) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/host/options",
       method: "post",

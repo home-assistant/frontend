@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
   property,
@@ -37,9 +37,7 @@ export abstract class HaDeviceAutomationCard<
   ) => string;
 
   constructor(
-    localizeDeviceAutomation: HaDeviceAutomationCard<
-      T
-    >["_localizeDeviceAutomation"]
+    localizeDeviceAutomation: HaDeviceAutomationCard<T>["_localizeDeviceAutomation"]
   ) {
     super();
     this._localizeDeviceAutomation = localizeDeviceAutomation;
@@ -61,9 +59,7 @@ export abstract class HaDeviceAutomationCard<
       return html``;
     }
     return html`
-      <h3>
-        ${this.hass.localize(this.headerKey)}
-      </h3>
+      <h3>${this.hass.localize(this.headerKey)}</h3>
       <div class="content">
         <ha-chip-set
           @chip-clicked=${this._handleAutomationClicked}
@@ -90,7 +86,7 @@ export abstract class HaDeviceAutomationCard<
     showAutomationEditor(this, data);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       h3 {
         color: var(--primary-text-color);

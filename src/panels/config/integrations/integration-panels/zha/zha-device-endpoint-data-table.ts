@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -113,14 +113,16 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               template: (entities) => html`
                 ${entities.length
                   ? entities.length > 3
-                    ? html`${entities.slice(0, 2).map(
-                          (entity) =>
-                            html`<div
-                              style="overflow: hidden; text-overflow: ellipsis;"
-                            >
-                              ${entity.name || entity.original_name}
-                            </div>`
-                        )}
+                    ? html`${entities
+                          .slice(0, 2)
+                          .map(
+                            (entity) =>
+                              html`<div
+                                style="overflow: hidden; text-overflow: ellipsis;"
+                              >
+                                ${entity.name || entity.original_name}
+                              </div>`
+                          )}
                         <div>And ${entities.length - 2} more...</div>`
                     : entities.map(
                         (entity) =>
@@ -154,7 +156,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         .table-cell-text {

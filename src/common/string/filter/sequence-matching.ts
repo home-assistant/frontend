@@ -71,8 +71,8 @@ type FuzzyFilterSort = <T extends ScorableTextItem>(
   items: T[]
 ) => T[];
 
-export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
-  return items
+export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) =>
+  items
     .map((item) => {
       item.score = fuzzySequentialMatch(filter, item);
       return item;
@@ -81,4 +81,3 @@ export const fuzzyFilterSort: FuzzyFilterSort = (filter, items) => {
     .sort(({ score: scoreA = 0 }, { score: scoreB = 0 }) =>
       scoreA > scoreB ? -1 : scoreA < scoreB ? 1 : 0
     );
-};

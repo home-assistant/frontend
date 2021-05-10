@@ -4,10 +4,10 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -36,7 +36,8 @@ import { SensorCardConfig, ShoppingListCardConfig } from "./types";
 let Sortable;
 
 @customElement("hui-shopping-list-card")
-class HuiShoppingListCard extends SubscribeMixin(LitElement)
+class HuiShoppingListCard
+  extends SubscribeMixin(LitElement)
   implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-shopping-list-editor");
@@ -49,15 +50,15 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ShoppingListCardConfig;
+  @state() private _config?: ShoppingListCardConfig;
 
-  @internalProperty() private _uncheckedItems?: ShoppingListItem[];
+  @state() private _uncheckedItems?: ShoppingListItem[];
 
-  @internalProperty() private _checkedItems?: ShoppingListItem[];
+  @state() private _checkedItems?: ShoppingListItem[];
 
-  @internalProperty() private _reordering = false;
+  @state() private _reordering = false;
 
-  @internalProperty() private _renderEmptySortable = false;
+  @state() private _renderEmptySortable = false;
 
   private _sortable?;
 
@@ -347,7 +348,7 @@ class HuiShoppingListCard extends SubscribeMixin(LitElement)
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         padding: 16px;

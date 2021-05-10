@@ -1,7 +1,7 @@
 import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   html,
   LitElement,
   property,
@@ -47,9 +47,7 @@ class HassioAddonRepositoryEl extends LitElement {
     const repo = this.repo;
     let _addons = this.addons;
     if (!this.hass.userData?.showAdvanced) {
-      _addons = _addons.filter((addon) => {
-        return !addon.advanced;
-      });
+      _addons = _addons.filter((addon) => !addon.advanced);
     }
     const addons = this._getAddons(_addons, this.filter);
 
@@ -68,9 +66,7 @@ class HassioAddonRepositoryEl extends LitElement {
     }
     return html`
       <div class="content">
-        <h1>
-          ${repo.name}
-        </h1>
+        <h1>${repo.name}</h1>
         <div class="card-group">
           ${addons.map(
             (addon) => html`
@@ -133,7 +129,7 @@ class HassioAddonRepositoryEl extends LitElement {
     navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       hassioStyle,
       css`

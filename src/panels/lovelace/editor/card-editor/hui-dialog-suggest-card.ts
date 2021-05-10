@@ -2,10 +2,10 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import deepFreeze from "deep-freeze";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -28,11 +28,11 @@ import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 export class HuiDialogSuggestCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: SuggestCardDialogParams;
+  @state() private _params?: SuggestCardDialogParams;
 
-  @internalProperty() private _cardConfig?: LovelaceCardConfig[];
+  @state() private _cardConfig?: LovelaceCardConfig[];
 
-  @internalProperty() private _saving = false;
+  @state() private _saving = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -123,7 +123,7 @@ export class HuiDialogSuggestCard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

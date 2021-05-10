@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -64,7 +64,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GlanceCardConfig;
+  @state() private _config?: GlanceCardConfig;
 
   private _configEntities?: GlanceConfigEntity[];
 
@@ -91,12 +91,10 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     };
     const entities = processConfigEntities<GlanceConfigEntity>(
       config.entities
-    ).map((entityConf) => {
-      return {
-        hold_action: { action: "more-info" } as MoreInfoActionConfig,
-        ...entityConf,
-      };
-    });
+    ).map((entityConf) => ({
+      hold_action: { action: "more-info" } as MoreInfoActionConfig,
+      ...entityConf,
+    }));
 
     for (const entity of entities) {
       if (
@@ -186,7 +184,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;

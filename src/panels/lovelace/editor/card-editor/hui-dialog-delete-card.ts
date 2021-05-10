@@ -2,10 +2,10 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import deepFreeze from "deep-freeze";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
@@ -24,9 +24,9 @@ import type { DeleteCardDialogParams } from "./show-delete-card-dialog";
 export class HuiDialogDeleteCard extends LitElement {
   @property() protected hass!: HomeAssistant;
 
-  @internalProperty() private _params?: DeleteCardDialogParams;
+  @state() private _params?: DeleteCardDialogParams;
 
-  @internalProperty() private _cardConfig?: LovelaceCardConfig;
+  @state() private _cardConfig?: LovelaceCardConfig;
 
   @query("ha-paper-dialog", true) private _dialog!: HaPaperDialog;
 
@@ -47,9 +47,7 @@ export class HuiDialogDeleteCard extends LitElement {
 
     return html`
       <ha-paper-dialog with-backdrop opened modal>
-        <h2>
-          ${this.hass.localize("ui.panel.lovelace.cards.confirm_delete")}
-        </h2>
+        <h2>${this.hass.localize("ui.panel.lovelace.cards.confirm_delete")}</h2>
         <paper-dialog-scrollable>
           ${this._cardConfig
             ? html`
@@ -74,7 +72,7 @@ export class HuiDialogDeleteCard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

@@ -4,15 +4,16 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   query,
   TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/dialog/ha-paper-dialog";
 import "../../../../components/ha-circular-progress";
 import type { AutomationConfig } from "../../../../data/automation";
@@ -40,15 +41,15 @@ export interface PlaceholderContainer {
 class DialogThingtalk extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: ThingtalkDialogParams;
+  @state() private _params?: ThingtalkDialogParams;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _placeholders?: PlaceholderContainer;
+  @state() private _placeholders?: PlaceholderContainer;
 
   @query("#input") private _input?: PaperInputElement;
 
@@ -65,6 +66,15 @@ class DialogThingtalk extends LitElement {
       await this.updateComplete;
       this._generate();
     }
+  }
+
+  public closeDialog() {
+    this._placeholders = undefined;
+    if (this._input) {
+      this._input.value = null;
+    }
+    this._opened = false;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
@@ -225,25 +235,17 @@ class DialogThingtalk extends LitElement {
 
   private _sendConfig(input, config) {
     this._params!.callback({ alias: input, ...config });
-    this._closeDialog();
+    this.closeDialog();
   }
 
   private _skip() {
     this._params!.callback(undefined);
-    this._closeDialog();
-  }
-
-  private _closeDialog() {
-    this._placeholders = undefined;
-    if (this._input) {
-      this._input.value = null;
-    }
-    this._opened = false;
+    this.closeDialog();
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!ev.detail.value) {
-      this._closeDialog();
+      this.closeDialog();
     }
   }
 
@@ -257,7 +259,7 @@ class DialogThingtalk extends LitElement {
     this._input!.value = (ev.target as HTMLAnchorElement).innerText;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

@@ -12,10 +12,10 @@ import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -91,14 +91,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   @property({ type: Array })
   private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
-  @internalProperty() private _config?: ZWaveJSNodeConfigParams;
+  @state() private _config?: ZWaveJSNodeConfigParams;
 
-  @internalProperty() private _results: Record<
-    string,
-    ZWaveJSSetConfigParamResult
-  > = {};
+  @state() private _results: Record<string, ZWaveJSSetConfigParamResult> = {};
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -294,8 +291,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               @iron-select=${this._dropdownSelected}
             >
               ${Object.entries(item.metadata.states).map(
-                ([key, state]) => html`
-                  <paper-item .value=${key}>${state}</paper-item>
+                ([key, entityState]) => html`
+                  <paper-item .value=${key}>${entityState}</paper-item>
                 `
               )}
             </paper-listbox>
@@ -428,7 +425,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     );
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

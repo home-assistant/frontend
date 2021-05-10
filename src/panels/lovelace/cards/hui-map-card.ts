@@ -11,7 +11,7 @@ import {
 } from "leaflet";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -653,7 +653,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         overflow: hidden;

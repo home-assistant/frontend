@@ -1,7 +1,7 @@
 import { safeDump } from "js-yaml";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -28,7 +28,7 @@ export class HaAutomationTraceConfig extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [css``];
   }
 }

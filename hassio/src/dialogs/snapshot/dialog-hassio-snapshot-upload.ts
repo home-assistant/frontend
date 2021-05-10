@@ -1,10 +1,10 @@
 import { mdiClose } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   TemplateResult,
@@ -18,11 +18,12 @@ import "../../components/hassio-upload-snapshot";
 import { HassioSnapshotUploadDialogParams } from "./show-dialog-snapshot-upload";
 
 @customElement("dialog-hassio-snapshot-upload")
-export class DialogHassioSnapshotUpload extends LitElement
+export class DialogHassioSnapshotUpload
+  extends LitElement
   implements HassDialog<HassioSnapshotUploadDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: HassioSnapshotUploadDialogParams;
+  @state() private _params?: HassioSnapshotUploadDialogParams;
 
   public async showDialog(
     params: HassioSnapshotUploadDialogParams
@@ -57,9 +58,7 @@ export class DialogHassioSnapshotUpload extends LitElement
       >
         <div slot="heading">
           <ha-header-bar>
-            <span slot="title">
-              Upload snapshot
-            </span>
+            <span slot="title"> Upload snapshot </span>
             <mwc-icon-button slot="actionItems" dialogAction="cancel">
               <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
             </mwc-icon-button>
@@ -79,7 +78,7 @@ export class DialogHassioSnapshotUpload extends LitElement
     this.closeDialog();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

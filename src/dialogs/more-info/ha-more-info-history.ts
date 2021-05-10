@@ -1,7 +1,7 @@
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -20,7 +20,7 @@ export class MoreInfoHistory extends LitElement {
 
   @property() public entityId!: string;
 
-  @internalProperty() private _stateHistory?: HistoryResult;
+  @state() private _stateHistory?: HistoryResult;
 
   private _throttleGetStateHistory = throttle(() => {
     this._getStateHistory();

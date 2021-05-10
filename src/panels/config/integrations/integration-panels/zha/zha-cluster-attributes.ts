@@ -5,9 +5,9 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -46,15 +46,15 @@ export class ZHAClusterAttributes extends LitElement {
 
   @property() public selectedCluster?: Cluster;
 
-  @internalProperty() private _attributes: Attribute[] = [];
+  @state() private _attributes: Attribute[] = [];
 
-  @internalProperty() private _selectedAttributeIndex = -1;
+  @state() private _selectedAttributeIndex = -1;
 
-  @internalProperty() private _attributeValue?: any = "";
+  @state() private _attributeValue?: any = "";
 
-  @internalProperty() private _manufacturerCodeOverride?: string | number;
+  @state() private _manufacturerCodeOverride?: string | number;
 
-  @internalProperty()
+  @state()
   private _setAttributeServiceData?: SetAttributeServiceData;
 
   protected updated(changedProperties: PropertyValues): void {
@@ -206,9 +206,7 @@ export class ZHAClusterAttributes extends LitElement {
         this.selectedCluster!.id,
         this.selectedCluster!.type
       );
-      this._attributes.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
+      this._attributes.sort((a, b) => a.name.localeCompare(b.name));
     }
   }
 
@@ -275,7 +273,7 @@ export class ZHAClusterAttributes extends LitElement {
     this._attributeValue = "";
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

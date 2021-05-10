@@ -2,7 +2,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -177,9 +177,7 @@ class MoreInfoVacuum extends LitElement {
                   >
                     ${stateObj.attributes.fan_speed_list!.map(
                       (mode) => html`
-                        <paper-item .itemName=${mode}>
-                          ${mode}
-                        </paper-item>
+                        <paper-item .itemName=${mode}> ${mode} </paper-item>
                       `
                     )}
                   </paper-listbox>
@@ -226,7 +224,7 @@ class MoreInfoVacuum extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         line-height: 1.5;

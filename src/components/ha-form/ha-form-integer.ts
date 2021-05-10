@@ -4,7 +4,7 @@ import "@polymer/paper-slider/paper-slider";
 import type { PaperSliderElement } from "@polymer/paper-slider/paper-slider";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -107,7 +107,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .flex {
         display: flex;

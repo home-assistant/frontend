@@ -1,7 +1,7 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   css,
-  CSSResultArray,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -54,7 +54,7 @@ class HassLoadingScreen extends LitElement {
     history.back();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

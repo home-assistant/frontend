@@ -1,10 +1,10 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -23,7 +23,7 @@ class HaCoverControls extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @internalProperty() private _entityObj?: CoverEntity;
+  @state() private _entityObj?: CoverEntity;
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -114,7 +114,7 @@ class HaCoverControls extends LitElement {
     this._entityObj.stopCover();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .state {
         white-space: nowrap;

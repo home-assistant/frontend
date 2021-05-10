@@ -1,9 +1,9 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   TemplateResult,
 } from "lit-element";
@@ -12,11 +12,12 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceElement, ServiceButtonElementConfig } from "./types";
 
 @customElement("hui-service-button-element")
-export class HuiServiceButtonElement extends LitElement
+export class HuiServiceButtonElement
+  extends LitElement
   implements LovelaceElement {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ServiceButtonElementConfig;
+  @state() private _config?: ServiceButtonElementConfig;
 
   private _domain?: string;
 
@@ -56,7 +57,7 @@ export class HuiServiceButtonElement extends LitElement
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-call-service-button {
         color: var(--primary-color);

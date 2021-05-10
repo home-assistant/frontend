@@ -1,7 +1,7 @@
 import {
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -32,7 +32,7 @@ class HuiTimestampDisplay extends LitElement {
 
   @property() public format?: TimestampRenderingFormats;
 
-  @internalProperty() private _relative?: string;
+  @state() private _relative?: string;
 
   private _connected?: boolean;
 

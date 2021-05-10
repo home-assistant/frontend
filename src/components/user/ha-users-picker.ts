@@ -1,7 +1,7 @@
 import { mdiClose } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -149,7 +149,7 @@ class HaUsersPickerLight extends LitElement {
     this._updateUsers(this._currentUsers.filter((user) => user !== userId));
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

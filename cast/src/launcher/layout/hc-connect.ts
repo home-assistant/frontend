@@ -13,12 +13,12 @@ import {
 } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
   TemplateResult,
-  internalProperty,
+  state,
 } from "lit-element";
 import { CastManager, getCastManager } from "../../../../src/cast/cast_manager";
 import { castSendShowDemo } from "../../../../src/cast/receiver_messages";
@@ -60,19 +60,19 @@ const INTRO = html`
 
 @customElement("hc-connect")
 export class HcConnect extends LitElement {
-  @internalProperty() private loading = false;
+  @state() private loading = false;
 
   // If we had stored credentials but we cannot connect,
   // show a screen asking retry or logout.
-  @internalProperty() private cannotConnect = false;
+  @state() private cannotConnect = false;
 
-  @internalProperty() private error?: string | TemplateResult;
+  @state() private error?: string | TemplateResult;
 
-  @internalProperty() private auth?: Auth;
+  @state() private auth?: Auth;
 
-  @internalProperty() private connection?: Connection;
+  @state() private connection?: Connection;
 
-  @internalProperty() private castManager?: CastManager | null;
+  @state() private castManager?: CastManager | null;
 
   private openDemo = false;
 
@@ -86,9 +86,7 @@ export class HcConnect extends LitElement {
           </div>
           <div class="card-actions">
             <a href="/">
-              <mwc-button>
-                Retry
-              </mwc-button>
+              <mwc-button> Retry </mwc-button>
             </a>
             <div class="spacer"></div>
             <mwc-button @click=${this._handleLogout}>Log out</mwc-button>
@@ -299,7 +297,7 @@ export class HcConnect extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .card-content a {
         color: var(--primary-color);

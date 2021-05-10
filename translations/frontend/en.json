@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "An unknown error occurred",
+            "error_addon_no_ingress": "The requested add-on does not support ingress",
             "error_addon_not_found": "Add-on not found",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced."
@@ -1744,12 +1745,18 @@
                         "nabu_casa_account": "Nabu Casa Account",
                         "not_connected": "Not Connected",
                         "remote": {
-                            "access_is_being_prepared": "Remote access is being prepared. We will notify you when it's ready.",
+                            "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
                             "certificate_info": "Certificate Info",
+                            "connected": "Connected",
                             "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
                             "instance_is_available": "Your instance is available at",
                             "instance_will_be_available": "Your instance will be available at",
                             "link_learn_how_it_works": "Learn how it works",
+                            "not_connected": "Not Connected",
+                            "remote_enabled": {
+                                "caption": "Automatically connect",
+                                "description": "Enable this option to make sure that your Home Assistant instance is always remotely accessible."
+                            },
                             "title": "Remote Control"
                         },
                         "sign_out": "Sign out",
@@ -2160,6 +2167,7 @@
                     "license": "Published under the Apache 2.0 license",
                     "path_configuration": "Path to configuration.yaml: {path}",
                     "server": "server",
+                    "setup_time": "Setup time",
                     "source": "Source:",
                     "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
                     "system_health": {
@@ -2239,6 +2247,7 @@
                         },
                         "finish": "Finish",
                         "loading_first_time": "Please wait while the integration is being installed",
+                        "next": "Next",
                         "not_all_required_fields": "Not all required fields are filled in.",
                         "not_loaded": "The integration could not be loaded, try to restart Home Assistant.",
                         "pick_flow_step": {
@@ -2944,6 +2953,7 @@
                     },
                     "logs": {
                         "log_level": "Log Level",
+                        "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
                         "title": "Z-Wave JS Logs"
                     },
                     "navigation": {
@@ -3965,12 +3975,12 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
-                    "created_at": "Created at {date}",
+                    "created_at": "Created {date}",
                     "current_token_tooltip": "Unable to delete current refresh token",
                     "delete_failed": "Failed to delete the refresh token.",
                     "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
                     "header": "Refresh Tokens",
-                    "last_used": "Last used at {date} from {location}",
+                    "last_used": "Last used {date} from {location}",
                     "not_used": "Has never been used",
                     "token_title": "Refresh token for {clientId}"
                 },

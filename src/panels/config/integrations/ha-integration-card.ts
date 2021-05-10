@@ -7,7 +7,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { mdiAlertCircle, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -39,7 +39,7 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../resources/styles";
+import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
@@ -139,7 +139,7 @@ export class HaIntegrationCard extends LitElement {
 
   private _renderGroupedIntegration(): TemplateResult {
     return html`
-      <paper-listbox>
+      <paper-listbox class="ha-scrollbar">
         ${this.items.map(
           (item) =>
             html`<paper-item
@@ -222,9 +222,7 @@ export class HaIntegrationCard extends LitElement {
         ? html`
             <div class="message">
               <ha-svg-icon .path=${mdiAlertCircle}></ha-svg-icon>
-              <div>
-                ${this.hass.localize(...stateText)}${stateTextExtra}
-              </div>
+              <div>${this.hass.localize(...stateText)}${stateTextExtra}</div>
             </div>
           `
         : ""}
@@ -302,80 +300,73 @@ export class HaIntegrationCard extends LitElement {
               `
             : ""}
         </div>
-        ${!this.manifest
-          ? ""
-          : html`
-              <ha-button-menu corner="BOTTOM_START">
-                <mwc-icon-button
-                  .title=${this.hass.localize("ui.common.menu")}
-                  .label=${this.hass.localize("ui.common.overflow_menu")}
-                  slot="trigger"
-                >
-                  <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-                </mwc-icon-button>
-                <mwc-list-item @request-selected="${this._editEntryName}">
+        <ha-button-menu corner="BOTTOM_START">
+          <mwc-icon-button
+            .title=${this.hass.localize("ui.common.menu")}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            slot="trigger"
+          >
+            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-list-item @request-selected="${this._editEntryName}">
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.rename"
+            )}
+          </mwc-list-item>
+          <mwc-list-item @request-selected="${this._handleSystemOptions}">
+            ${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.system_options"
+            )}
+          </mwc-list-item>
+          ${this.manifest
+            ? html` <a
+                href=${this.manifest.documentation}
+                rel="noreferrer"
+                target="_blank"
+              >
+                <mwc-list-item hasMeta>
                   ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.rename"
-                  )}
+                    "ui.panel.config.integrations.config_entry.documentation"
+                  )}<ha-svg-icon
+                    slot="meta"
+                    .path=${mdiOpenInNew}
+                  ></ha-svg-icon>
                 </mwc-list-item>
-                <mwc-list-item @request-selected="${this._handleSystemOptions}">
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.system_options"
-                  )}
-                </mwc-list-item>
-
-                <a
-                  href=${this.manifest.documentation}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <mwc-list-item hasMeta>
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.documentation"
-                    )}<ha-svg-icon
-                      slot="meta"
-                      .path=${mdiOpenInNew}
-                    ></ha-svg-icon>
-                  </mwc-list-item>
-                </a>
-                ${!item.disabled_by &&
-                item.state === "loaded" &&
-                item.supports_unload &&
-                item.source !== "system"
-                  ? html`<mwc-list-item
-                      @request-selected="${this._handleReload}"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.reload"
-                      )}
-                    </mwc-list-item>`
-                  : ""}
-                ${item.disabled_by === "user"
-                  ? html`<mwc-list-item
-                      @request-selected="${this._handleEnable}"
-                    >
-                      ${this.hass.localize("ui.common.enable")}
-                    </mwc-list-item>`
-                  : item.source !== "system"
-                  ? html`<mwc-list-item
-                      class="warning"
-                      @request-selected="${this._handleDisable}"
-                    >
-                      ${this.hass.localize("ui.common.disable")}
-                    </mwc-list-item>`
-                  : ""}
-                ${item.source !== "system"
-                  ? html`<mwc-list-item
-                      class="warning"
-                      @request-selected="${this._handleDelete}"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.delete"
-                      )}
-                    </mwc-list-item>`
-                  : ""}
-              </ha-button-menu>
-            `}
+              </a>`
+            : ""}
+          ${!item.disabled_by &&
+          item.state === "loaded" &&
+          item.supports_unload &&
+          item.source !== "system"
+            ? html`<mwc-list-item @request-selected="${this._handleReload}">
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.reload"
+                )}
+              </mwc-list-item>`
+            : ""}
+          ${item.disabled_by === "user"
+            ? html`<mwc-list-item @request-selected="${this._handleEnable}">
+                ${this.hass.localize("ui.common.enable")}
+              </mwc-list-item>`
+            : item.source !== "system"
+            ? html`<mwc-list-item
+                class="warning"
+                @request-selected="${this._handleDisable}"
+              >
+                ${this.hass.localize("ui.common.disable")}
+              </mwc-list-item>`
+            : ""}
+          ${item.source !== "system"
+            ? html`<mwc-list-item
+                class="warning"
+                @request-selected="${this._handleDelete}"
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.delete"
+                )}
+              </mwc-list-item>`
+            : ""}
+        </ha-button-menu>
       </div>
     `;
   }
@@ -583,9 +574,10 @@ export class HaIntegrationCard extends LitElement {
     fireEvent(this, "entry-updated", { entry: newEntry });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
+      haStyleScrollbar,
       css`
         ha-card {
           display: flex;
@@ -640,6 +632,13 @@ export class HaIntegrationCard extends LitElement {
           flex: 1;
           margin-left: 8px;
           padding-top: 2px;
+          padding-right: 2px;
+          overflow-wrap: break-word;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 7;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .content {

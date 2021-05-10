@@ -3,10 +3,10 @@ import "@polymer/paper-input/paper-input";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
-  internalProperty,
+  state,
   LitElement,
   property,
   PropertyValues,
@@ -47,23 +47,23 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   @property() public entry!: ExtEntityRegistryEntry;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _icon!: string;
+  @state() private _icon!: string;
 
-  @internalProperty() private _entityId!: string;
+  @state() private _entityId!: string;
 
-  @internalProperty() private _areaId?: string | null;
+  @state() private _areaId?: string | null;
 
-  @internalProperty() private _disabledBy!: string | null;
+  @state() private _disabledBy!: string | null;
 
   private _deviceLookup?: Record<string, DeviceRegistryEntry>;
 
-  @internalProperty() private _device?: DeviceRegistryEntry;
+  @state() private _device?: DeviceRegistryEntry;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _submitting?: boolean;
+  @state() private _submitting?: boolean;
 
   private _origEntityId!: string;
 
@@ -359,7 +359,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

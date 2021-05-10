@@ -561,8 +561,11 @@
             },
             "light": {
                 "brightness": "Helligkeit",
+                "cold_white_value": "Kaltweiße Helligkeit",
+                "color_brightness": "Farbhelligkeit",
                 "color_temperature": "Farbtemperatur",
                 "effect": "Effekt",
+                "warm_white_value": "Warmweiße Helligkeit",
                 "white_value": "Weißwert"
             },
             "lock": {
@@ -707,7 +710,7 @@
                     "text": "Gib den Namen des neuen Bereichs ein.",
                     "title": "Neuen Bereich hinzufügen"
                 },
-                "add_new": "Neuen Bereich hinzufügen...",
+                "add_new": "Neuen Bereich hinzufügen",
                 "area": "Bereich",
                 "clear": "Löschen",
                 "no_areas": "Du hast keine Bereiche",
@@ -886,6 +889,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Integrationsdokumentation",
                 "required": "Dieses Feld ist erforderlich",
                 "service_data": "Dienstdaten",
                 "target": "Ziele",
@@ -1193,7 +1197,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Gerät neu konfigurieren"
+                "attribute": "Attribut",
+                "battery_device_warning": "Sie müssen batteriebetriebene Geräte aktivieren, bevor Sie den Neukonfigurationsvorgang starten. Anweisungen zum Aktivieren des Geräts finden Sie im Handbuch Ihres Geräts.",
+                "bind_header": "Bindung",
+                "button_hide": "Details ausblenden",
+                "button_show": "Details anzeigen",
+                "cluster_header": "Cluster",
+                "configuration_complete": "Geräteneukonfiguration abgeschlossen.",
+                "configuration_failed": "Die Neukonfiguration des Geräts ist fehlgeschlagen. Weitere Informationen sind möglicherweise in den Protokollen verfügbar.",
+                "configuring_alt": "Konfigurieren",
+                "heading": "Gerät neu konfigurieren",
+                "in_progress": "Das Gerät wird neu konfiguriert. Dies könnte eine Weile dauern.",
+                "introduction": "Konfigurieren Sie ein Gerät in Ihrem Zigbee-Netzwerk neu. Verwenden Sie diese Funktion, wenn Ihr Gerät nicht ordnungsgemäß funktioniert.",
+                "min_max_change": "min/max/change",
+                "reporting_header": "Reporting",
+                "run_in_background": "Sie können diesen Dialog schließen und die Neukonfiguration wird im Hintergrund fortgesetzt.",
+                "start_reconfiguration": "Neukonfiguration starten"
             }
         },
         "duration": {
@@ -1256,7 +1275,8 @@
                     "caption": "Bereiche",
                     "data_table": {
                         "area": "Bereich",
-                        "devices": "Geräte"
+                        "devices": "Geräte",
+                        "entities": "Entitäten"
                     },
                     "delete": {
                         "confirmation_text": "Die Zuordnung aller Geräte zu diesem Bereich wird aufgelöst.",
@@ -1268,8 +1288,10 @@
                         "create": "Erstellen",
                         "default_name": "Neuer Bereich",
                         "delete": "Löschen",
+                        "linked_entities_caption": "Entitäten",
                         "name": "Name",
                         "name_required": "Name erforderlich",
+                        "no_linked_entities": "Es sind keine Entitäten mit diesem Bereich verknüpft.",
                         "unknown_error": "Unbekannter Fehler",
                         "update": "Aktualisieren"
                     },
@@ -1724,10 +1746,16 @@
                         "remote": {
                             "access_is_being_prepared": "Der Fernzugriff wird vorbereitet. Wir werden dich benachrichtigen, wenn alles fertig ist.",
                             "certificate_info": "Zertifikatsinformationen",
+                            "connected": "Verbunden",
                             "info": "Home Assistant Cloud bietet eine sichere Remote-Verbindung zu Ihrer Instanz, wenn Sie nicht zu Hause sind.",
                             "instance_is_available": "Deine Instanz ist verfügbar unter",
                             "instance_will_be_available": "Deine Instanz wird verfügbar sein unter",
                             "link_learn_how_it_works": "Lerne, wie es funktioniert",
+                            "not_connected": "Nicht verbunden",
+                            "remote_enabled": {
+                                "caption": "Automatisch verbinden",
+                                "description": "Aktiviere diese Option um sicherzustellen dass deine Home Assistant Instanz immer aus der Ferne erreichbar ist."
+                            },
                             "title": "Fernsteuerung"
                         },
                         "sign_out": "Abmelden",
@@ -2138,6 +2166,7 @@
                     "license": "Veröffentlicht unter der Apache 2.0 Lizenz",
                     "path_configuration": "Pfad zu configuration.yaml: {path}",
                     "server": "Server",
+                    "setup_time": "Setup-Dauer",
                     "source": "Quelle:",
                     "system_health_error": "System Health-Komponente wird nicht geladen. Füge 'system_health:' zu configuration.yaml hinzu",
                     "system_health": {
@@ -2156,8 +2185,11 @@
                     "caption": "Integrationen",
                     "config_entry": {
                         "area": "In {area}",
+                        "check_the_logs": "Prüfen Sie die Protokolle",
+                        "configure": "Konfigurieren",
                         "delete": "Löschen",
                         "delete_confirm": "Möchtest du diese Integration wirklich löschen?",
+                        "depends_on_cloud": "Abhängig von der Cloud",
                         "device_unavailable": "Gerät nicht verfügbar",
                         "devices": "{count} {count, plural,\n one {Gerät}\n other {Geräte}\n}",
                         "disable_restart_confirm": "Home Assistant neu starten, um das Deaktivieren dieser Integration abzuschließen",
@@ -2180,14 +2212,23 @@
                         "logs": "Logs",
                         "manuf": "von {manufacturer}",
                         "no_area": "Kein Bereich",
-                        "not_loaded": "Nicht geladen, prüfe die {logs_link}",
+                        "not_loaded": "Nicht geladen",
                         "options": "Optionen",
+                        "provided_by_custom_integration": "Bereitgestellt durch eine benutzerdefinierte Integration",
                         "reload": "Neu laden",
                         "reload_confirm": "Die Integration wurde neu geladen",
                         "reload_restart_confirm": "Home Assistant neu starten, um das Neuladen dieser Integration abzuschließen",
                         "rename": "Umbenennen",
                         "restart_confirm": "Starte Home Assistant neu, um das Entfernen dieser Integration abzuschließen",
                         "services": "{count} {count, plural,\n  one {Dienst}\n  other {Dienste}\n}",
+                        "state": {
+                            "failed_unload": "Entladen fehlgeschlagen",
+                            "loaded": "Geladen",
+                            "migration_error": "Migrationsfehler",
+                            "not_loaded": "Nicht geladen",
+                            "setup_error": "Fehler beim Einrichten",
+                            "setup_retry": "Setup erneut versuchen"
+                        },
                         "system_options": "Systemoptionen",
                         "unnamed_entry": "Unbenannter Eintrag"
                     },
@@ -2205,6 +2246,7 @@
                         },
                         "finish": "Fertig",
                         "loading_first_time": "Bitte warten, während die Integration installiert wird",
+                        "next": "Weiter",
                         "not_all_required_fields": "Nicht alle Pflichtfelder sind ausgefüllt.",
                         "not_loaded": "Die Integration konnte nicht geladen werden. Versuche Home Assistant neu zu starten.",
                         "pick_flow_step": {
@@ -2775,6 +2817,15 @@
                         "manufacturer_code_override": "Hersteller-Code Überschreiben",
                         "value": "Wert"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Verknüpfungen",
+                        "update_button": "Konfiguration aktualisieren",
+                        "zha_options": {
+                            "default_light_transition": "Standard-Lichtübergangszeit (Sekunden)",
+                            "enable_identify_on_join": "Aktivieren Sie den Identifikationseffekt, wenn Geräte dem Netzwerk beitreten",
+                            "title": "Globale Optionen"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Konfiguration abgeschlossen",
                         "CONFIGURED_status_text": "Initialisieren",
@@ -2899,7 +2950,13 @@
                         "node_status": "Node Status",
                         "zwave_info": "Z-Wave Info"
                     },
+                    "logs": {
+                        "log_level": "Protokollstufe",
+                        "subscribed_to_logs": "Abonniert Z-Wave JS-Protokollnachrichten ...",
+                        "title": "Z-Wave JS Protokolle"
+                    },
                     "navigation": {
+                        "logs": "Protokolle",
                         "network": "Netzwerk"
                     },
                     "network_status": {
@@ -2914,6 +2971,9 @@
                         "header": "Z-Wave Gerätekonfiguration",
                         "introduction": "Verwalten und Anpassen von gerätespezifischen Konfigurationsparametern (Knoten) für das ausgewählte Gerät",
                         "parameter_is_read_only": "Dieser Parameter ist schreibgeschützt.",
+                        "set_param_accepted": "Der Parameter wurde aktualisiert.",
+                        "set_param_error": "Ein Fehler ist aufgetreten.",
+                        "set_param_queued": "Die Parameteränderung wurde in die Warteschlange gestellt und wird beim Aufwachen des Geräts aktualisiert.",
                         "zwave_js_device_database": "Z-Wave JS Gerätedatenbank"
                     },
                     "node_status": {
@@ -2922,6 +2982,16 @@
                         "awake": "Wach",
                         "dead": "Tot",
                         "unknown": "Unbekannt"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Sie müssen batteriebetriebene Geräte aktivieren, bevor Sie den Neukonfigurationsvorgang starten. Anweisungen zum Aktivieren des Geräts finden Sie im Handbuch Ihres Geräts.",
+                        "in_progress": "Das Gerät wird interviewt. Dies könnte eine Weile dauern.",
+                        "interview_complete": "Geräteinterview abgeschlossen.",
+                        "interview_failed": "Das Geräteinterview ist fehlgeschlagen. Zusätzliche Informationen sind möglicherweise in den Logs verfügbar.",
+                        "introduction": "Starten Sie ein erneutes Geräteinterview auf Ihrem Z-Wave-Netzwerk. Verwenden Sie diese Funktion, wenn Ihr Gerät fehlende oder falsche Funktionen anzeigt.",
+                        "run_in_background": "Sie können diesen Dialog schließen und das Interview wird im Hintergrund fortgesetzt.",
+                        "start_reinterview": "Neues Interview starten",
+                        "title": "Ein Z-Wave-Gerät erneut interviewen"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Entfernung von Geräten abbrechen",
