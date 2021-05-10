@@ -1108,13 +1108,6 @@
   dependencies:
     tslib "^2.1.0"
 
-"@formatjs/ecma402-abstract@^1.2.5":
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/@formatjs/ecma402-abstract/-/ecma402-abstract-1.2.5.tgz#5a61ac1990ff2df8d1348ab12e186c1ca2a2bd71"
-  integrity sha512-k0fqS3LBNOHueAoMdgig8Ni6TchsH+zbzWBzX2gTFm50X9mxHwnuXdCk0XLlCIbvgVVlzcO254Men/mHAheMbg==
-  dependencies:
-    tslib "^2.0.1"
-
 "@formatjs/fast-memoize@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@formatjs/fast-memoize/-/fast-memoize-1.1.1.tgz#3006b58aca1e39a98aca213356b42da5d173f26b"
@@ -1137,21 +1130,31 @@
     "@formatjs/ecma402-abstract" "1.7.1"
     tslib "^2.1.0"
 
-"@formatjs/intl-getcanonicallocales@^1.4.6":
-  version "1.4.6"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-getcanonicallocales/-/intl-getcanonicallocales-1.4.6.tgz#348a0b8dd87f2b0513a4942a6273c937dd91ead0"
-  integrity sha512-V54a+Ks02vke2CSmuGJ4GCvrdWfN105GSH7oZRoW5QSiwuac+fmxb5Qpu4002HetuRu0rrRTm+NMUTfZ1VB2xw==
+"@formatjs/intl-getcanonicallocales@1.5.10", "@formatjs/intl-getcanonicallocales@^1.5.10":
+  version "1.5.10"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-getcanonicallocales/-/intl-getcanonicallocales-1.5.10.tgz#f57f12f19fd28a241767986b081331f8b26fb18b"
+  integrity sha512-tFqGxZ9HkAzphupybyCKdWHzL1ge/sY8TtzEK57Hs3RCxrv/y+VxIPrE+Izw2oCFowQBz76cyi0zT6PjHuWArA==
   dependencies:
-    cldr-core "36.0.0"
-    tslib "^2.0.1"
+    cldr-core "38"
+    tslib "^2.1.0"
 
-"@formatjs/intl-pluralrules@^3.4.10":
-  version "3.4.10"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-3.4.10.tgz#7ed3b03190971f21d482cb0e46791d90783a74d3"
-  integrity sha512-KcZZv38bu0pho9+9pMUOsCAi9/Kayh4+V5QZ/I9ps5OFSQlQaFMP5sX/zHBp41SsT6HxTfrPw5CHWpGrS75NQQ==
+"@formatjs/intl-locale@^2.4.24":
+  version "2.4.24"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-locale/-/intl-locale-2.4.24.tgz#c3f9dba15653b79ac7b377bb048a35aeedfc234d"
+  integrity sha512-+JOwvBRFS/GFuJlWiWbfAzBng0A+ANoGV1LRseXK+4uzp4Sn35GD8M/dfgU1lp2R2dTWpYie2yyoHe4k4aHF6w==
   dependencies:
-    "@formatjs/ecma402-abstract" "^1.2.5"
-    tslib "^2.0.1"
+    "@formatjs/ecma402-abstract" "1.7.1"
+    "@formatjs/intl-getcanonicallocales" "1.5.10"
+    cldr-core "38"
+    tslib "^2.1.0"
+
+"@formatjs/intl-pluralrules@^4.0.18":
+  version "4.0.18"
+  resolved "https://registry.yarnpkg.com/@formatjs/intl-pluralrules/-/intl-pluralrules-4.0.18.tgz#da4bda058cce5217691836c4f46ba3e9f25b0eeb"
+  integrity sha512-qRFITPsNoeXfsiGc97pp8mVgqcC7aQNuXsiJjY9LpXVTkYNfjUP4ZpbYXflM4xoWCXMJNz3ilsrQhZWXy9td5g==
+  dependencies:
+    "@formatjs/ecma402-abstract" "1.7.1"
+    tslib "^2.1.0"
 
 "@fullcalendar/common@5.1.0", "@fullcalendar/common@~5.1.0":
   version "5.1.0"
@@ -4794,10 +4797,10 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-cldr-core@36.0.0:
-  version "36.0.0"
-  resolved "https://registry.yarnpkg.com/cldr-core/-/cldr-core-36.0.0.tgz#1d2148ed6802411845baeeb21432d7bbfde7d4f7"
-  integrity sha512-QLnAjt20rZe38c8h8OJ9jPND+O4o5O8Nw0TK/P3KpNn1cmOhMu0rk6Kc3ap96c5OStQ9gAngs9+Be2sum26NOw==
+cldr-core@38:
+  version "38.1.0"
+  resolved "https://registry.yarnpkg.com/cldr-core/-/cldr-core-38.1.0.tgz#3c400436b89110e2c0584469d51b7479ef0fa70c"
+  integrity sha512-Da9xKjDp4qGGIX0VDsBqTan09iR5nuYD2a/KkfEaUyqKhu6wFVNRiCpPDXeRbpVwPBY6PgemV8WiHatMhcpy4A==
 
 clean-css@^4.2.1:
   version "4.2.3"

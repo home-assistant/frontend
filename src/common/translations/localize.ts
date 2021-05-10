@@ -13,12 +13,17 @@ export interface FormatsType {
   time: FormatType;
 }
 
+let loadedPolyfillLocale: Set<string> | undefined;
+
 let polyfillLoaded = !shouldPolyfill();
 const polyfillProm = polyfillLoaded
   ? undefined
-  : import("@formatjs/intl-pluralrules/polyfill-locales").then(() => {
-      polyfillLoaded = true;
-    });
+  : import("@formatjs/intl-locale/polyfill")
+      .then(() => import("@formatjs/intl-pluralrules/polyfill"))
+      .then(() => {
+        loadedPolyfillLocale = new Set();
+        polyfillLoaded = true;
+      });
 
 /**
  * Adapted from Polymer app-localize-behavior.
@@ -49,6 +54,15 @@ export const computeLocalize = async (
 ): Promise<LocalizeFunc> => {
   if (!polyfillLoaded) {
     await polyfillProm;
+  }
+
+  if (loadedPolyfillLocale && !loadedPolyfillLocale.has(language)) {
+    try {
+      loadedPolyfillLocale.add(language);
+      await import("@formatjs/intl-pluralrules/locale-data/en");
+    } catch (_e) {
+      // Ignore
+    }
   }
 
   // Everytime any of the parameters change, invalidate the strings cache.
