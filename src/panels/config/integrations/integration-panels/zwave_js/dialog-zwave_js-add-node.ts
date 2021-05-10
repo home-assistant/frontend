@@ -291,6 +291,7 @@ class DialogZWaveJSAddNode extends LitElement {
         if (!this._nodeAdded) {
           this._status = "";
           this._unsubscribe();
+          this._stoppedTimeout = undefined;
         }
       }, 3000);
     }
@@ -344,6 +345,11 @@ class DialogZWaveJSAddNode extends LitElement {
     this._status = "";
     this._nodeAdded = false;
     this._device = undefined;
+    this._stages = undefined;
+    if (this._stoppedTimeout) {
+      clearTimeout(this._stoppedTimeout);
+      this._stoppedTimeout = undefined;
+    }
     this._use_secure_inclusion = false;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
