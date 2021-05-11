@@ -37,7 +37,7 @@ const cardConfigStruct = object({
   hours_to_show: optional(number()),
 });
 
-const includeDomains = ["sensor"];
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-sensor-card-editor")
 export class HuiSensorCardEditor
