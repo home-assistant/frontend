@@ -1,4 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { customElement } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
@@ -6,6 +7,8 @@ import { GraphHeaderFooterConfig } from "../header-footer/types";
 import { LovelaceCardEditor } from "../types";
 import { HuiEntityCard } from "./hui-entity-card";
 import { EntityCardConfig, SensorCardConfig } from "./types";
+
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-sensor-card")
 class HuiSensorCard extends HuiEntityCard {
@@ -19,7 +22,6 @@ class HuiSensorCard extends HuiEntityCard {
     entities: string[],
     entitiesFallback: string[]
   ): SensorCardConfig {
-    const includeDomains = ["sensor"];
     const maxEntities = 1;
     const entityFilter = (stateObj: HassEntity): boolean =>
       !isNaN(Number(stateObj.state)) &&
@@ -38,7 +40,10 @@ class HuiSensorCard extends HuiEntityCard {
   }
 
   public setConfig(config: SensorCardConfig): void {
-    if (!config.entity || config.entity.split(".")[0] !== "sensor") {
+    if (
+      !config.entity ||
+      !includeDomains.includes(computeDomain(config.entity))
+    ) {
       throw new Error("Specify an entity from within the sensor domain");
     }
 

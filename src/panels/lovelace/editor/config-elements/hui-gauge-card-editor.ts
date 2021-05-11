@@ -33,7 +33,7 @@ const cardConfigStruct = object({
   theme: optional(string()),
 });
 
-const includeDomains = ["sensor"];
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-gauge-card-editor")
 export class HuiGaugeCardEditor

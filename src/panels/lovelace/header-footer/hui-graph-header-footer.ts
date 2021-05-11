@@ -12,6 +12,7 @@ import {
 } from "lit-element";
 import "../../../components/ha-circular-progress";
 import { fetchRecent } from "../../../data/history";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { coordinates } from "../common/graph/coordinates";
@@ -22,6 +23,7 @@ import { GraphHeaderFooterConfig } from "./types";
 
 const MINUTE = 60000;
 const HOUR = MINUTE * 60;
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-graph-header-footer")
 export class HuiGraphHeaderFooter
@@ -37,7 +39,6 @@ export class HuiGraphHeaderFooter
     entities: string[],
     entitiesFallback: string[]
   ): GraphHeaderFooterConfig {
-    const includeDomains = ["sensor"];
     const maxEntities = 1;
     const entityFilter = (stateObj: HassEntity): boolean =>
       !isNaN(Number(stateObj.state)) &&
@@ -75,7 +76,10 @@ export class HuiGraphHeaderFooter
   }
 
   public setConfig(config: GraphHeaderFooterConfig): void {
-    if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
+    if (
+      !config?.entity ||
+      !includeDomains.includes(computeDomain(config.entity))
+    ) {
       throw new Error("Specify an entity from within the sensor domain");
     }
 
