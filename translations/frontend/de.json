@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Ein unbekannter Fehler ist aufgetreten.",
+            "error_addon_no_ingress": "Das angeforderte Add-on unterstützt keinen Ingress",
             "error_addon_not_found": "Add-on nicht gefunden",
             "faq_link": "Häufig gestellten Fragen zu Home Assistant",
             "not_supported": "Diese Weiterleitung wird von deiner Home Assistant-Instanz nicht unterstützt. Überprüfe den {link} auf die unterstützten Weiterleitungen und die Version, in der sie eingeführt wurden."
@@ -3143,8 +3144,8 @@
                         "attributes": "Attribute",
                         "copy_id": "ID in die Zwischenablage kopieren",
                         "current_entities": "Aktuelle Entitäten",
-                        "description1": "Stelle die Darstellung eines Geräts in Home Assistant ein.",
-                        "description2": "Dies führt nicht zur Kommunikation mit dem eigentlichen Gerät.",
+                        "description1": "Legt die aktuelle Zustandsdarstellung einer Entität in Home Assistant fest.",
+                        "description2": "Wenn die Entität zu einem Gerät gehört, findet keine tatsächliche Kommunikation mit diesem Gerät statt.",
                         "entity": "Entität",
                         "filter_attributes": "Attribute filtern",
                         "filter_entities": "Entitäten filtern",

@@ -384,6 +384,7 @@
             "create": "Crea",
             "create_blocked_not_running": "La creazione di un'istantanea non è al momento possibile perché il sistema è nello stato {state}.",
             "create_snapshot": "Crea istantanea",
+            "created": "Creato",
             "description": "Le istantanee ti consentono di eseguire facilmente il backup e il ripristino di tutti i dati dell'istanza di Home Assistant.",
             "enter_password": "Immettere una password.",
             "folder": {
@@ -459,6 +460,7 @@
                 "leave_beta_description": "Ricevi aggiornamenti stabili per Home Assistant, Supervisor e host",
                 "ram_usage": "Utilizzo RAM Supervisor",
                 "reload_supervisor": "Ricarica Supervisor",
+                "search": "Ricerca",
                 "share_diagnostics": "Condividi diagnostica",
                 "share_diagnostics_description": "Condividi i rapporti sugli arresti anomali e le informazioni diagnostiche.",
                 "share_diagonstics_description": "Vorresti condividere automaticamente i rapporti sugli arresti anomali e le informazioni diagnostiche quando il Supervisor rileva errori imprevisti? {line_break} Questo ci consentirà di risolvere i problemi, le informazioni sono accessibili solo al team di Home Assistant Core e non saranno condivise con altri. {line_break} I dati non includono alcuna informazione privata/sensibile e puoi disabilitarla nelle impostazioni in qualsiasi momento lo desideri.",

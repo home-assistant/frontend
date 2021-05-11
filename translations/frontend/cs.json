@@ -2227,6 +2227,7 @@
                         },
                         "finish": "Dokončit",
                         "loading_first_time": "Počkejte prosím, než bude integrace nainstalována.",
+                        "next": "Další",
                         "not_all_required_fields": "Nejsou vyplněna všechna povinná pole.",
                         "not_loaded": "Integraci se nepodařilo načíst, zkuste restartovat Home Assistant.",
                         "pick_flow_step": {
