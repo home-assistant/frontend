@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "En ukjent feil har oppstått",
+            "error_addon_no_ingress": "Det etterspurte tillegget støtter ikke inngang",
             "error_addon_not_found": "Tillegget ble ikke funnet",
             "faq_link": "Vanlige spørsmål om Min Home Assistant",
             "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
@@ -3974,12 +3975,12 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "Er du sikker på at du vil slette oppdateringstoken for {name}?",
-                    "created_at": "Opprettet den {date}",
+                    "created_at": "Opprettet {date}",
                     "current_token_tooltip": "Kan ikke slette gjeldende oppdateringstoken",
                     "delete_failed": "Kunne ikke slette oppdateringstoken.",
                     "description": "Hver oppdateringstoken representerer en innloggingsøkt. Oppdateringstoken blir automatisk fjernet når du klikker på logg ut. Følgende oppdateringstoken er for tiden aktiv for kontoen din.",
                     "header": "Oppdater Tokens",
-                    "last_used": "Sist brukt den {date} fra {location}",
+                    "last_used": "Sist brukt {date} fra {location}",
                     "not_used": "Har aldri blitt brukt",
                     "token_title": "Oppdateringstoken for {clientId}"
                 },

@@ -384,6 +384,7 @@
             "create": "Maak",
             "create_blocked_not_running": "Het maken van een snapshot is nu niet mogelijk omdat het systeem in {state} staat.",
             "create_snapshot": "Maak snapshot",
+            "created": "Gemaakt",
             "description": "Met snapshots kunt u gemakkelijk een back-up maken van alle gegevens van uw Home Assistant en ze herstellen.",
             "enter_password": "Voer een wachtwoord in.",
             "folder": {
@@ -459,6 +460,7 @@
                 "leave_beta_description": "Krijg stabiele updates voor Home Assistant, Supervisor en host",
                 "ram_usage": "Supervisor RAM-gebruik",
                 "reload_supervisor": "Herlaad de Supervisor",
+                "search": "Zoek",
                 "share_diagnostics": "Diagnostische gegevens delen",
                 "share_diagnostics_description": "Deel crash rapporten en diagnostische informatie.",
                 "share_diagonstics_description": "Zou je automatisch crash rapporten en diagnostische informatie willen delen wanneer de Supervisor onverwachte fouten tegenkomt? {line_break} Dit stelt ons in staat om de problemen op te lossen, de informatie is alleen toegankelijk voor het Home Assistant Core team en zal niet met anderen gedeeld worden.{line_break} De gegevens bevatten geen privé/gevoelige informatie en u kunt dit in de instellingen op elk gewenst moment uitschakelen.",

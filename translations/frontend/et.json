@@ -384,6 +384,7 @@
             "create": "Loo",
             "create_blocked_not_running": "Hetktõmmise loomine pole praegu võimalik kuna süsteem on olekus {state}.",
             "create_snapshot": "Loo hetktõmmis",
+            "created": "Loodud",
             "description": "Hetktõmmised võimaldavad hõlpsalt varundada ja taastada kõik Home Assistanti andmed.",
             "enter_password": "Sisesta salasõna.",
             "folder": {
@@ -459,6 +460,7 @@
                 "leave_beta_description": "Hangi Home Assistanti, Supervisori ja hosti jaoks stabiilseid uuendusi",
                 "ram_usage": "Supervisori mälu kasutus",
                 "reload_supervisor": "Taaslae Supevisor",
+                "search": "Otsing",
                 "share_diagnostics": "Jaga silumisteavet",
                 "share_diagnostics_description": "Jaga krahhiaruandeid ja diagnostikateavet.",
                 "share_diagonstics_description": "Kas soovid automaatselt jagada krahhiaruandeid ja diagnostikateavet kui Supervisoris ilmneb ootamatuid tõrkeid? {line_break} See võimaldab meil probleeme lahendada, teave on kättesaadav ainult Home Assistanti põhimeeskonnale ja seda ei jagata teistega. {line_break} Andmed ei sisalda privaatset/tundlikku teavet ja saad selle sätetes igal ajal keelata.",

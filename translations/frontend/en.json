@@ -384,6 +384,7 @@
             "create": "Create",
             "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
             "create_snapshot": "Create snapshot",
+            "created": "Created",
             "description": "Snapshots allow you to easily backup and restore all data of your Home Assistant instance.",
             "enter_password": "Please enter a password.",
             "folder": {
@@ -459,6 +460,7 @@
                 "leave_beta_description": "Get stable updates for Home Assistant, Supervisor and host",
                 "ram_usage": "Supervisor RAM Usage",
                 "reload_supervisor": "Reload Supervisor",
+                "search": "Search",
                 "share_diagnostics": "Share Diagnostics",
                 "share_diagnostics_description": "Share crash reports and diagnostic information.",
                 "share_diagonstics_description": "Would you want to automatically share crash reports and diagnostic information when the Supervisor encounters unexpected errors? {line_break} This will allow us to fix the problems, the information is only accessible to the Home Assistant Core team and will not be shared with others.{line_break} The data does not include any private/sensitive information and you can disable this in settings at any time you want.",
