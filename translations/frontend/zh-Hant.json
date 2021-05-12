@@ -384,6 +384,7 @@
             "create": "新增",
             "create_blocked_not_running": "由於系統為 {state} 狀態，無法製作系統備份。",
             "create_snapshot": "製作系統備份",
+            "created": "建立",
             "description": "系統備份可供您快速的備份與還原 Home Assistant 所有資料。",
             "enter_password": "請輸入密碼。",
             "folder": {
@@ -459,6 +460,7 @@
                 "leave_beta_description": "取得 Home Assistant、Supervisor 與主機穩定更新版",
                 "ram_usage": "Supervisor RAM 使用率",
                 "reload_supervisor": "重新載入 Supervisor",
+                "search": "搜尋",
                 "share_diagnostics": "分享診斷資料",
                 "share_diagnostics_description": "分享當機回報與診斷資訊。",
                 "share_diagonstics_description": "是否要於 Supervisor 遭遇未知錯誤時、自動分享當機回報與診斷資訊？{line_break} 此些訊息將協助我們修正問題、所提供的資訊僅供 Home Assistant Core 團隊分析使用、將不會與其他人員共享。{line_break} 所提供的資料並不包含任何私人/敏感資訊，您可以於之後隨時關閉此設定。",
