@@ -1680,6 +1680,8 @@
             "show_info_scene": "Show info about scene",
             "delete_scene": "Delete scene",
             "delete_confirm": "Are you sure you want to delete this scene?",
+            "duplicate_scene": "Duplicate scene",
+            "duplicate": "Duplicate",
             "headers": {
               "name": "Name"
             }
