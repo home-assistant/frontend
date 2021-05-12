@@ -384,6 +384,7 @@
             "create": "Opprett",
             "create_blocked_not_running": "Å lage en sikkerhetskopi er ikke mulig akkurat nå fordi systemet er i {state} status",
             "create_snapshot": "Opprett sikkerhetskopi",
+            "created": "Opprettet",
             "description": "Sikkerhetskopier lar deg enkelt sikkerhetskopiere og gjenopprette alle dataene fra din Home Assistant forekomst",
             "enter_password": "Vennligst skriv inn et passord",
             "folder": {
@@ -459,6 +460,7 @@
                 "leave_beta_description": "Få stabile oppdateringer for Home Assistant, Supervisor og vert",
                 "ram_usage": "Supervisor RAM forbruk",
                 "reload_supervisor": "Last inn Supervisor på nytt",
+                "search": "Søk",
                 "share_diagnostics": "Del diagnostikk",
                 "share_diagnostics_description": "Del krasjrapporter og diagnoseinformasjon",
                 "share_diagonstics_description": "Vil du automatisk dele krasjrapporter og diagnostisk informasjon når Supervisor møter på uventede feil? {line_break} Dette vil tillate oss å løse problemene, informasjonen er bare tilgjengelig for Home Assistant Core-teamet og deles ikke med andre. {line_break} Dataene inkluderer ikke privat / sensitiv informasjon, og du kan deaktivere dette i innstillingene når som helst.",

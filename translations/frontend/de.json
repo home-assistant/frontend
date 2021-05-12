@@ -384,6 +384,7 @@
             "create": "Erstellen",
             "create_blocked_not_running": "Das Erstellen eines Snapshots ist derzeit nicht möglich, da sich das System im Zustand {state} befindet.",
             "create_snapshot": "Datensicherung erstellen",
+            "created": "Erstellt",
             "description": "Datensicherungen ermöglichen dir das leichte Speichern und Wiederherstellen von allen Daten aus Home Assistant.",
             "enter_password": "Bitte Passwort eingeben.",
             "folder": {
@@ -459,6 +460,7 @@
                 "leave_beta_description": "Erhalte stabile Updates für Home Assistant, Supervisor und Host",
                 "ram_usage": "Arbeitsspeicherbedarf von Supervisor",
                 "reload_supervisor": "Supervisor neu laden",
+                "search": "Suche",
                 "share_diagnostics": "Diagnose teilen",
                 "share_diagnostics_description": "Teile Absturzberichte und Diagnoseinformationen.",
                 "share_diagonstics_description": "Möchtest du Absturzberichte und Diagnoseinformationen automatisch freigeben, wenn der Supervisor auf unerwartete Fehler stößt? {line_break} Auf diese Weise können wir die Probleme beheben. Die Informationen sind nur für das Home Assistant Core Team zugänglich und werden nicht an andere weitergegeben. {line_break} Die Daten enthalten keine privaten/sensiblen Informationen und du kannst diese jederzeit in den Einstellungen deaktivieren.",
