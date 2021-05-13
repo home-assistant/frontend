@@ -95,7 +95,7 @@ export const computeLocalize = async (
     }
 
     let argObject = {};
-    if (args[0] && typeof args[0] === "object") {
+    if (args.length === 1 && typeof args[0] === "object") {
       argObject = args[0];
     } else {
       for (let i = 0; i < args.length; i += 2) {
