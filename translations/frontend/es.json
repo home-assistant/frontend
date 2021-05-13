@@ -384,7 +384,7 @@
             "create": "Crear",
             "create_blocked_not_running": "No es posible crear una instantánea en este momento porque el sistema está en el estado {state}.",
             "create_snapshot": "Crear instantánea",
-            "created": "Creado",
+            "created": "Creada",
             "description": "Las instantáneas te permiten realizar copias de seguridad y restaurar fácilmente todos los datos de tu instancia de Home Assistant.",
             "enter_password": "Por favor, introduce una contraseña.",
             "folder": {
@@ -460,7 +460,7 @@
                 "leave_beta_description": "Obtén actualizaciones estables para Home Assistant, Supervisor y el host",
                 "ram_usage": "Uso de RAM del Supervisor",
                 "reload_supervisor": "Recargar el Supervisor",
-                "search": "Búsqueda",
+                "search": "Buscar",
                 "share_diagnostics": "Compartir diagnósticos",
                 "share_diagnostics_description": "Comparte informes de fallos e información de diagnóstico.",
                 "share_diagonstics_description": "¿Te gustaría compartir automáticamente informes de fallos e información de diagnóstico cuando el Supervisor encuentra errores inesperados? {line_break} Esto nos permitirá solucionar los problemas, la información solo es accesible para el equipo principal de Home Assistant y no se compartirá con otros. {line_break} Los datos no incluyen ninguna información privada/confidencial y puedes desactivar esto en la configuración en cualquier momento que desees.",

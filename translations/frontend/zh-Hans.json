@@ -384,6 +384,7 @@
             "create": "创建",
             "create_blocked_not_running": "现在无法创建快照，因为系统处于{state}状态。",
             "create_snapshot": "创建快照",
+            "created": "创建于",
             "description": "“快照”使您可以轻松地备份和还原 Home Assistant 实例的所有数据。",
             "enter_password": "请输入密码。",
             "folder": {
@@ -459,6 +460,7 @@
                 "leave_beta_description": "获取 Home Assistant、Supervisor 和主机的稳定版更新",
                 "ram_usage": "Supervisor 内存使用率",
                 "reload_supervisor": "重载 Supervisor",
+                "search": "搜索",
                 "share_diagnostics": "共享诊断信息",
                 "share_diagnostics_description": "共享崩溃报告和诊断信息。",
                 "share_diagonstics_description": "您想要在 Supervisor 遇到异常错误时，共享崩溃报告和诊断信息吗？{line_break}这将帮助我们解决问题，此信息仅限 Home Assistant Core 团队访问，不会共享给他人。{line_break}此信息不包含私密、敏感信息，您可以随时在设置中将其禁用。",

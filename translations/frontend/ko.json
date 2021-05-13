@@ -1923,11 +1923,11 @@
                                     },
                                     "usage_supervisor": {
                                         "description": "이름, 버전 그리고 기타 정보.",
-                                        "title": "사용된 통합 구성요소 및 애드온"
+                                        "title": "사용된 통합구성요소 및 애드온"
                                     },
                                     "usage": {
                                         "description": "이름과 버전 정보.",
-                                        "title": "사용된 통합 구성요소"
+                                        "title": "사용된 통합구성요소"
                                     }
                                 }
                             },
@@ -2119,7 +2119,7 @@
                     "show": "표시하기"
                 },
                 "hassio": {
-                    "button": "구성하기"
+                    "button": "구성"
                 },
                 "header": "Home Assistant 구성하기",
                 "helpers": {
@@ -2191,6 +2191,7 @@
                         "configure": "구성",
                         "delete": "삭제하기",
                         "delete_confirm": "이 통합 구성요소를 제거하시겠습니까?",
+                        "depends_on_cloud": "클라우드 서비스",
                         "device_unavailable": "기기 사용불가",
                         "devices": "{count} {count, plural,\none{개의 기기}\nother{개의 기기}\n}",
                         "disable_restart_confirm": "이 통합 구성요소를 비활성화하려면 Home Assistant를 다시 시작해주세요",
@@ -2215,6 +2216,7 @@
                         "no_area": "영역 없음",
                         "not_loaded": "로드되지 않음",
                         "options": "옵션",
+                        "provided_by_custom_integration": "사용자 통합구성요소",
                         "reload": "다시 읽어오기",
                         "reload_confirm": "통합 구성요소를 다시 읽어 들였습니다",
                         "reload_restart_confirm": "이 통합 구성요소를 다시 읽어 들일려면 Home Assistant를 다시 시작해주세요",
@@ -2920,7 +2922,7 @@
                         "use_secure_inclusion": "암호화 연결 사용하기",
                         "view_device": "기기 보기"
                     },
-                    "button": "구성하기",
+                    "button": "구성",
                     "common": {
                         "add_node": "노드 추가하기",
                         "close": "닫기",
@@ -2944,7 +2946,7 @@
                         "server_version": "서버 버전"
                     },
                     "device_info": {
-                        "device_config": "기기 구성하기",
+                        "device_config": "기기 구성",
                         "node_ready": "노드 준비",
                         "node_status": "노드 상태",
                         "zwave_info": "Z-Wave 정보"
