@@ -632,7 +632,7 @@
                     "humidity": "濕度",
                     "precipitation": "降雨量",
                     "temperature": "溫度",
-                    "visibility": "顯示選項",
+                    "visibility": "能見度",
                     "wind_speed": "風速"
                 },
                 "cardinal_direction": {

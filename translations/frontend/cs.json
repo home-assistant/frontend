@@ -383,6 +383,7 @@
             "create": "Vytvořit",
             "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
             "create_snapshot": "Vytvořit zálohu",
+            "created": "Vytvořeno",
             "description": "Zálohy umožňují snadno zálohovat a obnovovat všechna data vaší instance Home Assistant.",
             "enter_password": "Prosím zadejte heslo.",
             "folder": {
@@ -458,6 +459,7 @@
                 "leave_beta_description": "Získejte stabilní aktualizace pro Home Assistant, Supervisor a hostitele",
                 "ram_usage": "Využití paměti RAM Supervisorem",
                 "reload_supervisor": "Nově načíst Supervisor",
+                "search": "Hledat",
                 "share_diagnostics": "Sdílet diagnostické informace",
                 "share_diagnostics_description": "Sdílejte zprávy o selhání a diagnostické informace.",
                 "share_diagonstics_description": "Chcete automaticky sdílet zprávy o selhání a diagnostické informace, když  Supervisor narazí na neočekávané chyby? {line_break} To nám umožní vyřešit problémy, informace jsou přístupné pouze týmu Home Assistant Core a nebudou sdíleny s ostatními. {line_break} Data neobsahují žádné soukromé / citlivé informace a tato volba může být kdykoliv deaktivována v nastavení.",
