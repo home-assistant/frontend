@@ -346,8 +346,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                   ? html`<div class="active-filters">
                       ${this.hass.localize(
                         "ui.panel.config.integrations.disable.disabled_integrations",
-                        "number",
-                        disabledConfigEntries.size
+                        { number: disabledConfigEntries.size }
                       )}
                       <mwc-button
                         @click=${this._toggleShowDisabled}
@@ -606,11 +605,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     const localize = await localizePromise;
     if (
       !(await showConfirmationDialog(this, {
-        title: localize(
-          "ui.panel.config.integrations.confirm_new",
-          "integration",
-          domainToName(localize, domain)
-        ),
+        title: localize("ui.panel.config.integrations.confirm_new", {
+          integration: domainToName(localize, domain),
+        }),
       }))
     ) {
       return;

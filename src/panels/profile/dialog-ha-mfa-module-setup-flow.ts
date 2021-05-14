@@ -8,7 +8,6 @@ import {
   property,
 } from "lit-element";
 import { html, TemplateResult } from "lit-html";
-import { localizeKey } from "../../common/translations/localize";
 import "../../components/ha-circular-progress";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
@@ -112,8 +111,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                 ? html` <ha-markdown
                       allowsvg
                       breaks
-                      .content=${localizeKey(
-                        this.hass.localize,
+                      .content=${this.hass.localize(
                         `component.auth.mfa_setup.${this._step!.handler}.step.${
                           (this._step! as DataEntryFlowStepForm).step_id
                         }.description`,

@@ -87,11 +87,9 @@ class HaPanelProfile extends LitElement {
         <div class="content">
           <ha-card .header=${this.hass.user!.name}>
             <div class="card-content">
-              ${this.hass.localize(
-                "ui.panel.profile.current_user",
-                "fullName",
-                this.hass.user!.name
-              )}
+              ${this.hass.localize("ui.panel.profile.current_user", {
+                fullName: this.hass.user!.name,
+              })}
               ${this.hass.user!.is_owner
                 ? this.hass.localize("ui.panel.profile.is_owner")
                 : ""}
