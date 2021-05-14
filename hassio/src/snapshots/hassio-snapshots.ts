@@ -123,6 +123,8 @@ export class HassioSnapshots extends LitElement {
         @row-click=${this._handleRowClicked}
         clickable
         hasFab
+        main-page
+        supervisor
       >
         <ha-button-menu
           corner="BOTTOM_START"
