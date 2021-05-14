@@ -171,16 +171,16 @@ class HassioAddonInfo extends LitElement {
                   : ""}
               </div>
               <div class="card-actions">
-                <mwc-button @click=${this._updateClicked}>
-                  ${this.supervisor.localize("common.update")}
-                </mwc-button>
                 ${this.addon.changelog
                   ? html`
                       <mwc-button @click=${this._openChangelog}>
                         ${this.supervisor.localize("addon.dashboard.changelog")}
                       </mwc-button>
                     `
-                  : ""}
+                  : html`<span></span>`}
+                <mwc-button @click=${this._updateClicked}>
+                  ${this.supervisor.localize("common.update")}
+                </mwc-button>
               </div>
             </ha-card>
           `
