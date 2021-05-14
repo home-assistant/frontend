@@ -177,7 +177,7 @@ class HassioAddonInfo extends LitElement {
                         ${this.supervisor.localize("addon.dashboard.changelog")}
                       </mwc-button>
                     `
-                  : ""}
+                  : html`<span></span>`}
                 <mwc-button @click=${this._updateClicked}>
                   ${this.supervisor.localize("common.update")}
                 </mwc-button>
