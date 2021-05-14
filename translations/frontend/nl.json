@@ -1671,7 +1671,7 @@
                         "error_no_url": "Voer de URL van de Blueprint in.",
                         "file_name": "Blueprint pad",
                         "header": "Voeg een nieuwe Blueprint toe",
-                        "import_btn": "Bekijk een Blueprint",
+                        "import_btn": "Bekijk deze Blueprint",
                         "import_header": "Blueprint \"{name}\"",
                         "import_introduction_link": "U kunt Blueprints van andere gebruikers importeren vanuit Github en de {community_link} . Voer de URL van de Blueprint hieronder in.",
                         "importing": "Blueprint importeren ...",

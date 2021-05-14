@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Nastala neznámá chyba",
+            "error_addon_no_ingress": "Požadovaný doplněk nepodporuje ingress",
             "error_addon_not_found": "Doplněk nebyl nalezen",
             "faq_link": "Časté dotazy týkající se My Home Assistant",
             "not_supported": "Toto přesměrování není vaší instancí Home Assistant podporováno. Zkontrolujte {link} pro podporovaná přesměrování a verzi, ve které byla zavedena."
@@ -563,9 +564,11 @@
             },
             "light": {
                 "brightness": "Jas",
+                "cold_white_value": "Jas studené bílé",
                 "color_brightness": "Jas barev",
                 "color_temperature": "Teplota barvy",
                 "effect": "Efekt",
+                "warm_white_value": "Jas teplé bílé",
                 "white_value": "Jas bílé"
             },
             "lock": {
@@ -1197,7 +1200,14 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Znovunastavení zařízení"
+                "button_show": "Podrobnosti",
+                "cluster_header": "Klastr",
+                "configuration_complete": "Změna konfigurace zařízení dokončena.",
+                "configuration_failed": "Rekonfigurace zařízení se nezdařila. Další informace mohou být k dispozici v protokolech.",
+                "configuring_alt": "Nastavuji",
+                "heading": "Znovunastavení zařízení",
+                "in_progress": "Zařízení se překonfigurová. Může to chvíli trvat.",
+                "start_reconfiguration": "Spustit rekonfiguraci"
             }
         },
         "duration": {
@@ -1738,7 +1748,8 @@
                             "link_learn_how_it_works": "Zjistěte, jak to funguje",
                             "not_connected": "Nepřipojeno",
                             "remote_enabled": {
-                                "caption": "Automaticky se připojit"
+                                "caption": "Automaticky se připojit",
+                                "description": "Povolením této možnosti zajistíte, aby byla vaše instance Home Assistant vždy vzdáleně přístupná."
                             },
                             "title": "Vzdálené ovládání"
                         },
@@ -2801,7 +2812,11 @@
                         "value": "Hodnota"
                     },
                     "configuration_page": {
-                        "update_button": "Aktualizovat nastavení"
+                        "shortcuts_title": "Zástupci",
+                        "update_button": "Aktualizovat nastavení",
+                        "zha_options": {
+                            "title": "Globální možnosti"
+                        }
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Nastavení dokončeno",
@@ -2927,7 +2942,11 @@
                         "node_status": "Stav uzlu",
                         "zwave_info": "Z-Wave Info"
                     },
+                    "logs": {
+                        "title": "Z-Wave JS protokoly"
+                    },
                     "navigation": {
+                        "logs": "Protokoly",
                         "network": "Síť"
                     },
                     "network_status": {
@@ -2942,6 +2961,9 @@
                         "header": "Konfigurace zařízení Z-Wave",
                         "introduction": "Spravujte a upravujte specifické konfigurační parametry zařízení (uzlu) pro vybrané zařízení",
                         "parameter_is_read_only": "Tento parametr je jen pro čtení.",
+                        "set_param_accepted": "Parametr byl aktualizován.",
+                        "set_param_error": "Vyskytla se chyba.",
+                        "set_param_queued": "Změna parametru byla zařazena do fronty a bude aktualizována, jakmile se zařízení probudí.",
                         "zwave_js_device_database": "Databáze zařízení Z-Wave JS"
                     },
                     "node_status": {
@@ -2950,6 +2972,11 @@
                         "awake": "Probuzený",
                         "dead": "Mrtvý",
                         "unknown": "Nezjištěno"
+                    },
+                    "reinterview_node": {
+                        "interview_complete": "Pohovor se zařízením dokončen.",
+                        "run_in_background": "Toto dialogové okno můžete zavřít a rozhovor bude pokračovat na pozadí.",
+                        "start_reinterview": "Zahájit opakovaný rozhovor"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Zrušit vyloučení",
