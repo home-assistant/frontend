@@ -10,13 +10,6 @@ class HaMarkdownElement extends ReactiveElement {
 
   @property({ type: Boolean }) public breaks = false;
 
-  public connectedCallback() {
-    super.connectedCallback();
-    if (!this.shadowRoot) {
-      this.attachShadow({ mode: "open" });
-    }
-  }
-
   protected update(changedProps) {
     super.update(changedProps);
     if (this.content !== undefined) {
@@ -25,7 +18,7 @@ class HaMarkdownElement extends ReactiveElement {
   }
 
   private async _render() {
-    this.shadowRoot!.innerHTML = await renderMarkdown(
+    this.innerHTML = await renderMarkdown(
       this.content,
       {
         breaks: this.breaks,
@@ -39,8 +32,10 @@ class HaMarkdownElement extends ReactiveElement {
     this._resize();
 
     const walker = document.createTreeWalker(
-      this.shadowRoot!,
-      1 /* SHOW_ELEMENT */
+      this,
+      1 /* SHOW_ELEMENT */,
+      null,
+      false
     );
 
     while (walker.nextNode()) {
