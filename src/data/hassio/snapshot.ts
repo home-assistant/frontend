@@ -2,12 +2,27 @@ import { atLeastVersion } from "../../common/config/version";
 import { HomeAssistant } from "../../types";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
+export const friendlyFolderName = {
+  ssl: "SSL",
+  homeassistant: "Configuration",
+  "addons/local": "Local add-ons",
+  media: "Media",
+  share: "Share",
+};
+
+interface SnapshotContent {
+  homeassistant: boolean;
+  folders: string[];
+  addons: string[];
+}
+
 export interface HassioSnapshot {
   slug: string;
   date: string;
   name: string;
   type: "full" | "partial";
   protected: boolean;
+  content: SnapshotContent;
 }
 
 export interface HassioSnapshotDetail extends HassioSnapshot {
