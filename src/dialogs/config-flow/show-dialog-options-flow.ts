@@ -1,5 +1,4 @@
 import { html } from "lit-element";
-import { localizeKey } from "../../common/translations/localize";
 import { ConfigEntry } from "../../data/config_entries";
 import {
   createOptionsFlow,
@@ -43,8 +42,7 @@ export const showOptionsFlowDialog = (
       deleteFlow: deleteOptionsFlow,
 
       renderAbortDescription(hass, step) {
-        const description = localizeKey(
-          hass.localize,
+        const description = hass.localize(
           `component.${configEntry.domain}.options.abort.${step.reason}`,
           step.description_placeholders
         );
@@ -69,8 +67,7 @@ export const showOptionsFlowDialog = (
       },
 
       renderShowFormStepDescription(hass, step) {
-        const description = localizeKey(
-          hass.localize,
+        const description = hass.localize(
           `component.${configEntry.domain}.options.step.${step.step_id}.description`,
           step.description_placeholders
         );
