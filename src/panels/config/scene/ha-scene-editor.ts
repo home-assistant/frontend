@@ -748,7 +748,7 @@ export class HaSceneEditor extends SubscribeMixin(
       ) {
         return;
       }
-      // Wait for dialog to complate closing
+      // Wait for dialog to complete closing
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
     showSceneEditor(this, {
