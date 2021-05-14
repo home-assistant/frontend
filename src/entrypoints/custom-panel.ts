@@ -11,6 +11,8 @@ import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
 import { baseEntrypointStyles } from "../resources/styles";
 import { CSSResult } from "lit-element";
+import { isNavigationClick } from "../common/dom/is-navigation-click";
+import { navigate } from "../common/navigate";
 
 declare global {
   interface Window {
@@ -109,6 +111,13 @@ function initialize(
         document.body.appendChild(errorScreen);
       }
     );
+
+  document.body.addEventListener("click", (ev) => {
+    const href = isNavigationClick(ev);
+    if (href) {
+      navigate(document.body, href);
+    }
+  });
 }
 
 document.addEventListener(
