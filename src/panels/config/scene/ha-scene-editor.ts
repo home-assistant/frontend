@@ -91,7 +91,7 @@ export class HaSceneEditor extends SubscribeMixin(
 
   @property() public route!: Route;
 
-  @property() public sceneId!: string;
+  @property() public sceneId: string | null = null;
 
   @property() public scenes!: SceneEntity[];
 
@@ -240,12 +240,12 @@ export class HaSceneEditor extends SubscribeMixin(
             aria-label=${this.hass.localize(
               "ui.panel.config.scene.picker.delete_scene"
             )}
-            class=${classMap({ warning: this.sceneId })}
+            class=${classMap({ warning: Boolean(this.sceneId) })}
             graphic="icon"
           >
             ${this.hass.localize("ui.panel.config.scene.picker.delete_scene")}
             <ha-svg-icon
-              class=${classMap({ warning: this.sceneId })}
+              class=${classMap({ warning: Boolean(this.sceneId) })}
               slot="graphic"
               .path=${mdiDelete}
             >
