@@ -122,8 +122,6 @@ export class HaTab extends LitElement {
 
       :host([narrow]) {
         padding: 0 16px;
-        width: 20%;
-        min-width: 0;
       }
     `;
   }
