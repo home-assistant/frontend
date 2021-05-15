@@ -10,6 +10,10 @@ class HaMarkdownElement extends ReactiveElement {
 
   @property({ type: Boolean }) public breaks = false;
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   protected update(changedProps) {
     super.update(changedProps);
     if (this.content !== undefined) {
