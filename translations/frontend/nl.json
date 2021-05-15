@@ -1961,7 +1961,7 @@
                     "attributes_override": "Je kunt ze overschrijven als je wilt.",
                     "attributes_set": "De volgende attributen van de entiteit zijn automatisch ingevuld.",
                     "caption": "Aanpassingen",
-                    "description": "Pas je entiteiten aan",
+                    "description": "Pas uw entiteiten aan",
                     "different_include": "Mogelijk via een domein, een glob of een andere include.",
                     "pick_attribute": "Kies een attribuut om te overschrijven",
                     "picker": {

@@ -1151,7 +1151,7 @@
                             "delete_confirm": "Ste si istý odstránením ? ",
                             "duplicate": "Duplikovať",
                             "header": "Akcie",
-                            "introduction": "Akcie, ktoré vykoná Home Assistant, sa aktivujú po spustení automatizácie. \n\n [Viac informácií o akciách.](https://home-assistant.io/docs/automation/action/)",
+                            "introduction": "Akcie predstavujú činnosti, ktoré Home Assistant vykoná po spustení automatizácie.",
                             "learn_more": "Získajte viac informácií o akciách",
                             "name": "Akcia",
                             "type_select": "Typ akcie",
