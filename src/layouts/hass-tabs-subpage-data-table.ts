@@ -42,6 +42,10 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
 
+  @property({ type: Boolean }) public supervisor = false;
+
+  @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
+
   /**
    * Object with the columns.
    * @type {Object}
@@ -195,6 +199,8 @@ export class HaTabsSubpageDataTable extends LitElement {
         .backCallback=${this.backCallback}
         .route=${this.route}
         .tabs=${this.tabs}
+        .mainPage=${this.mainPage}
+        .supervisor=${this.supervisor}
       >
         <div slot="toolbar-icon"><slot name="toolbar-icon"></slot></div>
         ${this.narrow
