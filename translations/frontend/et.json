@@ -2588,6 +2588,8 @@
                         "add_scene": "Lisa stseen",
                         "delete_confirm": "Oled kindel, et soovid selle stseeni kustutada?",
                         "delete_scene": "Kustuta stseen",
+                        "duplicate": "Paljunda",
+                        "duplicate_scene": "Paljunda stseen",
                         "edit_scene": "Muuda stseeni",
                         "header": "Stseeniredaktor",
                         "headers": {

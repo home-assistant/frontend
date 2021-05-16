@@ -2587,6 +2587,8 @@
                         "add_scene": "씬 추가하기",
                         "delete_confirm": "이 씬을 삭제하시겠습니까?",
                         "delete_scene": "씬 삭제하기",
+                        "duplicate": "복제",
+                        "duplicate_scene": "씬 복제",
                         "edit_scene": "씬 편집하기",
                         "header": "씬 편집기",
                         "headers": {
