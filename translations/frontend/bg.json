@@ -1994,7 +1994,7 @@
                     "frontend": "интерфейс",
                     "frontend_version": "Версия на интерфейса: {version} - {type}",
                     "home_assistant_logo": "Лого на Home Assistant",
-                    "icons_by": "Икони от",
+                    "icons_by": "икони от",
                     "integrations": "Интеграции",
                     "license": "Публикувано под лиценза Apache 2.0",
                     "path_configuration": "Път към configuration.yaml: {path}",

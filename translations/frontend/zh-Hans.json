@@ -2169,7 +2169,7 @@
                     "license": "根据 Apache 2.0 许可发布",
                     "path_configuration": "configuration.yaml 路径：{path}",
                     "server": "服务器",
-                    "setup_time": "安装时间",
+                    "setup_time": "启动时长",
                     "source": "源：",
                     "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
                     "system_health": {
@@ -2588,6 +2588,8 @@
                         "add_scene": "添加场景",
                         "delete_confirm": "您确定要删除此场景吗？",
                         "delete_scene": "删除场景",
+                        "duplicate": "制作副本",
+                        "duplicate_scene": "复制场景",
                         "edit_scene": "编辑场景",
                         "header": "场景编辑器",
                         "headers": {

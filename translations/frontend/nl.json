@@ -1633,7 +1633,7 @@
                         "delete_automation": "Verwijder automatisering",
                         "delete_confirm": "Weet je zeker dat je deze automatisering wilt verwijderen?",
                         "dev_automation": "Debug automatisering",
-                        "dev_only_editable": "Alleen automatiseringen in automations.yaml kunnen worden gedebugd.",
+                        "dev_only_editable": "Alleen automatiseringen waaraan een uniek ID is toegewezen, kunnen worden gedebugd",
                         "duplicate": "Dupliceren",
                         "duplicate_automation": "Dupliceer automatisering",
                         "edit_automation": "Bewerk automatisering",
@@ -2588,6 +2588,8 @@
                         "add_scene": "Voeg scène toe",
                         "delete_confirm": "Weet je zeker dat je deze scène wilt verwijderen?",
                         "delete_scene": "Scène verwijderen",
+                        "duplicate": "Dupliceer",
+                        "duplicate_scene": "Dupliceer scene",
                         "edit_scene": "Scène bewerken",
                         "header": "Scene Editor",
                         "headers": {
@@ -2824,7 +2826,7 @@
                         "shortcuts_title": "Snelkoppelingen",
                         "update_button": "Update configuratie",
                         "zha_options": {
-                            "default_light_transition": "Standaard licht transitietijd (seconden)",
+                            "default_light_transition": "Standaard lichttransitietijd (seconden)",
                             "enable_identify_on_join": "Schakel het identificatie-effect in wanneer apparaten in het netwerk komen",
                             "title": "Globale opties"
                         }
