@@ -136,7 +136,7 @@ class HuiTimerEntityRow extends LitElement {
     let display = secondsToDuration(this._timeRemaining || 0);
 
     if (stateObj.state === "paused") {
-      display += ` (${computeStateDisplay(
+      display = `${display} (${computeStateDisplay(
         this.hass!.localize,
         stateObj,
         this.hass!.locale
