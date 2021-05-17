@@ -2,6 +2,8 @@ import { customElement, html, property, PropertyValues } from "lit-element";
 import { atLeastVersion } from "../../src/common/config/version";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
+import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
+import { navigate } from "../../src/common/navigate";
 import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
@@ -53,6 +55,15 @@ export class HassioMain extends SupervisorBaseElement {
         bubbles: false,
       })
     );
+
+    // Paulus - May 17, 2021
+    // Convert the <a> tags to native nav in Home Assistant < 2021.6
+    document.body.addEventListener("click", (ev) => {
+      const href = isNavigationClick(ev);
+      if (href) {
+        navigate(document.body, href);
+      }
+    });
 
     // Forward haptic events to parent window.
     window.addEventListener("haptic", (ev) => {
