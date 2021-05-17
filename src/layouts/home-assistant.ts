@@ -57,7 +57,9 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     // Navigation
     const useHash = __DEMO__;
     const curPath = () =>
-      useHash ? location.hash.substr(1) : location.pathname;
+      window.decodeURIComponent(
+        useHash ? location.hash.substr(1) : location.pathname
+      );
     const updateRoute = (path = curPath()) => {
       if (this._route && path === this._route.path) {
         return;
