@@ -29,12 +29,12 @@ export class HaNumberSelector extends LitElement {
 
   protected render() {
     return html`${this.label}
-      ${this.selector.number.mode === "slider"
+      ${this.selector.number.mode !== "box"
         ? html`<ha-slider
             .min=${this.selector.number.min}
             .max=${this.selector.number.max}
             .value=${this._value}
-            .step=${this.selector.number.step}
+            .step=${this.selector.number.step ?? 1}
             .disabled=${this.disabled}
             pin
             ignore-bar-touch
@@ -44,16 +44,14 @@ export class HaNumberSelector extends LitElement {
         : ""}
       <paper-input
         pattern="[0-9]+([\\.][0-9]+)?"
-        .label=${this.selector.number.mode === "slider"
-          ? undefined
-          : this.label}
+        .label=${this.selector.number.mode !== "box" ? undefined : this.label}
         .placeholder=${this.placeholder}
-        .noLabelFloat=${this.selector.number.mode === "slider"}
+        .noLabelFloat=${this.selector.number.mode !== "box"}
         class=${classMap({ single: this.selector.number.mode === "box" })}
         .min=${this.selector.number.min}
         .max=${this.selector.number.max}
         .value=${this.value}
-        .step=${this.selector.number.step}
+        .step=${this.selector.number.step ?? 1}
         .disabled=${this.disabled}
         type="number"
         auto-validate
