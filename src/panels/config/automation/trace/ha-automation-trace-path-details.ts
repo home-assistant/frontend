@@ -99,7 +99,7 @@ export class HaAutomationTracePathDetails extends LitElement {
     const parts: TemplateResult[][] = [];
 
     let active = false;
-    const childConditionsPrefix = `${this.selected.path}/conditions/`;
+    const childConditionsPrefix = `${this.selected.path}/condition`;
 
     for (const curPath of Object.keys(this.trace.trace)) {
       // Include all child conditions too
