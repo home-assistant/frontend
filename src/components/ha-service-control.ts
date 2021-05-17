@@ -233,15 +233,7 @@ export class HaServiceControl extends LitElement {
               )}</span
             ><ha-selector
               .hass=${this.hass}
-              .selector=${serviceData.target
-                ? { target: serviceData.target }
-                : {
-                    target: {
-                      entity: {
-                        domain: domainFilter ? domainFilter[0] : undefined,
-                      },
-                    },
-                  }}
+              .selector=${serviceData.target}
               @value-changed=${this._targetChanged}
               .value=${this._value?.target}
             ></ha-selector
