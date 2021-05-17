@@ -19,7 +19,6 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
-import { ENTITY_COMPONENT_DOMAINS } from "../data/entity";
 import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
@@ -124,11 +123,6 @@ export class HaServiceControl extends LitElement {
     }
   }
 
-  private _domainFilter = memoizeOne((service: string) => {
-    const domain = computeDomain(service);
-    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
-  });
-
   private _getServiceInfo = memoizeOne(
     (
       service?: string,
@@ -231,11 +225,7 @@ export class HaServiceControl extends LitElement {
               .hass=${this.hass}
               .selector=${serviceData.target
                 ? { target: serviceData.target }
-                : {
-                    target: {
-                      entity: { domain: computeDomain(this._value!.service) },
-                    },
-                  }}
+                : { target: {} }}
               @value-changed=${this._targetChanged}
               .value=${this._value?.target}
             ></ha-selector
@@ -245,7 +235,6 @@ export class HaServiceControl extends LitElement {
             .hass=${this.hass}
             .value=${this._value?.data?.entity_id}
             .label=${entityId.description}
-            .includeDomains=${this._domainFilter(this._value!.service)}
             @value-changed=${this._entityPicked}
             allow-custom-entity
           ></ha-entity-picker>`
