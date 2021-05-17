@@ -38,6 +38,8 @@ export class HaAutomationTracePathDetails extends LitElement {
 
   @property() public logbookEntries!: LogbookEntry[];
 
+  @property() renderedNodes: Record<string, any> = {};
+
   @property() public trackedNodes!: Record<string, any>;
 
   @state() private _view: "config" | "changed_variables" | "logbook" = "config";
@@ -99,12 +101,12 @@ export class HaAutomationTracePathDetails extends LitElement {
     const parts: TemplateResult[][] = [];
 
     let active = false;
-    const childConditionsPrefix = `${this.selected.path}/condition`;
 
     for (const curPath of Object.keys(this.trace.trace)) {
-      // Include all child conditions too
+      // Include all trace results until the next rendered node.
+      // Rendered nodes also include non-chosen choose paths.
       if (active) {
-        if (!curPath.startsWith(childConditionsPrefix)) {
+        if (curPath in this.renderedNodes) {
           break;
         }
       } else if (curPath === this.selected.path) {
@@ -129,9 +131,7 @@ export class HaAutomationTracePathDetails extends LitElement {
           return html`
             ${curPath === this.selected.path
               ? ""
-              : html`<h2>
-                  Condition ${curPath.substr(childConditionsPrefix.length)}
-                </h2>`}
+              : html`<h2>${curPath.substr(this.selected.path.length + 1)}</h2>`}
             ${data.length === 1 ? "" : html`<h3>Iteration ${idx + 1}</h3>`}
             Executed:
             ${formatDateTimeWithSeconds(

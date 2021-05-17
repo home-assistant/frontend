@@ -81,9 +81,9 @@ export class HaAutomationTrace extends LitElement {
       ? this.hass.states[this._entityId]
       : undefined;
 
-    const trackedNodes = this.shadowRoot!.querySelector(
-      "hat-script-graph"
-    )?.getTrackedNodes();
+    const graph = this.shadowRoot!.querySelector("hat-script-graph");
+    const trackedNodes = graph?.trackedNodes;
+    const renderedNodes = graph?.renderedNodes;
 
     const title = stateObj?.attributes.friendly_name || this._entityId;
 
@@ -234,6 +234,7 @@ export class HaAutomationTrace extends LitElement {
                           .selected=${this._selected}
                           .logbookEntries=${this._logbookEntries}
                           .trackedNodes=${trackedNodes}
+                          .renderedNodes=${renderedNodes}
                         ></ha-automation-trace-path-details>
                       `
                     : this._view === "config"
@@ -442,9 +443,8 @@ export class HaAutomationTrace extends LitElement {
 
   private _timelinePathPicked(ev) {
     const path = ev.detail.value;
-    const nodes = this.shadowRoot!.querySelector(
-      "hat-script-graph"
-    )!.getTrackedNodes();
+    const nodes = this.shadowRoot!.querySelector("hat-script-graph")!
+      .trackedNodes;
     if (nodes[path]) {
       this._selected = nodes[path];
     }
