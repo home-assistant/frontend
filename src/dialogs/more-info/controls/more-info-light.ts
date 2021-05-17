@@ -282,15 +282,18 @@ class MoreInfoLight extends LitElement {
         stateObj.attributes.color_mode === LightColorModes.RGBWW
           ? Math.round((stateObj.attributes.rgbww_color[4] * 100) / 255)
           : undefined;
-      this._colorBrightnessSliderValue = Math.round(
-        (Math.max(...getLightCurrentModeRgbColor(stateObj).slice(0, 3)) * 100) /
-          255
-      );
 
-      this._colorPickerColor = getLightCurrentModeRgbColor(stateObj).slice(
-        0,
-        3
-      ) as [number, number, number];
+      const currentRgbColor = getLightCurrentModeRgbColor(stateObj);
+
+      this._colorBrightnessSliderValue = currentRgbColor
+        ? Math.round((Math.max(...currentRgbColor.slice(0, 3)) * 100) / 255)
+        : undefined;
+
+      this._colorPickerColor = currentRgbColor?.slice(0, 3) as [
+        number,
+        number,
+        number
+      ];
     } else {
       this._brightnessSliderValue = 0;
     }
