@@ -17,7 +17,7 @@ export interface DeviceAction extends DeviceAutomation {
 }
 
 export interface DeviceCondition extends DeviceAutomation {
-  condition: string;
+  condition: "device";
 }
 
 export interface DeviceTrigger extends DeviceAutomation {

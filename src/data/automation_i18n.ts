@@ -7,8 +7,8 @@ export const describeCondition = (condition: Condition) => {
   if (condition.alias) {
     return condition.alias;
   }
-  if (condition.condition === "template") {
-    return "Test a template";
+  if (["or", "and", "not"].includes(condition.condition)) {
+    return `multiple conditions using "${condition.condition}"`;
   }
   return `${condition.condition} condition`;
 };
