@@ -245,8 +245,9 @@ class ActionRenderer {
     try {
       data = getDataFromPath(this.trace.config, path);
     } catch (err) {
-      this.entries.push(
-        html`Unable to extract path ${path}. Download trace and report as bug`
+      this._renderEntry(
+        path,
+        `Unable to extract path ${path}. Download trace and report as bug`
       );
       return index + 1;
     }
