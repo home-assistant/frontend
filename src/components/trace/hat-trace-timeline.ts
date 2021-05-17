@@ -252,7 +252,8 @@ class ActionRenderer {
       return index + 1;
     }
 
-    const isTopLevel = path.split("/").length === 2;
+    const parts = path.split("/");
+    const isTopLevel = parts.length === 2;
 
     if (!isTopLevel && !actionType) {
       this._renderEntry(path, path.replace(/\//g, " "));
@@ -268,7 +269,16 @@ class ActionRenderer {
     }
 
     this._renderEntry(path, describeAction(this.hass, data, actionType));
-    return index + 1;
+
+    let i = index + 1;
+
+    for (; i < this.keys.length; i++) {
+      if (this.keys[i].split("/").length === parts.length) {
+        break;
+      }
+    }
+
+    return i;
   }
 
   private _handleTrigger(index: number, triggerStep: TriggerTraceStep): number {
@@ -304,7 +314,7 @@ class ActionRenderer {
     // +4: executed sequence
 
     const choosePath = this.keys[index];
-    const startLevel = choosePath.split("/").length - 1;
+    const startLevel = choosePath.split("/").length;
 
     const chooseTrace = this._getItem(index)[0] as ChooseActionTraceStep;
     const defaultExecuted = chooseTrace.result?.choice === "default";
