@@ -1,5 +1,5 @@
-import "@polymer/app-route/app-location";
 import { customElement, html, state, PropertyValues } from "lit-element";
+import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
@@ -31,22 +31,16 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   protected render() {
     const hass = this.hass;
 
-    return html`
-      <app-location
-        @route-changed=${this._routeChanged}
-        ?use-hash-as-path=${__DEMO__}
-      ></app-location>
-      ${this._panelUrl === undefined || this._route === undefined
-        ? ""
-        : hass && hass.states && hass.config && hass.services
-        ? html`
-            <home-assistant-main
-              .hass=${this.hass}
-              .route=${this._route}
-            ></home-assistant-main>
-          `
-        : html` <ha-init-page .error=${this._error}></ha-init-page> `}
-    `;
+    return this._panelUrl === undefined || this._route === undefined
+      ? html``
+      : hass && hass.states && hass.config && hass.services
+      ? html`
+          <home-assistant-main
+            .hass=${this.hass}
+            .route=${this._route}
+          ></home-assistant-main>
+        `
+      : html`<ha-init-page .error=${this._error}></ha-init-page>`;
   }
 
   protected firstUpdated(changedProps) {
@@ -59,6 +53,47 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       this._updateHass({ suspendWhenHidden: ev.detail.suspend });
       storeState(this.hass!);
     });
+
+    // Navigation
+    const useHash = __DEMO__;
+    const curPath = () =>
+      useHash ? location.hash.substr(1) : location.pathname;
+    const updateRoute = (path = curPath()) => {
+      if (this._route && path === this._route.path) {
+        return;
+      }
+      this._route = {
+        prefix: "",
+        path: path,
+      };
+      const dividerPos = path.indexOf("/", 1);
+      this._panelUrl =
+        dividerPos === -1 ? path.substr(1) : path.substr(1, dividerPos - 1);
+    };
+
+    window.addEventListener("location-changed", () => updateRoute());
+
+    // Handle history changes
+    if (useHash) {
+      window.addEventListener("hashchange", () => updateRoute());
+    } else {
+      window.addEventListener("popstate", () => updateRoute());
+    }
+
+    // Handle clicking on links
+    window.addEventListener("click", (ev) => {
+      const href = isNavigationClick(ev);
+      if (href) {
+        navigate(this, href);
+      }
+    });
+
+    // Handle first navigation
+    if (["", "/"].includes(curPath())) {
+      navigate(window, `/${getStorageDefaultPanelUrlPath()}`, true);
+    } else {
+      updateRoute();
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -127,31 +162,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     } catch (err) {
       this._error = true;
     }
-  }
-
-  private async _routeChanged(ev) {
-    // routeChangged event listener is called while we're doing the fist render,
-    // causing the update to be ignored. So delay it to next task (Lit render is sync).
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    const route = ev.detail.value as Route;
-    // If it's the first route that we process,
-    // check if we should navigate away from /
-    if (
-      this._route === undefined &&
-      (route.path === "" || route.path === "/")
-    ) {
-      navigate(window, `/${getStorageDefaultPanelUrlPath()}`, true);
-      return;
-    }
-
-    this._route = route;
-
-    const dividerPos = route.path.indexOf("/", 1);
-    this._panelUrl =
-      dividerPos === -1
-        ? route.path.substr(1)
-        : route.path.substr(1, dividerPos - 1);
   }
 
   protected _checkVisibility() {
