@@ -2588,6 +2588,8 @@
                         "add_scene": "新增場景",
                         "delete_confirm": "確定要刪除此場景？",
                         "delete_scene": "刪除場景",
+                        "duplicate": "複製",
+                        "duplicate_scene": "複製場景",
                         "edit_scene": "編輯場景",
                         "header": "場景編輯器",
                         "headers": {

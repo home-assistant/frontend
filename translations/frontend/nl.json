@@ -3599,7 +3599,7 @@
                         "unsaved_changes": "Niet-opgeslagen wijzigingen"
                     },
                     "save_config": {
-                        "cancel": "Laat maar",
+                        "cancel": "Annuleer",
                         "close": "Sluiten",
                         "empty_config": "Begin met een leeg dashboard",
                         "header": "Neem de controle over je Lovelace UI",

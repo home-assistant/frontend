@@ -344,6 +344,7 @@
             "create": "Criar",
             "create_blocked_not_running": "Não é possível criar um snapshot agora porque o sistema está {state}.",
             "create_snapshot": "Criar snapshot",
+            "created": "Criado",
             "description": "As imagens de sistema permitem facilmente criar uma cópia de segurança e restauro de todos os dados da sua instância do Home Assistant",
             "enter_password": "Por favor introduza uma palavra-passe.",
             "folder": {
@@ -419,6 +420,7 @@
                 "leave_beta_description": "Obter actualizações estáveis para Home Assistant, Supervisor e Host",
                 "ram_usage": "Utilização de RAM do Supervisor",
                 "reload_supervisor": "Recarregar Supervisor",
+                "search": "Procurar",
                 "share_diagnostics": "Partilhar Diagnósticos",
                 "share_diagnostics_description": "Partilhar relatórios de falhas e informações de diagnóstico.",
                 "share_diagonstics_description": "Quer partilhar automaticamente relatórios de quebras do sistema e informações de diagnóstico quando o Supervisor se deparar com erros inesperados? {line_break} Isto permitir-nos-á resolver os problemas, a informação só é acessível à equipa do Home Assistant Core  e não será partilhada com outros.{line_break} Os dados não incluem qualquer informação privada/sensível e pode desativá-la em configurações em qualquer altura.",
@@ -1134,6 +1136,13 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Alterar o nome do dispositivo"
                 }
+            },
+            "zha_reconfigure_device": {
+                "attribute": "Atributo",
+                "button_hide": "Ocultar detalhes",
+                "button_show": "Mostrar Detalhes",
+                "configuring_alt": "A configurar",
+                "start_reconfiguration": "Iniciar reconfiguração"
             }
         },
         "duration": {
@@ -1185,7 +1194,8 @@
                     "caption": "Áreas",
                     "data_table": {
                         "area": "Área",
-                        "devices": "Dispositivos"
+                        "devices": "Dispositivos",
+                        "entities": "Entidades"
                     },
                     "delete": {
                         "confirmation_text": "Todos os dispositivos nesta área ficarão por atribuir.",
@@ -1197,6 +1207,7 @@
                         "create": "Criar",
                         "default_name": "Nova área",
                         "delete": "Apagar",
+                        "linked_entities_caption": "Entidades",
                         "name": "Nome",
                         "name_required": "Nome é obrigatório",
                         "unknown_error": "Erro desconhecido",
@@ -1649,10 +1660,15 @@
                         "remote": {
                             "access_is_being_prepared": "O acesso remoto está a ser preparado. Iremos notificá-lo quando estiver pronto.",
                             "certificate_info": "Informações do certificado",
+                            "connected": "Ligado",
                             "info": "O Home Assistant Cloud oferece uma ligação remota segura à sua instância enquanto estiver fora de casa.",
                             "instance_is_available": "A sua instância está disponível em",
                             "instance_will_be_available": "Sua instância estará disponível em",
                             "link_learn_how_it_works": "Aprenda como funciona",
+                            "not_connected": "Não Ligado",
+                            "remote_enabled": {
+                                "caption": "Ligar automaticamente"
+                            },
                             "title": "Controle Remoto"
                         },
                         "sign_out": "Terminar sessão",
@@ -2094,6 +2110,7 @@
                         },
                         "finish": "Terminar",
                         "loading_first_time": "Por favor, aguarde enquanto a integração está a ser instalada",
+                        "next": "Próximo",
                         "not_all_required_fields": "Nem todos os campos obrigatórios estão preenchidos.",
                         "submit": "Enviar"
                     },
@@ -2417,6 +2434,7 @@
                         "add_scene": "Adicionar cenário",
                         "delete_confirm": "Tem certeza de que deseja apagar esta cena?",
                         "delete_scene": "Eliminar cena",
+                        "duplicate": "Duplicado",
                         "edit_scene": "Editar cena",
                         "header": "Editor de cenários",
                         "headers": {
