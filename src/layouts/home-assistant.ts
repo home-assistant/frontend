@@ -92,7 +92,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
     // Handle first navigation
     if (["", "/"].includes(curPath())) {
-      navigate(window, `/${getStorageDefaultPanelUrlPath()}`, true);
+      navigate(this, `/${getStorageDefaultPanelUrlPath()}`, true);
     } else {
       updateRoute();
     }
