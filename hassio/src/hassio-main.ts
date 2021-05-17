@@ -48,7 +48,7 @@ export class HassioMain extends SupervisorBaseElement {
     // listen on this element for navigation events, so we need to forward them.
 
     // Joakim - April 26, 2021
-    // Due to changes in behavior in Google Chrome, we changed navigate to fire on the top element
+    // Due to changes in behavior in Google Chrome, we changed navigate to listen on the top element
     top.addEventListener("location-changed", (ev) =>
       // @ts-ignore
       fireEvent(this, ev.type, ev.detail, {
