@@ -2633,8 +2633,10 @@
             "controller_in_inclusion_mode": "Your Z-Wave controller is now in inclusion mode.",
             "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
             "inclusion_failed": "The node could not be added. Please check the logs for more information.",
-            "inclusion_finished": "The node has been added. It may take a few minutes for all entities to show up as we finish setting up the node in the background.",
-            "view_device": "View Device"
+            "inclusion_finished": "The node has been added.",
+            "view_device": "View Device",
+            "interview_started": "The device is being interviewed. This may take some time.",
+            "interview_failed": "The device interview failed. Additional information may be available in the logs."
           },
           "remove_node": {
             "title": "Remove a Z-Wave Node",
