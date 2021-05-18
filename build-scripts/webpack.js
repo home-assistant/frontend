@@ -129,6 +129,7 @@ const createWebpackConfig = ({
       alias: {
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",
+        "lit/polyfill-support$": "lit/polyfill-support.js",
       },
     },
     output: {
