@@ -8721,6 +8721,13 @@ lit-html@2.0.0-rc.3, lit-html@^1.4.0, lit-html@^2.0.0-rc.3:
   dependencies:
     "@types/trusted-types" "^1.0.1"
 
+lit-vaadin-helpers@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/lit-vaadin-helpers/-/lit-vaadin-helpers-0.1.3.tgz#6230ffdb90f7808d087107f18e83f14d64f0f5d5"
+  integrity sha512-fEUJEVzC1IluUbOOExBYuwal/DyhZqheIvtDV/Tlnmbq1NFtIjgybFQuFNXAyHDaaVwuKDijTGP1c3wwf9rg8w==
+  dependencies:
+    lit "^2.0.0-rc.1"
+
 lit@^2.0.0-rc.1, lit@^2.0.0-rc.2:
   version "2.0.0-rc.2"
   resolved "https://registry.yarnpkg.com/lit/-/lit-2.0.0-rc.2.tgz#724a2d621aa098001d73bf7106f3a72b7b5948ef"

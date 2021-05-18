@@ -9,32 +9,20 @@ import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import { HaComboBox } from "./ha-combo-box";
+import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 
-const rowRenderer = (
-  root: HTMLElement,
-  _owner,
-  model: { item: HassioAddonInfo }
-) => {
-  if (!root.firstElementChild) {
-    root.innerHTML = `
-    <style>
-      paper-item {
-        margin: -10px 0;
-        padding: 0;
-      }
-    </style>
-    <paper-item>
-      <paper-item-body two-line="">
-        <div class='name'>[[item.name]]</div>
-        <div secondary>[[item.slug]]</div>
-      </paper-item-body>
-    </paper-item>
-    `;
-  }
-
-  root.querySelector(".name")!.textContent = model.item.name;
-  root.querySelector("[secondary]")!.textContent = model.item.slug;
-};
+const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (item) => html`<style>
+    paper-item {
+      margin: -10px 0;
+      padding: 0;
+    }
+  </style>
+  <paper-item>
+    <paper-item-body two-line>
+      ${item.name}
+      <span secondary>${item.slug}</span>
+    </paper-item-body>
+  </paper-item>`;
 
 @customElement("ha-addon-picker")
 class HaAddonPicker extends LitElement {
