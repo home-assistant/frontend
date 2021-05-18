@@ -107,7 +107,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       const href = isNavigationClick(ev);
       if (href) {
         navigate(this, href);
-        updateRoute();
       }
     });
   }
