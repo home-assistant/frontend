@@ -105,7 +105,7 @@ class HaPanelDevTemplate extends LitElement {
           <ul>
             <li>
               <a
-                href="http://jinja.pocoo.org/docs/dev/templates/"
+                href="https://jinja.palletsprojects.com/en/latest/templates/"
                 target="_blank"
                 rel="noreferrer"
                 >${this.hass.localize(
