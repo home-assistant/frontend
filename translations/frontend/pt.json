@@ -138,6 +138,9 @@
                     "apparmor": {
                         "title": "AppArmor"
                     },
+                    "auth_api": {
+                        "title": "Autenticação do Home Assistant"
+                    },
                     "docker_api": {
                         "title": "Acesso completo ao Docker"
                     },
@@ -146,6 +149,9 @@
                     },
                     "hassio_api": {
                         "description": "O suplemento tem acesso à API do Supervisor, a pedido do autor do complemento. Por defeito, o complemento pode aceder à informação da versão do seu sistema. Quando o complemento solicita acesso de nível 'gestor' ou 'administrador' à API, obterá acesso para controlar múltiplas partes do seu sistema Home Assistant. Esta permissão é indicada por este crachá e terá um impacto negativo na pontuação de segurança do complemento."
+                    },
+                    "ingress": {
+                        "title": "Ingress"
                     },
                     "label": {
                         "apparmor": "AppArmor",
@@ -525,7 +531,7 @@
                 "brightness": "Brilho",
                 "color_temperature": "Temperatura de cor",
                 "effect": "Efeito",
-                "white_value": "Quantidade de brancos"
+                "white_value": "Brilho"
             },
             "lock": {
                 "code": "Código",
@@ -681,6 +687,8 @@
                 "today": "Hoje"
             },
             "data-table": {
+                "clear": "Limpar",
+                "filtering_by": "A filtrar por",
                 "no-data": "Dados do evento",
                 "search": "Procurar"
             },
@@ -1139,9 +1147,11 @@
             },
             "zha_reconfigure_device": {
                 "attribute": "Atributo",
+                "bind_header": "Associação",
                 "button_hide": "Ocultar detalhes",
                 "button_show": "Mostrar Detalhes",
                 "configuring_alt": "A configurar",
+                "min_max_change": "min/max/alterar",
                 "start_reconfiguration": "Iniciar reconfiguração"
             }
         },
@@ -1210,6 +1220,7 @@
                         "linked_entities_caption": "Entidades",
                         "name": "Nome",
                         "name_required": "Nome é obrigatório",
+                        "no_linked_entities": "Não há entidades ligadas a essa área.",
                         "unknown_error": "Erro desconhecido",
                         "update": "Atualizar"
                     },
@@ -2045,6 +2056,7 @@
                     "license": "Publicado sob a licença de Apache 2.0",
                     "path_configuration": "Caminho para configuration.yaml: {path}",
                     "server": "servidor",
+                    "setup_time": "Tempo de inicialização",
                     "source": "Fonte:",
                     "system_health_error": "O componente System Health não está carregado. Adicione 'system_health:' ao configuration.yaml",
                     "system_health": {
@@ -2063,8 +2075,11 @@
                     "caption": "Integrações",
                     "config_entry": {
                         "area": "Em {area}",
+                        "check_the_logs": "Verifique os logs",
+                        "configure": "Configurar",
                         "delete": "Eliminar",
                         "delete_confirm": "Tem a certeza que pretende apagar esta integração?",
+                        "depends_on_cloud": "Depende da nuvem",
                         "device_unavailable": "Dispositivo indisponível",
                         "devices": "{count} {count, plural,\n one {dispositivo}\n other {dispositivos}\n}",
                         "disable_restart_confirm": "Reinicie o Home Assistant para termina a desactivação desta integração",
@@ -2086,6 +2101,7 @@
                         "hub": "Conectado via",
                         "manuf": "por {manufacturer}",
                         "no_area": "Nenhuma Área",
+                        "not_loaded": "Não carregado",
                         "options": "Opções",
                         "reload": "Recarregar",
                         "reload_confirm": "A integração foi recarregada",
@@ -2093,6 +2109,12 @@
                         "rename": "Renomear",
                         "restart_confirm": "Reinicie o Home Assistant para concluir a remoção desta integração",
                         "services": "{count} {count, plural,\n  one {serviço}\n  other {serviços}\n}",
+                        "state": {
+                            "loaded": "Carregado",
+                            "migration_error": "Erro de migração",
+                            "not_loaded": "Não carregado",
+                            "setup_error": "Erro ao inicializar"
+                        },
                         "system_options": "Opções do sistema",
                         "unnamed_entry": "Entrada sem nome"
                     },
@@ -2122,6 +2144,7 @@
                     "disable": {
                         "disabled_integrations": "{number} desativado",
                         "hide_disabled": "Ocultar integrações desativadas",
+                        "show": "Mostrar",
                         "show_disabled": "Mostrar integrações desativadas"
                     },
                     "discovered": "Descoberto",
@@ -2435,6 +2458,7 @@
                         "delete_confirm": "Tem certeza de que deseja apagar esta cena?",
                         "delete_scene": "Eliminar cena",
                         "duplicate": "Duplicado",
+                        "duplicate_scene": "Duplicar cena",
                         "edit_scene": "Editar cena",
                         "header": "Editor de cenários",
                         "headers": {
@@ -2788,13 +2812,22 @@
                         "node_status": "Estado do Nó",
                         "zwave_info": "Informações sobre Z-Wave"
                     },
+                    "logs": {
+                        "log_level": "Nível de log",
+                        "title": "Z-Wave JS Logs"
+                    },
                     "navigation": {
+                        "logs": "Logs",
                         "network": "Rede"
                     },
                     "network_status": {
                         "connected": "Conectado",
                         "connecting": "A conectar",
                         "unknown": "Desconhecido"
+                    },
+                    "node_config": {
+                        "error_device_not_found": "Dispositivo não encontrado",
+                        "parameter_is_read_only": "Este parâmetro é apenas de leitura."
                     },
                     "node_status": {
                         "alive": "Ativo",
@@ -2919,7 +2952,7 @@
                         "count_listeners": " ({count} escutas)",
                         "data": "Dados do evento (YAML, opcional)",
                         "description": "Dispare um evento aqui.",
-                        "documentation": "Documentação de eventos.",
+                        "documentation": "Documentação de eventos",
                         "event_fired": "Evento {name} despoletado",
                         "fire_event": "Executar Evento",
                         "listen_to_events": "Ouça os eventos",
@@ -2950,7 +2983,7 @@
                         "copy_id": "Copiar para a Área de Transferência",
                         "current_entities": "Entidades atuais",
                         "description1": "Coloque o nome de um dispositivo do Home Assistant.",
-                        "description2": "Isto não irá comunicar com o dispositivo.",
+                        "description2": "Se a entidade pertencer a um dispositivo, não haverá comunicação com o dispositivo.",
                         "entity": "Entidade",
                         "filter_attributes": "Filtrar atributos",
                         "filter_entities": "Filtrar entidades",
@@ -3320,7 +3353,7 @@
                         "duplicate": "Duplicar cartão",
                         "edit": "Editar",
                         "header": "Configuração do cartão",
-                        "move": "Mover para Vista",
+                        "move": "Mover para vista",
                         "move_after": "Mover cartão após",
                         "move_before": "Mover cartão antes de",
                         "options": "Mais opções",
@@ -3741,6 +3774,15 @@
                     "disable": "Desativar",
                     "enable": "Ativar",
                     "header": "Módulos de Autenticação por Multíplos-fatores"
+                },
+                "number_format": {
+                    "dropdown_label": "Formatação numérica",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "space_comma": "1 234 567,89"
+                    },
+                    "header": "Formatação numérica"
                 },
                 "push_notifications": {
                     "add_device_prompt": {
