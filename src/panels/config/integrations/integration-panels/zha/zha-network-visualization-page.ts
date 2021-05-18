@@ -100,9 +100,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       if (ieee) {
         const device = this._devices.get(ieee);
         if (device) {
-          navigate(`/config/devices/device/${device.device_reg_id}`, {
-            replace: true,
-          });
+          navigate(`/config/devices/device/${device.device_reg_id}`);
         }
       }
     });
