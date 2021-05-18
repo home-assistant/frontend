@@ -32,7 +32,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   @state() private _error = false;
 
-  @state() private _panelUrl: string;
+  private _panelUrl: string;
 
   private _haVersion?: string;
 
@@ -52,14 +52,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       path,
     };
     this._panelUrl = panelUrl(path);
-  }
-
-  public willUpdate(changedProps) {
-    super.willUpdate(changedProps);
-    if (changedProps.has("_panelUrl")) {
-      this.panelUrlChanged(this._panelUrl!);
-      this._updateHass({ panelUrl: this._panelUrl });
-    }
   }
 
   protected render() {
@@ -97,6 +89,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       };
 
       this._panelUrl = panelUrl(path);
+      this.panelUrlChanged(this._panelUrl!);
+      this._updateHass({ panelUrl: this._panelUrl });
     };
 
     window.addEventListener("location-changed", () => updateRoute());
