@@ -1200,6 +1200,10 @@
                 }
             },
             "zha_reconfigure_device": {
+                "attribute": "Atribut",
+                "battery_device_warning": "Před zahájením procesu rekonfigurace budete muset probudit zařízení napájená z baterie. Pokyny k probuzení zařízení najdete v příručce k zařízení.",
+                "bind_header": "Vazba",
+                "button_hide": "Skrýt podrobnosti",
                 "button_show": "Podrobnosti",
                 "cluster_header": "Klastr",
                 "configuration_complete": "Změna konfigurace zařízení dokončena.",
@@ -1207,6 +1211,10 @@
                 "configuring_alt": "Nastavuji",
                 "heading": "Znovunastavení zařízení",
                 "in_progress": "Zařízení se překonfigurová. Může to chvíli trvat.",
+                "introduction": "Překonfigurujte zařízení v síti Zigbee. Tuto funkci použijte, pokud zařízení nefunguje správně.",
+                "min_max_change": "min/max/změna",
+                "reporting_header": "Hlášení",
+                "run_in_background": "Toto dialogové okno můžete zavřít a změna konfigurace bude pokračovat na pozadí.",
                 "start_reconfiguration": "Spustit rekonfiguraci"
             }
         },
@@ -2161,6 +2169,7 @@
                     "license": "Publikováno pod licencí Apache 2.0",
                     "path_configuration": "Cesta k souboru configuration.yaml: {path}",
                     "server": "server",
+                    "setup_time": "Doba nastavení",
                     "source": "Zdroj:",
                     "system_health_error": "Součást System Health není načtena. Přidejte 'system_health:' do configuration.yaml",
                     "system_health": {
@@ -2579,6 +2588,8 @@
                         "add_scene": "Přidat scénu",
                         "delete_confirm": "Opravdu chcete tuto scénu smazat?",
                         "delete_scene": "Smazat scénu",
+                        "duplicate": "Duplikovat",
+                        "duplicate_scene": "Duplikovat scénu",
                         "edit_scene": "Upravit scénu",
                         "header": "Editor scén",
                         "headers": {
@@ -2815,6 +2826,7 @@
                         "shortcuts_title": "Zástupci",
                         "update_button": "Aktualizovat nastavení",
                         "zha_options": {
+                            "default_light_transition": "Výchozí doba přechodu světla (sekundy)",
                             "title": "Globální možnosti"
                         }
                     },
@@ -2943,6 +2955,7 @@
                         "zwave_info": "Z-Wave Info"
                     },
                     "logs": {
+                        "log_level": "Úroveň protokolu",
                         "title": "Z-Wave JS protokoly"
                     },
                     "navigation": {
@@ -2974,7 +2987,10 @@
                         "unknown": "Nezjištěno"
                     },
                     "reinterview_node": {
+                        "battery_device_warning": "Před zahájením opakovaného rozhovoru je třeba probudit zařízení napájená z baterie. Pokyny k probuzení zařízení naleznete v příručce k zařízení.",
+                        "in_progress": "Zařízení je dotazováno. To může nějakou dobu trvat.",
                         "interview_complete": "Pohovor se zařízením dokončen.",
+                        "interview_failed": "Dotazování zařízení se nezdařilo. Další informace mohou být k dispozici v protokolech.",
                         "run_in_background": "Toto dialogové okno můžete zavřít a rozhovor bude pokračovat na pozadí.",
                         "start_reinterview": "Zahájit opakovaný rozhovor"
                     },

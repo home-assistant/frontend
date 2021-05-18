@@ -2588,6 +2588,8 @@
                         "add_scene": "Szene hinzufügen",
                         "delete_confirm": "Bist du sicher, dass du diese Szene löschen möchtest?",
                         "delete_scene": "Szene löschen",
+                        "duplicate": "Duplizieren",
+                        "duplicate_scene": "Szene duplizieren",
                         "edit_scene": "Szene bearbeiten",
                         "header": "Szenen-Editor",
                         "headers": {
