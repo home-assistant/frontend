@@ -69,18 +69,18 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    this.shadowRoot!.querySelectorAll("#states > div > *").forEach(
-      (element: unknown) => {
+    this.shadowRoot
+      ?.querySelectorAll("#states > div > *")
+      .forEach((element: unknown) => {
         (element as LovelaceRow).hass = hass;
-      }
-    );
+      });
     if (this._headerElement) {
       this._headerElement.hass = hass;
     }
     if (this._footerElement) {
       this._footerElement.hass = hass;
     }
-    const entitiesToggle = this.shadowRoot!.querySelector(
+    const entitiesToggle = this.shadowRoot?.querySelector(
       "hui-entities-toggle"
     );
     if (entitiesToggle) {

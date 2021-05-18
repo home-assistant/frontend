@@ -1,6 +1,5 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
-import { ripple } from "@material/mwc-ripple/ripple-directive";
 import "./ha-icon";
 import {
   css,
@@ -34,7 +33,7 @@ export class HaChip extends LitElement {
               <slot name="icon"></slot>
             </div>`
           : null}
-        <div class="mdc-chip__ripple" .ripple="${ripple()}"></div>
+        <div class="mdc-chip__ripple"></div>
         <span role="gridcell">
           <span role="button" tabindex="0" class="mdc-chip__primary-action">
             <span class="mdc-chip__text"><slot></slot></span>

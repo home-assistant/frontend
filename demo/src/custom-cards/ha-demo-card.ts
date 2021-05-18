@@ -8,7 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import { until } from "lit-html/directives/until";
+import { until } from "lit/directives/until";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-circular-progress";
 import { LovelaceCardConfig } from "../../../src/data/lovelace";

@@ -22,7 +22,7 @@ import {
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { styleMap } from "lit-html/directives/style-map";
-import { scroll } from "lit-virtualizer";
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
@@ -194,7 +194,9 @@ export class QuickBar extends LitElement {
             >
               ${scroll({
                 items,
-                renderItem: (item: QuickBarItem, index?: number) =>
+                layout: Layout1d,
+                // @ts-expect-error
+                renderItem: (item: QuickBarItem, index) =>
                   this._renderItem(item, index),
               })}
             </mwc-list>`}

@@ -5,6 +5,7 @@ import "core-js";
 import "proxy-polyfill";
 import "regenerator-runtime/runtime";
 import "unfetch/polyfill";
+import "@lit/polyfill-support";
 
 // Source: https://github.com/jserz/js_piece/blob/master/DOM/ParentNode/append()/append().md
 (function (arr) {

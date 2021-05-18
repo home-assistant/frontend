@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import {
-  CSSResult,
+  CSSResultGroup,
   customElement,
   html,
   LitElement,
@@ -212,7 +212,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

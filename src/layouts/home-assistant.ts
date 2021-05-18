@@ -45,7 +45,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._initialize();
+    this._initializeHass();
     setTimeout(() => registerServiceWorker(this), 1000);
     /* polyfill for paper-dropdown */
     import("web-animations-js/web-animations-next-lite.min");
@@ -145,7 +145,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     }
   }
 
-  protected async _initialize() {
+  protected async _initializeHass() {
     try {
       let result;
 

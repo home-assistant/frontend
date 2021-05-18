@@ -2,6 +2,9 @@ import { Auth, Connection } from "home-assistant-js-websocket";
 import { LitElement, property } from "lit-element";
 import { HomeAssistant } from "../types";
 
+if (__DEV__) {
+  LitElement.disableWarning?.("change-in-update");
+}
 export class HassBaseEl extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

@@ -1,18 +1,11 @@
-import "@material/mwc-formfield";
-import type { Formfield } from "@material/mwc-formfield";
-import { style } from "@material/mwc-formfield/mwc-formfield-css";
+import { Formfield } from "@material/mwc-formfield";
 import { css, CSSResultGroup, customElement } from "lit-element";
-import { Constructor } from "../types";
-
-const MwcFormfield = customElements.get(
-  "mwc-formfield"
-) as Constructor<Formfield>;
-
 @customElement("ha-formfield")
-export class HaFormfield extends MwcFormfield {
+// @ts-expect-error
+export class HaFormfield extends Formfield {
   protected static get styles(): CSSResultGroup {
     return [
-      style,
+      Formfield.styles,
       css`
         :host(:not([alignEnd])) ::slotted(ha-switch) {
           margin-right: 10px;

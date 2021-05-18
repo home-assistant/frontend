@@ -59,15 +59,12 @@ export class DialogEntityEditor extends LitElement {
 
   private _curTabIndex = 0;
 
-  public async showDialog(
-    params: EntityRegistryDetailDialogParams
-  ): Promise<void> {
+  public showDialog(params: EntityRegistryDetailDialogParams): void {
     this._params = params;
     this._entry = undefined;
     this._settingsElementTag = undefined;
     this._extraTabs = {};
     this._getEntityReg();
-    await this.updateComplete;
   }
 
   public closeDialog(): void {

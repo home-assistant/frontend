@@ -1,13 +1,9 @@
-import "@material/mwc-dialog";
-import type { Dialog } from "@material/mwc-dialog";
-import { style } from "@material/mwc-dialog/mwc-dialog-css";
+import { Dialog } from "@material/mwc-dialog";
 import { mdiClose } from "@mdi/js";
 import { css, CSSResultGroup, customElement, html } from "lit-element";
 import { computeRTLDirection } from "../common/util/compute_rtl";
-import type { Constructor, HomeAssistant } from "../types";
+import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
-
-const MwcDialog = customElements.get("mwc-dialog") as Constructor<Dialog>;
 
 export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
   <span class="header_title">${title}</span>
@@ -22,7 +18,8 @@ export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
 `;
 
 @customElement("ha-dialog")
-export class HaDialog extends MwcDialog {
+// @ts-expect-error
+export class HaDialog extends Dialog {
   public scrollToPos(x: number, y: number) {
     this.contentElement.scrollTo(x, y);
   }
@@ -33,7 +30,7 @@ export class HaDialog extends MwcDialog {
 
   protected static get styles(): CSSResultGroup {
     return [
-      style,
+      Dialog.styles,
       css`
         .mdc-dialog {
           --mdc-dialog-scroll-divider-color: var(--divider-color);

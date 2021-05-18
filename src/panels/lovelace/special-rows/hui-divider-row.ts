@@ -30,7 +30,9 @@ class HuiDividerRow extends LitElement implements LovelaceRow {
       return html``;
     }
 
-    return html`<div style=${styleMap(this._config.style)}></div>`;
+    return html`<div
+      style=${this._config.style ? styleMap(this._config.style) : ""}
+    ></div>`;
   }
 
   static get styles(): CSSResultGroup {

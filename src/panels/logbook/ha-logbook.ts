@@ -10,7 +10,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import { scroll } from "lit-virtualizer";
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../../common/const";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
@@ -101,7 +101,9 @@ class HaLogbook extends LitElement {
         ${this.virtualize
           ? scroll({
               items: this.entries,
-              renderItem: (item: LogbookEntry, index?: number) =>
+              layout: Layout1d,
+              // @ts-expect-error
+              renderItem: (item: LogbookEntry, index) =>
                 this._renderLogbookItem(item, index),
             })
           : this.entries.map((item, index) =>
@@ -349,7 +351,7 @@ class HaLogbook extends LitElement {
           color: var(--primary-color);
         }
 
-        .uni-virtualizer-host {
+        :host([virtualize]) .container {
           display: block;
           position: relative;
           contain: strict;
@@ -357,7 +359,7 @@ class HaLogbook extends LitElement {
           overflow: auto;
         }
 
-        .uni-virtualizer-host > * {
+        .container > * {
           box-sizing: border-box;
         }
 
