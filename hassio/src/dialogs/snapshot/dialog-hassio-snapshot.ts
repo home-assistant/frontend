@@ -28,6 +28,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
+import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { PolymerChangedEvent } from "../../../../src/polymer-types";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
@@ -76,7 +77,9 @@ interface FolderItem {
 }
 
 @customElement("dialog-hassio-snapshot")
-class HassioSnapshotDialog extends LitElement {
+class HassioSnapshotDialog
+  extends LitElement
+  implements HassDialog<HassioSnapshotDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public supervisor?: Supervisor;
@@ -114,12 +117,21 @@ class HassioSnapshotDialog extends LitElement {
     }
   }
 
+  public closeDialog() {
+    this._dialogParams = undefined;
+    this._snapshot = undefined;
+    this._snapshotPassword = "";
+    this._folders = [];
+    this._addons = [];
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._dialogParams || !this._snapshot) {
       return html``;
     }
     return html`
-      <ha-dialog open @closing=${this._closeDialog} .heading=${true}>
+      <ha-dialog open @closing=${this.closeDialog} .heading=${true}>
         <div slot="heading">
           <ha-header-bar>
             <span slot="title"> ${this._computeName} </span>
@@ -367,7 +379,7 @@ class HassioSnapshotDialog extends LitElement {
         .then(
           () => {
             alert("Snapshot restored!");
-            this._closeDialog();
+            this.closeDialog();
           },
           (error) => {
             this._error = error.body.message;
@@ -379,7 +391,7 @@ class HassioSnapshotDialog extends LitElement {
         method: "POST",
         body: JSON.stringify(data),
       });
-      this._closeDialog();
+      this.closeDialog();
     }
   }
 
@@ -418,7 +430,7 @@ class HassioSnapshotDialog extends LitElement {
         .then(
           () => {
             alert("Snapshot restored!");
-            this._closeDialog();
+            this.closeDialog();
           },
           (error) => {
             this._error = error.body.message;
@@ -430,7 +442,7 @@ class HassioSnapshotDialog extends LitElement {
         method: "POST",
         body: JSON.stringify(data),
       });
-      this._closeDialog();
+      this.closeDialog();
     }
   }
 
@@ -453,7 +465,7 @@ class HassioSnapshotDialog extends LitElement {
           if (this._dialogParams!.onDelete) {
             this._dialogParams!.onDelete();
           }
-          this._closeDialog();
+          this.closeDialog();
         },
         (error) => {
           this._error = error.body.message;
@@ -503,14 +515,6 @@ class HassioSnapshotDialog extends LitElement {
 
   private get _computeSize() {
     return Math.ceil(this._snapshot!.size * 10) / 10 + " MB";
-  }
-
-  private _closeDialog() {
-    this._dialogParams = undefined;
-    this._snapshot = undefined;
-    this._snapshotPassword = "";
-    this._folders = [];
-    this._addons = [];
   }
 }
 
