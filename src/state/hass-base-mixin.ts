@@ -3,10 +3,6 @@ import { LitElement } from "lit";
 import { property } from "lit/decorators";
 import { HomeAssistant } from "../types";
 
-// Temporary disable warnings so the dev console is not flooded, we should fix these and then re-enable the warning
-if (__DEV__) {
-  LitElement.disableWarning?.("change-in-update");
-}
 export class HassBaseEl extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 

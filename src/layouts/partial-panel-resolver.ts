@@ -65,8 +65,8 @@ class PartialPanelResolver extends HassRouterPage {
     document.addEventListener("resume", () => this._checkVisibility());
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
 
     if (!changedProps.has("hass")) {
       return;

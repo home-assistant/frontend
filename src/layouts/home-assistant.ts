@@ -15,13 +15,24 @@ import {
 import "./ha-init-page";
 import "./home-assistant-main";
 
+const useHash = __DEMO__;
+const curPath = () =>
+  window.decodeURIComponent(
+    useHash ? location.hash.substr(1) : location.pathname
+  );
+
+const panelUrl = (path: string) => {
+  const dividerPos = path.indexOf("/", 1);
+  return dividerPos === -1 ? path.substr(1) : path.substr(1, dividerPos - 1);
+};
+
 @customElement("home-assistant")
 export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
-  @state() private _route?: Route;
+  @state() private _route: Route;
 
   @state() private _error = false;
 
-  @state() private _panelUrl?: string;
+  private _panelUrl: string;
 
   private _haVersion?: string;
 
@@ -29,12 +40,24 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   private _visiblePromiseResolve?: () => void;
 
+  constructor() {
+    super();
+    const path = curPath();
+
+    if (["", "/"].includes(path)) {
+      navigate(this, `/${getStorageDefaultPanelUrlPath()}`, true);
+    }
+    this._route = {
+      prefix: "",
+      path,
+    };
+    this._panelUrl = panelUrl(path);
+  }
+
   protected render() {
     const hass = this.hass;
 
-    return this._panelUrl === undefined || this._route === undefined
-      ? html``
-      : hass && hass.states && hass.config && hass.services
+    return hass && hass.states && hass.config && hass.services
       ? html`
           <home-assistant-main
             .hass=${this.hass}
@@ -56,11 +79,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     });
 
     // Navigation
-    const useHash = __DEMO__;
-    const curPath = () =>
-      window.decodeURIComponent(
-        useHash ? location.hash.substr(1) : location.pathname
-      );
     const updateRoute = (path = curPath()) => {
       if (this._route && path === this._route.path) {
         return;
@@ -69,9 +87,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         prefix: "",
         path: path,
       };
-      const dividerPos = path.indexOf("/", 1);
-      this._panelUrl =
-        dividerPos === -1 ? path.substr(1) : path.substr(1, dividerPos - 1);
+
+      this._panelUrl = panelUrl(path);
+      this.panelUrlChanged(this._panelUrl!);
+      this._updateHass({ panelUrl: this._panelUrl });
     };
 
     window.addEventListener("location-changed", () => updateRoute());
@@ -90,21 +109,10 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
         navigate(this, href);
       }
     });
-
-    // Handle first navigation
-    if (["", "/"].includes(curPath())) {
-      navigate(this, `/${getStorageDefaultPanelUrlPath()}`, true);
-    } else {
-      updateRoute();
-    }
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (changedProps.has("_panelUrl")) {
-      this.panelUrlChanged(this._panelUrl!);
-      this._updateHass({ panelUrl: this._panelUrl });
-    }
     if (changedProps.has("hass")) {
       this.hassChanged(
         this.hass!,

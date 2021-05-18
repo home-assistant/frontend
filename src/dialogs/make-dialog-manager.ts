@@ -50,6 +50,12 @@ export const showDialog = async (
 ) => {
   if (!(dialogTag in LOADED)) {
     if (!dialogImport) {
+      if (__DEV__) {
+        // eslint-disable-next-line
+        console.warn(
+          "Asked to show dialog that's not loaded and can't be imported"
+        );
+      }
       return;
     }
     LOADED[dialogTag] = dialogImport().then(() => {

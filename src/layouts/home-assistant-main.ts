@@ -42,19 +42,20 @@ class HomeAssistantMain extends LitElement {
 
   @property() public route?: Route;
 
-  @property({ type: Boolean }) public narrow?: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
   @state() private _sidebarEditMode = false;
 
+  constructor() {
+    super();
+    listenMediaQuery("(max-width: 870px)", (matches) => {
+      this.narrow = matches;
+    });
+  }
+
   protected render(): TemplateResult {
     const hass = this.hass;
-
-    if (!hass) {
-      return html``;
-    }
-
     const sidebarNarrow = this._sidebarNarrow;
-
     const disableSwipe =
       this._sidebarEditMode ||
       !sidebarNarrow ||
@@ -142,12 +143,8 @@ class HomeAssistantMain extends LitElement {
 
     this.addEventListener("hass-show-notifications", () => {
       showNotificationDrawer(this, {
-        narrow: this.narrow!,
+        narrow: this.narrow,
       });
-    });
-
-    listenMediaQuery("(max-width: 870px)", (matches) => {
-      this.narrow = matches;
     });
   }
 
