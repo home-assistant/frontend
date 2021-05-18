@@ -69,6 +69,19 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     this.addEventListener("iron-resize", (ev: Event) => ev.stopPropagation());
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this._initMqls();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._mqls?.forEach((mql) => {
+      mql.removeListener(this._updateColumns);
+    });
+    this._mqls = undefined;
+  }
+
   public setConfig(_config: LovelaceViewConfig): void {}
 
   protected render(): TemplateResult {
@@ -96,15 +109,19 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     `;
   }
 
-  private get mqls() {
-    return (
-      this._mqls ||
-      [300, 600, 900, 1200].map((width) => {
-        const mql = window.matchMedia(`(min-width: ${width}px)`);
-        mql.addListener(() => this._updateColumns());
-        return mql;
-      })
-    );
+  private _initMqls() {
+    this._mqls = [300, 600, 900, 1200].map((width) => {
+      const mql = window.matchMedia(`(min-width: ${width}px)`);
+      mql.addListener(this._updateColumns.bind(this));
+      return mql;
+    });
+  }
+
+  private get mqls(): MediaQueryList[] {
+    if (!this._mqls) {
+      this._initMqls();
+    }
+    return this._mqls!;
   }
 
   public willUpdate(changedProperties: PropertyValues) {
