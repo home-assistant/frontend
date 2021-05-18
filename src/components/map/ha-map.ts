@@ -2,13 +2,12 @@ import { Circle, Layer, Map, Marker, TileLayer } from "leaflet";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import {
   LeafletModuleType,
   replaceTileLayer,

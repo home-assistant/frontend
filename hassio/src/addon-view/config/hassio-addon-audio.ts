@@ -5,14 +5,12 @@ import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "web-animations-js/web-animations-next-lite.min";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-card";

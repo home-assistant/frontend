@@ -1,4 +1,5 @@
-import { customElement, html, property, PropertyValues } from "lit-element";
+import { html, PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../../src/common/config/version";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";

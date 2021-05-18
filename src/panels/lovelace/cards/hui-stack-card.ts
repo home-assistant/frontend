@@ -2,12 +2,11 @@ import {
   css,
   CSSResultGroup,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { property, state } from "lit/decorators";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { createCardElement } from "../create-element/create-card-element";

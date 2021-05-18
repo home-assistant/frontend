@@ -1,15 +1,7 @@
 import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 
 @customElement("mqtt-discovery-payload")
 class MQTTDiscoveryPayload extends LitElement {

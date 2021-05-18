@@ -3,13 +3,12 @@ import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
   TemplateResult,
   unsafeCSS,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-chip";
 

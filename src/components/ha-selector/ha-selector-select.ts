@@ -1,14 +1,8 @@
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HomeAssistant } from "../../types";
 import { SelectSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
 import "../ha-paper-dropdown-menu";
 
 @customElement("ha-selector-select")

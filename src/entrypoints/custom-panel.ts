@@ -1,18 +1,19 @@
 // Compat needs to be first import
 import "../resources/compatibility";
+import "../resources/safari-14-attachshadow-patch";
+
 import { PolymerElement } from "@polymer/polymer";
+import { CSSResult } from "lit";
 import { fireEvent } from "../common/dom/fire_event";
+import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { loadJS } from "../common/dom/load_resource";
 import { webComponentsSupported } from "../common/feature-detect/support-web-components";
+import { navigate } from "../common/navigate";
 import { CustomPanelInfo } from "../data/panel_custom";
-import "../resources/safari-14-attachshadow-patch";
+import { baseEntrypointStyles } from "../resources/styles";
 import { createCustomPanelElement } from "../util/custom-panel/create-custom-panel-element";
 import { loadCustomPanel } from "../util/custom-panel/load-custom-panel";
 import { setCustomPanelProperties } from "../util/custom-panel/set-custom-panel-properties";
-import { baseEntrypointStyles } from "../resources/styles";
-import { CSSResult } from "lit-element";
-import { isNavigationClick } from "../common/dom/is-navigation-click";
-import { navigate } from "../common/navigate";
 
 declare global {
   interface Window {

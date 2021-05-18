@@ -1,15 +1,9 @@
 import { mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import {
-  css,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { css, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
@@ -17,19 +11,18 @@ import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
-import { TraceContexts, loadTraceContexts } from "../../data/trace";
 import {
   clearLogbookCache,
   getLogbookData,
   LogbookEntry,
 } from "../../data/logbook";
 import { fetchPersons } from "../../data/person";
+import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {

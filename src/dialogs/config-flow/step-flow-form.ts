@@ -3,13 +3,12 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
 import "../../components/ha-form/ha-form";

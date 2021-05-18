@@ -1,7 +1,7 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { css, state, LitElement, property, PropertyValues } from "lit-element";
-import { html } from "lit-html";
+import { css, html, LitElement, PropertyValues } from "lit";
+import { property, state } from "lit/decorators";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";

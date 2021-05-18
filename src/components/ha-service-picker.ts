@@ -1,4 +1,5 @@
-import { html, state, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";

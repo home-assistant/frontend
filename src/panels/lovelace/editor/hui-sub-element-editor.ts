@@ -1,17 +1,8 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button";
 import { mdiArrowLeft } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";

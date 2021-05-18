@@ -1,13 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import "../../../components/ha-icon-button";
 import { fetchErrorLog } from "../../../data/error_log";
 import { HomeAssistant } from "../../../types";

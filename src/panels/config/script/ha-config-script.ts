@@ -1,5 +1,6 @@
 import { HassEntities } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";

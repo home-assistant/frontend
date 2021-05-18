@@ -1,16 +1,9 @@
+import "@material/mwc-button/mwc-button";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { Auth, Connection } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  state,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { CastManager } from "../../../../src/cast/cast_manager";
 import {
   castSendShowLovelaceView,
@@ -32,7 +25,6 @@ import {
 import "../../../../src/layouts/hass-loading-screen";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
 import "./hc-layout";
-import "@material/mwc-button/mwc-button";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {

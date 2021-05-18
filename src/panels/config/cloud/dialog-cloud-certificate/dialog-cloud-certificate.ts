@@ -1,12 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import "../../../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";

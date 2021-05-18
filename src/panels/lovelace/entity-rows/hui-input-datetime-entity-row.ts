@@ -1,13 +1,5 @@
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import "../../../components/ha-date-input";
 import type { HaDateInput } from "../../../components/ha-date-input";
 import "../../../components/paper-time-input";

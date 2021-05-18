@@ -6,14 +6,12 @@ import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
   PropertyValues,
-  queryAssignedNodes,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, queryAssignedNodes } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
 import { saveConfig } from "../../../data/lovelace";

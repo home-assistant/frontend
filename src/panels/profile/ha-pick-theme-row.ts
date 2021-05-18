@@ -5,13 +5,12 @@ import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResultGroup,
-  customElement,
-  state,
+  html,
   LitElement,
-  property,
   PropertyValues,
-} from "lit-element";
-import { html, TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
 import "../../components/ha-paper-dropdown-menu";

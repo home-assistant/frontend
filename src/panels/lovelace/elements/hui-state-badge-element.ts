@@ -1,13 +1,6 @@
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/ha-state-label-badge";
 import { ActionHandlerEvent } from "../../../data/lovelace";

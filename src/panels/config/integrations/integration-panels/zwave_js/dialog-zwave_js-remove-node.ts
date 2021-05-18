@@ -1,21 +1,13 @@
 import "@material/mwc-button/mwc-button";
-import {
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  state,
-  TemplateResult,
-  css,
-} from "lit-element";
+import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSRemoveNodeDialogParams } from "./show-dialog-zwave_js-remove-node";
-import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
-import { fireEvent } from "../../../../../common/dom/fire_event";
 
 export interface ZWaveJSRemovedNode {
   node_id: number;

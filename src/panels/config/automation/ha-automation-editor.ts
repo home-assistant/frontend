@@ -15,14 +15,12 @@ import {
   css,
   CSSResultGroup,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button-menu";

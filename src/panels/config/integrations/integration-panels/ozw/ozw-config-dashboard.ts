@@ -2,16 +2,8 @@ import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCircle, mdiCloseCircle, mdiZWave } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-next";

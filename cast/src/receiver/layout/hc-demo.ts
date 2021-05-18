@@ -1,10 +1,5 @@
-import {
-  customElement,
-  html,
-  state,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { mockHistory } from "../../../../demo/src/stubs/history";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
 import {

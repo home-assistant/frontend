@@ -1,12 +1,4 @@
-import {
-  customElement,
-  html,
-  css,
-  state,
-  LitElement,
-  TemplateResult,
-  property,
-} from "lit-element";
+import { html, css, LitElement, TemplateResult } from "lit";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
 
@@ -23,7 +15,8 @@ import type {
 } from "../../../src/panels/config/integrations/ha-config-integrations";
 import { DeviceRegistryEntry } from "../../../src/data/device_registry";
 import { EntityRegistryEntry } from "../../../src/data/entity_registry";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit/directives/class-map";
+import { customElement, property, state } from "lit/decorators";
 
 const createConfigEntry = (
   title: string,

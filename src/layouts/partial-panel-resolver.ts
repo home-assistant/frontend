@@ -4,7 +4,8 @@ import {
   STATE_RUNNING,
   STATE_STARTING,
 } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
 import { getDefaultPanel } from "../data/panel";

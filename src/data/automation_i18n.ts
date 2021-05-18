@@ -1,4 +1,4 @@
-import { Trigger, Condition } from "./automation";
+import { Condition, Trigger } from "./automation";
 
 export const describeTrigger = (trigger: Trigger) =>
   `${trigger.platform} trigger`;

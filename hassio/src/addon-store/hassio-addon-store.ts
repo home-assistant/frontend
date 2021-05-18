@@ -5,12 +5,12 @@ import { mdiDotsVertical } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
-  state,
+  html,
   LitElement,
-  property,
   PropertyValues,
-} from "lit-element";
-import { html, TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit";
+import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";

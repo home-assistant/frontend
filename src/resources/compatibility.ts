@@ -1,5 +1,6 @@
 // For localize
 import "@formatjs/intl-getcanonicallocales/polyfill";
+import "@lit/polyfill-support";
 import "core-js";
 // To use comlink under ES5
 import "proxy-polyfill";

@@ -4,15 +4,8 @@ import {
   getUser,
   HassUser,
 } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../src/components/ha-card";
 
 @customElement("hc-layout")

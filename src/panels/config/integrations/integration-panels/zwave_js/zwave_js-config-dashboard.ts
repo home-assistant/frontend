@@ -1,20 +1,12 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiCheckCircle, mdiCircle, mdiRefresh } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../../../data/auth";
 import {
   fetchDataCollectionStatus,

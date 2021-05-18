@@ -15,18 +15,15 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResultGroup,
-  customElement,
-  eventOptions,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
   CSSResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { guard } from "lit-html/directives/guard";
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+} from "lit";
+import { customElement, eventOptions, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
 import { LocalStorage } from "../common/decorators/local-storage";
 import { fireEvent } from "../common/dom/fire_event";

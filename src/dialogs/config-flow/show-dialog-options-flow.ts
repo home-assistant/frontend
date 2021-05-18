@@ -1,4 +1,4 @@
-import { html } from "lit-element";
+import { html } from "lit";
 import { ConfigEntry } from "../../data/config_entries";
 import {
   createOptionsFlow,

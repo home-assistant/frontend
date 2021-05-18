@@ -1,26 +1,19 @@
-import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import "@material/mwc-list/mwc-list-item";
-import "@polymer/paper-listbox";
 import "@material/mwc-button";
-import "@polymer/paper-item";
-import "@polymer/paper-tooltip/paper-tooltip";
+import "@material/mwc-list/mwc-list-item";
+import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiAlertCircle, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import "@polymer/paper-item";
+import "@polymer/paper-listbox";
+import "@polymer/paper-tooltip/paper-tooltip";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
-import "../../../components/ha-icon-next";
 import "../../../components/ha-button-menu";
-import "../../../components/ha-svg-icon";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-next";
+import "../../../components/ha-svg-icon";
 import {
   ConfigEntry,
   deleteConfigEntry,

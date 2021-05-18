@@ -2,14 +2,12 @@ import "@material/mwc-button";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, query } from "lit/decorators";
 import "../../components/buttons/ha-progress-button";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-card";

@@ -1,4 +1,4 @@
-import { noChange } from "lit-html";
+import { noChange } from "lit";
 import {
   ChildPart,
   Directive,
@@ -6,8 +6,7 @@ import {
   DirectiveParameters,
   PartInfo,
   PartType,
-  // eslint-disable-next-line import/extensions
-} from "lit-html/directive.js";
+} from "lit/directive";
 
 export const dynamicElement = directive(
   class extends Directive {

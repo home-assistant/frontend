@@ -14,18 +14,9 @@ import {
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  query,
-  unsafeCSS,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, unsafeCSS } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { ensureArray } from "../common/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";

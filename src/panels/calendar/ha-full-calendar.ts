@@ -16,13 +16,12 @@ import {
   css,
   CSSResultGroup,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
   unsafeCSS,
-} from "lit-element";
+} from "lit";
+import { property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button-toggle-group";

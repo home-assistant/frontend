@@ -1,12 +1,6 @@
-import {
-  css,
-  customElement,
-  html,
-  LitElement,
-  property,
-  svg,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, html, LitElement, svg } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 
 export const BRANCH_HEIGHT = 20;
 export const SPACING = 10;

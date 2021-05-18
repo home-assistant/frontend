@@ -3,7 +3,8 @@ import {
   getAuth,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import { customElement, html, state, TemplateResult } from "lit-element";
+import { html, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import { CAST_NS } from "../../../../src/cast/const";
 import {
   ConnectMessage,
