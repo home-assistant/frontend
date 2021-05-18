@@ -22,7 +22,7 @@ import { mockTemplate } from "./stubs/template";
 import { mockTranslations } from "./stubs/translations";
 
 class HaDemo extends HomeAssistantAppEl {
-  protected async _initialize() {
+  protected async _initializeHass() {
     const initial: Partial<MockHomeAssistant> = {
       panelUrl: (this as any).panelUrl,
       // Override updateHass so that the correct hass lifecycle methods are called
