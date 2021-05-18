@@ -117,8 +117,6 @@
     "leaflet": "^1.7.1",
     "leaflet-draw": "^1.0.4",
     "lit": "^2.0.0-rc.2",
-    "lit-element": "^3.0.0-rc.2",
-    "lit-html": "^2.0.0-rc.3",
     "marked": "2.0.0",
     "mdn-polyfills": "^5.16.0",
     "memoize-one": "^5.0.2",

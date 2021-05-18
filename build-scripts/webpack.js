@@ -126,6 +126,10 @@ const createWebpackConfig = ({
     ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],
+      alias: {
+        "lit/decorators$": "lit/decorators.js",
+        "lit/directive$": "lit/directive.js",
+      },
     },
     output: {
       filename: ({ chunk }) => {
