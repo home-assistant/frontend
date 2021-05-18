@@ -93,7 +93,6 @@ class HaMenuButton extends LitElement {
     this.style.display = newNarrow || this._alwaysVisible ? "initial" : "none";
 
     if (!newNarrow) {
-      this._hasNotifications = false;
       if (this._unsubNotifications) {
         this._unsubNotifications();
         this._unsubNotifications = undefined;

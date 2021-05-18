@@ -20,7 +20,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
-      import("../managers/notification-manager");
+      setTimeout(() => import("../managers/notification-manager"), 5000);
     }
 
     updated(changedProperties) {

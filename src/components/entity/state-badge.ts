@@ -63,7 +63,8 @@ export class StateBadge extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
     if (
       !changedProps.has("stateObj") &&
       !changedProps.has("overrideImage") &&

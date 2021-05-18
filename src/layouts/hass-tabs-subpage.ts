@@ -106,8 +106,7 @@ class HassTabsSubpage extends LitElement {
     }
   );
 
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("route")) {
       this._activeTab = this.tabs.find((tab) =>
         `${this.route.prefix}${this.route.path}`.includes(tab.path)
@@ -121,6 +120,7 @@ class HassTabsSubpage extends LitElement {
         this.rtl = computeRTL(this.hass);
       }
     }
+    super.willUpdate(changedProperties);
   }
 
   protected render(): TemplateResult {
