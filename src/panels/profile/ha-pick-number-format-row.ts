@@ -1,19 +1,14 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
+import { formatNumber } from "../../common/string/format_number";
 import "../../components/ha-card";
 import "../../components/ha-paper-dropdown-menu";
-import { HomeAssistant } from "../../types";
 import "../../components/ha-settings-row";
-import { formatNumber } from "../../common/string/format_number";
 import { NumberFormat } from "../../data/translation";
-import { fireEvent } from "../../common/dom/fire_event";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-pick-number-format-row")
 class NumberFormatRow extends LitElement {

@@ -1,25 +1,4 @@
 import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
-import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import {
-  AutomationTraceExtended,
-  ChooseActionTraceStep,
-  getDataFromPath,
-  TriggerTraceStep,
-  isTriggerPath,
-} from "../../data/trace";
-import { HomeAssistant } from "../../types";
-import "./ha-timeline";
-import type { HaTimeline } from "./ha-timeline";
-import {
   mdiAlertCircle,
   mdiCircle,
   mdiCircleOutline,
@@ -27,16 +6,36 @@ import {
   mdiProgressWrench,
   mdiRecordCircleOutline,
 } from "@mdi/js";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import relativeTime from "../../common/datetime/relative_time";
+import { fireEvent } from "../../common/dom/fire_event";
 import { LogbookEntry } from "../../data/logbook";
 import {
   ChooseAction,
   ChooseActionChoice,
   getActionType,
 } from "../../data/script";
-import relativeTime from "../../common/datetime/relative_time";
-import { fireEvent } from "../../common/dom/fire_event";
 import { describeAction } from "../../data/script_i18n";
-import { ifDefined } from "lit-html/directives/if-defined";
+import {
+  AutomationTraceExtended,
+  ChooseActionTraceStep,
+  getDataFromPath,
+  isTriggerPath,
+  TriggerTraceStep,
+} from "../../data/trace";
+import { HomeAssistant } from "../../types";
+import "./ha-timeline";
+import type { HaTimeline } from "./ha-timeline";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
 

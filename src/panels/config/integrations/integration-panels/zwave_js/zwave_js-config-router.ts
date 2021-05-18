@@ -1,4 +1,3 @@
-import { customElement, property } from "lit-element";
 import {
   HassRouterPage,
   RouterOptions,
@@ -8,6 +7,7 @@ import { navigate } from "../../../../../common/navigate";
 import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
 
 import { mdiServerNetwork, mdiMathLog } from "@mdi/js";
+import { customElement, property } from "lit/decorators";
 
 export const configTabs: PageNavigation[] = [
   {

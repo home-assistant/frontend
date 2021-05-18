@@ -2,14 +2,8 @@ import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiImagePlus } from "@mdi/js";
 import "@polymer/iron-input/iron-input";
 import "@polymer/paper-input/paper-input-container";
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { createImage, generateImageThumbnailUrl } from "../data/image";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";

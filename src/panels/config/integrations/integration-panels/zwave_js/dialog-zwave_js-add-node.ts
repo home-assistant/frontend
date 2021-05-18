@@ -2,22 +2,14 @@ import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-formfield";
-import {
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  state,
-  TemplateResult,
-  css,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult, css } from "lit";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { customElement, property, state } from "lit/decorators";
 
 export interface ZWaveJSAddNodeDevice {
   id: string;

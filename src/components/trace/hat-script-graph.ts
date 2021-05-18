@@ -1,19 +1,4 @@
-import {
-  html,
-  LitElement,
-  property,
-  customElement,
-  PropertyValues,
-  css,
-} from "lit-element";
 import "@material/mwc-icon-button/mwc-icon-button";
-import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-svg-icon";
-import {
-  AutomationTraceExtended,
-  ChooseActionTraceStep,
-  ConditionTraceStep,
-} from "../../data/trace";
 import {
   mdiAbTesting,
   mdiArrowUp,
@@ -32,9 +17,11 @@ import {
   mdiTimerOutline,
   mdiTrafficLight,
 } from "@mdi/js";
-import "./hat-graph-node";
-import { classMap } from "lit-html/directives/class-map";
-import { NODE_SIZE, SPACING, NodeInfo } from "./hat-graph";
+import { css, html, LitElement, PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../common/dom/fire_event";
+import { ensureArray } from "../../common/ensure-array";
 import { Condition, Trigger } from "../../data/automation";
 import {
   Action,
@@ -48,7 +35,14 @@ import {
   WaitAction,
   WaitForTriggerAction,
 } from "../../data/script";
-import { ensureArray } from "../../common/ensure-array";
+import {
+  AutomationTraceExtended,
+  ChooseActionTraceStep,
+  ConditionTraceStep,
+} from "../../data/trace";
+import "../ha-svg-icon";
+import { NodeInfo, NODE_SIZE, SPACING } from "./hat-graph";
+import "./hat-graph-node";
 import "./hat-graph-spacer";
 
 declare global {

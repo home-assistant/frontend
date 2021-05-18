@@ -6,14 +6,8 @@ import {
   mdiPlus,
   mdiRobot,
 } from "@mdi/js";
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-card";

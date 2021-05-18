@@ -5,14 +5,9 @@ import {
   getAuth,
   subscribeConfig,
 } from "home-assistant-js-websocket";
-import {
-  customElement,
-  html,
-  state,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
@@ -29,10 +24,9 @@ import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { HassElement } from "../state/hass-element";
 import { HomeAssistant } from "../types";
 import { registerServiceWorker } from "../util/register-service-worker";
+import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
-import "./onboarding-analytics";
-import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 
 type OnboardingEvent =
   | {

@@ -1,11 +1,4 @@
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import {
   createSearchParam,
@@ -20,6 +13,7 @@ import {
 import { navigate } from "../../src/common/navigate";
 import { HomeAssistant, Route } from "../../src/types";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
+import { customElement, property, state } from "lit/decorators";
 
 const REDIRECTS: Redirects = {
   supervisor: {

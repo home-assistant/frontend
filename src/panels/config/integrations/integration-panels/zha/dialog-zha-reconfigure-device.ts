@@ -1,19 +1,11 @@
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import "@material/mwc-button/mwc-button";
-import { haStyleDialog } from "../../../../../resources/styles";
-import { HomeAssistant } from "../../../../../types";
-import { ZHAReconfigureDeviceDialogParams } from "./show-dialog-zha-reconfigure-device";
+import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
+import { createCloseHeading } from "../../../../../components/ha-dialog";
 import "../../../../../components/ha-svg-icon";
 import {
   AttributeConfigurationStatus,
@@ -26,9 +18,9 @@ import {
   ZHA_CHANNEL_MSG_BIND,
   ZHA_CHANNEL_MSG_CFG_RPT,
 } from "../../../../../data/zha";
-import { fireEvent } from "../../../../../common/dom/fire_event";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { haStyleDialog } from "../../../../../resources/styles";
+import { HomeAssistant } from "../../../../../types";
+import { ZHAReconfigureDeviceDialogParams } from "./show-dialog-zha-reconfigure-device";
 
 @customElement("dialog-zha-reconfigure-device")
 class DialogZHAReconfigureDevice extends LitElement {

@@ -1,13 +1,7 @@
 import "@polymer/paper-item/paper-item";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/dialog/ha-paper-dialog";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-paper-dropdown-menu";
@@ -17,7 +11,6 @@ import {
   LovelaceConfig,
   LovelaceDashboard,
 } from "../../../../data/lovelace";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "../../components/hui-views-list";

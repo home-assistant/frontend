@@ -1,5 +1,5 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { PropertyDeclaration, ReactiveElement } from "lit-element";
+import { PropertyDeclaration, ReactiveElement } from "lit";
 import type { ClassElement } from "../../types";
 
 type Callback = (oldValue: any, newValue: any) => void;

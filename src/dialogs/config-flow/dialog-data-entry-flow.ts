@@ -4,13 +4,12 @@ import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-circular-progress";
@@ -41,9 +40,9 @@ import "./step-flow-create-entry";
 import "./step-flow-external";
 import "./step-flow-form";
 import "./step-flow-loading";
+import "./step-flow-pick-flow";
 import "./step-flow-pick-handler";
 import "./step-flow-progress";
-import "./step-flow-pick-flow";
 
 let instance = 0;
 

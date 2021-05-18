@@ -1,10 +1,5 @@
-import {
-  customElement,
-  state,
-  property,
-  PropertyValues,
-  ReactiveElement,
-} from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";

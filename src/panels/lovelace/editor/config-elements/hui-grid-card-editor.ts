@@ -1,4 +1,5 @@
-import { customElement, html, TemplateResult } from "lit-element";
+import { html, TemplateResult } from "lit";
+import { customElement } from "lit/decorators";
 import {
   any,
   array,

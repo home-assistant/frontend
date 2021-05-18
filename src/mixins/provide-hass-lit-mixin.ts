@@ -1,4 +1,4 @@
-import { PropertyValues, ReactiveElement } from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
 import { Constructor, HomeAssistant } from "../types";
 
 export interface ProvideHassElement {

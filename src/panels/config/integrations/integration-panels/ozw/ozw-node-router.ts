@@ -1,5 +1,5 @@
 import { mdiNetwork, mdiWrench } from "@mdi/js";
-import { customElement, property } from "lit-element";
+import { customElement, property } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import {
   HassRouterPage,

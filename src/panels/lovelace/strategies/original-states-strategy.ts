@@ -5,8 +5,8 @@ import { subscribeDeviceRegistry } from "../../../data/device_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
 import {
-  LovelaceViewStrategy,
   LovelaceDashboardStrategy,
+  LovelaceViewStrategy,
 } from "./get-strategy";
 
 let subscribedRegistries = false;

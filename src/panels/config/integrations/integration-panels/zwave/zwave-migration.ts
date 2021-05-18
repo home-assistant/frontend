@@ -1,45 +1,37 @@
+import "@material/mwc-button/mwc-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@material/mwc-button/mwc-button";
-import "../../../../../components/ha-icon-button";
-import "../../../../../components/ha-circular-progress";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  state,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { computeStateName } from "../../../../../common/entity/compute_state_name";
+import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-api-button";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-icon";
-import {
-  fetchNetworkStatus,
-  ZWaveNetworkStatus,
-  ZWAVE_NETWORK_STATE_STOPPED,
-  fetchMigrationConfig,
-  ZWaveMigrationConfig,
-  startOzwConfigFlow,
-} from "../../../../../data/zwave";
-import { haStyle } from "../../../../../resources/styles";
-import type { HomeAssistant, Route } from "../../../../../types";
-import "../../../ha-config-section";
-import "../../../../../layouts/hass-subpage";
-import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
-import { migrateZwave, OZWMigrationData } from "../../../../../data/ozw";
-import { navigate } from "../../../../../common/navigate";
-import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
-import { computeStateName } from "../../../../../common/entity/compute_state_name";
+import "../../../../../components/ha-icon-button";
 import {
   computeDeviceName,
   subscribeDeviceRegistry,
 } from "../../../../../data/device_registry";
-import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { migrateZwave, OZWMigrationData } from "../../../../../data/ozw";
+import {
+  fetchMigrationConfig,
+  fetchNetworkStatus,
+  startOzwConfigFlow,
+  ZWaveMigrationConfig,
+  ZWaveNetworkStatus,
+  ZWAVE_NETWORK_STATE_STOPPED,
+} from "../../../../../data/zwave";
+import { showConfigFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-config-flow";
+import { showAlertDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import "../../../../../layouts/hass-subpage";
+import { haStyle } from "../../../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../../../types";
+import "../../../ha-config-section";
 
 @customElement("zwave-migration")
 export class ZwaveMigration extends LitElement {

@@ -1,4 +1,4 @@
-import { LitElement } from "lit-element";
+import { LitElement } from "lit";
 import { Constructor } from "../types";
 
 export const KeyboardShortcutMixin = <T extends Constructor<LitElement>>(

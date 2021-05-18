@@ -3,21 +3,20 @@ import {
   css,
   CSSResultGroup,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
 import { HomeAssistant } from "../../types";
+import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-switch";
-import "../ha-formfield";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&

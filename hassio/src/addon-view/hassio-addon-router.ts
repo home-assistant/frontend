@@ -1,4 +1,4 @@
-import { customElement, property } from "lit-element";
+import { customElement, property } from "lit/decorators";
 import { HassioAddonDetails } from "../../../src/data/hassio/addon";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {

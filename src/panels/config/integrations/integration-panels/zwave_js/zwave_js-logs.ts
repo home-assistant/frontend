@@ -1,27 +1,19 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  html,
-  property,
-  customElement,
-  LitElement,
-  CSSResultArray,
-  state,
-  query,
-} from "lit-element";
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-listbox/paper-listbox";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultArray, html, LitElement } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import {
   fetchZWaveJSLogConfig,
   setZWaveJSLogLevel,
   subscribeZWaveJSLogs,
   ZWaveJSLogConfig,
 } from "../../../../../data/zwave_js";
+import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
 import { configTabs } from "./zwave_js-config-router";
-import "../../../../../layouts/hass-tabs-subpage";
-import { haStyle } from "../../../../../resources/styles";
 
 @customElement("zwave_js-logs")
 class ZWaveJSLogs extends SubscribeMixin(LitElement) {

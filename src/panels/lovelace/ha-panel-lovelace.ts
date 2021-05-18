@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import deepFreeze from "deep-freeze";
-import { html, state, LitElement, property, TemplateResult } from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import { constructUrlCurrentPath } from "../../common/url/construct-url";
 import {
   addSearchParam,

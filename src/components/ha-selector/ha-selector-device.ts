@@ -1,4 +1,5 @@
-import { customElement, html, state, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
 import { DeviceRegistryEntry } from "../../data/device_registry";
 import { DeviceSelector } from "../../data/selector";

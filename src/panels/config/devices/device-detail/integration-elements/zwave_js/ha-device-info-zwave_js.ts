@@ -1,23 +1,20 @@
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
-  getIdentifiersFromDevice,
   fetchNodeStatus,
+  getIdentifiersFromDevice,
+  nodeStatus,
   ZWaveJSNode,
   ZWaveJSNodeIdentifiers,
-  nodeStatus,
 } from "../../../../../../data/zwave_js";
-
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 

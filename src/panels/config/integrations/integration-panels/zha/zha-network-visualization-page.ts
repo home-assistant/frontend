@@ -1,14 +1,4 @@
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 
 import "@material/mwc-button";
 import { navigate } from "../../../../../common/navigate";
@@ -30,6 +20,7 @@ import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import { zhaTabs } from "./zha-config-dashboard";
+import { customElement, property, query, state } from "lit/decorators";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {

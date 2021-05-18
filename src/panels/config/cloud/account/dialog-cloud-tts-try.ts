@@ -1,34 +1,25 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
-import { HomeAssistant } from "../../../../types";
-import { TryTtsDialogParams } from "./show-dialog-cloud-tts-try";
-import { haStyleDialog } from "../../../../resources/styles";
-import { fireEvent } from "../../../../common/dom/fire_event";
-import { convertTextToSpeech } from "../../../../data/tts";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { mdiPlayCircleOutline } from "@mdi/js";
 import "@polymer/paper-input/paper-textarea";
-import "../../../../components/ha-paper-dropdown-menu";
-import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
+import type { PaperTextareaElement } from "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import { supportsFeature } from "../../../../common/entity/supports-feature";
-import { SUPPORT_PLAY_MEDIA } from "../../../../data/media-player";
-import { createCloseHeading } from "../../../../components/ha-dialog";
-import { mdiPlayCircleOutline } from "@mdi/js";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import type { PaperTextareaElement } from "@polymer/paper-input/paper-textarea";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { LocalStorage } from "../../../../common/decorators/local-storage";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { supportsFeature } from "../../../../common/entity/supports-feature";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-paper-dropdown-menu";
+import { SUPPORT_PLAY_MEDIA } from "../../../../data/media-player";
+import { convertTextToSpeech } from "../../../../data/tts";
+import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
+import { haStyleDialog } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import { TryTtsDialogParams } from "./show-dialog-cloud-tts-try";
 
 @customElement("dialog-cloud-try-tts")
 export class DialogTryTts extends LitElement {

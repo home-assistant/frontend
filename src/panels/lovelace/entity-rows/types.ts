@@ -18,7 +18,7 @@ export interface EntityFilterEntityConfig extends EntityConfig {
 }
 export interface DividerConfig {
   type: "divider";
-  style: Record<string, string>;
+  style?: Record<string, string>;
 }
 export interface SectionConfig {
   type: "section";

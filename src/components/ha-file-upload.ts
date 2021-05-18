@@ -2,18 +2,9 @@ import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose } from "@mdi/js";
 import "@polymer/iron-input/iron-input";
 import "@polymer/paper-input/paper-input-container";
-import {
-  css,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-circular-progress";
 import "./ha-svg-icon";

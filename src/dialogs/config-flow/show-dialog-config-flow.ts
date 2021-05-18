@@ -1,4 +1,4 @@
-import { html } from "lit-element";
+import { html } from "lit";
 import { caseInsensitiveCompare } from "../../common/string/compare";
 import {
   createConfigFlow,

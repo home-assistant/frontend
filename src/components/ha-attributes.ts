@@ -1,18 +1,11 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { until } from "lit-html/directives/until";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { until } from "lit/directives/until";
+import { haStyle } from "../resources/styles";
 import hassAttributeUtil, {
   formatAttributeName,
 } from "../util/hass-attributes-util";
-import { haStyle } from "../resources/styles";
 
 let jsYamlPromise: Promise<typeof import("js-yaml")>;
 

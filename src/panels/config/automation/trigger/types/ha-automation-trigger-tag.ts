@@ -1,12 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { TagTrigger } from "../../../../../data/automation";
 import { fetchTags, Tag } from "../../../../../data/tag";
