@@ -2,14 +2,12 @@ import "@material/mwc-button/mwc-button";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
-  state,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { compare } from "../common/string/compare";
 import { LocalizeFunc } from "../common/translations/localize";

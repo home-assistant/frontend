@@ -1,5 +1,6 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { customElement, state, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,

@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  LitElement,
-  property,
-  svg,
-  SVGTemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, LitElement, svg, SVGTemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-svg-icon")
 export class HaSvgIcon extends LitElement {

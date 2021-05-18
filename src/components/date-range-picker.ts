@@ -1,6 +1,5 @@
 // @ts-nocheck
 import wrap from "@vue/web-component-wrapper";
-import { customElement } from "lit-element";
 import Vue from "vue";
 import DateRangePicker from "vue2-daterange-picker";
 import dateRangePickerStyles from "vue2-daterange-picker/dist/vue2-daterange-picker.css";

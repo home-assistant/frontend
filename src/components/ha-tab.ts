@@ -1,19 +1,15 @@
 import type { Ripple } from "@material/mwc-ripple";
 import "@material/mwc-ripple/mwc-ripple";
 import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import {
-  css,
-  CSSResultGroup,
   customElement,
   eventOptions,
-  html,
-  state,
-  LitElement,
   property,
   queryAsync,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+  state,
+} from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import "./ha-icon";
 import "./ha-svg-icon";
 

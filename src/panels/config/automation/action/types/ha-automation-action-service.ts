@@ -1,22 +1,14 @@
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
-import { html } from "lit-html";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { any, assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { hasTemplate } from "../../../../../common/string/has-template";
+import { entityIdOrAll } from "../../../../../common/structs/is-entity-id";
+import "../../../../../components/ha-service-control";
 import { ServiceAction } from "../../../../../data/script";
 import type { HomeAssistant } from "../../../../../types";
-import { entityIdOrAll } from "../../../../../common/structs/is-entity-id";
 import { ActionElement } from "../ha-automation-action-row";
-import "../../../../../components/ha-service-control";
-import { hasTemplate } from "../../../../../common/string/has-template";
 
 const actionStruct = object({
   service: optional(string()),

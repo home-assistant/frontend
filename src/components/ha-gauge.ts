@@ -1,14 +1,7 @@
-import {
-  css,
-  customElement,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-  svg,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
+import { css, LitElement, PropertyValues, svg } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../common/string/format_number";
 import { afterNextRender } from "../common/util/render-status";
 import { FrontendTranslationData } from "../data/translation";

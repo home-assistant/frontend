@@ -1,11 +1,6 @@
 import { safeDump } from "js-yaml";
-import {
-  customElement,
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { html, css, LitElement, TemplateResult } from "lit";
+import { customElement } from "lit/decorators";
 import "../../../src/components/ha-card";
 import { describeCondition } from "../../../src/data/automation_i18n";
 

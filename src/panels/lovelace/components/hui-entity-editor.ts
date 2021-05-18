@@ -2,15 +2,13 @@ import { mdiDrag } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { guard } from "lit-html/directives/guard";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { guard } from "lit/directives/guard";
 import type { SortableEvent } from "sortablejs";
 import Sortable, {
   AutoScroll,

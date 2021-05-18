@@ -1,4 +1,4 @@
-import type { PropertyValues } from "lit-element";
+import type { PropertyValues } from "lit";
 import type { HASSDomEvent } from "../common/dom/fire_event";
 import { showDialog } from "../dialogs/make-dialog-manager";
 import type { MoreInfoDialogParams } from "../dialogs/more-info/ha-more-info-dialog";

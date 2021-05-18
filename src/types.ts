@@ -3,8 +3,8 @@ import {
   Connection,
   HassConfig,
   HassEntities,
-  HassServiceTarget,
   HassServices,
+  HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";

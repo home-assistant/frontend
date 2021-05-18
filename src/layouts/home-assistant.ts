@@ -1,5 +1,6 @@
-import { customElement, html, state, PropertyValues } from "lit-element";
 import { isNavigationClick } from "../common/dom/is-navigation-click";
+import { html, PropertyValues } from "lit";
+import { customElement, state } from "lit/decorators";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
@@ -45,7 +46,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._initialize();
+    this._initializeHass();
     setTimeout(() => registerServiceWorker(this), 1000);
     /* polyfill for paper-dropdown */
     import("web-animations-js/web-animations-next-lite.min");
@@ -145,7 +146,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     }
   }
 
-  protected async _initialize() {
+  protected async _initializeHass() {
     try {
       let result;
 

@@ -1,4 +1,4 @@
-import { TemplateResult } from "lit-html";
+import { TemplateResult } from "lit";
 import { fireEvent } from "../../common/dom/fire_event";
 
 interface BaseDialogBoxParams {

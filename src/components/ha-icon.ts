@@ -2,14 +2,12 @@ import "@polymer/iron-icon/iron-icon";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { debounce } from "../common/util/debounce";
 import { CustomIcon, customIconsets } from "../data/custom_iconsets";

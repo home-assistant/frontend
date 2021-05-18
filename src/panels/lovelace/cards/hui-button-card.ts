@@ -5,18 +5,20 @@ import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import {
   customElement,
   eventOptions,
-  html,
-  state,
-  LitElement,
   property,
-  PropertyValues,
   queryAsync,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
+  state,
+} from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeActiveState } from "../../../common/entity/compute_active_state";

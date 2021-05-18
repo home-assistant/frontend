@@ -1,5 +1,6 @@
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { customElement, html, state, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { subscribeEntityRegistry } from "../../data/entity_registry";
 import { EntitySelector } from "../../data/selector";

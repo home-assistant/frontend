@@ -1,5 +1,6 @@
 import "@polymer/paper-input/paper-textarea";
-import { property, PropertyValues, ReactiveElement } from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { property } from "lit/decorators";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";

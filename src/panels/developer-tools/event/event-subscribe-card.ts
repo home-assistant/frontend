@@ -1,16 +1,8 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import { HassEvent } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { formatTime } from "../../../common/datetime/format_time";
 import "../../../components/ha-card";
 import { PolymerChangedEvent } from "../../../polymer-types";

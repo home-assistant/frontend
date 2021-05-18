@@ -1,16 +1,8 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../../src/common/datetime/format_date";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { compare } from "../../../../src/common/string/compare";
@@ -334,7 +326,7 @@ class HassioCreateSnapshotDialog extends LitElement {
     button.progress = false;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

@@ -117,7 +117,7 @@ const createWebpackConfig = ({
       new webpack.NormalModuleReplacementPlugin(
         new RegExp(
           require.resolve(
-            "lit-virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
+            "@lit-labs/virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
           )
         ),
         path.resolve(paths.polymer_dir, "src/resources/EventTarget-ponyfill.js")
@@ -126,6 +126,10 @@ const createWebpackConfig = ({
     ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],
+      alias: {
+        "lit/decorators$": "lit/decorators.js",
+        "lit/directive$": "lit/directive.js",
+      },
     },
     output: {
       filename: ({ chunk }) => {

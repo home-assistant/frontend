@@ -1,16 +1,7 @@
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  queryAll,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state, property } from "lit/decorators";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
-import type { StateBadge } from "../../../components/entity/state-badge";
 import type { ActionHandlerEvent } from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
 import type { EntitiesCardEntityConfig } from "../cards/types";
@@ -21,27 +12,14 @@ import { hasAction } from "../common/has-action";
 
 @customElement("hui-buttons-base")
 export class HuiButtonsBase extends LitElement {
+  @state() public hass!: HomeAssistant;
+
   @property() public configEntities?: EntitiesCardEntityConfig[];
 
-  @queryAll("state-badge") protected _badges!: StateBadge[];
-
-  private _hass?: HomeAssistant;
-
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
-    const entitiesShowingIcons = this.configEntities?.filter(
-      (entity) => entity.show_icon !== false
-    );
-    this._badges.forEach((badge, index: number) => {
-      badge.hass = hass;
-      badge.stateObj = hass.states[entitiesShowingIcons![index].entity];
-    });
-  }
-
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       ${(this.configEntities || []).map((entityConf) => {
-        const stateObj = this._hass!.states[entityConf.entity];
+        const stateObj = this.hass.states[entityConf.entity];
 
         return html`
           <div
@@ -56,8 +34,8 @@ export class HuiButtonsBase extends LitElement {
             ${entityConf.show_icon !== false
               ? html`
                   <state-badge
-                    title=${computeTooltip(this._hass!, entityConf)}
-                    .hass=${this._hass}
+                    title=${computeTooltip(this.hass, entityConf)}
+                    .hass=${this.hass}
                     .stateObj=${stateObj}
                     .overrideIcon=${entityConf.icon}
                     .overrideImage=${entityConf.image}
@@ -79,7 +57,7 @@ export class HuiButtonsBase extends LitElement {
 
   private _handleAction(ev: ActionHandlerEvent) {
     const config = (ev.currentTarget as any).config as EntitiesCardEntityConfig;
-    handleAction(this, this._hass!, config, ev.detail.action!);
+    handleAction(this, this.hass, config, ev.detail.action!);
   }
 
   static get styles(): CSSResultGroup {

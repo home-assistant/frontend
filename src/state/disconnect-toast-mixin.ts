@@ -4,14 +4,14 @@ import {
   STATE_STARTING,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
+import {
+  BootstrapIntegrationsTimings,
+  subscribeBootstrapIntegrations,
+} from "../data/bootstrap_integrations";
+import { domainToName } from "../data/integration";
 import { Constructor } from "../types";
 import { showToast } from "../util/toast";
 import { HassBaseEl } from "./hass-base-mixin";
-import { domainToName } from "../data/integration";
-import {
-  subscribeBootstrapIntegrations,
-  BootstrapIntegrationsTimings,
-} from "../data/bootstrap_integrations";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {

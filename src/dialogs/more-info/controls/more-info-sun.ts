@@ -1,13 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { formatTime } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/string/format_number";
 import "../../../components/ha-relative-time";

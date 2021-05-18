@@ -1,4 +1,5 @@
-import { customElement, property, ReactiveElement } from "lit-element";
+import { ReactiveElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 
