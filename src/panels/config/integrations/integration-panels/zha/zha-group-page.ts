@@ -282,7 +282,7 @@ export class ZHAGroupPage extends LitElement {
 
   private async _deleteGroup(): Promise<void> {
     await removeGroups(this.hass, [this.groupId]);
-    navigate(this, `/config/zha/groups`, true);
+    navigate(`/config/zha/groups`, { replace: true });
   }
 
   static get styles(): CSSResultGroup {

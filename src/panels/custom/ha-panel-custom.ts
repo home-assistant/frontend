@@ -1,5 +1,5 @@
 import { property, PropertyValues, ReactiveElement } from "lit-element";
-import { navigate } from "../../common/navigate";
+import { navigate, NavigateOptions } from "../../common/navigate";
 import { CustomPanelInfo } from "../../data/panel_custom";
 import { HomeAssistant, Route } from "../../types";
 import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
@@ -33,8 +33,8 @@ export class HaPanelCustom extends ReactiveElement {
   // Since navigate fires events on `window`, we need to expose this as a function
   // to allow custom panels to forward their location changes to the main window
   // instead of their iframe window.
-  public navigate = (path: string, replace?: boolean) =>
-    navigate(this, path, replace);
+  public navigate = (path: string, options?: NavigateOptions) =>
+    navigate(path, options);
 
   public registerIframe(initialize, setProperties) {
     initialize(this.panel, {

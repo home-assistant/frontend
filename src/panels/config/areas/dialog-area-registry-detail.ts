@@ -156,7 +156,7 @@ class DialogAreaDetail extends LitElement {
       this._submitting = false;
     }
 
-    navigate(this, "/config/areas/dashboard");
+    navigate("/config/areas/dashboard");
   }
 
   static get styles(): CSSResultGroup {

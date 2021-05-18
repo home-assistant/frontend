@@ -172,11 +172,9 @@ class HaPanelMy extends LitElement {
         this._error = "no_supervisor";
         return;
       }
-      navigate(
-        this,
-        `/hassio/_my_redirect/${path}${window.location.search}`,
-        true
-      );
+      navigate(`/hassio/_my_redirect/${path}${window.location.search}`, {
+        replace: true,
+      });
       return;
     }
 
@@ -203,7 +201,7 @@ class HaPanelMy extends LitElement {
       return;
     }
 
-    navigate(this, url, true);
+    navigate(url, { replace: true });
   }
 
   protected render() {

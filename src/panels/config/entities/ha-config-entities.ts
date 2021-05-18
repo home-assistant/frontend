@@ -838,7 +838,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     if (
       this._activeFilters(this._searchParms, this.hass.localize, this._entries)
     ) {
-      navigate(this, window.location.pathname, true);
+      navigate(window.location.pathname, { replace: true });
     }
     this._showDisabled = true;
     this._showReadOnly = true;

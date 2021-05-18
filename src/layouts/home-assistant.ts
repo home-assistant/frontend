@@ -86,13 +86,13 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     window.addEventListener("click", (ev) => {
       const href = isNavigationClick(ev);
       if (href) {
-        navigate(this, href);
+        navigate(href);
       }
     });
 
     // Handle first navigation
     if (["", "/"].includes(curPath())) {
-      navigate(this, `/${getStorageDefaultPanelUrlPath()}`, true);
+      navigate(`/${getStorageDefaultPanelUrlPath()}`, { replace: true });
     } else {
       updateRoute();
     }

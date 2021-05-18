@@ -602,7 +602,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
       // Wait for dialog to complate closing
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
-    showScriptEditor(this, {
+    showScriptEditor({
       ...this._config,
       alias: `${this._config?.alias} (${this.hass.localize(
         "ui.panel.config.script.picker.duplicate"
@@ -667,7 +667,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         this._dirty = false;
 
         if (!this.scriptEntityId) {
-          navigate(this, `/config/script/edit/${id}`, true);
+          navigate(`/config/script/edit/${id}`, { replace: true });
         }
       },
       (errors) => {

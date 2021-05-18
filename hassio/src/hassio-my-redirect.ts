@@ -95,7 +95,7 @@ class HassioMyRedirect extends LitElement {
       return;
     }
 
-    navigate(this, url, true);
+    navigate(url, { replace: true });
   }
 
   protected render(): TemplateResult {

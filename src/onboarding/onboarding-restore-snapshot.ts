@@ -70,7 +70,7 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
         });
         if (response.status === 401) {
           // If we get a unauthorized response, the restore is done
-          navigate(this, "/", true);
+          navigate("/", { replace: true });
           location.reload();
         }
       } catch (err) {

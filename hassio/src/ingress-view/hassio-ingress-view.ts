@@ -107,7 +107,7 @@ class HassioIngressView extends LitElement {
           });
           history.back();
         } else {
-          navigate(this, `/hassio/ingress/${addonInfo.slug}`, true);
+          navigate(`/hassio/ingress/${addonInfo.slug}`, { replace: true });
         }
       }
     }
@@ -159,8 +159,8 @@ class HassioIngressView extends LitElement {
       await showAlertDialog(this, {
         text: "Add-on is not running. Please start it first",
         title: addon.name,
+        confirm: () => navigate(`/hassio/addon/${addon.slug}`),
       });
-      navigate(this, `/hassio/addon/${addon.slug}/info`, true);
       return;
     }
 

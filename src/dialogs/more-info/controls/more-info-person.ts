@@ -61,7 +61,7 @@ class MoreInfoPerson extends LitElement {
   }
 
   private _handleAction() {
-    showZoneEditor(this, {
+    showZoneEditor({
       latitude: this.stateObj!.attributes.latitude,
       longitude: this.stateObj!.attributes.longitude,
     });

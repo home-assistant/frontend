@@ -84,7 +84,7 @@ class PanelDeveloperTools extends LitElement {
   private handlePageSelected(ev) {
     const newPage = ev.detail.item.getAttribute("page-name");
     if (newPage !== this._page) {
-      navigate(this, `/developer-tools/${newPage}`);
+      navigate(`/developer-tools/${newPage}`);
     } else {
       scrollTo(0, 0);
     }

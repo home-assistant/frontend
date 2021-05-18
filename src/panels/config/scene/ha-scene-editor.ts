@@ -751,7 +751,7 @@ export class HaSceneEditor extends SubscribeMixin(
       // Wait for dialog to complete closing
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
-    showSceneEditor(this, {
+    showSceneEditor({
       ...this._config,
       id: undefined,
       name: `${this._config?.name} (${this.hass.localize(
@@ -798,7 +798,7 @@ export class HaSceneEditor extends SubscribeMixin(
       this._dirty = false;
 
       if (!this.sceneId) {
-        navigate(this, `/config/scene/edit/${id}`, true);
+        navigate(`/config/scene/edit/${id}`, { replace: true });
       }
     } catch (err) {
       this._errors = err.body.message || err.message;

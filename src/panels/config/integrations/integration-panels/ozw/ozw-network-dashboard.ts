@@ -54,7 +54,7 @@ class OZWNetworkDashboard extends LitElement {
 
   protected firstUpdated() {
     if (!this.ozwInstance) {
-      navigate(this, "/config/ozw/dashboard", true);
+      navigate("/config/ozw/dashboard", { replace: true });
     } else if (this.hass) {
       this._fetchData();
     }

@@ -55,9 +55,11 @@ class OZWNodeConfig extends LitElement {
 
   protected firstUpdated() {
     if (!this.ozwInstance) {
-      navigate(this, "/config/ozw/dashboard", true);
+      navigate("/config/ozw/dashboard", { replace: true });
     } else if (!this.nodeId) {
-      navigate(this, `/config/ozw/network/${this.ozwInstance}/nodes`, true);
+      navigate(`/config/ozw/network/${this.ozwInstance}/nodes`, {
+        replace: true,
+      });
     } else {
       this._fetchData();
     }

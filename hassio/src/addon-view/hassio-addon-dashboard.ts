@@ -183,7 +183,7 @@ class HassioAddonDashboard extends LitElement {
         if (!validAddon) {
           this._error = this.supervisor.localize("my.error_addon_not_found");
         } else {
-          navigate(this, `/hassio/addon/${requestedAddon}`, true);
+          navigate(`/hassio/addon/${requestedAddon}`, { replace: true });
         }
       }
     }

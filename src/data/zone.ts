@@ -52,12 +52,9 @@ export const deleteZone = (hass: HomeAssistant, zoneId: string) =>
 
 let inititialZoneEditorData: Partial<ZoneMutableParams> | undefined;
 
-export const showZoneEditor = (
-  el: HTMLElement,
-  data?: Partial<ZoneMutableParams>
-) => {
+export const showZoneEditor = (data?: Partial<ZoneMutableParams>) => {
   inititialZoneEditorData = data;
-  navigate(el, "/config/zone/new");
+  navigate("/config/zone/new");
 };
 
 export const getZoneEditorInitData = () => {

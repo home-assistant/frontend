@@ -598,7 +598,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   private async _handleAdd(localizePromise: Promise<LocalizeFunc>) {
     const domain = extractSearchParam("domain");
-    navigate(this, "/config/integrations", true);
+    navigate("/config/integrations", { replace: true });
     if (!domain) {
       return;
     }

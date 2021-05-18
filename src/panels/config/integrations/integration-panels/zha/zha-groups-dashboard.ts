@@ -141,7 +141,7 @@ export class ZHAGroupsDashboard extends LitElement {
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const groupId = ev.detail.id;
-    navigate(this, `/config/zha/group/${groupId}`);
+    navigate(`/config/zha/group/${groupId}`);
   }
 
   static get styles(): CSSResultGroup {

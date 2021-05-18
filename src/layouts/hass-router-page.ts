@@ -98,7 +98,7 @@ export class HassRouterPage extends ReactiveElement {
     const defaultPage = routerOptions.defaultPage;
 
     if (route && route.path === "" && defaultPage !== undefined) {
-      navigate(this, `${route.prefix}/${defaultPage}`, true);
+      navigate(`${route.prefix}/${defaultPage}`, { replace: true });
     }
 
     let newPage = route
@@ -126,7 +126,7 @@ export class HassRouterPage extends ReactiveElement {
 
         // Update the url if we know where we're mounted.
         if (route) {
-          navigate(this, `${route.prefix}/${result}`, true);
+          navigate(`${route.prefix}/${result}`, { replace: true });
         }
       }
     }

@@ -147,7 +147,7 @@ export class ZHAAddGroupPage extends LitElement {
     this._processingAdd = false;
     this._groupName = "";
     this._zhaDevicesDataTable.clearSelection();
-    navigate(this, `/config/zha/group/${group.group_id}`, true);
+    navigate(`/config/zha/group/${group.group_id}`, { replace: true });
   }
 
   private _handleNameChange(ev: PolymerChangedEvent<string>) {

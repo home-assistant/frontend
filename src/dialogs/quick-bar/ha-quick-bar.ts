@@ -562,7 +562,7 @@ export class QuickBar extends LitElement {
         categoryText: this.hass.localize(
           `ui.dialogs.quick-bar.commands.types.${categoryKey}`
         ),
-        action: () => navigate(this, item.path),
+        action: () => navigate(item.path),
       };
 
       return {

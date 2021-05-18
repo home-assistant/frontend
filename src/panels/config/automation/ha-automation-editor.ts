@@ -452,7 +452,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       // Wait for dialog to complate closing
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
-    showAutomationEditor(this, {
+    showAutomationEditor({
       ...this._config,
       id: undefined,
       alias: `${this._config?.alias} (${this.hass.localize(
@@ -505,7 +505,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         this._dirty = false;
 
         if (!this.automationId) {
-          navigate(this, `/config/automation/edit/${id}`, true);
+          navigate(`/config/automation/edit/${id}`, { replace: true });
         }
       },
       (errors) => {

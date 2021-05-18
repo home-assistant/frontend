@@ -109,14 +109,11 @@ export class HaDeviceActionsZha extends LitElement {
   }
 
   private _onAddDevicesClick() {
-    navigate(this, "/config/zha/add/" + this._zhaDevice!.ieee);
+    navigate(`/config/zha/add/${this._zhaDevice!.ieee}`);
   }
 
   private _onViewInVisualizationClick() {
-    navigate(
-      this,
-      "/config/zha/visualization/" + this._zhaDevice!.device_reg_id
-    );
+    navigate(`/config/zha/visualization/${this._zhaDevice!.device_reg_id}`);
   }
 
   private async _handleZigbeeInfoClicked() {

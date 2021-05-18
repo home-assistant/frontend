@@ -3,13 +3,17 @@ import { fireEvent } from "./dom/fire_event";
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "location-changed": {
-      replace: boolean;
-    };
+    "location-changed": NavigateOptions;
   }
 }
 
-export const navigate = (_node: any, path: string, replace = false) => {
+export interface NavigateOptions {
+  replace?: boolean;
+}
+
+export const navigate = (path: string, options?: NavigateOptions) => {
+  const replace = options?.replace || false;
+
   if (__DEMO__) {
     if (replace) {
       top.history.replaceState(
@@ -29,7 +33,5 @@ export const navigate = (_node: any, path: string, replace = false) => {
   } else {
     top.history.pushState(null, "", path);
   }
-  fireEvent(top, "location-changed", {
-    replace,
-  });
+  fireEvent(top, "location-changed", options);
 };

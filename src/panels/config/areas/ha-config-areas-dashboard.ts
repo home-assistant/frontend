@@ -199,7 +199,7 @@ export class HaConfigAreasDashboard extends LitElement {
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const areaId = ev.detail.id;
-    navigate(this, `/config/areas/area/${areaId}`);
+    navigate(`/config/areas/area/${areaId}`);
   }
 
   private _openDialog(entry?: AreaRegistryEntry) {
