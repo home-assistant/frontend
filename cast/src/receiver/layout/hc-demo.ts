@@ -33,10 +33,10 @@ class HcDemo extends HassElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._initialize();
+    this._initializeHass();
   }
 
-  private async _initialize() {
+  private async _initializeHass() {
     const initial: Partial<MockHomeAssistant> = {
       // Override updateHass so that the correct hass lifecycle methods are called
       updateHass: (hassUpdate: Partial<HomeAssistant>) =>
