@@ -2,15 +2,13 @@ import "@material/mwc-button/mwc-button";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { CastManager } from "../../../cast/cast_manager";
 import {
   castSendShowLovelaceView,

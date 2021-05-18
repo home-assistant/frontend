@@ -1,6 +1,7 @@
 import { Dialog } from "@material/mwc-dialog";
 import { mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, customElement, html } from "lit-element";
+import { css, CSSResultGroup, html } from "lit";
+import { customElement } from "lit/decorators";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-button";

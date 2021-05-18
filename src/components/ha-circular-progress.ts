@@ -1,5 +1,5 @@
 import { CircularProgress } from "@material/mwc-circular-progress";
-import { customElement, property } from "lit-element";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-circular-progress")
 // @ts-ignore

@@ -1,5 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { property, PropertyValues, ReactiveElement } from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { property } from "lit/decorators";
 import dynamicContentUpdater from "../../common/dom/dynamic_content_updater";
 import { importMoreInfoControl } from "../../panels/lovelace/custom-card-helpers";
 import { HomeAssistant } from "../../types";

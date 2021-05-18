@@ -1,5 +1,5 @@
 import "@polymer/polymer/lib/elements/dom-module";
-import { CSSResult } from "lit-element";
+import { CSSResult } from "lit";
 import { haStyleDialog } from "../resources/styles";
 
 const documentContainer = document.createElement("template");

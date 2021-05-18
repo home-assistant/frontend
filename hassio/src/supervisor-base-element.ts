@@ -1,5 +1,6 @@
 import { Collection, UnsubscribeFunc } from "home-assistant-js-websocket";
-import { state, LitElement, property, PropertyValues } from "lit-element";
+import { LitElement, PropertyValues } from "lit";
+import { property, state } from "lit/decorators";
 import { atLeastVersion } from "../../src/common/config/version";
 import { computeLocalize } from "../../src/common/translations/localize";
 import { fetchHassioAddonsInfo } from "../../src/data/hassio/addon";

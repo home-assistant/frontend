@@ -4,14 +4,12 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiPlus } from "@mdi/js";
 import {
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
   PropertyValues,
-  state,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import relativeTime from "../../../src/common/datetime/relative_time";

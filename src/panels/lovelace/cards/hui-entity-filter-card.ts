@@ -1,4 +1,5 @@
-import { state, property, PropertyValues, ReactiveElement } from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { property, state } from "lit/decorators";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { computeCardSize } from "../common/compute-card-size";

@@ -1,4 +1,4 @@
-import type { LitElement } from "lit-element";
+import type { LitElement } from "lit";
 import type { ClassElement } from "../../types";
 
 export const restoreScroll = (selector: string): any => (

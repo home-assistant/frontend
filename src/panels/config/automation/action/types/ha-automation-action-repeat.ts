@@ -1,13 +1,8 @@
 import "@polymer/paper-input/paper-input";
 import type { PaperListboxElement } from "@polymer/paper-listbox";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  CSSResultGroup,
-  customElement,
-  LitElement,
-  property,
-} from "lit-element";
-import { html } from "lit-html";
+import { CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import {
   Action,

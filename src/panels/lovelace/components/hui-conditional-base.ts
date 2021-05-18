@@ -1,9 +1,5 @@
-import {
-  customElement,
-  property,
-  PropertyValues,
-  ReactiveElement,
-} from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { ConditionalCardConfig } from "../cards/types";
 import {

@@ -1,8 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { EventsMixin } from "../mixins/events-mixin";
 import { hs2rgb, rgb2hs } from "../common/color/convert-color";
+import { EventsMixin } from "../mixins/events-mixin";
 /**
  * Color-picker custom element
  *

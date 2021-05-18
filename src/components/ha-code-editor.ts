@@ -1,13 +1,6 @@
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
-import {
-  customElement,
-  state,
-  property,
-  PropertyValues,
-  ReactiveElement,
-  css,
-  CSSResultGroup,
-} from "lit-element";
+import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
 

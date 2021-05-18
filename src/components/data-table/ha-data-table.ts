@@ -1,21 +1,23 @@
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import deepClone from "deep-clone-simple";
 import {
   css,
   CSSResultGroup,
-  customElement,
-  eventOptions,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
-import { Layout1d, scroll } from "@lit-labs/virtualizer";
+} from "lit";
+import {
+  customElement,
+  property,
+  state,
+  query,
+  eventOptions,
+} from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";

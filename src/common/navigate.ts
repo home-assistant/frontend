@@ -9,27 +9,37 @@ declare global {
   }
 }
 
+export const MAIN_WINDOW_NAME = "ha-main";
+
+export const getMainWindow = () =>
+  top.name === MAIN_WINDOW_NAME
+    ? top
+    : parent.name === MAIN_WINDOW_NAME
+    ? parent
+    : window;
+
 export const navigate = (_node: any, path: string, replace = false) => {
+  const mainWindow = getMainWindow();
   if (__DEMO__) {
     if (replace) {
-      top.history.replaceState(
-        top.history.state?.root ? { root: true } : null,
+      mainWindow.history.replaceState(
+        mainWindow.history.state?.root ? { root: true } : null,
         "",
-        `${top.location.pathname}#${path}`
+        `${mainWindow.location.pathname}#${path}`
       );
     } else {
-      top.location.hash = path;
+      mainWindow.location.hash = path;
     }
   } else if (replace) {
-    top.history.replaceState(
-      top.history.state?.root ? { root: true } : null,
+    mainWindow.history.replaceState(
+      mainWindow.history.state?.root ? { root: true } : null,
       "",
       path
     );
   } else {
-    top.history.pushState(null, "", path);
+    mainWindow.history.pushState(null, "", path);
   }
-  fireEvent(top, "location-changed", {
+  fireEvent(mainWindow, "location-changed", {
     replace,
   });
 };

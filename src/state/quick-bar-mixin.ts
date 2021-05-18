@@ -1,4 +1,4 @@
-import type { PropertyValues } from "lit-element";
+import type { PropertyValues } from "lit";
 import tinykeys from "tinykeys";
 import {
   QuickBarParams,

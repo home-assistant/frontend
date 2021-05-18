@@ -1,13 +1,7 @@
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
 

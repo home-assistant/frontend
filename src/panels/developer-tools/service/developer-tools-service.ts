@@ -1,15 +1,8 @@
 import { mdiHelpCircle } from "@mdi/js";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { safeLoad } from "js-yaml";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  state,
-  LitElement,
-  property,
-  query,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { LocalStorage } from "../../../common/decorators/local-storage";
 import { computeDomain } from "../../../common/entity/compute_domain";

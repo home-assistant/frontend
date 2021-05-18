@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property } from "lit/decorators";
 import "../../../../components/ha-card";
 import "../../../../components/ha-chip-set";
 import { showAutomationEditor } from "../../../../data/automation";

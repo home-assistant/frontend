@@ -1,4 +1,5 @@
-import { customElement, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import { Blueprints, fetchBlueprints } from "../../../data/blueprint";
 import {
   HassRouterPage,

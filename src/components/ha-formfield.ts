@@ -1,5 +1,6 @@
 import { Formfield } from "@material/mwc-formfield";
-import { css, CSSResultGroup, customElement } from "lit-element";
+import { css, CSSResultGroup } from "lit";
+import { customElement } from "lit/decorators";
 @customElement("ha-formfield")
 // @ts-expect-error
 export class HaFormfield extends Formfield {

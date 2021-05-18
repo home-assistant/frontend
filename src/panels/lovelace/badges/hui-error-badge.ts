@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import "../../../components/ha-label-badge";
 import { HomeAssistant } from "../../../types";
 import { LovelaceBadge } from "../types";

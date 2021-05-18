@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  property,
-  query,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
 import "./ha-progress-button";

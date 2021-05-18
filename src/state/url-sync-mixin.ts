@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { ReactiveElement } from "lit-element";
+import { ReactiveElement } from "lit";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import {
   closeDialog,

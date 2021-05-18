@@ -1,11 +1,11 @@
 // For localize
 import "@formatjs/intl-getcanonicallocales/polyfill";
+import "@lit/polyfill-support";
 import "core-js";
 // To use comlink under ES5
 import "proxy-polyfill";
 import "regenerator-runtime/runtime";
 import "unfetch/polyfill";
-import "@lit/polyfill-support";
 
 // Source: https://github.com/jserz/js_piece/blob/master/DOM/ParentNode/append()/append().md
 (function (arr) {

@@ -1,5 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import { customElement, html, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../../components/entity/ha-entity-attribute-picker";
 import "../../../../../components/entity/ha-entity-picker";
 import { ForDict, StateTrigger } from "../../../../../data/automation";

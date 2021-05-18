@@ -1,30 +1,22 @@
 import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
+import "../../../../components/ha-code-editor";
+import "../../../../components/ha-icon-button";
+import type { NodeInfo } from "../../../../components/trace/hat-graph";
+import "../../../../components/trace/hat-logbook-note";
+import { LogbookEntry } from "../../../../data/logbook";
 import {
   ActionTraceStep,
   AutomationTraceExtended,
   ChooseActionTraceStep,
   getDataFromPath,
 } from "../../../../data/trace";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-code-editor";
-import type { NodeInfo } from "../../../../components/trace/hat-graph";
-import "../../../../components/trace/hat-logbook-note";
 import { HomeAssistant } from "../../../../types";
-import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
-import { LogbookEntry } from "../../../../data/logbook";
-import { traceTabStyles } from "./styles";
 import "../../../logbook/ha-logbook";
+import { traceTabStyles } from "./styles";
 
 @customElement("ha-automation-trace-path-details")
 export class HaAutomationTracePathDetails extends LitElement {

@@ -1,14 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  state,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state, query } from "lit/decorators";
 import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-toast";
 import type { HaToast } from "../components/ha-toast";

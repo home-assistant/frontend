@@ -1,5 +1,6 @@
 import { Switch } from "@material/mwc-switch";
-import { css, CSSResultGroup, customElement, property } from "lit-element";
+import { css, CSSResultGroup } from "lit";
+import { customElement, property } from "lit/decorators";
 import { forwardHaptic } from "../data/haptics";
 @customElement("ha-switch")
 // @ts-expect-error
