@@ -233,7 +233,9 @@ class MoreInfoLight extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues<this>) {
+  public willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+
     if (!changedProps.has("stateObj")) {
       return;
     }
