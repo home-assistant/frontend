@@ -31,6 +31,8 @@ export class HaNetwork extends LitElement {
 
   @property({ attribute: false }) public networkConfig?: NetworkConfig;
 
+  @property({ attribute: false }) private _expanded?: boolean;
+
   protected render(): TemplateResult {
     if (this.networkConfig === undefined) {
       return html``;
@@ -50,7 +52,7 @@ export class HaNetwork extends LitElement {
         <span slot="heading" data-for="auto_configure"> Auto Configure </span>
         <span slot="description" data-for="auto_configure"></span>
       </ha-settings-row>
-      ${configured_adapters.length
+      ${configured_adapters.length || this._expanded
         ? this.networkConfig.adapters.map(
             (adapter) =>
               html`<ha-settings-row>
@@ -87,8 +89,10 @@ export class HaNetwork extends LitElement {
     }
 
     if (checkbox.checked) {
+      this._expanded = false;
       this.networkConfig.configured_adapters = [];
     } else {
+      this._expanded = true;
       for (const adapter of this.networkConfig.adapters) {
         if (adapter.default) {
           this.networkConfig.configured_adapters = [adapter.name];
