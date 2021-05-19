@@ -1588,7 +1588,7 @@
                                 "sun": {
                                     "event": "Gebeurtenis:",
                                     "label": "Zon",
-                                    "offset": "Afwijking (optioneel)",
+                                    "offset": "Offset (optioneel)",
                                     "sunrise": "Zonsopkomst",
                                     "sunset": "Zonsondergang"
                                 },
@@ -2169,7 +2169,7 @@
                     "license": "Gepubliceerd onder de Apache 2.0-licentie",
                     "path_configuration": "Pad naar configuration.yaml: {path}",
                     "server": "Server",
-                    "setup_time": "Setup tijd",
+                    "setup_time": "Insteltijd",
                     "source": "Bron:",
                     "system_health_error": "De systeemstatus component is niet geladen. Voeg ' system_health: ' toe aan het configuratiebestand.",
                     "system_health": {
@@ -2701,7 +2701,7 @@
                         },
                         "validation": {
                             "check_config": "Controleer configuratie",
-                            "heading": "Configuratie validatie",
+                            "heading": "Valideer configuratie",
                             "introduction": "Controleer je configuratie als je onlangs wijzigingen hebt aangebracht en zeker wilt weten dat ze geldig zijn",
                             "invalid": "Ongeldige configuratie",
                             "valid": "Geldige configuratie!"
@@ -2917,7 +2917,9 @@
                         "controller_in_inclusion_mode": "Uw Z-Wave controller bevindt zich nu in de opnamemodus.",
                         "follow_device_instructions": "Volg de aanwijzingen die bij het apparaat zijn geleverd om de koppeling van het apparaat te activeren.",
                         "inclusion_failed": "Het knooppunt kon niet worden toegevoegd. Controleer de logs voor meer informatie.",
-                        "inclusion_finished": "Het knooppunt is toegevoegd. Het kan een paar minuten duren voordat alle entiteiten zichtbaar zijn, omdat we het opzetten van het knooppunt op de achtergrond afwerken.",
+                        "inclusion_finished": "Het knooppunt is toegevoegd.",
+                        "interview_failed": "Het apparaat \"interview\" is mislukt. Aanvullende informatie is mogelijk beschikbaar in de logboeken.",
+                        "interview_started": "Het apparaat wordt \"geïnterviewd\". Dit kan wat tijd kosten.",
                         "introduction": "Deze wizard begeleidt u bij het toevoegen van een knooppunt aan uw Z-Wave netwerk.",
                         "secure_inclusion_warning": "Beveiligde apparaten vereisen extra bandbreedte; te veel beveiligde apparaten kunnen uw Z-Wave-netwerk vertragen. We raden aan om alleen veilige opname te gebruiken voor apparaten die dat vereisen, zoals sloten of garagedeuropeners.",
                         "start_inclusion": "Start Opname",
@@ -2989,8 +2991,14 @@
                         "unknown": "Onbekend"
                     },
                     "reinterview_node": {
+                        "battery_device_warning": "U moet apparaten met batterijvoeding uit de slaapstand halen voordat u een nieuw \"interview\" begint. Raadpleeg de handleiding van uw apparaat voor instructies over hoe u het apparaat uit de slaapstand haalt.",
+                        "in_progress": "Het apparaat wordt \"geïnterviewd\". Dit kan wat tijd kosten.",
                         "interview_complete": "Apparaat interview voltooid.",
-                        "interview_failed": "Het apparaat interview is mislukt. Aanvullende informatie is mogelijk beschikbaar in de logboeken."
+                        "interview_failed": "Het apparaat \"interview\" is mislukt. Aanvullende informatie is mogelijk beschikbaar in de logboeken.",
+                        "introduction": "\"Interview\" een apparaat op uw Z-Wave-netwerk opnieuw. Gebruik deze functie als uw apparaat een ontbrekende of onjuiste functionaliteit heeft.",
+                        "run_in_background": "U kunt dit dialoogvenster sluiten en het \"interview\" zal op de achtergrond worden voortgezet.",
+                        "start_reinterview": "Start opnieuw \"interview\"",
+                        "title": "\"Interview\" een Z-Wave-apparaat opnieuw"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Uitsluiting annuleren",
