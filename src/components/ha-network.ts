@@ -37,7 +37,7 @@ export class HaNetwork extends LitElement {
 
   @property({ attribute: false }) public networkConfig?: NetworkConfig;
 
-  @property({ attribute: false }) private _expanded?: boolean;
+  @state() private _expanded?: boolean;
 
   protected render(): TemplateResult {
     if (this.networkConfig === undefined) {
