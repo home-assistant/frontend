@@ -2,6 +2,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import {
+  Adapter,
   NetworkConfig,
   IPv6ConfiguredAddress,
   IPv4ConfiguredAddress,
@@ -13,15 +14,20 @@ import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-settings-row";
 import "./ha-icon";
 
-function format_ipv4_addresses(addresses: IPv4ConfiguredAddress[]) {
+function format_addresses(
+  addresses: IPv6ConfiguredAddress[] | IPv4ConfiguredAddress[]
+) {
   return addresses.map(
-    (address) => html`${address.address}/${address.network_prefix}`
+    (address) => html`<span>${address.address}/${address.network_prefix}</span>`
   );
 }
 
-function format_ipv6_addresses(addresses: IPv6ConfiguredAddress[]) {
-  return addresses.map(
-    (address) => html`${address.address}/${address.network_prefix}`
+function format_auto_detected_interfaces(adapters: Adapter[]) {
+  return adapters.map((adapter) =>
+    adapter.auto
+      ? html`${adapter.name} (${format_addresses(adapter.ipv4)}
+        ${format_addresses(adapter.ipv6)} )`
+      : ""
   );
 }
 
@@ -50,7 +56,10 @@ export class HaNetwork extends LitElement {
           </ha-checkbox>
         </span>
         <span slot="heading" data-for="auto_configure"> Auto Configure </span>
-        <span slot="description" data-for="auto_configure"></span>
+        <span slot="description" data-for="auto_configure">
+          Detected:
+          ${format_auto_detected_interfaces(this.networkConfig.adapters)}
+        </span>
       </ha-settings-row>
       ${configured_adapters.length || this._expanded
         ? this.networkConfig.adapters.map(
@@ -73,8 +82,8 @@ export class HaNetwork extends LitElement {
                     : ""}
                 </span>
                 <span slot="description">
-                  ${format_ipv4_addresses(adapter.ipv4)}
-                  ${format_ipv6_addresses(adapter.ipv6)}
+                  ${format_addresses(adapter.ipv4)}
+                  ${format_addresses(adapter.ipv6)}
                 </span>
               </ha-settings-row>`
           )

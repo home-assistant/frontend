@@ -15,6 +15,7 @@ export interface IPv4ConfiguredAddress {
 export interface Adapter {
   name: string;
   enabled: boolean;
+  auto: boolean;
   default: boolean;
   ipv6: IPv6ConfiguredAddress[];
   ipv4: IPv4ConfiguredAddress[];
