@@ -50,31 +50,33 @@ export class HaNetwork extends LitElement {
         <span slot="heading" data-for="auto_configure"> Auto Configure </span>
         <span slot="description" data-for="auto_configure"></span>
       </ha-settings-row>
-      ${this.networkConfig.adapters.map(
-        (adapter) =>
-          html`<ha-settings-row>
-            <span slot="prefix">
-              <ha-checkbox
-                id=${adapter.name}
-                @change=${this._handleAdapterCheckboxClick}
-                .checked=${configured_adapters.includes(adapter.name)}
-                .adapter=${adapter.name}
-                name=${adapter.name}
-              >
-              </ha-checkbox>
-            </span>
-            <span slot="heading">
-              Adapter: ${adapter.name}
-              ${adapter.default
-                ? html`<ha-icon .icon="hass:star"></ha-icon> (Default)`
-                : ""}
-            </span>
-            <span slot="description">
-              ${format_ipv4_addresses(adapter.ipv4)}
-              ${format_ipv6_addresses(adapter.ipv6)}
-            </span>
-          </ha-settings-row>`
-      )}
+      ${configured_adapters.length
+        ? this.networkConfig.adapters.map(
+            (adapter) =>
+              html`<ha-settings-row>
+                <span slot="prefix">
+                  <ha-checkbox
+                    id=${adapter.name}
+                    @change=${this._handleAdapterCheckboxClick}
+                    .checked=${configured_adapters.includes(adapter.name)}
+                    .adapter=${adapter.name}
+                    name=${adapter.name}
+                  >
+                  </ha-checkbox>
+                </span>
+                <span slot="heading">
+                  Adapter: ${adapter.name}
+                  ${adapter.default
+                    ? html`<ha-icon .icon="hass:star"></ha-icon> (Default)`
+                    : ""}
+                </span>
+                <span slot="description">
+                  ${format_ipv4_addresses(adapter.ipv4)}
+                  ${format_ipv6_addresses(adapter.ipv6)}
+                </span>
+              </ha-settings-row>`
+          )
+        : ""}
     `;
   }
 
