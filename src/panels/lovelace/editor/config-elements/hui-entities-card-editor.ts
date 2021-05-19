@@ -44,6 +44,7 @@ const cardConfigStruct = object({
   title: optional(union([string(), boolean()])),
   entity: optional(entityId()),
   theme: optional(string()),
+  icon: optional(string()),
   show_header_toggle: optional(boolean()),
   state_color: optional(boolean()),
   entities: array(entitiesConfigStruct),
