@@ -1,6 +1,6 @@
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, state, property } from "lit/decorators";
 import {
   Adapter,
   NetworkConfig,
