@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import { assert } from "chai";
 import { DEFAULT_VIEW_ENTITY_ID } from "../../../src/common/const";
 import { extractViews } from "../../../src/common/entity/extract_views";
 import { createEntities, createView } from "./test_util";

@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import { assert } from "chai";
 import { brandsUrl } from "../../src/util/brands-url";
 
 describe("Generate brands Url", function () {
