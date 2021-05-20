@@ -1,14 +1,12 @@
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../../../../common/navigate";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { fetchZHADevice, ZHADevice } from "../../../../../../data/zha";
@@ -16,9 +14,9 @@ import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-d
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 import { showZHAClusterDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-cluster";
+import { showZHADeviceChildrenDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-children";
 import { showZHADeviceZigbeeInfoDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-zigbee-info";
 import { showZHAReconfigureDeviceDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-reconfigure-device";
-import { showZHADeviceChildrenDialog } from "../../../../integrations/integration-panels/zha/show-dialog-zha-device-children";
 
 @customElement("ha-device-actions-zha")
 export class HaDeviceActionsZha extends LitElement {

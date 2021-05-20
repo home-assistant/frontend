@@ -1,13 +1,12 @@
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaFormConstantSchema, HaFormElement } from "./ha-form";
 

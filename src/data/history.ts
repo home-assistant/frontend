@@ -224,12 +224,15 @@ export const computeHistory = (
 
     if (stateWithUnit) {
       unit = stateWithUnit.attributes.unit_of_measurement;
-    } else if (computeStateDomain(stateInfo[0]) === "climate") {
-      unit = hass.config.unit_system.temperature;
-    } else if (computeStateDomain(stateInfo[0]) === "water_heater") {
-      unit = hass.config.unit_system.temperature;
-    } else if (computeStateDomain(stateInfo[0]) === "humidifier") {
-      unit = "%";
+    } else {
+      unit = {
+        climate: hass.config.unit_system.temperature,
+        counter: "#",
+        humidifier: "%",
+        input_number: "#",
+        number: "#",
+        water_heater: hass.config.unit_system.temperature,
+      }[computeStateDomain(stateInfo[0])];
     }
 
     if (!unit) {

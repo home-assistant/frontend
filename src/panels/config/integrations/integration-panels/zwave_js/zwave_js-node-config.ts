@@ -1,31 +1,37 @@
-import {
-  mdiCheckCircle,
-  mdiCircle,
-  mdiProgressClock,
-  mdiCloseCircle,
-} from "@mdi/js";
-import "../../../../../components/ha-settings-row";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
 import {
+  mdiCheckCircle,
+  mdiCircle,
+  mdiCloseCircle,
+  mdiProgressClock,
+} from "@mdi/js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-settings-row";
+import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
+import {
+  computeDeviceName,
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../../../data/device_registry";
 import {
   fetchNodeConfigParameters,
   setNodeConfigParameter,
@@ -33,19 +39,11 @@ import {
   ZWaveJSSetConfigParamResult,
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
-import {
-  DeviceRegistryEntry,
-  computeDeviceName,
-  subscribeDeviceRegistry,
-} from "../../../../../data/device_registry";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import memoizeOne from "memoize-one";
-import { classMap } from "lit-html/directives/class-map";
 
 const icons = {
   accepted: mdiCheckCircle,

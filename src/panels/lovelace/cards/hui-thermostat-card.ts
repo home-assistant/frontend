@@ -4,17 +4,14 @@ import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
-  query,
   svg,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";

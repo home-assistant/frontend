@@ -1,13 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import { computeStateName } from "../../../../../../common/entity/compute_state_name";
 import { computeRTLDirection } from "../../../../../../common/util/compute_rtl";
 import "../../../../../../components/ha-dialog";

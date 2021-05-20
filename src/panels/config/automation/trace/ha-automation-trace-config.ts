@@ -1,16 +1,9 @@
 import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { AutomationTraceExtended } from "../../../../data/trace";
-import "../../../../components/ha-icon-button";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-code-editor";
+import "../../../../components/ha-icon-button";
+import { AutomationTraceExtended } from "../../../../data/trace";
 import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-automation-trace-config")

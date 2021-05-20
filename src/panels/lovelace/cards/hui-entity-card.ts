@@ -1,14 +1,12 @@
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";

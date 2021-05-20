@@ -1,12 +1,5 @@
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { throttle } from "../../common/util/throttle";
 import "../../components/state-history-charts";

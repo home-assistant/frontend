@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-buttons-base";

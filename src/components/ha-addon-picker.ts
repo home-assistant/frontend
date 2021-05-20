@@ -1,12 +1,5 @@
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { compare } from "../common/string/compare";

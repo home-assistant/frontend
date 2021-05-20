@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";

@@ -1,21 +1,23 @@
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import deepClone from "deep-clone-simple";
 import {
   css,
   CSSResultGroup,
-  customElement,
-  eventOptions,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
-import { scroll } from "lit-virtualizer";
+} from "lit";
+import {
+  customElement,
+  property,
+  state,
+  query,
+  eventOptions,
+} from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { restoreScroll } from "../../common/decorators/restore-scroll";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -165,6 +167,10 @@ export class HaDataTable extends LitElement {
       // Force update of location of rows
       this._items = [...this._items];
     }
+  }
+
+  protected firstUpdated() {
+    this.updateComplete.then(() => this._calcTableHeight());
   }
 
   protected updated(properties: PropertyValues) {
@@ -333,6 +339,8 @@ export class HaDataTable extends LitElement {
                 >
                   ${scroll({
                     items: this._items,
+                    layout: Layout1d,
+                    // @ts-expect-error
                     renderItem: (row: DataTableRowData, index) => {
                       if (row.append) {
                         return html`

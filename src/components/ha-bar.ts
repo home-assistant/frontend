@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  LitElement,
-  property,
-  svg,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, LitElement, svg, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import {
   getValueInPercentage,
   normalize,

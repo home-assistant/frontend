@@ -1,13 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";

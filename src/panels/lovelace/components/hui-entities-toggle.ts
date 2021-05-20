@@ -1,14 +1,12 @@
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
@@ -24,8 +22,8 @@ class HuiEntitiesToggle extends LitElement {
 
   @state() private _toggleEntities?: string[];
 
-  public updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
     if (changedProperties.has("entities")) {
       this._toggleEntities = this.entities!.filter(
         (entityId) =>

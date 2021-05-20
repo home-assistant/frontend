@@ -1,20 +1,12 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../../../components/ha-card";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import {
   CloudStatusLoggedIn,
   CloudWebhook,

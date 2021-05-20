@@ -2,13 +2,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import {
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";

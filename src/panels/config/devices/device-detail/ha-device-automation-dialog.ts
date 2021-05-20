@@ -1,12 +1,6 @@
-import {
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import "@material/mwc-button/mwc-button";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
 import {
@@ -23,7 +17,6 @@ import "./ha-device-actions-card";
 import "./ha-device-conditions-card";
 import "./ha-device-triggers-card";
 import { DeviceAutomationDialogParams } from "./show-dialog-device-automation";
-import "@material/mwc-button/mwc-button";
 
 @customElement("dialog-device-automation")
 export class DialogDeviceAutomation extends LitElement {

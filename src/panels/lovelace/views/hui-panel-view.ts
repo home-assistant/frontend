@@ -3,13 +3,12 @@ import {
   css,
   CSSResultGroup,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import type {
   LovelaceViewConfig,
@@ -41,8 +40,8 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   public setConfig(_config: LovelaceViewConfig): void {}
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;

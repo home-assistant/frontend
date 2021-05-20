@@ -1,4 +1,6 @@
-import { customElement, html, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { TimeSelector } from "../../data/selector";

@@ -7,13 +7,12 @@ import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../common/datetime/format_date_time";
 import { useAmPm } from "../common/datetime/use_am_pm";
 import { computeRTLDirection } from "../common/util/compute_rtl";

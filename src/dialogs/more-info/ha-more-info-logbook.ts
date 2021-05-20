@@ -1,24 +1,16 @@
-import {
-  css,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { closeDialog } from "../make-dialog-manager";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
-import { TraceContexts, loadTraceContexts } from "../../data/trace";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
+import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import "../../panels/logbook/ha-logbook";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import { closeDialog } from "../make-dialog-manager";
 
 @customElement("ha-more-info-logbook")
 export class MoreInfoLogbook extends LitElement {

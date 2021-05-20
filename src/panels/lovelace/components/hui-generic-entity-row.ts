@@ -3,12 +3,12 @@ import {
   CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { computeDomain } from "../../../common/entity/compute_domain";

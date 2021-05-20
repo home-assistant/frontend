@@ -2,15 +2,8 @@ import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { compare } from "../../common/string/compare";

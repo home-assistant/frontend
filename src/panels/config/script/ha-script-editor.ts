@@ -15,14 +15,12 @@ import {
   css,
   CSSResultGroup,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
@@ -61,7 +59,7 @@ import { configSections } from "../ha-panel-config";
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scriptEntityId!: string;
+  @property() public scriptEntityId: string | null = null;
 
   @property() public route!: Route;
 
@@ -161,12 +159,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             aria-label=${this.hass.localize(
               "ui.panel.config.script.editor.delete_script"
             )}
-            class=${classMap({ warning: this.scriptEntityId })}
+            class=${classMap({ warning: Boolean(this.scriptEntityId) })}
             graphic="icon"
           >
             ${this.hass.localize("ui.panel.config.script.editor.delete_script")}
             <ha-svg-icon
-              class=${classMap({ warning: this.scriptEntityId })}
+              class=${classMap({ warning: Boolean(this.scriptEntityId) })}
               slot="graphic"
               .path=${mdiDelete}
             >
@@ -470,7 +468,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _runScript(ev) {
     ev.stopPropagation();
-    await triggerScript(this.hass, this.scriptEntityId);
+    await triggerScript(this.hass, this.scriptEntityId as string);
     showToast(this, {
       message: this.hass.localize(
         "ui.notification_toast.triggered",
@@ -620,7 +618,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _delete() {
-    await deleteScript(this.hass, computeObjectId(this.scriptEntityId));
+    await deleteScript(
+      this.hass,
+      computeObjectId(this.scriptEntityId as string)
+    );
     history.back();
   }
 

@@ -1,15 +1,10 @@
 import { safeDump } from "js-yaml";
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import "../../../../components/ha-icon-button";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-code-editor";
-import { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-icon-button";
 import { AutomationTraceExtended } from "../../../../data/trace";
+import { HomeAssistant } from "../../../../types";
 
 @customElement("ha-automation-trace-blueprint-config")
 export class HaAutomationTraceBlueprintConfig extends LitElement {

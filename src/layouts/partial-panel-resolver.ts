@@ -4,7 +4,8 @@ import {
   STATE_RUNNING,
   STATE_STARTING,
 } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
 import { getDefaultPanel } from "../data/panel";
@@ -64,8 +65,8 @@ class PartialPanelResolver extends HassRouterPage {
     document.addEventListener("resume", () => this._checkVisibility());
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
 
     if (!changedProps.has("hass")) {
       return;

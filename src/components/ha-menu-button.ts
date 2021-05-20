@@ -1,16 +1,8 @@
 import "@material/mwc-icon-button";
 import { mdiMenu } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { subscribeNotifications } from "../data/persistent_notification";
@@ -101,7 +93,6 @@ class HaMenuButton extends LitElement {
     this.style.display = newNarrow || this._alwaysVisible ? "initial" : "none";
 
     if (!newNarrow) {
-      this._hasNotifications = false;
       if (this._unsubNotifications) {
         this._unsubNotifications();
         this._unsubNotifications = undefined;

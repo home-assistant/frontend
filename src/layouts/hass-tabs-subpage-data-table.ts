@@ -1,18 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import { mdiFilterVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
-import { LocalizeFunc } from "../common/translations/localize";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { LocalizeFunc } from "../common/translations/localize";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/data-table/ha-data-table";
 import type {
@@ -41,6 +33,10 @@ export class HaTabsSubpageDataTable extends LitElement {
   @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ type: Boolean }) public supervisor = false;
+
+  @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
   /**
    * Object with the columns.
@@ -195,6 +191,8 @@ export class HaTabsSubpageDataTable extends LitElement {
         .backCallback=${this.backCallback}
         .route=${this.route}
         .tabs=${this.tabs}
+        .mainPage=${this.mainPage}
+        .supervisor=${this.supervisor}
       >
         <div slot="toolbar-icon"><slot name="toolbar-icon"></slot></div>
         ${this.narrow

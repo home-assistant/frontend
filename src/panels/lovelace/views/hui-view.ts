@@ -1,10 +1,5 @@
-import {
-  customElement,
-  state,
-  property,
-  PropertyValues,
-  ReactiveElement,
-} from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
@@ -93,8 +88,8 @@ export class HUIView extends ReactiveElement {
     return this;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     /*
       We need to handle the following use cases:
@@ -117,8 +112,11 @@ export class HUIView extends ReactiveElement {
             oldLovelace.config.views[this.index]))
     ) {
       this._initializeConfig();
-      return;
     }
+  }
+
+  protected update(changedProperties) {
+    super.update(changedProperties);
 
     // If no layout element, we're still creating one
     if (this._layoutElement) {

@@ -1,14 +1,7 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-paper-dropdown-menu";
 import "../../components/ha-settings-row";
 import { fetchDashboards, LovelaceDashboard } from "../../data/lovelace";

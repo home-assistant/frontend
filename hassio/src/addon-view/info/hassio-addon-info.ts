@@ -14,17 +14,9 @@ import {
   mdiPound,
   mdiShield,
 } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -171,16 +163,16 @@ class HassioAddonInfo extends LitElement {
                   : ""}
               </div>
               <div class="card-actions">
-                <mwc-button @click=${this._updateClicked}>
-                  ${this.supervisor.localize("common.update")}
-                </mwc-button>
                 ${this.addon.changelog
                   ? html`
                       <mwc-button @click=${this._openChangelog}>
                         ${this.supervisor.localize("addon.dashboard.changelog")}
                       </mwc-button>
                     `
-                  : ""}
+                  : html`<span></span>`}
+                <mwc-button @click=${this._updateClicked}>
+                  ${this.supervisor.localize("common.update")}
+                </mwc-button>
               </div>
             </ha-card>
           `

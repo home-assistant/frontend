@@ -4,14 +4,12 @@ import { genClientId } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { LocalizeFunc } from "../common/translations/localize";
 import { onboardUserStep } from "../data/onboarding";

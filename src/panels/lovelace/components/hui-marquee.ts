@@ -1,13 +1,12 @@
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("hui-marquee")
 class HuiMarquee extends LitElement {

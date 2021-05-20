@@ -1,9 +1,5 @@
-import {
-  customElement,
-  property,
-  PropertyValues,
-  ReactiveElement,
-} from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import relativeTime from "../common/datetime/relative_time";
 import type { HomeAssistant } from "../types";
 

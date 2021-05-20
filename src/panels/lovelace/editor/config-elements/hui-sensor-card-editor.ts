@@ -2,15 +2,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
@@ -37,7 +30,7 @@ const cardConfigStruct = object({
   hours_to_show: optional(number()),
 });
 
-const includeDomains = ["sensor"];
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-sensor-card-editor")
 export class HuiSensorCardEditor

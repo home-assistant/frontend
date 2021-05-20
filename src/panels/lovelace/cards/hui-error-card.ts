@@ -1,13 +1,6 @@
 import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { ErrorCardConfig } from "./types";

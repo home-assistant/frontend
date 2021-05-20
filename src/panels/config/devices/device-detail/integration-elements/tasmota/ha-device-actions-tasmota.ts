@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { removeTasmotaDeviceEntry } from "../../../../../../data/tasmota";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";

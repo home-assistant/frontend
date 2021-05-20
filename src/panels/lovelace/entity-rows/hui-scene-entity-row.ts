@@ -2,14 +2,12 @@ import "@material/mwc-button/mwc-button";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { activateScene } from "../../../data/scene";

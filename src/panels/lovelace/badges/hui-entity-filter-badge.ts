@@ -1,4 +1,5 @@
-import { state, property, PropertyValues, ReactiveElement } from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { property, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { evaluateFilter } from "../common/evaluate-filter";
 import { processConfigEntities } from "../common/process-config-entities";

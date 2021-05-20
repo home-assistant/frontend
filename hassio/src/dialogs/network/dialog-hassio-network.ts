@@ -6,17 +6,9 @@ import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiClose } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { cache } from "lit-html/directives/cache";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";

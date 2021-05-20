@@ -15,14 +15,12 @@ import {
   css,
   CSSResultGroup,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button-menu";
@@ -75,7 +73,7 @@ declare global {
 export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public automationId!: string;
+  @property() public automationId: string | null = null;
 
   @property() public automations!: AutomationEntity[];
 
@@ -178,14 +176,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             aria-label=${this.hass.localize(
               "ui.panel.config.automation.picker.delete_automation"
             )}
-            class=${classMap({ warning: this.automationId })}
+            class=${classMap({ warning: Boolean(this.automationId) })}
             graphic="icon"
           >
             ${this.hass.localize(
               "ui.panel.config.automation.picker.delete_automation"
             )}
             <ha-svg-icon
-              class=${classMap({ warning: this.automationId })}
+              class=${classMap({ warning: Boolean(this.automationId) })}
               slot="graphic"
               .path=${mdiDelete}
             >
@@ -349,7 +347,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _loadConfig() {
     try {
-      const config = await getAutomationConfig(this.hass, this.automationId);
+      const config = await getAutomationConfig(
+        this.hass,
+        this.automationId as string
+      );
 
       // Normalize data: ensure trigger, action and condition are lists
       // Happens when people copy paste their automations into the config
@@ -470,7 +471,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _delete() {
-    await deleteAutomation(this.hass, this.automationId);
+    await deleteAutomation(this.hass, this.automationId as string);
     history.back();
   }
 

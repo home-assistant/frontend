@@ -4,16 +4,8 @@ import {
   mdiInformationVariant,
   mdiMathLog,
 } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";

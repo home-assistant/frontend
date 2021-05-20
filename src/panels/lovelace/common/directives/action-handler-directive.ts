@@ -1,14 +1,13 @@
 /* eslint-disable max-classes-per-file */
 import "@material/mwc-ripple";
 import type { Ripple } from "@material/mwc-ripple";
-import { noChange } from "lit-html";
+import { noChange } from "lit";
 import {
   AttributePart,
   directive,
   Directive,
   DirectiveParameters,
-  // eslint-disable-next-line import/extensions
-} from "lit-html/directive.js";
+} from "lit/directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { deepEqual } from "../../../../common/util/deep-equal";
 import {

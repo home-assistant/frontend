@@ -124,6 +124,14 @@
         },
         "my": {
             "error_addon_not_found": "لم يتم العثور على الإضافة"
+        },
+        "snapshot": {
+            "created": "خلقت"
+        },
+        "system": {
+            "supervisor": {
+                "search": "بحث"
+            }
         }
     },
     "ui": {
@@ -383,6 +391,10 @@
                 "zha_device_card": {
                     "device_name_placeholder": "تغيير اسم الجهاز"
                 }
+            },
+            "zha_reconfigure_device": {
+                "button_hide": "أخف التفاصيل",
+                "button_show": "إظهار التفاصيل"
             }
         },
         "duration": {
@@ -421,7 +433,8 @@
                 "areas": {
                     "data_table": {
                         "area": "المنطقة",
-                        "devices": "الأجهزة"
+                        "devices": "الأجهزة",
+                        "entities": "الكيانات"
                     },
                     "delete": {
                         "confirmation_text": "سيتم إلغاء تعيين جميع الأجهزة في هذه المنطقة.",
@@ -429,8 +442,10 @@
                     },
                     "editor": {
                         "area_id": "المنطقة",
+                        "linked_entities_caption": "الكيانات",
                         "name": "اسم",
                         "name_required": "الاسم مطلوب",
+                        "no_linked_entities": "لا توجد كيانات مرتبطة بهذه المنطقة.",
                         "unknown_error": "خطأ غير معروف"
                     },
                     "picker": {
@@ -649,6 +664,14 @@
                         "integrations": "تكاملات",
                         "integrations_introduction2": "تحقق من الموقع ل",
                         "integrations_link_all_features": " جميع الميزات المتوفرة",
+                        "remote": {
+                            "connected": "متصل",
+                            "not_connected": "غير متصل",
+                            "remote_enabled": {
+                                "caption": "الاتصال تلقائيا",
+                                "description": "قم بتفعيل هذا الخيار للتأكد من أن Home Assistant الخاص بك يمكن الوصول إليه دائمًا عن بُعد."
+                            }
+                        },
                         "tts": {
                             "dialog": {
                                 "example_message": "مرحبًا {name} ، يمكنك تشغيل أي نص على أي مشغل وسائط مدعوم!",
@@ -752,7 +775,8 @@
                     "documentation": "الوثائق",
                     "home_assistant_logo": "شعار Home Assistant",
                     "integrations": "تكاملات",
-                    "issues": "الاعطال"
+                    "issues": "الاعطال",
+                    "setup_time": "وقت التنصيب"
                 },
                 "integration_panel_move": {
                     "link_integration_page": "صفحة التكاملات",
@@ -777,6 +801,9 @@
                         "options": "خيارات",
                         "rename": "إعادة تسمية",
                         "restart_confirm": "أعد تشغيل Home Assistant لإنهاء حذف هذا التكامل",
+                        "state": {
+                            "setup_error": "فشل في التنصيب"
+                        },
                         "system_options": "خيارات النظام",
                         "unnamed_entry": "إدخال بدون اسم"
                     },
@@ -791,6 +818,7 @@
                         },
                         "finish": "إنهاء",
                         "loading_first_time": "يرجى الانتظار بينما يتم تثبيت الـintegration",
+                        "next": "التالى",
                         "not_all_required_fields": "لم يتم تعبئة جميع الحقول المطلوبة."
                     },
                     "configure": "إعداد",
@@ -914,6 +942,8 @@
                         "icon": "أيقونة"
                     },
                     "picker": {
+                        "duplicate": "تكرار",
+                        "duplicate_scene": "تكرار بطاقة",
                         "headers": {
                             "name": "الاسم"
                         }
@@ -1033,6 +1063,12 @@
                     },
                     "dashboard": {
                         "dump_not_ready_confirm": "تحميل"
+                    },
+                    "logs": {
+                        "log_level": "مستوى التسجيل في السجل"
+                    },
+                    "navigation": {
+                        "logs": "السجلات"
                     },
                     "remove_node": {
                         "cancel_exclusion": "إلغاء الاستبعاد",

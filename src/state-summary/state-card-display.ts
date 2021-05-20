@@ -1,15 +1,8 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import type { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeRTL } from "../common/util/compute_rtl";

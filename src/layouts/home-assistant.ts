@@ -1,5 +1,6 @@
-import "@polymer/app-route/app-location";
-import { customElement, html, state, PropertyValues } from "lit-element";
+import { isNavigationClick } from "../common/dom/is-navigation-click";
+import { html, PropertyValues } from "lit";
+import { customElement, state } from "lit/decorators";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
@@ -14,13 +15,24 @@ import {
 import "./ha-init-page";
 import "./home-assistant-main";
 
+const useHash = __DEMO__;
+const curPath = () =>
+  window.decodeURIComponent(
+    useHash ? location.hash.substr(1) : location.pathname
+  );
+
+const panelUrl = (path: string) => {
+  const dividerPos = path.indexOf("/", 1);
+  return dividerPos === -1 ? path.substr(1) : path.substr(1, dividerPos - 1);
+};
+
 @customElement("home-assistant")
 export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
-  @state() private _route?: Route;
+  @state() private _route: Route;
 
   @state() private _error = false;
 
-  @state() private _panelUrl?: string;
+  private _panelUrl: string;
 
   private _haVersion?: string;
 
@@ -28,30 +40,36 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
 
   private _visiblePromiseResolve?: () => void;
 
+  constructor() {
+    super();
+    const path = curPath();
+
+    if (["", "/"].includes(path)) {
+      navigate(this, `/${getStorageDefaultPanelUrlPath()}`, true);
+    }
+    this._route = {
+      prefix: "",
+      path,
+    };
+    this._panelUrl = panelUrl(path);
+  }
+
   protected render() {
     const hass = this.hass;
 
-    return html`
-      <app-location
-        @route-changed=${this._routeChanged}
-        ?use-hash-as-path=${__DEMO__}
-      ></app-location>
-      ${this._panelUrl === undefined || this._route === undefined
-        ? ""
-        : hass && hass.states && hass.config && hass.services
-        ? html`
-            <home-assistant-main
-              .hass=${this.hass}
-              .route=${this._route}
-            ></home-assistant-main>
-          `
-        : html` <ha-init-page .error=${this._error}></ha-init-page> `}
-    `;
+    return hass && hass.states && hass.config && hass.services
+      ? html`
+          <home-assistant-main
+            .hass=${this.hass}
+            .route=${this._route}
+          ></home-assistant-main>
+        `
+      : html`<ha-init-page .error=${this._error}></ha-init-page>`;
   }
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this._initialize();
+    this._initializeHass();
     setTimeout(() => registerServiceWorker(this), 1000);
     /* polyfill for paper-dropdown */
     import("web-animations-js/web-animations-next-lite.min");
@@ -59,14 +77,42 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
       this._updateHass({ suspendWhenHidden: ev.detail.suspend });
       storeState(this.hass!);
     });
+
+    // Navigation
+    const updateRoute = (path = curPath()) => {
+      if (this._route && path === this._route.path) {
+        return;
+      }
+      this._route = {
+        prefix: "",
+        path: path,
+      };
+
+      this._panelUrl = panelUrl(path);
+      this.panelUrlChanged(this._panelUrl!);
+      this._updateHass({ panelUrl: this._panelUrl });
+    };
+
+    window.addEventListener("location-changed", () => updateRoute());
+
+    // Handle history changes
+    if (useHash) {
+      window.addEventListener("hashchange", () => updateRoute());
+    } else {
+      window.addEventListener("popstate", () => updateRoute());
+    }
+
+    // Handle clicking on links
+    window.addEventListener("click", (ev) => {
+      const href = isNavigationClick(ev);
+      if (href) {
+        navigate(this, href);
+      }
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (changedProps.has("_panelUrl")) {
-      this.panelUrlChanged(this._panelUrl!);
-      this._updateHass({ panelUrl: this._panelUrl });
-    }
     if (changedProps.has("hass")) {
       this.hassChanged(
         this.hass!,
@@ -108,7 +154,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     }
   }
 
-  protected async _initialize() {
+  protected async _initializeHass() {
     try {
       let result;
 
@@ -127,31 +173,6 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     } catch (err) {
       this._error = true;
     }
-  }
-
-  private async _routeChanged(ev) {
-    // routeChangged event listener is called while we're doing the fist render,
-    // causing the update to be ignored. So delay it to next task (Lit render is sync).
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    const route = ev.detail.value as Route;
-    // If it's the first route that we process,
-    // check if we should navigate away from /
-    if (
-      this._route === undefined &&
-      (route.path === "" || route.path === "/")
-    ) {
-      navigate(window, `/${getStorageDefaultPanelUrlPath()}`, true);
-      return;
-    }
-
-    this._route = route;
-
-    const dividerPos = route.path.indexOf("/", 1);
-    this._panelUrl =
-      dividerPos === -1
-        ? route.path.substr(1)
-        : route.path.substr(1, dividerPos - 1);
   }
 
   protected _checkVisibility() {

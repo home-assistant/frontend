@@ -1,11 +1,5 @@
-import {
-  customElement,
-  LitElement,
-  property,
-  css,
-  html,
-  TemplateResult,
-} from "lit-element";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { deleteConfigEntry } from "../../../data/config_entries";
 import type { IntegrationManifest } from "../../../data/integration";

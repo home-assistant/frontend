@@ -1,4 +1,4 @@
-import { customElement } from "lit-element";
+import { customElement } from "lit/decorators";
 import "../../../../components/ha-card";
 import {
   DeviceAction,

@@ -14,8 +14,8 @@ import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
-  getTranslation,
   getLocalLanguage,
+  getTranslation,
   getUserLocale,
 } from "../util/hass-translation";
 import { HassBaseEl } from "./hass-base-mixin";

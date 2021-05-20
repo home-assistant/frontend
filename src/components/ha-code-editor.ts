@@ -1,13 +1,6 @@
 import type { EditorView, KeyBinding, ViewUpdate } from "@codemirror/view";
-import {
-  customElement,
-  state,
-  property,
-  PropertyValues,
-  ReactiveElement,
-  css,
-  CSSResultGroup,
-} from "lit-element";
+import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
 
@@ -62,14 +55,6 @@ export class HaCodeEditor extends ReactiveElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    // Lit 2.0 will create the shadowRoot for us, and adopt the styles, check if it was created
-    if (!this.shadowRoot) {
-      this.attachShadow({ mode: "open" }).innerHTML = `<style>
-      :host(.error-state) div.cm-wrap .cm-gutters {
-        border-color: var(--error-state-color, red);
-      }
-    </style>`;
-    }
     if (!this.codemirror) {
       return;
     }

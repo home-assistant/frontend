@@ -1,13 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { formatNumber } from "../common/string/format_number";
 import { CLIMATE_PRESET_NONE } from "../data/climate";
 import type { HomeAssistant } from "../types";

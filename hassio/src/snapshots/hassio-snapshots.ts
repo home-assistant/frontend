@@ -4,14 +4,12 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical, mdiPlus } from "@mdi/js";
 import {
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
   PropertyValues,
-  state,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import relativeTime from "../../../src/common/datetime/relative_time";
@@ -24,6 +22,7 @@ import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-fab";
 import {
   fetchHassioSnapshots,
+  friendlyFolderName,
   HassioSnapshot,
   reloadHassioSnapshots,
 } from "../../../src/data/hassio/snapshot";
@@ -66,6 +65,33 @@ export class HassioSnapshots extends LitElement {
     await this.fetchSnapshots();
   }
 
+  private _computeSnapshotContent = (snapshot: HassioSnapshot): string => {
+    if (snapshot.type === "full") {
+      return this.supervisor.localize("snapshot.full_snapshot");
+    }
+    const content: string[] = [];
+    if (snapshot.content.homeassistant) {
+      content.push("Home Assistant");
+    }
+    if (snapshot.content.folders.length !== 0) {
+      for (const folder of snapshot.content.folders) {
+        content.push(friendlyFolderName[folder] || folder);
+      }
+    }
+
+    if (snapshot.content.addons.length !== 0) {
+      for (const addon of snapshot.content.addons) {
+        content.push(
+          this.supervisor.supervisor.addons.find(
+            (entry) => entry.slug === addon
+          )?.name || addon
+        );
+      }
+    }
+
+    return content.join(", ");
+  };
+
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
     if (this.hass && this.isConnected) {
@@ -81,7 +107,9 @@ export class HassioSnapshots extends LitElement {
         sortable: true,
         filterable: true,
         grows: true,
-        template: (entry: string, snapshot: any) => entry || snapshot.slug,
+        template: (entry: string, snapshot: any) =>
+          html`${entry || snapshot.slug}
+            <div class="secondary">${snapshot.secondary}</div>`,
       },
       date: {
         title: this.supervisor?.localize("snapshot.created") || "",
@@ -93,15 +121,19 @@ export class HassioSnapshots extends LitElement {
         template: (entry: string) =>
           relativeTime(new Date(entry), this.hass.localize),
       },
-      type: {
-        title: this.supervisor?.localize("snapshot.type") || "",
-        width: "15%",
-        hidden: narrow,
+      secondary: {
+        title: "",
+        hidden: true,
         filterable: true,
-        sortable: true,
-        template: (entry: string) => (entry === "partial" ? "Partial" : "Full"),
       },
     })
+  );
+
+  private _snapshotData = memoizeOne((snapshots: HassioSnapshot[]) =>
+    snapshots.map((snapshot) => ({
+      ...snapshot,
+      secondary: this._computeSnapshotContent(snapshot),
+    }))
   );
 
   protected render(): TemplateResult {
@@ -118,11 +150,13 @@ export class HassioSnapshots extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.narrow)}
-        .data=${this._snapshots}
+        .data=${this._snapshotData(this._snapshots || [])}
         id="slug"
         @row-click=${this._handleRowClicked}
         clickable
         hasFab
+        main-page
+        supervisor
       >
         <ha-button-menu
           corner="BOTTOM_START"

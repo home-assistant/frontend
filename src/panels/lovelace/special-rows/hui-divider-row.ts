@@ -1,13 +1,6 @@
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { HomeAssistant } from "../../../types";
 import { DividerConfig, LovelaceRow } from "../entity-rows/types";
 
@@ -30,7 +23,9 @@ class HuiDividerRow extends LitElement implements LovelaceRow {
       return html``;
     }
 
-    return html`<div style=${styleMap(this._config.style)}></div>`;
+    return html`<div
+      style=${this._config.style ? styleMap(this._config.style) : ""}
+    ></div>`;
   }
 
   static get styles(): CSSResultGroup {

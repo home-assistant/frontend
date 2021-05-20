@@ -1,14 +1,7 @@
 import { mdiClose } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { guard } from "lit-html/directives/guard";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { fetchUsers, User } from "../../data/user";

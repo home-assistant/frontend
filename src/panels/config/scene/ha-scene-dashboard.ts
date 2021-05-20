@@ -8,26 +8,18 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-button-related-filter-menu";
 import { forwardHaptic } from "../../../data/haptics";
 import { activateScene, SceneEntity } from "../../../data/scene";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
