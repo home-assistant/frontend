@@ -1,13 +1,13 @@
-import "./ha-expansion-panel";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { haStyle } from "../resources/styles";
+import { HomeAssistant } from "../types";
 import hassAttributeUtil, {
   formatAttributeName,
 } from "../util/hass-attributes-util";
-import { HomeAssistant } from "../types";
+import "./ha-expansion-panel";
 
 let jsYamlPromise: Promise<typeof import("js-yaml")>;
 
