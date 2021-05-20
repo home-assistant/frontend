@@ -4,10 +4,9 @@ import memoizeOne from "memoize-one";
 import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import { TimeSelector } from "../../data/selector";
-import { HomeAssistant } from "../../types";
-import memoizeOne from "memoize-one";
-import "../paper-time-input";
 import { FrontendLocaleData } from "../../data/translation";
+import { HomeAssistant } from "../../types";
+import "../paper-time-input";
 @customElement("ha-selector-time")
 export class HaTimeSelector extends LitElement {
   @property() public hass!: HomeAssistant;
