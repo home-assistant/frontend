@@ -7,6 +7,7 @@ import {
   IPv6ConfiguredAddress,
   IPv4ConfiguredAddress,
 } from "../data/network";
+import { fireEvent } from "../common/dom/fire_event";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import "./ha-checkbox";
@@ -31,6 +32,11 @@ function format_auto_detected_interfaces(adapters: Adapter[]) {
   );
 }
 
+declare global {
+  interface HASSDomEvents {
+    "network-config-changed": { configured_adapters: string[] };
+  }
+}
 @customElement("ha-network")
 export class HaNetwork extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -97,19 +103,24 @@ export class HaNetwork extends LitElement {
       return;
     }
 
+    let configured_adapters = [...this.networkConfig.configured_adapters];
+
     if (checkbox.checked) {
       this._expanded = false;
-      this.networkConfig.configured_adapters = [];
+      configured_adapters = [];
     } else {
       this._expanded = true;
       for (const adapter of this.networkConfig.adapters) {
         if (adapter.default) {
-          this.networkConfig.configured_adapters = [adapter.name];
+          configured_adapters = [adapter.name];
           break;
         }
       }
     }
-    this.requestUpdate();
+
+    fireEvent(this, "network-config-changed", {
+      configured_adapters: configured_adapters,
+    });
   }
 
   private _handleAdapterCheckboxClick(ev: Event) {
@@ -119,17 +130,18 @@ export class HaNetwork extends LitElement {
       return;
     }
 
+    const configured_adapters = [...this.networkConfig.configured_adapters];
+
     if (checkbox.checked) {
-      this.networkConfig.configured_adapters.push(adapter_name);
+      configured_adapters.push(adapter_name);
     } else {
-      const index = this.networkConfig.configured_adapters.indexOf(
-        adapter_name,
-        0
-      );
-      this.networkConfig.configured_adapters.splice(index, 1);
+      const index = configured_adapters.indexOf(adapter_name, 0);
+      configured_adapters.splice(index, 1);
     }
 
-    this.requestUpdate();
+    fireEvent(this, "network-config-changed", {
+      configured_adapters: configured_adapters,
+    });
   }
 
   static get styles(): CSSResultGroup {
