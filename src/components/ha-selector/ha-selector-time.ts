@@ -7,6 +7,7 @@ import { TimeSelector } from "../../data/selector";
 import { FrontendLocaleData } from "../../data/translation";
 import { HomeAssistant } from "../../types";
 import "../paper-time-input";
+
 @customElement("ha-selector-time")
 export class HaTimeSelector extends LitElement {
   @property() public hass!: HomeAssistant;

@@ -1,19 +1,14 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { formatTime } from "../../common/datetime/format_time";
+import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-paper-dropdown-menu";
-import { HomeAssistant } from "../../types";
 import "../../components/ha-settings-row";
 import { TimeFormat } from "../../data/translation";
-import { fireEvent } from "../../common/dom/fire_event";
-import { formatTime } from "../../common/datetime/format_time";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-pick-time-format-row")
 class TimeFormatRow extends LitElement {
