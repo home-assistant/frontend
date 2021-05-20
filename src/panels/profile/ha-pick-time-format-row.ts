@@ -27,7 +27,7 @@ class TimeFormatRow extends LitElement {
           ${this.hass.localize("ui.panel.profile.time_format.description")}
         </span>
         <ha-paper-dropdown-menu
-          label=${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.profile.time_format.dropdown_label"
           )}
           dynamic-align
