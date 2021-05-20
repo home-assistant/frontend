@@ -1,4 +1,4 @@
-import { FrontendTranslationData, NumberFormat } from "../../data/translation";
+import { FrontendLocaleData, NumberFormat } from "../../data/translation";
 
 /**
  * Formats a number based on the user's preference with thousands separator(s) and decimal character for better legibility.
@@ -9,7 +9,7 @@ import { FrontendTranslationData, NumberFormat } from "../../data/translation";
  */
 export const formatNumber = (
   num: string | number,
-  locale?: FrontendTranslationData,
+  locale?: FrontendLocaleData,
   options?: Intl.NumberFormatOptions
 ): string => {
   let format: string | string[] | undefined;

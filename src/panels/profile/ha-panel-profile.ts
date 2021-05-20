@@ -29,6 +29,7 @@ import "./ha-pick-dashboard-row";
 import "./ha-pick-language-row";
 import "./ha-pick-number-format-row";
 import "./ha-pick-theme-row";
+import "./ha-pick-time-format-row";
 import "./ha-push-notifications-row";
 import "./ha-refresh-tokens-card";
 import "./ha-set-suspend-row";
@@ -96,6 +97,10 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-pick-number-format-row>
+            <ha-pick-time-format-row
+              .narrow=${this.narrow}
+              .hass=${this.hass}
+            ></ha-pick-time-format-row>
             <ha-pick-theme-row
               .narrow=${this.narrow}
               .hass=${this.hass}
