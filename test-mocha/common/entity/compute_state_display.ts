@@ -7,16 +7,20 @@ import {
   TimeFormat,
 } from "../../../src/data/translation";
 
-const localeData: FrontendLocaleData = {
-  language: "en",
-  number_format: NumberFormat.comma_decimal,
-  time_format: TimeFormat.am_pm,
-};
+let localeData: FrontendLocaleData;
 
 describe("computeStateDisplay", () => {
   // Mock Localize function for testing
   const localize = (message, ...args) =>
     message + (args.length ? ": " + args.join(",") : "");
+
+  beforeEach(() => {
+    localeData = {
+      language: "en",
+      number_format: NumberFormat.comma_decimal,
+      time_format: TimeFormat.am_pm,
+    };
+  });
 
   it("Localizes binary sensor defaults", () => {
     const stateObj: any = {
@@ -150,7 +154,7 @@ describe("computeStateDisplay", () => {
     );
   });
 
-  it("Localizes input_datetime with full date time", () => {
+  describe("Localizes input_datetime with full date time", () => {
     const stateObj: any = {
       entity_id: "input_datetime.test",
       state: "123",
@@ -165,16 +169,19 @@ describe("computeStateDisplay", () => {
         second: 13,
       },
     };
-    localeData.time_format = TimeFormat.am_pm;
-    assert.strictEqual(
-      computeStateDisplay(localize, stateObj, localeData),
-      "November 18, 2017, 11:12 PM"
-    );
-    localeData.time_format = TimeFormat.twenty_four;
-    assert.strictEqual(
-      computeStateDisplay(localize, stateObj, localeData),
-      "November 18, 2017, 23:12"
-    );
+    it("Uses am/pm time format", () => {
+      assert.strictEqual(
+        computeStateDisplay(localize, stateObj, localeData),
+        "November 18, 2017, 11:12 PM"
+      );
+    });
+    it("Uses 24h time format", () => {
+      localeData.time_format = TimeFormat.twenty_four;
+      assert.strictEqual(
+        computeStateDisplay(localize, stateObj, localeData),
+        "November 18, 2017, 23:12"
+      );
+    });
   });
 
   it("Localizes input_datetime with date", () => {
@@ -198,7 +205,7 @@ describe("computeStateDisplay", () => {
     );
   });
 
-  it("Localizes input_datetime with time", () => {
+  describe("Localizes input_datetime with time", () => {
     const stateObj: any = {
       entity_id: "input_datetime.test",
       state: "123",
@@ -213,16 +220,20 @@ describe("computeStateDisplay", () => {
         second: 13,
       },
     };
-    localeData.time_format = TimeFormat.am_pm;
-    assert.strictEqual(
-      computeStateDisplay(localize, stateObj, localeData),
-      "11:12 PM"
-    );
-    localeData.time_format = TimeFormat.twenty_four;
-    assert.strictEqual(
-      computeStateDisplay(localize, stateObj, localeData),
-      "23:12"
-    );
+    it("Uses am/pm time format", () => {
+      localeData.time_format = TimeFormat.am_pm;
+      assert.strictEqual(
+        computeStateDisplay(localize, stateObj, localeData),
+        "11:12 PM"
+      );
+    });
+    it("Uses 24h time format", () => {
+      localeData.time_format = TimeFormat.twenty_four;
+      assert.strictEqual(
+        computeStateDisplay(localize, stateObj, localeData),
+        "23:12"
+      );
+    });
   });
 
   it("Localizes unavailable", () => {
@@ -244,10 +255,9 @@ describe("computeStateDisplay", () => {
   });
 
   it("Localizes custom state", () => {
-    const altLocalize = () => {
+    const altLocalize = () =>
       // No matches can be found
-      return "";
-    };
+      "";
     const stateObj: any = {
       entity_id: "sensor.test",
       state: "My Custom State",
