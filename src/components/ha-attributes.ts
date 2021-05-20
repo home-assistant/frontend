@@ -1,3 +1,4 @@
+import "./ha-expansion-panel";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -6,11 +7,14 @@ import { haStyle } from "../resources/styles";
 import hassAttributeUtil, {
   formatAttributeName,
 } from "../util/hass-attributes-util";
+import { HomeAssistant } from "../types";
 
 let jsYamlPromise: Promise<typeof import("js-yaml")>;
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   @property({ attribute: "extra-filters" }) public extraFilters?: string;
@@ -31,23 +35,30 @@ class HaAttributes extends LitElement {
 
     return html`
       <hr />
-      <div>
-        ${attributes.map(
-          (attribute) => html`
-            <div class="data-entry">
-              <div class="key">${formatAttributeName(attribute)}</div>
-              <div class="value">${this.formatAttribute(attribute)}</div>
-            </div>
-          `
+      <ha-expansion-panel
+        .header=${this.hass.localize(
+          "ui.components.attributes.expansion_header"
         )}
-        ${this.stateObj.attributes.attribution
-          ? html`
-              <div class="attribution">
-                ${this.stateObj.attributes.attribution}
+        outlined
+      >
+        <div class="attribute-container">
+          ${attributes.map(
+            (attribute) => html`
+              <div class="data-entry">
+                <div class="key">${formatAttributeName(attribute)}</div>
+                <div class="value">${this.formatAttribute(attribute)}</div>
               </div>
             `
-          : ""}
-      </div>
+          )}
+          ${this.stateObj.attributes.attribution
+            ? html`
+                <div class="attribution">
+                  ${this.stateObj.attributes.attribution}
+                </div>
+              `
+            : ""}
+        </div>
+      </ha-expansion-panel>
     `;
   }
 
@@ -55,6 +66,9 @@ class HaAttributes extends LitElement {
     return [
       haStyle,
       css`
+        .attribute-container {
+          margin-bottom: 8px;
+        }
         .data-entry {
           display: flex;
           flex-direction: row;

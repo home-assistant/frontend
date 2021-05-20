@@ -24,6 +24,7 @@ class MoreInfoPerson extends LitElement {
 
     return html`
       <ha-attributes
+        .hass=${this.hass}
         .stateObj=${this.stateObj}
         extra-filters="id,user_id,editable"
       ></ha-attributes>
