@@ -349,7 +349,6 @@ export class HuiDialogEditView extends LitElement {
           line-height: normal;
           -moz-osx-font-smoothing: grayscale;
           -webkit-font-smoothing: antialiased;
-          font-family: Roboto, sans-serif;
           font-family: var(
             --mdc-typography-headline6-font-family,
             var(--mdc-typography-font-family, Roboto, sans-serif)

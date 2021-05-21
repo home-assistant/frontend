@@ -591,7 +591,7 @@ export class HaDataTable extends LitElement {
           height: 100%;
         }
         .mdc-data-table__content {
-          font-family: Roboto, sans-serif;
+          font-family: var(--mdc-typography-font-family, Roboto, sans-serif);
           -moz-osx-font-smoothing: grayscale;
           -webkit-font-smoothing: antialiased;
           font-size: 0.875rem;
@@ -691,7 +691,7 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__cell {
-          font-family: Roboto, sans-serif;
+          font-family: var(--mdc-typography-font-family, Roboto, sans-serif);
           -moz-osx-font-smoothing: grayscale;
           -webkit-font-smoothing: antialiased;
           font-size: 0.875rem;
@@ -795,7 +795,7 @@ export class HaDataTable extends LitElement {
         }
 
         .mdc-data-table__header-cell {
-          font-family: Roboto, sans-serif;
+          font-family: var(--mdc-typography-font-family, Roboto, sans-serif);
           -moz-osx-font-smoothing: grayscale;
           -webkit-font-smoothing: antialiased;
           font-size: 0.875rem;
