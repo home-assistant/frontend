@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Si è verificato un errore sconosciuto",
+            "error_addon_no_ingress": "Il componente aggiuntivo richiesto non supporta l'ingresso",
             "error_addon_not_found": "Componente aggiuntivo non trovato",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "Questo reindirizzamento non è supportato dall'istanza di Home Assistant. Controlla il {link} per i reindirizzamenti supportati e la versione in cui sono stati introdotti."
@@ -383,13 +384,14 @@
             "create": "Crea",
             "create_blocked_not_running": "La creazione di un'istantanea non è al momento possibile perché il sistema è nello stato {state}.",
             "create_snapshot": "Crea istantanea",
+            "created": "Creato",
             "description": "Le istantanee ti consentono di eseguire facilmente il backup e il ripristino di tutti i dati dell'istanza di Home Assistant.",
             "enter_password": "Immettere una password.",
             "folder": {
                 "addons/local": "Componenti aggiuntivi locali",
                 "homeassistant": "Configurazione di Home Assistant",
                 "media": "Media",
-                "share": "Share",
+                "share": "Condividi",
                 "ssl": "SSL"
             },
             "folders": "Cartelle",
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Ricevi aggiornamenti stabili per Home Assistant, Supervisor e host",
                 "ram_usage": "Utilizzo RAM Supervisor",
                 "reload_supervisor": "Ricarica Supervisor",
+                "search": "Ricerca",
                 "share_diagnostics": "Condividi diagnostica",
                 "share_diagnostics_description": "Condividi i rapporti sugli arresti anomali e le informazioni diagnostiche.",
                 "share_diagonstics_description": "Vorresti condividere automaticamente i rapporti sugli arresti anomali e le informazioni diagnostiche quando il Supervisor rileva errori imprevisti? {line_break} Questo ci consentirà di risolvere i problemi, le informazioni sono accessibili solo al team di Home Assistant Core e non saranno condivise con altri. {line_break} I dati non includono alcuna informazione privata/sensibile e puoi disabilitarla nelle impostazioni in qualsiasi momento lo desideri.",
@@ -769,7 +772,7 @@
                 "by_service": "dal servizio",
                 "entries_not_found": "Non sono state trovate voci nel registro.",
                 "messages": {
-                    "became_unavailable": "non è più disponibile",
+                    "became_unavailable": "è diventato non disponibile",
                     "changed_to_state": "cambiato in {state}",
                     "cleared_device_class": "sgombro (nessun {device_class} rilevato)",
                     "detected_device_class": "rilevato {device_class}",
@@ -1744,12 +1747,18 @@
                         "nabu_casa_account": "Account Nabu Casa",
                         "not_connected": "Non Connesso",
                         "remote": {
-                            "access_is_being_prepared": "È in fase di preparazione l'accesso remoto. Ti avviseremo quando sarà pronto.",
+                            "access_is_being_prepared": "Il controllo remoto è in fase di preparazione. Ti avviseremo quando sarà pronto.",
                             "certificate_info": "Informazioni sul certificato",
+                            "connected": "Connesso",
                             "info": "Home Assistant Cloud fornisce una connessione remota sicura alla tua istanza mentre sei fuori casa.",
                             "instance_is_available": "La tua istanza è disponibile su",
                             "instance_will_be_available": "La tua istanza sarà disponibile su",
                             "link_learn_how_it_works": "Scopri come funziona",
+                            "not_connected": "Non Connesso",
+                            "remote_enabled": {
+                                "caption": "Collegati automaticamente",
+                                "description": "Abilita questa opzione per assicurarti che la tua istanza di Home Assistant sia sempre accessibile da remoto."
+                            },
                             "title": "Telecomando"
                         },
                         "sign_out": "Esci",
@@ -2160,6 +2169,7 @@
                     "license": "Pubblicato sotto la licenza Apache 2.0",
                     "path_configuration": "Percorso del file configuration.yaml: {path}",
                     "server": "server",
+                    "setup_time": "Tempo di preparazione",
                     "source": "Sorgenti:",
                     "system_health_error": "Il componente System Health non è caricato. Aggiungere 'system_health:' a configuration.yaml",
                     "system_health": {
@@ -2239,6 +2249,7 @@
                         },
                         "finish": "Finito",
                         "loading_first_time": "Si prega di attendere durante l'installazione dell'integrazione",
+                        "next": "Prossimo",
                         "not_all_required_fields": "Non tutti i campi obbligatori sono compilati.",
                         "not_loaded": "L'integrazione non può essere caricata, prova a riavviare Home Assistant.",
                         "pick_flow_step": {
@@ -2577,6 +2588,8 @@
                         "add_scene": "Aggiungi scena",
                         "delete_confirm": "Sei sicuro di voler cancellare questa scena?",
                         "delete_scene": "Cancella scena",
+                        "duplicate": "Duplica",
+                        "duplicate_scene": "Scena duplicata",
                         "edit_scene": "Modifica scena",
                         "header": "Editor di scene",
                         "headers": {
@@ -2904,7 +2917,9 @@
                         "controller_in_inclusion_mode": "Il tuo controller Z-Wave è ora in modalità inclusione.",
                         "follow_device_instructions": "Segui le indicazioni fornite con il tuo dispositivo per attivare l'associazione sul dispositivo.",
                         "inclusion_failed": "Impossibile aggiungere il nodo. Si prega di controllare i registri per ulteriori informazioni.",
-                        "inclusion_finished": "Il nodo è stato aggiunto. Potrebbero essere necessari alcuni minuti prima che tutte le entità vengano visualizzate mentre finiamo di configurare il nodo in background.",
+                        "inclusion_finished": "Il nodo è stato aggiunto.",
+                        "interview_failed": "L'interrogazione al dispositivo non è riuscita. Ulteriori informazioni potrebbero essere disponibili nei registri.",
+                        "interview_started": "Il dispositivo viene interrogato. Potrebbe volerci un po' di tempo.",
                         "introduction": "Questa procedura ti guiderà nell'aggiunta di un nodo alla tua rete Z-Wave.",
                         "secure_inclusion_warning": "I dispositivi protetti richiedono una larghezza di banda aggiuntiva; troppi dispositivi sicuri possono rallentare la tua rete Z-Wave. Si consiglia di utilizzare l'inclusione sicura solo per i dispositivi che lo richiedono, come serrature o apri porta da garage.",
                         "start_inclusion": "Avvia inclusione",
@@ -2944,6 +2959,7 @@
                     },
                     "logs": {
                         "log_level": "Livello di registro",
+                        "subscribed_to_logs": "Sottoscrizione al registro dei messaggi di Z-Wave JS ...",
                         "title": "Registri Z-Wave JS"
                     },
                     "navigation": {
@@ -3970,7 +3986,7 @@
                     "delete_failed": "Impossibile eliminare il token di aggiornamento.",
                     "description": "Ogni token di aggiornamento rappresenta una sessione di accesso. I token di aggiornamento verranno rimossi automaticamente quando si fa clic su Disconnetti. I seguenti token di aggiornamento sono attualmente attivi per il tuo account.",
                     "header": "Token di aggiornamento",
-                    "last_used": "Utilizzato l'ultima volta il {date} da {location}",
+                    "last_used": "Ultimo utilizzo del {date} da {location}",
                     "not_used": "Non è mai stato usato",
                     "token_title": "Token di aggiornamento per {clientId}"
                 },

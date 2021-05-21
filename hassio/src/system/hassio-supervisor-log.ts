@@ -2,16 +2,8 @@ import "@material/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
@@ -61,11 +53,11 @@ class HassioSupervisorLog extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _selectedLogProvider = "supervisor";
+  @state() private _selectedLogProvider = "supervisor";
 
-  @internalProperty() private _content?: string;
+  @state() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -146,7 +138,7 @@ class HassioSupervisorLog extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

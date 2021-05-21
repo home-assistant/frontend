@@ -4,15 +4,13 @@ import "@polymer/app-layout/app-drawer/app-drawer";
 import type { AppDrawerElement } from "@polymer/app-layout/app-drawer/app-drawer";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../common/dom/fire_event";
 import { listenMediaQuery } from "../common/dom/media_query";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
@@ -44,19 +42,20 @@ class HomeAssistantMain extends LitElement {
 
   @property() public route?: Route;
 
-  @property({ type: Boolean }) public narrow?: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private _sidebarEditMode = false;
+  @state() private _sidebarEditMode = false;
+
+  constructor() {
+    super();
+    listenMediaQuery("(max-width: 870px)", (matches) => {
+      this.narrow = matches;
+    });
+  }
 
   protected render(): TemplateResult {
     const hass = this.hass;
-
-    if (!hass) {
-      return html``;
-    }
-
     const sidebarNarrow = this._sidebarNarrow;
-
     const disableSwipe =
       this._sidebarEditMode ||
       !sidebarNarrow ||
@@ -144,12 +143,8 @@ class HomeAssistantMain extends LitElement {
 
     this.addEventListener("hass-show-notifications", () => {
       showNotificationDrawer(this, {
-        narrow: this.narrow!,
+        narrow: this.narrow,
       });
-    });
-
-    listenMediaQuery("(max-width: 870px)", (matches) => {
-      this.narrow = matches;
     });
   }
 
@@ -186,7 +181,7 @@ class HomeAssistantMain extends LitElement {
     return this.shadowRoot!.querySelector("app-drawer-layout")!;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         color: var(--primary-text-color);

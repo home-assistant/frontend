@@ -1,15 +1,14 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-card";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -80,7 +79,7 @@ export class HuiPictureHeaderFooter
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       img.clickable {
         cursor: pointer;

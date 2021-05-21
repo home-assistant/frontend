@@ -1,4 +1,4 @@
-import { customElement, property } from "lit-element";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import {
   HassRouterPage,

@@ -1,11 +1,11 @@
-import { PropertyValues, UpdatingElement } from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
 import { Constructor, HomeAssistant } from "../types";
 
 export interface ProvideHassElement {
   provideHass(element: HTMLElement);
 }
 
-export const ProvideHassLitMixin = <T extends Constructor<UpdatingElement>>(
+export const ProvideHassLitMixin = <T extends Constructor<ReactiveElement>>(
   superClass: T
 ) =>
   class extends superClass {

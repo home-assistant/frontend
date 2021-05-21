@@ -1,20 +1,19 @@
-import "../components/ha-card";
 import "@material/mwc-button";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { HomeAssistant } from "../types";
+} from "lit";
+import { customElement, property } from "lit/decorators";
+import { atLeastVersion } from "../common/config/version";
+import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
+import "../components/ha-card";
 import "../resources/ha-style";
 import { haStyle } from "../resources/styles";
-import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
-import { atLeastVersion } from "../common/config/version";
+import { HomeAssistant } from "../types";
 import "./hass-subpage";
 
 @customElement("supervisor-error-screen")
@@ -112,7 +111,7 @@ class SupervisorErrorScreen extends LitElement {
     );
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -126,6 +126,7 @@ export function formatAttributeName(value: string): string {
     .replace(/_/g, " ")
     .replace(/\bid\b/g, "ID")
     .replace(/\bip\b/g, "IP")
-    .replace(/\bmac\b/g, "MAC");
+    .replace(/\bmac\b/g, "MAC")
+    .replace(/\bgps\b/g, "GPS");
   return value.charAt(0).toUpperCase() + value.slice(1);
 }

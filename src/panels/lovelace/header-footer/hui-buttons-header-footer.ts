@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-buttons-base";
@@ -23,7 +17,7 @@ export class HuiButtonsHeaderFooter
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public getCardSize(): number {
     return 3;

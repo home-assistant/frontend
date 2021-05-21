@@ -3,14 +3,13 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-circular-progress";
@@ -41,9 +40,9 @@ import "./step-flow-create-entry";
 import "./step-flow-external";
 import "./step-flow-form";
 import "./step-flow-loading";
+import "./step-flow-pick-flow";
 import "./step-flow-pick-handler";
 import "./step-flow-progress";
-import "./step-flow-pick-flow";
 
 let instance = 0;
 
@@ -61,27 +60,27 @@ declare global {
 class DataEntryFlowDialog extends LitElement {
   public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: DataEntryFlowDialogParams;
+  @state() private _params?: DataEntryFlowDialogParams;
 
-  @internalProperty() private _loading = true;
+  @state() private _loading = true;
 
   private _instance = instance;
 
-  @internalProperty() private _step:
+  @state() private _step:
     | DataEntryFlowStep
     | undefined
     // Null means we need to pick a config flow
     | null;
 
-  @internalProperty() private _devices?: DeviceRegistryEntry[];
+  @state() private _devices?: DeviceRegistryEntry[];
 
-  @internalProperty() private _areas?: AreaRegistryEntry[];
+  @state() private _areas?: AreaRegistryEntry[];
 
-  @internalProperty() private _handlers?: string[];
+  @state() private _handlers?: string[];
 
-  @internalProperty() private _handler?: string;
+  @state() private _handler?: string;
 
-  @internalProperty() private _flowsInProgress?: DataEntryFlowProgress[];
+  @state() private _flowsInProgress?: DataEntryFlowProgress[];
 
   private _unsubAreas?: UnsubscribeFunc;
 
@@ -400,7 +399,7 @@ class DataEntryFlowDialog extends LitElement {
     this._step = step;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

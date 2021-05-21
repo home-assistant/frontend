@@ -1,14 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, object, optional, string } from "superstruct";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -30,7 +22,7 @@ export class HuiShoppingListEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ShoppingListCardConfig;
+  @state() private _config?: ShoppingListCardConfig;
 
   public setConfig(config: ShoppingListCardConfig): void {
     assert(config, cardConfigStruct);
@@ -104,7 +96,7 @@ export class HuiShoppingListEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .error {
         color: var(--error-color);

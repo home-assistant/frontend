@@ -1,12 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -21,7 +14,7 @@ import { EntityConfig, LovelaceRow } from "./types";
 class HuiGroupEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   private _computeCanToggle(hass: HomeAssistant, entityIds: string[]): boolean {
     return entityIds.some((entityId) => {

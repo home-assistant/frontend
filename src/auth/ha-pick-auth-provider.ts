@@ -1,6 +1,7 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import { html, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "../components/ha-icon-next";
 import { AuthProvider } from "../data/auth";

@@ -2,15 +2,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
@@ -37,7 +30,7 @@ const cardConfigStruct = object({
   hours_to_show: optional(number()),
 });
 
-const includeDomains = ["sensor"];
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-sensor-card-editor")
 export class HuiSensorCardEditor
@@ -45,7 +38,7 @@ export class HuiSensorCardEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: SensorCardConfig;
+  @state() private _config?: SensorCardConfig;
 
   public setConfig(config: SensorCardConfig): void {
     assert(config, cardConfigStruct);
@@ -238,7 +231,7 @@ export class HuiSensorCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

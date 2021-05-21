@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  LitElement,
-  property,
-  svg,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, LitElement, svg, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import {
   getValueInPercentage,
   normalize,
@@ -40,7 +33,7 @@ export class HaBar extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       rect {
         height: 100%;

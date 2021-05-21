@@ -1,14 +1,12 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import checkValidDate from "../../../common/datetime/check_valid_date";
 import { formatNumber } from "../../../common/string/format_number";
 import { HomeAssistant } from "../../../types";
@@ -22,7 +20,7 @@ import { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
 class HuiAttributeRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: AttributeRowConfig;
+  @state() private _config?: AttributeRowConfig;
 
   public setConfig(config: AttributeRowConfig): void {
     if (!config) {
@@ -81,7 +79,7 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         text-align: right;

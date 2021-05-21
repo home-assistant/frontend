@@ -1,14 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
@@ -45,13 +37,13 @@ class OZWNodeConfig extends LitElement {
 
   @property() public nodeId?;
 
-  @internalProperty() private _node?: OZWDevice;
+  @state() private _node?: OZWDevice;
 
-  @internalProperty() private _metadata?: OZWDeviceMetaDataResponse;
+  @state() private _metadata?: OZWDeviceMetaDataResponse;
 
-  @internalProperty() private _config?: OZWDeviceConfig[];
+  @state() private _config?: OZWDeviceConfig[];
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   protected firstUpdated() {
     if (!this.ozwInstance) {
@@ -221,7 +213,7 @@ class OZWNodeConfig extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

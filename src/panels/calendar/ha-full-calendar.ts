@@ -14,15 +14,14 @@ import "@material/mwc-button";
 import { mdiViewAgenda, mdiViewDay, mdiViewModule, mdiViewWeek } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
   unsafeCSS,
-} from "lit-element";
+} from "lit";
+import { property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button-toggle-group";
@@ -91,9 +90,9 @@ export class HAFullCalendar extends LitElement {
 
   @property() public initialView: FullCalendarView = "dayGridMonth";
 
-  @internalProperty() private calendar?: Calendar;
+  @state() private calendar?: Calendar;
 
-  @internalProperty() private _activeView?: FullCalendarView;
+  @state() private _activeView?: FullCalendarView;
 
   public updateSize(): void {
     this.calendar?.updateSize();
@@ -285,7 +284,7 @@ export class HAFullCalendar extends LitElement {
     )
   );
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

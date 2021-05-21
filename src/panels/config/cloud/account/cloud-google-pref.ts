@@ -1,14 +1,8 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-card";
@@ -220,7 +214,7 @@ export class CloudGooglePref extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

@@ -1,14 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../../common/datetime/format_date_time";
 import "../../components/ha-markdown";
 import "../../components/ha-relative-time";
@@ -57,7 +50,7 @@ export class HuiPersistentNotificationItem extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .time {
         display: flex;

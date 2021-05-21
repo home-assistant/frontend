@@ -6,21 +6,26 @@ import Fuse from "fuse.js";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
+import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
+import "../../../common/search/search-input";
 import { caseInsensitiveCompare } from "../../../common/string/compare";
+import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
+import "../../../components/ha-button-menu";
+import "../../../components/ha-checkbox";
+import "../../../components/ha-fab";
+import "../../../components/ha-svg-icon";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
   getConfigFlowInProgressCollection,
@@ -44,25 +49,16 @@ import {
 } from "../../../data/integration";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { haStyle } from "../../../resources/styles";
-import { configSections } from "../ha-panel-config";
-
-import type { HomeAssistant, Route } from "../../../types";
-import type { HASSDomEvent } from "../../../common/dom/fire_event";
-import type { LocalizeFunc } from "../../../common/translations/localize";
-import type { HaIntegrationCard } from "./ha-integration-card";
-
-import "../../../common/search/search-input";
-import "../../../components/ha-button-menu";
-import "../../../components/ha-fab";
-import "../../../components/ha-checkbox";
-import "../../../components/ha-svg-icon";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
-import "./ha-integration-card";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../resources/styles";
+import type { HomeAssistant, Route } from "../../../types";
+import { configSections } from "../ha-panel-config";
 import "./ha-config-flow-card";
 import "./ha-ignored-config-entry-card";
+import "./ha-integration-card";
+import type { HaIntegrationCard } from "./ha-integration-card";
 
 export interface ConfigEntryUpdatedEvent {
   entry: ConfigEntry;
@@ -114,31 +110,31 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @internalProperty() private _configEntries?: ConfigEntryExtended[];
+  @state() private _configEntries?: ConfigEntryExtended[];
 
   @property()
   private _configEntriesInProgress: DataEntryFlowProgressExtended[] = [];
 
-  @internalProperty()
+  @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
-  @internalProperty()
+  @state()
   private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
-  @internalProperty()
+  @state()
   private _manifests: Record<string, IntegrationManifest> = {};
 
   private _extraFetchedManifests?: Set<string>;
 
-  @internalProperty() private _showIgnored = false;
+  @state() private _showIgnored = false;
 
-  @internalProperty() private _showDisabled = false;
+  @state() private _showDisabled = false;
 
-  @internalProperty() private _searchParms = new URLSearchParams(
+  @state() private _searchParms = new URLSearchParams(
     window.location.hash.substring(1)
   );
 
-  @internalProperty() private _filter?: string;
+  @state() private _filter?: string;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -346,8 +342,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                   ? html`<div class="active-filters">
                       ${this.hass.localize(
                         "ui.panel.config.integrations.disable.disabled_integrations",
-                        "number",
-                        disabledConfigEntries.size
+                        { number: disabledConfigEntries.size }
                       )}
                       <mwc-button
                         @click=${this._toggleShowDisabled}
@@ -606,11 +601,9 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     const localize = await localizePromise;
     if (
       !(await showConfirmationDialog(this, {
-        title: localize(
-          "ui.panel.config.integrations.confirm_new",
-          "integration",
-          domainToName(localize, domain)
-        ),
+        title: localize("ui.panel.config.integrations.confirm_new", {
+          integration: domainToName(localize, domain),
+        }),
       }))
     ) {
       return;
@@ -624,7 +617,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

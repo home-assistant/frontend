@@ -1,18 +1,16 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
 import {
   CameraEntity,
   CAMERA_SUPPORT_STREAM,
@@ -39,9 +37,9 @@ class HaCameraStream extends LitElement {
 
   // We keep track if we should force MJPEG with a string
   // that way it automatically resets if we change entity.
-  @internalProperty() private _forceMJPEG?: string;
+  @state() private _forceMJPEG?: string;
 
-  @internalProperty() private _url?: string;
+  @state() private _url?: string;
 
   protected render(): TemplateResult {
     if (!this.stateObj) {
@@ -113,7 +111,7 @@ class HaCameraStream extends LitElement {
     fireEvent(this, "iron-resize");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host,
       img {

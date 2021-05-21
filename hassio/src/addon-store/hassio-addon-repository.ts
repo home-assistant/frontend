@@ -1,12 +1,6 @@
 import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
-import {
-  css,
-  CSSResultArray,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
@@ -129,7 +123,7 @@ class HassioAddonRepositoryEl extends LitElement {
     navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       hassioStyle,
       css`

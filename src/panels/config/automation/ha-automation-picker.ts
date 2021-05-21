@@ -8,16 +8,9 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -26,9 +19,9 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
+import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-button-related-filter-menu";
 import {
   AutomationEntity,
   triggerAutomationActions,
@@ -56,9 +49,9 @@ class HaAutomationPicker extends LitElement {
 
   @property() private _activeFilters?: string[];
 
-  @internalProperty() private _filteredAutomations?: string[] | null;
+  @state() private _filteredAutomations?: string[] | null;
 
-  @internalProperty() private _filterValue?;
+  @state() private _filterValue?;
 
   private _automations = memoizeOne(
     (
@@ -335,7 +328,7 @@ class HaAutomationPicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

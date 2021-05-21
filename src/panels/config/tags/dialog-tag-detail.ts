@@ -1,20 +1,11 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
-import "../../../components/map/ha-location-editor";
 import { Tag, UpdateTagParams } from "../../../data/tag";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
@@ -29,17 +20,17 @@ class DialogTagDetail
   implements HassDialog<TagDetailDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _id?: string;
+  @state() private _id?: string;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: TagDetailDialogParams;
+  @state() private _params?: TagDetailDialogParams;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
-  @internalProperty() private _qrCode?: TemplateResult;
+  @state() private _qrCode?: TemplateResult;
 
   public showDialog(params: TagDetailDialogParams): void {
     this._params = params;
@@ -253,7 +244,7 @@ class DialogTagDetail
     this._qrCode = html`<img src=${canvas.toDataURL()}></img>`;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

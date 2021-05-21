@@ -1,15 +1,8 @@
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiContentCopy, mdiPackageVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-dialog";
@@ -34,9 +27,9 @@ import { formatSystemLogTime } from "./util";
 class DialogSystemLogDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: SystemLogDetailDialogParams;
+  @state() private _params?: SystemLogDetailDialogParams;
 
-  @internalProperty() private _manifest?: IntegrationManifest;
+  @state() private _manifest?: IntegrationManifest;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
@@ -197,7 +190,7 @@ class DialogSystemLogDetail extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

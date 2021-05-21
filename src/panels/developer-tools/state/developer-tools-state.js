@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import {
-  mdiInformationOutline,
   mdiClipboardTextMultipleOutline,
+  mdiInformationOutline,
 } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
@@ -11,6 +11,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { safeDump, safeLoad } from "js-yaml";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
 import "../../../components/ha-svg-icon";
@@ -18,7 +19,6 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
-import { copyToClipboard } from "../../../common/util/copy-clipboard";
 
 const ERROR_SENTINEL = {};
 /*
@@ -410,7 +410,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             const attributeValue = value.attributes[key];
 
             if (
-              attributeValue !== null &&
+              attributeValue !== undefined &&
               JSON.stringify(attributeValue).toLowerCase().includes(valueFilter)
             ) {
               return true;

@@ -1,14 +1,8 @@
-import "../../../components/ha-svg-icon";
-import { mdiPackageVariant, mdiCloud } from "@mdi/js";
+import { mdiCloud, mdiPackageVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  html,
-  customElement,
-  property,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import "../../../components/ha-svg-icon";
 import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -131,6 +125,7 @@ export class HaIntegrationHeader extends LitElement {
       height: 40px;
     }
     .header .info {
+      flex: 1;
       align-self: center;
     }
     .header .info div {
@@ -146,7 +141,7 @@ export class HaIntegrationHeader extends LitElement {
       margin-top: 16px;
       margin-right: 2px;
       font-weight: 400;
-      line-break: anywhere;
+      word-break: break-word;
       color: var(--primary-text-color);
     }
     .secondary {

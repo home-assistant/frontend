@@ -11,9 +11,9 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-switch";
+import { SUPPORT_SET_SPEED } from "../../../data/fan";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import { SUPPORT_SET_SPEED } from "../../../data/fan";
 
 /*
  * @appliesMixin EventsMixin

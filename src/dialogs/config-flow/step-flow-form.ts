@@ -2,14 +2,13 @@ import "@material/mwc-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
 import "../../components/ha-form/ha-form";
@@ -83,7 +82,9 @@ class StepFlowForm extends LitElement {
                   @click=${this._submitStep}
                   .disabled=${!allRequiredInfoFilledIn}
                   >${this.hass.localize(
-                    "ui.panel.config.integrations.config_flow.submit"
+                    `ui.panel.config.integrations.config_flow.${
+                      this.step.last_step === false ? "next" : "submit"
+                    }`
                   )}
                 </mwc-button>
 
@@ -181,7 +182,7 @@ class StepFlowForm extends LitElement {
   private _errorCallback = (error: string) =>
     this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`

@@ -4,15 +4,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "web-animations-js/web-animations-next-lite.min";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-card";
@@ -39,15 +37,15 @@ class HassioAddonAudio extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _inputDevices?: HassioHardwareAudioDevice[];
+  @state() private _inputDevices?: HassioHardwareAudioDevice[];
 
-  @internalProperty() private _outputDevices?: HassioHardwareAudioDevice[];
+  @state() private _outputDevices?: HassioHardwareAudioDevice[];
 
-  @internalProperty() private _selectedInput!: null | string;
+  @state() private _selectedInput!: null | string;
 
-  @internalProperty() private _selectedOutput!: null | string;
+  @state() private _selectedOutput!: null | string;
 
   protected render(): TemplateResult {
     return html`
@@ -109,7 +107,7 @@ class HassioAddonAudio extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

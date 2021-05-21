@@ -1680,6 +1680,8 @@
             "show_info_scene": "Show info about scene",
             "delete_scene": "Delete scene",
             "delete_confirm": "Are you sure you want to delete this scene?",
+            "duplicate_scene": "Duplicate scene",
+            "duplicate": "Duplicate",
             "headers": {
               "name": "Name"
             }
@@ -1794,10 +1796,16 @@
             },
             "remote": {
               "title": "Remote Control",
-              "access_is_being_prepared": "Remote access is being prepared. We will notify you when it's ready.",
+              "connected": "Connected",
+              "not_connected": "Not Connected",
+              "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
               "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
               "instance_is_available": "Your instance is available at",
               "instance_will_be_available": "Your instance will be available at",
+              "remote_enabled": {
+                "caption": "Automatically connect",
+                "description": "Enable this option to make sure that your Home Assistant instance is always remotely accessible."
+              },
               "link_learn_how_it_works": "Learn how it works",
               "certificate_info": "Certificate Info"
             },
@@ -2185,6 +2193,7 @@
             "dismiss": "Dismiss dialog",
             "finish": "Finish",
             "submit": "Submit",
+            "next": "Next",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
             "created_config": "Created configuration for {name}.",
@@ -2624,8 +2633,10 @@
             "controller_in_inclusion_mode": "Your Z-Wave controller is now in inclusion mode.",
             "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
             "inclusion_failed": "The node could not be added. Please check the logs for more information.",
-            "inclusion_finished": "The node has been added. It may take a few minutes for all entities to show up as we finish setting up the node in the background.",
-            "view_device": "View Device"
+            "inclusion_finished": "The node has been added.",
+            "view_device": "View Device",
+            "interview_started": "The device is being interviewed. This may take some time.",
+            "interview_failed": "The device interview failed. Additional information may be available in the logs."
           },
           "remove_node": {
             "title": "Remove a Z-Wave Node",
@@ -3202,6 +3213,17 @@
             "none": "None"
           }
         },
+        "time_format": {
+          "header": "Time Format",
+          "dropdown_label": "Time format",
+          "description": "Choose how times are formatted.",
+          "formats": {
+            "language": "Auto (use language setting)",
+            "system": "Use system locale",
+            "12": "12 hours (AM/PM)",
+            "24": "24 hours"
+          }
+        },
         "themes": {
           "header": "Theme",
           "error_no_theme": "No themes available.",
@@ -3254,8 +3276,8 @@
           "header": "Refresh Tokens",
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
           "token_title": "Refresh token for {clientId}",
-          "created_at": "Created at {date}",
-          "last_used": "Last used at {date} from {location}",
+          "created_at": "Created {date}",
+          "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
           "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
           "delete_failed": "Failed to delete the refresh token.",
@@ -3779,7 +3801,8 @@
       "not_supported": "[%key:ui::panel::my::not_supported%]",
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "error": "[%key:ui::panel::my::error%]",
-      "error_addon_not_found": "Add-on not found"
+      "error_addon_not_found": "Add-on not found",
+      "error_addon_no_ingress": "The requested add-on does not support ingress"
     },
     "system": {
       "log": {
@@ -3806,6 +3829,7 @@
         "share_diagnostics_description": "Share crash reports and diagnostic information.",
         "reload_supervisor": "Reload Supervisor",
         "warning": "WARNING",
+        "search": "Search",
         "beta_warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
         "beta_backup": "Make sure you have backups of your data before you activate this feature.",
         "beta_release_items": "This includes beta releases for:",
@@ -3871,6 +3895,7 @@
       "upload_snapshot": "Upload snapshot",
       "create_snapshot": "Create snapshot",
       "create": "Create",
+      "created": "Created",
       "name": "Name",
       "type": "Type",
       "security": "Security",

@@ -1,13 +1,6 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-icon";
 import { HomeAssistant } from "../../../types";
 import { LovelaceRow, WeblinkConfig } from "../entity-rows/types";
@@ -16,7 +9,7 @@ import { LovelaceRow, WeblinkConfig } from "../entity-rows/types";
 class HuiWeblinkRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: WeblinkConfig;
+  @state() private _config?: WeblinkConfig;
 
   public setConfig(config: WeblinkConfig): void {
     if (!config || !config.url) {
@@ -48,7 +41,7 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         display: flex;

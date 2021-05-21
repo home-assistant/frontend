@@ -2,16 +2,8 @@ import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
 import { mdiCancel, mdiFilterVariant, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
@@ -68,15 +60,13 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _searchParms = new URLSearchParams(
-    window.location.search
-  );
+  @state() private _searchParms = new URLSearchParams(window.location.search);
 
-  @internalProperty() private _showDisabled = false;
+  @state() private _showDisabled = false;
 
-  @internalProperty() private _filter = "";
+  @state() private _filter = "";
 
-  @internalProperty() private _numHiddenDevices = 0;
+  @state() private _numHiddenDevices = 0;
 
   private _activeFilters = memoizeOne(
     (
@@ -468,7 +458,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     this._showDisabled = true;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         ha-button-menu {

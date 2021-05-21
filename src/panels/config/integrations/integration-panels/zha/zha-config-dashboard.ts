@@ -4,14 +4,12 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
 import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
@@ -27,6 +25,7 @@ import {
   updateZHAConfiguration,
   ZHAConfiguration,
 } from "../../../../../data/zha";
+import { customElement, property } from "lit/decorators";
 
 export const zhaTabs: PageNavigation[] = [
   {
@@ -169,7 +168,7 @@ class ZHAConfigDashboard extends LitElement {
       schema.name;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

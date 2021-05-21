@@ -1,14 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { until } from "lit-html/directives/until";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { until } from "lit/directives/until";
 import checkValidDate from "../common/datetime/check_valid_date";
 import { formatDate } from "../common/datetime/format_date";
 import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
@@ -16,6 +9,7 @@ import { isDate } from "../common/string/is_date";
 import { isTimestamp } from "../common/string/is_timestamp";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
+
 import hassAttributeUtil, {
   formatAttributeName,
 } from "../util/hass-attributes-util";
@@ -35,13 +29,19 @@ class HaAttributes extends LitElement {
       return html``;
     }
 
+    const attributes = this.computeDisplayAttributes(
+      Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
+        this.extraFilters ? this.extraFilters.split(",") : []
+      )
+    );
+    if (attributes.length === 0) {
+      return html``;
+    }
+
     return html`
+      <hr />
       <div>
-        ${this.computeDisplayAttributes(
-          Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
-            this.extraFilters ? this.extraFilters.split(",") : []
-          )
-        ).map(
+        ${attributes.map(
           (attribute) => html`
             <div class="data-entry">
               <div class="key">${formatAttributeName(attribute)}</div>
@@ -60,7 +60,7 @@ class HaAttributes extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
@@ -87,6 +87,11 @@ class HaAttributes extends LitElement {
           margin: 0px;
           overflow-wrap: break-word;
           white-space: pre-line;
+        }
+        hr {
+          border-color: var(--divider-color);
+          border-bottom: none;
+          margin: 16px 0;
         }
       `,
     ];

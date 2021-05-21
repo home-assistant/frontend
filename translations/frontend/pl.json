@@ -287,7 +287,7 @@
             "reset_defaults": "Przywróć domyślne",
             "reset_options": "Resetuj opcje",
             "restart": "Uruchom ponownie",
-            "restart_name": "Uruchom ponownie {name}",
+            "restart_name": "Uruchom ponownie",
             "running_version": "Aktualnie używasz wersji {version}",
             "save": "Zapisz",
             "show_more": "Pokaż więcej informacji na ten temat",
@@ -303,7 +303,7 @@
             },
             "restart": {
                 "text": "Czy na pewno chcesz ponownie uruchomić {name}?",
-                "title": "Uruchom ponownie {name}"
+                "title": "Uruchom ponownie"
             },
             "update": {
                 "text": "Czy na pewno chcesz zaktualizować {name} do wersji {version}?",
@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Wystąpił nieznany błąd",
+            "error_addon_no_ingress": "Żądany dodatek nie obsługuje osadzania",
             "error_addon_not_found": "Nie znaleziono dodatku",
             "faq_link": "Mój Home Assistant - często zadawane pytania",
             "not_supported": "To przekierowanie nie jest obsługiwane przez Twoją instancję Home Assistanta. Sprawdź {link} aby znaleźć obsługiwane przekierowania i wersję, w której zostały wprowadzone."
@@ -383,6 +384,7 @@
             "create": "Utwórz",
             "create_blocked_not_running": "Tworzenie snapshota nie jest teraz możliwe, ponieważ system jest w {state}.",
             "create_snapshot": "Utwórz snapshot",
+            "created": "Utworzony",
             "description": "Snapshoty umożliwiają łatwe tworzenie kopii zapasowych i przywracanie wszystkich danych instancji Home Assistant.",
             "enter_password": "Proszę wprowadzić hasło",
             "folder": {
@@ -434,8 +436,8 @@
                 "ip_address": "Adres IP",
                 "new_hostname": "Wprowadź nową nazwę hosta:",
                 "operating_system": "System operacyjny",
-                "reboot_host": "Uruchom ponownie hosta",
-                "shutdown_host": "Zamknij hosta",
+                "reboot_host": "Uruchom ponownie",
+                "shutdown_host": "Wyłącz",
                 "used_space": "Zajęte miejsce"
             },
             "log": {
@@ -457,7 +459,8 @@
                 "leave_beta_action": "Opuść kanał beta",
                 "leave_beta_description": "Pobieraj stabilne aktualizacje dla Home Assistanta, Supervisora i hosta",
                 "ram_usage": "Zużycie pamięci przez Supervisora",
-                "reload_supervisor": "Wczytaj ponownie Supervisor",
+                "reload_supervisor": "Wczytaj ponownie",
+                "search": "Szukaj",
                 "share_diagnostics": "Udostępnij dane diagnostyczne",
                 "share_diagnostics_description": "Udostępniaj raporty o awariach i informacje diagnostyczne.",
                 "share_diagonstics_description": "Czy chcesz automatycznie udostępniać raporty o awariach i informacje diagnostyczne, gdy Supervisor napotka nieoczekiwane błędy? {line_break} Pozwoli nam to rozwiązać problemy, informacje są dostępne tylko dla głównego zespołu Home Assistant Core i nie będą udostępniane innym. {line_break} Dane nie zawierają żadnych prywatnych/wrażliwych informacji i możesz to wyłączyć w ustawieniach w dowolnym momencie.",
@@ -1746,10 +1749,16 @@
                         "remote": {
                             "access_is_being_prepared": "Trwa przygotowywanie dostępu zdalnego. Powiadomimy Cię, gdy będzie gotowy.",
                             "certificate_info": "Informacje o certyfikacie",
+                            "connected": "Połączono",
                             "info": "Chmura Home Assistant umożliwia bezpieczny zdalny dostęp do instancji Home Assistanta z dala od domu.",
                             "instance_is_available": "Twoja instancja jest dostępna pod adresem",
                             "instance_will_be_available": "Twoja instancja będzie dostępna pod adresem",
                             "link_learn_how_it_works": "Dowiedz się, jak to działa",
+                            "not_connected": "Brak połączenia",
+                            "remote_enabled": {
+                                "caption": "Połącz automatycznie",
+                                "description": "Włącz tę opcję, aby mieć pewność, że ta instancja Home Assistant jest zawsze dostępna zdalnie."
+                            },
                             "title": "Dostęp zdalny"
                         },
                         "sign_out": "Wyloguj",
@@ -2160,7 +2169,7 @@
                     "license": "Opublikowany na licencji Apache 2.0",
                     "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
                     "server": "serwer",
-                    "setup_time": "Ustawienia czasu",
+                    "setup_time": "Czas konfiguracji",
                     "source": "Źródło:",
                     "system_health_error": "Komponent kondycji systemu nie jest wczytany. Dodaj 'system_health:' do pliku configuration.yaml",
                     "system_health": {
@@ -2240,6 +2249,7 @@
                         },
                         "finish": "Zakończ",
                         "loading_first_time": "Proszę czekać, trwa instalowanie integracji...",
+                        "next": "Dalej",
                         "not_all_required_fields": "Nie wszystkie wymagane pola są wypełnione.",
                         "not_loaded": "Nie udało się wczytać integracji, spróbuj ponownie uruchomić Home Assistanta.",
                         "pick_flow_step": {
@@ -2945,7 +2955,7 @@
                     },
                     "logs": {
                         "log_level": "Poziom loga",
-                        "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS ...",
+                        "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS...",
                         "title": "Logi Z-Wave JS"
                     },
                     "navigation": {

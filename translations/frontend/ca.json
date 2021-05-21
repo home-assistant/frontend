@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "S'ha produït un error desconegut",
+            "error_addon_no_ingress": "El complement sol·licitat no admet ingress",
             "error_addon_not_found": "No s'ha trobat el complement",
             "faq_link": "Preguntes freqüents de My Home Assistant",
             "not_supported": "La instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
@@ -383,6 +384,7 @@
             "create": "Crea",
             "create_blocked_not_running": "Ara mateix no és possible crear una instantània perquè el sistema es troba en estat {state}.",
             "create_snapshot": "Crea instantània",
+            "created": "Creada",
             "description": "Les instantànies et permeten fer una còpia de seguretat i recuperar les dades de la teva instància de Home Assistant.",
             "enter_password": "Introdueix una contrasenya.",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Obtén actualitzacions estables de Home Assistant, del Supervisor i de l'amfitrió",
                 "ram_usage": "Ús de RAM del Supervisor",
                 "reload_supervisor": "Torna a carregar el Supervisor",
+                "search": "Cerca",
                 "share_diagnostics": "Comparteix diagnòstics",
                 "share_diagnostics_description": "Comparteix informes d'errors i informació de diagnòstic.",
                 "share_diagonstics_description": "Vols compartir automàticament informes d'error i informació de diagnòstic quan el Supervisor trobi amb errors inesperats?{line_break} Això ens permetrà solucionar problemes, la informació només és accessible per a l'equip de Home Assistant Core i no es compartirà amb altres persones.{line_break} Les dades no inclouen informació privada/confidencial, ho pots desactivar en qualsevol moment a la configuració.",
@@ -1744,12 +1747,18 @@
                         "nabu_casa_account": "Compte Nabu Casa",
                         "not_connected": "No connectat",
                         "remote": {
-                            "access_is_being_prepared": "S'està preparant l'accés remot. T'avisarem quan estigui a punt.",
+                            "access_is_being_prepared": "S'està preparant el control remot. T'avisarem quan estigui a punt.",
                             "certificate_info": "Informació del certificat",
+                            "connected": "Connectat",
                             "info": "Home Assistant Cloud t'ofereix una connexió remota i segura amb la teva instància mentre siguis fora de casa",
                             "instance_is_available": "La teva instància està disponible a",
                             "instance_will_be_available": "La teva instància estarà disponible a",
                             "link_learn_how_it_works": "Informació sobre com funciona",
+                            "not_connected": "No connectat",
+                            "remote_enabled": {
+                                "caption": "Connexió automàtica",
+                                "description": "Activa aquesta opció per assegurar-te que la teva instància de Home Assistant sempre sigui accessible de forma remota."
+                            },
                             "title": "Control remot"
                         },
                         "sign_out": "Tanca sessió",
@@ -2240,6 +2249,7 @@
                         },
                         "finish": "Finalitza",
                         "loading_first_time": "Espera mentre s'instal·la la integració",
+                        "next": "Següent",
                         "not_all_required_fields": "No s'han omplert tots els camps obligatoris.",
                         "not_loaded": "No s'ha pogut carregar la integració, prova de reiniciar Home Assistant.",
                         "pick_flow_step": {
@@ -2578,6 +2588,8 @@
                         "add_scene": "Afegeix escena",
                         "delete_confirm": "Estàs segur que vols eliminar aquesta escena?",
                         "delete_scene": "Elimina l'escena",
+                        "duplicate": "Duplica",
+                        "duplicate_scene": "Duplica escena",
                         "edit_scene": "Edita escena",
                         "header": "Editor d'escenes",
                         "headers": {
@@ -2905,7 +2917,9 @@
                         "controller_in_inclusion_mode": "El controlador Z-Wave ara està en mode d'inclusió.",
                         "follow_device_instructions": "Segueix les instruccions del teu dispositiu per activar la vinculació al dispositiu.",
                         "inclusion_failed": "No s'ha pogut afegir el node. Consulta els registres per a més informació.",
-                        "inclusion_finished": "S'ha afegit el node. Pot ser que les entitats triguin uns minuts a aparèixer mentre s'acaba de configurar el node en segon pla.",
+                        "inclusion_finished": "S'ha afegit el node.",
+                        "interview_failed": "Ha fallat la consulta del dispositiu. Pots trobar informació addicional als registres.",
+                        "interview_started": "S'està consultant el dispositiu. Això pot trigar una estona.",
                         "introduction": "Aquest assistent et guiarà perquè afegeixis un node a la teva xarxa Z-Wave.",
                         "secure_inclusion_warning": "Els dispositius segurs necessiten una amplada de banda més gran; si tens molts dispositius segurs pot ser que la xarxa Z-Wave vagi més lenta. Et recomanem que utilitzis la inclusió segura només en dispositius que realment ho necessitin com ara panys i controls de portes.",
                         "start_inclusion": "Inicia la inclusió",
@@ -3967,7 +3981,7 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "Estàs segur que vols eliminar el token d'actualització per a {name}?",
-                    "created_at": "Creat el {date}",
+                    "created_at": "Creat {date}",
                     "current_token_tooltip": "No s'ha pogut eliminar el token d'autenticació d'actualització.",
                     "delete_failed": "No s'ha pogut eliminar el token d'autenticació d'actualització.",
                     "description": "Cada token d'autenticació d'actualització representa un inici de sessió diferent. Els tokens d'autenticació d'actualització s'eliminaran automàticament quan tanquis la sessió. A sota hi ha una llista de tokens d'autenticació d'actualització que estan actius actualment al teu compte.",

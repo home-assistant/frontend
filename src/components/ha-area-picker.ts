@@ -8,16 +8,13 @@ import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
@@ -119,13 +116,13 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
-  @internalProperty() private _areas?: AreaRegistryEntry[];
+  @state() private _areas?: AreaRegistryEntry[];
 
-  @internalProperty() private _devices?: DeviceRegistryEntry[];
+  @state() private _devices?: DeviceRegistryEntry[];
 
-  @internalProperty() private _entities?: EntityRegistryEntry[];
+  @state() private _entities?: EntityRegistryEntry[];
 
-  @internalProperty() private _opened?: boolean;
+  @state() private _opened?: boolean;
 
   @query("vaadin-combo-box-light", true) public comboBox!: HTMLElement;
 
@@ -457,7 +454,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
     }, 0);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-input > mwc-icon-button {
         --mdc-icon-button-size: 24px;

@@ -1,15 +1,8 @@
 import "@material/mwc-icon-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -129,7 +122,7 @@ class PanelMediaBrowser extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

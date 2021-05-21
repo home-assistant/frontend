@@ -1,13 +1,6 @@
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { Analytics, AnalyticsPreferences } from "../data/analytics";
 import { haStyle } from "../resources/styles";
@@ -151,7 +144,7 @@ export class HaAnalytics extends LitElement {
     fireEvent(this, "analytics-preferences-changed", { preferences });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

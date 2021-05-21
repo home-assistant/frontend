@@ -3,14 +3,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
 import { PaperListboxElement } from "@polymer/paper-listbox";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  LitElement,
-  property,
-} from "lit-element";
-import { html } from "lit-html";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-card";
@@ -317,7 +311,7 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

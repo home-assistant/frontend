@@ -1,13 +1,7 @@
 import { mdiHelpCircle } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "./ha-svg-icon";
 
 @customElement("ha-help-tooltip")

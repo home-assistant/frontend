@@ -8,14 +8,13 @@ import {
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -312,7 +311,7 @@ class HaBlueprintOverview extends LitElement {
     fireEvent(this, "reload-blueprints");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

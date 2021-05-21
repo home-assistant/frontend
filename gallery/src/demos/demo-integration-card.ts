@@ -1,12 +1,4 @@
-import {
-  customElement,
-  html,
-  css,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-  property,
-} from "lit-element";
+import { html, css, LitElement, TemplateResult } from "lit";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
 
@@ -23,7 +15,8 @@ import type {
 } from "../../../src/panels/config/integrations/ha-config-integrations";
 import { DeviceRegistryEntry } from "../../../src/data/device_registry";
 import { EntityRegistryEntry } from "../../../src/data/entity_registry";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit/directives/class-map";
+import { customElement, property, state } from "lit/decorators";
 
 const createConfigEntry = (
   title: string,
@@ -86,7 +79,8 @@ const setupRetryReasonEntry = createConfigEntry("Setup Retry", {
 });
 const setupRetryReasonMissingKeyEntry = createConfigEntry("Setup Retry", {
   state: "setup_retry",
-  reason: "resolve_error",
+  reason:
+    "HTTPSConnectionpool: Max retries exceeded with NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x9eedfc10>: Failed to establish a new connection: [Errno 113] Host is unreachable')",
 });
 const failedUnloadEntry = createConfigEntry("Failed Unload", {
   state: "failed_unload",
@@ -219,9 +213,9 @@ const createDeviceRegistryEntries = (
 export class DemoIntegrationCard extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
 
-  @internalProperty() isCustomIntegration = false;
+  @state() isCustomIntegration = false;
 
-  @internalProperty() isCloud = false;
+  @state() isCloud = false;
 
   protected render(): TemplateResult {
     if (!this.hass) {

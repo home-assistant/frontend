@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Er is een onbekende fout opgetreden",
+            "error_addon_no_ingress": "De gevraagde add-on ondersteunt geen ingress",
             "error_addon_not_found": "Invoegtoepassing niet gevonden",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "Deze redirect wordt niet ondersteund door uw Home Assistant instantie. Controleer de {link} voor de ondersteunde redirects en de versie waarin ze zijn geïntroduceerd."
@@ -383,6 +384,7 @@
             "create": "Maak",
             "create_blocked_not_running": "Het maken van een snapshot is nu niet mogelijk omdat het systeem in {state} staat.",
             "create_snapshot": "Maak snapshot",
+            "created": "Gemaakt",
             "description": "Met snapshots kunt u gemakkelijk een back-up maken van alle gegevens van uw Home Assistant en ze herstellen.",
             "enter_password": "Voer een wachtwoord in.",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Krijg stabiele updates voor Home Assistant, Supervisor en host",
                 "ram_usage": "Supervisor RAM-gebruik",
                 "reload_supervisor": "Herlaad de Supervisor",
+                "search": "Zoek",
                 "share_diagnostics": "Diagnostische gegevens delen",
                 "share_diagnostics_description": "Deel crash rapporten en diagnostische informatie.",
                 "share_diagonstics_description": "Zou je automatisch crash rapporten en diagnostische informatie willen delen wanneer de Supervisor onverwachte fouten tegenkomt? {line_break} Dit stelt ons in staat om de problemen op te lossen, de informatie is alleen toegankelijk voor het Home Assistant Core team en zal niet met anderen gedeeld worden.{line_break} De gegevens bevatten geen privé/gevoelige informatie en u kunt dit in de instellingen op elk gewenst moment uitschakelen.",
@@ -1208,7 +1211,7 @@
                 "configuring_alt": "Configureren",
                 "heading": "Apparaat opnieuw configureren",
                 "in_progress": "Het apparaat wordt opnieuw geconfigureerd. Dit kan wat tijd kosten.",
-                "introduction": "Herconfigureer een apparaat op je Zigbee netwerk. Gebruik deze functie als uw apparaat niet correct functioneert.",
+                "introduction": "Herconfigureer een apparaat op uw Zigbee netwerk. Gebruik deze functie als uw apparaat niet correct functioneert.",
                 "min_max_change": "min/max/verandering",
                 "reporting_header": "Rapporteren",
                 "run_in_background": "U kunt dit dialoogvenster sluiten en de herconfiguratie wordt op de achtergrond voortgezet.",
@@ -1585,7 +1588,7 @@
                                 "sun": {
                                     "event": "Gebeurtenis:",
                                     "label": "Zon",
-                                    "offset": "Afwijking (optioneel)",
+                                    "offset": "Offset (optioneel)",
                                     "sunrise": "Zonsopkomst",
                                     "sunset": "Zonsondergang"
                                 },
@@ -1630,7 +1633,7 @@
                         "delete_automation": "Verwijder automatisering",
                         "delete_confirm": "Weet je zeker dat je deze automatisering wilt verwijderen?",
                         "dev_automation": "Debug automatisering",
-                        "dev_only_editable": "Alleen automatiseringen in automations.yaml kunnen worden gedebugd.",
+                        "dev_only_editable": "Alleen automatiseringen waaraan een uniek ID is toegewezen, kunnen worden gedebugd",
                         "duplicate": "Dupliceren",
                         "duplicate_automation": "Dupliceer automatisering",
                         "edit_automation": "Bewerk automatisering",
@@ -1668,7 +1671,7 @@
                         "error_no_url": "Voer de URL van de Blueprint in.",
                         "file_name": "Blueprint pad",
                         "header": "Voeg een nieuwe Blueprint toe",
-                        "import_btn": "Bekijk een Blueprint",
+                        "import_btn": "Bekijk deze Blueprint",
                         "import_header": "Blueprint \"{name}\"",
                         "import_introduction_link": "U kunt Blueprints van andere gebruikers importeren vanuit Github en de {community_link} . Voer de URL van de Blueprint hieronder in.",
                         "importing": "Blueprint importeren ...",
@@ -1746,10 +1749,16 @@
                         "remote": {
                             "access_is_being_prepared": "Toegang op afstand wordt voorbereid. We zullen u op de hoogte brengen wanneer het klaar is.",
                             "certificate_info": "Certificaatinfo",
+                            "connected": "Verbonden",
                             "info": "Home Assistant Cloud biedt een veilige externe verbinding met uw exemplaar terwijl u niet thuis bent.",
                             "instance_is_available": "Uw exemplaar is beschikbaar op",
                             "instance_will_be_available": "Uw exemplaar zal beschikbaar zijn op",
                             "link_learn_how_it_works": "Leer hoe het werkt",
+                            "not_connected": "Niet verbonden",
+                            "remote_enabled": {
+                                "caption": "Automatisch verbinden",
+                                "description": "Schakel deze optie in om ervoor te zorgen dat uw Home Assistant instantie altijd op afstand toegankelijk is."
+                            },
                             "title": "Afstand Bediening"
                         },
                         "sign_out": "Afmelden",
@@ -1855,7 +1864,7 @@
                         "password": "Wachtwoord",
                         "password_error_msg": "Wachtwoorden moeten uit ten minste 8 tekens bestaan",
                         "sign_in": "Aanmelden",
-                        "start_trial": "Start je gratis proefperiode van 1 maand",
+                        "start_trial": "Start uw gratis proefperiode van 1 maand",
                         "title": "Cloud aanmelding",
                         "trial_info": "Geen betalingsinformatie nodig"
                     },
@@ -1868,7 +1877,7 @@
                         "feature_google_home": "Integratie met Google Assistent",
                         "feature_remote_control": "Beheer van Home Assistant van buitenaf",
                         "feature_webhook_apps": "Eenvoudige integratie met webhook gebaseerde apps zoals OwnTracks",
-                        "headline": "Start je gratis proefperiode",
+                        "headline": "Start uw gratis proefperiode",
                         "information": "Maak een account om uw gratis proefperiode van een maand te starten met Home Assistant Cloud. Geen betalingsinformatie nodig.",
                         "information2": "De proefversie geeft u toegang tot alle voordelen van Home Assistant Cloud, waaronder:",
                         "information3": "Deze service wordt uitgevoerd door onze partner",
@@ -1952,7 +1961,7 @@
                     "attributes_override": "Je kunt ze overschrijven als je wilt.",
                     "attributes_set": "De volgende attributen van de entiteit zijn automatisch ingevuld.",
                     "caption": "Aanpassingen",
-                    "description": "Pas je entiteiten aan",
+                    "description": "Pas uw entiteiten aan",
                     "different_include": "Mogelijk via een domein, een glob of een andere include.",
                     "pick_attribute": "Kies een attribuut om te overschrijven",
                     "picker": {
@@ -2160,6 +2169,7 @@
                     "license": "Gepubliceerd onder de Apache 2.0-licentie",
                     "path_configuration": "Pad naar configuration.yaml: {path}",
                     "server": "Server",
+                    "setup_time": "Insteltijd",
                     "source": "Bron:",
                     "system_health_error": "De systeemstatus component is niet geladen. Voeg ' system_health: ' toe aan het configuratiebestand.",
                     "system_health": {
@@ -2239,6 +2249,7 @@
                         },
                         "finish": "Voltooien",
                         "loading_first_time": "Even geduld a.u.b. terwijl de integratie wordt geïnstalleerd",
+                        "next": "Volgende",
                         "not_all_required_fields": "Niet alle verplichte velden zijn ingevuld.",
                         "not_loaded": "De integratie kan niet worden geladen, probeer Home Assistant opnieuw te starten.",
                         "pick_flow_step": {
@@ -2274,7 +2285,7 @@
                     "integration": "integratie",
                     "integration_not_found": "Integratie niet gevonden.",
                     "new": "Stel een nieuwe integratie in",
-                    "no_integrations": "Het lijkt erop dat je nog geen integraties hebt geconfigureerd. Klik op de knop hieronder om uw eerste integratie toe te voegen!",
+                    "no_integrations": "Het lijkt erop dat u nog geen integraties heeft geconfigureerd. Klik op de knop hieronder om uw eerste integratie toe te voegen!",
                     "none": "Er is nog niets geconfigureerd",
                     "none_found": "Geen integraties gevonden",
                     "none_found_detail": "Pas uw zoekcriteria aan.",
@@ -2577,6 +2588,8 @@
                         "add_scene": "Voeg scène toe",
                         "delete_confirm": "Weet je zeker dat je deze scène wilt verwijderen?",
                         "delete_scene": "Scène verwijderen",
+                        "duplicate": "Dupliceer",
+                        "duplicate_scene": "Dupliceer scene",
                         "edit_scene": "Scène bewerken",
                         "header": "Scene Editor",
                         "headers": {
@@ -2682,13 +2695,13 @@
                             "confirm_restart": "Weet je zeker dat je Home Assistant opnieuw wilt starten?",
                             "confirm_stop": "Weet je zeker dat je Home Assistant wilt afsluiten?",
                             "heading": "Serverbeheer",
-                            "introduction": "Beheer je Home Assistant-server... vanuit Home Assistant.",
+                            "introduction": "Beheer uw Home Assistant-server... vanuit Home Assistant.",
                             "restart": "Herstarten",
                             "stop": "Stop"
                         },
                         "validation": {
                             "check_config": "Controleer configuratie",
-                            "heading": "Configuratie validatie",
+                            "heading": "Valideer configuratie",
                             "introduction": "Controleer je configuratie als je onlangs wijzigingen hebt aangebracht en zeker wilt weten dat ze geldig zijn",
                             "invalid": "Ongeldige configuratie",
                             "valid": "Geldige configuratie!"
@@ -2813,7 +2826,7 @@
                         "shortcuts_title": "Snelkoppelingen",
                         "update_button": "Update configuratie",
                         "zha_options": {
-                            "default_light_transition": "Standaard licht transitietijd (seconden)",
+                            "default_light_transition": "Standaard lichttransitietijd (seconden)",
                             "enable_identify_on_join": "Schakel het identificatie-effect in wanneer apparaten in het netwerk komen",
                             "title": "Globale opties"
                         }
@@ -2904,7 +2917,9 @@
                         "controller_in_inclusion_mode": "Uw Z-Wave controller bevindt zich nu in de opnamemodus.",
                         "follow_device_instructions": "Volg de aanwijzingen die bij het apparaat zijn geleverd om de koppeling van het apparaat te activeren.",
                         "inclusion_failed": "Het knooppunt kon niet worden toegevoegd. Controleer de logs voor meer informatie.",
-                        "inclusion_finished": "Het knooppunt is toegevoegd. Het kan een paar minuten duren voordat alle entiteiten zichtbaar zijn, omdat we het opzetten van het knooppunt op de achtergrond afwerken.",
+                        "inclusion_finished": "Het knooppunt is toegevoegd.",
+                        "interview_failed": "Het apparaat \"interview\" is mislukt. Aanvullende informatie is mogelijk beschikbaar in de logboeken.",
+                        "interview_started": "Het apparaat wordt \"geïnterviewd\". Dit kan wat tijd kosten.",
                         "introduction": "Deze wizard begeleidt u bij het toevoegen van een knooppunt aan uw Z-Wave netwerk.",
                         "secure_inclusion_warning": "Beveiligde apparaten vereisen extra bandbreedte; te veel beveiligde apparaten kunnen uw Z-Wave-netwerk vertragen. We raden aan om alleen veilige opname te gebruiken voor apparaten die dat vereisen, zoals sloten of garagedeuropeners.",
                         "start_inclusion": "Start Opname",
@@ -2942,7 +2957,13 @@
                         "node_status": "Knooppuntstatus",
                         "zwave_info": "Z-Wave info"
                     },
+                    "logs": {
+                        "log_level": "Log niveau",
+                        "subscribed_to_logs": "Geabonneerd op Z-Wave JS log berichten ...",
+                        "title": "Z-Wave JS Logs"
+                    },
                     "navigation": {
+                        "logs": "Logs",
                         "network": "Netwerk"
                     },
                     "network_status": {
@@ -2968,6 +2989,16 @@
                         "awake": "Wakker",
                         "dead": "Onbereikbaar",
                         "unknown": "Onbekend"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "U moet apparaten met batterijvoeding uit de slaapstand halen voordat u een nieuw \"interview\" begint. Raadpleeg de handleiding van uw apparaat voor instructies over hoe u het apparaat uit de slaapstand haalt.",
+                        "in_progress": "Het apparaat wordt \"geïnterviewd\". Dit kan wat tijd kosten.",
+                        "interview_complete": "Apparaat interview voltooid.",
+                        "interview_failed": "Het apparaat \"interview\" is mislukt. Aanvullende informatie is mogelijk beschikbaar in de logboeken.",
+                        "introduction": "\"Interview\" een apparaat op uw Z-Wave-netwerk opnieuw. Gebruik deze functie als uw apparaat een ontbrekende of onjuiste functionaliteit heeft.",
+                        "run_in_background": "U kunt dit dialoogvenster sluiten en het \"interview\" zal op de achtergrond worden voortgezet.",
+                        "start_reinterview": "Start opnieuw \"interview\"",
+                        "title": "\"Interview\" een Z-Wave-apparaat opnieuw"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Uitsluiting annuleren",
@@ -3576,7 +3607,7 @@
                         "unsaved_changes": "Niet-opgeslagen wijzigingen"
                     },
                     "save_config": {
-                        "cancel": "Laat maar",
+                        "cancel": "Annuleer",
                         "close": "Sluiten",
                         "empty_config": "Begin met een leeg dashboard",
                         "header": "Neem de controle over je Lovelace UI",
@@ -3976,6 +4007,17 @@
                     "link_promo": "Meer informatie over thema's",
                     "primary_color": "Primaire kleur",
                     "reset": "Herstel"
+                },
+                "time_format": {
+                    "description": "Kies hoe tijden worden opgemaakt.",
+                    "dropdown_label": "Tijdformaat",
+                    "formats": {
+                        "12": "12 uur (AM/PM)",
+                        "24": "24 uur",
+                        "language": "Automatisch (taalinstelling gebruiken)",
+                        "system": "Systeemlokalen gebruiken"
+                    },
+                    "header": "Tijdformaat"
                 },
                 "vibrate": {
                     "description": "Schakel trillingen op dit apparaat in of uit wanneer u apparaten bestuurt.",

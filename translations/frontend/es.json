@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Se ha producido un error desconocido",
+            "error_addon_no_ingress": "El complemento solicitado no admite la entrada",
             "error_addon_not_found": "Complemento no encontrado",
             "faq_link": "Preguntas frecuentes sobre mi Home Assistant",
             "not_supported": "Esta redirección no es compatible con tu instancia de Home Assistant. Consulta el {link} para conocer las redirecciones admitidas y la versión en la que se introdujeron."
@@ -383,6 +384,7 @@
             "create": "Crear",
             "create_blocked_not_running": "No es posible crear una instantánea en este momento porque el sistema está en el estado {state}.",
             "create_snapshot": "Crear instantánea",
+            "created": "Creada",
             "description": "Las instantáneas te permiten realizar copias de seguridad y restaurar fácilmente todos los datos de tu instancia de Home Assistant.",
             "enter_password": "Por favor, introduce una contraseña.",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Obtén actualizaciones estables para Home Assistant, Supervisor y el host",
                 "ram_usage": "Uso de RAM del Supervisor",
                 "reload_supervisor": "Recargar el Supervisor",
+                "search": "Buscar",
                 "share_diagnostics": "Compartir diagnósticos",
                 "share_diagnostics_description": "Comparte informes de fallos e información de diagnóstico.",
                 "share_diagonstics_description": "¿Te gustaría compartir automáticamente informes de fallos e información de diagnóstico cuando el Supervisor encuentra errores inesperados? {line_break} Esto nos permitirá solucionar los problemas, la información solo es accesible para el equipo principal de Home Assistant y no se compartirá con otros. {line_break} Los datos no incluyen ninguna información privada/confidencial y puedes desactivar esto en la configuración en cualquier momento que desees.",
@@ -1744,12 +1747,18 @@
                         "nabu_casa_account": "Cuenta Nabu Casa",
                         "not_connected": "No conectado",
                         "remote": {
-                            "access_is_being_prepared": "Se está preparando el acceso remoto. Te avisaremos cuando esté listo.",
+                            "access_is_being_prepared": "Se está preparando el control remoto. Te avisaremos cuando esté listo.",
                             "certificate_info": "Información del certificado",
+                            "connected": "Conectado",
                             "info": "Home Assistant Cloud proporciona una conexión remota segura a tu instancia mientras estás fuera de casa.",
                             "instance_is_available": "Tu instancia está disponible en",
                             "instance_will_be_available": "Tu instancia estará disponible en",
                             "link_learn_how_it_works": "Aprende cómo funciona",
+                            "not_connected": "No conectado",
+                            "remote_enabled": {
+                                "caption": "Conectar automáticamente",
+                                "description": "Habilita esta opción para asegurarte de que tu instancia de Home Assistant está siempre accesible de forma remota."
+                            },
                             "title": "Control remoto"
                         },
                         "sign_out": "Cerrar sesión",
@@ -2160,6 +2169,7 @@
                     "license": "Publicado bajo la licencia Apache 2.0",
                     "path_configuration": "Ruta a configuration.yaml: {path}",
                     "server": "servidor",
+                    "setup_time": "Tiempo de configuración",
                     "source": "Fuente:",
                     "system_health_error": "El componente Estado del Sistema no está cargado. Añade 'system_health:' a configuration.yaml",
                     "system_health": {
@@ -2239,6 +2249,7 @@
                         },
                         "finish": "Terminar",
                         "loading_first_time": "Por favor, espera mientras la integración está siendo instalada",
+                        "next": "Siguiente",
                         "not_all_required_fields": "No se han completado todos los campos requeridos.",
                         "not_loaded": "La integración no se ha podido cargar, intenta reiniciar Home Assistant.",
                         "pick_flow_step": {
@@ -2577,6 +2588,8 @@
                         "add_scene": "Añadir escena",
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta escena?",
                         "delete_scene": "Eliminar escena",
+                        "duplicate": "Duplicar",
+                        "duplicate_scene": "Duplicar la escena",
                         "edit_scene": "Editar escena",
                         "header": "Editor de escenas",
                         "headers": {
@@ -2904,7 +2917,9 @@
                         "controller_in_inclusion_mode": "Tu controlador Z-Wave ahora está en modo de inclusión.",
                         "follow_device_instructions": "Sigue las instrucciones que vienen con el dispositivo para activar el emparejamiento en el dispositivo.",
                         "inclusion_failed": "No se pudo agregar el nodo. Por favor, consulta los registros para obtener más información.",
-                        "inclusion_finished": "Se ha agregado el nodo. Pueden tardar unos minutos en aparecer todas las entidades mientras terminamos de configurar el nodo en segundo plano.",
+                        "inclusion_finished": "Se ha agregado el nodo.",
+                        "interview_failed": "La entrevista del dispositivo falló. Es posible que haya información adicional disponible en los registros.",
+                        "interview_started": "El dispositivo está siendo entrevistado. Esto puede llevar algún tiempo.",
                         "introduction": "Este asistente te guiará para añadir un nodo a tu red Z-Wave.",
                         "secure_inclusion_warning": "Los dispositivos seguros requieren ancho de banda adicional; demasiados dispositivos seguros pueden ralentizar tu red Z-Wave. Recomendamos usar solo la inclusión segura para dispositivos que lo requieran, como cerraduras o abre-puertas de garaje.",
                         "start_inclusion": "Iniciar inclusión",
@@ -2944,6 +2959,7 @@
                     },
                     "logs": {
                         "log_level": "Nivel de registro",
+                        "subscribed_to_logs": "Suscrito a los mensajes de registro de Z-Wave JS...",
                         "title": "Registros de Z-Wave JS"
                     },
                     "navigation": {
@@ -3591,7 +3607,7 @@
                         "unsaved_changes": "Cambios no guardados"
                     },
                     "save_config": {
-                        "cancel": "No importa",
+                        "cancel": "Cancelar",
                         "close": "Cerrar",
                         "empty_config": "Empezar con un panel de control vacío",
                         "header": "Tomar el control de la interfaz de usuario Lovelace",
@@ -3965,12 +3981,12 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "¿Estás seguro de que quieres eliminar el token de actualización para {name}?",
-                    "created_at": "Creado el {date}",
+                    "created_at": "Creado {date}",
                     "current_token_tooltip": "No se puede eliminar el token actual",
                     "delete_failed": "Error al eliminar el token de acceso.",
                     "description": "Cada token de actualización representa un acceso de sesión. Los tokens de actualización se eliminarán automáticamente al cerrar la sesión. Los siguientes tokens de actualización están actualmente activos para tu cuenta.",
                     "header": "Actualizar tokens",
-                    "last_used": "Último uso el {date} desde {location}",
+                    "last_used": "Último uso {date} desde {location}",
                     "not_used": "Nunca ha sido usado",
                     "token_title": "Actualizar token para {clientId}"
                 },

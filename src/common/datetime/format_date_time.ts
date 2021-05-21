@@ -1,26 +1,42 @@
 import { format } from "fecha";
-import { FrontendTranslationData } from "../../data/translation";
+import memoizeOne from "memoize-one";
+import { FrontendLocaleData } from "../../data/translation";
 import { toLocaleStringSupportsOptions } from "./check_options_support";
+import { useAmPm } from "./use_am_pm";
+
+const formatDateTimeMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(locale.language, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: useAmPm(locale),
+    })
+);
 
 export const formatDateTime = toLocaleStringSupportsOptions
-  ? (dateObj: Date, locales: FrontendTranslationData) =>
-      dateObj.toLocaleString(locales.language, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-      })
-  : (dateObj: Date) => format(dateObj, "MMMM D, YYYY, HH:mm");
+  ? (dateObj: Date, locale: FrontendLocaleData) =>
+      formatDateTimeMem(locale).format(dateObj)
+  : (dateObj: Date, locale: FrontendLocaleData) =>
+      format(dateObj, "MMMM D, YYYY, HH:mm" + useAmPm(locale) ? " A" : "");
+
+const formatDateTimeWithSecondsMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(locale.language, {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: useAmPm(locale),
+    })
+);
 
 export const formatDateTimeWithSeconds = toLocaleStringSupportsOptions
-  ? (dateObj: Date, locales: FrontendTranslationData) =>
-      dateObj.toLocaleString(locales.language, {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit",
-        second: "2-digit",
-      })
-  : (dateObj: Date) => format(dateObj, "MMMM D, YYYY, HH:mm:ss");
+  ? (dateObj: Date, locale: FrontendLocaleData) =>
+      formatDateTimeWithSecondsMem(locale).format(dateObj)
+  : (dateObj: Date, locale: FrontendLocaleData) =>
+      format(dateObj, "MMMM D, YYYY, HH:mm:ss" + useAmPm(locale) ? " A" : "");

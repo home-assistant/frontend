@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../src/components/ha-circular-progress";
 import { HassioAddonDetails } from "../../../../src/data/hassio/addon";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
@@ -42,7 +35,7 @@ class HassioAddonInfoDashboard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

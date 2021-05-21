@@ -1,12 +1,7 @@
 import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import { UNAVAILABLE_STATES } from "../data/entity";
@@ -72,7 +67,7 @@ export class StateCardScript extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

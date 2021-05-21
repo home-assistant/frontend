@@ -1,13 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { formatTime } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/string/format_number";
 import "../../../components/ha-relative-time";
@@ -29,6 +22,7 @@ class MoreInfoSun extends LitElement {
     const order = risingDate > settingDate ? ["set", "ris"] : ["ris", "set"];
 
     return html`
+      <hr />
       ${order.map(
         (item) => html`
           <div class="row">
@@ -67,7 +61,7 @@ class MoreInfoSun extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .row {
         margin: 0;
@@ -81,6 +75,11 @@ class MoreInfoSun extends LitElement {
       }
       ha-relative-time::first-letter {
         text-transform: lowercase;
+      }
+      hr {
+        border-color: var(--divider-color);
+        border-bottom: none;
+        margin: 16px 0;
       }
     `;
   }

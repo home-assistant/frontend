@@ -2,16 +2,15 @@ import "@material/mwc-button";
 import { safeDump, safeLoad } from "js-yaml";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { property, state, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { handleStructError } from "../../../common/structs/handle-errors";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-circular-progress";
@@ -22,7 +21,6 @@ import type {
   LovelaceConfig,
 } from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
-import { handleStructError } from "../../../common/structs/handle-errors";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceGenericElementEditor } from "../types";
@@ -55,25 +53,25 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @internalProperty() private _yaml?: string;
+  @state() private _yaml?: string;
 
-  @internalProperty() private _config?: T;
+  @state() private _config?: T;
 
-  @internalProperty() private _configElement?: LovelaceGenericElementEditor;
+  @state() private _configElement?: LovelaceGenericElementEditor;
 
-  @internalProperty() private _configElementType?: string;
+  @state() private _configElementType?: string;
 
-  @internalProperty() private _guiMode = true;
+  @state() private _guiMode = true;
 
   // Error: Configuration broken - do not save
-  @internalProperty() private _errors?: string[];
+  @state() private _errors?: string[];
 
   // Warning: GUI editor can't handle configuration - ok to save
-  @internalProperty() private _warnings?: string[];
+  @state() private _warnings?: string[];
 
-  @internalProperty() private _guiSupported?: boolean;
+  @state() private _guiSupported?: boolean;
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
   @query("ha-code-editor") _yamlEditor?: HaCodeEditor;
 
@@ -351,7 +349,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
     ev.stopPropagation();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

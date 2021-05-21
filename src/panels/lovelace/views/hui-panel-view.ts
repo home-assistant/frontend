@@ -1,15 +1,14 @@
 import { mdiPlus } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import type {
   LovelaceViewConfig,
@@ -37,15 +36,12 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     LovelaceCard | HuiErrorCard
   > = [];
 
-  @internalProperty() private _card?:
-    | LovelaceCard
-    | HuiWarning
-    | HuiCardOptions;
+  @state() private _card?: LovelaceCard | HuiWarning | HuiCardOptions;
 
   public setConfig(_config: LovelaceViewConfig): void {}
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;
@@ -138,7 +134,7 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

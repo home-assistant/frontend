@@ -3,16 +3,9 @@ import { mdiClose, mdiDelete, mdiDownload, mdiHistory } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { formatDateTime } from "../../../../src/common/datetime/format_date_time";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-svg-icon";
@@ -27,6 +20,7 @@ import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../src/dialogs/generic/show-dialog-box";
+import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { PolymerChangedEvent } from "../../../../src/polymer-types";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
@@ -75,26 +69,28 @@ interface FolderItem {
 }
 
 @customElement("dialog-hassio-snapshot")
-class HassioSnapshotDialog extends LitElement {
+class HassioSnapshotDialog
+  extends LitElement
+  implements HassDialog<HassioSnapshotDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public supervisor?: Supervisor;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _onboarding = false;
+  @state() private _onboarding = false;
 
-  @internalProperty() private _snapshot?: HassioSnapshotDetail;
+  @state() private _snapshot?: HassioSnapshotDetail;
 
-  @internalProperty() private _folders!: FolderItem[];
+  @state() private _folders!: FolderItem[];
 
-  @internalProperty() private _addons!: AddonItem[];
+  @state() private _addons!: AddonItem[];
 
-  @internalProperty() private _dialogParams?: HassioSnapshotDialogParams;
+  @state() private _dialogParams?: HassioSnapshotDialogParams;
 
-  @internalProperty() private _snapshotPassword!: string;
+  @state() private _snapshotPassword!: string;
 
-  @internalProperty() private _restoreHass = true;
+  @state() private _restoreHass = true;
 
   public async showDialog(params: HassioSnapshotDialogParams) {
     this._snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
@@ -113,12 +109,21 @@ class HassioSnapshotDialog extends LitElement {
     }
   }
 
+  public closeDialog() {
+    this._dialogParams = undefined;
+    this._snapshot = undefined;
+    this._snapshotPassword = "";
+    this._folders = [];
+    this._addons = [];
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._dialogParams || !this._snapshot) {
       return html``;
     }
     return html`
-      <ha-dialog open @closing=${this._closeDialog} .heading=${true}>
+      <ha-dialog open @closing=${this.closeDialog} .heading=${true}>
         <div slot="heading">
           <ha-header-bar>
             <span slot="title"> ${this._computeName} </span>
@@ -132,7 +137,7 @@ class HassioSnapshotDialog extends LitElement {
             ? "Full snapshot"
             : "Partial snapshot"}
           (${this._computeSize})<br />
-          ${this._formatDatetime(this._snapshot.date)}
+          ${formatDateTime(new Date(this._snapshot.date), this.hass.locale)}
         </div>
         ${this._snapshot.homeassistant
           ? html`<div>Home Assistant:</div>
@@ -142,7 +147,8 @@ class HassioSnapshotDialog extends LitElement {
                   this._restoreHass = (ev.target as PaperCheckboxElement).checked!;
                 }}"
               >
-                Home Assistant ${this._snapshot.homeassistant}
+                Home Assistant
+                <span class="version">(${this._snapshot.homeassistant})</span>
               </paper-checkbox>`
           : ""}
         ${this._folders.length
@@ -181,6 +187,7 @@ class HassioSnapshotDialog extends LitElement {
                         )}"
                     >
                       ${item.name}
+                      <span class="version">(${item.version})</span>
                     </paper-checkbox>
                   `
                 )}
@@ -235,7 +242,7 @@ class HassioSnapshotDialog extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,
@@ -267,6 +274,9 @@ class HassioSnapshotDialog extends LitElement {
         }
         .no-margin-top {
           margin-top: 0;
+        }
+        span.version {
+          color: var(--secondary-text-color);
         }
         ha-header-bar {
           --mdc-theme-on-primary: var(--primary-text-color);
@@ -361,7 +371,7 @@ class HassioSnapshotDialog extends LitElement {
         .then(
           () => {
             alert("Snapshot restored!");
-            this._closeDialog();
+            this.closeDialog();
           },
           (error) => {
             this._error = error.body.message;
@@ -373,7 +383,7 @@ class HassioSnapshotDialog extends LitElement {
         method: "POST",
         body: JSON.stringify(data),
       });
-      this._closeDialog();
+      this.closeDialog();
     }
   }
 
@@ -412,7 +422,7 @@ class HassioSnapshotDialog extends LitElement {
         .then(
           () => {
             alert("Snapshot restored!");
-            this._closeDialog();
+            this.closeDialog();
           },
           (error) => {
             this._error = error.body.message;
@@ -424,7 +434,7 @@ class HassioSnapshotDialog extends LitElement {
         method: "POST",
         body: JSON.stringify(data),
       });
-      this._closeDialog();
+      this.closeDialog();
     }
   }
 
@@ -447,7 +457,7 @@ class HassioSnapshotDialog extends LitElement {
           if (this._dialogParams!.onDelete) {
             this._dialogParams!.onDelete();
           }
-          this._closeDialog();
+          this.closeDialog();
         },
         (error) => {
           this._error = error.body.message;
@@ -497,25 +507,6 @@ class HassioSnapshotDialog extends LitElement {
 
   private get _computeSize() {
     return Math.ceil(this._snapshot!.size * 10) / 10 + " MB";
-  }
-
-  private _formatDatetime(datetime) {
-    return new Date(datetime).toLocaleDateString(navigator.language, {
-      weekday: "long",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    });
-  }
-
-  private _closeDialog() {
-    this._dialogParams = undefined;
-    this._snapshot = undefined;
-    this._snapshotPassword = "";
-    this._folders = [];
-    this._addons = [];
   }
 }
 

@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -54,7 +46,7 @@ export class HaConfigLogs extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

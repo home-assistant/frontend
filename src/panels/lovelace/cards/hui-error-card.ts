@@ -1,13 +1,6 @@
 import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { ErrorCardConfig } from "./types";
@@ -16,7 +9,7 @@ import { ErrorCardConfig } from "./types";
 export class HuiErrorCard extends LitElement implements LovelaceCard {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ErrorCardConfig;
+  @state() private _config?: ErrorCardConfig;
 
   public getCardSize(): number {
     return 4;
@@ -46,7 +39,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

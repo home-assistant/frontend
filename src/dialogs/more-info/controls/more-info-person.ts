@@ -1,14 +1,7 @@
 import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-attributes";
@@ -69,7 +62,7 @@ class MoreInfoPerson extends LitElement {
     fireEvent(this, "hass-more-info", { entityId: null });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .flex {
         display: flex;

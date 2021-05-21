@@ -1,12 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import "../../../src/components/ha-card";
 import {
   LightColorModes,

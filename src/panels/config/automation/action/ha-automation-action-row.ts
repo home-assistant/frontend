@@ -6,19 +6,11 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
@@ -27,7 +19,6 @@ import type { Action } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
-import { handleStructError } from "../../../../common/structs/handle-errors";
 import "./types/ha-automation-action-choose";
 import "./types/ha-automation-action-condition";
 import "./types/ha-automation-action-delay";
@@ -99,11 +90,11 @@ export default class HaAutomationActionRow extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @internalProperty() private _warnings?: string[];
+  @state() private _warnings?: string[];
 
-  @internalProperty() private _uiModeAvailable = true;
+  @state() private _uiModeAvailable = true;
 
-  @internalProperty() private _yamlMode = false;
+  @state() private _yamlMode = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -339,7 +330,7 @@ export default class HaAutomationActionRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

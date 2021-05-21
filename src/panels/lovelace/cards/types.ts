@@ -286,6 +286,10 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   detail?: number;
   theme?: string;
   hours_to_show?: number;
+  limits?: {
+    min?: number;
+    max?: number;
+  };
 }
 
 export interface ShoppingListCardConfig extends LovelaceCardConfig {

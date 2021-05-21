@@ -1,17 +1,10 @@
 import "@material/mwc-button/mwc-button";
 import { mdiFilterVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { LocalizeFunc } from "../common/translations/localize";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/data-table/ha-data-table";
 import type {
@@ -35,9 +28,15 @@ declare global {
 export class HaTabsSubpageDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
+
   @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ type: Boolean }) public supervisor = false;
+
+  @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
   /**
    * Object with the columns.
@@ -185,12 +184,15 @@ export class HaTabsSubpageDataTable extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.localizeFunc}
         .narrow=${this.narrow}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
         .backCallback=${this.backCallback}
         .route=${this.route}
         .tabs=${this.tabs}
+        .mainPage=${this.mainPage}
+        .supervisor=${this.supervisor}
       >
         <div slot="toolbar-icon"><slot name="toolbar-icon"></slot></div>
         ${this.narrow
@@ -238,7 +240,7 @@ export class HaTabsSubpageDataTable extends LitElement {
     fireEvent(this, "clear-filter");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-data-table {
         width: 100%;

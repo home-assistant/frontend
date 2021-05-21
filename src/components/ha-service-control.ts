@@ -1,21 +1,15 @@
 import { mdiHelpCircle } from "@mdi/js";
-import { HassService, HassServiceTarget } from "home-assistant-js-websocket";
 import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
+  HassService,
+  HassServices,
+  HassServiceTarget,
+} from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
-import { ENTITY_COMPONENT_DOMAINS } from "../data/entity";
 import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
@@ -51,13 +45,13 @@ export class HaServiceControl extends LitElement {
     data?: Record<string, any>;
   };
 
-  @internalProperty() private _value!: this["value"];
+  @state() private _value!: this["value"];
 
   @property({ reflect: true, type: Boolean }) public narrow!: boolean;
 
   @property({ type: Boolean }) public showAdvanced?: boolean;
 
-  @internalProperty() private _checkedKeys = new Set();
+  @state() private _checkedKeys = new Set();
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -73,7 +67,10 @@ export class HaServiceControl extends LitElement {
       this._checkedKeys = new Set();
     }
 
-    const serviceData = this._getServiceInfo(this.value?.service);
+    const serviceData = this._getServiceInfo(
+      this.value?.service,
+      this.hass.services
+    );
 
     if (
       serviceData &&
@@ -117,45 +114,45 @@ export class HaServiceControl extends LitElement {
     }
   }
 
-  private _domainFilter = memoizeOne((service: string) => {
-    const domain = computeDomain(service);
-    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
-  });
+  private _getServiceInfo = memoizeOne(
+    (
+      service?: string,
+      serviceDomains?: HassServices
+    ): ExtHassService | undefined => {
+      if (!service || !serviceDomains) {
+        return undefined;
+      }
+      const domain = computeDomain(service);
+      const serviceName = computeObjectId(service);
+      if (!(domain in serviceDomains)) {
+        return undefined;
+      }
+      if (!(serviceName in serviceDomains[domain])) {
+        return undefined;
+      }
 
-  private _getServiceInfo = memoizeOne((service?: string):
-    | ExtHassService
-    | undefined => {
-    if (!service) {
-      return undefined;
+      const fields = Object.entries(
+        serviceDomains[domain][serviceName].fields
+      ).map(([key, value]) => ({
+        key,
+        ...value,
+        selector: value.selector as Selector | undefined,
+      }));
+      return {
+        ...serviceDomains[domain][serviceName],
+        fields,
+        hasSelector: fields.length
+          ? fields.filter((field) => field.selector).map((field) => field.key)
+          : [],
+      };
     }
-    const domain = computeDomain(service);
-    const serviceName = computeObjectId(service);
-    const serviceDomains = this.hass.services;
-    if (!(domain in serviceDomains)) {
-      return undefined;
-    }
-    if (!(serviceName in serviceDomains[domain])) {
-      return undefined;
-    }
-
-    const fields = Object.entries(
-      serviceDomains[domain][serviceName].fields
-    ).map(([key, value]) => ({
-      key,
-      ...value,
-      selector: value.selector as Selector | undefined,
-    }));
-    return {
-      ...serviceDomains[domain][serviceName],
-      fields,
-      hasSelector: fields.length
-        ? fields.filter((field) => field.selector).map((field) => field.key)
-        : [],
-    };
-  });
+  );
 
   protected render() {
-    const serviceData = this._getServiceInfo(this._value?.service);
+    const serviceData = this._getServiceInfo(
+      this._value?.service,
+      this.hass.services
+    );
 
     const shouldRenderServiceDataYaml =
       (serviceData?.fields.length && !serviceData.hasSelector.length) ||
@@ -219,11 +216,7 @@ export class HaServiceControl extends LitElement {
               .hass=${this.hass}
               .selector=${serviceData.target
                 ? { target: serviceData.target }
-                : {
-                    target: {
-                      entity: { domain: computeDomain(this._value!.service) },
-                    },
-                  }}
+                : { target: {} }}
               @value-changed=${this._targetChanged}
               .value=${this._value?.target}
             ></ha-selector
@@ -233,7 +226,6 @@ export class HaServiceControl extends LitElement {
             .hass=${this.hass}
             .value=${this._value?.data?.entity_id}
             .label=${entityId.description}
-            .includeDomains=${this._domainFilter(this._value!.service)}
             @value-changed=${this._entityPicked}
             allow-custom-entity
           ></ha-entity-picker>`
@@ -395,7 +387,7 @@ export class HaServiceControl extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-settings-row {
         padding: var(--service-control-padding, 0 16px);

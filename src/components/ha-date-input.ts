@@ -1,17 +1,9 @@
-import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker-light";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
-import "@polymer/paper-input/paper-input";
-import { fireEvent } from "../common/dom/fire_event";
 import { mdiCalendar } from "@mdi/js";
+import "@polymer/paper-input/paper-input";
+import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker-light";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
 import "./ha-svg-icon";
 
 const i18n = {
@@ -134,7 +126,7 @@ export class HaDateInput extends LitElement {
     return true;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-input {
         width: 110px;

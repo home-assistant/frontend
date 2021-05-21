@@ -1,13 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
@@ -18,9 +11,9 @@ import {
   union,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { entityId } from "../../../../common/structs/is-entity-id";
 import { HomeAssistant } from "../../../../types";
 import { HistoryGraphCardConfig } from "../../cards/types";
-import { EntityId } from "../../../../common/structs/is-entity-id";
 import "../../components/hui-entity-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
@@ -30,10 +23,10 @@ import { configElementStyle } from "./config-elements-style";
 
 const entitiesConfigStruct = union([
   object({
-    entity: EntityId,
+    entity: entityId(),
     name: optional(string()),
   }),
-  EntityId,
+  entityId(),
 ]);
 
 const cardConfigStruct = object({
@@ -50,9 +43,9 @@ export class HuiHistoryGraphCardEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: HistoryGraphCardConfig;
+  @state() private _config?: HistoryGraphCardConfig;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public setConfig(config: HistoryGraphCardConfig): void {
     assert(config, cardConfigStruct);
@@ -158,7 +151,7 @@ export class HuiHistoryGraphCardEditor
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }
