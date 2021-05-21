@@ -384,6 +384,7 @@
             "create": "Loo",
             "create_blocked_not_running": "Hetktõmmise loomine pole praegu võimalik kuna süsteem on olekus {state}.",
             "create_snapshot": "Loo hetktõmmis",
+            "created": "Loodud",
             "description": "Hetktõmmised võimaldavad hõlpsalt varundada ja taastada kõik Home Assistanti andmed.",
             "enter_password": "Sisesta salasõna.",
             "folder": {
@@ -459,6 +460,7 @@
                 "leave_beta_description": "Hangi Home Assistanti, Supervisori ja hosti jaoks stabiilseid uuendusi",
                 "ram_usage": "Supervisori mälu kasutus",
                 "reload_supervisor": "Taaslae Supevisor",
+                "search": "Otsing",
                 "share_diagnostics": "Jaga silumisteavet",
                 "share_diagnostics_description": "Jaga krahhiaruandeid ja diagnostikateavet.",
                 "share_diagonstics_description": "Kas soovid automaatselt jagada krahhiaruandeid ja diagnostikateavet kui Supervisoris ilmneb ootamatuid tõrkeid? {line_break} See võimaldab meil probleeme lahendada, teave on kättesaadav ainult Home Assistanti põhimeeskonnale ja seda ei jagata teistega. {line_break} Andmed ei sisalda privaatset/tundlikku teavet ja saad selle sätetes igal ajal keelata.",
@@ -869,7 +871,7 @@
                     "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
                     "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n}",
                     "minute": "{count} {count, plural,\n  one {minut}\n  other {minuti}\n}",
-                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundi}\n}",
                     "week": "{count} {count, plural,\n  one {nädala}\n  other {nädala}\n}"
                 },
                 "future_duration": {
@@ -1218,8 +1220,8 @@
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
-            "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n}",
-            "minute": "{count} {count, plural,\n  one {minut}\n  other {minuti}\n}",
+            "hour": "{count} {count, plural,\n  one {tund}\n  other {tundi}\n}",
+            "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n}",
             "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
             "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}"
         },
@@ -2586,6 +2588,8 @@
                         "add_scene": "Lisa stseen",
                         "delete_confirm": "Oled kindel, et soovid selle stseeni kustutada?",
                         "delete_scene": "Kustuta stseen",
+                        "duplicate": "Paljunda",
+                        "duplicate_scene": "Paljunda stseen",
                         "edit_scene": "Muuda stseeni",
                         "header": "Stseeniredaktor",
                         "headers": {
@@ -2913,7 +2917,9 @@
                         "controller_in_inclusion_mode": "Z-Wave kontroller on nüüd kaasamise režiimis.",
                         "follow_device_instructions": "Sidumise käivitamiseks järgi seadmega kaasas olnud juhiseid.",
                         "inclusion_failed": "Sõlme ei saanud lisada. Lisateabe saamiseks vaata logi.",
-                        "inclusion_finished": "Sõlm on lisatud. See võib võtta paar minutit, et kõik üksused ilmuksid kuni me lõpetame taustal sõlme loomise.",
+                        "inclusion_finished": "Sõlm on lisatud.",
+                        "interview_failed": "Seadme küsitlemine nurjus. Lisateave võib olla kättesaadav logides.",
+                        "interview_started": "Seadet küsitletakse. See võib võtta aega.",
                         "introduction": "See viisard juhendab sõlme lisamisel Z-Wave'i võrku.",
                         "secure_inclusion_warning": "Turvalised seadmed vajavad täiendavat ribalaiust; liiga palju turvalisi seadmeid võib Z-Wave võrku aeglustada. Turvalist kaasamist soovitame kasutada ainult seadmete jaoks mis seda vajavad, näiteks lukud või garaažiukse avajad.",
                         "start_inclusion": "Alusta kaasamist",
@@ -4001,6 +4007,17 @@
                     "link_promo": "Lisateave teemade kohta",
                     "primary_color": "Esmane värv",
                     "reset": "Lähtesta"
+                },
+                "time_format": {
+                    "description": "Vali kuidas ajad vormindatakse.",
+                    "dropdown_label": "Ajavorming",
+                    "formats": {
+                        "12": "12 tundi (AM/PM)",
+                        "24": "24 tundi",
+                        "language": "Automaatne (kasuta keeleseadet)",
+                        "system": "Kasuta süsteemi poolt määratut"
+                    },
+                    "header": "Ajavorming"
                 },
                 "vibrate": {
                     "description": "Seadmete juhtimisel lubage või keelake vibratsioon.",

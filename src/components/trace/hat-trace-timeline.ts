@@ -1,25 +1,4 @@
 import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
-import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import {
-  AutomationTraceExtended,
-  ChooseActionTraceStep,
-  getDataFromPath,
-  TriggerTraceStep,
-  isTriggerPath,
-} from "../../data/trace";
-import { HomeAssistant } from "../../types";
-import "./ha-timeline";
-import type { HaTimeline } from "./ha-timeline";
-import {
   mdiAlertCircle,
   mdiCircle,
   mdiCircleOutline,
@@ -27,16 +6,36 @@ import {
   mdiProgressWrench,
   mdiRecordCircleOutline,
 } from "@mdi/js";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import relativeTime from "../../common/datetime/relative_time";
+import { fireEvent } from "../../common/dom/fire_event";
 import { LogbookEntry } from "../../data/logbook";
 import {
   ChooseAction,
   ChooseActionChoice,
   getActionType,
 } from "../../data/script";
-import relativeTime from "../../common/datetime/relative_time";
-import { fireEvent } from "../../common/dom/fire_event";
 import { describeAction } from "../../data/script_i18n";
-import { ifDefined } from "lit-html/directives/if-defined";
+import {
+  AutomationTraceExtended,
+  ChooseActionTraceStep,
+  getDataFromPath,
+  isTriggerPath,
+  TriggerTraceStep,
+} from "../../data/trace";
+import { HomeAssistant } from "../../types";
+import "./ha-timeline";
+import type { HaTimeline } from "./ha-timeline";
 
 const LOGBOOK_ENTRIES_BEFORE_FOLD = 2;
 
@@ -245,13 +244,15 @@ class ActionRenderer {
     try {
       data = getDataFromPath(this.trace.config, path);
     } catch (err) {
-      this.entries.push(
-        html`Unable to extract path ${path}. Download trace and report as bug`
+      this._renderEntry(
+        path,
+        `Unable to extract path ${path}. Download trace and report as bug`
       );
       return index + 1;
     }
 
-    const isTopLevel = path.split("/").length === 2;
+    const parts = path.split("/");
+    const isTopLevel = parts.length === 2;
 
     if (!isTopLevel && !actionType) {
       this._renderEntry(path, path.replace(/\//g, " "));
@@ -267,7 +268,16 @@ class ActionRenderer {
     }
 
     this._renderEntry(path, describeAction(this.hass, data, actionType));
-    return index + 1;
+
+    let i = index + 1;
+
+    for (; i < this.keys.length; i++) {
+      if (this.keys[i].split("/").length === parts.length) {
+        break;
+      }
+    }
+
+    return i;
   }
 
   private _handleTrigger(index: number, triggerStep: TriggerTraceStep): number {
@@ -303,7 +313,7 @@ class ActionRenderer {
     // +4: executed sequence
 
     const choosePath = this.keys[index];
-    const startLevel = choosePath.split("/").length - 1;
+    const startLevel = choosePath.split("/").length;
 
     const chooseTrace = this._getItem(index)[0] as ChooseActionTraceStep;
     const defaultExecuted = chooseTrace.result?.choice === "default";

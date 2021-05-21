@@ -1,12 +1,6 @@
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 
 export const createEntityNotFoundWarning = (

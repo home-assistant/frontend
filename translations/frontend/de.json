@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Ein unbekannter Fehler ist aufgetreten.",
+            "error_addon_no_ingress": "Das angeforderte Add-on unterstützt keinen Ingress",
             "error_addon_not_found": "Add-on nicht gefunden",
             "faq_link": "Häufig gestellten Fragen zu Home Assistant",
             "not_supported": "Diese Weiterleitung wird von deiner Home Assistant-Instanz nicht unterstützt. Überprüfe den {link} auf die unterstützten Weiterleitungen und die Version, in der sie eingeführt wurden."
@@ -383,6 +384,7 @@
             "create": "Erstellen",
             "create_blocked_not_running": "Das Erstellen eines Snapshots ist derzeit nicht möglich, da sich das System im Zustand {state} befindet.",
             "create_snapshot": "Datensicherung erstellen",
+            "created": "Erstellt",
             "description": "Datensicherungen ermöglichen dir das leichte Speichern und Wiederherstellen von allen Daten aus Home Assistant.",
             "enter_password": "Bitte Passwort eingeben.",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Erhalte stabile Updates für Home Assistant, Supervisor und Host",
                 "ram_usage": "Arbeitsspeicherbedarf von Supervisor",
                 "reload_supervisor": "Supervisor neu laden",
+                "search": "Suche",
                 "share_diagnostics": "Diagnose teilen",
                 "share_diagnostics_description": "Teile Absturzberichte und Diagnoseinformationen.",
                 "share_diagonstics_description": "Möchtest du Absturzberichte und Diagnoseinformationen automatisch freigeben, wenn der Supervisor auf unerwartete Fehler stößt? {line_break} Auf diese Weise können wir die Probleme beheben. Die Informationen sind nur für das Home Assistant Core Team zugänglich und werden nicht an andere weitergegeben. {line_break} Die Daten enthalten keine privaten/sensiblen Informationen und du kannst diese jederzeit in den Einstellungen deaktivieren.",
@@ -2297,7 +2300,7 @@
                 "logs": {
                     "caption": "Logs",
                     "clear": "Löschen",
-                    "custom_integration": "benutzerdefiniert integration",
+                    "custom_integration": "benutzerdefinierte Integration",
                     "description": "Home Assistant Logs einsehen",
                     "details": "Protokolldetails ({level})",
                     "error_from_custom_integration": "benutzerdefinierte",
@@ -2585,6 +2588,8 @@
                         "add_scene": "Szene hinzufügen",
                         "delete_confirm": "Bist du sicher, dass du diese Szene löschen möchtest?",
                         "delete_scene": "Szene löschen",
+                        "duplicate": "Duplizieren",
+                        "duplicate_scene": "Szene duplizieren",
                         "edit_scene": "Szene bearbeiten",
                         "header": "Szenen-Editor",
                         "headers": {
@@ -2913,6 +2918,8 @@
                         "follow_device_instructions": "Befolge die mit dem Gerät gelieferten Anweisungen, um die Kopplung am Gerät auszulösen.",
                         "inclusion_failed": "Der Knoten konnte nicht hinzugefügt werden. Bitte überprüfe die Protokolle für weitere Informationen.",
                         "inclusion_finished": "Der Knoten wurde hinzugefügt. Es kann einige Minuten dauern, bis alle Einheiten angezeigt werden, da der Knoten im Hintergrund fertig eingerichtet wird.",
+                        "interview_failed": "Das Geräteinterview ist fehlgeschlagen. Zusätzliche Informationen sind möglicherweise in den Logs verfügbar.",
+                        "interview_started": "Das Gerät wird gerade eingerichtet. Dies könnte eine Weile dauern.",
                         "introduction": "Dieser Assistent führt dich durch das Hinzufügen eines Knotens zu deinem Z-Wave-Netzwerk.",
                         "secure_inclusion_warning": "Sichere Geräte benötigen zusätzliche Bandbreite; zu viele sichere Geräte können Ihr Z-Wave-Netzwerk ausbremsen. Wir empfehlen, die sichere Einbindung nur für Geräte zu verwenden, die sie benötigen, wie Schlösser oder Garagentoröffner.",
                         "start_inclusion": "Starten der Erfassung",
@@ -3143,8 +3150,8 @@
                         "attributes": "Attribute",
                         "copy_id": "ID in die Zwischenablage kopieren",
                         "current_entities": "Aktuelle Entitäten",
-                        "description1": "Stelle die Darstellung eines Geräts in Home Assistant ein.",
-                        "description2": "Dies führt nicht zur Kommunikation mit dem eigentlichen Gerät.",
+                        "description1": "Legt die aktuelle Zustandsdarstellung einer Entität in Home Assistant fest.",
+                        "description2": "Wenn die Entität zu einem Gerät gehört, findet keine tatsächliche Kommunikation mit diesem Gerät statt.",
                         "entity": "Entität",
                         "filter_attributes": "Attribute filtern",
                         "filter_entities": "Entitäten filtern",
@@ -4000,6 +4007,16 @@
                     "link_promo": "Erfahre mehr über Themen",
                     "primary_color": "Primärfarbe",
                     "reset": "zurücksetzen"
+                },
+                "time_format": {
+                    "description": "Wählen Sie, wie die Zeiten formatiert werden sollen.",
+                    "dropdown_label": "Zeitformatierung",
+                    "formats": {
+                        "12": "12 Stunden (AM/PM)",
+                        "24": "24 Stunden",
+                        "system": "Systemstandart verwenden"
+                    },
+                    "header": "Zeitformatierung"
                 },
                 "vibrate": {
                     "description": "Aktiviere oder deaktiviere die Vibration an diesem Gerät, wenn du Geräte steuerst.",

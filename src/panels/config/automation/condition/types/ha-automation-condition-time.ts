@@ -1,14 +1,7 @@
 import { Radio } from "@material/mwc-radio";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-formfield";

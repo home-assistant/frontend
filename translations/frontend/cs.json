@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Nastala neznámá chyba",
+            "error_addon_no_ingress": "Požadovaný doplněk nepodporuje ingress",
             "error_addon_not_found": "Doplněk nebyl nalezen",
             "faq_link": "Časté dotazy týkající se My Home Assistant",
             "not_supported": "Toto přesměrování není vaší instancí Home Assistant podporováno. Zkontrolujte {link} pro podporovaná přesměrování a verzi, ve které byla zavedena."
@@ -383,6 +384,7 @@
             "create": "Vytvořit",
             "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
             "create_snapshot": "Vytvořit zálohu",
+            "created": "Vytvořeno",
             "description": "Zálohy umožňují snadno zálohovat a obnovovat všechna data vaší instance Home Assistant.",
             "enter_password": "Prosím zadejte heslo.",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Získejte stabilní aktualizace pro Home Assistant, Supervisor a hostitele",
                 "ram_usage": "Využití paměti RAM Supervisorem",
                 "reload_supervisor": "Nově načíst Supervisor",
+                "search": "Hledat",
                 "share_diagnostics": "Sdílet diagnostické informace",
                 "share_diagnostics_description": "Sdílejte zprávy o selhání a diagnostické informace.",
                 "share_diagonstics_description": "Chcete automaticky sdílet zprávy o selhání a diagnostické informace, když  Supervisor narazí na neočekávané chyby? {line_break} To nám umožní vyřešit problémy, informace jsou přístupné pouze týmu Home Assistant Core a nebudou sdíleny s ostatními. {line_break} Data neobsahují žádné soukromé / citlivé informace a tato volba může být kdykoliv deaktivována v nastavení.",
@@ -561,9 +564,11 @@
             },
             "light": {
                 "brightness": "Jas",
+                "cold_white_value": "Jas studené bílé",
                 "color_brightness": "Jas barev",
                 "color_temperature": "Teplota barvy",
                 "effect": "Efekt",
+                "warm_white_value": "Jas teplé bílé",
                 "white_value": "Jas bílé"
             },
             "lock": {
@@ -1195,7 +1200,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Znovunastavení zařízení"
+                "attribute": "Atribut",
+                "battery_device_warning": "Před zahájením procesu rekonfigurace budete muset probudit zařízení napájená z baterie. Pokyny k probuzení zařízení najdete v příručce k zařízení.",
+                "bind_header": "Vazba",
+                "button_hide": "Skrýt podrobnosti",
+                "button_show": "Podrobnosti",
+                "cluster_header": "Klastr",
+                "configuration_complete": "Změna konfigurace zařízení dokončena.",
+                "configuration_failed": "Rekonfigurace zařízení se nezdařila. Další informace mohou být k dispozici v protokolech.",
+                "configuring_alt": "Nastavuji",
+                "heading": "Znovunastavení zařízení",
+                "in_progress": "Zařízení se překonfigurová. Může to chvíli trvat.",
+                "introduction": "Překonfigurujte zařízení v síti Zigbee. Tuto funkci použijte, pokud zařízení nefunguje správně.",
+                "min_max_change": "min/max/změna",
+                "reporting_header": "Hlášení",
+                "run_in_background": "Toto dialogové okno můžete zavřít a změna konfigurace bude pokračovat na pozadí.",
+                "start_reconfiguration": "Spustit rekonfiguraci"
             }
         },
         "duration": {
@@ -1736,7 +1756,8 @@
                             "link_learn_how_it_works": "Zjistěte, jak to funguje",
                             "not_connected": "Nepřipojeno",
                             "remote_enabled": {
-                                "caption": "Automaticky se připojit"
+                                "caption": "Automaticky se připojit",
+                                "description": "Povolením této možnosti zajistíte, aby byla vaše instance Home Assistant vždy vzdáleně přístupná."
                             },
                             "title": "Vzdálené ovládání"
                         },
@@ -2148,6 +2169,7 @@
                     "license": "Publikováno pod licencí Apache 2.0",
                     "path_configuration": "Cesta k souboru configuration.yaml: {path}",
                     "server": "server",
+                    "setup_time": "Doba nastavení",
                     "source": "Zdroj:",
                     "system_health_error": "Součást System Health není načtena. Přidejte 'system_health:' do configuration.yaml",
                     "system_health": {
@@ -2227,6 +2249,7 @@
                         },
                         "finish": "Dokončit",
                         "loading_first_time": "Počkejte prosím, než bude integrace nainstalována.",
+                        "next": "Další",
                         "not_all_required_fields": "Nejsou vyplněna všechna povinná pole.",
                         "not_loaded": "Integraci se nepodařilo načíst, zkuste restartovat Home Assistant.",
                         "pick_flow_step": {
@@ -2565,6 +2588,8 @@
                         "add_scene": "Přidat scénu",
                         "delete_confirm": "Opravdu chcete tuto scénu smazat?",
                         "delete_scene": "Smazat scénu",
+                        "duplicate": "Duplikovat",
+                        "duplicate_scene": "Duplikovat scénu",
                         "edit_scene": "Upravit scénu",
                         "header": "Editor scén",
                         "headers": {
@@ -2798,7 +2823,12 @@
                         "value": "Hodnota"
                     },
                     "configuration_page": {
-                        "update_button": "Aktualizovat nastavení"
+                        "shortcuts_title": "Zástupci",
+                        "update_button": "Aktualizovat nastavení",
+                        "zha_options": {
+                            "default_light_transition": "Výchozí doba přechodu světla (sekundy)",
+                            "title": "Globální možnosti"
+                        }
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Nastavení dokončeno",
@@ -2924,7 +2954,12 @@
                         "node_status": "Stav uzlu",
                         "zwave_info": "Z-Wave Info"
                     },
+                    "logs": {
+                        "log_level": "Úroveň protokolu",
+                        "title": "Z-Wave JS protokoly"
+                    },
                     "navigation": {
+                        "logs": "Protokoly",
                         "network": "Síť"
                     },
                     "network_status": {
@@ -2939,6 +2974,9 @@
                         "header": "Konfigurace zařízení Z-Wave",
                         "introduction": "Spravujte a upravujte specifické konfigurační parametry zařízení (uzlu) pro vybrané zařízení",
                         "parameter_is_read_only": "Tento parametr je jen pro čtení.",
+                        "set_param_accepted": "Parametr byl aktualizován.",
+                        "set_param_error": "Vyskytla se chyba.",
+                        "set_param_queued": "Změna parametru byla zařazena do fronty a bude aktualizována, jakmile se zařízení probudí.",
                         "zwave_js_device_database": "Databáze zařízení Z-Wave JS"
                     },
                     "node_status": {
@@ -2947,6 +2985,14 @@
                         "awake": "Probuzený",
                         "dead": "Mrtvý",
                         "unknown": "Nezjištěno"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Před zahájením opakovaného rozhovoru je třeba probudit zařízení napájená z baterie. Pokyny k probuzení zařízení naleznete v příručce k zařízení.",
+                        "in_progress": "Zařízení je dotazováno. To může nějakou dobu trvat.",
+                        "interview_complete": "Pohovor se zařízením dokončen.",
+                        "interview_failed": "Dotazování zařízení se nezdařilo. Další informace mohou být k dispozici v protokolech.",
+                        "run_in_background": "Toto dialogové okno můžete zavřít a rozhovor bude pokračovat na pozadí.",
+                        "start_reinterview": "Zahájit opakovaný rozhovor"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Zrušit vyloučení",

@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { Action } from "../../data/script";
 import { ActionSelector } from "../../data/selector";
 import "../../panels/config/automation/action/ha-automation-action";

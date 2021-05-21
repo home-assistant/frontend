@@ -1,14 +1,12 @@
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { fetchZHADevice, ZHADevice } from "../../../../../../data/zha";
 import { haStyle } from "../../../../../../resources/styles";

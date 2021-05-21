@@ -1,12 +1,7 @@
 import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  customElement,
-  LitElement,
-  property,
-  CSSResultGroup,
-} from "lit-element";
-import { html } from "lit-html";
+import { CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../components/entity/ha-entity-toggle";
 import "../components/entity/state-info";
 import { UNAVAILABLE_STATES } from "../data/entity";

@@ -1,8 +1,8 @@
-import { css, CSSResultGroup } from "lit-element";
+import { css, CSSResultGroup } from "lit";
 import { computeCardSize } from "../common/compute-card-size";
+import { LovelaceCardEditor } from "../types";
 import { HuiStackCard } from "./hui-stack-card";
 import { GridCardConfig } from "./types";
-import { LovelaceCardEditor } from "../types";
 
 const DEFAULT_COLUMNS = 3;
 const SQUARE_ROW_HEIGHTS_BY_COLUMNS = {

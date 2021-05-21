@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Wystąpił nieznany błąd",
+            "error_addon_no_ingress": "Żądany dodatek nie obsługuje osadzania",
             "error_addon_not_found": "Nie znaleziono dodatku",
             "faq_link": "Mój Home Assistant - często zadawane pytania",
             "not_supported": "To przekierowanie nie jest obsługiwane przez Twoją instancję Home Assistanta. Sprawdź {link} aby znaleźć obsługiwane przekierowania i wersję, w której zostały wprowadzone."
@@ -383,6 +384,7 @@
             "create": "Utwórz",
             "create_blocked_not_running": "Tworzenie snapshota nie jest teraz możliwe, ponieważ system jest w {state}.",
             "create_snapshot": "Utwórz snapshot",
+            "created": "Utworzony",
             "description": "Snapshoty umożliwiają łatwe tworzenie kopii zapasowych i przywracanie wszystkich danych instancji Home Assistant.",
             "enter_password": "Proszę wprowadzić hasło",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Pobieraj stabilne aktualizacje dla Home Assistanta, Supervisora i hosta",
                 "ram_usage": "Zużycie pamięci przez Supervisora",
                 "reload_supervisor": "Wczytaj ponownie",
+                "search": "Szukaj",
                 "share_diagnostics": "Udostępnij dane diagnostyczne",
                 "share_diagnostics_description": "Udostępniaj raporty o awariach i informacje diagnostyczne.",
                 "share_diagonstics_description": "Czy chcesz automatycznie udostępniać raporty o awariach i informacje diagnostyczne, gdy Supervisor napotka nieoczekiwane błędy? {line_break} Pozwoli nam to rozwiązać problemy, informacje są dostępne tylko dla głównego zespołu Home Assistant Core i nie będą udostępniane innym. {line_break} Dane nie zawierają żadnych prywatnych/wrażliwych informacji i możesz to wyłączyć w ustawieniach w dowolnym momencie.",

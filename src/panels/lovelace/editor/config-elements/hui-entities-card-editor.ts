@@ -2,16 +2,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
@@ -52,6 +44,7 @@ const cardConfigStruct = object({
   title: optional(union([string(), boolean()])),
   entity: optional(entityId()),
   theme: optional(string()),
+  icon: optional(string()),
   show_header_toggle: optional(boolean()),
   state_color: optional(boolean()),
   entities: array(entitiesConfigStruct),

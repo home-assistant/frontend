@@ -1,12 +1,6 @@
 import { safeDump, safeLoad } from "js-yaml";
-import {
-  customElement,
-  html,
-  state,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-code-editor";
 

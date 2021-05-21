@@ -1,12 +1,6 @@
 import { safeDump } from "js-yaml";
-import {
-  customElement,
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  property,
-} from "lit-element";
+import { html, css, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../src/components/ha-card";
 import { describeAction } from "../../../src/data/script_i18n";
 import { provideHass } from "../../../src/fake_data/provide_hass";

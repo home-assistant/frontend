@@ -3,12 +3,11 @@ import {
   css,
   CSSResultGroup,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { property, state } from "lit/decorators";
 import "../components/ha-form/ha-form";
 import "../components/ha-markdown";
 import { AuthProvider } from "../data/auth";

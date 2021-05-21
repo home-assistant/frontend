@@ -4,17 +4,12 @@ import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-help-tooltip";
+import "../../../components/ha-service-control";
 import {
   ActionConfig,
   CallServiceActionConfig,
@@ -24,8 +19,6 @@ import {
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
-import "../../../components/ha-service-control";
-import memoizeOne from "memoize-one";
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {

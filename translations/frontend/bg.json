@@ -350,6 +350,7 @@
             "create": "Създаване",
             "create_blocked_not_running": "Създаването на снапшот в момента не е възможно, тъй като системата е в състояние {state}.",
             "create_snapshot": "Създаване на снапшот",
+            "created": "Създаден",
             "description": "Снапшотите ви позволяват лесно да архивирате и възстановявате всички данни от вашия екземпляр на Home Assistant.",
             "enter_password": "Моля, въведете парола.",
             "folder": {
@@ -425,6 +426,7 @@
                 "leave_beta_description": "Получавайте стабилни актуализации за Home Assistant, Supervisor и хоста",
                 "ram_usage": "Използване на RAM от Supervisor",
                 "reload_supervisor": "Презареждане на Supervisor",
+                "search": "Търсене",
                 "share_diagnostics": "Споделяне на диагностика",
                 "share_diagnostics_description": "Споделяйте доклади за сривове и диагностична информация.",
                 "share_diagonstics_description": "Искате ли да споделяте автоматично отчети за сривове и диагностична информация, когато Supervisor срещне неочаквани грешки? {line_break} Това ще ни позволи да отстраним проблемите, информацията е достъпна само за екипа на Home Assistant Core и няма да бъде споделяна с други. {line_break} Данните не включват никаква частна/чувствителна информация и можете да деактивирате това в настройките по всяко време, когато пожелаете.",
@@ -1994,7 +1996,7 @@
                     "frontend": "интерфейс",
                     "frontend_version": "Версия на интерфейса: {version} - {type}",
                     "home_assistant_logo": "Лого на Home Assistant",
-                    "icons_by": "Икони от",
+                    "icons_by": "икони от",
                     "integrations": "Интеграции",
                     "license": "Публикувано под лиценза Apache 2.0",
                     "path_configuration": "Път към configuration.yaml: {path}",
@@ -3487,7 +3489,7 @@
         },
         "sidebar": {
             "done": "Готово",
-            "external_app_configuration": "Конфигурация на приложение"
+            "external_app_configuration": "Конфигурация на приложението"
         }
     }
 }

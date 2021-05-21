@@ -3,16 +3,15 @@ import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
+import "../../../components/ha-button-toggle-group";
 import "../../../components/ha-color-picker";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
@@ -28,7 +27,6 @@ import {
   SUPPORT_EFFECT,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
-import "../../../components/ha-button-toggle-group";
 
 const toggleButtons = [
   { label: "Color", value: "color" },
@@ -235,7 +233,9 @@ class MoreInfoLight extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues<this>) {
+  public willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
+
     if (!changedProps.has("stateObj")) {
       return;
     }
@@ -282,15 +282,18 @@ class MoreInfoLight extends LitElement {
         stateObj.attributes.color_mode === LightColorModes.RGBWW
           ? Math.round((stateObj.attributes.rgbww_color[4] * 100) / 255)
           : undefined;
-      this._colorBrightnessSliderValue = Math.round(
-        (Math.max(...getLightCurrentModeRgbColor(stateObj).slice(0, 3)) * 100) /
-          255
-      );
 
-      this._colorPickerColor = getLightCurrentModeRgbColor(stateObj).slice(
-        0,
-        3
-      ) as [number, number, number];
+      const currentRgbColor = getLightCurrentModeRgbColor(stateObj);
+
+      this._colorBrightnessSliderValue = currentRgbColor
+        ? Math.round((Math.max(...currentRgbColor.slice(0, 3)) * 100) / 255)
+        : undefined;
+
+      this._colorPickerColor = currentRgbColor?.slice(0, 3) as [
+        number,
+        number,
+        number
+      ];
     } else {
       this._brightnessSliderValue = 0;
     }

@@ -1,13 +1,6 @@
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-settings-row")
 export class HaSettingsRow extends LitElement {

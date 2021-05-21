@@ -1,15 +1,7 @@
 import "@material/mwc-button";
 import type { Button } from "@material/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import "../ha-circular-progress";
 
 @customElement("ha-progress-button")

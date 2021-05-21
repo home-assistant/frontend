@@ -1,19 +1,18 @@
-import "./ha-circular-progress";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { HistoryResult } from "../data/history";
+import type { HomeAssistant } from "../types";
+import "./ha-circular-progress";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
-import type { HomeAssistant } from "../types";
-import { HistoryResult } from "../data/history";
 
 @customElement("state-history-charts")
 class StateHistoryCharts extends LitElement {

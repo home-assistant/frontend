@@ -1,12 +1,8 @@
-import "@material/mwc-checkbox";
-import type { Checkbox } from "@material/mwc-checkbox";
-import { customElement } from "lit-element";
-import type { Constructor } from "../types";
-
-const MwcCheckbox = customElements.get("mwc-checkbox") as Constructor<Checkbox>;
+import { Checkbox } from "@material/mwc-checkbox";
+import { customElement } from "lit/decorators";
 
 @customElement("ha-checkbox")
-export class HaCheckbox extends MwcCheckbox {
+export class HaCheckbox extends Checkbox {
   public firstUpdated() {
     super.firstUpdated();
     this.style.setProperty("--mdc-theme-secondary", "var(--primary-color)");

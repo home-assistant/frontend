@@ -1,12 +1,6 @@
 import { mdiNfcVariant } from "@mdi/js";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../components/ha-svg-icon";
 import { TagRowData } from "./ha-config-tags";
 

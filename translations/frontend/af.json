@@ -79,6 +79,19 @@
             "unknown": "Onbekend"
         }
     },
+    "supervisor": {
+        "my": {
+            "error_addon_no_ingress": "Die aangevraagde byvoegsel ondersteun nie ingryping nie"
+        },
+        "snapshot": {
+            "created": "Geskep"
+        },
+        "system": {
+            "supervisor": {
+                "search": "Soek"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Wil u hierdie aanmelding stoor?",
@@ -635,6 +648,13 @@
                     "account": {
                         "google": {
                             "sync_entities_404_message": "Kon nie u entiteite met Google sinkroniseer nie, vra Google 'Hallo Google, sinkroniseer my toestelle' om u entiteite te sinkroniseer."
+                        },
+                        "remote": {
+                            "not_connected": "Nie gekoppel nie",
+                            "remote_enabled": {
+                                "caption": "Verbind outomaties",
+                                "description": "Skakel hierdie opsie in om seker te maak dat u Home Assistent-instansie altyd op afstand toeganklik is."
+                            }
                         }
                     },
                     "description_features": "Beheer terwyl weg van die huis af is, integreer met Alexa en Google Assistant.",
@@ -819,6 +839,7 @@
                             "open_site": "Maak webwerf oop"
                         },
                         "finish": "Klaar",
+                        "next": "Volgende",
                         "not_all_required_fields": "Nie alle vereiste velde is gevul nie.",
                         "submit": "Dien in"
                     },
@@ -966,6 +987,8 @@
                         "add_scene": "Voeg toneel by",
                         "delete_confirm": "Is u seker dat u hierdie toneel wil uitvee?",
                         "delete_scene": "Verwyder toneel",
+                        "duplicate": "Dupliseer",
+                        "duplicate_scene": "Duplikaat toneel",
                         "edit_scene": "Wysig toneel",
                         "header": "Toneel-Redakteur",
                         "introduction": "Die toneel redakteur kan jy om te skep en wysig skerms. Volg asseblief die skakel hieronder om die instruksies te lees om seker te maak dat jy het ingestel Huis Assistent korrek.",
@@ -1088,6 +1111,12 @@
                     "home_zone_core_config": "Die ligging van u tuissone kan vanaf die algemene konfigurasiebladsy verander word. Die radius van die Tuis-sone kan nog nie vanaf die voorkant verander word nie. Wil u na die algemene opset gaan?",
                     "introduction": "Met sones kan u sekere streke op aarde spesifiseer. As 'n persoon binne 'n sone is, neem die toestand die sonenaam aan. Sones kan ook as 'n sneller of toestand gebruik word in outomatiseringsinstellings.",
                     "no_zones_created_yet": "Lyk asof jy nog geen sones geskep het nie."
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "interview_failed": "Die toestelonderhoud het misluk. Bykomende inligting kan moontlik in die logboeke beskikbaar wees.",
+                        "interview_started": "Die toestel word ondervra. Dit kan 'n geruime tyd neem."
+                    }
                 },
                 "zwave": {
                     "common": {

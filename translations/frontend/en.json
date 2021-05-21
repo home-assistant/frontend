@@ -384,6 +384,7 @@
             "create": "Create",
             "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
             "create_snapshot": "Create snapshot",
+            "created": "Created",
             "description": "Snapshots allow you to easily backup and restore all data of your Home Assistant instance.",
             "enter_password": "Please enter a password.",
             "folder": {
@@ -459,6 +460,7 @@
                 "leave_beta_description": "Get stable updates for Home Assistant, Supervisor and host",
                 "ram_usage": "Supervisor RAM Usage",
                 "reload_supervisor": "Reload Supervisor",
+                "search": "Search",
                 "share_diagnostics": "Share Diagnostics",
                 "share_diagnostics_description": "Share crash reports and diagnostic information.",
                 "share_diagonstics_description": "Would you want to automatically share crash reports and diagnostic information when the Supervisor encounters unexpected errors? {line_break} This will allow us to fix the problems, the information is only accessible to the Home Assistant Core team and will not be shared with others.{line_break} The data does not include any private/sensitive information and you can disable this in settings at any time you want.",
@@ -2586,6 +2588,8 @@
                         "add_scene": "Add scene",
                         "delete_confirm": "Are you sure you want to delete this scene?",
                         "delete_scene": "Delete scene",
+                        "duplicate": "Duplicate",
+                        "duplicate_scene": "Duplicate scene",
                         "edit_scene": "Edit scene",
                         "header": "Scene Editor",
                         "headers": {
@@ -2913,7 +2917,9 @@
                         "controller_in_inclusion_mode": "Your Z-Wave controller is now in inclusion mode.",
                         "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
                         "inclusion_failed": "The node could not be added. Please check the logs for more information.",
-                        "inclusion_finished": "The node has been added. It may take a few minutes for all entities to show up as we finish setting up the node in the background.",
+                        "inclusion_finished": "The node has been added.",
+                        "interview_failed": "The device interview failed. Additional information may be available in the logs.",
+                        "interview_started": "The device is being interviewed. This may take some time.",
                         "introduction": "This wizard will guide you through adding a node to your Z-Wave network.",
                         "secure_inclusion_warning": "Secure devices require additional bandwidth; too many secure devices can slow down your Z-Wave network. We recommend only using secure inclusion for devices that require it, like locks or garage door openers.",
                         "start_inclusion": "Start Inclusion",
@@ -4001,6 +4007,17 @@
                     "link_promo": "Learn about themes",
                     "primary_color": "Primary color",
                     "reset": "Reset"
+                },
+                "time_format": {
+                    "description": "Choose how times are formatted.",
+                    "dropdown_label": "Time format",
+                    "formats": {
+                        "12": "12 hours (AM/PM)",
+                        "24": "24 hours",
+                        "language": "Auto (use language setting)",
+                        "system": "Use system locale"
+                    },
+                    "header": "Time Format"
                 },
                 "vibrate": {
                     "description": "Enable or disable vibration on this device when controlling devices.",

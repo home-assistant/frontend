@@ -4,14 +4,13 @@ import {
   css,
   CSSResultGroup,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { supportsFeature } from "../../../common/entity/supports-feature";
+} from "lit";
+import { property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-camera-stream";
 import {
   CameraEntity,

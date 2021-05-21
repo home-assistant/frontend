@@ -1,4 +1,5 @@
-import { customElement, property, ReactiveElement } from "lit-element";
+import { ReactiveElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 
@@ -10,11 +11,8 @@ class HaMarkdownElement extends ReactiveElement {
 
   @property({ type: Boolean }) public breaks = false;
 
-  public connectedCallback() {
-    super.connectedCallback();
-    if (!this.shadowRoot) {
-      this.attachShadow({ mode: "open" });
-    }
+  protected createRenderRoot() {
+    return this;
   }
 
   protected update(changedProps) {
@@ -25,7 +23,7 @@ class HaMarkdownElement extends ReactiveElement {
   }
 
   private async _render() {
-    this.shadowRoot!.innerHTML = await renderMarkdown(
+    this.innerHTML = await renderMarkdown(
       this.content,
       {
         breaks: this.breaks,
@@ -39,8 +37,10 @@ class HaMarkdownElement extends ReactiveElement {
     this._resize();
 
     const walker = document.createTreeWalker(
-      this.shadowRoot!,
-      1 /* SHOW_ELEMENT */
+      this,
+      1 /* SHOW_ELEMENT */,
+      null,
+      false
     );
 
     while (walker.nextNode()) {

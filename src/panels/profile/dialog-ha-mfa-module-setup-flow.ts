@@ -1,15 +1,8 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  state,
-  LitElement,
-  property,
-} from "lit-element";
-import { html, TemplateResult } from "lit-html";
-import { localizeKey } from "../../common/translations/localize";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-circular-progress";
+import "../../components/ha-dialog";
 import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import {
@@ -18,7 +11,6 @@ import {
 } from "../../data/data_entry_flow";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import "../../components/ha-dialog";
 
 let instance = 0;
 
@@ -112,8 +104,7 @@ class HaMfaModuleSetupFlow extends LitElement {
                 ? html` <ha-markdown
                       allowsvg
                       breaks
-                      .content=${localizeKey(
-                        this.hass.localize,
+                      .content=${this.hass.localize(
                         `component.auth.mfa_setup.${this._step!.handler}.step.${
                           (this._step! as DataEntryFlowStepForm).step_id
                         }.description`,

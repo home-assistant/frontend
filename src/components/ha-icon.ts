@@ -2,14 +2,12 @@ import "@polymer/iron-icon/iron-icon";
 import {
   css,
   CSSResultGroup,
-  customElement,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { debounce } from "../common/util/debounce";
 import { CustomIcon, customIconsets } from "../data/custom_iconsets";
@@ -51,7 +49,8 @@ export class HaIcon extends LitElement {
 
   @state() private _legacy = false;
 
-  protected updated(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
     if (changedProps.has("icon")) {
       this._path = undefined;
       this._viewBox = undefined;

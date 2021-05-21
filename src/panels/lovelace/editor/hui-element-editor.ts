@@ -4,14 +4,13 @@ import {
   css,
   CSSResultGroup,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { property, state, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { handleStructError } from "../../../common/structs/handle-errors";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { deepEqual } from "../../../common/util/deep-equal";
 import "../../../components/ha-circular-progress";
@@ -22,7 +21,6 @@ import type {
   LovelaceConfig,
 } from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
-import { handleStructError } from "../../../common/structs/handle-errors";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import type { LovelaceGenericElementEditor } from "../types";

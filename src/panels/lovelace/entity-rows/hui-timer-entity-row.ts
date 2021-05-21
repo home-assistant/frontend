@@ -1,13 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  PropertyValues,
-  state,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import secondsToDuration from "../../../common/datetime/seconds_to_duration";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { timerTimeRemaining } from "../../../common/entity/timer_time_remaining";

@@ -1,14 +1,7 @@
 import "@polymer/paper-tooltip/paper-tooltip";
 import type { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
 import type { HomeAssistant } from "../../types";
@@ -73,7 +66,7 @@ class StateInfo extends LitElement {
                 </div>
               </paper-tooltip>
             </div>`
-          : html`<div class="extra-info"><slot> </slot></div>`}
+          : html`<div class="extra-info"><slot></slot></div>`}
       </div>`;
   }
 
@@ -106,6 +99,10 @@ class StateInfo extends LitElement {
 
       .info {
         margin-left: 56px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
       }
 
       :host([rtl]) .info {

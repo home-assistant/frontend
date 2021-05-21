@@ -1,15 +1,8 @@
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResultGroup,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import relativeTime from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -62,28 +55,31 @@ class HaRefreshTokens extends LitElement {
                 <span slot="heading"
                   >${this.hass.localize(
                     "ui.panel.profile.refresh_tokens.token_title",
-                    "clientId",
-                    token.client_id
+                    { clientId: token.client_id }
                   )}
                 </span>
                 <div slot="description">
                   ${this.hass.localize(
                     "ui.panel.profile.refresh_tokens.created_at",
-                    "date",
-                    relativeTime(new Date(token.created_at), this.hass.localize)
+                    {
+                      date: relativeTime(
+                        new Date(token.created_at),
+                        this.hass.localize
+                      ),
+                    }
                   )}
                 </div>
                 <div slot="description">
                   ${token.last_used_at
                     ? this.hass.localize(
                         "ui.panel.profile.refresh_tokens.last_used",
-                        "date",
-                        relativeTime(
-                          new Date(token.last_used_at),
-                          this.hass.localize
-                        ),
-                        "location",
-                        token.last_used_ip
+                        {
+                          date: relativeTime(
+                            new Date(token.last_used_at),
+                            this.hass.localize
+                          ),
+                          location: token.last_used_ip,
+                        }
                       )
                     : this.hass.localize(
                         "ui.panel.profile.refresh_tokens.not_used"
@@ -119,8 +115,7 @@ class HaRefreshTokens extends LitElement {
       !(await showConfirmationDialog(this, {
         text: this.hass.localize(
           "ui.panel.profile.refresh_tokens.confirm_delete",
-          "name",
-          token.client_name || token.client_id
+          { name: token.client_name || token.client_id }
         ),
       }))
     ) {
