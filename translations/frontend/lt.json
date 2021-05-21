@@ -202,7 +202,7 @@
                 "messages": {
                     "became_unavailable": "tapo neprieinama",
                     "changed_to_state": "pakeista į {state}",
-                    "cleared_device_class": "išvalyta  {device_class} nerasta)",
+                    "cleared_device_class": "išvalyta ({device_class} neaptikta)",
                     "detected_device_class": "aptikta {device_class}",
                     "rose": "pakilo",
                     "set": "nustatyti",
@@ -1039,8 +1039,39 @@
                     "close": "Uždaryti",
                     "title_aborted": "Nutraukta"
                 },
+                "number_format": {
+                    "dropdown_label": "Skaičių formatas",
+                    "formats": {
+                        "language": "Automatinis (naudoti kalbos nustatymą)",
+                        "none": "Joks",
+                        "system": "Naudoti sistemos lokalę"
+                    },
+                    "header": "Skaičių formatas"
+                },
                 "push_notifications": {
                     "description": "Siųsti pranešimus į šį įrenginį."
+                },
+                "themes": {
+                    "accent_color": "Akcento spalva",
+                    "dark_mode": {
+                        "auto": "Automatinė",
+                        "dark": "Tamsi",
+                        "light": "Šviesi"
+                    },
+                    "dropdown_label": "Tema",
+                    "header": "Tema",
+                    "primary_color": "Pagrindinė spalva",
+                    "reset": "Atstatyti"
+                },
+                "time_format": {
+                    "dropdown_label": "Laiko formatas",
+                    "formats": {
+                        "12": "12 valandų (AM/PM)",
+                        "24": "24 valandų",
+                        "language": "Automatinis (naudoti kalbos nustatymą)",
+                        "system": "Naudoti sistemos lokalę"
+                    },
+                    "header": "Laiko formatas"
                 }
             }
         }

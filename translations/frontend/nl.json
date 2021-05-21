@@ -4008,6 +4008,17 @@
                     "primary_color": "Primaire kleur",
                     "reset": "Herstel"
                 },
+                "time_format": {
+                    "description": "Kies hoe tijden worden opgemaakt.",
+                    "dropdown_label": "Tijdformaat",
+                    "formats": {
+                        "12": "12 uur (AM/PM)",
+                        "24": "24 uur",
+                        "language": "Automatisch (taalinstelling gebruiken)",
+                        "system": "Systeemlokalen gebruiken"
+                    },
+                    "header": "Tijdformaat"
+                },
                 "vibrate": {
                     "description": "Schakel trillingen op dit apparaat in of uit wanneer u apparaten bestuurt.",
                     "header": "Trillen"
