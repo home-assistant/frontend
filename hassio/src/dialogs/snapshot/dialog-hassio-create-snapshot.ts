@@ -40,6 +40,7 @@ class HassioCreateSnapshotDialog extends LitElement {
   public closeDialog() {
     this._dialogParams = undefined;
     this._creatingSnapshot = false;
+    this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 

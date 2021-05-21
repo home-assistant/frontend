@@ -52,6 +52,7 @@ class HassioSnapshotDialog
     this._snapshot = undefined;
     this._dialogParams = undefined;
     this._restoringSnapshot = false;
+    this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -105,6 +106,10 @@ class HassioSnapshotDialog
       css`
         ha-svg-icon {
           color: var(--primary-text-color);
+        }
+        ha-circular-progress {
+          display: block;
+          text-align: center;
         }
       `,
     ];
