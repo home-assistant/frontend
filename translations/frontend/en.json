@@ -4008,6 +4008,17 @@
                     "primary_color": "Primary color",
                     "reset": "Reset"
                 },
+                "time_format": {
+                    "description": "Choose how times are formatted.",
+                    "dropdown_label": "Time format",
+                    "formats": {
+                        "12": "12 hours (AM/PM)",
+                        "24": "24 hours",
+                        "language": "Auto (use language setting)",
+                        "system": "Use system locale"
+                    },
+                    "header": "Time Format"
+                },
                 "vibrate": {
                     "description": "Enable or disable vibration on this device when controlling devices.",
                     "header": "Vibrate"

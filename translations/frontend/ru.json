@@ -292,7 +292,7 @@
             "save": "Сохранить",
             "show_more": "Показать дополнительную информацию об этом",
             "update": "Обновить",
-            "update_available": "{count, plural,\n  one {Доступно обновление}\n  other {Доступно {count} обновления}\n}",
+            "update_available": "{count, plural,\n  one {Доступно обновление}\n  few {Доступно {count} обновления}\n  many {Доступно {count} обновлений}\n  other {Доступно {count} обновлений}\n}",
             "version": "Версия",
             "yes": "Да"
         },
@@ -868,27 +868,27 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\none {д.}\nother {д.}\n}",
-                    "hour": "{count} {count, plural,\none {ч.}\nother {ч.}\n}",
-                    "minute": "{count} {count, plural,\none {мин.}\nother {мин.}\n}",
-                    "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
-                    "week": "{count} {count, plural,\none {нед.}\nother {нед.}\n}"
+                    "day": "{count} {count, plural,\n  one {день}\n  few {дня}\n  many {дней}\n  other {дней}\n}",
+                    "hour": "{count} {count, plural,\n  one {час}\n  few {часа}\n  many {часов}\n  other {часов}\n}",
+                    "minute": "{count} {count, plural,\n  one {минута}\n  few {минуты}\n  many {минут}\n  other {минут}\n}",
+                    "second": "{count} {count, plural,\n  one {секунда}\n  few {секунды}\n  many {секунд}\n  other {секунд}\n}",
+                    "week": "{count} {count, plural,\n  one {неделя}\n  few {недели}\n  many {недель}\n  other {недель}\n}"
                 },
                 "future_duration": {
-                    "day": "Через {count} {count, plural,\n  one {д.}\n  other {д.}\n}",
-                    "hour": "Через {count} {count, plural,\n  one {ч.}\n  other {ч.}\n}",
-                    "minute": "Через {count} {count, plural,\n  one {мин.}\n  other {мин.}\n}",
-                    "second": "Через {count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
-                    "week": "Через {count} {count, plural,\n  one {нед.}\n  other {нед.}\n}"
+                    "day": "Через {count} {count, plural,\n  one {день}\n  few {дня}\n  many {дней}\n  other {дней}\n}",
+                    "hour": "Через {count} {count, plural,\n  one {час}\n  few {часа}\n  many {часов}\n  other {часов}\n}",
+                    "minute": "Через {count} {count, plural,\n  one {минуту}\n  few {минуты}\n  many {минут}\n  other {минут}\n}",
+                    "second": "Через {count} {count, plural,\n  one {секунду}\n  few {секунды}\n  many {секунд}\n  other {секунд}\n}",
+                    "week": "Через {count} {count, plural,\n  one {неделю}\n  few {недели}\n  many {недель}\n  other {недель}\n}"
                 },
                 "just_now": "Сейчас",
                 "never": "Никогда",
                 "past_duration": {
-                    "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n} назад",
-                    "hour": "{count} {count, plural,\n  one {ч.}\n  other {ч.}\n} назад",
-                    "minute": "{count} {count, plural,\n  one {мин.}\n  other {мин.}\n} назад",
-                    "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n} назад",
-                    "week": "{count} {count, plural,\n  one {нед.}\n  other {нед.}\n} назад"
+                    "day": "{count} {count, plural,\n  one {день}\n  few {дня}\n  many {дней}\n  other {дней}\n} назад",
+                    "hour": "{count} {count, plural,\n  one {час}\n  few {часа}\n  many {часов}\n  other {часов}\n} назад",
+                    "minute": "{count} {count, plural,\n  one {минуту}\n  few {минуты}\n  many {минут}\n  other {минут}\n} назад",
+                    "second": "{count} {count, plural,\n  one {секунду}\n  few {секунды}\n  many {секунд}\n  other {секунд}\n} назад",
+                    "week": "{count} {count, plural,\n  one {неделю}\n  few {недели}\n  many {недель}\n  other {недель}\n} назад"
                 }
             },
             "service-control": {
@@ -1041,7 +1041,7 @@
                 "restored": {
                     "confirm_remove_text": "Вы уверены, что хотите удалить этот объект?",
                     "confirm_remove_title": "Удалить объект?",
-                    "not_provided": "Этот объект в настоящее время недоступен и его родительская интеграция или устройство удалены, изменены либо неисправны.",
+                    "not_provided": "Этот объект в настоящее время недоступен. Его родительская интеграция или устройство удалены, изменены либо неисправны.",
                     "remove_action": "Удалить объект",
                     "remove_intro": "Если объект больше не используется, Вы можете удалить его."
                 },
@@ -1219,11 +1219,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\none {д.}\nother {д.}\n}",
-            "hour": "{count} {count, plural,\none {ч.}\nother {ч.}\n}",
-            "minute": "{count} {count, plural,\none {мин.}\nother {мин.}\n}",
-            "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
-            "week": "{count} {count, plural,\none {нед.}\nother {нед.}\n}"
+            "day": "{count} {count, plural,\n  one {день}\n  few {дня}\n  many {дней}\n  other {дней}\n}",
+            "hour": "{count} {count, plural,\n  one {час}\n  few {часа}\n  many {часов}\n  other {часов}\n}",
+            "minute": "{count} {count, plural,\n  one {минута}\n  few {минуты}\n  many {минут}\n  other {минут}\n}",
+            "second": "{count} {count, plural,\n  one {секунда}\n  few {секунды}\n  many {секунд}\n  other {секунд}\n}",
+            "week": "{count} {count, plural,\n  one {неделя}\n  few {недели}\n  many {недель}\n  other {недель}\n}"
         },
         "errors": {
             "config": {
@@ -2030,7 +2030,7 @@
                     "enabled_label": "Активировать устройство",
                     "entities": {
                         "add_entities_lovelace": "Добавить объекты в Lovelace UI",
-                        "disabled_entities": "Показать {count, plural,\n  one {деактивированные объекты:}\n  other {деактивированные объекты:}\n} {count}",
+                        "disabled_entities": "+{count} {count, plural,\n  one {деактивированный объект}\n  few {деактивированных объекта}\n  many {деактивированных объектов}\n  other {деактивированных объектов}\n}",
                         "entities": "Объекты",
                         "hide_disabled": "Скрыть деактивированные объекты",
                         "none": "У этого устройства нет объектов"
@@ -2071,12 +2071,12 @@
                         "disable_selected": {
                             "button": "Деактивировать выбранные",
                             "confirm_text": "Деактивированные объекты не будут доступны в Home Assistant.",
-                            "confirm_title": "Вы уверены, что хотите деактивировать {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n}?"
+                            "confirm_title": "Вы уверены, что хотите деактивировать {number} {number, plural,\n  one {выбранный объект}\n  few {выбранных объекта}\n  many {выбранных объектов}\n  other {выбранных объектов}\n}?"
                         },
                         "enable_selected": {
                             "button": "Активировать выбранные",
                             "confirm_text": "Если эти объекты ранее были деактивированы, они снова будут доступными в Home Assistant.",
-                            "confirm_title": "Активировать {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n}?"
+                            "confirm_title": "Активировать {number} {number, plural,\n  one {выбранный объект}\n  few {выбранных объекта}\n  many {выбранных объектов}\n  other {выбранных объектов}\n}?"
                         },
                         "filter": {
                             "filter": "Фильтр",
@@ -2099,9 +2099,9 @@
                         "remove_selected": {
                             "button": "Удалить выбранные",
                             "confirm_partly_text": "Вы можете удалить только {removable} из выбранных {selected} объектов. Объекты могут быть удалены только когда интеграция больше не предоставляет объекты. В некоторых случаях Вам нужно будет перезапустить Home Assistant, чтобы удалить объекты удаленной интеграции. Вы уверены, что хотите удалить объекты?",
-                            "confirm_partly_title": "Только {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n} могут быть удалены.",
+                            "confirm_partly_title": "Только {number} {number, plural,\n  one {выбранный объект}\n  few {выбранных объекта}\n  many {выбранных объектов}\n  other {выбранных объектов}\n} могут быть удалены.",
                             "confirm_text": "Вы должны удалить эти объекты из конфигурации Lovelace и из правил автоматизации.",
-                            "confirm_title": "Вы уверены, что хотите удалить {number} {number, plural,\n  one {выбранный объект}\n  other {выбранных объектов}\n}?"
+                            "confirm_title": "Вы уверены, что хотите удалить {number} {number, plural,\n  one {выбранный объект}\n  few {выбранных объекта}\n  many {выбранных объектов}\n  other {выбранных объектов}\n}?"
                         },
                         "search": "Поиск объектов",
                         "selected": "Выбрано: {number}",
@@ -2194,7 +2194,7 @@
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
                         "depends_on_cloud": "Зависит от облачных сервисов",
                         "device_unavailable": "Устройство недоступно",
-                        "devices": "{count, plural,\n  one {устройств:}\n  other {устройств:}\n} {count}",
+                        "devices": "{count} {count, plural,\n  one {устройство}\n  few {устройства}\n  many {устройств}\n  other {устройств}\n}",
                         "disable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить деактивацию этой интеграции.",
                         "disable": {
                             "disable_confirm": "Вы уверены, что хотите деактивировать эту запись конфигурации? Её дочерние устройства и объекты будут также деактивированы.",
@@ -2208,7 +2208,7 @@
                         },
                         "documentation": "Документация",
                         "enable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить подключение этой интеграции.",
-                        "entities": "{count, plural,\n  one {объектов:}\n  other {объектов:}\n} {count}",
+                        "entities": "{count} {count, plural,\n  one {объект}\n  few {объекта}\n  many {объектов}\n  other {объектов}\n}",
                         "entity_unavailable": "Объект недоступен",
                         "firmware": "Прошивка: {version}",
                         "hub": "Подключено через",
@@ -2223,7 +2223,7 @@
                         "reload_restart_confirm": "Перезапустите Home Assistant, чтобы завершить перезагрузку этой интеграции",
                         "rename": "Переименовать",
                         "restart_confirm": "Перезапустите Home Assistant, чтобы завершить удаление этой интеграции",
-                        "services": "{count, plural,\n  one {служб:}\n  other {служб:}\n} {count}",
+                        "services": "{count} {count, plural,\n  one {служба}\n  few {службы}\n  many {служб}\n  other {служб}\n}",
                         "state": {
                             "failed_unload": "Не удалось выгрузить",
                             "loaded": "Загружено",
@@ -4007,6 +4007,17 @@
                     "link_promo": "Узнать о темах",
                     "primary_color": "Основной цвет",
                     "reset": "Сбросить"
+                },
+                "time_format": {
+                    "description": "Отображение времени в пользовательском интерфейсе",
+                    "dropdown_label": "Формат времени",
+                    "formats": {
+                        "12": "12-часовой (AM/PM)",
+                        "24": "24-часовой",
+                        "language": "Автоматически (определять из настроек языка)",
+                        "system": "Использовать локализацию системы"
+                    },
+                    "header": "Формат времени"
                 },
                 "vibrate": {
                     "description": "Получать тактильный отклик при управлении устройствами",

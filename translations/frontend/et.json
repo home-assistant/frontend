@@ -871,7 +871,7 @@
                     "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
                     "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n}",
                     "minute": "{count} {count, plural,\n  one {minut}\n  other {minuti}\n}",
-                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundi}\n}",
                     "week": "{count} {count, plural,\n  one {nädala}\n  other {nädala}\n}"
                 },
                 "future_duration": {
@@ -1220,8 +1220,8 @@
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
-            "hour": "{count} {count, plural,\n  one {tund}\n  other {tunni}\n}",
-            "minute": "{count} {count, plural,\n  one {minut}\n  other {minuti}\n}",
+            "hour": "{count} {count, plural,\n  one {tund}\n  other {tundi}\n}",
+            "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n}",
             "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
             "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}"
         },
@@ -4007,6 +4007,17 @@
                     "link_promo": "Lisateave teemade kohta",
                     "primary_color": "Esmane värv",
                     "reset": "Lähtesta"
+                },
+                "time_format": {
+                    "description": "Vali kuidas ajad vormindatakse.",
+                    "dropdown_label": "Ajavorming",
+                    "formats": {
+                        "12": "12 tundi (AM/PM)",
+                        "24": "24 tundi",
+                        "language": "Automaatne (kasuta keeleseadet)",
+                        "system": "Kasuta süsteemi poolt määratut"
+                    },
+                    "header": "Ajavorming"
                 },
                 "vibrate": {
                     "description": "Seadmete juhtimisel lubage või keelake vibratsioon.",
