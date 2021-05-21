@@ -15,5 +15,11 @@ body {
   padding: 0;
   height: 100vh;
 }
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #111111;
+    color: #e1e1e1;
+  }
+}
 `;
 document.head.appendChild(styleEl);
