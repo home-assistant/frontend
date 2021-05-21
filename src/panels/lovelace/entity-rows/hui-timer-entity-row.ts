@@ -1,9 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import secondsToDuration from "../../../common/datetime/seconds_to_duration";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
-import { timerTimeRemaining } from "../../../common/entity/timer_time_remaining";
+import { computeDisplayTimer, timerTimeRemaining } from "../../../data/timer";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
@@ -59,7 +57,9 @@ class HuiTimerEntityRow extends LitElement {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <div class="text-content">${this._computeDisplay(stateObj)}</div>
+        <div class="text-content">
+          ${computeDisplayTimer(this.hass, stateObj, this._timeRemaining)}
+        </div>
       </hui-generic-entity-row>
     `;
   }
@@ -111,32 +111,6 @@ class HuiTimerEntityRow extends LitElement {
 
   private _calculateRemaining(stateObj: HassEntity): void {
     this._timeRemaining = timerTimeRemaining(stateObj);
-  }
-
-  private _computeDisplay(stateObj: HassEntity): string | null {
-    if (!stateObj) {
-      return null;
-    }
-
-    if (stateObj.state === "idle" || this._timeRemaining === 0) {
-      return computeStateDisplay(
-        this.hass!.localize,
-        stateObj,
-        this.hass!.locale
-      );
-    }
-
-    let display = secondsToDuration(this._timeRemaining || 0);
-
-    if (stateObj.state === "paused") {
-      display = `${display} (${computeStateDisplay(
-        this.hass!.localize,
-        stateObj,
-        this.hass!.locale
-      )})`;
-    }
-
-    return display;
   }
 }
 

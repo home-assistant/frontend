@@ -2,10 +2,8 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import secondsToDuration from "../common/datetime/seconds_to_duration";
-import { timerTimeRemaining } from "../common/entity/timer_time_remaining";
 import "../components/entity/state-info";
-import { computeStateDisplay } from "../common/entity/compute_state_display";
+import { computeDisplayTimer, timerTimeRemaining } from "../data/timer";
 
 class StateCardTimer extends PolymerElement {
   static get template() {
@@ -93,28 +91,7 @@ class StateCardTimer extends PolymerElement {
   }
 
   _displayState(timeRemaining, stateObj) {
-    if (!stateObj) {
-      return null;
-    }
-
-    if (stateObj.state === "idle" || timeRemaining === 0) {
-      return computeStateDisplay(
-        this.hass.localize,
-        stateObj,
-        this.hass.locale
-      );
-    }
-
-    let display = secondsToDuration(timeRemaining || 0);
-
-    if (stateObj.state === "paused") {
-      display +=
-        " (" +
-        computeStateDisplay(this.hass.localize, stateObj, this.hass.locale) +
-        ")";
-    }
-
-    return display;
+    return computeDisplayTimer(this.hass, stateObj, timeRemaining);
   }
 }
 customElements.define("state-card-timer", StateCardTimer);
