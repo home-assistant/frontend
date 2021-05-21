@@ -159,7 +159,7 @@ export class HaVoiceCommandDialog extends LitElement {
         <div class="input">
           <paper-input
             @keyup=${this._handleKeyUp}
-            label="${this.hass.localize(
+            .label="${this.hass.localize(
               `ui.dialogs.voice_command.${
                 SpeechRecognition ? "label_voice" : "label"
               }`
