@@ -91,6 +91,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
         .entities td:nth-child(1) {
           min-width: 300px;
+          width: 30%;
         }
         .entities td:nth-child(3) {
           white-space: pre-wrap;
