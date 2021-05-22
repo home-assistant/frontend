@@ -78,12 +78,12 @@ export class HaPanelLogbook extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.logbook")}</div>
-            <mwc-icon-button
+            <ha-icon-button
               @click=${this._refreshLogbook}
+              .path=${mdiRefresh}
+              .label=${this.hass!.localize("ui.common.refresh")}
               .disabled=${this._isLoading}
-            >
-              <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
           </app-toolbar>
         </app-header>
 

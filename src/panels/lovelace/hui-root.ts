@@ -281,28 +281,23 @@ class HUIRoot extends LitElement {
                   ${!this.narrow &&
                   this._conversation(this.hass.config.components)
                     ? html`
-                        <mwc-icon-button
+                        <ha-icon-button
                           .label=${this.hass!.localize(
                             "ui.panel.lovelace.menu.start_conversation"
                           )}
+                          .path=${mdiMicrophone}
                           @click=${this._showVoiceCommandDialog}
-                        >
-                          <ha-svg-icon .path=${mdiMicrophone}></ha-svg-icon>
-                        </mwc-icon-button>
+                        ></ha-icon-button>
                       `
                     : ""}
                   <ha-button-menu corner="BOTTOM_START">
-                    <mwc-icon-button
+                    <ha-icon-button
                       slot="trigger"
                       .label=${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.open"
                       )}
-                      .title="${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.open"
-                      )}"
-                    >
-                      <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-                    </mwc-icon-button>
+                      .path=${mdiDotsVertical}
+                    ></ha-icon-button>
                     ${this.narrow &&
                     this._conversation(this.hass.config.components)
                       ? html`
