@@ -1202,7 +1202,7 @@
             "zha_reconfigure_device": {
                 "attribute": "Attributt",
                 "battery_device_warning": "Du må vekke batteridrevne enheter før du starter omkonfigureringsprosessen. Se enhetens håndbok for instruksjoner om hvordan du vekker enheten.",
-                "bind_header": "Bindende",
+                "bind_header": "Binding",
                 "button_hide": "Skjul detaljer",
                 "button_show": "Vis detaljer",
                 "cluster_header": "Klynge",
@@ -1212,7 +1212,7 @@
                 "heading": "Konfigurerer enheten på nytt",
                 "in_progress": "Enheten konfigureres på nytt. Dette kan ta litt tid.",
                 "introduction": "Konfigurer en enhet på nytt på Zigbee-nettverket. Bruk denne funksjonen hvis enheten ikke fungerer som den skal.",
-                "min_max_change": "min./maks./endring",
+                "min_max_change": "min/maks/endring",
                 "reporting_header": "Rapportering",
                 "run_in_background": "Du kan lukke denne dialogen, og omkonfigurasjonen vil fortsette i bakgrunnen.",
                 "start_reconfiguration": "Start rekonfigurasjon"
@@ -4007,6 +4007,17 @@
                     "link_promo": "Lær om temaer",
                     "primary_color": "Primærfarge",
                     "reset": "Nullstille"
+                },
+                "time_format": {
+                    "description": "Velg hvordan tidene skal formateres.",
+                    "dropdown_label": "Tidsformat",
+                    "formats": {
+                        "12": "12 timer (AM/PM)",
+                        "24": "24 timer",
+                        "language": "Automatisk (bruk språkinnstilling)",
+                        "system": "Bruk systemområdet"
+                    },
+                    "header": "Tidsformat"
                 },
                 "vibrate": {
                     "description": "Aktiver eller deaktiver vibrasjoner på denne enheten når du kontrollerer enheter.",

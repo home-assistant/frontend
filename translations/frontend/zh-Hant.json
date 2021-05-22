@@ -4008,6 +4008,17 @@
                     "primary_color": "主色彩",
                     "reset": "重置"
                 },
+                "time_format": {
+                    "description": "選擇時間顯示格式。",
+                    "dropdown_label": "時間格式",
+                    "formats": {
+                        "12": "12 小時制（AM/PM）",
+                        "24": "24 小時制",
+                        "language": "自動（使用語言設定）",
+                        "system": "使用系統位置"
+                    },
+                    "header": "時間格式"
+                },
                 "vibrate": {
                     "description": "當控制裝置時、開啟或關閉此裝置震動。",
                     "header": "震動"
