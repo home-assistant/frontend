@@ -2,6 +2,7 @@ import "@material/mwc-button";
 import {
   mdiClipboardTextMultipleOutline,
   mdiInformationOutline,
+  mdiRefresh,
 } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
@@ -46,8 +47,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           padding: 0 16px;
         }
 
-        mwc-button {
+        .button-row {
+          display: flex;
           margin-top: 8px;
+          align-items: center;
         }
 
         .table-wrapper {
@@ -139,9 +142,20 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             error="[[!validJSON]]"
             on-value-changed="_yamlChanged"
           ></ha-code-editor>
-          <mwc-button on-click="handleSetState" disabled="[[!validJSON]]" raised
-            >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
-          >
+          <div class="button-row">
+            <mwc-button
+              on-click="handleSetState"
+              disabled="[[!validJSON]]"
+              raised
+              >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
+            >
+            <mwc-icon-button
+              on-click="entityIdChanged"
+              label="[[localize('ui.common.refresh')]]"
+              raised
+              ><ha-svg-icon path="[[refreshIcon()]]"></ha-svg-icon
+            ></mwc-icon-button>
+          </div>
         </div>
         <div class="info">
           <template is="dom-if" if="[[_entity]]">
@@ -365,6 +379,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   clipboardOutlineIcon() {
     return mdiClipboardTextMultipleOutline;
+  }
+
+  refreshIcon() {
+    return mdiRefresh;
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
