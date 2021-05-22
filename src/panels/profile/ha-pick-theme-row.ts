@@ -201,9 +201,7 @@ export class HaPickThemeRow extends LitElement {
   }
 
   private _supportsModeSelection(theme: Theme): boolean {
-    return (
-      theme.styles?.light !== undefined && theme.styles?.dark !== undefined
-    );
+    return theme.modes?.light !== undefined && theme.modes?.dark !== undefined;
   }
 
   private _handleDarkMode(ev: CustomEvent) {

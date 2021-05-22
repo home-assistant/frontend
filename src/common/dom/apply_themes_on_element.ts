@@ -47,19 +47,26 @@ export const applyThemesOnElement = (
       accentColor = themeSettings.accentColor;
     } else if (selectedTheme && themes.themes[selectedTheme]) {
       // Try in that order:
-      // 1. Fixed values from theme styles
-      // 2. HA default colors
+      // 1. Theme value from the selected mode
+      // 2. Mode-independent theme value
+      // 3. HA default colors (implicit)
       if (themeSettings.dark) {
         primaryColor =
-          themes.themes[selectedTheme].styles?.dark?.["primary-color"];
+          themes.themes[selectedTheme].modes?.dark?.["primary-color"];
         accentColor =
-          themes.themes[selectedTheme].styles?.dark?.["accent-color"];
+          themes.themes[selectedTheme].modes?.dark?.["accent-color"];
       } else {
         primaryColor =
-          themes.themes[selectedTheme].styles?.light?.["primary-color"];
+          themes.themes[selectedTheme].modes?.light?.["primary-color"];
         accentColor =
-          themes.themes[selectedTheme].styles?.light?.["accent-color"];
+          themes.themes[selectedTheme].modes?.light?.["accent-color"];
       }
+
+      // Mode-independent theme value as fallback
+      primaryColor =
+        primaryColor || themes.themes[selectedTheme]["primary-color"];
+      accentColor =
+        primaryColor || themes.themes[selectedTheme]["accent-color"];
     }
 
     if (themeSettings.dark) {
@@ -106,18 +113,16 @@ export const applyThemesOnElement = (
   }
 
   if (selectedTheme && themes.themes[selectedTheme]) {
-    // If dark is requested, check if the theme actually provides dark styles to use
-    if (themeSettings?.dark && themes.themes[selectedTheme].styles?.dark)
-      themeRules = {
-        ...themeRules,
-        ...themes.themes[selectedTheme].styles?.dark,
-      };
+    // Apply theme vars that are relevant for all modes (but extract the "modes" section first)
+    const { modes, ...baseThemeRules } = themes.themes[selectedTheme];
+    themeRules = { ...themeRules, ...baseThemeRules };
+
+    // If dark is requested, check if the theme actually supports dark mode. Otherwise we
+    // fall back to the light mode.
+    if (themeSettings?.dark && modes?.dark)
+      themeRules = { ...themeRules, ...modes?.dark };
     else {
-      // Check if the theme provides styles (= new theme scheme), otherwise fallback to old scheme
-      const rules =
-        themes.themes[selectedTheme].styles?.light ||
-        themes.themes[selectedTheme];
-      themeRules = { ...themeRules, ...rules };
+      themeRules = { ...themeRules, ...modes?.light };
     }
   }
 
