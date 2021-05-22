@@ -1,15 +1,7 @@
 import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { formatTimeWithSeconds } from "../../../../../../common/datetime/format_time";
 import { MQTTMessage } from "../../../../../../data/mqtt";
 import { HomeAssistant } from "../../../../../../types";
@@ -28,11 +20,11 @@ class MQTTMessages extends LitElement {
 
   @property() public summary!: string;
 
-  @internalProperty() private _open = false;
+  @state() private _open = false;
 
-  @internalProperty() private _payloadsJson = new WeakMap();
+  @state() private _payloadsJson = new WeakMap();
 
-  @internalProperty() private _showTopic = false;
+  @state() private _showTopic = false;
 
   protected firstUpdated(): void {
     this.messages.forEach((message) => {
@@ -61,7 +53,7 @@ class MQTTMessages extends LitElement {
                       Received
                       ${formatTimeWithSeconds(
                         new Date(message.time),
-                        this.hass.language
+                        this.hass.locale
                       )}
                     </div>
                     ${this._renderSingleMessage(message)}
@@ -80,9 +72,7 @@ class MQTTMessages extends LitElement {
       <ul class="message-with-topic">
         ${this._showTopic ? html` <li>Topic: <code>${topic}</code></li> ` : ""}
         <li>QoS: ${message.qos}${message.retain ? ", Retained" : ""}</li>
-        <li>
-          Payload: ${this._renderSinglePayload(message)}
-        </li>
+        <li>Payload: ${this._renderSinglePayload(message)}</li>
       </ul>
     `;
   }
@@ -135,7 +125,7 @@ class MQTTMessages extends LitElement {
     this._open = !this._open;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .expander {
         cursor: pointer;

@@ -13,7 +13,7 @@ export const fetchHassioResolution = async (
   hass: HomeAssistant
 ): Promise<HassioResolution> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/resolution/info",
       method: "get",

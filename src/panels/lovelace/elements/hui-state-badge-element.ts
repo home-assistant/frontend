@@ -1,13 +1,6 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/ha-state-label-badge";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -21,11 +14,12 @@ import "../components/hui-warning-element";
 import { LovelaceElement, StateBadgeElementConfig } from "./types";
 
 @customElement("hui-state-badge-element")
-export class HuiStateBadgeElement extends LitElement
+export class HuiStateBadgeElement
+  extends LitElement
   implements LovelaceElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: StateBadgeElementConfig;
+  @state() private _config?: StateBadgeElementConfig;
 
   public setConfig(config: StateBadgeElementConfig): void {
     if (!config.entity) {

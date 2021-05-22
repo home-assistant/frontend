@@ -1,58 +1,67 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
-import { Edge, EdgeOptions, Network, Node } from "vis-network";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+
+import "@material/mwc-button";
 import { navigate } from "../../../../../common/navigate";
+import {
+  fetchDevices,
+  refreshTopology,
+  ZHADevice,
+} from "../../../../../data/zha";
+import "../../../../../layouts/hass-tabs-subpage";
+import type { HomeAssistant, Route } from "../../../../../types";
+import { Network, Edge, Node, EdgeOptions } from "vis-network";
 import "../../../../../common/search/search-input";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-svg-icon";
-import { fetchDevices, ZHADevice } from "../../../../../data/zha";
-import "../../../../../layouts/hass-subpage";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
-import type { HomeAssistant } from "../../../../../types";
 import { formatAsPaddedHex } from "./functions";
+import { DeviceRegistryEntry } from "../../../../../data/device_registry";
+import "../../../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import { zhaTabs } from "./zha-config-dashboard";
+import { customElement, property, query, state } from "lit/decorators";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
-  @property({ type: Object }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public route!: Route;
 
   @property({ type: Boolean }) public narrow!: boolean;
+
+  @property({ type: Boolean }) public isWide!: boolean;
+
+  @property()
+  public zoomedDeviceId?: string;
 
   @query("#visualization", true)
   private _visualization?: HTMLElement;
 
-  @internalProperty()
+  @state()
   private _devices: Map<string, ZHADevice> = new Map();
 
-  @internalProperty()
+  @state()
   private _devicesByDeviceId: Map<string, ZHADevice> = new Map();
 
-  @internalProperty()
+  @state()
   private _nodes: Node[] = [];
 
-  @internalProperty()
+  @state()
   private _network?: Network;
 
-  @internalProperty()
+  @state()
   private _filter?: string;
 
-  @internalProperty()
-  private _zoomedDeviceId?: string;
+  private _autoZoom = true;
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
+
     if (this.hass) {
       this._fetchData();
     }
+
     this._network = new Network(
       this._visualization!,
       {},
@@ -85,6 +94,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         },
       }
     );
+
     this._network.on("doubleClick", (properties) => {
       const ieee = properties.nodes[0];
       if (ieee) {
@@ -98,12 +108,33 @@ export class ZHANetworkVisualizationPage extends LitElement {
         }
       }
     });
+
+    this._network.on("click", (properties) => {
+      const ieee = properties.nodes[0];
+      if (ieee) {
+        const device = this._devices.get(ieee);
+        if (device && this._autoZoom) {
+          this.zoomedDeviceId = device.device_reg_id;
+          this._zoomToDevice();
+        }
+      }
+    });
+
+    this._network.on("stabilized", () => {
+      if (this.zoomedDeviceId) {
+        this._zoomToDevice();
+      }
+    });
   }
 
   protected render() {
     return html`
-      <hass-subpage
+      <hass-tabs-subpage
+        .tabs=${zhaTabs}
         .hass=${this.hass}
+        .narrow=${this.narrow}
+        .isWide=${this.isWide}
+        .route=${this.route}
         .header=${this.hass.localize(
           "ui.panel.config.zha.visualization.header"
         )}
@@ -121,16 +152,26 @@ export class ZHANetworkVisualizationPage extends LitElement {
           </search-input>
           <ha-device-picker
             .hass=${this.hass}
-            .value=${this._zoomedDeviceId}
+            .value=${this.zoomedDeviceId}
             .label=${this.hass.localize(
               "ui.panel.config.zha.visualization.zoom_label"
             )}
-            .includeDomains="['zha']"
-            @value-changed=${this._zoomToDevice}
+            .deviceFilter=${(device) => this._filterDevices(device)}
+            @value-changed=${this._onZoomToDevice}
           ></ha-device-picker>
+          <ha-checkbox
+            @change=${this._handleCheckboxChange}
+            .checked=${this._autoZoom}
+          ></ha-checkbox
+          >${this.hass!.localize("ui.panel.config.zha.visualization.auto_zoom")}
+          <mwc-button @click=${this._refreshTopology}
+            >${this.hass!.localize(
+              "ui.panel.config.zha.visualization.refresh_topology"
+            )}</mwc-button
+          >
         </div>
         <div id="visualization"></div>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -248,7 +289,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           filteredNodeIds.push(node.id!);
         }
       });
-      this._zoomedDeviceId = "";
+      this.zoomedDeviceId = "";
       this._zoomOut();
       this._network.selectNodes(filteredNodeIds, true);
     } else {
@@ -256,21 +297,25 @@ export class ZHANetworkVisualizationPage extends LitElement {
     }
   }
 
-  private _zoomToDevice(event: PolymerChangedEvent<string>) {
+  private _onZoomToDevice(event: PolymerChangedEvent<string>) {
     event.stopPropagation();
-    this._zoomedDeviceId = event.detail.value;
+    this.zoomedDeviceId = event.detail.value;
     if (!this._network) {
       return;
     }
+    this._zoomToDevice();
+  }
+
+  private _zoomToDevice() {
     this._filter = "";
-    if (!this._zoomedDeviceId) {
+    if (!this.zoomedDeviceId) {
       this._zoomOut();
     } else {
       const device: ZHADevice | undefined = this._devicesByDeviceId.get(
-        this._zoomedDeviceId
+        this.zoomedDeviceId
       );
       if (device) {
-        this._network.fit({
+        this._network!.fit({
           nodes: [device.ieee],
           animation: { duration: 500, easingFunction: "easeInQuad" },
         });
@@ -285,7 +330,29 @@ export class ZHANetworkVisualizationPage extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  private async _refreshTopology(): Promise<void> {
+    await refreshTopology(this.hass);
+  }
+
+  private _filterDevices(device: DeviceRegistryEntry): boolean {
+    if (!this.hass) {
+      return false;
+    }
+    for (const parts of device.identifiers) {
+      for (const part of parts) {
+        if (part === "zha") {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  private _handleCheckboxChange(ev: Event) {
+    this._autoZoom = (ev.target as HaCheckbox).checked;
+  }
+
+  static get styles(): CSSResultGroup {
     return [
       css`
         .header {
@@ -299,29 +366,58 @@ export class ZHANetworkVisualizationPage extends LitElement {
           line-height: var(--paper-font-display1_-_line-height);
           opacity: var(--dark-primary-opacity);
         }
+
         .table-header {
           border-bottom: 1px solid --divider-color;
           padding: 0 16px;
           display: flex;
           align-items: center;
+          flex-direction: row;
           height: var(--header-height);
         }
+
+        :host([narrow]) .table-header {
+          flex-direction: column;
+          align-items: stretch;
+          height: var(--header-height) * 3;
+        }
+
         .search-toolbar {
           display: flex;
           align-items: center;
           color: var(--secondary-text-color);
           padding: 0 16px;
         }
+
         search-input {
           position: relative;
           top: 2px;
           flex: 1;
         }
+
+        :host(:not([narrow])) search-input {
+          margin: 5px;
+        }
+
         search-input.header {
           left: -8px;
         }
+
         ha-device-picker {
           flex: 1;
+        }
+
+        :host(:not([narrow])) ha-device-picker {
+          margin: 5px;
+        }
+
+        mwc-button {
+          font-weight: 500;
+          color: var(--primary-color);
+        }
+
+        :host(:not([narrow])) mwc-button {
+          margin: 5px;
         }
       `,
     ];

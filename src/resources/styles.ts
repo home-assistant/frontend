@@ -1,4 +1,4 @@
-import { css } from "lit-element";
+import { css } from "lit";
 
 export const darkStyles = {
   "primary-background-color": "#111111",
@@ -75,6 +75,7 @@ export const derivedStyles = {
   "mdc-theme-on-primary": "var(--text-primary-color)",
   "mdc-theme-on-secondary": "var(--text-primary-color)",
   "mdc-theme-on-surface": "var(--primary-text-color)",
+  "mdc-theme-text-disabled-on-light": "var(--disabled-text-color)",
   "mdc-theme-text-primary-on-background": "var(--primary-text-color)",
   "mdc-theme-text-secondary-on-background": "var(--secondary-text-color)",
   "mdc-theme-text-icon-on-background": "var(--secondary-text-color)",
@@ -92,7 +93,21 @@ export const derivedStyles = {
   "mdc-button-disabled-ink-color": "var(--disabled-text-color)",
   "mdc-button-outline-color": "var(--divider-color)",
   "mdc-dialog-scroll-divider-color": "var(--divider-color)",
+  "chip-background-color": "rgba(var(--rgb-primary-text-color), 0.15)",
 };
+
+export const buttonLinkStyle = css`
+  button.link {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    text-align: left;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+`;
 
 export const haStyle = css`
   :host {
@@ -180,16 +195,7 @@ export const haStyle = css`
     --mdc-theme-primary: var(--error-color);
   }
 
-  button.link {
-    background: none;
-    color: inherit;
-    border: none;
-    padding: 0;
-    font: inherit;
-    text-align: left;
-    text-decoration: underline;
-    cursor: pointer;
-  }
+  ${buttonLinkStyle}
 
   .card-actions a {
     text-decoration: none;
@@ -353,5 +359,14 @@ export const haStyleScrollbar = css`
     overflow-y: auto;
     scrollbar-color: var(--scrollbar-thumb-color) transparent;
     scrollbar-width: thin;
+  }
+`;
+
+export const baseEntrypointStyles = css`
+  body {
+    background-color: var(--primary-background-color);
+    color: var(--primary-text-color);
+    height: calc(100vh - 32px);
+    width: 100vw;
   }
 `;

@@ -2,15 +2,13 @@ import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-dialog";
@@ -33,24 +31,24 @@ import { AddUserDialogParams } from "./show-dialog-add-user";
 export class DialogAddUser extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
   // Error message when can't talk to server etc
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: AddUserDialogParams;
+  @state() private _params?: AddUserDialogParams;
 
-  @internalProperty() private _name?: string;
+  @state() private _name?: string;
 
-  @internalProperty() private _username?: string;
+  @state() private _username?: string;
 
-  @internalProperty() private _password?: string;
+  @state() private _password?: string;
 
-  @internalProperty() private _passwordConfirm?: string;
+  @state() private _passwordConfirm?: string;
 
-  @internalProperty() private _isAdmin?: boolean;
+  @state() private _isAdmin?: boolean;
 
-  @internalProperty() private _allowChangeName = true;
+  @state() private _allowChangeName = true;
 
   public showDialog(params: AddUserDialogParams) {
     this._params = params;
@@ -264,12 +262,13 @@ export class DialogAddUser extends LitElement {
     this._close();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
         ha-dialog {
           --mdc-dialog-max-width: 500px;
+          --dialog-z-index: 10;
         }
         ha-switch {
           margin-top: 8px;

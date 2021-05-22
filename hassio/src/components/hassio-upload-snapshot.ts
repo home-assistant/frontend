@@ -2,13 +2,8 @@ import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiFolderUpload } from "@mdi/js";
 import "@polymer/iron-input/iron-input";
 import "@polymer/paper-input/paper-input-container";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-circular-progress";
 import "../../../src/components/ha-file-upload";
@@ -33,9 +28,9 @@ const MAX_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB
 export class HassioUploadSnapshot extends LitElement {
   public hass!: HomeAssistant;
 
-  @internalProperty() public value: string | null = null;
+  @state() public value: string | null = null;
 
-  @internalProperty() private _uploading = false;
+  @state() private _uploading = false;
 
   public render(): TemplateResult {
     return html`

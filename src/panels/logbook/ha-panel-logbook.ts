@@ -1,15 +1,9 @@
 import { mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import {
-  css,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { css, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
@@ -23,6 +17,7 @@ import {
   LogbookEntry,
 } from "../../data/logbook";
 import { fetchPersons } from "../../data/person";
+import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
@@ -34,9 +29,6 @@ export class HaPanelLogbook extends LitElement {
   @property() hass!: HomeAssistant;
 
   @property({ reflect: true, type: Boolean }) narrow!: boolean;
-
-  @property({ attribute: false })
-  private _userIdToName = {};
 
   @property() _startDate: Date;
 
@@ -50,9 +42,13 @@ export class HaPanelLogbook extends LitElement {
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
-  @internalProperty() private _ranges?: DateRangePickerRanges;
+  @state() private _ranges?: DateRangePickerRanges;
 
   private _fetchUserDone?: Promise<unknown>;
+
+  @state() private _userIdToName = {};
+
+  @state() private _traceContexts: TraceContexts = {};
 
   public constructor() {
     super();
@@ -128,6 +124,7 @@ export class HaPanelLogbook extends LitElement {
                 .hass=${this.hass}
                 .entries=${this._entries}
                 .userIdToName=${this._userIdToName}
+                .traceContexts=${this._traceContexts}
                 virtualize
               ></ha-logbook>
             `}
@@ -181,7 +178,7 @@ export class HaPanelLogbook extends LitElement {
     };
   }
 
-  protected updated(changedProps: PropertyValues) {
+  protected updated(changedProps: PropertyValues<this>) {
     if (
       changedProps.has("_startDate") ||
       changedProps.has("_endDate") ||
@@ -257,19 +254,19 @@ export class HaPanelLogbook extends LitElement {
 
   private async _getData() {
     this._isLoading = true;
-    const [entries] = await Promise.all([
+    const [entries, traceContexts] = await Promise.all([
       getLogbookData(
         this.hass,
         this._startDate.toISOString(),
         this._endDate.toISOString(),
         this._entityId
       ),
+      isComponentLoaded(this.hass, "trace") ? loadTraceContexts(this.hass) : {},
       this._fetchUserDone,
     ]);
 
-    // Fixed in TS 3.9 but upgrade out of scope for this PR.
-    // @ts-ignore
     this._entries = entries;
+    this._traceContexts = traceContexts;
     this._isLoading = false;
   }
 

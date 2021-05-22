@@ -1,20 +1,11 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
-import "../../../components/map/ha-location-editor";
 import { Tag, UpdateTagParams } from "../../../data/tag";
 import { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
@@ -24,21 +15,22 @@ import { TagDetailDialogParams } from "./show-dialog-tag-detail";
 const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
 
 @customElement("dialog-tag-detail")
-class DialogTagDetail extends LitElement
+class DialogTagDetail
+  extends LitElement
   implements HassDialog<TagDetailDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _id?: string;
+  @state() private _id?: string;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: TagDetailDialogParams;
+  @state() private _params?: TagDetailDialogParams;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
-  @internalProperty() private _qrCode?: TemplateResult;
+  @state() private _qrCode?: TemplateResult;
 
   public showDialog(params: TagDetailDialogParams): void {
     this._params = params;
@@ -72,7 +64,7 @@ class DialogTagDetail extends LitElement
           this.hass,
           this._params.entry
             ? this._params.entry.name || this._params.entry.id
-            : this.hass!.localize("ui.panel.config.tags.detail.new_tag")
+            : this.hass!.localize("ui.panel.config.tag.detail.new_tag")
         )}
       >
         <div>
@@ -80,7 +72,7 @@ class DialogTagDetail extends LitElement
           <div class="form">
             ${this._params.entry
               ? html`${this.hass!.localize(
-                  "ui.panel.config.tags.detail.tag_id"
+                  "ui.panel.config.tag.detail.tag_id"
                 )}:
                 ${this._params.entry.id}`
               : ""}
@@ -89,11 +81,9 @@ class DialogTagDetail extends LitElement
               .value=${this._name}
               .configValue=${"name"}
               @value-changed=${this._valueChanged}
-              .label="${this.hass!.localize(
-                "ui.panel.config.tags.detail.name"
-              )}"
+              .label="${this.hass!.localize("ui.panel.config.tag.detail.name")}"
               .errorMessage="${this.hass!.localize(
-                "ui.panel.config.tags.detail.required_error_msg"
+                "ui.panel.config.tag.detail.required_error_msg"
               )}"
               required
               auto-validate
@@ -104,10 +94,10 @@ class DialogTagDetail extends LitElement
                   .configValue=${"id"}
                   @value-changed=${this._valueChanged}
                   .label=${this.hass!.localize(
-                    "ui.panel.config.tags.detail.tag_id"
+                    "ui.panel.config.tag.detail.tag_id"
                   )}
                   .placeholder=${this.hass!.localize(
-                    "ui.panel.config.tags.detail.tag_id_placeholder"
+                    "ui.panel.config.tag.detail.tag_id_placeholder"
                   )}
                 ></paper-input>`
               : ""}
@@ -117,14 +107,14 @@ class DialogTagDetail extends LitElement
                 <div>
                   <p>
                     ${this.hass!.localize(
-                      "ui.panel.config.tags.detail.usage",
+                      "ui.panel.config.tag.detail.usage",
                       "companion_link",
                       html`<a
                         href="https://companion.home-assistant.io/"
                         target="_blank"
                         rel="noreferrer"
                         >${this.hass!.localize(
-                          "ui.panel.config.tags.detail.companion_apps"
+                          "ui.panel.config.tag.detail.companion_apps"
                         )}</a
                       >`
                     )}
@@ -151,7 +141,7 @@ class DialogTagDetail extends LitElement
                 @click="${this._deleteEntry}"
                 .disabled=${this._submitting}
               >
-                ${this.hass!.localize("ui.panel.config.tags.detail.delete")}
+                ${this.hass!.localize("ui.panel.config.tag.detail.delete")}
               </mwc-button>
             `
           : html``}
@@ -161,8 +151,8 @@ class DialogTagDetail extends LitElement
           .disabled=${this._submitting}
         >
           ${this._params.entry
-            ? this.hass!.localize("ui.panel.config.tags.detail.update")
-            : this.hass!.localize("ui.panel.config.tags.detail.create")}
+            ? this.hass!.localize("ui.panel.config.tag.detail.update")
+            : this.hass!.localize("ui.panel.config.tag.detail.create")}
         </mwc-button>
         ${this._params.openWrite && !this._params.entry
           ? html` <mwc-button
@@ -171,7 +161,7 @@ class DialogTagDetail extends LitElement
               .disabled=${this._submitting}
             >
               ${this.hass!.localize(
-                "ui.panel.config.tags.detail.create_and_write"
+                "ui.panel.config.tag.detail.create_and_write"
               )}
             </mwc-button>`
           : ""}
@@ -254,7 +244,7 @@ class DialogTagDetail extends LitElement
     this._qrCode = html`<img src=${canvas.toDataURL()}></img>`;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

@@ -4,9 +4,11 @@ import {
   STATE_RUNNING,
   STATE_STARTING,
 } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import { deepActiveElement } from "../common/dom/deep-active-element";
 import { deepEqual } from "../common/util/deep-equal";
+import { getDefaultPanel } from "../data/panel";
 import { CustomPanelInfo } from "../data/panel_custom";
 import { HomeAssistant, Panels } from "../types";
 import { removeInitSkeleton } from "../util/init-skeleton";
@@ -37,25 +39,6 @@ const COMPONENTS = {
     import("../panels/media-browser/ha-panel-media-browser"),
 };
 
-const getRoutes = (panels: Panels): RouterOptions => {
-  const routes: RouterOptions["routes"] = {};
-  Object.values(panels).forEach((panel) => {
-    const data: RouteOptions = {
-      tag: `ha-panel-${panel.component_name}`,
-      cache: CACHE_URL_PATHS.includes(panel.url_path),
-    };
-    if (panel.component_name in COMPONENTS) {
-      data.load = COMPONENTS[panel.component_name];
-    }
-    routes[panel.url_path] = data;
-  });
-
-  return {
-    showLoading: true,
-    routes,
-  };
-};
-
 @customElement("partial-panel-resolver")
 class PartialPanelResolver extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -82,8 +65,8 @@ class PartialPanelResolver extends HassRouterPage {
     document.addEventListener("resume", () => this._checkVisibility());
   }
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
 
     if (!changedProps.has("hass")) {
       return;
@@ -144,6 +127,31 @@ class PartialPanelResolver extends HassRouterPage {
     }
   }
 
+  private getRoutes(panels: Panels): RouterOptions {
+    const routes: RouterOptions["routes"] = {};
+    Object.values(panels).forEach((panel) => {
+      const data: RouteOptions = {
+        tag: `ha-panel-${panel.component_name}`,
+        cache: CACHE_URL_PATHS.includes(panel.url_path),
+      };
+      if (panel.component_name in COMPONENTS) {
+        data.load = COMPONENTS[panel.component_name];
+      }
+      routes[panel.url_path] = data;
+    });
+
+    return {
+      beforeRender: (page) => {
+        if (!page || !routes[page]) {
+          return getDefaultPanel(this.hass).url_path;
+        }
+        return undefined;
+      },
+      showLoading: true,
+      routes,
+    };
+  }
+
   private _onHidden() {
     this._hiddenTimeout = window.setTimeout(() => {
       this._hiddenTimeout = undefined;
@@ -191,7 +199,7 @@ class PartialPanelResolver extends HassRouterPage {
   }
 
   private async _updateRoutes(oldPanels?: HomeAssistant["panels"]) {
-    this.routerOptions = getRoutes(this.hass.panels);
+    this.routerOptions = this.getRoutes(this.hass.panels);
 
     if (
       !this._waitForStart &&

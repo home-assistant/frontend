@@ -1,14 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -35,7 +27,7 @@ export class HuiViewEditor extends LitElement {
 
   @property() public isNew!: boolean;
 
-  @internalProperty() private _config!: LovelaceViewConfig;
+  @state() private _config!: LovelaceViewConfig;
 
   private _suggestedPath = false;
 
@@ -181,7 +173,7 @@ export class HuiViewEditor extends LitElement {
     fireEvent(this, "view-config-changed", { config });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

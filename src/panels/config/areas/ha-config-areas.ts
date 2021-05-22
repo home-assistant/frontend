@@ -1,10 +1,6 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  customElement,
-  internalProperty,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { compare } from "../../../common/string/compare";
 import {
   AreaRegistryEntry,
@@ -15,6 +11,10 @@ import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
 } from "../../../data/device_registry";
+import {
+  EntityRegistryEntry,
+  subscribeEntityRegistry,
+} from "../../../data/entity_registry";
 import {
   HassRouterPage,
   RouterOptions,
@@ -46,12 +46,15 @@ class HaConfigAreas extends HassRouterPage {
     },
   };
 
-  @internalProperty() private _configEntries: ConfigEntry[] = [];
+  @state() private _configEntries: ConfigEntry[] = [];
 
-  @internalProperty()
+  @state()
   private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
-  @internalProperty() private _areas: AreaRegistryEntry[] = [];
+  @state()
+  private _entityRegistryEntries: EntityRegistryEntry[] = [];
+
+  @state() private _areas: AreaRegistryEntry[] = [];
 
   private _unsubs?: UnsubscribeFunc[];
 
@@ -90,6 +93,7 @@ class HaConfigAreas extends HassRouterPage {
 
     pageEl.entries = this._configEntries;
     pageEl.devices = this._deviceRegistryEntries;
+    pageEl.entities = this._entityRegistryEntries;
     pageEl.areas = this._areas;
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
@@ -112,6 +116,9 @@ class HaConfigAreas extends HassRouterPage {
       }),
       subscribeDeviceRegistry(this.hass.connection, (entries) => {
         this._deviceRegistryEntries = entries;
+      }),
+      subscribeEntityRegistry(this.hass.connection, (entries) => {
+        this._entityRegistryEntries = entries;
       }),
     ];
   }

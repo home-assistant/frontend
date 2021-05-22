@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import "../ha-time-input";
 import { HaFormElement, HaFormTimeData, HaFormTimeSchema } from "./ha-form";
 

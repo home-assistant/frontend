@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
 import "../ha-formfield";
@@ -19,11 +13,14 @@ export class HaBooleanSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   protected render() {
     return html` <ha-formfield alignEnd spaceBetween .label=${this.label}>
       <ha-switch
         .checked=${this.value}
         @change=${this._handleChange}
+        .disabled=${this.disabled}
       ></ha-switch>
     </ha-formfield>`;
   }
@@ -36,7 +33,7 @@ export class HaBooleanSelector extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-formfield {
         width: 100%;

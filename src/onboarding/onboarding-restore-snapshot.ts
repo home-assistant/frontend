@@ -1,13 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../hassio/src/components/hassio-ansi-to-html";
 import { showHassioSnapshotDialog } from "../../hassio/src/dialogs/snapshot/show-dialog-hassio-snapshot";
 import { showSnapshotUploadDialog } from "../../hassio/src/dialogs/snapshot/show-dialog-snapshot-upload";
@@ -86,7 +79,7 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

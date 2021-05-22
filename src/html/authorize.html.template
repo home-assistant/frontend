@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Home Assistant</title>
-    <link rel="preload" href="<%= latestPageJS %>" as="script" crossorigin="use-credentials" />
+    <link rel="modulepreload" href="<%= latestPageJS %>" crossorigin="use-credentials" />
     <%= renderTemplate('_header') %>
     <style>
       .content {
@@ -23,11 +23,9 @@
         margin-right: 16px;
       }
       @media (prefers-color-scheme: dark) {
-        body {
+        html {
           background-color: #111111;
           color: #e1e1e1;
-          --primary-text-color: #e1e1e1;
-          --secondary-text-color: #9b9b9b;
         }
       }
     </style>

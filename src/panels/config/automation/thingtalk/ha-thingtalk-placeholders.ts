@@ -1,15 +1,13 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { applyPatch, getPath } from "../../../../common/util/patch";
@@ -72,13 +70,13 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
 
   @property() public placeholders!: PlaceholderContainer;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   private _deviceEntityLookup: DeviceEntitiesLookup = {};
 
-  @internalProperty() private _extraInfo: ExtraInfo = {};
+  @state() private _extraInfo: ExtraInfo = {};
 
-  @internalProperty() private _placeholderValues: PlaceholderValues = {};
+  @state() private _placeholderValues: PlaceholderValues = {};
 
   private _devices?: DeviceRegistryEntry[];
 
@@ -198,13 +196,13 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                                       "device_id",
                                     ])
                                   )}`}
-                                  .entityFilter=${(state: HassEntity) => {
+                                  .entityFilter=${(entityState: HassEntity) => {
                                     const devId = this._placeholderValues[type][
                                       placeholder.index
                                     ][idx].device_id;
                                     return this._deviceEntityLookup[
                                       devId
-                                    ].includes(state.entity_id);
+                                    ].includes(entityState.entity_id);
                                   }}
                                 ></ha-entity-picker>
                               `
@@ -470,7 +468,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
     this.dispatchEvent(new CustomEvent(ev.type, ev));
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

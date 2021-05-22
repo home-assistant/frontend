@@ -3,18 +3,16 @@ import "@material/mwc-tab/mwc-tab";
 import Fuse from "fuse.js";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { styleMap } from "lit-html/directives/style-map";
-import { until } from "lit-html/directives/until";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
+import { until } from "lit/directives/until";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../common/search/search-input";
@@ -50,17 +48,17 @@ interface CardElement {
 export class HuiCardPicker extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _cards: CardElement[] = [];
+  @state() private _cards: CardElement[] = [];
 
   public lovelace?: LovelaceConfig;
 
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
-  @internalProperty() private _filter = "";
+  @state() private _filter = "";
 
-  @internalProperty() private _width?: number;
+  @state() private _width?: number;
 
-  @internalProperty() private _height?: number;
+  @state() private _height?: number;
 
   private _unusedEntities?: string[];
 
@@ -147,7 +145,7 @@ export class HuiCardPicker extends LitElement {
       return true;
     }
 
-    if (oldHass.language !== this.hass!.language) {
+    if (oldHass.locale !== this.hass!.locale) {
       return true;
     }
 
@@ -333,7 +331,7 @@ export class HuiCardPicker extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         search-input {

@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "../common/process-config-entities";
 import "../components/hui-buttons-base";
@@ -14,7 +8,8 @@ import { LovelaceHeaderFooter } from "../types";
 import { ButtonsHeaderFooterConfig } from "./types";
 
 @customElement("hui-buttons-header-footer")
-export class HuiButtonsHeaderFooter extends LitElement
+export class HuiButtonsHeaderFooter
+  extends LitElement
   implements LovelaceHeaderFooter {
   public static getStubConfig(): Record<string, unknown> {
     return { entities: [] };
@@ -22,7 +17,7 @@ export class HuiButtonsHeaderFooter extends LitElement
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public getCardSize(): number {
     return 3;

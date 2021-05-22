@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResult,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property } from "lit/decorators";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
@@ -140,7 +134,10 @@ class HaConfigInfo extends LitElement {
         </div>
         <div class="content">
           <system-health-card .hass=${this.hass}></system-health-card>
-          <integrations-card .hass=${this.hass}></integrations-card>
+          <integrations-card
+            .hass=${this.hass}
+            .narrow=${this.narrow}
+          ></integrations-card>
         </div>
       </hass-tabs-subpage>
     `;
@@ -158,7 +155,7 @@ class HaConfigInfo extends LitElement {
     }, 1000);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

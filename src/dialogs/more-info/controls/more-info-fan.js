@@ -11,9 +11,9 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-switch";
+import { SUPPORT_SET_SPEED } from "../../../data/fan";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import { SUPPORT_SET_SPEED } from "../../../data/fan";
 
 /*
  * @appliesMixin EventsMixin
@@ -52,6 +52,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
             caption="[[localize('ui.card.fan.speed')]]"
             min="0"
             max="100"
+            step="[[computePercentageStepSize(stateObj)]]"
             value="{{percentageSliderValue}}"
             on-change="percentageChanged"
             pin=""
@@ -113,7 +114,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       <ha-attributes
         state-obj="[[stateObj]]"
-        extra-filters="speed,preset_mode,preset_modes,speed_list,percentage,oscillating,direction"
+        extra-filters="percentage_step,speed,preset_mode,preset_modes,speed_list,percentage,oscillating,direction"
       ></ha-attributes>
     `;
   }
@@ -152,6 +153,13 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
         this.fire("iron-resize");
       }, 500);
     }
+  }
+
+  computePercentageStepSize(stateObj) {
+    if (stateObj.attributes.percentage_step) {
+      return stateObj.attributes.percentage_step;
+    }
+    return 1;
   }
 
   computeClassNames(stateObj) {

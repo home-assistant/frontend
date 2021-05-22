@@ -7,20 +7,22 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
-  CSSResultArray,
-  customElement,
-  eventOptions,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
+} from "lit";
+import {
+  customElement,
+  property,
+  state,
+  query,
+  eventOptions,
+} from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
@@ -72,11 +74,11 @@ export class HaMediaPlayerBrowse extends LitElement {
   @property({ type: Boolean, attribute: "scroll", reflect: true })
   private _scrolled = false;
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
-  @internalProperty() private _error?: { message: string; code: string };
+  @state() private _error?: { message: string; code: string };
 
-  @internalProperty() private _mediaPlayerItems: MediaPlayerItem[] = [];
+  @state() private _mediaPlayerItems: MediaPlayerItem[] = [];
 
   @query(".header") private _header?: HTMLDivElement;
 
@@ -122,9 +124,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         });
       } else {
         return html`
-          <div class="container">
-            ${this._renderError(this._error)}
-          </div>
+          <div class="container">${this._renderError(this._error)}</div>
         `;
       }
     }
@@ -202,13 +202,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                   `
                 : ""}
               <h1 class="title">${currentItem.title}</h1>
-              ${subtitle
-                ? html`
-                    <h2 class="subtitle">
-                      ${subtitle}
-                    </h2>
-                  `
-                : ""}
+              ${subtitle ? html` <h2 class="subtitle">${subtitle}</h2> ` : ""}
             </div>
             ${currentItem.can_play && (!currentItem.thumbnail || !this._narrow)
               ? html`
@@ -247,9 +241,7 @@ export class HaMediaPlayerBrowse extends LitElement {
       <div class="content" @scroll=${this._scroll} @touchmove=${this._scroll}>
         ${this._error
           ? html`
-              <div class="container">
-                ${this._renderError(this._error)}
-              </div>
+              <div class="container">${this._renderError(this._error)}</div>
             `
           : currentItem.children?.length
           ? childrenMediaClass.layout === "grid"
@@ -620,7 +612,7 @@ export class HaMediaPlayerBrowse extends LitElement {
     return html`<span class="error">${err.message}</span>`;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

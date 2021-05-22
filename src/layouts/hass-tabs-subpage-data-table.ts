@@ -1,16 +1,10 @@
 import "@material/mwc-button/mwc-button";
+import { mdiFilterVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
-import { navigate } from "../common/navigate";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
+import { LocalizeFunc } from "../common/translations/localize";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import "../components/data-table/ha-data-table";
 import type {
@@ -22,13 +16,27 @@ import type { HomeAssistant, Route } from "../types";
 import "./hass-tabs-subpage";
 import type { PageNavigation } from "./hass-tabs-subpage";
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "search-changed": { value: string };
+    "clear-filter": undefined;
+  }
+}
+
 @customElement("hass-tabs-subpage-data-table")
 export class HaTabsSubpageDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public localizeFunc?: LocalizeFunc;
+
   @property({ type: Boolean }) public isWide = false;
 
   @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ type: Boolean }) public supervisor = false;
+
+  @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
   /**
    * Object with the columns.
@@ -64,7 +72,7 @@ export class HaTabsSubpageDataTable extends LitElement {
    * Add an extra row at the bottom of the data table
    * @type {TemplateResult}
    */
-  @property({ attribute: false }) public appendRow?;
+  @property({ attribute: false }) public appendRow?: TemplateResult;
 
   /**
    * Field with a unique id per entry in data.
@@ -78,11 +86,25 @@ export class HaTabsSubpageDataTable extends LitElement {
    */
   @property({ type: String }) public filter = "";
 
+  @property() public searchLabel?: string;
+
   /**
    * List of strings that show what the data is currently filtered by.
    * @type {Array}
    */
   @property({ type: Array }) public activeFilters?;
+
+  /**
+   * Text to how how many items are hidden.
+   * @type {String}
+   */
+  @property() public hiddenLabel?: string;
+
+  /**
+   * How many items are hidden because of active filters.
+   * @type {Number}
+   */
+  @property({ type: Number }) public numHidden = 0;
 
   /**
    * What path to use when the back button is pressed.
@@ -118,51 +140,66 @@ export class HaTabsSubpageDataTable extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const hiddenLabel = this.numHidden
+      ? this.hiddenLabel ||
+        this.hass.localize(
+          "ui.components.data-table.hidden",
+          "number",
+          this.numHidden
+        ) ||
+        this.numHidden
+      : undefined;
+
+    const filterInfo = this.activeFilters
+      ? html`${this.hass.localize("ui.components.data-table.filtering_by")}
+        ${this.activeFilters.join(", ")}
+        ${hiddenLabel ? `(${hiddenLabel})` : ""}`
+      : hiddenLabel;
+
+    const headerToolbar = html`<search-input
+        .filter=${this.filter}
+        no-label-float
+        no-underline
+        @value-changed=${this._handleSearchChange}
+        .label=${this.searchLabel ||
+        this.hass.localize("ui.components.data-table.search")}
+      >
+      </search-input
+      >${filterInfo
+        ? html`<div class="active-filters">
+            ${this.narrow
+              ? html`<div>
+                  <ha-svg-icon .path="${mdiFilterVariant}"></ha-svg-icon>
+                  <paper-tooltip animation-delay="0" position="left">
+                    ${filterInfo}
+                  </paper-tooltip>
+                </div>`
+              : filterInfo}
+            <mwc-button @click=${this._clearFilter}>
+              ${this.hass.localize("ui.components.data-table.clear")}
+            </mwc-button>
+          </div>`
+        : ""}<slot name="filter-menu"></slot>`;
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.localizeFunc}
         .narrow=${this.narrow}
         .isWide=${this.isWide}
         .backPath=${this.backPath}
         .backCallback=${this.backCallback}
         .route=${this.route}
         .tabs=${this.tabs}
+        .mainPage=${this.mainPage}
+        .supervisor=${this.supervisor}
       >
         <div slot="toolbar-icon"><slot name="toolbar-icon"></slot></div>
         ${this.narrow
           ? html`
               <div slot="header">
                 <slot name="header">
-                  <div class="search-toolbar">
-                    <search-input
-                      .filter=${this.filter}
-                      class="header"
-                      no-label-float
-                      no-underline
-                      @value-changed=${this._handleSearchChange}
-                      .label=${this.hass.localize(
-                        "ui.components.data-table.search"
-                      )}
-                    ></search-input>
-                    ${this.activeFilters
-                      ? html`<div class="active-filters">
-                          <div>
-                            <ha-icon icon="hass:filter-variant"></ha-icon>
-                            <paper-tooltip animation-delay="0" position="left">
-                              ${this.hass.localize(
-                                "ui.panel.config.filtering.filtering_by"
-                              )}
-                              ${this.activeFilters.join(", ")}
-                            </paper-tooltip>
-                          </div>
-                          <mwc-button @click=${this._clearFilter}
-                            >${this.hass.localize(
-                              "ui.panel.config.filtering.clear"
-                            )}</mwc-button
-                          >
-                        </div>`
-                      : ""}
-                  </div>
+                  <div class="search-toolbar">${headerToolbar}</div>
                 </slot>
               </div>
             `
@@ -183,31 +220,7 @@ export class HaTabsSubpageDataTable extends LitElement {
             ? html`
                 <div slot="header">
                   <slot name="header">
-                    <div class="table-header">
-                      <search-input
-                        .filter=${this.filter}
-                        no-label-float
-                        no-underline
-                        @value-changed=${this._handleSearchChange}
-                        .label=${this.hass.localize(
-                          "ui.components.data-table.search"
-                        )}
-                      >
-                      </search-input>
-                      ${this.activeFilters
-                        ? html`<div class="active-filters">
-                            ${this.hass.localize(
-                              "ui.panel.config.filtering.filtering_by"
-                            )}
-                            ${this.activeFilters.join(", ")}
-                            <mwc-button @click=${this._clearFilter}
-                              >${this.hass.localize(
-                                "ui.panel.config.filtering.clear"
-                              )}</mwc-button
-                            >
-                          </div>`
-                        : ""}
-                    </div>
+                    <div class="table-header">${headerToolbar}</div>
                   </slot>
                 </div>
               `
@@ -220,13 +233,14 @@ export class HaTabsSubpageDataTable extends LitElement {
 
   private _handleSearchChange(ev: CustomEvent) {
     this.filter = ev.detail.value;
+    fireEvent(this, "search-changed", { value: this.filter });
   }
 
   private _clearFilter() {
-    navigate(this, window.location.pathname);
+    fireEvent(this, "clear-filter");
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-data-table {
         width: 100%;
@@ -247,7 +261,6 @@ export class HaTabsSubpageDataTable extends LitElement {
         display: flex;
         align-items: center;
         color: var(--secondary-text-color);
-        padding: 0 16px;
       }
       search-input {
         position: relative;
@@ -282,10 +295,6 @@ export class HaTabsSubpageDataTable extends LitElement {
         bottom: 0;
         left: 0;
         content: "";
-      }
-      .search-toolbar .active-filters {
-        top: -8px;
-        right: -16px;
       }
     `;
   }

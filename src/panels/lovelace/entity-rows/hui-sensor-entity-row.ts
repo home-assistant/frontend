@@ -1,14 +1,12 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -33,7 +31,7 @@ interface SensorEntityConfig extends EntitiesCardEntityConfig {
 class HuiSensorEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: SensorEntityConfig;
+  @state() private _config?: SensorEntityConfig;
 
   public setConfig(config: SensorEntityConfig): void {
     if (!config) {
@@ -84,7 +82,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
             : computeStateDisplay(
                 this.hass!.localize,
                 stateObj,
-                this.hass.language
+                this.hass.locale
               )}
         </div>
       </hui-generic-entity-row>
@@ -95,7 +93,7 @@ class HuiSensorEntityRow extends LitElement implements LovelaceRow {
     handleAction(this, this.hass!, this._config!, ev.detail.action);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         text-align: right;

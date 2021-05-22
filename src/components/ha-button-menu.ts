@@ -1,18 +1,7 @@
-import "@material/mwc-button";
 import "@material/mwc-menu";
 import type { Corner, Menu } from "@material/mwc-menu";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
-import "./ha-icon-button";
-
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 @customElement("ha-button-menu")
 export class HaButtonMenu extends LitElement {
   @property() public corner: Corner = "TOP_START";
@@ -56,7 +45,7 @@ export class HaButtonMenu extends LitElement {
     this._menu!.show();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-block;

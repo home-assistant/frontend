@@ -37,8 +37,9 @@ export const validateHassioSession = async (
       type: "supervisor/api",
       endpoint: "/ingress/validate_session",
       method: "post",
-      data: session,
+      data: { session },
     });
+    return;
   }
 
   await hass.callApi<HassioResponse<void>>(

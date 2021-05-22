@@ -2,7 +2,27 @@ import { atLeastVersion } from "../../common/config/version";
 import { HaFormSchema } from "../../components/ha-form/ha-form";
 import { HomeAssistant } from "../../types";
 import { SupervisorArch } from "../supervisor/supervisor";
-import { hassioApiResultExtractor, HassioResponse } from "./common";
+import {
+  extractApiErrorMessage,
+  hassioApiResultExtractor,
+  HassioResponse,
+} from "./common";
+
+export type AddonStage = "stable" | "experimental" | "deprecated";
+export type AddonAppArmour = "disable" | "default" | "profile";
+export type AddonRole = "default" | "homeassistant" | "manager" | "admin";
+export type AddonStartup =
+  | "initialize"
+  | "system"
+  | "services"
+  | "application"
+  | "once";
+export type AddonState = "started" | "stopped" | null;
+export type AddonRepository = "core" | "local" | string;
+
+interface AddonTranslations {
+  [key: string]: Record<string, Record<string, Record<string, string>>>;
+}
 
 export interface HassioAddonInfo {
   advanced: boolean;
@@ -10,14 +30,15 @@ export interface HassioAddonInfo {
   build: boolean;
   description: string;
   detached: boolean;
+  homeassistant: string;
   icon: boolean;
   installed: boolean;
   logo: boolean;
   name: string;
-  repository: "core" | "local" | string;
+  repository: AddonRepository;
   slug: string;
-  stage: "stable" | "experimental" | "deprecated";
-  state: "started" | "stopped" | null;
+  stage: AddonStage;
+  state: AddonState;
   update_available: boolean;
   url: string | null;
   version_latest: string;
@@ -25,7 +46,7 @@ export interface HassioAddonInfo {
 }
 
 export interface HassioAddonDetails extends HassioAddonInfo {
-  apparmor: "disable" | "default" | "profile";
+  apparmor: AddonAppArmour;
   arch: SupervisorArch[];
   audio_input: null | string;
   audio_output: null | string;
@@ -43,10 +64,9 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   full_access: boolean;
   gpio: boolean;
   hassio_api: boolean;
-  hassio_role: "default" | "homeassistant" | "manager" | "admin";
+  hassio_role: AddonRole;
   hostname: string;
   homeassistant_api: boolean;
-  homeassistant: string;
   host_dbus: boolean;
   host_ipc: boolean;
   host_network: boolean;
@@ -68,8 +88,9 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   schema: HaFormSchema[] | null;
   services_role: string[];
   slug: string;
-  startup: "initialize" | "system" | "services" | "application" | "once";
+  startup: AddonStartup;
   stdin: boolean;
+  translations: AddonTranslations;
   watchdog: null | boolean;
   webui: null | string;
 }
@@ -118,7 +139,7 @@ export const fetchHassioAddonsInfo = async (
   hass: HomeAssistant
 ): Promise<HassioAddonsInfo> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: "/addons",
       method: "get",
@@ -135,7 +156,7 @@ export const fetchHassioAddonInfo = async (
   slug: string
 ): Promise<HassioAddonDetails> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/info`,
       method: "get",
@@ -153,23 +174,15 @@ export const fetchHassioAddonInfo = async (
 export const fetchHassioAddonChangelog = async (
   hass: HomeAssistant,
   slug: string
-) => {
-  return hass.callApi<string>("GET", `hassio/addons/${slug}/changelog`);
-};
+) => hass.callApi<string>("GET", `hassio/addons/${slug}/changelog`);
 
-export const fetchHassioAddonLogs = async (
-  hass: HomeAssistant,
-  slug: string
-) => {
-  return hass.callApi<string>("GET", `hassio/addons/${slug}/logs`);
-};
+export const fetchHassioAddonLogs = async (hass: HomeAssistant, slug: string) =>
+  hass.callApi<string>("GET", `hassio/addons/${slug}/logs`);
 
 export const fetchHassioAddonDocumentation = async (
   hass: HomeAssistant,
   slug: string
-) => {
-  return hass.callApi<string>("GET", `hassio/addons/${slug}/documentation`);
-};
+) => hass.callApi<string>("GET", `hassio/addons/${slug}/documentation`);
 
 export const setHassioAddonOption = async (
   hass: HomeAssistant,
@@ -177,16 +190,20 @@ export const setHassioAddonOption = async (
   data: HassioAddonSetOptionParams
 ) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    await hass.callWS({
+    const response = await hass.callWS<HassioResponse<any>>({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/options`,
       method: "post",
       data,
     });
-    return;
+
+    if (response.result === "error") {
+      throw Error(extractApiErrorMessage(response));
+    }
+    return response;
   }
 
-  await hass.callApi<HassioResponse<void>>(
+  return hass.callApi<HassioResponse<any>>(
     "POST",
     `hassio/addons/${slug}/options`,
     data
@@ -198,7 +215,7 @@ export const validateHassioAddonOption = async (
   slug: string
 ): Promise<{ message: string; valid: boolean }> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/options/validate`,
       method: "post",
@@ -215,7 +232,7 @@ export const validateHassioAddonOption = async (
 
 export const startHassioAddon = async (hass: HomeAssistant, slug: string) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/start`,
       method: "post",
@@ -228,7 +245,7 @@ export const startHassioAddon = async (hass: HomeAssistant, slug: string) => {
 
 export const stopHassioAddon = async (hass: HomeAssistant, slug: string) => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-    return await hass.callWS({
+    return hass.callWS({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/stop`,
       method: "post",
@@ -288,17 +305,16 @@ export const updateHassioAddon = async (
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     await hass.callWS({
       type: "supervisor/api",
-      endpoint: `/addons/${slug}/update`,
+      endpoint: `/store/addons/${slug}/update`,
       method: "post",
       timeout: null,
     });
-    return;
+  } else {
+    await hass.callApi<HassioResponse<void>>(
+      "POST",
+      `hassio/addons/${slug}/update`
+    );
   }
-
-  await hass.callApi<HassioResponse<void>>(
-    "POST",
-    `hassio/addons/${slug}/update`
-  );
 };
 
 export const restartHassioAddon = async (

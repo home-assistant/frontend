@@ -1,15 +1,8 @@
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiClose, mdiContentCopy } from "@mdi/js";
+import { mdiClose, mdiContentCopy, mdiPackageVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-dialog";
@@ -21,7 +14,10 @@ import {
   integrationIssuesUrl,
   IntegrationManifest,
 } from "../../../data/integration";
-import { getLoggedErrorIntegration } from "../../../data/system_log";
+import {
+  getLoggedErrorIntegration,
+  isCustomIntegrationError,
+} from "../../../data/system_log";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { showToast } from "../../../util/toast";
@@ -31,9 +27,9 @@ import { formatSystemLogTime } from "./util";
 class DialogSystemLogDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: SystemLogDetailDialogParams;
+  @state() private _params?: SystemLogDetailDialogParams;
 
-  @internalProperty() private _manifest?: IntegrationManifest;
+  @state() private _manifest?: IntegrationManifest;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
@@ -65,6 +61,12 @@ class DialogSystemLogDetail extends LitElement {
 
     const integration = getLoggedErrorIntegration(item);
 
+    const showDocumentation =
+      this._manifest &&
+      (this._manifest.is_built_in ||
+        // Custom components with our offical docs should not link to our docs
+        !this._manifest.documentation.includes("www.home-assistant.io"));
+
     return html`
       <ha-dialog open @closed=${this.closeDialog} hideActions heading=${true}>
         <ha-header-bar slot="heading">
@@ -75,13 +77,25 @@ class DialogSystemLogDetail extends LitElement {
             ${this.hass.localize(
               "ui.panel.config.logs.details",
               "level",
-              item.level
+              html`<span class="${item.level.toLowerCase()}"
+                >${this.hass.localize(
+                  "ui.panel.config.logs.level." + item.level.toLowerCase()
+                )}</span
+              >`
             )}
           </span>
           <mwc-icon-button id="copy" @click=${this._copyLog} slot="actionItems">
             <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
           </mwc-icon-button>
         </ha-header-bar>
+        ${this.isCustomIntegration
+          ? html`<div class="custom">
+              <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.logs.error_from_custom_integration"
+              )}
+            </div>`
+          : ""}
         <div class="contents">
           <p>
             Logger: ${item.name}<br />
@@ -92,7 +106,7 @@ class DialogSystemLogDetail extends LitElement {
                   Integration: ${domainToName(this.hass.localize, integration)}
                   ${!this._manifest ||
                   // Can happen with custom integrations
-                  !this._manifest.documentation
+                  !showDocumentation
                     ? ""
                     : html`
                         (<a
@@ -120,15 +134,12 @@ class DialogSystemLogDetail extends LitElement {
             ${item.count > 0
               ? html`
                   First occurred:
-                  ${formatSystemLogTime(
-                    item.first_occurred,
-                    this.hass!.language
-                  )}
+                  ${formatSystemLogTime(item.first_occurred, this.hass!.locale)}
                   (${item.count} occurrences) <br />
                 `
               : ""}
             Last logged:
-            ${formatSystemLogTime(item.timestamp, this.hass!.language)}
+            ${formatSystemLogTime(item.timestamp, this.hass!.locale)}
           </p>
           ${item.message.length > 1
             ? html`
@@ -141,6 +152,12 @@ class DialogSystemLogDetail extends LitElement {
         </div>
       </ha-dialog>
     `;
+  }
+
+  private get isCustomIntegration(): boolean {
+    return this._manifest
+      ? !this._manifest.is_built_in
+      : isCustomIntegrationError(this._params!.item);
   }
 
   private async _fetchManifest(integration: string) {
@@ -156,16 +173,31 @@ class DialogSystemLogDetail extends LitElement {
       ".contents"
     ) as HTMLElement;
 
-    await copyToClipboard(copyElement.innerText);
+    let text = copyElement.innerText;
+
+    if (this.isCustomIntegration) {
+      text =
+        this.hass.localize(
+          "ui.panel.config.logs.error_from_custom_integration"
+        ) +
+        "\n\n" +
+        text;
+    }
+
+    await copyToClipboard(text);
     showToast(this, {
       message: this.hass.localize("ui.common.copied_clipboard"),
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
+        ha-dialog {
+          --dialog-content-padding: 0px;
+        }
+
         a {
           color: var(--primary-color);
         }
@@ -175,6 +207,19 @@ class DialogSystemLogDetail extends LitElement {
         pre {
           margin-bottom: 0;
           font-family: var(--code-font-family, monospace);
+        }
+        .custom {
+          padding: 8px 16px;
+          background-color: var(--warning-color);
+        }
+        .contents {
+          padding: 16px;
+        }
+        .error {
+          color: var(--error-color);
+        }
+        .warning {
+          color: var(--warning-color);
         }
 
         ha-header-bar {

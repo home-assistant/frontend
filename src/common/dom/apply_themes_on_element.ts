@@ -70,13 +70,18 @@ export const applyThemesOnElement = (
       themeRules["text-accent-color"] =
         rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
     }
+
+    // Nothing was changed
+    if (element._themes?.cacheKey === cacheKey) {
+      return;
+    }
   }
 
   if (selectedTheme && themes.themes[selectedTheme]) {
     themeRules = themes.themes[selectedTheme];
   }
 
-  if (!element._themes && !Object.keys(themeRules).length) {
+  if (!element._themes?.keys && !Object.keys(themeRules).length) {
     // No styles to reset, and no styles to set
     return;
   }
@@ -87,8 +92,8 @@ export const applyThemesOnElement = (
       : undefined;
 
   // Add previous set keys to reset them, and new theme
-  const styles = { ...element._themes, ...newTheme?.styles };
-  element._themes = newTheme?.keys;
+  const styles = { ...element._themes?.keys, ...newTheme?.styles };
+  element._themes = { cacheKey, keys: newTheme?.keys };
 
   // Set and/or reset styles
   if (element.updateStyles) {

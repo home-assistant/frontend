@@ -1,13 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import secondsToDuration from "../../../common/datetime/seconds_to_duration";
 import { timerTimeRemaining } from "../../../common/entity/timer_time_remaining";
 import { HomeAssistant } from "../../../types";
@@ -20,9 +13,9 @@ import { EntityConfig } from "./types";
 class HuiTimerEntityRow extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
-  @internalProperty() private _timeRemaining?: number;
+  @state() private _timeRemaining?: number;
 
   private _interval?: number;
 
@@ -41,7 +34,7 @@ class HuiTimerEntityRow extends LitElement {
   public connectedCallback(): void {
     super.connectedCallback();
     if (this._config && this._config.entity) {
-      const stateObj = this.hass!.states[this._config!.entity];
+      const stateObj = this.hass?.states[this._config!.entity];
       if (stateObj) {
         this._startInterval(stateObj);
       }

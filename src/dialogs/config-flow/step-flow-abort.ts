@@ -1,12 +1,6 @@
 import "@material/mwc-button";
-import {
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { DataEntryFlowStepAbort } from "../../data/data_entry_flow";
 import { HomeAssistant } from "../../types";
@@ -47,7 +41,7 @@ class StepFlowAbort extends LitElement {
     fireEvent(this, "flow-update", { step: undefined });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configFlowContentStyles;
   }
 }

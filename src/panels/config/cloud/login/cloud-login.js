@@ -85,14 +85,16 @@ class CloudLogin extends LocalizeMixin(
           align-self: flex-end;
         }
       </style>
-      <hass-subpage hass="[[hass]]" header="Home Assistant Cloud">
+      <hass-subpage
+        hass="[[hass]]"
+        narrow="[[narrow]]"
+        header="Home Assistant Cloud"
+      >
         <div class="content">
           <ha-config-section is-wide="[[isWide]]">
             <span slot="header">Home Assistant Cloud</span>
             <div slot="introduction">
-              <p>
-                [[localize('ui.panel.config.cloud.login.introduction')]]
-              </p>
+              <p>[[localize('ui.panel.config.cloud.login.introduction')]]</p>
               <p>
                 [[localize('ui.panel.config.cloud.login.introduction2')]]
                 <a
@@ -103,9 +105,7 @@ class CloudLogin extends LocalizeMixin(
                   Nabu&nbsp;Casa,&nbsp;Inc</a
                 >[[localize('ui.panel.config.cloud.login.introduction2a')]]
               </p>
-              <p>
-                [[localize('ui.panel.config.cloud.login.introduction3')]]
-              </p>
+              <p>[[localize('ui.panel.config.cloud.login.introduction3')]]</p>
               <p>
                 <a
                   href="https://www.nabucasa.com"
@@ -186,6 +186,7 @@ class CloudLogin extends LocalizeMixin(
     return {
       hass: Object,
       isWide: Boolean,
+      narrow: Boolean,
       email: {
         type: String,
         notify: true,

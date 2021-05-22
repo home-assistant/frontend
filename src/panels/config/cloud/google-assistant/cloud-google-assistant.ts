@@ -6,17 +6,9 @@ import {
   mdiCloseBox,
   mdiCloseBoxMultiple,
 } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -64,7 +56,7 @@ class CloudGoogleAssistant extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private _entities?: GoogleEntity[];
+  @state() private _entities?: GoogleEntity[];
 
   @property()
   private _entityConfigs: CloudPreferences["google_entity_configs"] = {};
@@ -239,7 +231,8 @@ class CloudGoogleAssistant extends LitElement {
     return html`
       <hass-subpage
         .hass=${this.hass}
-        .header=${this.hass!.localize("ui.panel.config.cloud.google.title")}>
+        .header=${this.hass!.localize("ui.panel.config.cloud.google.title")}
+        .narrow=${this.narrow}>
         ${
           emptyFilter
             ? html`
@@ -371,7 +364,9 @@ class CloudGoogleAssistant extends LitElement {
     await this._updateConfig(entityId, {
       should_expose: newExposed,
     });
-    this._ensureEntitySync();
+    if (this.cloudStatus.google_registered) {
+      this._ensureEntitySync();
+    }
   }
 
   private async _disable2FAChanged(ev: Event) {
@@ -483,7 +478,7 @@ class CloudGoogleAssistant extends LitElement {
     );
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

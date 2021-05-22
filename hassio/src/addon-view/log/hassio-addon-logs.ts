@@ -1,20 +1,13 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-card";
 import {
   fetchHassioAddonLogs,
   HassioAddonDetails,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import "../../components/hassio-ansi-to-html";
@@ -24,11 +17,13 @@ import { hassioStyle } from "../../resources/hassio-style";
 class HassioAddonLogs extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _content?: string;
+  @state() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -48,13 +43,15 @@ class HassioAddonLogs extends LitElement {
             : ""}
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this._refresh}>Refresh</mwc-button>
+          <mwc-button @click=${this._refresh}>
+            ${this.supervisor.localize("common.refresh")}
+          </mwc-button>
         </div>
       </ha-card>
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,
@@ -76,7 +73,11 @@ class HassioAddonLogs extends LitElement {
     try {
       this._content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
     } catch (err) {
-      this._error = `Failed to get addon logs, ${extractApiErrorMessage(err)}`;
+      this._error = this.supervisor.localize(
+        "addon.logs.get_logs",
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
   }
 

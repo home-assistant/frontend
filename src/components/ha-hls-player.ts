@@ -1,21 +1,17 @@
+import type HlsType from "hls.js";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
-
-type HLSModule = typeof import("hls.js");
 
 @customElement("ha-hls-player")
 class HaHLSPlayer extends LitElement {
@@ -41,9 +37,9 @@ class HaHLSPlayer extends LitElement {
   // don't cache this, as we remove it on disconnects
   @query("video") private _videoEl!: HTMLVideoElement;
 
-  @internalProperty() private _attached = false;
+  @state() private _attached = false;
 
-  private _hlsPolyfillInstance?: Hls;
+  private _hlsPolyfillInstance?: HlsType;
 
   private _useExoPlayer = false;
 
@@ -107,8 +103,8 @@ class HaHLSPlayer extends LitElement {
     const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
-    const hls = ((await import("hls.js")) as any).default as HLSModule;
-    let hlsSupported = hls.isSupported();
+    const Hls = (await import("hls.js")).default;
+    let hlsSupported = Hls.isSupported();
 
     if (!hlsSupported) {
       hlsSupported =
@@ -144,8 +140,8 @@ class HaHLSPlayer extends LitElement {
     // If codec is HEVC and ExoPlayer is supported, use ExoPlayer.
     if (this._useExoPlayer && match !== null && match[1] !== undefined) {
       this._renderHLSExoPlayer(playlist_url);
-    } else if (hls.isSupported()) {
-      this._renderHLSPolyfill(videoEl, hls, playlist_url);
+    } else if (Hls.isSupported()) {
+      this._renderHLSPolyfill(videoEl, Hls, playlist_url);
     } else {
       this._renderHLSNative(videoEl, playlist_url);
     }
@@ -182,7 +178,7 @@ class HaHLSPlayer extends LitElement {
 
   private async _renderHLSPolyfill(
     videoEl: HTMLVideoElement,
-    Hls: HLSModule,
+    Hls: typeof HlsType,
     url: string
   ) {
     const hls = new Hls({
@@ -221,7 +217,7 @@ class HaHLSPlayer extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host,
       video {

@@ -24,22 +24,30 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return html`
       <style include="ha-style iron-flex iron-positioning"></style>
       <style>
+        .content {
+          padding: 16px;
+          max-width: 1200px;
+          margin: auto;
+        }
+
         :host {
           -ms-user-select: initial;
           -webkit-user-select: initial;
           -moz-user-select: initial;
           @apply --paper-font-body1;
-          padding: 16px;
           display: block;
         }
 
-        .ha-form {
-          margin-right: 16px;
+        .inputs {
           max-width: 400px;
         }
 
         mwc-button {
           margin-top: 8px;
+        }
+
+        .code-editor {
+          margin-right: 16px;
         }
 
         .header {
@@ -48,8 +56,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         event-subscribe-card {
           display: block;
-          max-width: 800px;
-          margin: 16px auto;
+          margin: 16px 16px 0 0;
         }
 
         a {
@@ -70,7 +77,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
               )]]
             </a>
           </p>
-          <div class="ha-form">
+          <div class="inputs">
             <paper-input
               label="[[localize(
                 'ui.panel.developer-tools.tabs.events.type'
@@ -79,20 +86,21 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
               required
               value="{{eventType}}"
             ></paper-input>
-            <p>
-              [[localize( 'ui.panel.developer-tools.tabs.events.data' )]]
-            </p>
+            <p>[[localize( 'ui.panel.developer-tools.tabs.events.data' )]]</p>
+          </div>
+          <div class="code-editor">
             <ha-code-editor
               mode="yaml"
               value="[[eventData]]"
               error="[[!validJSON]]"
               on-value-changed="_yamlChanged"
             ></ha-code-editor>
-            <mwc-button on-click="fireEvent" raised disabled="[[!validJSON]]"
-              >[[localize( 'ui.panel.developer-tools.tabs.events.fire_event'
-              )]]</mwc-button
-            >
           </div>
+          <mwc-button on-click="fireEvent" raised disabled="[[!validJSON]]"
+            >[[localize( 'ui.panel.developer-tools.tabs.events.fire_event'
+            )]]</mwc-button
+          >
+          <event-subscribe-card hass="[[hass]]"></event-subscribe-card>
         </div>
 
         <div>
@@ -106,7 +114,6 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
           ></events-list>
         </div>
       </div>
-      <event-subscribe-card hass="[[hass]]"></event-subscribe-card>
     `;
   }
 
@@ -185,7 +192,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   computeFormClasses(narrow) {
-    return narrow ? "" : "layout horizontal";
+    return narrow ? "content" : "content layout horizontal";
   }
 }
 

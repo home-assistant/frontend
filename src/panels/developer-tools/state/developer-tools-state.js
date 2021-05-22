@@ -1,5 +1,8 @@
 import "@material/mwc-button";
-import { mdiInformationOutline } from "@mdi/js";
+import {
+  mdiClipboardTextMultipleOutline,
+  mdiInformationOutline,
+} from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -8,6 +11,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { safeDump, safeLoad } from "js-yaml";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
 import "../../../components/ha-svg-icon";
@@ -165,7 +169,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <th>[[localize('ui.panel.developer-tools.tabs.states.state')]]</th>
             <th hidden$="[[narrow]]">
               [[localize('ui.panel.developer-tools.tabs.states.attributes')]]
-              <paper-checkbox checked="{{_showAttributes}}"></paper-checkbox>
+              <paper-checkbox
+                checked="{{_showAttributes}}"
+                on-change="saveAttributeCheckboxState"
+              ></paper-checkbox>
             </th>
           </tr>
           <tr>
@@ -205,15 +212,19 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                   title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                   path="[[informationOutlineIcon()]]"
                 ></ha-svg-icon>
+                <ha-svg-icon
+                  on-click="copyEntity"
+                  alt="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                  title="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                  path="[[clipboardOutlineIcon()]]"
+                ></ha-svg-icon>
                 <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
                 <br /><br />
                 <span class="secondary">
                   [[entity.attributes.friendly_name]]
                 </span>
               </td>
-              <td>
-                [[entity.state]]
-              </td>
+              <td>[[entity.state]]</td>
               <template
                 is="dom-if"
                 if="[[computeShowAttributes(narrow, _showAttributes)]]"
@@ -279,7 +290,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
       _showAttributes: {
         type: Boolean,
-        value: true,
+        value: JSON.parse(
+          localStorage.getItem("devToolsShowAttributes") || true
+        ),
       },
 
       _entities: {
@@ -298,6 +311,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         computed: "_computeRTL(hass)",
       },
     };
+  }
+
+  copyEntity(ev) {
+    ev.preventDefault();
+    copyToClipboard(ev.model.entity.entity_id);
   }
 
   entitySelected(ev) {
@@ -349,6 +367,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return mdiInformationOutline;
   }
 
+  clipboardOutlineIcon() {
+    return mdiClipboardTextMultipleOutline;
+  }
+
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
     const entityFilterRegExp = RegExp(
       _entityFilter.toLowerCase().replace(/\*/g, ".*")
@@ -374,7 +396,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           return false;
         }
 
-        if (!value.state.includes(_stateFilter.toLowerCase())) {
+        if (!value.state.toLowerCase().includes(_stateFilter.toLowerCase())) {
           return false;
         }
 
@@ -407,7 +429,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             const attributeValue = value.attributes[key];
 
             if (
-              attributeValue !== null &&
+              attributeValue !== undefined &&
               JSON.stringify(attributeValue).toLowerCase().includes(valueFilter)
             ) {
               return true;
@@ -457,14 +479,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   lastChangedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_changed),
-      this.hass.language
+      this.hass.locale
     );
   }
 
   lastUpdatedString(entity) {
     return formatDateTimeWithSeconds(
       new Date(entity.last_updated),
-      this.hass.language
+      this.hass.locale
     );
   }
 
@@ -476,6 +498,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       return `\n${safeDump(value)}`;
     }
     return Array.isArray(value) ? value.join(", ") : value;
+  }
+
+  saveAttributeCheckboxState(ev) {
+    try {
+      localStorage.setItem("devToolsShowAttributes", ev.target.checked);
+    } catch (e) {
+      // Catch for Safari private mode
+    }
   }
 
   _computeParsedStateAttributes(stateAttributes) {

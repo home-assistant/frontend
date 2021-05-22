@@ -1,15 +1,14 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-slider";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -24,7 +23,7 @@ import { EntityConfig, LovelaceRow } from "./types";
 class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   private _loaded?: boolean;
 
@@ -88,8 +87,12 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
                   id="input"
                 ></ha-slider>
                 <span class="state">
-                  ${Number(stateObj.state)}
-                  ${stateObj.attributes.unit_of_measurement}
+                  ${computeStateDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    stateObj.state
+                  )}
                 </span>
               </div>
             `
@@ -115,7 +118,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .flex {
         display: flex;

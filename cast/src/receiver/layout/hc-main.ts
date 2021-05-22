@@ -3,12 +3,8 @@ import {
   getAuth,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import {
-  customElement,
-  html,
-  internalProperty,
-  TemplateResult,
-} from "lit-element";
+import { html, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import { CAST_NS } from "../../../../src/cast/const";
 import {
   ConnectMessage,
@@ -36,13 +32,13 @@ let resourcesLoaded = false;
 
 @customElement("hc-main")
 export class HcMain extends HassElement {
-  @internalProperty() private _showDemo = false;
+  @state() private _showDemo = false;
 
-  @internalProperty() private _lovelaceConfig?: LovelaceConfig;
+  @state() private _lovelaceConfig?: LovelaceConfig;
 
-  @internalProperty() private _lovelacePath: string | number | null = null;
+  @state() private _lovelacePath: string | number | null = null;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   private _unsubLovelace?: UnsubscribeFunc;
 
@@ -221,11 +217,17 @@ export class HcMain extends HassElement {
   }
 
   private async _generateLovelaceConfig() {
-    const { generateLovelaceConfigFromHass } = await import(
-      "../../../../src/panels/lovelace/common/generate-lovelace-config"
+    const { generateLovelaceDashboardStrategy } = await import(
+      "../../../../src/panels/lovelace/strategies/get-strategy"
     );
     this._handleNewLovelaceConfig(
-      await generateLovelaceConfigFromHass(this.hass!)
+      await generateLovelaceDashboardStrategy(
+        {
+          hass: this.hass!,
+          narrow: false,
+        },
+        "original-states"
+      )
     );
   }
 

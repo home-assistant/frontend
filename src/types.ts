@@ -3,13 +3,13 @@ import {
   Connection,
   HassConfig,
   HassEntities,
-  HassServiceTarget,
   HassServices,
+  HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
 import { CoreFrontendUserData } from "./data/frontend";
-import { getHassTranslations } from "./data/translation";
+import { FrontendLocaleData, getHassTranslations } from "./data/translation";
 import { Themes } from "./data/ws-themes";
 import { ExternalMessaging } from "./external_app/external_messaging";
 
@@ -168,7 +168,7 @@ export interface Resources {
 export interface Context {
   id: string;
   parent_id?: string;
-  user_id?: string;
+  user_id?: string | null;
 }
 
 export interface ServiceCallResponse {
@@ -193,16 +193,16 @@ export interface HomeAssistant {
   selectedTheme?: ThemeSettings | null;
   panels: Panels;
   panelUrl: string;
-
   // i18n
-  // current effective language, in that order:
-  //   - backend saved user selected lanugage
-  //   - language in local appstorage
+  // current effective language in that order:
+  //   - backend saved user selected language
+  //   - language in local app storage
   //   - browser language
   //   - english (en)
   language: string;
-  // local stored language, keep that name for backward compability
+  // local stored language, keep that name for backward compatibility
   selectedLanguage: string | null;
+  locale: FrontendLocaleData;
   resources: Resources;
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;
@@ -253,3 +253,12 @@ export interface LocalizeMixin {
   hass?: HomeAssistant;
   localize: LocalizeFunc;
 }
+
+// https://www.jpwilliams.dev/how-to-unpack-the-return-type-of-a-promise-in-typescript
+export type AsyncReturnType<T extends (...args: any) => any> = T extends (
+  ...args: any
+) => Promise<infer U>
+  ? U
+  : T extends (...args: any) => infer U
+  ? U
+  : never;

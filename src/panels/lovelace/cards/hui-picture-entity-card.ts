@@ -1,16 +1,14 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -59,7 +57,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PictureEntityCardConfig;
+  @state() private _config?: PictureEntityCardConfig;
 
   public getCardSize(): number {
     return 3;
@@ -122,10 +120,10 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
 
     const name = this._config.name || computeStateName(stateObj);
-    const state = computeStateDisplay(
+    const entityState = computeStateDisplay(
       this.hass!.localize,
       stateObj,
-      this.hass.language
+      this.hass.locale
     );
 
     let footer: TemplateResult | string = "";
@@ -133,13 +131,13 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       footer = html`
         <div class="footer both">
           <div>${name}</div>
-          <div>${state}</div>
+          <div>${entityState}</div>
         </div>
       `;
     } else if (this._config.show_name) {
       footer = html`<div class="footer">${name}</div>`;
     } else if (this._config.show_state) {
-      footer = html`<div class="footer state">${state}</div>`;
+      footer = html`<div class="footer state">${entityState}</div>`;
     }
 
     return html`
@@ -174,7 +172,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         min-height: 75px;
@@ -199,11 +197,14 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.3);
+        background-color: var(
+          --ha-picture-card-background-color,
+          rgba(0, 0, 0, 0.3)
+        );
         padding: 16px;
         font-size: 16px;
         line-height: 16px;
-        color: white;
+        color: var(--ha-picture-card-text-color, white);
       }
 
       .both {

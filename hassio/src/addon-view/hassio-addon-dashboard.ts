@@ -4,16 +4,8 @@ import {
   mdiInformationVariant,
   mdiMathLog,
 } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
@@ -21,6 +13,7 @@ import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-circular-progress";
 import {
   fetchHassioAddonInfo,
+  fetchHassioAddonsInfo,
   HassioAddonDetails,
 } from "../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
@@ -51,7 +44,7 @@ class HassioAddonDashboard extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() _error?: string;
+  @state() _error?: string;
 
   private _computeTail = memoizeOne((route: Route) => {
     const dividerPos = route.path.indexOf("/", 1);
@@ -79,7 +72,7 @@ class HassioAddonDashboard extends LitElement {
 
     const addonTabs: PageNavigation[] = [
       {
-        name: "Info",
+        translationKey: "addon.panel.info",
         path: `/hassio/addon/${this.addon.slug}/info`,
         iconPath: mdiInformationVariant,
       },
@@ -87,7 +80,7 @@ class HassioAddonDashboard extends LitElement {
 
     if (this.addon.documentation) {
       addonTabs.push({
-        name: "Documentation",
+        translationKey: "addon.panel.documentation",
         path: `/hassio/addon/${this.addon.slug}/documentation`,
         iconPath: mdiFileDocument,
       });
@@ -96,12 +89,12 @@ class HassioAddonDashboard extends LitElement {
     if (this.addon.version) {
       addonTabs.push(
         {
-          name: "Configuration",
+          translationKey: "addon.panel.configuration",
           path: `/hassio/addon/${this.addon.slug}/config`,
           iconPath: mdiCogs,
         },
         {
-          name: "Log",
+          translationKey: "addon.panel.log",
           path: `/hassio/addon/${this.addon.slug}/logs`,
           iconPath: mdiMathLog,
         }
@@ -113,11 +106,12 @@ class HassioAddonDashboard extends LitElement {
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
+        .localizeFunc=${this.supervisor.localize}
         .narrow=${this.narrow}
         .backPath=${this.addon.version ? "/hassio/dashboard" : "/hassio/store"}
         .route=${route}
-        hassio
         .tabs=${addonTabs}
+        supervisor
       >
         <span slot="header">${this.addon.name}</span>
         <hassio-addon-router
@@ -131,7 +125,7 @@ class HassioAddonDashboard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,
@@ -172,15 +166,27 @@ class HassioAddonDashboard extends LitElement {
 
   protected async firstUpdated(): Promise<void> {
     if (this.route.path === "") {
-      const addon = extractSearchParam("addon");
-      if (addon) {
-        navigate(this, `/hassio/addon/${addon}`, true);
+      const requestedAddon = extractSearchParam("addon");
+      if (requestedAddon) {
+        const addonsInfo = await fetchHassioAddonsInfo(this.hass);
+        const validAddon = addonsInfo.addons.some(
+          (addon) => addon.slug === requestedAddon
+        );
+        if (!validAddon) {
+          this._error = this.supervisor.localize("my.error_addon_not_found");
+        } else {
+          navigate(this, `/hassio/addon/${requestedAddon}`, true);
+        }
       }
     }
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
 
   private async _apiCalled(ev): Promise<void> {
+    if (!ev.detail.success) {
+      return;
+    }
+
     const pathSplit: string[] = ev.detail.path?.split("/");
 
     if (!pathSplit || pathSplit.length === 0) {
@@ -190,7 +196,9 @@ class HassioAddonDashboard extends LitElement {
     const path: string = pathSplit[pathSplit.length - 1];
 
     if (["uninstall", "install", "update", "start", "stop"].includes(path)) {
-      fireEvent(this, "supervisor-store-refresh", { store: "supervisor" });
+      fireEvent(this, "supervisor-collection-refresh", {
+        collection: "supervisor",
+      });
     }
 
     if (path === "uninstall") {

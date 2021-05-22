@@ -1,4 +1,5 @@
 import { HASSDomEvent, ValidHassDomEvent } from "../common/dom/fire_event";
+import { mainWindow } from "../common/dom/get_main_window";
 import { ProvideHassElement } from "../mixins/provide-hass-lit-mixin";
 
 declare global {
@@ -45,10 +46,17 @@ export const showDialog = async (
   root: ShadowRoot | HTMLElement,
   dialogTag: string,
   dialogParams: unknown,
-  dialogImport?: () => Promise<unknown>
+  dialogImport?: () => Promise<unknown>,
+  addHistory = true
 ) => {
   if (!(dialogTag in LOADED)) {
     if (!dialogImport) {
+      if (__DEV__) {
+        // eslint-disable-next-line
+        console.warn(
+          "Asked to show dialog that's not loaded and can't be imported"
+        );
+      }
       return;
     }
     LOADED[dialogTag] = dialogImport().then(() => {
@@ -59,43 +67,48 @@ export const showDialog = async (
     });
   }
 
-  history.replaceState(
-    {
-      dialog: dialogTag,
-      open: false,
-      oldState:
-        history.state?.open && history.state?.dialog !== dialogTag
-          ? history.state
-          : null,
-    },
-    ""
-  );
-  try {
-    history.pushState(
-      { dialog: dialogTag, dialogParams: dialogParams, open: true },
+  if (addHistory) {
+    mainWindow.history.replaceState(
+      {
+        dialog: dialogTag,
+        open: false,
+        oldState:
+          mainWindow.history.state?.open &&
+          mainWindow.history.state?.dialog !== dialogTag
+            ? mainWindow.history.state
+            : null,
+      },
       ""
     );
-  } catch (err) {
-    // dialogParams could not be cloned, probably contains callback
-    history.pushState(
-      { dialog: dialogTag, dialogParams: null, open: true },
-      ""
-    );
+    try {
+      mainWindow.history.pushState(
+        { dialog: dialogTag, dialogParams: dialogParams, open: true },
+        ""
+      );
+    } catch (err) {
+      // dialogParams could not be cloned, probably contains callback
+      mainWindow.history.pushState(
+        { dialog: dialogTag, dialogParams: null, open: true },
+        ""
+      );
+    }
   }
-
   const dialogElement = await LOADED[dialogTag];
   dialogElement.showDialog(dialogParams);
 };
 
 export const replaceDialog = () => {
-  history.replaceState({ ...history.state, replaced: true }, "");
+  mainWindow.history.replaceState(
+    { ...mainWindow.history.state, replaced: true },
+    ""
+  );
 };
 
 export const closeDialog = async (dialogTag: string): Promise<boolean> => {
   if (!(dialogTag in LOADED)) {
     return true;
   }
-  const dialogElement = await LOADED[dialogTag];
+  const dialogElement: HassDialog = await LOADED[dialogTag];
   if (dialogElement.closeDialog) {
     return dialogElement.closeDialog() !== false;
   }

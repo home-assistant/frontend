@@ -1,22 +1,16 @@
-import {
-  css,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
+import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import "../../panels/logbook/ha-logbook";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import { closeDialog } from "../make-dialog-manager";
 
 @customElement("ha-more-info-logbook")
 export class MoreInfoLogbook extends LitElement {
@@ -24,9 +18,11 @@ export class MoreInfoLogbook extends LitElement {
 
   @property() public entityId!: string;
 
-  @internalProperty() private _logbookEntries?: LogbookEntry[];
+  @state() private _logbookEntries?: LogbookEntry[];
 
-  @internalProperty() private _persons = {};
+  @state() private _traceContexts?: TraceContexts;
+
+  @state() private _persons = {};
 
   private _lastLogbookDate?: Date;
 
@@ -63,6 +59,7 @@ export class MoreInfoLogbook extends LitElement {
                 relative-time
                 .hass=${this.hass}
                 .entries=${this._logbookEntries}
+                .traceContexts=${this._traceContexts}
                 .userIdToName=${this._persons}
               ></ha-logbook>
             `
@@ -75,6 +72,11 @@ export class MoreInfoLogbook extends LitElement {
 
   protected firstUpdated(): void {
     this._fetchPersonNames();
+    this.addEventListener("click", (ev) => {
+      if ((ev.composedPath()[0] as HTMLElement).tagName === "A") {
+        setTimeout(() => closeDialog("ha-more-info-dialog"), 500);
+      }
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -115,17 +117,21 @@ export class MoreInfoLogbook extends LitElement {
       this._lastLogbookDate ||
       new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
     const now = new Date();
-    const newEntries = await getLogbookData(
-      this.hass,
-      lastDate.toISOString(),
-      now.toISOString(),
-      this.entityId,
-      true
-    );
+    const [newEntries, traceContexts] = await Promise.all([
+      getLogbookData(
+        this.hass,
+        lastDate.toISOString(),
+        now.toISOString(),
+        this.entityId,
+        true
+      ),
+      loadTraceContexts(this.hass),
+    ]);
     this._logbookEntries = this._logbookEntries
       ? [...newEntries, ...this._logbookEntries]
       : newEntries;
     this._lastLogbookDate = now;
+    this._traceContexts = traceContexts;
   }
 
   private _fetchPersonNames() {

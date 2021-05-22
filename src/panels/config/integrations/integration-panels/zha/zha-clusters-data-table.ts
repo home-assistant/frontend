@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/data-table/ha-data-table";
@@ -35,12 +29,10 @@ export class ZHAClustersDataTable extends LitElement {
   private _clusters = memoizeOne((clusters: Cluster[]) => {
     let outputClusters: ClusterRowData[] = clusters;
 
-    outputClusters = outputClusters.map((cluster) => {
-      return {
-        ...cluster,
-        cluster_id: cluster.endpoint_id + "-" + cluster.id,
-      };
-    });
+    outputClusters = outputClusters.map((cluster) => ({
+      ...cluster,
+      cluster_id: cluster.endpoint_id + "-" + cluster.id,
+    }));
 
     return outputClusters;
   });
@@ -65,9 +57,7 @@ export class ZHAClustersDataTable extends LitElement {
             },
             id: {
               title: "ID",
-              template: (id: number) => {
-                return html` ${formatAsPaddedHex(id)} `;
-              },
+              template: (id: number) => html` ${formatAsPaddedHex(id)} `,
               sortable: true,
               width: "15%",
             },

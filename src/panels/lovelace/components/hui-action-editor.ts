@@ -4,17 +4,12 @@ import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-help-tooltip";
+import "../../../components/ha-service-control";
 import {
   ActionConfig,
   CallServiceActionConfig,
@@ -24,8 +19,6 @@ import {
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
-import "../../../components/ha-service-control";
-import memoizeOne from "memoize-one";
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
@@ -49,14 +42,17 @@ export class HuiActionEditor extends LitElement {
     return config.url_path || "";
   }
 
+  get _service(): string {
+    const config = this.config as CallServiceActionConfig;
+    return config.service || "";
+  }
+
   private _serviceAction = memoizeOne(
-    (config: CallServiceActionConfig): ServiceAction => {
-      return {
-        service: config.service || "",
-        data: config.service_data,
-        target: config.target,
-      };
-    }
+    (config: CallServiceActionConfig): ServiceAction => ({
+      service: this._service,
+      data: config.service_data,
+      target: config.target,
+    })
   );
 
   protected render(): TemplateResult {
@@ -81,15 +77,15 @@ export class HuiActionEditor extends LitElement {
                 "ui.panel.lovelace.editor.action-editor.actions.default_action"
               )}</paper-item
             >
-            ${this.actions.map((action) => {
-              return html`
+            ${this.actions.map(
+              (action) => html`
                 <paper-item .value=${action}
                   >${this.hass!.localize(
                     `ui.panel.lovelace.editor.action-editor.actions.${action}`
                   )}</paper-item
                 >
-              `;
-            })}
+              `
+            )}
           </paper-listbox>
         </paper-dropdown-menu>
         ${this.tooltipText
@@ -155,8 +151,25 @@ export class HuiActionEditor extends LitElement {
       }
       return;
     }
+
+    let data;
+    switch (value) {
+      case "url": {
+        data = { url_path: this._url_path };
+        break;
+      }
+      case "call-service": {
+        data = { service: this._service };
+        break;
+      }
+      case "navigate": {
+        data = { navigation_path: this._navigation_path };
+        break;
+      }
+    }
+
     fireEvent(this, "value-changed", {
-      value: { action: value },
+      value: { action: value, ...data },
     });
   }
 
@@ -189,10 +202,13 @@ export class HuiActionEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .dropdown {
         display: flex;
+      }
+      ha-service-control {
+        --service-control-padding: 0;
       }
     `;
   }

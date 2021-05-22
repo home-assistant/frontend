@@ -2,14 +2,20 @@
 // eslint-disable-next-line spaced-comment
 /// <reference path="../types/service-worker.d.ts" />
 /* eslint-env serviceworker */
-import { cacheNames } from "workbox-core";
+import { CacheableResponsePlugin } from "workbox-cacheable-response";
+import { cacheNames, RouteHandler } from "workbox-core";
+import { ExpirationPlugin } from "workbox-expiration";
 import { cleanupOutdatedCaches, precacheAndRoute } from "workbox-precaching";
-import { registerRoute } from "workbox-routing";
+import { registerRoute, setCatchHandler } from "workbox-routing";
 import {
   CacheFirst,
   NetworkOnly,
   StaleWhileRevalidate,
 } from "workbox-strategies";
+
+const noFallBackRegEx = new RegExp(
+  "/(api|static|auth|frontend_latest|frontend_es5|local)/.*"
+);
 
 // Clean up caches from older workboxes and old service workers.
 // Will help with cleaning up Workbox v4 stuff
@@ -18,34 +24,52 @@ cleanupOutdatedCaches();
 function initRouting() {
   precacheAndRoute(
     // @ts-ignore
-    WB_MANIFEST
+    WB_MANIFEST,
+    {
+      // Ignore all URL parameters.
+      ignoreURLParametersMatching: [/.*/],
+    }
   );
 
   // Cache static content (including translations) on first access.
   registerRoute(
-    new RegExp(`${location.host}/(static|frontend_latest|frontend_es5)/.+`),
-    new CacheFirst()
+    new RegExp("/(static|frontend_latest|frontend_es5)/.+"),
+    new CacheFirst({ matchOptions: { ignoreSearch: true } })
   );
 
   // Get api from network.
-  registerRoute(
-    new RegExp(`${location.host}/(api|auth)/.*`),
-    new NetworkOnly()
-  );
+  registerRoute(new RegExp("/(api|auth)/.*"), new NetworkOnly());
 
   // Get manifest, service worker, onboarding from network.
   registerRoute(
-    new RegExp(
-      `${location.host}/(service_worker.js|manifest.json|onboarding.html)`
-    ),
+    new RegExp("/(service_worker.js|manifest.json|onboarding.html)"),
     new NetworkOnly()
   );
 
+  // For the root "/" we ignore search
+  registerRoute(
+    new RegExp(/\/(\?.*)?$/),
+    new StaleWhileRevalidate({ matchOptions: { ignoreSearch: true } })
+  );
+
   // For rest of the files (on Home Assistant domain only) try both cache and network.
-  // This includes the root "/" or "/states" response and user files from "/local".
+  // This includes "/states" response and user files from "/local".
   // First access might bring stale data from cache, but a single refresh will bring updated
   // file.
-  registerRoute(new RegExp(`${location.host}/.*`), new StaleWhileRevalidate());
+  registerRoute(
+    new RegExp(/\/.*/),
+    new StaleWhileRevalidate({
+      cacheName: "file-cache",
+      plugins: [
+        new CacheableResponsePlugin({
+          statuses: [0, 200],
+        }),
+        new ExpirationPlugin({
+          maxAgeSeconds: 60 * 60 * 24,
+        }),
+      ],
+    })
+  );
 }
 
 function initPushNotifications() {
@@ -158,8 +182,15 @@ function initPushNotifications() {
 
 self.addEventListener("install", (event) => {
   // Delete all runtime caching, so that index.html has to be refetched.
+  // And add the new index.html back to the runtime cache
   const cacheName = cacheNames.runtime;
-  event.waitUntil(caches.delete(cacheName));
+  event.waitUntil(
+    caches.delete(cacheName).then(() =>
+      caches.open(cacheName).then((cache) => {
+        cache.add("/");
+      })
+    )
+  );
 });
 
 self.addEventListener("activate", () => {
@@ -177,5 +208,19 @@ self.addEventListener("message", (message) => {
   }
 });
 
+const catchHandler: RouteHandler = async (options) => {
+  const dest = (options.request as Request).destination;
+  const url = (options.request as Request).url;
+
+  if (dest !== "document" || noFallBackRegEx.test(url)) {
+    return Response.error();
+  }
+  // eslint-disable-next-line no-console
+  console.log("Using fallback for:", url);
+
+  return (await caches.match("/", { ignoreSearch: true })) || Response.error();
+};
+
 initRouting();
+setCatchHandler(catchHandler);
 initPushNotifications();

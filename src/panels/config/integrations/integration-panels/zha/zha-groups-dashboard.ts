@@ -2,14 +2,13 @@ import "@material/mwc-button";
 import { mdiPlus } from "@mdi/js";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
@@ -63,12 +62,10 @@ export class ZHAGroupsDashboard extends LitElement {
   private _formattedGroups = memoizeOne((groups: ZHAGroup[]) => {
     let outputGroups: GroupRowData[] = groups;
 
-    outputGroups = outputGroups.map((group) => {
-      return {
-        ...group,
-        id: String(group.group_id),
-      };
-    });
+    outputGroups = outputGroups.map((group) => ({
+      ...group,
+      id: String(group.group_id),
+    }));
 
     return outputGroups;
   });
@@ -97,18 +94,15 @@ export class ZHAGroupsDashboard extends LitElement {
               title: this.hass.localize("ui.panel.config.zha.groups.group_id"),
               type: "numeric",
               width: "15%",
-              template: (groupId: number) => {
-                return html` ${formatAsPaddedHex(groupId)} `;
-              },
+              template: (groupId: number) =>
+                html` ${formatAsPaddedHex(groupId)} `,
               sortable: true,
             },
             members: {
               title: this.hass.localize("ui.panel.config.zha.groups.members"),
               type: "numeric",
               width: "15%",
-              template: (members: ZHADevice[]) => {
-                return html` ${members.length} `;
-              },
+              template: (members: ZHADevice[]) => html` ${members.length} `,
               sortable: true,
             },
           }
@@ -149,7 +143,7 @@ export class ZHAGroupsDashboard extends LitElement {
     navigate(this, `/config/zha/group/${groupId}`);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

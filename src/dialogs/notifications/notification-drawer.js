@@ -20,7 +20,7 @@ export class HuiNotificationDrawer extends EventsMixin(
 ) {
   static get template() {
     return html`
-    <style include="paper-material-styles">
+    <style>
       app-toolbar {
         color: var(--primary-text-color);
         border-bottom: 1px solid var(--divider-color);

@@ -5,6 +5,7 @@ import {
 } from "../common/dom/apply_themes_on_element";
 import { computeLocalize } from "../common/translations/localize";
 import { DEFAULT_PANEL } from "../data/panel";
+import { NumberFormat, TimeFormat } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
 import { getLocalLanguage, getTranslation } from "../util/hass-translation";
@@ -29,6 +30,7 @@ export interface MockHomeAssistant extends HomeAssistant {
   updateStates(newStates: HassEntities);
   addEntities(entites: Entity | Entity[], replace?: boolean);
   updateTranslations(fragment: null | string, language?: string);
+  addTranslations(translations: Record<string, string>, language?: string);
   mockWS(
     type: string,
     callback: (msg: any, onChange?: (response: any) => void) => any
@@ -59,15 +61,25 @@ export const provideHass = (
   ) {
     const lang = language || getLocalLanguage();
     const translation = await getTranslation(fragment, lang);
+    await addTranslations(translation.data, lang);
+  }
+
+  async function addTranslations(
+    translations: Record<string, string>,
+    language?: string
+  ) {
+    const lang = language || getLocalLanguage();
     const resources = {
       [lang]: {
         ...(hass().resources && hass().resources[lang]),
-        ...translation.data,
+        ...translations,
       },
     };
     hass().updateHass({
       resources,
-      localize: await computeLocalize(elements[0], lang, resources),
+    });
+    hass().updateHass({
+      localize: await computeLocalize(elements[0], lang, hass().resources),
     });
   }
 
@@ -198,13 +210,20 @@ export const provideHass = (
     },
     panelUrl: "lovelace",
     defaultPanel: DEFAULT_PANEL,
-
     language: localLanguage,
     selectedLanguage: localLanguage,
+    locale: {
+      language: localLanguage,
+      number_format: NumberFormat.language,
+      time_format: TimeFormat.language,
+    },
     resources: null as any,
     localize: () => "",
 
     translationMetadata: translationMetadata as any,
+    async loadBackendTranslation() {
+      return hass().localize;
+    },
     dockedSidebar: "auto",
     vibrate: true,
     suspendWhenHidden: false,
@@ -246,6 +265,7 @@ export const provideHass = (
     },
     updateStates,
     updateTranslations,
+    addTranslations,
     addEntities,
     mockWS(type, callback) {
       wsCommands[type] = callback;

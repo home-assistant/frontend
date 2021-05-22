@@ -1,13 +1,7 @@
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
 
@@ -19,7 +13,7 @@ export class HaIconButtonArrowNext extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() private _icon = mdiArrowRight;
+  @state() private _icon = mdiArrowRight;
 
   public connectedCallback() {
     super.connectedCallback();

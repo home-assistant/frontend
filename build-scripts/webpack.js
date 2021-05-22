@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const webpack = require("webpack");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
-const ManifestPlugin = require("webpack-manifest-plugin");
+const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const paths = require("./paths.js");
-const bundle = require("./bundle");
+const bundle = require("./bundle.js");
 const log = require("fancy-log");
 
 class LogStartCompilePlugin {
@@ -68,7 +69,7 @@ const createWebpackConfig = ({
       ],
     },
     plugins: [
-      new ManifestPlugin({
+      new WebpackManifestPlugin({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
       }),
@@ -94,6 +95,7 @@ const createWebpackConfig = ({
               ? path.resolve(context, resource)
               : require.resolve(resource);
           } catch (err) {
+            // eslint-disable-next-line no-console
             console.error(
               "Error in Home Assistant ignore plugin",
               resource,
@@ -115,7 +117,7 @@ const createWebpackConfig = ({
       new webpack.NormalModuleReplacementPlugin(
         new RegExp(
           require.resolve(
-            "lit-virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
+            "@lit-labs/virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
           )
         ),
         path.resolve(paths.polymer_dir, "src/resources/EventTarget-ponyfill.js")
@@ -124,6 +126,11 @@ const createWebpackConfig = ({
     ].filter(Boolean),
     resolve: {
       extensions: [".ts", ".js", ".json"],
+      alias: {
+        "lit/decorators$": "lit/decorators.js",
+        "lit/directive$": "lit/directive.js",
+        "lit/polyfill-support$": "lit/polyfill-support.js",
+      },
     },
     output: {
       filename: ({ chunk }) => {
@@ -144,33 +151,24 @@ const createWebpackConfig = ({
   };
 };
 
-const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
-  return createWebpackConfig(
+const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
+  createWebpackConfig(
     bundle.config.app({ isProdBuild, latestBuild, isStatsBuild })
   );
-};
 
-const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
-  return createWebpackConfig(
+const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
+  createWebpackConfig(
     bundle.config.demo({ isProdBuild, latestBuild, isStatsBuild })
   );
-};
 
-const createCastConfig = ({ isProdBuild, latestBuild }) => {
-  return createWebpackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
-};
+const createCastConfig = ({ isProdBuild, latestBuild }) =>
+  createWebpackConfig(bundle.config.cast({ isProdBuild, latestBuild }));
 
-const createHassioConfig = ({ isProdBuild, latestBuild }) => {
-  return createWebpackConfig(
-    bundle.config.hassio({ isProdBuild, latestBuild })
-  );
-};
+const createHassioConfig = ({ isProdBuild, latestBuild }) =>
+  createWebpackConfig(bundle.config.hassio({ isProdBuild, latestBuild }));
 
-const createGalleryConfig = ({ isProdBuild, latestBuild }) => {
-  return createWebpackConfig(
-    bundle.config.gallery({ isProdBuild, latestBuild })
-  );
-};
+const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
+  createWebpackConfig(bundle.config.gallery({ isProdBuild, latestBuild }));
 
 module.exports = {
   createAppConfig,

@@ -8,16 +8,13 @@ import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
@@ -117,15 +114,17 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
 
   @property() public entityFilter?: (entity: EntityRegistryEntry) => boolean;
 
-  @internalProperty() private _areas?: AreaRegistryEntry[];
+  @property({ type: Boolean }) public disabled?: boolean;
 
-  @internalProperty() private _devices?: DeviceRegistryEntry[];
+  @state() private _areas?: AreaRegistryEntry[];
 
-  @internalProperty() private _entities?: EntityRegistryEntry[];
+  @state() private _devices?: DeviceRegistryEntry[];
 
-  @internalProperty() private _opened?: boolean;
+  @state() private _entities?: EntityRegistryEntry[];
 
-  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+  @state() private _opened?: boolean;
+
+  @query("vaadin-combo-box-light", true) public comboBox!: HTMLElement;
 
   private _init = false;
 
@@ -192,10 +191,13 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         }
         inputDevices = devices;
         inputEntities = entities.filter((entity) => entity.area_id);
-      } else if (deviceFilter) {
-        inputDevices = devices;
-      } else if (entityFilter) {
-        inputEntities = entities.filter((entity) => entity.area_id);
+      } else {
+        if (deviceFilter) {
+          inputDevices = devices;
+        }
+        if (entityFilter) {
+          inputEntities = entities.filter((entity) => entity.area_id);
+        }
       }
 
       if (includeDomains) {
@@ -314,7 +316,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
       (changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      (this._comboBox as any).items = this._getAreas(
+      (this.comboBox as any).items = this._getAreas(
         this._areas!,
         this._devices!,
         this._entities!,
@@ -339,6 +341,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         item-label-path="name"
         .value=${this._value}
         .renderer=${rowRenderer}
+        .disabled=${this.disabled}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._areaChanged}
       >
@@ -349,6 +352,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           .placeholder=${this.placeholder
             ? this._area(this.placeholder)?.name
             : undefined}
+          .disabled=${this.disabled}
           class="input"
           autocapitalize="none"
           autocomplete="off"
@@ -384,11 +388,9 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
     `;
   }
 
-  private _area = memoizeOne((areaId: string):
-    | AreaRegistryEntry
-    | undefined => {
-    return this._areas?.find((area) => area.area_id === areaId);
-  });
+  private _area = memoizeOne((areaId: string): AreaRegistryEntry | undefined =>
+    this._areas?.find((area) => area.area_id === areaId)
+  );
 
   private _clearValue(ev: Event) {
     ev.stopPropagation();
@@ -452,7 +454,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
     }, 0);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-input > mwc-icon-button {
         --mdc-icon-button-size: 24px;

@@ -4,6 +4,7 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
+import { FrontendLocaleData } from "./translation";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
 const LINE_ATTRIBUTES_TO_KEEP = [
@@ -87,14 +88,13 @@ export const fetchDate = (
   startTime: Date,
   endTime: Date,
   entityId
-): Promise<HassEntity[][]> => {
-  return hass.callApi(
+): Promise<HassEntity[][]> =>
+  hass.callApi(
     "GET",
     `history/period/${startTime.toISOString()}?end_time=${endTime.toISOString()}&minimal_response${
       entityId ? `&filter_entity_id=${entityId}` : ``
     }`
   );
-};
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
   obj1.state === obj2.state &&
@@ -109,7 +109,7 @@ const equalState = (obj1: LineChartState, obj2: LineChartState) =>
 
 const processTimelineEntity = (
   localize: LocalizeFunc,
-  language: string,
+  language: FrontendLocaleData,
   states: HassEntity[]
 ): TimelineEntity => {
   const data: TimelineState[] = [];
@@ -203,8 +203,7 @@ const processLineChartEntities = (
 export const computeHistory = (
   hass: HomeAssistant,
   stateHistory: HassEntity[][],
-  localize: LocalizeFunc,
-  language: string
+  localize: LocalizeFunc
 ): HistoryResult => {
   const lineChartDevices: { [unit: string]: HassEntity[][] } = {};
   const timelineDevices: TimelineEntity[] = [];
@@ -225,17 +224,20 @@ export const computeHistory = (
 
     if (stateWithUnit) {
       unit = stateWithUnit.attributes.unit_of_measurement;
-    } else if (computeStateDomain(stateInfo[0]) === "climate") {
-      unit = hass.config.unit_system.temperature;
-    } else if (computeStateDomain(stateInfo[0]) === "water_heater") {
-      unit = hass.config.unit_system.temperature;
-    } else if (computeStateDomain(stateInfo[0]) === "humidifier") {
-      unit = "%";
+    } else {
+      unit = {
+        climate: hass.config.unit_system.temperature,
+        counter: "#",
+        humidifier: "%",
+        input_number: "#",
+        number: "#",
+        water_heater: hass.config.unit_system.temperature,
+      }[computeStateDomain(stateInfo[0])];
     }
 
     if (!unit) {
       timelineDevices.push(
-        processTimelineEntity(localize, language, stateInfo)
+        processTimelineEntity(localize, hass.locale, stateInfo)
       );
     } else if (unit in lineChartDevices) {
       lineChartDevices[unit].push(stateInfo);

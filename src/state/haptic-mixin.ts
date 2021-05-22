@@ -1,4 +1,4 @@
-import { PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { HapticType } from "../data/haptics";
 import { Constructor, HomeAssistant } from "../types";
@@ -40,6 +40,7 @@ export const hapticMixin = <T extends Constructor<HassBaseEl>>(superClass: T) =>
       super.firstUpdated(changedProps);
       this.addEventListener("hass-vibrate", (ev) => {
         const vibrate = ev.detail.vibrate;
+        // @ts-expect-error not all browsers support vibrate
         if (navigator.vibrate && vibrate) {
           window.addEventListener("haptic", handleHaptic);
         } else {
@@ -52,6 +53,7 @@ export const hapticMixin = <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
     protected hassConnected() {
       super.hassConnected();
+      // @ts-expect-error not all browsers support vibrate
       if (navigator.vibrate && this.hass!.vibrate) {
         window.addEventListener("haptic", handleHaptic);
       }

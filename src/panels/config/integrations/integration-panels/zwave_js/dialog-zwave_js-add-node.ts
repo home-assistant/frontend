@@ -2,22 +2,14 @@ import "@material/mwc-button/mwc-button";
 import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import "../../../../../components/ha-switch";
 import "../../../../../components/ha-formfield";
-import {
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  internalProperty,
-  TemplateResult,
-  css,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult, css } from "lit";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { customElement, property, state } from "lit/decorators";
 
 export interface ZWaveJSAddNodeDevice {
   id: string;
@@ -28,13 +20,19 @@ export interface ZWaveJSAddNodeDevice {
 class DialogZWaveJSAddNode extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private entry_id?: string;
+  @state() private entry_id?: string;
 
-  @internalProperty() private _use_secure_inclusion = false;
+  @state() private _use_secure_inclusion = false;
 
-  @internalProperty() private _status = "";
+  @state() private _status = "";
 
-  @internalProperty() private _device?: ZWaveJSAddNodeDevice;
+  @state() private _nodeAdded = false;
+
+  @state() private _device?: ZWaveJSAddNodeDevice;
+
+  @state() private _stages?: string[];
+
+  private _stoppedTimeout?: any;
 
   private _addNodeTimeoutHandle?: number;
 
@@ -128,6 +126,40 @@ class DialogZWaveJSAddNode extends LitElement {
               </mwc-button>
             `
           : ``}
+        ${this._status === "interviewing"
+          ? html`
+              <div class="flex-container">
+                <ha-circular-progress active></ha-circular-progress>
+                <div class="status">
+                  <p>
+                    <b
+                      >${this.hass.localize(
+                        "ui.panel.config.zwave_js.add_node.interview_started"
+                      )}</b
+                    >
+                  </p>
+                  ${this._stages
+                    ? html` <div class="stages">
+                        ${this._stages.map(
+                          (stage) => html`
+                            <span class="stage">
+                              <ha-svg-icon
+                                .path=${mdiCheckCircle}
+                                class="success"
+                              ></ha-svg-icon>
+                              ${stage}
+                            </span>
+                          `
+                        )}
+                      </div>`
+                    : ""}
+                </div>
+              </div>
+              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+                ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
+              </mwc-button>
+            `
+          : ``}
         ${this._status === "failed"
           ? html`
               <div class="flex-container">
@@ -141,6 +173,21 @@ class DialogZWaveJSAddNode extends LitElement {
                       "ui.panel.config.zwave_js.add_node.inclusion_failed"
                     )}
                   </p>
+                  ${this._stages
+                    ? html` <div class="stages">
+                        ${this._stages.map(
+                          (stage) => html`
+                            <span class="stage">
+                              <ha-svg-icon
+                                .path=${mdiCheckCircle}
+                                class="success"
+                              ></ha-svg-icon>
+                              ${stage}
+                            </span>
+                          `
+                        )}
+                      </div>`
+                    : ""}
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
@@ -168,6 +215,21 @@ class DialogZWaveJSAddNode extends LitElement {
                       )}
                     </mwc-button>
                   </a>
+                  ${this._stages
+                    ? html` <div class="stages">
+                        ${this._stages.map(
+                          (stage) => html`
+                            <span class="stage">
+                              <ha-svg-icon
+                                .path=${mdiCheckCircle}
+                                class="success"
+                              ></ha-svg-icon>
+                              ${stage}
+                            </span>
+                          `
+                        )}
+                      </div>`
+                    : ""}
                 </div>
               </div>
               <mwc-button slot="primaryAction" @click=${this.closeDialog}>
@@ -211,15 +273,40 @@ class DialogZWaveJSAddNode extends LitElement {
       this._status = "failed";
     }
     if (message.event === "inclusion stopped") {
-      if (this._status !== "finished") {
-        this._status = "";
-      }
-      this._unsubscribe();
+      // we get the inclusion stopped event before the node added event
+      // during a successful inclusion. so we set a timer to wait 3 seconds
+      // to give the node added event time to come in before assuming it
+      // timed out or was cancelled and unsubscribing.
+      this._stoppedTimeout = setTimeout(() => {
+        if (!this._nodeAdded) {
+          this._status = "";
+          this._unsubscribe();
+          this._stoppedTimeout = undefined;
+        }
+      }, 3000);
     }
     if (message.event === "device registered") {
       this._device = message.device;
+    }
+    if (message.event === "node added") {
+      this._nodeAdded = true;
+      if (this._stoppedTimeout) {
+        clearTimeout(this._stoppedTimeout);
+      }
+      this._status = "interviewing";
+    }
+
+    if (message.event === "interview completed") {
       this._status = "finished";
       this._unsubscribe();
+    }
+
+    if (message.event === "interview stage completed") {
+      if (this._stages === undefined) {
+        this._stages = [message.stage];
+      } else {
+        this._stages = [...this._stages, message.stage];
+      }
     }
   }
 
@@ -246,13 +333,19 @@ class DialogZWaveJSAddNode extends LitElement {
     this._unsubscribe();
     this.entry_id = undefined;
     this._status = "";
+    this._nodeAdded = false;
     this._device = undefined;
+    this._stages = undefined;
+    if (this._stoppedTimeout) {
+      clearTimeout(this._stoppedTimeout);
+      this._stoppedTimeout = undefined;
+    }
     this._use_secure_inclusion = false;
 
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
@@ -261,11 +354,24 @@ class DialogZWaveJSAddNode extends LitElement {
         }
 
         .success {
-          color: green;
+          color: var(--success-color);
         }
 
         .failed {
-          color: red;
+          color: var(--warning-color);
+        }
+
+        .stages {
+          margin-top: 16px;
+        }
+
+        .flex-container .stage ha-svg-icon {
+          width: 16px;
+          height: 16px;
+          margin-right: 0px;
+        }
+        .stage {
+          padding: 8px;
         }
 
         blockquote {

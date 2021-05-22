@@ -2,20 +2,13 @@ import "@material/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-card";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import "../../../src/layouts/hass-loading-screen";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
@@ -58,11 +51,13 @@ const logProviders: LogProvider[] = [
 class HassioSupervisorLog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _error?: string;
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _selectedLogProvider = "supervisor";
+  @state() private _error?: string;
 
-  @internalProperty() private _content?: string;
+  @state() private _selectedLogProvider = "supervisor";
+
+  @state() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -76,7 +71,7 @@ class HassioSupervisorLog extends LitElement {
         ${this.hass.userData?.showAdvanced
           ? html`
               <paper-dropdown-menu
-                label="Log Provider"
+                .label=${this.supervisor.localize("system.log.log_provider")}
                 @iron-select=${this._setLogProvider}
               >
                 <paper-listbox
@@ -84,13 +79,13 @@ class HassioSupervisorLog extends LitElement {
                   attr-for-selected="provider"
                   .selected=${this._selectedLogProvider}
                 >
-                  ${logProviders.map((provider) => {
-                    return html`
-                      <paper-item provider=${provider.key}
-                        >${provider.name}</paper-item
-                      >
-                    `;
-                  })}
+                  ${logProviders.map(
+                    (provider) => html`
+                      <paper-item provider=${provider.key}>
+                        ${provider.name}
+                      </paper-item>
+                    `
+                  )}
                 </paper-listbox>
               </paper-dropdown-menu>
             `
@@ -98,14 +93,13 @@ class HassioSupervisorLog extends LitElement {
 
         <div class="card-content" id="content">
           ${this._content
-            ? html`<hassio-ansi-to-html
-                .content=${this._content}
-              ></hassio-ansi-to-html>`
+            ? html`<hassio-ansi-to-html .content=${this._content}>
+              </hassio-ansi-to-html>`
             : html`<hass-loading-screen no-toolbar></hass-loading-screen>`}
         </div>
         <div class="card-actions">
           <ha-progress-button @click=${this._refresh}>
-            Refresh
+            ${this.supervisor.localize("common.refresh")}
           </ha-progress-button>
         </div>
       </ha-card>
@@ -134,13 +128,17 @@ class HassioSupervisorLog extends LitElement {
         this._selectedLogProvider
       );
     } catch (err) {
-      this._error = `Failed to get supervisor logs, ${extractApiErrorMessage(
-        err
-      )}`;
+      this._error = this.supervisor.localize(
+        "system.log.get_logs",
+        "provider",
+        this._selectedLogProvider,
+        "error",
+        extractApiErrorMessage(err)
+      );
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

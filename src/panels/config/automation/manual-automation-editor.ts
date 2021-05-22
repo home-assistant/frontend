@@ -3,14 +3,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
 import { PaperListboxElement } from "@polymer/paper-listbox";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  LitElement,
-  property,
-} from "lit-element";
-import { html } from "lit-html";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-card";
@@ -18,7 +12,7 @@ import {
   Condition,
   ManualAutomationConfig,
   Trigger,
-  triggerAutomation,
+  triggerAutomationActions,
 } from "../../../data/automation";
 import { Action, MODES, MODES_MAX } from "../../../data/script";
 import { haStyle } from "../../../resources/styles";
@@ -139,12 +133,21 @@ export class HaManualAutomationEditor extends LitElement {
                       "ui.panel.config.automation.editor.enable_disable"
                     )}
                   </div>
-                  <mwc-button
-                    @click=${this._excuteAutomation}
-                    .stateObj=${this.stateObj}
-                  >
-                    ${this.hass.localize("ui.card.automation.trigger")}
-                  </mwc-button>
+                  <div>
+                    <a href="/config/automation/trace/${this.config.id}">
+                      <mwc-button>
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.editor.show_trace"
+                        )}
+                      </mwc-button>
+                    </a>
+                    <mwc-button
+                      @click=${this._runActions}
+                      .stateObj=${this.stateObj}
+                    >
+                      ${this.hass.localize("ui.card.automation.trigger")}
+                    </mwc-button>
+                  </div>
                 </div>
               `
             : ""}
@@ -240,8 +243,8 @@ export class HaManualAutomationEditor extends LitElement {
       </ha-config-section>`;
   }
 
-  private _excuteAutomation(ev: Event) {
-    triggerAutomation(this.hass, (ev.target as any).stateObj.entity_id);
+  private _runActions(ev: Event) {
+    triggerAutomationActions(this.hass, (ev.target as any).stateObj.entity_id);
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -270,12 +273,17 @@ export class HaManualAutomationEditor extends LitElement {
     if (mode === this.config!.mode) {
       return;
     }
+    const value = {
+      ...this.config!,
+      mode,
+    };
+
+    if (!MODES_MAX.includes(mode)) {
+      delete value.max;
+    }
+
     fireEvent(this, "value-changed", {
-      value: {
-        ...this.config!,
-        mode,
-        max: !MODES_MAX.includes(mode) ? undefined : this.config.max,
-      },
+      value,
     });
   }
 
@@ -303,7 +311,7 @@ export class HaManualAutomationEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

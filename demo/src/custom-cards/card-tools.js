@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { html, LitElement } from "lit-element";
+import { html, LitElement } from "lit";
 
 if (!window.cardTools) {
   const version = 0.2;

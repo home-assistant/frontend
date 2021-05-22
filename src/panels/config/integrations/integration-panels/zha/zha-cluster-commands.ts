@@ -4,14 +4,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
@@ -41,15 +40,15 @@ export class ZHAClusterCommands extends LitElement {
 
   @property() public selectedCluster?: Cluster;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
-  @internalProperty() private _commands: Command[] = [];
+  @state() private _commands: Command[] = [];
 
-  @internalProperty() private _selectedCommandIndex = -1;
+  @state() private _selectedCommandIndex = -1;
 
-  @internalProperty() private _manufacturerCodeOverride?: number;
+  @state() private _manufacturerCodeOverride?: number;
 
-  @internalProperty()
+  @state()
   private _issueClusterCommandServiceData?: IssueCommandServiceData;
 
   protected updated(changedProperties: PropertyValues): void {
@@ -171,9 +170,7 @@ export class ZHAClusterCommands extends LitElement {
         this.selectedCluster!.id,
         this.selectedCluster!.type
       );
-      this._commands.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
+      this._commands.sort((a, b) => a.name.localeCompare(b.name));
     }
   }
 
@@ -207,7 +204,7 @@ export class ZHAClusterCommands extends LitElement {
     this._issueClusterCommandServiceData = this._computeIssueClusterCommandServiceData();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

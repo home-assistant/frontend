@@ -1,5 +1,6 @@
 import { HassEntities } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
@@ -51,11 +52,12 @@ class HaConfigScript extends HassRouterPage {
     }
   }, 10);
 
-  private _getScripts = memoizeOne((states: HassEntities): ScriptEntity[] => {
-    return Object.values(states).filter(
-      (entity) => computeStateDomain(entity) === "script"
-    ) as ScriptEntity[];
-  });
+  private _getScripts = memoizeOne(
+    (states: HassEntities): ScriptEntity[] =>
+      Object.values(states).filter(
+        (entity) => computeStateDomain(entity) === "script"
+      ) as ScriptEntity[]
+  );
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);

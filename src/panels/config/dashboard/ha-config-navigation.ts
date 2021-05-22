@@ -1,14 +1,7 @@
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { canShowPage } from "../../../common/config/can_show_page";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
@@ -29,11 +22,7 @@ class HaConfigNavigation extends LitElement {
       ${this.pages.map((page) =>
         canShowPage(this.hass, page)
           ? html`
-              <a
-                href=${`/config/${page.component}`}
-                aria-role="option"
-                tabindex="-1"
-              >
+              <a href=${page.path} aria-role="option" tabindex="-1">
                 <paper-icon-item>
                   <ha-svg-icon
                     .path=${page.iconPath}
@@ -80,7 +69,7 @@ class HaConfigNavigation extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         text-decoration: none;

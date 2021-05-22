@@ -1,5 +1,6 @@
 import { HassEntities } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
@@ -51,11 +52,12 @@ class HaConfigScene extends HassRouterPage {
     }
   }, 10);
 
-  private _getScenes = memoizeOne((states: HassEntities): SceneEntity[] => {
-    return Object.values(states).filter(
-      (entity) => computeStateDomain(entity) === "scene"
-    ) as SceneEntity[];
-  });
+  private _getScenes = memoizeOne(
+    (states: HassEntities): SceneEntity[] =>
+      Object.values(states).filter(
+        (entity) => computeStateDomain(entity) === "scene"
+      ) as SceneEntity[]
+  );
 
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;

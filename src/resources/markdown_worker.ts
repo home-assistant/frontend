@@ -52,6 +52,6 @@ const api = {
   renderMarkdown,
 };
 
-export type api = typeof api;
+export type Api = typeof api;
 
 expose(api);

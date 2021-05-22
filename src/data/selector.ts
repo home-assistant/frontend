@@ -1,4 +1,5 @@
 export type Selector =
+  | AddonSelector
   | EntitySelector
   | DeviceSelector
   | AreaSelector
@@ -27,6 +28,13 @@ export interface DeviceSelector {
       domain?: EntitySelector["entity"]["domain"];
       device_class?: EntitySelector["entity"]["device_class"];
     };
+  };
+}
+
+export interface AddonSelector {
+  addon: {
+    name?: string;
+    slug?: string;
   };
 }
 
@@ -64,8 +72,8 @@ export interface NumberSelector {
   number: {
     min: number;
     max: number;
-    step: number;
-    mode: "box" | "slider";
+    step?: number;
+    mode?: "box" | "slider";
     unit_of_measurement?: string;
   };
 }

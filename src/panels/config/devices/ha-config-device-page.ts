@@ -1,24 +1,17 @@
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { compare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-next";
 import { AreaRegistryEntry } from "../../../data/area_registry";
-import { ConfigEntry } from "../../../data/config_entries";
+import { ConfigEntry, disableConfigEntry } from "../../../data/config_entries";
 import {
   computeDeviceName,
   DeviceRegistryEntry,
@@ -74,7 +67,7 @@ export class HaConfigDevicePage extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _related?: RelatedResult;
+  @state() private _related?: RelatedResult;
 
   private _device = memoizeOne(
     (
@@ -98,9 +91,10 @@ export class HaConfigDevicePage extends LitElement {
     ): EntityRegistryStateEntry[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
-        .map((entity) => {
-          return { ...entity, stateName: this._computeEntityName(entity) };
-        })
+        .map((entity) => ({
+          ...entity,
+          stateName: this._computeEntityName(entity),
+        }))
         .sort((ent1, ent2) =>
           compare(
             ent1.stateName || `zzz${ent1.entity_id}`,
@@ -160,6 +154,8 @@ export class HaConfigDevicePage extends LitElement {
     const batteryState = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
+    const batteryIsBinary =
+      batteryState && computeStateDomain(batteryState) === "binary_sensor";
     const batteryChargingState = batteryChargingEntity
       ? this.hass.states[batteryChargingEntity.entity_id]
       : undefined;
@@ -178,15 +174,17 @@ export class HaConfigDevicePage extends LitElement {
                 <span slot="header">
                   ${computeDeviceName(device, this.hass)}
                 </span>
+                <ha-icon-button
+                  slot="toolbar-icon"
+                  icon="hass:pencil"
+                  @click=${this._showSettings}
+                ></ha-icon-button>
               `
             : ""
         }
 
-        <ha-icon-button
-          slot="toolbar-icon"
-          icon="hass:cog"
-          @click=${this._showSettings}
-        ></ha-icon-button>
+
+
 
         <div class="container">
           <div class="header fullwidth">
@@ -194,19 +192,25 @@ export class HaConfigDevicePage extends LitElement {
               this.narrow
                 ? ""
                 : html`
-                    <div>
-                      <h1>${computeDeviceName(device, this.hass)}</h1>
-                      ${area
-                        ? html`
-                            <a href="/config/areas/area/${area.area_id}"
-                              >${this.hass.localize(
-                                "ui.panel.config.integrations.config_entry.area",
-                                "area",
-                                area.name || "Unnamed Area"
-                              )}</a
-                            >
-                          `
-                        : ""}
+                    <div class="header-name">
+                      <div>
+                        <h1>${computeDeviceName(device, this.hass)}</h1>
+                        ${area
+                          ? html`
+                              <a href="/config/areas/area/${area.area_id}"
+                                >${this.hass.localize(
+                                  "ui.panel.config.integrations.config_entry.area",
+                                  "area",
+                                  area.name || "Unnamed Area"
+                                )}</a
+                              >
+                            `
+                          : ""}
+                      </div>
+                      <ha-icon-button
+                        icon="hass:pencil"
+                        @click=${this._showSettings}
+                      ></ha-icon-button>
                     </div>
                   `
             }
@@ -215,7 +219,7 @@ export class HaConfigDevicePage extends LitElement {
                     batteryState
                       ? html`
                           <div class="battery">
-                            ${batteryState.state}%
+                            ${batteryIsBinary ? "" : batteryState.state + " %"}
                             <ha-battery-icon
                               .hass=${this.hass!}
                               .batteryStateObj=${batteryState}
@@ -261,11 +265,13 @@ export class HaConfigDevicePage extends LitElement {
                           )}
                         </p>
                       </div>
-                      <div class="card-actions" slot="actions">
-                        <mwc-button unelevated @click=${this._enableDevice}>
-                          ${this.hass.localize("ui.common.enable")}
-                        </mwc-button>
-                      </div>
+                      ${device.disabled_by === "user"
+                        ? html` <div class="card-actions" slot="actions">
+                            <mwc-button unelevated @click=${this._enableDevice}>
+                              ${this.hass.localize("ui.common.enable")}
+                            </mwc-button>
+                          </div>`
+                        : ""}
                     `
                   : html``
               }
@@ -309,28 +315,28 @@ export class HaConfigDevicePage extends LitElement {
                       </h1>
                       ${this._related?.automation?.length
                         ? this._related.automation.map((automation) => {
-                            const state = this.hass.states[automation];
-                            return state
+                            const entityState = this.hass.states[automation];
+                            return entityState
                               ? html`
                                   <div>
                                     <a
                                       href=${ifDefined(
-                                        state.attributes.id
-                                          ? `/config/automation/edit/${state.attributes.id}`
+                                        entityState.attributes.id
+                                          ? `/config/automation/edit/${entityState.attributes.id}`
                                           : undefined
                                       )}
                                     >
                                       <paper-item
-                                        .automation=${state}
-                                        .disabled=${!state.attributes.id}
+                                        .automation=${entityState}
+                                        .disabled=${!entityState.attributes.id}
                                       >
                                         <paper-item-body>
-                                          ${computeStateName(state)}
+                                          ${computeStateName(entityState)}
                                         </paper-item-body>
                                         <ha-icon-next></ha-icon-next>
                                       </paper-item>
                                     </a>
-                                    ${!state.attributes.id
+                                    ${!entityState.attributes.id
                                       ? html`
                                           <paper-tooltip animation-delay="0">
                                             ${this.hass.localize(
@@ -388,28 +394,29 @@ export class HaConfigDevicePage extends LitElement {
                         ${
                           this._related?.scene?.length
                             ? this._related.scene.map((scene) => {
-                                const state = this.hass.states[scene];
-                                return state
+                                const entityState = this.hass.states[scene];
+                                return entityState
                                   ? html`
                                       <div>
                                         <a
                                           href=${ifDefined(
-                                            state.attributes.id
-                                              ? `/config/scene/edit/${state.attributes.id}`
+                                            entityState.attributes.id
+                                              ? `/config/scene/edit/${entityState.attributes.id}`
                                               : undefined
                                           )}
                                         >
                                           <paper-item
-                                            .scene=${state}
-                                            .disabled=${!state.attributes.id}
+                                            .scene=${entityState}
+                                            .disabled=${!entityState.attributes
+                                              .id}
                                           >
                                             <paper-item-body>
-                                              ${computeStateName(state)}
+                                              ${computeStateName(entityState)}
                                             </paper-item-body>
                                             <ha-icon-next></ha-icon-next>
                                           </paper-item>
                                         </a>
-                                        ${!state.attributes.id
+                                        ${!entityState.attributes.id
                                           ? html`
                                               <paper-tooltip
                                                 animation-delay="0"
@@ -464,15 +471,15 @@ export class HaConfigDevicePage extends LitElement {
                         </h1>
                         ${this._related?.script?.length
                           ? this._related.script.map((script) => {
-                              const state = this.hass.states[script];
-                              return state
+                              const entityState = this.hass.states[script];
+                              return entityState
                                 ? html`
                                     <a
-                                      href=${`/config/script/edit/${state.entity_id}`}
+                                      href=${`/config/script/edit/${entityState.entity_id}`}
                                     >
                                       <paper-item .script=${script}>
                                         <paper-item-body>
-                                          ${computeStateName(state)}
+                                          ${computeStateName(entityState)}
                                         </paper-item-body>
                                         <ha-icon-next></ha-icon-next>
                                       </paper-item>
@@ -505,8 +512,8 @@ export class HaConfigDevicePage extends LitElement {
     if (entity.name) {
       return entity.name;
     }
-    const state = this.hass.states[entity.entity_id];
-    return state ? computeStateName(state) : null;
+    const entityState = this.hass.states[entity.entity_id];
+    return entityState ? computeStateName(entityState) : null;
   }
 
   private _onImageLoad(ev) {
@@ -609,11 +616,20 @@ export class HaConfigDevicePage extends LitElement {
       import(
         "./device-detail/integration-elements/zwave_js/ha-device-info-zwave_js"
       );
+      import(
+        "./device-detail/integration-elements/zwave_js/ha-device-actions-zwave_js"
+      );
       templates.push(html`
         <ha-device-info-zwave_js
           .hass=${this.hass}
           .device=${device}
         ></ha-device-info-zwave_js>
+        <div class="card-actions" slot="actions">
+          <ha-device-actions-zwave_js
+            .hass=${this.hass}
+            .device=${device}
+          ></ha-device-actions-zwave_js>
+        </div>
       `);
     }
     return templates;
@@ -626,6 +642,41 @@ export class HaConfigDevicePage extends LitElement {
       updateEntry: async (updates) => {
         const oldDeviceName = device.name_by_user || device.name;
         const newDeviceName = updates.name_by_user;
+        const disabled =
+          updates.disabled_by === "user" && device.disabled_by !== "user";
+
+        if (disabled) {
+          for (const cnfg_entry of device.config_entries) {
+            if (
+              !this.devices.some(
+                (dvc) =>
+                  dvc.id !== device.id &&
+                  dvc.config_entries.includes(cnfg_entry)
+              )
+            ) {
+              const config_entry = this.entries.find(
+                (entry) => entry.entry_id === cnfg_entry
+              );
+              if (
+                config_entry &&
+                !config_entry.disabled_by &&
+                // eslint-disable-next-line no-await-in-loop
+                (await showConfirmationDialog(this, {
+                  title: this.hass.localize(
+                    "ui.panel.config.devices.confirm_disable_config_entry",
+                    "entry_name",
+                    config_entry.title
+                  ),
+                  confirmText: this.hass.localize("ui.common.yes"),
+                  dismissText: this.hass.localize("ui.common.no"),
+                }))
+              ) {
+                disableConfigEntry(this.hass, cnfg_entry);
+                delete updates.disabled_by;
+              }
+            }
+          }
+        }
         await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
 
         if (
@@ -671,7 +722,7 @@ export class HaConfigDevicePage extends LitElement {
           }
 
           if (!newName && !newEntityId) {
-            return new Promise((resolve) => resolve());
+            return undefined;
           }
 
           return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
@@ -690,7 +741,7 @@ export class HaConfigDevicePage extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
@@ -738,6 +789,12 @@ export class HaConfigDevicePage extends LitElement {
         .header {
           display: flex;
           justify-content: space-between;
+        }
+
+        .header-name {
+          display: flex;
+          align-items: center;
+          padding-left: 8px;
         }
 
         .column,

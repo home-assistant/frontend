@@ -1,14 +1,13 @@
 import { Circle, Layer, Map, Marker, TileLayer } from "leaflet";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import {
   LeafletModuleType,
   replaceTileLayer,
@@ -326,7 +325,7 @@ class HaMap extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

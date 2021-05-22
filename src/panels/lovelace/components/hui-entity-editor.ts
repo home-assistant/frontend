@@ -1,16 +1,14 @@
 import { mdiDrag } from "@mdi/js";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { guard } from "lit-html/directives/guard";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { guard } from "lit/directives/guard";
 import type { SortableEvent } from "sortablejs";
 import Sortable, {
   AutoScroll,
@@ -32,9 +30,9 @@ export class HuiEntityEditor extends LitElement {
 
   @property() protected label?: string;
 
-  @internalProperty() private _attached = false;
+  @state() private _attached = false;
 
-  @internalProperty() private _renderEmptySortable = false;
+  @state() private _renderEmptySortable = false;
 
   private _sortable?: Sortable;
 
@@ -65,8 +63,8 @@ export class HuiEntityEditor extends LitElement {
         ${guard([this.entities, this._renderEmptySortable], () =>
           this._renderEmptySortable
             ? ""
-            : this.entities!.map((entityConf, index) => {
-                return html`
+            : this.entities!.map(
+                (entityConf, index) => html`
                   <div class="entity" data-entity-id=${entityConf.entity}>
                     <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
                     <ha-entity-picker
@@ -77,8 +75,8 @@ export class HuiEntityEditor extends LitElement {
                       allow-custom-entity
                     ></ha-entity-picker>
                   </div>
-                `;
-              })
+                `
+              )
         )}
       </div>
       <ha-entity-picker
@@ -181,7 +179,7 @@ export class HuiEntityEditor extends LitElement {
     fireEvent(this, "entities-changed", { entities: newConfigEntities });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       sortableStyles,
       css`

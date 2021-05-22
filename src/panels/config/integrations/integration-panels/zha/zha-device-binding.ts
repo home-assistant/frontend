@@ -4,15 +4,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-icon-button";
@@ -31,13 +29,13 @@ export class ZHADeviceBindingControl extends LitElement {
 
   @property() public selectedDevice?: ZHADevice;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
-  @internalProperty() private _bindTargetIndex = -1;
+  @state() private _bindTargetIndex = -1;
 
-  @internalProperty() private bindableDevices: ZHADevice[] = [];
+  @state() private bindableDevices: ZHADevice[] = [];
 
-  @internalProperty() private _deviceToBind?: ZHADevice;
+  @state() private _deviceToBind?: ZHADevice;
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedDevice")) {
@@ -94,11 +92,7 @@ export class ZHADeviceBindingControl extends LitElement {
               >Bind</mwc-button
             >
             ${this._showHelp
-              ? html`
-                  <div class="helpText">
-                    Bind devices.
-                  </div>
-                `
+              ? html` <div class="helpText">Bind devices.</div> `
               : ""}
             <mwc-button
               @click="${this._onUnbindDevicesClick}"
@@ -106,11 +100,7 @@ export class ZHADeviceBindingControl extends LitElement {
               >Unbind</mwc-button
             >
             ${this._showHelp
-              ? html`
-                  <div class="helpText">
-                    Unbind devices.
-                  </div>
-                `
+              ? html` <div class="helpText">Unbind devices.</div> `
               : ""}
           </div>
         </ha-card>
@@ -150,7 +140,7 @@ export class ZHADeviceBindingControl extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

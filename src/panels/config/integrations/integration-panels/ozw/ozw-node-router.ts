@@ -1,5 +1,5 @@
 import { mdiNetwork, mdiWrench } from "@mdi/js";
-import { customElement, property } from "lit-element";
+import { customElement, property } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import {
   HassRouterPage,
@@ -11,20 +11,18 @@ import { HomeAssistant } from "../../../../../types";
 export const ozwNodeTabs = (
   instance: number,
   node: number
-): PageNavigation[] => {
-  return [
-    {
-      translationKey: "ui.panel.config.ozw.navigation.node.dashboard",
-      path: `/config/ozw/network/${instance}/node/${node}/dashboard`,
-      iconPath: mdiNetwork,
-    },
-    {
-      translationKey: "ui.panel.config.ozw.navigation.node.config",
-      path: `/config/ozw/network/${instance}/node/${node}/config`,
-      iconPath: mdiWrench,
-    },
-  ];
-};
+): PageNavigation[] => [
+  {
+    translationKey: "ui.panel.config.ozw.navigation.node.dashboard",
+    path: `/config/ozw/network/${instance}/node/${node}/dashboard`,
+    iconPath: mdiNetwork,
+  },
+  {
+    translationKey: "ui.panel.config.ozw.navigation.node.config",
+    path: `/config/ozw/network/${instance}/node/${node}/config`,
+    iconPath: mdiWrench,
+  },
+];
 
 @customElement("ozw-node-router")
 class OZWNodeRouter extends HassRouterPage {

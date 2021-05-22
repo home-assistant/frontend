@@ -1,20 +1,16 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
 import { sanitizeUrl } from "@braintree/sanitize-url";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { navigate } from "../../common/navigate";
-import { HomeAssistant, Route } from "../../types";
 import {
   createSearchParam,
   extractSearchParamsObject,
 } from "../../common/url/search-params";
-import "../../layouts/hass-error-screen";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { domainToName } from "../../data/integration";
+import "../../layouts/hass-error-screen";
+import { HomeAssistant, Route } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 
 const REDIRECTS: Redirects = {
   developer_states: {
@@ -23,11 +19,20 @@ const REDIRECTS: Redirects = {
   developer_services: {
     redirect: "/developer-tools/service",
   },
+  developer_call_service: {
+    redirect: "/developer-tools/service",
+    params: {
+      service: "string",
+    },
+  },
   developer_template: {
     redirect: "/developer-tools/template",
   },
   developer_events: {
     redirect: "/developer-tools/event",
+  },
+  config: {
+    redirect: "/config",
   },
   cloud: {
     component: "cloud",
@@ -42,6 +47,18 @@ const REDIRECTS: Redirects = {
       domain: "string",
     },
   },
+  config_mqtt: {
+    component: "mqtt",
+    redirect: "/config/mqtt",
+  },
+  config_zha: {
+    component: "zha",
+    redirect: "/config/zha/dashboard",
+  },
+  config_zwave_js: {
+    component: "zwave_js",
+    redirect: "/config/zwave_js/dashboard",
+  },
   devices: {
     redirect: "/config/devices/dashboard",
   },
@@ -52,39 +69,49 @@ const REDIRECTS: Redirects = {
     redirect: "/config/areas/dashboard",
   },
   blueprints: {
+    component: "blueprint",
     redirect: "/config/blueprint/dashboard",
   },
   blueprint_import: {
+    component: "blueprint",
     redirect: "/config/blueprint/dashboard/import",
     params: {
       blueprint_url: "url",
     },
   },
   automations: {
+    component: "automation",
     redirect: "/config/automation/dashboard",
   },
   scenes: {
+    component: "scene",
     redirect: "/config/scene/dashboard",
   },
   scripts: {
+    component: "script",
     redirect: "/config/script/dashboard",
   },
   helpers: {
     redirect: "/config/helpers",
   },
   tags: {
+    component: "tag",
     redirect: "/config/tags",
   },
   lovelace_dashboards: {
+    component: "lovelace",
     redirect: "/config/lovelace/dashboards",
   },
   lovelace_resources: {
+    component: "lovelace",
     redirect: "/config/lovelace/resources",
   },
   people: {
+    component: "person",
     redirect: "/config/person",
   },
   zones: {
+    component: "zone",
     redirect: "/config/zone",
   },
   users: {
@@ -108,6 +135,14 @@ const REDIRECTS: Redirects = {
   profile: {
     redirect: "/profile/dashboard",
   },
+  logbook: {
+    component: "logbook",
+    redirect: "/logbook",
+  },
+  history: {
+    component: "history",
+    redirect: "/history",
+  },
 };
 
 export type ParamType = "url" | "string";
@@ -127,7 +162,7 @@ class HaPanelMy extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() public _error?: string;
+  @state() public _error?: string;
 
   connectedCallback() {
     super.connectedCallback();
@@ -201,12 +236,16 @@ class HaPanelMy extends LitElement {
             ) || "This redirect is not supported.";
           break;
         case "no_supervisor":
-          error =
-            this.hass.localize(
-              "ui.panel.my.component_not_loaded",
-              "integration",
-              "Home Assistant Supervisor"
-            ) || "This redirect requires Home Assistant Supervisor.";
+          error = this.hass.localize(
+            "ui.panel.my.no_supervisor",
+            "docs_link",
+            html`<a
+              target="_blank"
+              rel="noreferrer noopener"
+              href="${documentationUrl(this.hass, "/installation")}"
+              >${this.hass.localize("ui.panel.my.documentation")}</a
+            >`
+          );
           break;
         default:
           error = this.hass.localize("ui.panel.my.error") || "Unknown error";

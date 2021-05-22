@@ -1,10 +1,10 @@
-import { customElement, property } from "lit-element";
+import { customElement, property } from "lit/decorators";
+import { navigate } from "../../../../../common/navigate";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../../../types";
-import { navigate } from "../../../../../common/navigate";
 
 @customElement("zwave-config-router")
 class ZWaveConfigRouter extends HassRouterPage {

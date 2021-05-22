@@ -1,15 +1,14 @@
 import { mdiPlus } from "@mdi/js";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { nextRender } from "../../../common/util/render-status";
@@ -23,8 +22,6 @@ import type { HomeAssistant } from "../../../types";
 import type { HuiErrorCard } from "../cards/hui-error-card";
 import { computeCardSize } from "../common/compute-card-size";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
-
-let editCodeLoaded = false;
 
 // Find column with < 5 size, else smallest column
 const getColumnIndex = (columnSizes: number[], size: number) => {
@@ -53,13 +50,15 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   @property({ type: Number }) public index?: number;
 
+  @property({ type: Boolean }) public isStrategy = false;
+
   @property({ attribute: false }) public cards: Array<
     LovelaceCard | HuiErrorCard
   > = [];
 
   @property({ attribute: false }) public badges: LovelaceBadge[] = [];
 
-  @internalProperty() private _columns?: number;
+  @state() private _columns?: number;
 
   private _createColumnsIteration = 0;
 
@@ -70,16 +69,26 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     this.addEventListener("iron-resize", (ev: Event) => ev.stopPropagation());
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this._initMqls();
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._mqls?.forEach((mql) => {
+      mql.removeListener(this._updateColumns);
+    });
+    this._mqls = undefined;
+  }
+
   public setConfig(_config: LovelaceViewConfig): void {}
 
   protected render(): TemplateResult {
     return html`
-      <div
-        id="badges"
-        style=${this.badges.length > 0 ? "display: block" : "display: none"}
-      >
-        ${this.badges.map((badge) => html`${badge}`)}
-      </div>
+      ${this.badges.length > 0
+        ? html` <div class="badges">${this.badges}</div>`
+        : ""}
       <div id="columns"></div>
       ${this.lovelace?.editMode
         ? html`
@@ -100,31 +109,31 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     `;
   }
 
-  protected firstUpdated(): void {
+  private _initMqls() {
     this._mqls = [300, 600, 900, 1200].map((width) => {
       const mql = window.matchMedia(`(min-width: ${width}px)`);
-      mql.addListener(() => this._updateColumns());
+      mql.addListener(this._updateColumns.bind(this));
       return mql;
     });
-    this._updateColumns();
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
-
-    if (this.lovelace?.editMode && !editCodeLoaded) {
-      editCodeLoaded = true;
-      import("./default-view-editable");
+  private get mqls(): MediaQueryList[] {
+    if (!this._mqls) {
+      this._initMqls();
     }
+    return this._mqls!;
+  }
+
+  public willUpdate(changedProperties: PropertyValues) {
+    super.willUpdate(changedProperties);
 
     if (changedProperties.has("hass")) {
-      const oldHass = changedProperties.get("hass") as HomeAssistant;
+      const oldHass = changedProperties.get("hass") as
+        | HomeAssistant
+        | undefined;
 
-      if (oldHass && this.hass!.dockedSidebar !== oldHass.dockedSidebar) {
+      if (this.hass!.dockedSidebar !== oldHass?.dockedSidebar) {
         this._updateColumns();
-      }
-
-      if (changedProperties.size === 1) {
         return;
       }
     }
@@ -132,16 +141,24 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     if (changedProperties.has("narrow")) {
       this._updateColumns();
     }
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+
+    if (this.lovelace?.editMode) {
+      import("./default-view-editable");
+    }
 
     const oldLovelace = changedProperties.get("lovelace") as
       | Lovelace
       | undefined;
 
     if (
-      (changedProperties.has("lovelace") &&
-        (oldLovelace?.config !== this.lovelace?.config ||
-          oldLovelace?.editMode !== this.lovelace?.editMode)) ||
-      changedProperties.has("_columns")
+      changedProperties.has("lovelace") &&
+      oldLovelace &&
+      (oldLovelace.config !== this.lovelace?.config ||
+        oldLovelace.editMode !== this.lovelace?.editMode)
     ) {
       this._createColumns();
     }
@@ -151,6 +168,17 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     fireEvent(this, "ll-create-card");
   }
 
+  private _createRootElement(columns: HTMLDivElement[]) {
+    const root = this.shadowRoot!.getElementById("columns") as HTMLDivElement;
+
+    // Remove old columns
+    while (root.lastChild) {
+      root.removeChild(root.lastChild);
+    }
+
+    columns.forEach((column) => root.appendChild(column));
+  }
+
   private async _createColumns() {
     if (!this._columns) {
       return;
@@ -158,12 +186,6 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
     this._createColumnsIteration++;
     const iteration = this._createColumnsIteration;
-    const root = this.shadowRoot!.getElementById("columns")!;
-
-    // Remove old columns
-    while (root.lastChild) {
-      root.removeChild(root.lastChild);
-    }
 
     // Track the total height of cards in a columns
     const columnSizes: number[] = [];
@@ -172,9 +194,16 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     for (let i = 0; i < Math.min(this._columns, this.cards.length); i++) {
       const columnEl = document.createElement("div");
       columnEl.classList.add("column");
-      root.appendChild(columnEl);
       columnSizes.push(0);
       columnElements.push(columnEl);
+    }
+
+    if (!this.hasUpdated) {
+      this.updateComplete.then(() => {
+        this._createRootElement(columnElements);
+      });
+    } else {
+      this._createRootElement(columnElements);
     }
 
     let tillNextRender: Promise<unknown> | undefined;
@@ -183,7 +212,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
     // Calculate the size of every card and determine in what column it should go
     for (const [index, el] of this.cards.entries()) {
       if (tillNextRender === undefined) {
-        // eslint-disable-next-line no-loop-func
+        // eslint-disable-next-line @typescript-eslint/no-loop-func
         tillNextRender = nextRender().then(() => {
           tillNextRender = undefined;
           start = undefined;
@@ -228,7 +257,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
   private _addCardToColumn(columnEl, index, editMode) {
     const card: LovelaceCard = this.cards[index];
-    if (!editMode) {
+    if (!editMode || this.isStrategy) {
       card.editMode = false;
       columnEl.appendChild(card);
     } else {
@@ -243,22 +272,24 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   }
 
   private _updateColumns() {
-    if (!this._mqls) {
-      return;
-    }
-    const matchColumns = this._mqls!.reduce(
+    const matchColumns = this.mqls.reduce(
       (cols, mql) => cols + Number(mql.matches),
       0
     );
     // Do -1 column if the menu is docked and open
-    this._columns = Math.max(
+    const newColumns = Math.max(
       1,
       matchColumns -
         Number(!this.narrow && this.hass!.dockedSidebar === "docked")
     );
+    if (newColumns === this._columns) {
+      return;
+    }
+    this._columns = newColumns;
+    this._createColumns();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;
@@ -267,7 +298,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         box-sizing: border-box;
       }
 
-      #badges {
+      .badges {
         margin: 8px 16px;
         font-size: 85%;
         text-align: center;

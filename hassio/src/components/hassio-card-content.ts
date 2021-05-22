@@ -1,13 +1,6 @@
 import { mdiHelpCircle } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../src/components/ha-relative-time";
 import "../../../src/components/ha-svg-icon";
 import { HomeAssistant } from "../../../src/types";
@@ -44,7 +37,7 @@ class HassioCardContent extends LitElement {
       ${this.iconImage
         ? html`
             <div class="icon_image ${this.iconClass}">
-              <img src="${this.iconImage}" title="${this.iconTitle}" />
+              <img src="${this.iconImage}" .title=${this.iconTitle} />
               <div></div>
             </div>
           `
@@ -56,13 +49,13 @@ class HassioCardContent extends LitElement {
             ></ha-svg-icon>
           `}
       <div>
-        <div class="title">
-          ${this.title}
-        </div>
+        <div class="title">${this.title}</div>
         <div class="addition">
           ${this.description}
-          ${/* treat as available when undefined */
-          this.available === false ? " (Not available)" : ""}
+          ${
+            /* treat as available when undefined */
+            this.available === false ? " (Not available)" : ""
+          }
           ${this.datetime
             ? html`
                 <ha-relative-time
@@ -77,7 +70,7 @@ class HassioCardContent extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon {
         margin-right: 24px;

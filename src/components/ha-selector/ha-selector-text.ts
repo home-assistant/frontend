@@ -1,9 +1,10 @@
-import { customElement, html, LitElement, property } from "lit-element";
-import { fireEvent } from "../../common/dom/fire_event";
-import { HomeAssistant } from "../../types";
-import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-textarea";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../common/dom/fire_event";
 import { StringSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
 
 @customElement("ha-selector-text")
 export class HaTextSelector extends LitElement {
@@ -13,14 +14,20 @@ export class HaTextSelector extends LitElement {
 
   @property() public label?: string;
 
+  @property() public placeholder?: string;
+
   @property() public selector!: StringSelector;
+
+  @property({ type: Boolean }) public disabled = false;
 
   protected render() {
     if (this.selector.text?.multiline) {
       return html`<paper-textarea
         .label=${this.label}
-        .value="${this.value}"
-        @value-changed="${this._handleChange}"
+        .placeholder=${this.placeholder}
+        .value=${this.value}
+        .disabled=${this.disabled}
+        @value-changed=${this._handleChange}
         autocapitalize="none"
         autocomplete="off"
         spellcheck="false"
@@ -29,6 +36,8 @@ export class HaTextSelector extends LitElement {
     return html`<paper-input
       required
       .value=${this.value}
+      .placeholder=${this.placeholder}
+      .disabled=${this.disabled}
       @value-changed=${this._handleChange}
       .label=${this.label}
     ></paper-input>`;

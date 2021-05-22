@@ -1,13 +1,6 @@
 import "@material/mwc-icon-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "./ha-icon";
 
 @customElement("ha-icon-button")
@@ -18,9 +11,10 @@ export class HaIconButton extends LitElement {
 
   @property({ type: String }) label = "";
 
-  protected createRenderRoot() {
-    return this.attachShadow({ mode: "open", delegatesFocus: true });
-  }
+  static shadowRootOptions: ShadowRootInit = {
+    mode: "open",
+    delegatesFocus: true,
+  };
 
   protected render(): TemplateResult {
     return html`
@@ -30,7 +24,7 @@ export class HaIconButton extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: inline-block;

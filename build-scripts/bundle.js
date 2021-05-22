@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 const env = require("./env.js");
 const paths = require("./paths.js");
@@ -53,13 +54,13 @@ module.exports.babelOptions = ({ latestBuild }) => ({
   babelrc: false,
   presets: [
     !latestBuild && [
-      require("@babel/preset-env").default,
+      "@babel/preset-env",
       {
         useBuiltIns: "entry",
         corejs: "3.6",
       },
     ],
-    require("@babel/preset-typescript").default,
+    "@babel/preset-typescript",
   ].filter(Boolean),
   plugins: [
     // Part of ES2018. Converts {...a, b: 2} to Object.assign({}, a, {b: 2})
@@ -72,14 +73,9 @@ module.exports.babelOptions = ({ latestBuild }) => ({
     "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-proposal-nullish-coalescing-operator",
-    [
-      require("@babel/plugin-proposal-decorators").default,
-      { decoratorsBeforeExport: true },
-    ],
-    [
-      require("@babel/plugin-proposal-class-properties").default,
-      { loose: true },
-    ],
+    ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],
+    ["@babel/plugin-proposal-private-methods", { loose: true }],
+    ["@babel/plugin-proposal-class-properties", { loose: true }],
   ].filter(Boolean),
 });
 

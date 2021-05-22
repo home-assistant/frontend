@@ -1,15 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { compare } from "../common/string/compare";
 import { LocalizeFunc } from "../common/translations/localize";
@@ -37,9 +35,9 @@ class OnboardingIntegrations extends LitElement {
 
   @property() public onboardingLocalize!: LocalizeFunc;
 
-  @internalProperty() private _entries?: ConfigEntry[];
+  @state() private _entries?: ConfigEntry[];
 
-  @internalProperty() private _discovered?: DataEntryFlowProgress[];
+  @state() private _discovered?: DataEntryFlowProgress[];
 
   private _unsubEvents?: () => void;
 
@@ -175,7 +173,7 @@ class OnboardingIntegrations extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .badges {
         margin-top: 24px;

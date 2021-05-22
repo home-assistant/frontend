@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
-import { customElement, LitElement, property } from "lit-element";
-import { html } from "lit-html";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-formfield";
 import { WaitForTriggerAction } from "../../../../../data/script";
@@ -10,7 +10,8 @@ import "../../trigger/ha-automation-trigger";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 
 @customElement("ha-automation-action-wait_for_trigger")
-export class HaWaitForTriggerAction extends LitElement
+export class HaWaitForTriggerAction
+  extends LitElement
   implements ActionElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 

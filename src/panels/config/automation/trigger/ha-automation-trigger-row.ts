@@ -5,15 +5,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-button-menu";
@@ -87,7 +80,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property() public trigger!: Trigger;
 
-  @internalProperty() private _yamlMode = false;
+  @state() private _yamlMode = false;
 
   protected render() {
     const selected = OPTIONS.indexOf(this.trigger.platform);
@@ -136,7 +129,11 @@ export default class HaAutomationTriggerRow extends LitElement {
                       )}
                     `
                   : ""}
-                <h2>Edit in YAML</h2>
+                <h2>
+                  ${this.hass.localize(
+                    "ui.panel.config.automation.editor.edit_yaml"
+                  )}
+                </h2>
                 <ha-yaml-editor
                   .defaultValue=${this.trigger}
                   @value-changed=${this._onYamlChange}
@@ -236,7 +233,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     this._yamlMode = !this._yamlMode;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

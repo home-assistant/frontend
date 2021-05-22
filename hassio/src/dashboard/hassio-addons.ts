@@ -1,13 +1,6 @@
 import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
 import { compare } from "../../../src/common/string/compare";
@@ -27,17 +20,15 @@ class HassioAddons extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="content">
-        <h1>Add-ons</h1>
+        <h1>${this.supervisor.localize("dashboard.addons")}</h1>
         <div class="card-group">
           ${!this.supervisor.supervisor.addons?.length
             ? html`
                 <ha-card>
                   <div class="card-content">
-                    You don't have any add-ons installed yet. Head over to
                     <button class="link" @click=${this._openStore}>
-                      the add-on store
+                      ${this.supervisor.localize("dashboard.no_addons")}
                     </button>
-                    to get started!
                   </div>
                 </ha-card>
               `
@@ -58,10 +49,16 @@ class HassioAddons extends LitElement {
                             ? mdiArrowUpBoldCircle
                             : mdiPuzzle}
                           .iconTitle=${addon.state !== "started"
-                            ? "Add-on is stopped"
+                            ? this.supervisor.localize(
+                                "dashboard.addon_stopped"
+                              )
                             : addon.update_available!
-                            ? "New version available"
-                            : "Add-on is running"}
+                            ? this.supervisor.localize(
+                                "dashboard.addon_new_version"
+                              )
+                            : this.supervisor.localize(
+                                "dashboard.addon_running"
+                              )}
                           .iconClass=${addon.update_available
                             ? addon.state === "started"
                               ? "update"
@@ -86,7 +83,7 @@ class HassioAddons extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

@@ -1,18 +1,18 @@
-import "./ha-circular-progress";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
+  PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
+import { HistoryResult } from "../data/history";
+import type { HomeAssistant } from "../types";
+import "./ha-circular-progress";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
-import type { HomeAssistant } from "../types";
-import { HistoryResult } from "../data/history";
 
 @customElement("state-history-charts")
 class StateHistoryCharts extends LitElement {
@@ -83,6 +83,10 @@ class StateHistoryCharts extends LitElement {
     `;
   }
 
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    return !(changedProps.size === 1 && changedProps.has("hass"));
+  }
+
   private _isHistoryEmpty(): boolean {
     const historyDataEmpty =
       !this.historyData ||
@@ -93,7 +97,7 @@ class StateHistoryCharts extends LitElement {
     return !this.isLoadingData && historyDataEmpty;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

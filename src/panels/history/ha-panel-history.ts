@@ -1,13 +1,7 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import {
-  css,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
-import { html } from "lit-html";
+import { css, html, LitElement, PropertyValues } from "lit";
+import { property, state } from "lit/decorators";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
@@ -37,7 +31,7 @@ class HaPanelHistory extends LitElement {
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
-  @internalProperty() private _ranges?: DateRangePickerRanges;
+  @state() private _ranges?: DateRangePickerRanges;
 
   public constructor() {
     super();
@@ -181,8 +175,7 @@ class HaPanelHistory extends LitElement {
     this._stateHistory = computeHistory(
       this.hass,
       dateHistory,
-      this.hass.localize,
-      this.hass.language
+      this.hass.localize
     );
     this._isLoading = false;
   }

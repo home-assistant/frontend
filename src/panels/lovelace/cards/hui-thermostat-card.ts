@@ -3,18 +3,15 @@ import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   svg,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -74,9 +71,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ThermostatCardConfig;
+  @state() private _config?: ThermostatCardConfig;
 
-  @internalProperty() private _setTemp?: number | number[];
+  @state() private _setTemp?: number | number[];
 
   @query("ha-card") private _card?: HaCard;
 
@@ -146,7 +143,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               !isNaN(stateObj.attributes.current_temperature)
                 ? svg`${formatNumber(
                     stateObj.attributes.current_temperature,
-                    this.hass!.language
+                    this.hass.locale
                   )}
             <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
               ${this.hass.config.unit_system.temperature}
@@ -169,31 +166,31 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                 : Array.isArray(this._setTemp)
                 ? this._stepSize === 1
                   ? svg`
-                      ${formatNumber(this._setTemp[0], this.hass!.language, {
+                      ${formatNumber(this._setTemp[0], this.hass.locale, {
                         maximumFractionDigits: 0,
                       })} -
-                      ${formatNumber(this._setTemp[1], this.hass!.language, {
+                      ${formatNumber(this._setTemp[1], this.hass.locale, {
                         maximumFractionDigits: 0,
                       })}
                       `
                   : svg`
-                      ${formatNumber(this._setTemp[0], this.hass!.language, {
+                      ${formatNumber(this._setTemp[0], this.hass.locale, {
                         minimumFractionDigits: 1,
                         maximumFractionDigits: 1,
                       })} -
-                      ${formatNumber(this._setTemp[1], this.hass!.language, {
+                      ${formatNumber(this._setTemp[1], this.hass.locale, {
                         minimumFractionDigits: 1,
                         maximumFractionDigits: 1,
                       })}
                       `
                 : this._stepSize === 1
                 ? svg`
-                      ${formatNumber(this._setTemp, this.hass!.language, {
+                      ${formatNumber(this._setTemp, this.hass.locale, {
                         maximumFractionDigits: 0,
                       })}
                       `
                 : svg`
-                      ${formatNumber(this._setTemp, this.hass!.language, {
+                      ${formatNumber(this._setTemp, this.hass.locale, {
                         minimumFractionDigits: 1,
                         maximumFractionDigits: 1,
                       })}
@@ -250,9 +247,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             <div id="slider">
               ${slider}
               <div id="slider-center">
-                <div id="temperature">
-                  ${currentTemperature} ${setValues}
-                </div>
+                <div id="temperature">${currentTemperature} ${setValues}</div>
               </div>
             </div>
           </div>
@@ -423,7 +418,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

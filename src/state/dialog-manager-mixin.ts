@@ -1,4 +1,4 @@
-import { PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { makeDialogManager, showDialog } from "../dialogs/make-dialog-manager";
 import { Constructor } from "../types";
@@ -8,6 +8,7 @@ interface RegisterDialogParams {
   dialogShowEvent: keyof HASSDomEvents;
   dialogTag: keyof HTMLElementTagNameMap;
   dialogImport: () => Promise<unknown>;
+  addHistory?: boolean;
 }
 
 declare global {
@@ -38,6 +39,7 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
       dialogShowEvent,
       dialogTag,
       dialogImport,
+      addHistory = true,
     }: RegisterDialogParams) {
       this.addEventListener(dialogShowEvent, (showEv) => {
         showDialog(
@@ -45,7 +47,8 @@ export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
           this.shadowRoot!,
           dialogTag,
           (showEv as HASSDomEvent<unknown>).detail,
-          dialogImport
+          dialogImport,
+          addHistory
         );
       });
     }

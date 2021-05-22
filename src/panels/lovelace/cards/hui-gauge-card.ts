@@ -1,16 +1,14 @@
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -44,11 +42,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     entities: string[],
     entitiesFallback: string[]
   ): GaugeCardConfig {
-    const includeDomains = ["sensor"];
+    const includeDomains = ["counter", "input_number", "number", "sensor"];
     const maxEntities = 1;
-    const entityFilter = (stateObj: HassEntity): boolean => {
-      return !isNaN(Number(stateObj.state));
-    };
+    const entityFilter = (stateObj: HassEntity): boolean =>
+      !isNaN(Number(stateObj.state));
 
     const foundEntities = findEntities(
       hass,
@@ -64,7 +61,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GaugeCardConfig;
+  @state() private _config?: GaugeCardConfig;
 
   public getCardSize(): number {
     return 4;
@@ -96,7 +93,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const state = Number(stateObj.state);
+    const entityState = Number(stateObj.state);
 
     if (stateObj.state === UNAVAILABLE) {
       return html`
@@ -110,7 +107,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    if (isNaN(state)) {
+    if (isNaN(entityState)) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -130,13 +127,13 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           .min=${this._config.min!}
           .max=${this._config.max!}
           .value=${stateObj.state}
-          .language=${this.hass!.language}
+          .locale=${this.hass!.locale}
           .label=${this._config!.unit ||
           this.hass?.states[this._config!.entity].attributes
             .unit_of_measurement ||
           ""}
           style=${styleMap({
-            "--gauge-color": this._computeSeverity(state),
+            "--gauge-color": this._computeSeverity(entityState),
           })}
         ></ha-gauge>
         <div class="name">
@@ -207,7 +204,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         cursor: pointer;

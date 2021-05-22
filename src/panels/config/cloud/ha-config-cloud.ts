@@ -1,5 +1,5 @@
 import { PolymerElement } from "@polymer/polymer";
-import { customElement, internalProperty, property } from "lit-element";
+import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../common/navigate";
 import { CloudStatus } from "../../../data/cloud";
 import {
@@ -67,13 +67,13 @@ class HaConfigCloud extends HassRouterPage {
     },
   };
 
-  @internalProperty() private _flashMessage = "";
+  @state() private _flashMessage = "";
 
-  @internalProperty() private _loginEmail = "";
+  @state() private _loginEmail = "";
 
   private _resolveCloudStatusLoaded!: () => void;
 
-  private _cloudStatusLoaded = new Promise((resolve) => {
+  private _cloudStatusLoaded = new Promise<void>((resolve) => {
     this._resolveCloudStatusLoaded = resolve;
   });
 
@@ -128,6 +128,7 @@ class HaConfigCloud extends HassRouterPage {
         hass: this.hass,
         email: this._loginEmail,
         isWide: this.isWide,
+        narrow: this.narrow,
         cloudStatus: this.cloudStatus,
         flashMessage: this._flashMessage,
       });
