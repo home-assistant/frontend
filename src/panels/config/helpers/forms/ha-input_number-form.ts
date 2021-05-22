@@ -1,16 +1,8 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-input";
 import { InputNumber } from "../../../../data/input_number";
@@ -25,20 +17,20 @@ class HaInputNumberForm extends LitElement {
 
   private _item?: Partial<InputNumber>;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _icon!: string;
+  @state() private _icon!: string;
 
-  @internalProperty() private _max?: number;
+  @state() private _max?: number;
 
-  @internalProperty() private _min?: number;
+  @state() private _min?: number;
 
-  @internalProperty() private _mode?: string;
+  @state() private _mode?: string;
 
-  @internalProperty() private _step?: number;
+  @state() private _step?: number;
 
   // eslint-disable-next-line: variable-name
-  @internalProperty() private _unit_of_measurement?: string;
+  @state() private _unit_of_measurement?: string;
 
   set item(item: InputNumber) {
     this._item = item;
@@ -194,7 +186,7 @@ class HaInputNumberForm extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

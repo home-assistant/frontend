@@ -1,13 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import "../../../components/ha-date-input";
 import type { HaDateInput } from "../../../components/ha-date-input";
 import "../../../components/paper-time-input";
@@ -24,7 +16,7 @@ import type { EntityConfig, LovelaceRow } from "./types";
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   @query("paper-time-input") private _timeInputEl?: PaperTimeInput;
 

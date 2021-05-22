@@ -1,20 +1,12 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../../../components/ha-card";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-settings-row";
 import "../../../../components/ha-switch";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import {
   CloudStatusLoggedIn,
   CloudWebhook,
@@ -34,13 +26,13 @@ export class CloudWebhooks extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private _cloudHooks?: {
+  @state() private _cloudHooks?: {
     [webhookId: string]: CloudWebhook;
   };
 
-  @internalProperty() private _localHooks?: Webhook[];
+  @state() private _localHooks?: Webhook[];
 
-  @internalProperty() private _progress: string[] = [];
+  @state() private _progress: string[] = [];
 
   public connectedCallback() {
     super.connectedCallback();
@@ -208,7 +200,7 @@ export class CloudWebhooks extends LitElement {
       : [];
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

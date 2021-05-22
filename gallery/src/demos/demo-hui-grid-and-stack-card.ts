@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  PropertyValues,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, query } from "lit/decorators";
 import { mockHistory } from "../../../demo/src/stubs/history";
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
@@ -49,6 +43,110 @@ const ENTITIES = [
 ];
 
 const CONFIGS = [
+  {
+    heading: "Default Grid",
+    config: `
+- type: grid
+  cards:
+    - type: entity
+      entity: light.kitchen_lights
+    - type: entity
+      entity: light.bed_light
+    - type: entity
+      entity: device_tracker.demo_paulus
+    - type: sensor
+      entity: sensor.illumination
+      graph: line
+    - type: entity
+      entity: device_tracker.demo_anne_therese
+    `,
+  },
+  {
+    heading: "Non-square Grid with 2 columns",
+    config: `
+- type: grid
+  columns: 2
+  square: false
+  cards:
+    - type: entity
+      entity: light.kitchen_lights
+    - type: entity
+      entity: light.bed_light
+    - type: entity
+      entity: device_tracker.demo_paulus
+    - type: sensor
+      entity: sensor.illumination
+      graph: line
+    `,
+  },
+  {
+    heading: "Default Grid with title",
+    config: `
+- type: grid
+  title: Kitchen
+  cards:
+    - type: entity
+      entity: light.kitchen_lights
+    - type: entity
+      entity: light.bed_light
+    - type: entity
+      entity: device_tracker.demo_paulus
+    - type: sensor
+      entity: sensor.illumination
+      graph: line
+    - type: entity
+      entity: device_tracker.demo_anne_therese
+    `,
+  },
+  {
+    heading: "Columns 4",
+    config: `
+- type: grid
+  columns: 4
+  cards:
+    - type: entity
+      entity: light.kitchen_lights
+    - type: entity
+      entity: light.bed_light
+    - type: entity
+      entity: device_tracker.demo_paulus
+    - type: sensor
+      entity: sensor.illumination
+      graph: line
+    `,
+  },
+  {
+    heading: "Columns 2",
+    config: `
+- type: grid
+  columns: 2
+  cards:
+    - type: entity
+      entity: light.kitchen_lights
+    - type: entity
+      entity: light.bed_light
+    `,
+  },
+  {
+    heading: "Columns 1",
+    config: `
+- type: grid
+  columns: 1
+  cards:
+  - type: entity
+    entity: light.kitchen_lights
+    `,
+  },
+  {
+    heading: "Size for single card",
+    config: `
+- type: grid
+  cards:
+  - type: entity
+    entity: light.kitchen_lights
+    `,
+  },
+
   {
     heading: "Vertical Stack",
     config: `
@@ -99,45 +197,9 @@ const CONFIGS = [
       entity: light.bed_light
     `,
   },
-  {
-    heading: "Default Grid",
-    config: `
-- type: grid
-  cards:
-    - type: entity
-      entity: light.kitchen_lights
-    - type: entity
-      entity: light.bed_light
-    - type: entity
-      entity: device_tracker.demo_paulus
-    - type: sensor
-      entity: sensor.illumination
-      graph: line
-    - type: entity
-      entity: device_tracker.demo_anne_therese
-    `,
-  },
-  {
-    heading: "Non-square Grid with 2 columns",
-    config: `
-- type: grid
-  columns: 2
-  square: false
-  cards:
-    - type: entity
-      entity: light.kitchen_lights
-    - type: entity
-      entity: light.bed_light
-    - type: entity
-      entity: device_tracker.demo_paulus
-    - type: sensor
-      entity: sensor.illumination
-      graph: line
-    `,
-  },
 ];
 
-@customElement("demo-hui-stack-card")
+@customElement("demo-hui-grid-and-stack-card")
 class DemoStack extends LitElement {
   @query("#demos") private _demoRoot!: HTMLElement;
 
@@ -155,4 +217,8 @@ class DemoStack extends LitElement {
   }
 }
 
-customElements.define("demo-hui-stack-card", DemoStack);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-grid-and-stack-card": DemoStack;
+  }
+}

@@ -1,15 +1,8 @@
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -47,9 +40,9 @@ class HaConfigPerson extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _storageItems?: Person[];
+  @state() private _storageItems?: Person[];
 
-  @internalProperty() private _configItems?: Person[];
+  @state() private _configItems?: Person[];
 
   private _usersLoad?: Promise<User[]>;
 
@@ -75,9 +68,7 @@ class HaConfigPerson extends LitElement {
             >${hass.localize("ui.panel.config.person.caption")}</span
           >
           <span slot="introduction">
-            <p>
-              ${hass.localize("ui.panel.config.person.introduction")}
-            </p>
+            <p>${hass.localize("ui.panel.config.person.introduction")}</p>
             ${this._configItems.length > 0
               ? html`
                   <p>
@@ -98,19 +89,17 @@ class HaConfigPerson extends LitElement {
           </span>
 
           <ha-card class="storage">
-            ${this._storageItems.map((entry) => {
-              return html`
+            ${this._storageItems.map(
+              (entry) => html`
                 <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
                   <ha-person-badge
                     slot="item-icon"
                     .person=${entry}
                   ></ha-person-badge>
-                  <paper-item-body>
-                    ${entry.name}
-                  </paper-item-body>
+                  <paper-item-body> ${entry.name} </paper-item-body>
                 </paper-icon-item>
-              `;
-            })}
+              `
+            )}
             ${this._storageItems.length === 0
               ? html`
                   <div class="empty">
@@ -129,19 +118,17 @@ class HaConfigPerson extends LitElement {
           ${this._configItems.length > 0
             ? html`
                 <ha-card header="Configuration.yaml persons">
-                  ${this._configItems.map((entry) => {
-                    return html`
+                  ${this._configItems.map(
+                    (entry) => html`
                       <paper-icon-item>
                         <ha-person-badge
                           slot="item-icon"
                           .person=${entry}
                         ></ha-person-badge>
-                        <paper-item-body>
-                          ${entry.name}
-                        </paper-item-body>
+                        <paper-item-body> ${entry.name} </paper-item-body>
                       </paper-icon-item>
-                    `;
-                  })}
+                    `
+                  )}
                 </ha-card>
               `
             : ""}
@@ -271,7 +258,7 @@ class HaConfigPerson extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

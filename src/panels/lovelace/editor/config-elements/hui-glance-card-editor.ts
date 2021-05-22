@@ -1,15 +1,8 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
@@ -53,13 +46,14 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-glance-card-editor")
-export class HuiGlanceCardEditor extends LitElement
+export class HuiGlanceCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GlanceCardConfig;
+  @state() private _config?: GlanceCardConfig;
 
-  @internalProperty() private _configEntities?: ConfigEntity[];
+  @state() private _configEntities?: ConfigEntity[];
 
   public setConfig(config: GlanceCardConfig): void {
     assert(config, cardConfigStruct);
@@ -235,7 +229,7 @@ export class HuiGlanceCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

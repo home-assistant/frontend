@@ -1,3 +1,4 @@
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
 import type { List } from "@material/mwc-list/mwc-list";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
@@ -11,18 +12,10 @@ import {
   mdiReload,
   mdiServerNetwork,
 } from "@mdi/js";
-import {
-  css,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
-import { scroll } from "lit-virtualizer";
+import { css, html, LitElement } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { canShowPage } from "../../common/config/can_show_page";
 import { componentsWithService } from "../../common/config/components_with_service";
@@ -38,6 +31,7 @@ import {
   ScorableTextItem,
 } from "../../common/string/filter/sequence-matching";
 import { debounce } from "../../common/util/debounce";
+import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
@@ -52,7 +46,6 @@ import {
   showConfirmationDialog,
 } from "../generic/show-dialog-box";
 import { QuickBarParams } from "./show-dialog-quick-bar";
-import "../../components/ha-chip";
 
 interface QuickBarItem extends ScorableTextItem {
   primaryText: string;
@@ -70,9 +63,8 @@ interface EntityItem extends QuickBarItem {
   icon?: string;
 }
 
-const isCommandItem = (item: QuickBarItem): item is CommandItem => {
-  return (item as CommandItem).categoryKey !== undefined;
-};
+const isCommandItem = (item: QuickBarItem): item is CommandItem =>
+  (item as CommandItem).categoryKey !== undefined;
 
 interface QuickBarNavigationItem extends CommandItem {
   path: string;
@@ -88,19 +80,19 @@ type BaseNavigationCommand = Pick<
 export class QuickBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _commandItems?: CommandItem[];
+  @state() private _commandItems?: CommandItem[];
 
-  @internalProperty() private _entityItems?: EntityItem[];
+  @state() private _entityItems?: EntityItem[];
 
-  @internalProperty() private _filter = "";
+  @state() private _filter = "";
 
-  @internalProperty() private _search = "";
+  @state() private _search = "";
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _commandMode = false;
+  @state() private _commandMode = false;
 
-  @internalProperty() private _done = false;
+  @state() private _done = false;
 
   @query("paper-input", false) private _filterInputField?: HTMLElement;
 
@@ -195,7 +187,9 @@ export class QuickBar extends LitElement {
             >
               ${scroll({
                 items,
-                renderItem: (item: QuickBarItem, index?: number) =>
+                layout: Layout1d,
+                // @ts-expect-error
+                renderItem: (item: QuickBarItem, index) =>
                   this._renderItem(item, index),
               })}
             </mwc-list>`}
@@ -579,9 +573,8 @@ export class QuickBar extends LitElement {
   }
 
   private _filterItems = memoizeOne(
-    (items: QuickBarItem[], filter: string): QuickBarItem[] => {
-      return fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items);
-    }
+    (items: QuickBarItem[], filter: string): QuickBarItem[] =>
+      fuzzyFilterSort<QuickBarItem>(filter.trimLeft(), items)
   );
 
   static get styles() {

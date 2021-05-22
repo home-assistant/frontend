@@ -1,12 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import { Trigger } from "../../../../data/automation";
@@ -77,7 +71,7 @@ export default class HaAutomationTrigger extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-automation-trigger-row,
       ha-card {

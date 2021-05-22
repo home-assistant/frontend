@@ -1,4 +1,4 @@
-import type { LitElement } from "lit-element";
+import type { LitElement } from "lit";
 import {
   HassioAddonDetails,
   restartHassioAddon,

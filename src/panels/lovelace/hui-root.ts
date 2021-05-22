@@ -24,16 +24,14 @@ import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -85,7 +83,7 @@ class HUIRoot extends LitElement {
 
   @property() public route?: { path: string; prefix: string };
 
-  @internalProperty() private _curView?: number | "hass-unused-entities";
+  @state() private _curView?: number | "hass-unused-entities";
 
   @query("ha-app-layout", true) private _appLayout!: haAppLayout;
 
@@ -853,7 +851,7 @@ class HUIRoot extends LitElement {
     fireEvent(this, "iron-resize");
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -1,4 +1,4 @@
-import { customElement } from "lit-element";
+import { customElement } from "lit/decorators";
 import {
   DeviceTrigger,
   localizeDeviceAutomationTrigger,
@@ -6,9 +6,7 @@ import {
 import { HaDeviceAutomationCard } from "./ha-device-automation-card";
 
 @customElement("ha-device-triggers-card")
-export class HaDeviceTriggersCard extends HaDeviceAutomationCard<
-  DeviceTrigger
-> {
+export class HaDeviceTriggersCard extends HaDeviceAutomationCard<DeviceTrigger> {
   protected type = "trigger";
 
   protected headerKey = "ui.panel.config.devices.automation.triggers.caption";

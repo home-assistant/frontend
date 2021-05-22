@@ -1,15 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-code-editor";
 import { getConfigEntries } from "../../../../../data/config_entries";
@@ -25,9 +17,9 @@ class HaPanelDevMqtt extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private topic = "";
+  @state() private topic = "";
 
-  @internalProperty() private payload = "";
+  @state() private payload = "";
 
   private inited = false;
 
@@ -64,9 +56,7 @@ class HaPanelDevMqtt extends LitElement {
                 @value-changed=${this._handleTopic}
               ></paper-input>
 
-              <p>
-                ${this.hass.localize("ui.panel.config.mqtt.payload")}
-              </p>
+              <p>${this.hass.localize("ui.panel.config.mqtt.payload")}</p>
               <ha-code-editor
                 mode="jinja2"
                 .value="${this.payload}"
@@ -125,7 +115,7 @@ class HaPanelDevMqtt extends LitElement {
     showOptionsFlowDialog(this, configEntry!);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

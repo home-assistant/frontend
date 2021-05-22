@@ -1,12 +1,6 @@
 import { safeDump, safeLoad } from "js-yaml";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-code-editor";
 
@@ -32,7 +26,7 @@ export class HaYamlEditor extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() private _yaml = "";
+  @state() private _yaml = "";
 
   public setValue(value): void {
     try {

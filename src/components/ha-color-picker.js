@@ -1,8 +1,8 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import { hs2rgb, rgb2hs } from "../common/color/convert-color";
 import { EventsMixin } from "../mixins/events-mixin";
-
 /**
  * Color-picker custom element
  *
@@ -114,6 +114,12 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
         observer: "applyHsColor",
       },
 
+      // use these properties to update the state via attributes
+      desiredRgbColor: {
+        type: Object,
+        observer: "applyRgbColor",
+      },
+
       // width, height and radius apply to the coordinates of
       // of the canvas.
       // border width are relative to these numbers
@@ -177,8 +183,11 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
     this.drawMarker();
 
     if (this.desiredHsColor) {
-      this.setMarkerOnColor(this.desiredHsColor);
-      this.applyColorToCanvas(this.desiredHsColor);
+      this.applyHsColor(this.desiredHsColor);
+    }
+
+    if (this.desiredRgbColor) {
+      this.applyRgbColor(this.desiredRgbColor);
     }
 
     this.interactionLayer.addEventListener("mousedown", (ev) =>
@@ -282,12 +291,19 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   processUserSelect(ev) {
     const canvasXY = this.convertToCanvasCoordinates(ev.clientX, ev.clientY);
     const hs = this.getColor(canvasXY.x, canvasXY.y);
-    this.onColorSelect(hs);
+    let rgb;
+    if (!this.isInWheel(canvasXY.x, canvasXY.y)) {
+      const [r, g, b] = hs2rgb([hs.h, hs.s]);
+      rgb = { r, g, b };
+    } else {
+      rgb = this.getRgbColor(canvasXY.x, canvasXY.y);
+    }
+    this.onColorSelect(hs, rgb);
   }
 
   // apply color to marker position and canvas
-  onColorSelect(hs) {
-    this.setMarkerOnColor(hs); // marker always follows mounse 'raw' hs value (= mouse position)
+  onColorSelect(hs, rgb) {
+    this.setMarkerOnColor(hs); // marker always follows mouse 'raw' hs value (= mouse position)
     if (!this.ignoreSegments) {
       // apply segments if needed
       hs = this.applySegmentFilter(hs);
@@ -301,11 +317,11 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
       // eventually after throttle limit has passed
       clearTimeout(this.ensureFinalSelect);
       this.ensureFinalSelect = setTimeout(() => {
-        this.fireColorSelected(hs); // do it for the final time
+        this.fireColorSelected(hs, rgb); // do it for the final time
       }, this.throttle);
       return;
     }
-    this.fireColorSelected(hs); // do it
+    this.fireColorSelected(hs, rgb); // do it
     this.colorSelectIsThrottled = true;
     setTimeout(() => {
       this.colorSelectIsThrottled = false;
@@ -313,9 +329,9 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
   }
 
   // set color values and fire colorselected event
-  fireColorSelected(hs) {
+  fireColorSelected(hs, rgb) {
     this.hsColor = hs;
-    this.fire("colorselected", { hs: { h: hs.h, s: hs.s } });
+    this.fire("colorselected", { hs, rgb });
   }
 
   /*
@@ -363,6 +379,11 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
     this.applyColorToCanvas(hs);
   }
 
+  applyRgbColor(rgb) {
+    const [h, s] = rgb2hs(rgb);
+    this.applyHsColor({ h, s });
+  }
+
   /*
    * input processing helpers
    */
@@ -393,6 +414,15 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
     const relativeDistance = this.getDistance(x, y); // edge of radius = 1
     const sat = Math.min(relativeDistance, 1); // Distance from center
     return { h: hue, s: sat };
+  }
+
+  getRgbColor(x, y) {
+    // get current pixel
+    const imageData = this.backgroundLayer
+      .getContext("2d")
+      .getImageData(x + 250, y + 250, 1, 1);
+    const pixel = imageData.data;
+    return { r: pixel[0], g: pixel[1], b: pixel[2] };
   }
 
   applySegmentFilter(hs) {
@@ -468,7 +498,7 @@ class HaColorPicker extends EventsMixin(PolymerElement) {
       .getPropertyValue("--wheel-bordercolor")
       .trim();
     const wheelShadow = wheelStyle.getPropertyValue("--wheel-shadow").trim();
-    // extract shadow properties from  CCS variable
+    // extract shadow properties from CSS variable
     // the shadow should be defined as: "10px 5px 5px 0px COLOR"
     if (wheelShadow !== "none") {
       const values = wheelShadow.split("px ");

@@ -2,15 +2,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -44,11 +37,12 @@ const cardConfigStruct = object({
 const includeDomains = ["camera"];
 
 @customElement("hui-picture-entity-card-editor")
-export class HuiPictureEntityCardEditor extends LitElement
+export class HuiPictureEntityCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PictureEntityCardConfig;
+  @state() private _config?: PictureEntityCardConfig;
 
   public setConfig(config: PictureEntityCardConfig): void {
     assert(config, cardConfigStruct);
@@ -169,9 +163,7 @@ export class HuiPictureEntityCardEditor extends LitElement
               slot="dropdown-content"
               .selected="${views.indexOf(this._camera_view)}"
             >
-              ${views.map((view) => {
-                return html` <paper-item>${view}</paper-item> `;
-              })}
+              ${views.map((view) => html` <paper-item>${view}</paper-item> `)}
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-input
@@ -294,7 +286,7 @@ export class HuiPictureEntityCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

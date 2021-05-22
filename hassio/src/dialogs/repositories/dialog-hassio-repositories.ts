@@ -5,17 +5,8 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
@@ -37,15 +28,15 @@ class HassioRepositoriesDialog extends LitElement {
 
   @query("#repository_input", true) private _optionInput?: PaperInputElement;
 
-  @internalProperty() private _repositories?: HassioAddonRepository[];
+  @state() private _repositories?: HassioAddonRepository[];
 
-  @internalProperty() private _dialogParams?: HassioRepositoryDialogParams;
+  @state() private _dialogParams?: HassioRepositoryDialogParams;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _prosessing = false;
+  @state() private _processing = false;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   public async showDialog(
     dialogParams: HassioRepositoryDialogParams
@@ -87,8 +78,8 @@ class HassioRepositoriesDialog extends LitElement {
         ${this._error ? html`<div class="error">${this._error}</div>` : ""}
         <div class="form">
           ${repositories.length
-            ? repositories.map((repo) => {
-                return html`
+            ? repositories.map(
+                (repo) => html`
                   <paper-item class="option">
                     <paper-item-body three-line>
                       <div>${repo.name}</div>
@@ -105,13 +96,9 @@ class HassioRepositoriesDialog extends LitElement {
                       <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
                     </mwc-icon-button>
                   </paper-item>
-                `;
-              })
-            : html`
-                <paper-item>
-                  No repositories
-                </paper-item>
-              `}
+                `
+              )
+            : html` <paper-item> No repositories </paper-item> `}
           <div class="layout horizontal bottom">
             <paper-input
               class="flex-auto"
@@ -123,8 +110,11 @@ class HassioRepositoriesDialog extends LitElement {
               @keydown=${this._handleKeyAdd}
             ></paper-input>
             <mwc-button @click=${this._addRepository}>
-              ${this._prosessing
-                ? html`<ha-circular-progress active></ha-circular-progress>`
+              ${this._processing
+                ? html`<ha-circular-progress
+                    active
+                    size="small"
+                  ></ha-circular-progress>`
                 : this._dialogParams!.supervisor.localize(
                     "dialog.repositories.add"
                   )}
@@ -138,7 +128,7 @@ class HassioRepositoriesDialog extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,
@@ -205,11 +195,9 @@ class HassioRepositoriesDialog extends LitElement {
     if (!input || !input.value) {
       return;
     }
-    this._prosessing = true;
+    this._processing = true;
     const repositories = this._filteredRepositories(this._repositories!);
-    const newRepositories = repositories.map((repo) => {
-      return repo.source;
-    });
+    const newRepositories = repositories.map((repo) => repo.source);
     newRepositories.push(input.value);
 
     try {
@@ -222,25 +210,19 @@ class HassioRepositoriesDialog extends LitElement {
     } catch (err) {
       this._error = extractApiErrorMessage(err);
     }
-    this._prosessing = false;
+    this._processing = false;
   }
 
   private async _removeRepository(ev: Event) {
     const slug = (ev.currentTarget as any).slug;
     const repositories = this._filteredRepositories(this._repositories!);
-    const repository = repositories.find((repo) => {
-      return repo.slug === slug;
-    });
+    const repository = repositories.find((repo) => repo.slug === slug);
     if (!repository) {
       return;
     }
     const newRepositories = repositories
-      .map((repo) => {
-        return repo.source;
-      })
-      .filter((repo) => {
-        return repo !== repository.source;
-      });
+      .map((repo) => repo.source)
+      .filter((repo) => repo !== repository.source);
 
     try {
       await setSupervisorOption(this.hass, {

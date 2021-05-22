@@ -1,15 +1,13 @@
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-card";
@@ -43,9 +41,9 @@ class HassioAddonNetwork extends LitElement {
 
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _config?: NetworkItem[];
+  @state() private _config?: NetworkItem[];
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -79,12 +77,10 @@ class HassioAddonNetwork extends LitElement {
                     "addon.configuration.network.host"
                   )}
                 </th>
-                <th>
-                  ${this.supervisor.localize("common.description")}
-                </th>
+                <th>${this.supervisor.localize("common.description")}</th>
               </tr>
-              ${this._config!.map((item) => {
-                return html`
+              ${this._config!.map(
+                (item) => html`
                   <tr>
                     <td>${item.container}</td>
                     <td>
@@ -100,8 +96,8 @@ class HassioAddonNetwork extends LitElement {
                     </td>
                     <td>${this._computeDescription(item)}</td>
                   </tr>
-                `;
-              })}
+                `
+              )}
             </tbody>
           </table>
         </div>
@@ -124,25 +120,20 @@ class HassioAddonNetwork extends LitElement {
     }
   }
 
-  private _computeDescription = (item: NetworkItem): string => {
-    return (
-      this.addon.translations[this.hass.language]?.network?.[item.container]
-        ?.description ||
-      this.addon.translations.en?.network?.[item.container]?.description ||
-      item.description
-    );
-  };
+  private _computeDescription = (item: NetworkItem): string =>
+    this.addon.translations[this.hass.language]?.network?.[item.container]
+      ?.description ||
+    this.addon.translations.en?.network?.[item.container]?.description ||
+    item.description;
 
   private _setNetworkConfig(): void {
     const network = this.addon.network || {};
     const description = this.addon.network_description || {};
-    const items: NetworkItem[] = Object.keys(network).map((key) => {
-      return {
-        container: key,
-        host: network[key],
-        description: description[key],
-      };
-    });
+    const items: NetworkItem[] = Object.keys(network).map((key) => ({
+      container: key,
+      host: network[key],
+      description: description[key],
+    }));
     this._config = items.sort((a, b) => (a.container > b.container ? 1 : -1));
   }
 
@@ -223,7 +214,7 @@ class HassioAddonNetwork extends LitElement {
     button.progress = false;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

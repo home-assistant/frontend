@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../components/entity/ha-entity-toggle";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";

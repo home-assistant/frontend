@@ -14,8 +14,8 @@ const filterData = (
   filter: string
 ) => {
   filter = filter.toUpperCase();
-  return data.filter((row) => {
-    return Object.entries(columns).some((columnEntry) => {
+  return data.filter((row) =>
+    Object.entries(columns).some((columnEntry) => {
       const [key, column] = columnEntry;
       if (column.filterable) {
         if (
@@ -27,8 +27,8 @@ const filterData = (
         }
       }
       return false;
-    });
-  });
+    })
+  );
 };
 
 const sortData = (
@@ -80,6 +80,6 @@ const api = {
   sortData,
 };
 
-export type api = typeof api;
+export type Api = typeof api;
 
 expose(api);

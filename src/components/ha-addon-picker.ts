@@ -1,12 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { compare } from "../common/string/compare";
@@ -51,7 +44,7 @@ class HaAddonPicker extends LitElement {
 
   @property() public value = "";
 
-  @internalProperty() private _addons?: HassioAddonInfo[];
+  @state() private _addons?: HassioAddonInfo[];
 
   @property({ type: Boolean }) public disabled = false;
 

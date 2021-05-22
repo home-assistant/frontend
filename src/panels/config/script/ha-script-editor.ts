@@ -13,16 +13,14 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import { PaperListboxElement } from "@polymer/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { navigate } from "../../../common/navigate";
 import { slugify } from "../../../common/string/slugify";
@@ -61,7 +59,7 @@ import { configSections } from "../ha-panel-config";
 export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public scriptEntityId!: string;
+  @property() public scriptEntityId: string | null = null;
 
   @property() public route!: Route;
 
@@ -69,17 +67,17 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private _config?: ScriptConfig;
+  @state() private _config?: ScriptConfig;
 
-  @internalProperty() private _entityId?: string;
+  @state() private _entityId?: string;
 
-  @internalProperty() private _idError = false;
+  @state() private _idError = false;
 
-  @internalProperty() private _dirty = false;
+  @state() private _dirty = false;
 
-  @internalProperty() private _errors?: string;
+  @state() private _errors?: string;
 
-  @internalProperty() private _mode: "gui" | "yaml" = "gui";
+  @state() private _mode: "gui" | "yaml" = "gui";
 
   @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
 
@@ -161,12 +159,12 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
             aria-label=${this.hass.localize(
               "ui.panel.config.script.editor.delete_script"
             )}
-            class=${classMap({ warning: this.scriptEntityId })}
+            class=${classMap({ warning: Boolean(this.scriptEntityId) })}
             graphic="icon"
           >
             ${this.hass.localize("ui.panel.config.script.editor.delete_script")}
             <ha-svg-icon
-              class=${classMap({ warning: this.scriptEntityId })}
+              class=${classMap({ warning: Boolean(this.scriptEntityId) })}
               slot="graphic"
               .path=${mdiDelete}
             >
@@ -357,9 +355,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                 ${!this.narrow
                   ? html`
                       <ha-card
-                        ><div class="card-header">
-                          ${this._config?.alias}
-                        </div>
+                        ><div class="card-header">${this._config?.alias}</div>
                         <div
                           class="card-actions layout horizontal justified center"
                         >
@@ -472,7 +468,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _runScript(ev) {
     ev.stopPropagation();
-    await triggerScript(this.hass, this.scriptEntityId);
+    await triggerScript(this.hass, this.scriptEntityId as string);
     showToast(this, {
       message: this.hass.localize(
         "ui.notification_toast.triggered",
@@ -622,7 +618,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _delete() {
-    await deleteScript(this.hass, computeObjectId(this.scriptEntityId));
+    await deleteScript(
+      this.hass,
+      computeObjectId(this.scriptEntityId as string)
+    );
     history.back();
   }
 
@@ -683,7 +682,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     this._saveScript();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

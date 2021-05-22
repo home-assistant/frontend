@@ -1,6 +1,6 @@
 import {
   fetchTranslationPreferences,
-  FrontendTranslationData,
+  FrontendLocaleData,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
@@ -36,9 +36,18 @@ export function findAvailableLanguage(language: string) {
     return LOCALE_LOOKUP[langLower];
   }
 
-  return Object.keys(translationMetadata.translations).find(
+  const translation = Object.keys(translationMetadata.translations).find(
     (lang) => lang.toLowerCase() === langLower
   );
+  if (translation) {
+    return translation;
+  }
+
+  if (language.includes("-")) {
+    return findAvailableLanguage(language.split("-")[0]);
+  }
+
+  return undefined;
 }
 
 /**
@@ -46,21 +55,24 @@ export function findAvailableLanguage(language: string) {
  */
 export async function getUserLocale(
   hass: HomeAssistant
-): Promise<Partial<FrontendTranslationData>> {
+): Promise<Partial<FrontendLocaleData>> {
   const result = await fetchTranslationPreferences(hass);
   const language = result?.language;
   const number_format = result?.number_format;
+  const time_format = result?.time_format;
   if (language) {
     const availableLanguage = findAvailableLanguage(language);
     if (availableLanguage) {
       return {
         language: availableLanguage,
         number_format,
+        time_format,
       };
     }
   }
   return {
     number_format,
+    time_format,
   };
 }
 
@@ -94,13 +106,6 @@ export function getLocalLanguage() {
   if (language) {
     return language;
   }
-  if (navigator.language && navigator.language.includes("-")) {
-    language = findAvailableLanguage(navigator.language.split("-")[0]);
-    if (language) {
-      return language;
-    }
-  }
-
   // Final fallback
   return "en";
 }

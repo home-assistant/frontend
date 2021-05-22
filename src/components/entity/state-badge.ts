@@ -1,16 +1,15 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
+} from "lit";
+import { property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { computeActiveState } from "../../common/entity/compute_active_state";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateIcon } from "../../common/entity/state_icon";
@@ -32,7 +31,7 @@ export class StateBadge extends LitElement {
   @property({ type: Boolean, reflect: true, attribute: "icon" })
   private _showIcon = true;
 
-  @internalProperty() private _iconStyle: { [name: string]: string } = {};
+  @state() private _iconStyle: { [name: string]: string } = {};
 
   protected render(): TemplateResult {
     const stateObj = this.stateObj;
@@ -64,7 +63,8 @@ export class StateBadge extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
     if (
       !changedProps.has("stateObj") &&
       !changedProps.has("overrideImage") &&
@@ -99,12 +99,8 @@ export class StateBadge extends LitElement {
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
       } else if (stateObj.state === "on") {
-        if (stateObj.attributes.hs_color && this.stateColor !== false) {
-          const hue = stateObj.attributes.hs_color[0];
-          const sat = stateObj.attributes.hs_color[1];
-          if (sat > 10) {
-            iconStyle.color = `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
-          }
+        if (this.stateColor !== false && stateObj.attributes.rgb_color) {
+          iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
         }
         if (stateObj.attributes.brightness && this.stateColor !== false) {
           const brightness = stateObj.attributes.brightness;
@@ -132,7 +128,7 @@ export class StateBadge extends LitElement {
     Object.assign(this.style, hostStyle);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         position: relative;

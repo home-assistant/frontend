@@ -7,16 +7,8 @@ import {
   mdiPlus,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -50,9 +42,9 @@ class HaScriptPicker extends LitElement {
 
   @property() private _activeFilters?: string[];
 
-  @internalProperty() private _filteredScripts?: string[] | null;
+  @state() private _filteredScripts?: string[] | null;
 
-  @internalProperty() private _filterValue?;
+  @state() private _filterValue?;
 
   private _scripts = memoizeOne(
     (scripts: HassEntity[], filteredScripts?: string[] | null) => {
@@ -64,14 +56,12 @@ class HaScriptPicker extends LitElement {
             filteredScripts!.includes(script.entity_id)
           )
         : scripts
-      ).map((script) => {
-        return {
-          ...script,
-          name: computeStateName(script),
-          icon: stateIcon(script),
-          last_triggered: script.attributes.last_triggered || undefined,
-        };
-      });
+      ).map((script) => ({
+        ...script,
+        name: computeStateName(script),
+        icon: stateIcon(script),
+        last_triggered: script.attributes.last_triggered || undefined,
+      }));
     }
   );
 
@@ -270,7 +260,7 @@ class HaScriptPicker extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -1,17 +1,8 @@
 import { mdiArrowLeft, mdiArrowRight, mdiDelete, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { any, array, assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
@@ -32,19 +23,20 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-stack-card-editor")
-export class HuiStackCardEditor extends LitElement
+export class HuiStackCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @internalProperty() protected _config?: StackCardConfig;
+  @state() protected _config?: StackCardConfig;
 
-  @internalProperty() protected _selectedCard = 0;
+  @state() protected _selectedCard = 0;
 
-  @internalProperty() protected _GUImode = true;
+  @state() protected _GUImode = true;
 
-  @internalProperty() protected _guiModeAvailable? = true;
+  @state() protected _guiModeAvailable? = true;
 
   @query("hui-card-element-editor")
   protected _cardEditorEl?: HuiCardElementEditor;
@@ -73,13 +65,9 @@ export class HuiStackCardEditor extends LitElement
             scrollable
             @iron-activate=${this._handleSelectedCard}
           >
-            ${this._config.cards.map((_card, i) => {
-              return html`
-                <paper-tab>
-                  ${i + 1}
-                </paper-tab>
-              `;
-            })}
+            ${this._config.cards.map(
+              (_card, i) => html` <paper-tab> ${i + 1} </paper-tab> `
+            )}
           </paper-tabs>
           <paper-tabs
             id="add-card"
@@ -239,7 +227,7 @@ export class HuiStackCardEditor extends LitElement
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

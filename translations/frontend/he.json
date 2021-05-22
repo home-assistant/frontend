@@ -183,14 +183,16 @@
                 "text": "האם ברצונך לאתחל את התוסף עם השינויים שלך?"
             },
             "update": {
-                "create_snapshot": "צור נקודת גיבוי עבור {name}",
+                "create_snapshot": "צור נקודת גיבוי עבור {name} לפני העדכון",
                 "snapshot": "נקודת גיבוי",
                 "snapshotting": "יוצר נקודת גיבוי עבור {name}",
                 "updating": "מעדכן את {name} לגרסה {version}"
             }
         },
         "my": {
-            "error_addon_not_found": "התוסף לא נמצא"
+            "error": "שגיאה לא ידועה התרחשה",
+            "error_addon_not_found": "התוסף לא נמצא",
+            "faq_link": "שאלות ותשובות של Home Assistant"
         },
         "snapshot": {
             "addons": "תוספים",
@@ -199,6 +201,7 @@
             "create": "צור",
             "create_blocked_not_running": "יצירת גיבוי אינה אפשרית כרגע מכיוון שהמערכת במצב {state} .",
             "create_snapshot": "צור גיבוי",
+            "description": "גיבויים מאפשרים לך לגבות ולשחזר בקלות את כל הנתונים של Home Assistant.",
             "enter_password": "נא הזן סיסמה.",
             "folder": {
                 "addons/local": "תוספות מקומיות",
@@ -220,11 +223,18 @@
             "upload_snapshot": "טען גיבוי"
         },
         "system": {
+            "core": {
+                "cpu_usage": "שימו ליבה ב CPU",
+                "ram_usage": "שימוש ליבה ב RAM"
+            },
             "host": {
+                "change": "שינוי",
                 "change_hostname": "שנה שם מכונה",
                 "confirm_reboot": "האם אתה בטוח שאתה מעוניין לאתחל שרת מארח?",
                 "confirm_shutdown": "האם אתה בטוח שאתה מעוניין לכבות שרת מארח?",
+                "deployment": "פריסה",
                 "docker_version": "גרסת Docker",
+                "emmc_lifetime_used": "eMMC Lifetime בשימוש",
                 "failed_to_get_hardware_list": "קבלת רשימת החומרה נכשלה",
                 "failed_to_import_from_usb": "ייבוא מ- USB נכשל",
                 "failed_to_reboot": "אתחול המכונה נכשל",
@@ -240,16 +250,25 @@
                 "shutdown_host": "כבה שרת מארח",
                 "used_space": "שטח בשימוש"
             },
+            "log": {
+                "get_logs": "קבלת יומני רישום של {provider} נכשלה. {error}.",
+                "log_provider": "ספק יומן רישום"
+            },
             "supervisor": {
                 "beta_backup": "ודא שיש לך גיבויים של הנתונים לפני הפעלת תכונה זו.",
                 "beta_join_confirm": "האם אתה רוצה להצטרף לערוץ הבטא?",
                 "beta_release_items": "זה כולל גרסאות בטא עבור:",
                 "beta_warning": "גרסאות בטא מיועדות לבודקים ומאמצים מוקדמים ויכולות להכיל שינויי קוד לא יציבים",
                 "channel": "עָרוּץ",
+                "cpu_usage": "שימוש ב- CPU של ה Supervisor",
+                "failed_to_reload": "הטעינה מחדש של ה Supervisor נכשלה",
+                "failed_to_set_option": "הגדרת אפשרות ה Supervisor נכשלה",
+                "failed_to_update": "עדכון ה Supervisor נכשל",
                 "join_beta_action": "הצטרף לערוץ בטא",
                 "join_beta_description": "קבל עדכוני בטא עבור Home Assistant, Supervisor ומערכת ההפעלה",
                 "leave_beta_action": "עזוב את ערוץ הבטא",
                 "leave_beta_description": "קבל עדכונים יציבים עבור Home Assistant, Supervisor ומערכת ההפעלה",
+                "ram_usage": "שימוש ב- RAM של ה Supervisor",
                 "reload_supervisor": "טען מחדש את ה Supervisor",
                 "share_diagnostics": "שתף מידע אבחוני",
                 "share_diagnostics_description": "שתף דוחות קריסה ומידע אבחוני.",
@@ -279,6 +298,7 @@
                     "privileged": "ל Supervisor אין הרשאות",
                     "systemd": "Systemd"
                 },
+                "unsupported_title": "אתה מפעיל התקנה שאינה נתמכת",
                 "update_supervisor": "עדכן את ה Supervisor",
                 "warning": "אזהרה"
             }
@@ -352,8 +372,11 @@
             },
             "light": {
                 "brightness": "בהירות",
+                "cold_white_value": "בהירות לבנה קרה",
+                "color_brightness": "בהירות צבע",
                 "color_temperature": "טמפרטורת הצבע",
                 "effect": "אפקט",
+                "warm_white_value": "בהירות לבנה חמה",
                 "white_value": "לבן"
             },
             "lock": {
@@ -601,6 +624,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "תיעוד אינטגרציה",
                 "target_description": "אלה האיזורים, התקנים וישויות בהם ישתמש שירות זה"
             },
             "service-picker": {
@@ -821,7 +845,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "מגדיר תצורה מחדש של המכשיר"
+                "attribute": "מאפיין",
+                "battery_device_warning": "יהיה עליך להעיר התקנים המופעלים באמצעות סוללה לפני שתתחיל בתהליך קביעת התצורה מחדש. עיין במדריך למשתמש של המכשיר לקבלת הוראות להעיר את ההתקן.",
+                "bind_header": "קישור",
+                "button_hide": "הסתר פרטים",
+                "button_show": "הצג פרטים",
+                "cluster_header": "אֶשׁכּוֹל",
+                "configuration_complete": "קביעת התצורה הושלמה",
+                "configuration_failed": "קביעת התצורה מחדש של ההתקן נכשלה. ייתכן שמידע נוסף יהיה זמין ביומני הרישום.",
+                "configuring_alt": "הגדרת תצורה",
+                "heading": "מגדיר תצורה מחדש של המכשיר",
+                "in_progress": "תצורת ההתקן נקבע, מחדש. פעולה זו עשויה להימשך זמן מה.",
+                "introduction": "קביעת תצורה מחדש של התקן ברשת Zigbee. השתמש בתכונה זו אם ההתקן שלך אינו פועל כראוי.",
+                "min_max_change": "מינימום/מקסימום/שינוי",
+                "reporting_header": "דיווח",
+                "run_in_background": "באפשרותך לסגור תיבת דו-שיח זו וקביעת התצורה מחדש תמשיך ברקע.",
+                "start_reconfiguration": "התחל קביעת תצורה מחדש"
             }
         },
         "duration": {
@@ -876,7 +915,8 @@
                     "caption": "מאגר האזורים",
                     "data_table": {
                         "area": "אזור",
-                        "devices": "התקנים"
+                        "devices": "התקנים",
+                        "entities": "ישויות"
                     },
                     "delete": {
                         "confirmation_text": "כל ההתקנים באזור זה לא יהיו מוקצים.",
@@ -888,8 +928,10 @@
                         "create": "צור",
                         "default_name": "אזור חדש",
                         "delete": "מחק",
+                        "linked_entities_caption": "ישויות",
                         "name": "שם",
                         "name_required": "שם הוא חובה",
+                        "no_linked_entities": "אין ישויות המקושרות לאזור זה.",
                         "unknown_error": "שגיאה לא ידועה",
                         "update": "עדכון"
                     },
@@ -1294,10 +1336,16 @@
                         "remote": {
                             "access_is_being_prepared": "מכינים גישה מרחוק. אנו נודיע לך כשזה יהיה מוכן.",
                             "certificate_info": "פרטי התעודה",
+                            "connected": "מחובר",
                             "info": "ענן Home Assistant מספק חיבור מרוחק מאובטח למערכת שלך כשאתה רחוק מהבית.",
                             "instance_is_available": "המופע שלך זמין ב",
                             "instance_will_be_available": "המופע שלך יהיה זמין ב",
                             "link_learn_how_it_works": "למד כיצד זה עובד",
+                            "not_connected": "לא מחובר",
+                            "remote_enabled": {
+                                "caption": "התחבר אוטומטית",
+                                "description": "אפשר אפשרות זו כדי לוודא שה- Home Assistant שלך תמיד נגיש מרחוק."
+                            },
                             "title": "שליטה מרחוק"
                         },
                         "sign_out": "התנתק",
@@ -1678,6 +1726,7 @@
                     "license": "פורסם תחת רישיון Apache 2.0",
                     "path_configuration": "נתיב ל - configuration.yaml: {path}",
                     "server": "שרת",
+                    "setup_time": "זמן התקנה",
                     "source": "מקור:",
                     "system_health_error": "רכיב ה System Health אינו טעון. הוסף 'system_health:' ל - configuration.yaml"
                 },
@@ -1741,6 +1790,7 @@
                         },
                         "finish": "סיום",
                         "loading_first_time": "אנא המתן בזמן שהאינטגרציה מותקנת",
+                        "next": "הבא",
                         "not_all_required_fields": "לא כל שדות החובה מולאו.",
                         "not_loaded": "לא ניתן היה לטעון את האינטגרציה, נסה להפעיל מחדש את Home Assistant.",
                         "submit": "המשך"
@@ -2209,6 +2259,15 @@
                         "manufacturer_code_override": "עקיפת קוד יצרן",
                         "value": "ערך"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "קיצורי דרך",
+                        "update_button": "עדכן תצורה",
+                        "zha_options": {
+                            "default_light_transition": "זמן מעבר ברירת מחדל של האור (שניות)",
+                            "enable_identify_on_join": "אפשר אפקט זיהוי כאשר מכשירים מצטרפים לרשת",
+                            "title": "אפשרויות גלובליות"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "קביעת התצורה הושלמה",
                         "CONFIGURED_status_text": "מאתחל",
@@ -2301,6 +2360,14 @@
                     "device_info": {
                         "device_config": "הגדר את המכשיר"
                     },
+                    "logs": {
+                        "log_level": "רמת יומן",
+                        "subscribed_to_logs": "הרשם כמנוי להודעות יומן Z-Wave JS ...",
+                        "title": "יומני Z-Wave JS"
+                    },
+                    "navigation": {
+                        "logs": "יומנים"
+                    },
                     "node_config": {
                         "attribution": "פרמטרים ותיאורי תצורת המכשיר מסופקים על ידי {device_database}",
                         "battery_device_notice": "התקני סוללה חייבים להיות ערים כדי לעדכן את תצורתם. נא עיין במדריך למשתמש לקבלת הוראות כיצד להעיר את ההתקן.",
@@ -2308,7 +2375,20 @@
                         "header": "תצורת מכשיר Z-Wave",
                         "introduction": "נהל והתאם פרמטרי תצורה ספציפיים למכשיר (צומת) עבור ההתקן שנבחר",
                         "parameter_is_read_only": "פרמטר זה מוגדר לקריאה בלבד.",
+                        "set_param_accepted": "הפרמטר עודכן.",
+                        "set_param_error": "אירעה שגיאה.",
+                        "set_param_queued": "שינוי הפרמטר נכנס לתור ויעודכן כאשר ההתקן יתעורר.",
                         "zwave_js_device_database": "מאגר התקני Z-Wave JS"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "יהיה עליך להעיר התקנים המופעלים באמצעות סוללה לפני שתתחיל בראיון מחדש. עיין במדריך למשתמש של המכשיר לקבלת הוראות להעיר את ההתקן.",
+                        "in_progress": "המכשיר מתראיין. זה עלול לקחת זמן מה.",
+                        "interview_complete": "ראיון המכשיר הושלם.",
+                        "interview_failed": "ראיון המכשיר נכשל. מידע נוסף עשוי להיות זמין ביומנים.",
+                        "introduction": "ראיינו מחדש מכשיר ברשת Z-Wave שלכם. השתמש בתכונה זו אם הפונקציונליות של ההתקן שלך חסרה או שגויה.",
+                        "run_in_background": "ניתן לסגור תיבת דו-שיח זו והראיון יימשך ברקע.",
+                        "start_reinterview": "מתחיל ראיון מחדש",
+                        "title": "ראיון מחדש של התקן Z-Wave"
                     }
                 },
                 "zwave": {

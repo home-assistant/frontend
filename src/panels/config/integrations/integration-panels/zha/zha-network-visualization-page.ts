@@ -1,14 +1,4 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 
 import "@material/mwc-button";
 import { navigate } from "../../../../../common/navigate";
@@ -17,8 +7,8 @@ import {
   refreshTopology,
   ZHADevice,
 } from "../../../../../data/zha";
-import "../../../../../layouts/hass-subpage";
-import type { HomeAssistant } from "../../../../../types";
+import "../../../../../layouts/hass-tabs-subpage";
+import type { HomeAssistant, Route } from "../../../../../types";
 import { Network, Edge, Node, EdgeOptions } from "vis-network";
 import "../../../../../common/search/search-input";
 import "../../../../../components/device/ha-device-picker";
@@ -29,12 +19,18 @@ import { formatAsPaddedHex } from "./functions";
 import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
+import { zhaTabs } from "./zha-config-dashboard";
+import { customElement, property, query, state } from "lit/decorators";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
-  @property({ type: Object }) public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean, reflect: true }) public narrow = false;
+  @property({ attribute: false }) public route!: Route;
+
+  @property({ type: Boolean }) public narrow!: boolean;
+
+  @property({ type: Boolean }) public isWide!: boolean;
 
   @property()
   public zoomedDeviceId?: string;
@@ -42,19 +38,19 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @query("#visualization", true)
   private _visualization?: HTMLElement;
 
-  @internalProperty()
+  @state()
   private _devices: Map<string, ZHADevice> = new Map();
 
-  @internalProperty()
+  @state()
   private _devicesByDeviceId: Map<string, ZHADevice> = new Map();
 
-  @internalProperty()
+  @state()
   private _nodes: Node[] = [];
 
-  @internalProperty()
+  @state()
   private _network?: Network;
 
-  @internalProperty()
+  @state()
   private _filter?: string;
 
   private _autoZoom = true;
@@ -133,9 +129,12 @@ export class ZHANetworkVisualizationPage extends LitElement {
 
   protected render() {
     return html`
-      <hass-subpage
+      <hass-tabs-subpage
+        .tabs=${zhaTabs}
         .hass=${this.hass}
         .narrow=${this.narrow}
+        .isWide=${this.isWide}
+        .route=${this.route}
         .header=${this.hass.localize(
           "ui.panel.config.zha.visualization.header"
         )}
@@ -172,7 +171,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           >
         </div>
         <div id="visualization"></div>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -353,7 +352,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._autoZoom = (ev.target as HaCheckbox).checked;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         .header {

@@ -3,16 +3,13 @@ import "@polymer/paper-item/paper-item-body";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -34,8 +31,8 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
-import type { HaComboBox } from "../ha-combo-box";
 import "../ha-combo-box";
+import type { HaComboBox } from "../ha-combo-box";
 
 interface Device {
   name: string;
@@ -111,7 +108,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
-  @internalProperty() private _opened?: boolean;
+  @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
 
@@ -212,19 +209,17 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         );
       }
 
-      const outputDevices = inputDevices.map((device) => {
-        return {
-          id: device.id,
-          name: computeDeviceName(
-            device,
-            this.hass,
-            deviceEntityLookup[device.id]
-          ),
-          area: device.area_id
-            ? areaLookup[device.area_id].name
-            : this.hass.localize("ui.components.device-picker.no_area"),
-        };
-      });
+      const outputDevices = inputDevices.map((device) => ({
+        id: device.id,
+        name: computeDeviceName(
+          device,
+          this.hass,
+          deviceEntityLookup[device.id]
+        ),
+        area: device.area_id
+          ? areaLookup[device.area_id].name
+          : this.hass.localize("ui.components.device-picker.no_area"),
+      }));
       if (!outputDevices.length) {
         return [
           {
@@ -328,7 +323,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     }, 0);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-input > mwc-icon-button {
         --mdc-icon-button-size: 24px;

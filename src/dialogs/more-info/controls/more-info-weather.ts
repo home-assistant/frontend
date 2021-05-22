@@ -22,13 +22,13 @@ import {
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
+  html,
   LitElement,
-  property,
   PropertyValues,
-} from "lit-element";
-import { html, TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { formatDateWeekday } from "../../../common/datetime/format_date";
 import { formatTimeWeekday } from "../../../common/datetime/format_time";
 import { formatNumber } from "../../../common/string/format_number";
@@ -169,8 +169,8 @@ class MoreInfoWeather extends LitElement {
             <div class="section">
               ${this.hass.localize("ui.card.weather.forecast")}:
             </div>
-            ${this.stateObj.attributes.forecast.map((item) => {
-              return html`
+            ${this.stateObj.attributes.forecast.map(
+              (item) => html`
                 <div class="flex">
                   ${item.condition
                     ? html`
@@ -204,12 +204,14 @@ class MoreInfoWeather extends LitElement {
                       `
                     : ""}
                   <div class="temp">
-                    ${formatNumber(item.temperature, this.hass.locale)}
-                    ${getWeatherUnit(this.hass, "temperature")}
+                    ${this._showValue(item.temperature)
+                      ? `${formatNumber(item.temperature, this.hass.locale)}
+                    ${getWeatherUnit(this.hass, "temperature")}`
+                      : ""}
                   </div>
                 </div>
-              `;
-            })}
+              `
+            )}
           `
         : ""}
       ${this.stateObj.attributes.attribution
@@ -222,7 +224,7 @@ class MoreInfoWeather extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon {
         color: var(--paper-item-icon-color);

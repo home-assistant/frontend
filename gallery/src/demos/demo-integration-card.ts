@@ -1,12 +1,4 @@
-import {
-  customElement,
-  html,
-  css,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-  property,
-} from "lit-element";
+import { html, css, LitElement, TemplateResult } from "lit";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
 
@@ -23,7 +15,8 @@ import type {
 } from "../../../src/panels/config/integrations/ha-config-integrations";
 import { DeviceRegistryEntry } from "../../../src/data/device_registry";
 import { EntityRegistryEntry } from "../../../src/data/entity_registry";
-import { classMap } from "lit-html/directives/class-map";
+import { classMap } from "lit/directives/class-map";
+import { customElement, property, state } from "lit/decorators";
 
 const createConfigEntry = (
   title: string,
@@ -61,6 +54,9 @@ const nameAsDomainEntry = createConfigEntry("ESPHome");
 const longNameEntry = createConfigEntry(
   "Entry with a super long name that is going to the next line"
 );
+const longNonBreakingNameEntry = createConfigEntry(
+  "EntryWithASuperLongNameThatDoesNotBreak"
+);
 const configPanelEntry = createConfigEntry("Config Panel", {
   domain: "mqtt",
   localized_domain_name: "MQTT",
@@ -79,7 +75,12 @@ const setupRetryEntry = createConfigEntry("Setup Retry", {
 });
 const setupRetryReasonEntry = createConfigEntry("Setup Retry", {
   state: "setup_retry",
-  reason: "Unable to connect",
+  reason: "connection_error",
+});
+const setupRetryReasonMissingKeyEntry = createConfigEntry("Setup Retry", {
+  state: "setup_retry",
+  reason:
+    "HTTPSConnectionpool: Max retries exceeded with NewConnectionError('<urllib3.connection.HTTPSConnection object at 0x9eedfc10>: Failed to establish a new connection: [Errno 113] Host is unreachable')",
 });
 const failedUnloadEntry = createConfigEntry("Failed Unload", {
   state: "failed_unload",
@@ -137,10 +138,12 @@ const configEntries: Array<{
   { items: [optionsFlowEntry] },
   { items: [nameAsDomainEntry] },
   { items: [longNameEntry] },
+  { items: [longNonBreakingNameEntry] },
   { items: [setupErrorEntry] },
   { items: [migrationErrorEntry] },
   { items: [setupRetryEntry] },
   { items: [setupRetryReasonEntry] },
+  { items: [setupRetryReasonMissingKeyEntry] },
   { items: [failedUnloadEntry] },
   { items: [notLoadedEntry] },
   {
@@ -149,6 +152,7 @@ const configEntries: Array<{
       setupErrorEntry,
       migrationErrorEntry,
       longNameEntry,
+      longNonBreakingNameEntry,
       setupRetryEntry,
       failedUnloadEntry,
       notLoadedEntry,
@@ -209,9 +213,9 @@ const createDeviceRegistryEntries = (
 export class DemoIntegrationCard extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
 
-  @internalProperty() isCustomIntegration = false;
+  @state() isCustomIntegration = false;
 
-  @internalProperty() isCloud = false;
+  @state() isCloud = false;
 
   protected render(): TemplateResult {
     if (!this.hass) {
@@ -298,6 +302,14 @@ export class DemoIntegrationCard extends LitElement {
     const hass = provideHass(this);
     hass.updateTranslations(null, "en");
     hass.updateTranslations("config", "en");
+    // Normally this string is loaded from backend
+    hass.addTranslations(
+      {
+        "component.esphome.config.error.connection_error":
+          "Can't connect to ESP. Please make sure your YAML file contains an 'api:' line.",
+      },
+      "en"
+    );
   }
 
   private _toggleCustomIntegration() {

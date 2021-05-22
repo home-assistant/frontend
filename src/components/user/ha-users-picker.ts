@@ -1,14 +1,7 @@
 import { mdiClose } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { guard } from "lit-html/directives/guard";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { fetchUsers, User } from "../../data/user";
@@ -149,7 +142,7 @@ class HaUsersPickerLight extends LitElement {
     this._updateUsers(this._currentUsers.filter((user) => user !== userId));
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

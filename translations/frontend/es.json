@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Se ha producido un error desconocido",
+            "error_addon_no_ingress": "El complemento solicitado no admite la entrada",
             "error_addon_not_found": "Complemento no encontrado",
             "faq_link": "Preguntas frecuentes sobre mi Home Assistant",
             "not_supported": "Esta redirección no es compatible con tu instancia de Home Assistant. Consulta el {link} para conocer las redirecciones admitidas y la versión en la que se introdujeron."
@@ -383,6 +384,7 @@
             "create": "Crear",
             "create_blocked_not_running": "No es posible crear una instantánea en este momento porque el sistema está en el estado {state}.",
             "create_snapshot": "Crear instantánea",
+            "created": "Creada",
             "description": "Las instantáneas te permiten realizar copias de seguridad y restaurar fácilmente todos los datos de tu instancia de Home Assistant.",
             "enter_password": "Por favor, introduce una contraseña.",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Obtén actualizaciones estables para Home Assistant, Supervisor y el host",
                 "ram_usage": "Uso de RAM del Supervisor",
                 "reload_supervisor": "Recargar el Supervisor",
+                "search": "Buscar",
                 "share_diagnostics": "Compartir diagnósticos",
                 "share_diagnostics_description": "Comparte informes de fallos e información de diagnóstico.",
                 "share_diagonstics_description": "¿Te gustaría compartir automáticamente informes de fallos e información de diagnóstico cuando el Supervisor encuentra errores inesperados? {line_break} Esto nos permitirá solucionar los problemas, la información solo es accesible para el equipo principal de Home Assistant y no se compartirá con otros. {line_break} Los datos no incluyen ninguna información privada/confidencial y puedes desactivar esto en la configuración en cualquier momento que desees.",
@@ -561,9 +564,12 @@
             },
             "light": {
                 "brightness": "Brillo",
+                "cold_white_value": "Brillo del blanco frío",
+                "color_brightness": "Brillo del color",
                 "color_temperature": "Temperatura del color",
                 "effect": "Efecto",
-                "white_value": "Valor de blanco"
+                "warm_white_value": "Brillo del blanco cálido",
+                "white_value": "Brillo del blanco"
             },
             "lock": {
                 "code": "Código",
@@ -886,6 +892,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Documentación sobre la integración",
                 "required": "Este campo es obligatorio",
                 "service_data": "Datos del servicio",
                 "target": "Objetivos",
@@ -1193,7 +1200,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Reconfigurando el dispositivo"
+                "attribute": "Atributo",
+                "battery_device_warning": "Antes de iniciar el proceso de reconfiguración, deberás despertar los dispositivos que funcionan con batería. Consulta el manual de tu dispositivo para obtener instrucciones sobre cómo despertar el dispositivo.",
+                "bind_header": "Emparejamiento",
+                "button_hide": "Ocultar detalles",
+                "button_show": "Mostrar detalles",
+                "cluster_header": "Clúster",
+                "configuration_complete": "Reconfiguración del dispositivo completada.",
+                "configuration_failed": "Error en la reconfiguración del dispositivo. Es posible que haya información adicional disponible en los registros.",
+                "configuring_alt": "Configurando",
+                "heading": "Reconfigurando el dispositivo",
+                "in_progress": "El dispositivo se está reconfigurando. Esto puede llevar algún tiempo.",
+                "introduction": "Reconfigura un dispositivo en tu red Zigbee. Utiliza esta función si tu dispositivo no funciona correctamente.",
+                "min_max_change": "min/max/cambio",
+                "reporting_header": "Informes",
+                "run_in_background": "Puedes cerrar este cuadro de diálogo y la reconfiguración continuará en segundo plano.",
+                "start_reconfiguration": "Iniciar reconfiguración"
             }
         },
         "duration": {
@@ -1256,7 +1278,8 @@
                     "caption": "Áreas",
                     "data_table": {
                         "area": "Área",
-                        "devices": "Dispositivos"
+                        "devices": "Dispositivos",
+                        "entities": "Entidades"
                     },
                     "delete": {
                         "confirmation_text": "Todos los dispositivos en esta área quedarán sin asignar.",
@@ -1268,8 +1291,10 @@
                         "create": "Crear",
                         "default_name": "Área Nueva",
                         "delete": "Eliminar",
+                        "linked_entities_caption": "Entidades",
                         "name": "Nombre",
                         "name_required": "Se requiere el nombre",
+                        "no_linked_entities": "No hay entidades vinculadas a este área.",
                         "unknown_error": "Error desconocido",
                         "update": "Actualizar"
                     },
@@ -1695,7 +1720,7 @@
                         },
                         "connected": "Conectado",
                         "connection_status": "Estado de conexión a la nube",
-                        "fetching_subscription": "Obteniendo suscripción ...",
+                        "fetching_subscription": "Obteniendo suscripción...",
                         "google": {
                             "config_documentation": "Documentación de configuración",
                             "devices_pin": "PIN de dispositivos de seguridad",
@@ -1722,12 +1747,18 @@
                         "nabu_casa_account": "Cuenta Nabu Casa",
                         "not_connected": "No conectado",
                         "remote": {
-                            "access_is_being_prepared": "Se está preparando el acceso remoto. Te avisaremos cuando esté listo.",
+                            "access_is_being_prepared": "Se está preparando el control remoto. Te avisaremos cuando esté listo.",
                             "certificate_info": "Información del certificado",
+                            "connected": "Conectado",
                             "info": "Home Assistant Cloud proporciona una conexión remota segura a tu instancia mientras estás fuera de casa.",
                             "instance_is_available": "Tu instancia está disponible en",
                             "instance_will_be_available": "Tu instancia estará disponible en",
                             "link_learn_how_it_works": "Aprende cómo funciona",
+                            "not_connected": "No conectado",
+                            "remote_enabled": {
+                                "caption": "Conectar automáticamente",
+                                "description": "Habilita esta opción para asegurarte de que tu instancia de Home Assistant está siempre accesible de forma remota."
+                            },
                             "title": "Control remoto"
                         },
                         "sign_out": "Cerrar sesión",
@@ -1751,7 +1782,7 @@
                             "disable_hook_error_msg": "No se pudo deshabilitar el webhook:",
                             "info": "Cualquier cosa que esté configurada para ser activada por un webhook puede recibir una URL de acceso público para permitirte enviar datos a Home Assistant desde cualquier lugar, sin exponer tu instancia a Internet.",
                             "link_learn_more": "Saber más sobre la creación de automatizaciones basadas en webhook.",
-                            "loading": "Cargando ...",
+                            "loading": "Cargando...",
                             "manage": "Administrar",
                             "no_hooks_yet": "Parece que aún no tienes webhooks. Comienza configurando un",
                             "no_hooks_yet_link_automation": "automatización de webhook",
@@ -2138,6 +2169,7 @@
                     "license": "Publicado bajo la licencia Apache 2.0",
                     "path_configuration": "Ruta a configuration.yaml: {path}",
                     "server": "servidor",
+                    "setup_time": "Tiempo de configuración",
                     "source": "Fuente:",
                     "system_health_error": "El componente Estado del Sistema no está cargado. Añade 'system_health:' a configuration.yaml",
                     "system_health": {
@@ -2198,7 +2230,7 @@
                             "migration_error": "Error de migración",
                             "not_loaded": "No se ha cargado",
                             "setup_error": "No se pudo configurar",
-                            "setup_retry": "Volviendo a intentar configurar"
+                            "setup_retry": "Reintentando la configuración"
                         },
                         "system_options": "Opciones del sistema",
                         "unnamed_entry": "Entrada sin nombre"
@@ -2217,6 +2249,7 @@
                         },
                         "finish": "Terminar",
                         "loading_first_time": "Por favor, espera mientras la integración está siendo instalada",
+                        "next": "Siguiente",
                         "not_all_required_fields": "No se han completado todos los campos requeridos.",
                         "not_loaded": "La integración no se ha podido cargar, intenta reiniciar Home Assistant.",
                         "pick_flow_step": {
@@ -2555,6 +2588,8 @@
                         "add_scene": "Añadir escena",
                         "delete_confirm": "¿Estás seguro de que quieres eliminar esta escena?",
                         "delete_scene": "Eliminar escena",
+                        "duplicate": "Duplicar",
+                        "duplicate_scene": "Duplicar la escena",
                         "edit_scene": "Editar escena",
                         "header": "Editor de escenas",
                         "headers": {
@@ -2787,6 +2822,15 @@
                         "manufacturer_code_override": "Anulación del código del fabricante",
                         "value": "Valor"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Atajos",
+                        "update_button": "Actualizar la configuración",
+                        "zha_options": {
+                            "default_light_transition": "Tiempo de transición de la luz por defecto (segundos)",
+                            "enable_identify_on_join": "Habilita el efecto de identificación cuando los dispositivos se unen a la red",
+                            "title": "Opciones globales"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuración completada",
                         "CONFIGURED_status_text": "Inicializando",
@@ -2873,7 +2917,9 @@
                         "controller_in_inclusion_mode": "Tu controlador Z-Wave ahora está en modo de inclusión.",
                         "follow_device_instructions": "Sigue las instrucciones que vienen con el dispositivo para activar el emparejamiento en el dispositivo.",
                         "inclusion_failed": "No se pudo agregar el nodo. Por favor, consulta los registros para obtener más información.",
-                        "inclusion_finished": "Se ha agregado el nodo. Pueden tardar unos minutos en aparecer todas las entidades mientras terminamos de configurar el nodo en segundo plano.",
+                        "inclusion_finished": "Se ha agregado el nodo.",
+                        "interview_failed": "La entrevista del dispositivo falló. Es posible que haya información adicional disponible en los registros.",
+                        "interview_started": "El dispositivo está siendo entrevistado. Esto puede llevar algún tiempo.",
                         "introduction": "Este asistente te guiará para añadir un nodo a tu red Z-Wave.",
                         "secure_inclusion_warning": "Los dispositivos seguros requieren ancho de banda adicional; demasiados dispositivos seguros pueden ralentizar tu red Z-Wave. Recomendamos usar solo la inclusión segura para dispositivos que lo requieran, como cerraduras o abre-puertas de garaje.",
                         "start_inclusion": "Iniciar inclusión",
@@ -2911,7 +2957,13 @@
                         "node_status": "Estado del Nodo",
                         "zwave_info": "Información de Z-Wave"
                     },
+                    "logs": {
+                        "log_level": "Nivel de registro",
+                        "subscribed_to_logs": "Suscrito a los mensajes de registro de Z-Wave JS...",
+                        "title": "Registros de Z-Wave JS"
+                    },
                     "navigation": {
+                        "logs": "Registros",
                         "network": "Red"
                     },
                     "network_status": {
@@ -2926,6 +2978,9 @@
                         "header": "Configuración del dispositivo Z-Wave",
                         "introduction": "Administra y ajusta los parámetros de configuración específicos del dispositivo (nodo) para el dispositivo seleccionado",
                         "parameter_is_read_only": "Este parámetro es de solo lectura.",
+                        "set_param_accepted": "El parámetro se ha actualizado.",
+                        "set_param_error": "Se ha producido un error.",
+                        "set_param_queued": "El cambio de parámetro se ha puesto en cola y se actualizará cuando el dispositivo se active.",
                         "zwave_js_device_database": "Base de datos de dispositivos Z-Wave JS"
                     },
                     "node_status": {
@@ -2934,6 +2989,16 @@
                         "awake": "Despierto",
                         "dead": "No responde",
                         "unknown": "Desconocido"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Deberás reactivar los dispositivos que funcionan con baterías antes de comenzar la reentrevista. Consulta el manual de tu dispositivo para obtener instrucciones sobre cómo reactivar el dispositivo.",
+                        "in_progress": "El dispositivo está siendo entrevistado. Esto puede llevar algún tiempo.",
+                        "interview_complete": "Entrevista con el dispositivo completa.",
+                        "interview_failed": "La entrevista del dispositivo falló. Es posible que haya información adicional disponible en los registros.",
+                        "introduction": "Vuelve a entrevistar un dispositivo en tu red Z-Wave. Utiliza esta función si tu dispositivo tiene una funcionalidad incorrecta o ausente.",
+                        "run_in_background": "Puedes cerrar este cuadro de diálogo y la entrevista continuará en segundo plano.",
+                        "start_reinterview": "Iniciar la reentrevista",
+                        "title": "Volver a entrevistar un dispositivo Z-Wave"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Cancelar exclusión",
@@ -3053,12 +3118,12 @@
                         "count_listeners": " ({count} oyentes)",
                         "data": "Datos del evento (YAML, opcional)",
                         "description": "Disparar un evento en el bus de eventos.",
-                        "documentation": "Documentación de eventos.",
+                        "documentation": "Documentación de eventos",
                         "event_fired": "Evento {name} disparado",
                         "fire_event": "Lanzar evento",
                         "listen_to_events": "Escuchar eventos",
                         "listening_to": "Escuchando",
-                        "notification_event_fired": "¡Evento {tipe} disparado con éxito!",
+                        "notification_event_fired": "¡Evento {type} disparado con éxito!",
                         "start_listening": "Empezar a escuchar",
                         "stop_listening": "Dejar de escuchar",
                         "subscribe_to": "Evento al que suscribirse",
@@ -3085,8 +3150,8 @@
                         "attributes": "Atributos",
                         "copy_id": "Copiar ID al portapapeles",
                         "current_entities": "Entidades actuales",
-                        "description1": "Establecer la representación de un dispositivo dentro de Home Assistant.",
-                        "description2": "Esto no se comunicará con el dispositivo actual.",
+                        "description1": "Establece la representación del estado actual de una entidad dentro de Home Assistant.",
+                        "description2": "Si la entidad pertenece a un dispositivo, no habrá comunicación real con ese dispositivo.",
                         "entity": "Entidad",
                         "filter_attributes": "Filtrar atributos",
                         "filter_entities": "Filtrar entidades",
@@ -3542,7 +3607,7 @@
                         "unsaved_changes": "Cambios no guardados"
                     },
                     "save_config": {
-                        "cancel": "No importa",
+                        "cancel": "Cancelar",
                         "close": "Cerrar",
                         "empty_config": "Empezar con un panel de control vacío",
                         "header": "Tomar el control de la interfaz de usuario Lovelace",
@@ -3916,12 +3981,12 @@
                 },
                 "refresh_tokens": {
                     "confirm_delete": "¿Estás seguro de que quieres eliminar el token de actualización para {name}?",
-                    "created_at": "Creado el {date}",
+                    "created_at": "Creado {date}",
                     "current_token_tooltip": "No se puede eliminar el token actual",
                     "delete_failed": "Error al eliminar el token de acceso.",
                     "description": "Cada token de actualización representa un acceso de sesión. Los tokens de actualización se eliminarán automáticamente al cerrar la sesión. Los siguientes tokens de actualización están actualmente activos para tu cuenta.",
                     "header": "Actualizar tokens",
-                    "last_used": "Último uso el {date} desde {location}",
+                    "last_used": "Último uso {date} desde {location}",
                     "not_used": "Nunca ha sido usado",
                     "token_title": "Actualizar token para {clientId}"
                 },
@@ -3942,6 +4007,17 @@
                     "link_promo": "Aprende sobre los temas",
                     "primary_color": "Color primario",
                     "reset": "Reiniciar"
+                },
+                "time_format": {
+                    "description": "Elije cómo se formatean las horas.",
+                    "dropdown_label": "Formato de hora",
+                    "formats": {
+                        "12": "12 horas (AM/PM)",
+                        "24": "24 horas",
+                        "language": "Automático (utilizar la configuración del idioma)",
+                        "system": "Utilizar la configuración regional del sistema"
+                    },
+                    "header": "Formato de hora"
                 },
                 "vibrate": {
                     "description": "Activar o deshabilitar la vibración en este dispositivo al controlar dispositivos.",

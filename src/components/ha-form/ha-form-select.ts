@@ -1,15 +1,7 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-paper-dropdown-menu";
 import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./ha-form";
@@ -41,15 +33,17 @@ export class HaFormSelect extends LitElement implements HaFormElement {
           .selected=${this.data}
           @selected-item-changed=${this._valueChanged}
         >
-          ${// TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
-          // @ts-ignore
-          this.schema.options!.map(
-            (item: string | [string, string]) => html`
-              <paper-item .itemValue=${this._optionValue(item)}>
-                ${this._optionLabel(item)}
-              </paper-item>
-            `
-          )}
+          ${
+            // TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
+            // @ts-ignore
+            this.schema.options!.map(
+              (item: string | [string, string]) => html`
+                <paper-item .itemValue=${this._optionValue(item)}>
+                  ${this._optionLabel(item)}
+                </paper-item>
+              `
+            )
+          }
         </paper-listbox>
       </ha-paper-dropdown-menu>
     `;
@@ -72,7 +66,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-paper-dropdown-menu {
         display: block;

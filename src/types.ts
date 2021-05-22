@@ -3,16 +3,13 @@ import {
   Connection,
   HassConfig,
   HassEntities,
-  HassServiceTarget,
   HassServices,
+  HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
 import { CoreFrontendUserData } from "./data/frontend";
-import {
-  FrontendTranslationData,
-  getHassTranslations,
-} from "./data/translation";
+import { FrontendLocaleData, getHassTranslations } from "./data/translation";
 import { Themes } from "./data/ws-themes";
 import { ExternalMessaging } from "./external_app/external_messaging";
 
@@ -89,7 +86,8 @@ export interface CurrentUser {
 export interface ThemeSettings {
   theme: string;
   // Radio box selection for theme picker. Do not use in cards as
-  // it can be undefined == auto. Property hass.themes.darkMode carries effective current mode.
+  // it can be undefined == auto.
+  // Property hass.themes.darkMode carries effective current mode.
   dark?: boolean;
   primaryColor?: string;
   accentColor?: string;
@@ -200,7 +198,7 @@ export interface HomeAssistant {
   panels: Panels;
   panelUrl: string;
   // i18n
-  // current effective language, in that order:
+  // current effective language in that order:
   //   - backend saved user selected language
   //   - language in local app storage
   //   - browser language
@@ -208,7 +206,7 @@ export interface HomeAssistant {
   language: string;
   // local stored language, keep that name for backward compatibility
   selectedLanguage: string | null;
-  locale: FrontendTranslationData;
+  locale: FrontendLocaleData;
   resources: Resources;
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;

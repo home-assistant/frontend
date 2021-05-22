@@ -1,5 +1,5 @@
-import { css, customElement, LitElement, property, svg } from "lit-element";
-
+import { css, LitElement, svg } from "lit";
+import { customElement, property } from "lit/decorators";
 import { NODE_SIZE, SPACING } from "./hat-graph";
 
 @customElement("hat-graph-spacer")

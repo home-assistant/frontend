@@ -1,22 +1,16 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import "../../../components/buttons/ha-call-service-button";
 import { HomeAssistant } from "../../../types";
 import { LovelaceElement, ServiceButtonElementConfig } from "./types";
 
 @customElement("hui-service-button-element")
-export class HuiServiceButtonElement extends LitElement
+export class HuiServiceButtonElement
+  extends LitElement
   implements LovelaceElement {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ServiceButtonElementConfig;
+  @state() private _config?: ServiceButtonElementConfig;
 
   private _domain?: string;
 
@@ -56,7 +50,7 @@ export class HuiServiceButtonElement extends LitElement
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-call-service-button {
         color: var(--primary-color);

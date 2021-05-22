@@ -1,14 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
 import "./ha-svg-icon";
@@ -18,6 +12,8 @@ export class HaButtonToggleGroup extends LitElement {
   @property({ attribute: false }) public buttons!: ToggleButton[];
 
   @property() public active?: string;
+
+  @property({ type: Boolean }) public fullWidth = false;
 
   protected render(): TemplateResult {
     return html`
@@ -33,6 +29,11 @@ export class HaButtonToggleGroup extends LitElement {
                 <ha-svg-icon .path=${button.iconPath}></ha-svg-icon>
               </mwc-icon-button>`
             : html`<mwc-button
+                style=${styleMap({
+                  width: this.fullWidth
+                    ? `${100 / this.buttons.length}%`
+                    : "initial",
+                })}
                 .value=${button.value}
                 ?active=${this.active === button.value}
                 @click=${this._handleClick}
@@ -48,7 +49,7 @@ export class HaButtonToggleGroup extends LitElement {
     fireEvent(this, "value-changed", { value: this.active });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         display: flex;

@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  PropertyValues,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, query } from "lit/decorators";
 import { getEntity } from "../../../src/fake_data/entity";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -186,7 +180,7 @@ const CONFIGS = [
       name:
     - light.kitchen_lights
     - entity: lock.kitchen_door
-      name: 
+      name:
     - light.ceiling_lights
     `,
   },
@@ -194,7 +188,7 @@ const CONFIGS = [
     heading: "Custom tap action",
     config: `
 - type: glance
-  columns: 4  
+  columns: 4
   entities:
     - entity: lock.kitchen_door
       name: Custom
@@ -232,4 +226,8 @@ class DemoGlanceEntity extends LitElement {
   }
 }
 
-customElements.define("demo-hui-glance-card", DemoGlanceEntity);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-glance-card": DemoGlanceEntity;
+  }
+}

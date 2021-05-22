@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  PropertyValues,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, query } from "lit/decorators";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
 import { createMediaPlayerEntities } from "../data/media_players";
@@ -180,4 +174,8 @@ class DemoHuiMediaControlCard extends LitElement {
   }
 }
 
-customElements.define("demo-hui-media-control-card", DemoHuiMediaControlCard);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-media-control-card": DemoHuiMediaControlCard;
+  }
+}

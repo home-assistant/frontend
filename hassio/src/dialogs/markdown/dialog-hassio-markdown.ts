@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-markdown";
 import { haStyleDialog } from "../../../../src/resources/styles";
@@ -23,7 +15,7 @@ class HassioMarkdownDialog extends LitElement {
 
   @property() public content!: string;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
   public showDialog(params: HassioMarkdownDialogParams) {
     this.title = params.title;
@@ -50,7 +42,7 @@ class HassioMarkdownDialog extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       hassioStyle,

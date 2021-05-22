@@ -2,12 +2,27 @@ import { atLeastVersion } from "../../common/config/version";
 import { HomeAssistant } from "../../types";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
+export const friendlyFolderName = {
+  ssl: "SSL",
+  homeassistant: "Configuration",
+  "addons/local": "Local add-ons",
+  media: "Media",
+  share: "Share",
+};
+
+interface SnapshotContent {
+  homeassistant: boolean;
+  folders: string[];
+  addons: string[];
+}
+
 export interface HassioSnapshot {
   slug: string;
   date: string;
   name: string;
   type: "full" | "partial";
   protected: boolean;
+  content: SnapshotContent;
 }
 
 export interface HassioSnapshotDetail extends HassioSnapshot {
@@ -61,7 +76,7 @@ export const fetchHassioSnapshotInfo = async (
 ): Promise<HassioSnapshotDetail> => {
   if (hass) {
     if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
-      return await hass.callWS({
+      return hass.callWS({
         type: "supervisor/api",
         endpoint: `/snapshots/${snapshot}/info`,
         method: "get",
@@ -163,5 +178,5 @@ export const uploadSnapshot = async (
   } else if (resp.status !== 200) {
     throw new Error(`${resp.status} ${resp.statusText}`);
   }
-  return await resp.json();
+  return resp.json();
 };

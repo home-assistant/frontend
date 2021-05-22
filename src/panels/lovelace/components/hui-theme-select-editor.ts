@@ -2,15 +2,8 @@ import "@material/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
 
@@ -46,15 +39,16 @@ export class HuiThemeSelectEditor extends LitElement {
           >
           ${Object.keys(this.hass!.themes.themes)
             .sort()
-            .map((theme) => {
-              return html` <paper-item theme=${theme}>${theme}</paper-item> `;
-            })}
+            .map(
+              (theme) =>
+                html` <paper-item theme=${theme}>${theme}</paper-item> `
+            )}
         </paper-listbox>
       </paper-dropdown-menu>
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-dropdown-menu {
         width: 100%;

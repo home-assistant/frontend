@@ -1,12 +1,5 @@
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   array,
   assert,
@@ -37,13 +30,14 @@ const cardConfigStruct = object({
 const views = ["dayGridMonth", "dayGridDay", "listWeek"];
 
 @customElement("hui-calendar-card-editor")
-export class HuiCalendarCardEditor extends LitElement
+export class HuiCalendarCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) private _config?: CalendarCardConfig;
 
-  @internalProperty() private _configEntities?: string[];
+  @state() private _configEntities?: string[];
 
   public setConfig(config: CalendarCardConfig): void {
     assert(config, cardConfigStruct);
@@ -93,15 +87,15 @@ export class HuiCalendarCardEditor extends LitElement
               .configValue=${"initial_view"}
               @iron-select=${this._viewChanged}
             >
-              ${views.map((view) => {
-                return html`
+              ${views.map(
+                (view) => html`
                   <paper-item .view=${view}
                     >${this.hass!.localize(
                       `ui.panel.lovelace.editor.card.calendar.views.${view}`
                     )}
                   </paper-item>
-                `;
-              })}
+                `
+              )}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
@@ -175,7 +169,7 @@ export class HuiCalendarCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

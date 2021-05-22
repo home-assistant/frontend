@@ -1,13 +1,12 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -55,7 +54,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return { type: "entities", entities: foundEntities };
   }
 
-  @internalProperty() private _config?: EntitiesCardConfig;
+  @state() private _config?: EntitiesCardConfig;
 
   private _hass?: HomeAssistant;
 
@@ -69,18 +68,18 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    this.shadowRoot!.querySelectorAll("#states > div > *").forEach(
-      (element: unknown) => {
+    this.shadowRoot
+      ?.querySelectorAll("#states > div > *")
+      .forEach((element: unknown) => {
         (element as LovelaceRow).hass = hass;
-      }
-    );
+      });
     if (this._headerElement) {
       this._headerElement.hass = hass;
     }
     if (this._footerElement) {
       this._footerElement.hass = hass;
     }
-    const entitiesToggle = this.shadowRoot!.querySelector(
+    const entitiesToggle = this.shadowRoot?.querySelector(
       "hui-entities-toggle"
     );
     if (entitiesToggle) {
@@ -181,9 +180,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         ${this._headerElement
-          ? html`<div class="header-footer header">
-              ${this._headerElement}
-            </div>`
+          ? html`<div class="header-footer header">${this._headerElement}</div>`
           : ""}
         ${!this._config.title && !this._showHeaderToggle && !this._config.icon
           ? ""
@@ -219,15 +216,13 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         </div>
 
         ${this._footerElement
-          ? html`<div class="header-footer footer">
-              ${this._footerElement}
-            </div>`
+          ? html`<div class="header-footer footer">${this._footerElement}</div>`
           : ""}
       </ha-card>
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;

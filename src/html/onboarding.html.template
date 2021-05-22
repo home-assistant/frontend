@@ -2,7 +2,11 @@
 <html>
   <head>
     <title>Home Assistant</title>
-    <link rel="modulepreload" href="<%= latestPageJS %>" crossorigin="use-credentials" />
+    <link
+      rel="modulepreload"
+      href="<%= latestPageJS %>"
+      crossorigin="use-credentials"
+    />
     <%= renderTemplate('_header') %>
     <style>
       html {
@@ -15,8 +19,19 @@
         border-radius: 4px;
         max-width: 432px;
         margin: 64px auto 0;
-        box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
-        background-color: #fff;
+        box-shadow: var(
+          --ha-card-box-shadow,
+          rgba(0, 0, 0, 0.25) 0px 54px 55px,
+          rgba(0, 0, 0, 0.12) 0px -12px 30px,
+          rgba(0, 0, 0, 0.12) 0px 4px 6px,
+          rgba(0, 0, 0, 0.17) 0px 12px 13px,
+          rgba(0, 0, 0, 0.09) 0px -3px 5px
+        );
+        background: var(
+          --ha-card-background,
+          var(--card-background-color, white)
+        );
+        color: var(--primary-text-color, #212121);
       }
 
       .header {
@@ -36,16 +51,6 @@
         html {
           color: #e1e1e1;
         }
-        ha-onboarding {
-          --primary-text-color: #e1e1e1;
-          --secondary-text-color: #9b9b9b;
-          --disabled-text-color: #6f6f6f;
-          --mdc-theme-surface: #1e1e1e;
-          --ha-card-background: #1e1e1e;
-        }
-        .content {
-          background-color: #111111;
-        }
       }
 
       @media (max-width: 450px) {
@@ -54,10 +59,9 @@
           margin: 0;
         }
       }
-
     </style>
   </head>
-  <body id='particles'>
+  <body id="particles">
     <div class="content">
       <div class="header">
         <img src="/static/icons/favicon-192x192.png" height="52" width="52" />

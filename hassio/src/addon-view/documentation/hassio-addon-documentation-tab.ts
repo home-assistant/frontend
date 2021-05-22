@@ -1,14 +1,5 @@
 import "../../../../src/components/ha-card";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-markdown";
 import {
@@ -21,6 +12,7 @@ import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
+import { customElement, property, state } from "lit/decorators";
 
 @customElement("hassio-addon-documentation-tab")
 class HassioAddonDocumentationDashboard extends LitElement {
@@ -30,9 +22,9 @@ class HassioAddonDocumentationDashboard extends LitElement {
 
   @property({ attribute: false }) public addon?: HassioAddonDetails;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _content?: string;
+  @state() private _content?: string;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -57,7 +49,7 @@ class HassioAddonDocumentationDashboard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

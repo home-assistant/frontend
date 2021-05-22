@@ -1,14 +1,8 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HomeAssistant } from "../../types";
 import { SelectSelector } from "../../data/selector";
+import { HomeAssistant } from "../../types";
 import "../ha-paper-dropdown-menu";
 
 @customElement("ha-selector-select")
@@ -36,9 +30,7 @@ export class HaSelectSelector extends LitElement {
       >
         ${this.selector.select.options.map(
           (item: string) => html`
-            <paper-item .itemValue=${item}>
-              ${item}
-            </paper-item>
+            <paper-item .itemValue=${item}> ${item} </paper-item>
           `
         )}
       </paper-listbox>
@@ -54,7 +46,7 @@ export class HaSelectSelector extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-paper-dropdown-menu {
         width: 100%;

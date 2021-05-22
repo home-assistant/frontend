@@ -5,8 +5,8 @@ import { subscribeDeviceRegistry } from "../../../data/device_registry";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
 import {
-  LovelaceViewStrategy,
   LovelaceDashboardStrategy,
+  LovelaceViewStrategy,
 } from "./get-strategy";
 
 let subscribedRegistries = false;
@@ -83,10 +83,10 @@ export class OriginalStatesStrategy {
     info: Parameters<LovelaceDashboardStrategy["generateDashboard"]>[0]
   ): ReturnType<LovelaceDashboardStrategy["generateDashboard"]> {
     return {
+      title: info.hass.config.location_name,
       views: [
         {
-          strategy: { name: "original-states" },
-          title: info.hass.config.location_name,
+          strategy: { type: "original-states" },
         },
       ],
     };

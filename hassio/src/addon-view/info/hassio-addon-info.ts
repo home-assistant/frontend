@@ -14,17 +14,9 @@ import {
   mdiPound,
   mdiShield,
 } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
@@ -90,9 +82,9 @@ class HassioAddonInfo extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _metrics?: HassioStats;
+  @state() private _metrics?: HassioStats;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   private _addonStoreInfo = memoizeOne(
     (slug: string, storeAddons: StoreAddon[]) =>
@@ -171,16 +163,16 @@ class HassioAddonInfo extends LitElement {
                   : ""}
               </div>
               <div class="card-actions">
-                <mwc-button @click=${this._updateClicked}>
-                  ${this.supervisor.localize("common.update")}
-                </mwc-button>
                 ${this.addon.changelog
                   ? html`
                       <mwc-button @click=${this._openChangelog}>
                         ${this.supervisor.localize("addon.dashboard.changelog")}
                       </mwc-button>
                     `
-                  : ""}
+                  : html`<span></span>`}
+                <mwc-button @click=${this._updateClicked}>
+                  ${this.supervisor.localize("common.update")}
+                </mwc-button>
               </div>
             </ha-card>
           `
@@ -261,13 +253,9 @@ class HassioAddonInfo extends LitElement {
             ${this.supervisor.localize(
               "addon.dashboard.visit_addon_page",
               "name",
-              html`<a
-                href="${this.addon.url!}"
-                target="_blank"
-                rel="noreferrer"
-              >
-                ${this.addon.name}
-              </a>`
+              html`<a href="${this.addon.url!}" target="_blank" rel="noreferrer"
+                >${this.addon.name}</a
+              >`
             )}
           </div>
           <div class="addon-container">
@@ -566,9 +554,7 @@ class HassioAddonInfo extends LitElement {
                       <span slot="heading">
                         ${this.supervisor.localize("addon.dashboard.hostname")}
                       </span>
-                      <code slot="description">
-                        ${this.addon.hostname}
-                      </code>
+                      <code slot="description"> ${this.addon.hostname} </code>
                     </ha-settings-row>
                     ${metrics.map(
                       (metric) =>
@@ -997,7 +983,7 @@ class HassioAddonInfo extends LitElement {
         addons: [this.addon.slug],
         homeassistant: false,
       },
-      updateHandler: async () => await this._updateAddon(),
+      updateHandler: async () => this._updateAddon(),
     });
   }
 
@@ -1104,7 +1090,7 @@ class HassioAddonInfo extends LitElement {
     button.progress = false;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

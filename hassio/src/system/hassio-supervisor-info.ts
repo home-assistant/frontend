@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
@@ -67,7 +59,7 @@ class HassioSupervisorInfo extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _metrics?: HassioStats;
+  @state() private _metrics?: HassioStats;
 
   protected render(): TemplateResult | void {
     const metrics = [
@@ -264,9 +256,7 @@ class HassioSupervisorInfo extends LitElement {
         title: this.supervisor.localize("system.supervisor.warning"),
         text: html`${this.supervisor.localize("system.supervisor.beta_warning")}
           <br />
-          <b>
-            ${this.supervisor.localize("system.supervisor.beta_backup")}
-          </b>
+          <b> ${this.supervisor.localize("system.supervisor.beta_backup")} </b>
           <br /><br />
           ${this.supervisor.localize("system.supervisor.beta_release_items")}
           <ul>
@@ -506,7 +496,7 @@ class HassioSupervisorInfo extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

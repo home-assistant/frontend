@@ -5,16 +5,14 @@ import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { safeDump, safeLoad } from "js-yaml";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { array, assert, object, optional, string, type } from "superstruct";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { deepEqual } from "../../common/util/deep-equal";
@@ -47,9 +45,9 @@ class LovelaceFullConfigEditor extends LitElement {
 
   @property() public closeEditor?: () => void;
 
-  @internalProperty() private _saving?: boolean;
+  @state() private _saving?: boolean;
 
-  @internalProperty() private _changed?: boolean;
+  @state() private _changed?: boolean;
 
   protected render(): TemplateResult | void {
     return html`
@@ -115,8 +113,8 @@ class LovelaceFullConfigEditor extends LitElement {
       !this._saving &&
       oldLovelace &&
       this.lovelace &&
-      oldLovelace.config !== this.lovelace.config &&
-      !deepEqual(oldLovelace.config, this.lovelace.config)
+      oldLovelace.rawConfig !== this.lovelace.rawConfig &&
+      !deepEqual(oldLovelace.rawConfig, this.lovelace.rawConfig)
     ) {
       showToast(this, {
         message: this.hass!.localize(
@@ -124,7 +122,7 @@ class LovelaceFullConfigEditor extends LitElement {
         ),
         action: {
           action: () => {
-            this.yamlEditor.value = safeDump(this.lovelace!.config);
+            this.yamlEditor.value = safeDump(this.lovelace!.rawConfig);
           },
           text: this.hass!.localize(
             "ui.panel.lovelace.editor.raw_editor.reload"
@@ -136,7 +134,7 @@ class LovelaceFullConfigEditor extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
@@ -182,9 +180,7 @@ class LovelaceFullConfigEditor extends LitElement {
   private _yamlChanged() {
     this._changed = undoDepth(this.yamlEditor.codemirror!.state) > 0;
     if (this._changed && !window.onbeforeunload) {
-      window.onbeforeunload = () => {
-        return true;
-      };
+      window.onbeforeunload = () => true;
     } else if (!this._changed && window.onbeforeunload) {
       window.onbeforeunload = null;
     }

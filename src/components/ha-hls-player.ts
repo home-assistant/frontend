@@ -1,16 +1,13 @@
 import type HlsType from "hls.js";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import { getExternalConfig } from "../external_app/external_config";
@@ -40,7 +37,7 @@ class HaHLSPlayer extends LitElement {
   // don't cache this, as we remove it on disconnects
   @query("video") private _videoEl!: HTMLVideoElement;
 
-  @internalProperty() private _attached = false;
+  @state() private _attached = false;
 
   private _hlsPolyfillInstance?: HlsType;
 
@@ -220,7 +217,7 @@ class HaHLSPlayer extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host,
       video {

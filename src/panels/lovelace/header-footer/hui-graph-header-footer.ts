@@ -1,17 +1,16 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-circular-progress";
 import { fetchRecent } from "../../../data/history";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { coordinates } from "../common/graph/coordinates";
@@ -22,9 +21,11 @@ import { GraphHeaderFooterConfig } from "./types";
 
 const MINUTE = 60000;
 const HOUR = MINUTE * 60;
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-graph-header-footer")
-export class HuiGraphHeaderFooter extends LitElement
+export class HuiGraphHeaderFooter
+  extends LitElement
   implements LovelaceHeaderFooter {
   public static async getConfigElement(): Promise<LovelaceHeaderFooterEditor> {
     await import("../editor/config-elements/hui-graph-footer-editor");
@@ -36,14 +37,10 @@ export class HuiGraphHeaderFooter extends LitElement
     entities: string[],
     entitiesFallback: string[]
   ): GraphHeaderFooterConfig {
-    const includeDomains = ["sensor"];
     const maxEntities = 1;
-    const entityFilter = (stateObj: HassEntity): boolean => {
-      return (
-        !isNaN(Number(stateObj.state)) &&
-        !!stateObj.attributes.unit_of_measurement
-      );
-    };
+    const entityFilter = (stateObj: HassEntity): boolean =>
+      !isNaN(Number(stateObj.state)) &&
+      !!stateObj.attributes.unit_of_measurement;
 
     const foundEntities = findEntities(
       hass,
@@ -64,7 +61,7 @@ export class HuiGraphHeaderFooter extends LitElement
 
   @property() protected _config?: GraphHeaderFooterConfig;
 
-  @internalProperty() private _coordinates?: number[][];
+  @state() private _coordinates?: number[][];
 
   private _date?: Date;
 
@@ -77,7 +74,10 @@ export class HuiGraphHeaderFooter extends LitElement
   }
 
   public setConfig(config: GraphHeaderFooterConfig): void {
-    if (!config?.entity || config.entity.split(".")[0] !== "sensor") {
+    if (
+      !config?.entity ||
+      !includeDomains.includes(computeDomain(config.entity))
+    ) {
       throw new Error("Specify an entity from within the sensor domain");
     }
 
@@ -104,7 +104,7 @@ export class HuiGraphHeaderFooter extends LitElement
     if (!this._coordinates) {
       return html`
         <div class="container">
-          <ha-circular-progress active></ha-circular-progress>
+          <ha-circular-progress active size="small"></ha-circular-progress>
         </div>
       `;
     }
@@ -112,9 +112,7 @@ export class HuiGraphHeaderFooter extends LitElement
     if (!this._coordinates.length) {
       return html`
         <div class="container">
-          <div class="info">
-            No state history found.
-          </div>
+          <div class="info">No state history found.</div>
         </div>
       `;
     }
@@ -194,23 +192,32 @@ export class HuiGraphHeaderFooter extends LitElement
       this._stateHistory!.push(...stateHistory[0]);
     }
 
+    const limits =
+      this._config!.limits === undefined &&
+      this._stateHistory?.some(
+        (entity) => entity.attributes?.unit_of_measurement === "%"
+      )
+        ? { min: 0, max: 100 }
+        : this._config!.limits;
+
     this._coordinates =
       coordinates(
         this._stateHistory,
         this._config!.hours_to_show!,
         500,
-        this._config!.detail!
+        this._config!.detail!,
+        limits
       ) || [];
 
     this._date = endTime;
     this._fetching = false;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-circular-progress {
         position: absolute;
-        top: calc(50% - 28px);
+        top: calc(50% - 14px);
       }
       .container {
         display: flex;

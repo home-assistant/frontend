@@ -1,15 +1,7 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -22,12 +14,16 @@ import {
 import {
   computeDeviceName,
   DeviceRegistryEntry,
-  devicesInArea,
 } from "../../../data/device_registry";
+import {
+  computeEntityRegistryName,
+  EntityRegistryEntry,
+} from "../../../data/entity_registry";
 import { findRelated, RelatedResult } from "../../../data/search";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
+import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
 import { configSections } from "../ha-panel-config";
 import {
   loadAreaRegistryDetailDialog,
@@ -44,6 +40,8 @@ class HaConfigAreaPage extends LitElement {
 
   @property() public devices!: DeviceRegistryEntry[];
 
+  @property() public entities!: EntityRegistryEntry[];
+
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
   @property() public isWide!: boolean;
@@ -52,15 +50,45 @@ class HaConfigAreaPage extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _related?: RelatedResult;
+  @state() private _related?: RelatedResult;
 
   private _area = memoizeOne((areaId: string, areas: AreaRegistryEntry[]):
     | AreaRegistryEntry
     | undefined => areas.find((area) => area.area_id === areaId));
 
-  private _devices = memoizeOne(
-    (areaId: string, devices: DeviceRegistryEntry[]): DeviceRegistryEntry[] =>
-      devicesInArea(devices, areaId)
+  private _memberships = memoizeOne(
+    (
+      areaId: string,
+      registryDevices: DeviceRegistryEntry[],
+      registryEntities: EntityRegistryEntry[]
+    ) => {
+      const devices = new Map();
+
+      for (const device of registryDevices) {
+        if (device.area_id === areaId) {
+          devices.set(device.id, device);
+        }
+      }
+
+      const entities: EntityRegistryEntry[] = [];
+      const indirectEntities: EntityRegistryEntry[] = [];
+
+      for (const entity of registryEntities) {
+        if (entity.area_id) {
+          if (entity.area_id === areaId) {
+            entities.push(entity);
+          }
+        } else if (devices.has(entity.device_id)) {
+          indirectEntities.push(entity);
+        }
+      }
+
+      return {
+        devices: Array.from(devices.values()),
+        entities,
+        indirectEntities,
+      };
+    }
   );
 
   protected firstUpdated(changedProps) {
@@ -87,7 +115,11 @@ class HaConfigAreaPage extends LitElement {
       `;
     }
 
-    const devices = this._devices(this.areaId, this.devices);
+    const { devices, entities } = this._memberships(
+      this.areaId,
+      this.devices,
+      this.entities
+    );
 
     return html`
       <hass-tabs-subpage
@@ -96,13 +128,7 @@ class HaConfigAreaPage extends LitElement {
         .tabs=${configSections.integrations}
         .route=${this.route}
       >
-        ${this.narrow
-          ? html`
-              <span slot="header">
-                ${area.name}
-              </span>
-            `
-          : ""}
+        ${this.narrow ? html` <span slot="header"> ${area.name} </span> ` : ""}
 
         <ha-icon-button
           slot="toolbar-icon"
@@ -144,6 +170,33 @@ class HaConfigAreaPage extends LitElement {
                     >
                   `}
             </ha-card>
+            <ha-card
+              .header=${this.hass.localize(
+                "ui.panel.config.areas.editor.linked_entities_caption"
+              )}
+              >${entities.length
+                ? entities.map(
+                    (entity) =>
+                      html`
+                        <paper-item
+                          @click=${this._openEntity}
+                          .entity=${entity}
+                        >
+                          <paper-item-body>
+                            ${computeEntityRegistryName(this.hass, entity)}
+                          </paper-item-body>
+                          <ha-icon-next></ha-icon-next>
+                        </paper-item>
+                      `
+                  )
+                : html`
+                    <paper-item class="no-link"
+                      >${this.hass.localize(
+                        "ui.panel.config.areas.editor.no_linked_entities"
+                      )}</paper-item
+                    >
+                  `}
+            </ha-card>
           </div>
           <div class="column">
             ${isComponentLoaded(this.hass, "automation")
@@ -154,27 +207,27 @@ class HaConfigAreaPage extends LitElement {
                     )}
                     >${this._related?.automation?.length
                       ? this._related.automation.map((automation) => {
-                          const state = this.hass.states[automation];
-                          return state
+                          const entityState = this.hass.states[automation];
+                          return entityState
                             ? html`
                                 <div>
                                   <a
                                     href=${ifDefined(
-                                      state.attributes.id
-                                        ? `/config/automation/edit/${state.attributes.id}`
+                                      entityState.attributes.id
+                                        ? `/config/automation/edit/${entityState.attributes.id}`
                                         : undefined
                                     )}
                                   >
                                     <paper-item
-                                      .disabled=${!state.attributes.id}
+                                      .disabled=${!entityState.attributes.id}
                                     >
                                       <paper-item-body>
-                                        ${computeStateName(state)}
+                                        ${computeStateName(entityState)}
                                       </paper-item-body>
                                       <ha-icon-next></ha-icon-next>
                                     </paper-item>
                                   </a>
-                                  ${!state.attributes.id
+                                  ${!entityState.attributes.id
                                     ? html`
                                         <paper-tooltip animation-delay="0">
                                           ${this.hass.localize(
@@ -207,27 +260,27 @@ class HaConfigAreaPage extends LitElement {
                     )}
                     >${this._related?.scene?.length
                       ? this._related.scene.map((scene) => {
-                          const state = this.hass.states[scene];
-                          return state
+                          const entityState = this.hass.states[scene];
+                          return entityState
                             ? html`
                                 <div>
                                   <a
                                     href=${ifDefined(
-                                      state.attributes.id
-                                        ? `/config/scene/edit/${state.attributes.id}`
+                                      entityState.attributes.id
+                                        ? `/config/scene/edit/${entityState.attributes.id}`
                                         : undefined
                                     )}
                                   >
                                     <paper-item
-                                      .disabled=${!state.attributes.id}
+                                      .disabled=${!entityState.attributes.id}
                                     >
                                       <paper-item-body>
-                                        ${computeStateName(state)}
+                                        ${computeStateName(entityState)}
                                       </paper-item-body>
                                       <ha-icon-next></ha-icon-next>
                                     </paper-item>
                                   </a>
-                                  ${!state.attributes.id
+                                  ${!entityState.attributes.id
                                     ? html`
                                         <paper-tooltip animation-delay="0">
                                           ${this.hass.localize(
@@ -258,15 +311,15 @@ class HaConfigAreaPage extends LitElement {
                     )}
                     >${this._related?.script?.length
                       ? this._related.script.map((script) => {
-                          const state = this.hass.states[script];
-                          return state
+                          const entityState = this.hass.states[script];
+                          return entityState
                             ? html`
                                 <a
-                                  href=${`/config/script/edit/${state.entity_id}`}
+                                  href=${`/config/script/edit/${entityState.entity_id}`}
                                 >
                                   <paper-item>
                                     <paper-item-body>
-                                      ${computeStateName(state)}
+                                      ${computeStateName(entityState)}
                                     </paper-item-body>
                                     <ha-icon-next></ha-icon-next>
                                   </paper-item>
@@ -297,6 +350,14 @@ class HaConfigAreaPage extends LitElement {
   private _showSettings(ev: MouseEvent) {
     const entry: AreaRegistryEntry = (ev.currentTarget! as any).entry;
     this._openDialog(entry);
+  }
+
+  private _openEntity(ev) {
+    const entry: EntityRegistryEntry = (ev.currentTarget as any).entity;
+    showEntityEditorDialog(this, {
+      entity_id: entry.entity_id,
+      entry,
+    });
   }
 
   private _openDialog(entry?: AreaRegistryEntry) {
@@ -330,7 +391,7 @@ class HaConfigAreaPage extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

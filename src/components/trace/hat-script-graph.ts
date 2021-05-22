@@ -1,19 +1,4 @@
-import {
-  html,
-  LitElement,
-  property,
-  customElement,
-  PropertyValues,
-  css,
-} from "lit-element";
 import "@material/mwc-icon-button/mwc-icon-button";
-import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-svg-icon";
-import {
-  AutomationTraceExtended,
-  ChooseActionTraceStep,
-  ConditionTraceStep,
-} from "../../data/trace";
 import {
   mdiAbTesting,
   mdiArrowUp,
@@ -32,9 +17,11 @@ import {
   mdiTimerOutline,
   mdiTrafficLight,
 } from "@mdi/js";
-import "./hat-graph-node";
-import { classMap } from "lit-html/directives/class-map";
-import { NODE_SIZE, SPACING, NodeInfo } from "./hat-graph";
+import { css, html, LitElement, PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { fireEvent } from "../../common/dom/fire_event";
+import { ensureArray } from "../../common/ensure-array";
 import { Condition, Trigger } from "../../data/automation";
 import {
   Action,
@@ -48,7 +35,14 @@ import {
   WaitAction,
   WaitForTriggerAction,
 } from "../../data/script";
-import { ensureArray } from "../../common/ensure-array";
+import {
+  AutomationTraceExtended,
+  ChooseActionTraceStep,
+  ConditionTraceStep,
+} from "../../data/trace";
+import "../ha-svg-icon";
+import { NodeInfo, NODE_SIZE, SPACING } from "./hat-graph";
+import "./hat-graph-node";
 import "./hat-graph-spacer";
 
 declare global {
@@ -63,6 +57,8 @@ class HatScriptGraph extends LitElement {
 
   @property({ attribute: false }) public selected;
 
+  @property() renderedNodes: Record<string, any> = {};
+
   @property() trackedNodes: Record<string, any> = {};
 
   private selectNode(config, path) {
@@ -74,8 +70,9 @@ class HatScriptGraph extends LitElement {
   private render_trigger(config: Trigger, i: number) {
     const path = `trigger/${i}`;
     const tracked = this.trace && path in this.trace.trace;
+    this.renderedNodes[path] = { config, path };
     if (tracked) {
-      this.trackedNodes[path] = { config, path };
+      this.trackedNodes[path] = this.renderedNodes[path];
     }
     return html`
       <hat-graph-node
@@ -96,8 +93,9 @@ class HatScriptGraph extends LitElement {
     const trace = this.trace.trace[path] as ConditionTraceStep[] | undefined;
     const track_path =
       trace?.[0].result === undefined ? 0 : trace[0].result.result ? 1 : 2;
+    this.renderedNodes[path] = { config, path };
     if (trace) {
-      this.trackedNodes[path] = { config, path };
+      this.trackedNodes[path] = this.renderedNodes[path];
     }
     return html`
       <hat-graph
@@ -143,7 +141,7 @@ class HatScriptGraph extends LitElement {
     const trace = this.trace.trace[path] as ChooseActionTraceStep[] | undefined;
     const trace_path = trace?.[0].result
       ? trace[0].result.choice === "default"
-        ? [config.choose?.length || 0]
+        ? [Array.isArray(config.choose) ? config.choose.length : 0]
         : [trace[0].result.choice]
       : [];
     return html`
@@ -167,31 +165,36 @@ class HatScriptGraph extends LitElement {
           nofocus
         ></hat-graph-node>
 
-        ${config.choose?.map((branch, i) => {
-          const branch_path = `${path}/choose/${i}`;
-          const track_this =
-            trace !== undefined && trace[0].result?.choice === i;
-          if (track_this) {
-            this.trackedNodes[branch_path] = { config, path: branch_path };
-          }
-          return html`
-            <hat-graph>
-              <hat-graph-node
-                .iconPath=${!trace || track_this
-                  ? mdiCheckBoxOutline
-                  : mdiCheckboxBlankOutline}
-                @focus=${this.selectNode(config, branch_path)}
-                class=${classMap({
-                  active: this.selected === branch_path,
-                  track: track_this,
-                })}
-              ></hat-graph-node>
-              ${ensureArray(branch.sequence).map((action, j) =>
-                this.render_node(action, `${branch_path}/sequence/${j}`)
-              )}
-            </hat-graph>
-          `;
-        })}
+        ${config.choose
+          ? ensureArray(config.choose)?.map((branch, i) => {
+              const branch_path = `${path}/choose/${i}`;
+              const track_this =
+                trace !== undefined && trace[0].result?.choice === i;
+              this.renderedNodes[branch_path] = { config, path: branch_path };
+              if (track_this) {
+                this.trackedNodes[branch_path] = this.renderedNodes[
+                  branch_path
+                ];
+              }
+              return html`
+                <hat-graph>
+                  <hat-graph-node
+                    .iconPath=${!trace || track_this
+                      ? mdiCheckBoxOutline
+                      : mdiCheckboxBlankOutline}
+                    @focus=${this.selectNode(config, branch_path)}
+                    class=${classMap({
+                      active: this.selected === branch_path,
+                      track: track_this,
+                    })}
+                  ></hat-graph-node>
+                  ${ensureArray(branch.sequence).map((action, j) =>
+                    this.render_node(action, `${branch_path}/sequence/${j}`)
+                  )}
+                </hat-graph>
+              `;
+            })
+          : ""}
         <hat-graph>
           <hat-graph-spacer
             class=${classMap({
@@ -409,8 +412,9 @@ class HatScriptGraph extends LitElement {
 
     const type = Object.keys(NODE_TYPES).find((key) => key in node) || "other";
     const nodeEl = NODE_TYPES[type].bind(this)(node, path);
+    this.renderedNodes[path] = { config: node, path };
     if (this.trace && path in this.trace.trace) {
-      this.trackedNodes[path] = { config: node, path };
+      this.trackedNodes[path] = this.renderedNodes[path];
     }
     return nodeEl;
   }
@@ -481,6 +485,7 @@ class HatScriptGraph extends LitElement {
 
   protected update(changedProps: PropertyValues<this>) {
     if (changedProps.has("trace")) {
+      this.renderedNodes = {};
       this.trackedNodes = {};
     }
     super.update(changedProps);
@@ -491,7 +496,7 @@ class HatScriptGraph extends LitElement {
 
     // Select first node if new trace loaded but no selection given.
     if (changedProps.has("trace")) {
-      const tracked = this.getTrackedNodes();
+      const tracked = this.trackedNodes;
       const paths = Object.keys(tracked);
 
       // If trace changed and we have no or an invalid selection, select first option.
@@ -507,42 +512,44 @@ class HatScriptGraph extends LitElement {
 
       if (this.trace) {
         const sortKeys = Object.keys(this.trace.trace);
-        const keys = Object.keys(this.trackedNodes).sort(
+        const keys = Object.keys(this.renderedNodes).sort(
           (a, b) => sortKeys.indexOf(a) - sortKeys.indexOf(b)
         );
-        const sortedTrackedNodes = keys.reduce((obj, key) => {
-          obj[key] = this.trackedNodes[key];
-          return obj;
-        }, {});
+        const sortedTrackedNodes = {};
+        const sortedRenderedNodes = {};
+        for (const key of keys) {
+          sortedRenderedNodes[key] = this.renderedNodes[key];
+          if (key in this.trackedNodes) {
+            sortedTrackedNodes[key] = this.trackedNodes[key];
+          }
+        }
+        this.renderedNodes = sortedRenderedNodes;
         this.trackedNodes = sortedTrackedNodes;
       }
     }
   }
 
-  public getTrackedNodes() {
-    return this.trackedNodes;
-  }
-
   public previousTrackedNode() {
-    const tracked = this.getTrackedNodes();
-    const nodes = Object.keys(tracked);
-
-    for (let i = nodes.indexOf(this.selected) - 1; i >= 0; i--) {
-      if (tracked[nodes[i]]) {
-        fireEvent(this, "graph-node-selected", tracked[nodes[i]]);
-        break;
-      }
+    const nodes = Object.keys(this.trackedNodes);
+    const prevIndex = nodes.indexOf(this.selected) - 1;
+    if (prevIndex >= 0) {
+      fireEvent(
+        this,
+        "graph-node-selected",
+        this.trackedNodes[nodes[prevIndex]]
+      );
     }
   }
 
   public nextTrackedNode() {
-    const tracked = this.getTrackedNodes();
-    const nodes = Object.keys(tracked);
-    for (let i = nodes.indexOf(this.selected) + 1; i < nodes.length; i++) {
-      if (tracked[nodes[i]]) {
-        fireEvent(this, "graph-node-selected", tracked[nodes[i]]);
-        break;
-      }
+    const nodes = Object.keys(this.trackedNodes);
+    const nextIndex = nodes.indexOf(this.selected) + 1;
+    if (nextIndex < nodes.length) {
+      fireEvent(
+        this,
+        "graph-node-selected",
+        this.trackedNodes[nodes[nextIndex]]
+      );
     }
   }
 

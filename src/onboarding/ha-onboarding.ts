@@ -5,14 +5,9 @@ import {
   getAuth,
   subscribeConfig,
 } from "home-assistant-js-websocket";
-import {
-  customElement,
-  html,
-  internalProperty,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
@@ -29,9 +24,9 @@ import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { HassElement } from "../state/hass-element";
 import { HomeAssistant } from "../types";
 import { registerServiceWorker } from "../util/register-service-worker";
+import "./onboarding-analytics";
 import "./onboarding-create-user";
 import "./onboarding-loading";
-import "./onboarding-analytics";
 
 type OnboardingEvent =
   | {
@@ -65,13 +60,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   public translationFragment = "page-onboarding";
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
-  @internalProperty() private _restoring = false;
+  @state() private _restoring = false;
 
-  @internalProperty() private _supervisor?: boolean;
+  @state() private _supervisor?: boolean;
 
-  @internalProperty() private _steps?: OnboardingStep[];
+  @state() private _steps?: OnboardingStep[];
 
   protected render(): TemplateResult {
     const step = this._curStep()!;
@@ -136,6 +131,19 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
     if (window.innerWidth > 450) {
       import("./particles");
+    }
+    if (matchMedia("(prefers-color-scheme: dark)").matches) {
+      applyThemesOnElement(
+        document.documentElement,
+        {
+          default_theme: "default",
+          default_dark_theme: null,
+          themes: {},
+          darkMode: false,
+        },
+        "default",
+        { dark: true }
+      );
     }
   }
 

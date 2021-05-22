@@ -4,17 +4,12 @@ import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-help-tooltip";
+import "../../../components/ha-service-control";
 import {
   ActionConfig,
   CallServiceActionConfig,
@@ -24,8 +19,6 @@ import {
 import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
-import "../../../components/ha-service-control";
-import memoizeOne from "memoize-one";
 
 @customElement("hui-action-editor")
 export class HuiActionEditor extends LitElement {
@@ -55,13 +48,11 @@ export class HuiActionEditor extends LitElement {
   }
 
   private _serviceAction = memoizeOne(
-    (config: CallServiceActionConfig): ServiceAction => {
-      return {
-        service: this._service,
-        data: config.service_data,
-        target: config.target,
-      };
-    }
+    (config: CallServiceActionConfig): ServiceAction => ({
+      service: this._service,
+      data: config.service_data,
+      target: config.target,
+    })
   );
 
   protected render(): TemplateResult {
@@ -86,15 +77,15 @@ export class HuiActionEditor extends LitElement {
                 "ui.panel.lovelace.editor.action-editor.actions.default_action"
               )}</paper-item
             >
-            ${this.actions.map((action) => {
-              return html`
+            ${this.actions.map(
+              (action) => html`
                 <paper-item .value=${action}
                   >${this.hass!.localize(
                     `ui.panel.lovelace.editor.action-editor.actions.${action}`
                   )}</paper-item
                 >
-              `;
-            })}
+              `
+            )}
           </paper-listbox>
         </paper-dropdown-menu>
         ${this.tooltipText
@@ -211,7 +202,7 @@ export class HuiActionEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .dropdown {
         display: flex;

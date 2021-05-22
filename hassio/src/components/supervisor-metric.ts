@@ -1,13 +1,6 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../src/components/ha-bar";
 import "../../../src/components/ha-settings-row";
 import { roundWithOneDecimal } from "../../../src/util/calculate";
@@ -23,13 +16,9 @@ class SupervisorMetric extends LitElement {
   protected render(): TemplateResult {
     const roundedValue = roundWithOneDecimal(this.value);
     return html`<ha-settings-row>
-      <span slot="heading">
-        ${this.description}
-      </span>
+      <span slot="heading"> ${this.description} </span>
       <div slot="description" .title=${this.tooltip ?? ""}>
-        <span class="value">
-          ${roundedValue} %
-        </span>
+        <span class="value"> ${roundedValue} % </span>
         <ha-bar
           class="${classMap({
             "target-warning": roundedValue > 50,
@@ -41,7 +30,7 @@ class SupervisorMetric extends LitElement {
     </ha-settings-row>`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-settings-row {
         padding: 0;

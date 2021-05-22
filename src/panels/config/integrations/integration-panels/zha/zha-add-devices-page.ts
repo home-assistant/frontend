@@ -3,15 +3,13 @@ import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
 import "@polymer/paper-input/paper-textarea";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-circular-progress";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-service-description";
@@ -36,20 +34,17 @@ class ZHAAddDevicesPage extends LitElement {
 
   @property() public route?: Route;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _discoveredDevices: Record<
-    string,
-    ZHADevice
-  > = {};
+  @state() private _discoveredDevices: Record<string, ZHADevice> = {};
 
-  @internalProperty() private _formattedEvents = "";
+  @state() private _formattedEvents = "";
 
-  @internalProperty() private _active = false;
+  @state() private _active = false;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
-  @internalProperty() private _showLogs = false;
+  @state() private _showLogs = false;
 
   private _ieeeAddress?: string;
 
@@ -217,7 +212,7 @@ class ZHAAddDevicesPage extends LitElement {
     );
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

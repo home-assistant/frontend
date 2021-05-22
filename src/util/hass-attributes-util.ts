@@ -122,6 +122,11 @@ export default hassAttributeUtil;
 
 // Convert from internal snake_case format to user-friendly format
 export function formatAttributeName(value: string): string {
-  value = value.replace(/_/g, " ").replace(/\bid\b/g, "ID");
+  value = value
+    .replace(/_/g, " ")
+    .replace(/\bid\b/g, "ID")
+    .replace(/\bip\b/g, "IP")
+    .replace(/\bmac\b/g, "MAC")
+    .replace(/\bgps\b/g, "GPS");
   return value.charAt(0).toUpperCase() + value.slice(1);
 }

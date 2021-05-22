@@ -4,16 +4,14 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
@@ -39,9 +37,9 @@ class PanelCalendar extends LitElement {
   @property({ type: Boolean, reflect: true })
   public narrow!: boolean;
 
-  @internalProperty() private _calendars: Calendar[] = [];
+  @state() private _calendars: Calendar[] = [];
 
-  @internalProperty() private _events: CalendarEvent[] = [];
+  @state() private _events: CalendarEvent[] = [];
 
   @LocalStorage("deSelectedCalendars", true)
   private _deSelectedCalendars: string[] = [];
@@ -175,7 +173,7 @@ class PanelCalendar extends LitElement {
     );
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

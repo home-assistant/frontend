@@ -1,5 +1,6 @@
 import { HassEntities } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
@@ -9,8 +10,8 @@ import {
   RouterOptions,
 } from "../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../types";
-import "./ha-automation-picker";
 import "./ha-automation-editor";
+import "./ha-automation-picker";
 
 const equal = (a: AutomationEntity[], b: AutomationEntity[]): boolean => {
   if (a.length !== b.length) {
@@ -56,11 +57,10 @@ class HaConfigAutomation extends HassRouterPage {
   };
 
   private _getAutomations = memoizeOne(
-    (states: HassEntities): AutomationEntity[] => {
-      return Object.values(states).filter(
+    (states: HassEntities): AutomationEntity[] =>
+      Object.values(states).filter(
         (entity) => computeStateDomain(entity) === "automation"
-      ) as AutomationEntity[];
-    }
+      ) as AutomationEntity[]
   );
 
   protected firstUpdated(changedProps) {

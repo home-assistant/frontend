@@ -37,12 +37,11 @@ export const subscribeMQTTTopic = (
   hass: HomeAssistant,
   topic: string,
   callback: (message: MQTTMessage) => void
-) => {
-  return hass.connection.subscribeMessage<MQTTMessage>(callback, {
+) =>
+  hass.connection.subscribeMessage<MQTTMessage>(callback, {
     type: "mqtt/subscribe",
     topic,
   });
-};
 
 export const removeMQTTDeviceEntry = (
   hass: HomeAssistant,

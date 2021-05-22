@@ -3,14 +3,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
@@ -45,9 +44,9 @@ export class ZHAClusters extends LitElement {
 
   @property() public showHelp = false;
 
-  @internalProperty() private _selectedClusterIndex = -1;
+  @state() private _selectedClusterIndex = -1;
 
-  @internalProperty() private _clusters: Cluster[] = [];
+  @state() private _clusters: Cluster[] = [];
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedDevice")) {
@@ -117,9 +116,7 @@ export class ZHAClusters extends LitElement {
         this.hass,
         this.selectedDevice!.ieee
       );
-      this._clusters.sort((a, b) => {
-        return a.name.localeCompare(b.name);
-      });
+      this._clusters.sort((a, b) => a.name.localeCompare(b.name));
     }
   }
 
@@ -134,7 +131,7 @@ export class ZHAClusters extends LitElement {
     this.showHelp = !this.showHelp;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

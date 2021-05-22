@@ -9,8 +9,8 @@ import {
   HassEntityAttributeBase,
   HassEntityBase,
 } from "home-assistant-js-websocket";
-import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
+import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit";
+import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../common/string/format_number";
 import "../components/ha-icon";
 import "../components/ha-svg-icon";
@@ -280,8 +280,7 @@ export const weatherSVGStyles = css`
 const getWeatherStateSVG = (
   state: string,
   nightTime?: boolean
-): SVGTemplateResult => {
-  return svg`
+): SVGTemplateResult => svg`
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 17 17"
@@ -416,7 +415,6 @@ const getWeatherStateSVG = (
       : ""
   }
   </svg>`;
-};
 
 export const getWeatherStateIcon = (
   state: string,

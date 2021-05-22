@@ -1,15 +1,14 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-slider";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -17,15 +16,14 @@ import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
-import { EntityConfig, LovelaceRow } from "./types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
-import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-number-entity-row")
 class HuiNumberEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   private _loaded?: boolean;
 
@@ -120,7 +118,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .flex {
         display: flex;

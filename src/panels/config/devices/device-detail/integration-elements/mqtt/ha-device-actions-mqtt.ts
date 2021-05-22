@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { removeMQTTDeviceEntry } from "../../../../../../data/mqtt";
 import { showConfirmationDialog } from "../../../../../../dialogs/generic/show-dialog-box";
@@ -22,9 +15,7 @@ export class HaDeviceActionsMqtt extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-button @click=${this._showDebugInfo}>
-        MQTT Info
-      </mwc-button>
+      <mwc-button @click=${this._showDebugInfo}> MQTT Info </mwc-button>
       <mwc-button class="warning" @click="${this._confirmDeleteEntry}">
         ${this.hass.localize("ui.panel.config.devices.delete")}
       </mwc-button>
@@ -48,7 +39,7 @@ export class HaDeviceActionsMqtt extends LitElement {
     await showMQTTDeviceDebugInfoDialog(this, { device });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

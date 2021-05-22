@@ -1,4 +1,4 @@
-import { customElement } from "lit-element";
+import { customElement } from "lit/decorators";
 import { getRowElementClass } from "../../create-element/create-row-element";
 import { LovelaceRowConfig } from "../../entity-rows/types";
 import type { LovelaceRowEditor } from "../../types";

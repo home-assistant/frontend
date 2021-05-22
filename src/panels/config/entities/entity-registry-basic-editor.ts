@@ -1,15 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-switch";
@@ -34,19 +26,19 @@ export class HaEntityRegistryBasicEditor extends SubscribeMixin(LitElement) {
 
   @property() public entry!: ExtEntityRegistryEntry;
 
-  @internalProperty() private _origEntityId!: string;
+  @state() private _origEntityId!: string;
 
-  @internalProperty() private _entityId!: string;
+  @state() private _entityId!: string;
 
-  @internalProperty() private _areaId?: string | null;
+  @state() private _areaId?: string | null;
 
-  @internalProperty() private _disabledBy!: string | null;
+  @state() private _disabledBy!: string | null;
 
   private _deviceLookup?: Record<string, DeviceRegistryEntry>;
 
-  @internalProperty() private _device?: DeviceRegistryEntry;
+  @state() private _device?: DeviceRegistryEntry;
 
-  @internalProperty() private _submitting?: boolean;
+  @state() private _submitting?: boolean;
 
   public async updateEntry(): Promise<void> {
     this._submitting = true;

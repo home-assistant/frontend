@@ -3,14 +3,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/entity/state-badge";
@@ -140,9 +139,7 @@ export class HaDeviceEntitiesCard extends LitElement {
           .icon=${domainIcon(computeDomain(entry.entity_id))}
         ></ha-icon>
         <paper-item-body>
-          <div class="name">
-            ${entry.stateName || entry.entity_id}
-          </div>
+          <div class="name">${entry.stateName || entry.entity_id}</div>
         </paper-item-body>
       </paper-icon-item>
     `;
@@ -175,7 +172,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     );
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

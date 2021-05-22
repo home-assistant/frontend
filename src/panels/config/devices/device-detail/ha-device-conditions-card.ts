@@ -1,4 +1,4 @@
-import { customElement } from "lit-element";
+import { customElement } from "lit/decorators";
 import "../../../../components/ha-card";
 import {
   DeviceCondition,
@@ -7,9 +7,7 @@ import {
 import { HaDeviceAutomationCard } from "./ha-device-automation-card";
 
 @customElement("ha-device-conditions-card")
-export class HaDeviceConditionsCard extends HaDeviceAutomationCard<
-  DeviceCondition
-> {
+export class HaDeviceConditionsCard extends HaDeviceAutomationCard<DeviceCondition> {
   protected type = "condition";
 
   protected headerKey = "ui.panel.config.devices.automation.conditions.caption";

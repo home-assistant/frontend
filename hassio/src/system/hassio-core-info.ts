@@ -1,15 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
@@ -39,7 +31,7 @@ class HassioCoreInfo extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _metrics?: HassioStats;
+  @state() private _metrics?: HassioStats;
 
   protected render(): TemplateResult | void {
     const metrics = [
@@ -178,7 +170,7 @@ class HassioCoreInfo extends LitElement {
         folders: ["homeassistant"],
         homeassistant: true,
       },
-      updateHandler: async () => await this._updateCore(),
+      updateHandler: async () => this._updateCore(),
     });
   }
 
@@ -189,7 +181,7 @@ class HassioCoreInfo extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

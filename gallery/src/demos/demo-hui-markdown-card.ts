@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  PropertyValues,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, query } from "lit/decorators";
 import { mockTemplate } from "../../../demo/src/stubs/template";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
@@ -276,4 +270,8 @@ class DemoMarkdown extends LitElement {
   }
 }
 
-customElements.define("demo-hui-markdown-card", DemoMarkdown);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-markdown-card": DemoMarkdown;
+  }
+}

@@ -4,14 +4,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
-  customElement,
-  internalProperty,
+  CSSResultGroup,
+  html,
   LitElement,
-  property,
   PropertyValues,
-} from "lit-element";
-import { html, TemplateResult } from "lit-html";
+  TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-formfield";
 import "../../components/ha-paper-dropdown-menu";
@@ -32,11 +31,11 @@ export class HaPickThemeRow extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() _themeNames: string[] = [];
+  @state() _themeNames: string[] = [];
 
-  @internalProperty() _selectedThemeIndex = 0;
+  @state() _selectedThemeIndex = 0;
 
-  @internalProperty() _selectedTheme?: Theme;
+  @state() _selectedTheme?: Theme;
 
   protected render(): TemplateResult {
     const hasThemes =
@@ -239,7 +238,7 @@ export class HaPickThemeRow extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

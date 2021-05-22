@@ -1,6 +1,5 @@
-import { html } from "lit-element";
+import { html } from "lit";
 import { caseInsensitiveCompare } from "../../common/string/compare";
-import { localizeKey } from "../../common/translations/localize";
 import {
   createConfigFlow,
   deleteConfigFlow,
@@ -52,8 +51,7 @@ export const showConfigFlowDialog = (
     deleteFlow: deleteConfigFlow,
 
     renderAbortDescription(hass, step) {
-      const description = localizeKey(
-        hass.localize,
+      const description = hass.localize(
         `component.${step.handler}.config.abort.${step.reason}`,
         step.description_placeholders
       );
@@ -74,8 +72,7 @@ export const showConfigFlowDialog = (
     },
 
     renderShowFormStepDescription(hass, step) {
-      const description = localizeKey(
-        hass.localize,
+      const description = hass.localize(
         `component.${step.handler}.config.step.${step.step_id}.description`,
         step.description_placeholders
       );
@@ -108,8 +105,7 @@ export const showConfigFlowDialog = (
     },
 
     renderExternalStepDescription(hass, step) {
-      const description = localizeKey(
-        hass.localize,
+      const description = hass.localize(
         `component.${step.handler}.config.${step.step_id}.description`,
         step.description_placeholders
       );
@@ -133,8 +129,7 @@ export const showConfigFlowDialog = (
     },
 
     renderCreateEntryDescription(hass, step) {
-      const description = localizeKey(
-        hass.localize,
+      const description = hass.localize(
         `component.${step.handler}.config.create_entry.${
           step.description || "default"
         }`,
@@ -170,8 +165,7 @@ export const showConfigFlowDialog = (
     },
 
     renderShowFormProgressDescription(hass, step) {
-      const description = localizeKey(
-        hass.localize,
+      const description = hass.localize(
         `component.${step.handler}.config.progress.${step.progress_action}`,
         step.description_placeholders
       );

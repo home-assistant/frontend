@@ -1,11 +1,4 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
 import { sanitizeUrl } from "@braintree/sanitize-url";
 import {
   createSearchParam,
@@ -20,6 +13,7 @@ import {
 import { navigate } from "../../src/common/navigate";
 import { HomeAssistant, Route } from "../../src/types";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
+import { customElement, property, state } from "lit/decorators";
 
 const REDIRECTS: Redirects = {
   supervisor: {
@@ -43,6 +37,12 @@ const REDIRECTS: Redirects = {
       addon: "string",
     },
   },
+  supervisor_ingress: {
+    redirect: "/hassio/ingress",
+    params: {
+      addon: "string",
+    },
+  },
   supervisor_add_addon_repository: {
     redirect: "/hassio/store",
     params: {
@@ -59,7 +59,7 @@ class HassioMyRedirect extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @internalProperty() public _error?: TemplateResult | string;
+  @state() public _error?: TemplateResult | string;
 
   connectedCallback() {
     super.connectedCallback();

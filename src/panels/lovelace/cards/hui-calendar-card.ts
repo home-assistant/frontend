@@ -1,15 +1,12 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { HA_COLOR_PALETTE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -62,13 +59,13 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public _events: CalendarEvent[] = [];
 
-  @internalProperty() private _config?: CalendarCardConfig;
+  @state() private _config?: CalendarCardConfig;
 
-  @internalProperty() private _calendars: Calendar[] = [];
+  @state() private _calendars: Calendar[] = [];
 
-  @internalProperty() private _narrow = false;
+  @state() private _narrow = false;
 
-  @internalProperty() private _veryNarrow = false;
+  @state() private _veryNarrow = false;
 
   @query("ha-full-calendar", true) private _calendar?: HAFullCalendar;
 
@@ -87,12 +84,10 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
       throw new Error("Entities need to be an array");
     }
 
-    this._calendars = config!.entities.map((entity, idx) => {
-      return {
-        entity_id: entity,
-        backgroundColor: `#${HA_COLOR_PALETTE[idx % HA_COLOR_PALETTE.length]}`,
-      };
-    });
+    this._calendars = config!.entities.map((entity, idx) => ({
+      entity_id: entity,
+      backgroundColor: `#${HA_COLOR_PALETTE[idx % HA_COLOR_PALETTE.length]}`,
+    }));
 
     if (this._config?.entities !== config.entities) {
       this._fetchCalendarEvents();
@@ -206,7 +201,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     this._resizeObserver.observe(card);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         position: relative;

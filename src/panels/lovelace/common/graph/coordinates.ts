@@ -1,15 +1,10 @@
 import { strokeWidth } from "../../../../data/graph";
 
-const average = (items: any[]): number => {
-  return (
-    items.reduce((sum, entry) => sum + parseFloat(entry.state), 0) /
-    items.length
-  );
-};
+const average = (items: any[]): number =>
+  items.reduce((sum, entry) => sum + parseFloat(entry.state), 0) / items.length;
 
-const lastValue = (items: any[]): number => {
-  return parseFloat(items[items.length - 1].state) || 0;
-};
+const lastValue = (items: any[]): number =>
+  parseFloat(items[items.length - 1].state) || 0;
 
 const calcPoints = (
   history: any,
@@ -62,15 +57,22 @@ export const coordinates = (
   history: any,
   hours: number,
   width: number,
-  detail: number
+  detail: number,
+  limits?: { min?: number; max?: number }
 ): number[][] | undefined => {
   history.forEach((item) => {
     item.state = Number(item.state);
   });
   history = history.filter((item) => !Number.isNaN(item.state));
 
-  const min = Math.min(...history.map((item) => item.state));
-  const max = Math.max(...history.map((item) => item.state));
+  const min =
+    limits?.min !== undefined
+      ? limits.min
+      : Math.min(...history.map((item) => item.state));
+  const max =
+    limits?.max !== undefined
+      ? limits.max
+      : Math.max(...history.map((item) => item.state));
   const now = new Date().getTime();
 
   const reduce = (res, item, point) => {

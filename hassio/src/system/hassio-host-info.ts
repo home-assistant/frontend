@@ -3,15 +3,8 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
@@ -97,9 +90,7 @@ class HassioHostInfo extends LitElement {
                   <span slot="heading">
                     ${this.supervisor.localize("system.host.ip_address")}
                   </span>
-                  <span slot="description">
-                    ${primaryIpAddress}
-                  </span>
+                  <span slot="description"> ${primaryIpAddress} </span>
                   <mwc-button
                     .label=${this.supervisor.localize("system.host.change")}
                     @click=${this._changeNetworkClicked}
@@ -417,7 +408,7 @@ class HassioHostInfo extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

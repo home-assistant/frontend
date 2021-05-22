@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
@@ -24,11 +18,12 @@ const cardConfigStruct = object({
 const includeDomains = ["media_player"];
 
 @customElement("hui-media-control-card-editor")
-export class HuiMediaControlCardEditor extends LitElement
+export class HuiMediaControlCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: MediaControlCardConfig;
+  @state() private _config?: MediaControlCardConfig;
 
   public setConfig(config: MediaControlCardConfig): void {
     assert(config, cardConfigStruct);

@@ -10,14 +10,13 @@ import {
 } from "leaflet";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   LeafletModuleType,
@@ -271,7 +270,7 @@ class LocationEditor extends LitElement {
     (this._locationMarker as Circle).setStyle({ color: this.radiusColor });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

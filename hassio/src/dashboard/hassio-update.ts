@@ -1,14 +1,7 @@
 import "@material/mwc-button";
 import { mdiHomeAssistant } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
@@ -40,9 +33,8 @@ import { HomeAssistant } from "../../../src/types";
 import { showDialogSupervisorUpdate } from "../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../resources/hassio-style";
 
-const computeVersion = (key: string, version: string): string => {
-  return key === "os" ? version : `${key}-${version}`;
-};
+const computeVersion = (key: string, version: string): string =>
+  key === "os" ? version : `${key}-${version}`;
 
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
@@ -50,11 +42,12 @@ export class HassioUpdate extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  private _pendingUpdates = memoizeOne((supervisor: Supervisor): number => {
-    return Object.keys(supervisor).filter(
-      (value) => supervisor[value].update_available
-    ).length;
-  });
+  private _pendingUpdates = memoizeOne(
+    (supervisor: Supervisor): number =>
+      Object.keys(supervisor).filter(
+        (value) => supervisor[value].update_available
+      ).length
+  );
 
   protected render(): TemplateResult {
     if (!this.supervisor) {
@@ -233,7 +226,7 @@ export class HassioUpdate extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

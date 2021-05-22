@@ -1,15 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-code-editor";
@@ -48,13 +41,13 @@ class HaPanelDevTemplate extends LitElement {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _rendering = false;
+  @state() private _rendering = false;
 
-  @internalProperty() private _templateResult?: RenderTemplateResult;
+  @state() private _templateResult?: RenderTemplateResult;
 
-  @internalProperty() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+  @state() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
   private _template = "";
 
@@ -105,7 +98,7 @@ class HaPanelDevTemplate extends LitElement {
           <ul>
             <li>
               <a
-                href="http://jinja.pocoo.org/docs/dev/templates/"
+                href="https://jinja.palletsprojects.com/en/latest/templates/"
                 target="_blank"
                 rel="noreferrer"
                 >${this.hass.localize(
@@ -240,7 +233,7 @@ class HaPanelDevTemplate extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -5,15 +5,13 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
-  queryAssignedNodes,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, queryAssignedNodes } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
 import { saveConfig } from "../../../data/lovelace";
@@ -113,7 +111,7 @@ export class HuiCardOptions extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host(:hover) {
         outline: 2px solid var(--primary-color);

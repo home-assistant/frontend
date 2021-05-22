@@ -1,15 +1,13 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -42,11 +40,11 @@ import type { EntityConfig, LovelaceRow } from "./types";
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
-  @internalProperty() private _narrow?: boolean = false;
+  @state() private _narrow?: boolean = false;
 
-  @internalProperty() private _veryNarrow?: boolean = false;
+  @state() private _veryNarrow?: boolean = false;
 
   private _resizeObserver?: ResizeObserver;
 
@@ -91,11 +89,11 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
-    const state = stateObj.state;
+    const entityState = stateObj.state;
 
     const buttons = html`
       ${!this._narrow &&
-      state === "playing" &&
+      entityState === "playing" &&
       supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
         ? html`
             <ha-icon-button
@@ -104,12 +102,12 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ></ha-icon-button>
           `
         : ""}
-      ${(state === "playing" &&
+      ${(entityState === "playing" &&
         (supportsFeature(stateObj, SUPPORT_PAUSE) ||
           supportsFeature(stateObj, SUPPORT_STOP))) ||
-      ((state === "paused" || state === "idle") &&
+      ((entityState === "paused" || entityState === "idle") &&
         supportsFeature(stateObj, SUPPORT_PLAY)) ||
-      (state === "on" &&
+      (entityState === "on" &&
         (supportsFeature(stateObj, SUPPORT_PLAY) ||
           supportsFeature(stateObj, SUPPORT_PAUSE)))
         ? html`
@@ -119,7 +117,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ></ha-icon-button>
           `
         : ""}
-      ${state === "playing" && supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+      ${entityState === "playing" &&
+      supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
         ? html`
             <ha-icon-button
               icon="hass:skip-next"
@@ -140,8 +139,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       >
         <div class="controls">
           ${supportsFeature(stateObj, SUPPORT_TURN_ON) &&
-          state === "off" &&
-          !UNAVAILABLE_STATES.includes(state)
+          entityState === "off" &&
+          !UNAVAILABLE_STATES.includes(entityState)
             ? html`
                 <ha-icon-button
                   icon="hass:power"
@@ -153,8 +152,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             ? buttons
             : ""}
           ${supportsFeature(stateObj, SUPPORT_TURN_OFF) &&
-          state !== "off" &&
-          !UNAVAILABLE_STATES.includes(state)
+          entityState !== "off" &&
+          !UNAVAILABLE_STATES.includes(entityState)
             ? html`
                 <ha-icon-button
                   icon="hass:power"
@@ -166,7 +165,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       </hui-generic-entity-row>
       ${(supportsFeature(stateObj, SUPPORT_VOLUME_SET) ||
         supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)) &&
-      ![UNAVAILABLE, UNKNOWN, "off"].includes(state)
+      ![UNAVAILABLE, UNKNOWN, "off"].includes(entityState)
         ? html`
             <div class="flex">
               <div class="volume">
@@ -207,9 +206,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                   : ""}
               </div>
 
-              <div class="controls">
-                ${buttons}
-              </div>
+              <div class="controls">${buttons}</div>
             </div>
           `
         : ""}
@@ -310,7 +307,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

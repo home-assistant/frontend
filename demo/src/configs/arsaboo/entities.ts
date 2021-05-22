@@ -246,11 +246,15 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
 
     "light.living_room_lights": {
       entity_id: "light.living_room_lights",
-      state: "off",
+      state: "on",
       attributes: {
         min_mireds: 111,
         max_mireds: 400,
+        brightness: 175,
+        color_temp: 300,
+        supported_color_modes: ["brightness", "color_temp"],
         friendly_name: "Living Room Lights",
+        color_mode: "color_temp",
         supported_features: 55,
       },
     },
@@ -263,13 +267,27 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
     },
     "light.kitchen_lights": {
       entity_id: "light.kitchen_lights",
+      state: "on",
+      attributes: {
+        min_mireds: 111,
+        max_mireds: 400,
+        brightness: 200,
+        rgb_color: [255, 175, 96],
+        supported_color_modes: ["brightness", "color_temp", "rgb"],
+        color_mode: "rgb",
+        friendly_name: "Kitchen Lights",
+        supported_features: 55,
+      },
+    },
+    "light.lifx5": {
+      entity_id: "light.lifx5",
       state: "off",
       attributes: {
-        friendly_name: "Kitchen Lights",
+        supported_color_modes: ["brightness"],
+        friendly_name: "Garage Lights",
         supported_features: 1,
       },
     },
-
     "sensor.plexspy": {
       entity_id: "sensor.plexspy",
       state: "0",
@@ -480,16 +498,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         answered: false,
         friendly_name: "Front Door Last Ding",
         icon: "hademo:history",
-      },
-    },
-    "light.lifx5": {
-      entity_id: "light.lifx5",
-      state: "on",
-      attributes: {
-        min_mireds: 111,
-        max_mireds: 400,
-        friendly_name: "Garage Lights",
-        supported_features: 55,
       },
     },
     "sensor.alok_to_home": {

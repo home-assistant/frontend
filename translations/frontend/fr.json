@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Une erreur inconnue s'est produite",
+            "error_addon_no_ingress": "L’add-on demandé ne prend pas en charge l’entrée",
             "error_addon_not_found": "Module complémentaire introuvable",
             "faq_link": "FAQ de My Home Assistant",
             "not_supported": "Cette redirection n'est pas prise en charge par votre instance Home Assistant. Vérifiez le {link} pour les redirections prises en charge et la version dans laquelle elles ont été introduites."
@@ -383,6 +384,7 @@
             "create": "Créer",
             "create_blocked_not_running": "La création d’un instantané n’est pas possible en ce moment car le système est en état {state}.",
             "create_snapshot": "Créer un instantané",
+            "created": "créé",
             "description": "Les instantanés vous permettent de sauvegarder et de restaurer facilement toutes les données de votre instance Home Assistant.",
             "enter_password": "Veuillez entrer un mot de passe.",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Obtenez des mises à jour stables pour l'assistant domestique, le Superviseur et l'hôte",
                 "ram_usage": "Utilisation de la RAM du Superviseur",
                 "reload_supervisor": "Recharger le Superviseur",
+                "search": "Recherche",
                 "share_diagnostics": "Partager les diagnostics",
                 "share_diagnostics_description": "Partagez les rapports d'incident et les informations de diagnostic.",
                 "share_diagonstics_description": "Souhaitez-vous partager automatiquement les rapports d'erreur et les informations de diagnostic lorsque le Superviseur rencontre des erreurs inattendues? {line_break} Cela nous permettra de résoudre les problèmes, les informations ne sont accessibles qu'à l'équipe Home Assistant Core et ne seront pas partagées avec d'autres. {line_break} Les données n'incluent aucune information privée / sensible et vous pouvez désactiver cela dans les paramètres à tout moment.",
@@ -473,7 +476,7 @@
                 "unhealthy_title": "Votre installation est défectueuse",
                 "unsupported_description": "Vous trouverez ci-dessous une liste des problèmes rencontrés avec votre installation, cliquez sur les liens pour savoir comment vous pouvez résoudre les problèmes.",
                 "unsupported_reason": {
-                    "apparmor": "AppArmo n'est pas activé sur l'hôte",
+                    "apparmor": "AppArmor n'est pas activé sur l'hôte",
                     "container": "Conteneurs connus pour causer des problèmes",
                     "content-trust": "La validation de la confiance du contenu est désactivée",
                     "dbus": "DBUS",
@@ -561,8 +564,11 @@
             },
             "light": {
                 "brightness": "Luminosité",
+                "cold_white_value": "Luminosité du blanc froid",
+                "color_brightness": "Luminosité de la couleur",
                 "color_temperature": "Température de couleur",
                 "effect": "Effet",
+                "warm_white_value": "Luminosité du blanc chaud",
                 "white_value": "Niveau de blanc"
             },
             "lock": {
@@ -886,6 +892,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Documentation de l'intégration",
                 "required": "Ce champ est obligatoire",
                 "service_data": "Données de service",
                 "target": "Cibles",
@@ -1193,7 +1200,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "Reconfigurer l'appareil"
+                "attribute": "Attribut",
+                "battery_device_warning": "Vous allez avoir besoin de réveiller les appareils sur batterie avant de commencer le processus de reconfiguration. Consultez le manuel de l'appareil pour connaître la procédure.",
+                "bind_header": "Liaison",
+                "button_hide": "Masquer les détails",
+                "button_show": "Afficher les détails",
+                "cluster_header": "Cluster",
+                "configuration_complete": "Reconfiguration de l'appareil complété.",
+                "configuration_failed": "La reconfiguration de l'appareil a échoué. Des informations additionnelles sont disponibles dans les journaux.",
+                "configuring_alt": "Configurer",
+                "heading": "Reconfigurer l'appareil",
+                "in_progress": "L'appareil est en cours de configuration. Cela peut prendre du temps.",
+                "introduction": "Reconfigure l'appareil sur votre réseau Zigbee. Utilisez cette fonctionnalité si votre appareil ne fonctionne pas correctement.",
+                "min_max_change": "min / max / changement",
+                "reporting_header": "Rapports",
+                "run_in_background": "Vous pouvez fermer cette fenêtre pendant que la reconfiguration se poursuivra en arrière-plan.",
+                "start_reconfiguration": "Démarrer la reconfiguration"
             }
         },
         "duration": {
@@ -1244,7 +1266,7 @@
             "started": "Home Assistant a démarré !",
             "starting": "Home Assistant est en cours de démarrage, tout ne sera pas disponible tant qu’il n’aura pas terminé.",
             "triggered": "{name} déclenché",
-            "wrapping_up_startup": "En terminant le démarrage, tout ne sera pas disponible tant qu'il ne sera pas terminé."
+            "wrapping_up_startup": "Finalisation du démarrage, tout ne sera pas disponible tant qu'il ne sera pas terminé."
         },
         "panel": {
             "config": {
@@ -1256,7 +1278,8 @@
                     "caption": "Pièces",
                     "data_table": {
                         "area": "Pièce",
-                        "devices": "Appareils"
+                        "devices": "Appareils",
+                        "entities": "Entités"
                     },
                     "delete": {
                         "confirmation_text": "Tous les appareils de cette pièce ne seront plus attribués.",
@@ -1268,8 +1291,10 @@
                         "create": "Créer",
                         "default_name": "Nouvelle Pièce",
                         "delete": "Supprimer",
+                        "linked_entities_caption": "Entités",
                         "name": "Nom",
                         "name_required": "Le nom est requis",
+                        "no_linked_entities": "Il n'y a pas d'entités liées à cette pièce",
                         "unknown_error": "Erreur inconnue",
                         "update": "Mise à jour"
                     },
@@ -1724,10 +1749,16 @@
                         "remote": {
                             "access_is_being_prepared": "L'accès à distance est en préparation. Nous vous informerons quand ce sera prêt.",
                             "certificate_info": "Informations sur le certificat",
+                            "connected": "Connecté",
                             "info": "Home Assistant Cloud fournit une connexion à distance sécurisée à votre instance lorsque vous n'êtes pas chez vous.",
                             "instance_is_available": "Votre instance est disponible à l'adresse",
                             "instance_will_be_available": "Votre instance sera disponible sur",
                             "link_learn_how_it_works": "Apprenez comment ça marche",
+                            "not_connected": "Non connecté",
+                            "remote_enabled": {
+                                "caption": "Se connecter automatiquement",
+                                "description": "Activez cette option pour vous assurer que votre instance de Home Assistant est toujours accessible à distance."
+                            },
                             "title": "Contrôle à distance"
                         },
                         "sign_out": "Déconnexion",
@@ -2138,6 +2169,7 @@
                     "license": "Publié sous la licence Apache 2.0",
                     "path_configuration": "Chemin vers configuration.yaml : {path}",
                     "server": "serveur",
+                    "setup_time": "Temps de configuration",
                     "source": "Source:",
                     "system_health_error": "Le composant System Health n'est pas chargé. Ajouter 'system_health:' à configuration.yaml",
                     "system_health": {
@@ -2156,8 +2188,11 @@
                     "caption": "Intégrations",
                     "config_entry": {
                         "area": "Dans {area}",
+                        "check_the_logs": "Vérifiez les journaux",
+                        "configure": "Configurer",
                         "delete": "Supprimer",
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette intégration?",
+                        "depends_on_cloud": "Dépend du cloud",
                         "device_unavailable": "Appareil non disponible",
                         "devices": "{count} {count, plural,\n  one {appareil}\n  other {appareils}\n}",
                         "disable_restart_confirm": "Redémarrez Home Assistant pour terminer la désactivation de cette intégration",
@@ -2180,14 +2215,23 @@
                         "logs": "journaux",
                         "manuf": "par {manufacturer}",
                         "no_area": "Pas de zone",
-                        "not_loaded": "Non chargé, vérifiez le {logs_link}",
+                        "not_loaded": "Non chargé",
                         "options": "Options",
+                        "provided_by_custom_integration": "Fourni par une intégration personnalisée",
                         "reload": "Recharger",
                         "reload_confirm": "L'intégration a été rechargée",
                         "reload_restart_confirm": "Redémarrer Home Assistant pour finaliser le rechargement de cette intégration",
                         "rename": "Renommer",
                         "restart_confirm": "Redémarrer Home Assistant pour terminer la suppression de cette intégration",
                         "services": "{count} {count, plural,\n  one {service}\n  other {services}\n}",
+                        "state": {
+                            "failed_unload": "Échec du déchargement",
+                            "loaded": "Chargé",
+                            "migration_error": "Erreur de migration",
+                            "not_loaded": "Non chargé",
+                            "setup_error": "Échec de la configuration",
+                            "setup_retry": "Réessayer la configuration"
+                        },
                         "system_options": "Options système",
                         "unnamed_entry": "Entrée sans nom"
                     },
@@ -2205,6 +2249,7 @@
                         },
                         "finish": "Terminer",
                         "loading_first_time": "Veuillez patienter pendant que l'intégration est en cours d'installation",
+                        "next": "Suivant",
                         "not_all_required_fields": "Tous les champs obligatoires ne sont pas renseignés.",
                         "not_loaded": "Cette intégration ne peut être chargée, essayez de redémarrer Home Assistant",
                         "pick_flow_step": {
@@ -2255,8 +2300,10 @@
                 "logs": {
                     "caption": "Journaux",
                     "clear": "Nettoyer",
+                    "custom_integration": "intégration personnalisée",
                     "description": "Afficher les journaux de Home Assistant",
                     "details": "Détails du journal ( {level} )",
+                    "error_from_custom_integration": "Cette erreur provient d'une intégration personnalisée",
                     "level": {
                         "critical": "CRITIQUE",
                         "debug": "DEBUG",
@@ -2773,6 +2820,15 @@
                         "manufacturer_code_override": "Code de remplacement du fabricant",
                         "value": "Valeur"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Raccourcis",
+                        "update_button": "Configuration de mise à jour",
+                        "zha_options": {
+                            "default_light_transition": "Temps de transition de la lumière par défaut (en secondes)",
+                            "enable_identify_on_join": "Activer l'effet d'identification quand les appareils rejoignent le réseau",
+                            "title": "Options générales"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuration terminée",
                         "CONFIGURED_status_text": "Initialisation",
@@ -2897,7 +2953,13 @@
                         "node_status": "État du nœud",
                         "zwave_info": "Informations Z-Wave"
                     },
+                    "logs": {
+                        "log_level": "Niveau du journal",
+                        "subscribed_to_logs": "S'abonner aux messages du journal Z-Wave JS",
+                        "title": "Journaux Z-Wave JS"
+                    },
                     "navigation": {
+                        "logs": "Journaux",
                         "network": "Réseau"
                     },
                     "network_status": {
@@ -2912,6 +2974,9 @@
                         "header": "Configuration du périphérique Z-Wave",
                         "introduction": "Gérer et ajuster les paramètres de configuration spécifiques au périphérique (nœud) pour le périphérique sélectionné",
                         "parameter_is_read_only": "Ce paramètre est en lecture seule.",
+                        "set_param_accepted": "Le paramètre a été mis à jour.",
+                        "set_param_error": "Une erreur s'est produite.",
+                        "set_param_queued": "La modification du paramètre a été mise en file d'attente et sera mise à jour lorsque l'appareil se réveillera.",
                         "zwave_js_device_database": "Base de données de périphériques Z-Wave JS"
                     },
                     "node_status": {
@@ -2920,6 +2985,16 @@
                         "awake": "Éveillé",
                         "dead": "Mort",
                         "unknown": "Inconnu"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Vous allez avoir besoin de réveiller les appareils sur batterie avant de commencer le processus de réinterrogation. Consultez le manuel de l'appareil pour connaître la procédure.",
+                        "in_progress": "L'appareil est en cours d'interrogation. Cela peut prendre du temps.",
+                        "interview_complete": "Processus d'interrogation de l'appareil terminé.",
+                        "interview_failed": "L'interrogation de l'appareil a échoué. Des informations additionnelles peuvent être disponibles dans les journaux.",
+                        "introduction": "Réinterroger un appareil sur votre réseau Z-Wave. Utilisez cette fonctionnalité si votre appareil a des fonctionnalités manquantes ou incorrectes.",
+                        "run_in_background": "Vous pouvez fermer cette fenêtre pendant que le processus d'interrogation se poursuivra en arrière-plan.",
+                        "start_reinterview": "Démarrer le processus de réinterrogation",
+                        "title": "Réinterroger un appareil Z-Wave"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Annuler l'exclusion",
@@ -3928,6 +4003,16 @@
                     "link_promo": "En savoir plus sur les thèmes",
                     "primary_color": "Couleur primaire",
                     "reset": "Réinitialiser"
+                },
+                "time_format": {
+                    "description": "Définir le formatage des nombres",
+                    "dropdown_label": "Format de l'heure",
+                    "formats": {
+                        "12": "12 heures (AM / PM)",
+                        "24": "24 heures",
+                        "system": "Utiliser les paramètres régionaux du système"
+                    },
+                    "header": "Format de l'heure"
                 },
                 "vibrate": {
                     "description": "Activer ou désactiver les vibrations sur cet appareil lors du contrôle des périphériques.",

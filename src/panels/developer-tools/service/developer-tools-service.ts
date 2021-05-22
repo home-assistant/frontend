@@ -1,14 +1,8 @@
+import { mdiHelpCircle } from "@mdi/js";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
 import { safeLoad } from "js-yaml";
-import {
-  css,
-  CSSResultArray,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { LocalStorage } from "../../../common/decorators/local-storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -23,8 +17,8 @@ import "../../../components/ha-service-control";
 import "../../../components/ha-service-picker";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
-import { ServiceAction } from "../../../data/script";
 import { forwardHaptic } from "../../../data/haptics";
+import { ServiceAction } from "../../../data/script";
 import {
   callExecuteScript,
   serviceCallWillDisconnect,
@@ -33,6 +27,7 @@ import { haStyle } from "../../../resources/styles";
 import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
 import "../../../util/app-localstorage-document";
+import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 
 class HaPanelDevService extends LitElement {
@@ -40,7 +35,7 @@ class HaPanelDevService extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private _uiAvailable = true;
+  @state() private _uiAvailable = true;
 
   @LocalStorage("panel-dev-service-state-service-data", true)
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
@@ -162,12 +157,39 @@ class HaPanelDevService extends LitElement {
               outlined
               .expanded=${this._yamlMode}
             >
-              ${this._yamlMode && target
-                ? html`<h3>
-                    ${this.hass.localize(
-                      "ui.panel.developer-tools.tabs.services.accepts_target"
-                    )}
-                  </h3>`
+              ${this._yamlMode
+                ? html` <div class="description">
+                    <h3>
+                      ${target
+                        ? html`
+                            ${this.hass.localize(
+                              "ui.panel.developer-tools.tabs.services.accepts_target"
+                            )}
+                          `
+                        : ""}
+                    </h3>
+                    ${this._serviceData?.service
+                      ? html` <a
+                          href="${documentationUrl(
+                            this.hass,
+                            "/integrations/" +
+                              computeDomain(this._serviceData?.service)
+                          )}"
+                          title="${this.hass.localize(
+                            "ui.components.service-control.integration_doc"
+                          )}"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <mwc-icon-button>
+                            <ha-svg-icon
+                              path=${mdiHelpCircle}
+                              class="help-icon"
+                            ></ha-svg-icon>
+                          </mwc-icon-button>
+                        </a>`
+                      : ""}
+                  </div>`
                 : ""}
               <table class="attributes">
                 <tr>
@@ -262,9 +284,10 @@ class HaPanelDevService extends LitElement {
       }
       const target = "target" in serviceDomains[domain][service];
       const fields = serviceDomains[domain][service].fields;
-      const result = Object.keys(fields).map((field) => {
-        return { key: field, ...fields[field] };
-      });
+      const result = Object.keys(fields).map((field) => ({
+        key: field,
+        ...fields[field],
+      }));
 
       return {
         target,
@@ -351,7 +374,7 @@ class HaPanelDevService extends LitElement {
     this._yamlEditor?.setValue(this._serviceData);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
@@ -418,6 +441,15 @@ class HaPanelDevService extends LitElement {
         .attributes td {
           padding: 4px;
           vertical-align: middle;
+        }
+
+        .help-icon {
+          color: var(--secondary-text-color);
+        }
+        .description {
+          justify-content: space-between;
+          display: flex;
+          align-items: center;
         }
       `,
     ];

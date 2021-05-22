@@ -1,6 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
-import { customElement, html, LitElement, property } from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../../components/entity/ha-entity-picker";
 import { ForDict, NumericStateTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";

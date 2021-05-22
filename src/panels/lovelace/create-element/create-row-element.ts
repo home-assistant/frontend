@@ -89,11 +89,5 @@ export const createRowElement = (config: LovelaceRowConfig) =>
     undefined
   );
 
-export const getRowElementClass = (type: string) => {
-  return getLovelaceElementClass(
-    type,
-    "row",
-    ALWAYS_LOADED_TYPES,
-    LAZY_LOAD_TYPES
-  );
-};
+export const getRowElementClass = (type: string) =>
+  getLovelaceElementClass(type, "row", ALWAYS_LOADED_TYPES, LAZY_LOAD_TYPES);

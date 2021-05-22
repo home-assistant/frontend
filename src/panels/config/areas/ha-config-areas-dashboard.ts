@@ -1,15 +1,8 @@
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
@@ -24,10 +17,8 @@ import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
 } from "../../../data/area_registry";
-import {
-  DeviceRegistryEntry,
-  devicesInArea,
-} from "../../../data/device_registry";
+import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
@@ -53,15 +44,41 @@ export class HaConfigAreasDashboard extends LitElement {
 
   @property() public devices!: DeviceRegistryEntry[];
 
+  @property() public entities!: EntityRegistryEntry[];
+
   private _areas = memoizeOne(
-    (areas: AreaRegistryEntry[], devices: DeviceRegistryEntry[]) => {
-      return areas.map((area) => {
+    (
+      areas: AreaRegistryEntry[],
+      devices: DeviceRegistryEntry[],
+      entities: EntityRegistryEntry[]
+    ) =>
+      areas.map((area) => {
+        const devicesInArea = new Set();
+
+        for (const device of devices) {
+          if (device.area_id === area.area_id) {
+            devicesInArea.add(device.id);
+          }
+        }
+
+        let entitiesInArea = 0;
+
+        for (const entity of entities) {
+          if (
+            entity.area_id
+              ? entity.area_id === area.area_id
+              : devicesInArea.has(entity.device_id)
+          ) {
+            entitiesInArea++;
+          }
+        }
+
         return {
           ...area,
-          devices: devicesInArea(devices, area.area_id).length,
+          devices: devicesInArea.size,
+          entities: entitiesInArea,
         };
-      });
-    }
+      })
   );
 
   private _columns = memoizeOne(
@@ -97,6 +114,15 @@ export class HaConfigAreasDashboard extends LitElement {
               width: "20%",
               direction: "asc",
             },
+            entities: {
+              title: this.hass.localize(
+                "ui.panel.config.areas.data_table.entities"
+              ),
+              sortable: true,
+              type: "numeric",
+              width: "20%",
+              direction: "asc",
+            },
           }
   );
 
@@ -110,7 +136,7 @@ export class HaConfigAreasDashboard extends LitElement {
         .tabs=${configSections.integrations}
         .route=${this.route}
         .columns=${this._columns(this.narrow)}
-        .data=${this._areas(this.areas, this.devices)}
+        .data=${this._areas(this.areas, this.devices, this.entities)}
         @row-click=${this._handleRowClicked}
         .noDataText=${this.hass.localize(
           "ui.panel.config.areas.picker.no_areas"
@@ -177,7 +203,7 @@ export class HaConfigAreasDashboard extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       hass-loading-screen {
         --app-header-background-color: var(--sidebar-background-color);

@@ -1,43 +1,55 @@
-import "../../../../../components/ha-settings-row";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
 import {
+  mdiCheckCircle,
+  mdiCircle,
+  mdiCloseCircle,
+  mdiProgressClock,
+} from "@mdi/js";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { debounce } from "../../../../../common/util/debounce";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-icon-next";
+import "../../../../../components/ha-settings-row";
+import "../../../../../components/ha-svg-icon";
 import "../../../../../components/ha-switch";
+import {
+  computeDeviceName,
+  DeviceRegistryEntry,
+  subscribeDeviceRegistry,
+} from "../../../../../data/device_registry";
 import {
   fetchNodeConfigParameters,
   setNodeConfigParameter,
   ZWaveJSNodeConfigParams,
+  ZWaveJSSetConfigParamResult,
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-tabs-subpage";
+import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
 import "../../../ha-config-section";
 import { configTabs } from "./zwave_js-config-router";
-import {
-  DeviceRegistryEntry,
-  computeDeviceName,
-  subscribeDeviceRegistry,
-} from "../../../../../data/device_registry";
-import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import memoizeOne from "memoize-one";
+
+const icons = {
+  accepted: mdiCheckCircle,
+  queued: mdiProgressClock,
+  error: mdiCloseCircle,
+};
 
 const getDevice = memoizeOne(
   (
@@ -77,9 +89,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   @property({ type: Array })
   private _deviceRegistryEntries?: DeviceRegistryEntry[];
 
-  @internalProperty() private _config?: ZWaveJSNodeConfigParams[];
+  @state() private _config?: ZWaveJSNodeConfigParams;
 
-  @internalProperty() private _error?: string;
+  @state() private _results: Record<string, ZWaveJSSetConfigParamResult> = {};
+
+  @state() private _error?: string;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -178,6 +192,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   private _generateConfigBox(id, item): TemplateResult {
+    const result = this._results[id];
     const labelAndDescription = html`
       <span slot="heading">${item.metadata.label}</span>
       <span slot="description">
@@ -191,6 +206,26 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                 "ui.panel.config.zwave_js.node_config.parameter_is_read_only"
               )}
             </em>`
+          : ""}
+        ${result?.status
+          ? html` <p
+              class="result ${classMap({
+                [result.status]: true,
+              })}"
+            >
+              <ha-svg-icon
+                .path=${icons[result.status] ? icons[result.status] : mdiCircle}
+                class="result-icon"
+                slot="item-icon"
+              ></ha-svg-icon>
+              ${this.hass.localize(
+                "ui.panel.config.zwave_js.node_config.set_param_" +
+                  result.status
+              )}
+              ${result.status === "error" && result.error
+                ? html` <br /><em>${result.error}</em> `
+                : ""}
+            </p>`
           : ""}
       </span>
     `;
@@ -254,8 +289,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               @iron-select=${this._dropdownSelected}
             >
               ${Object.entries(item.metadata.states).map(
-                ([key, state]) => html`
-                  <paper-item .value=${key}>${state}</paper-item>
+                ([key, entityState]) => html`
+                  <paper-item .value=${key}>${entityState}</paper-item>
                 `
               )}
             </paper-listbox>
@@ -293,6 +328,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   }
 
   private _switchToggled(ev) {
+    this.setResult(ev.target.key, undefined);
     this._updateConfigParameter(ev.target, ev.target.checked ? 1 : 0);
   }
 
@@ -303,6 +339,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     if (this._config![ev.target.key].value === ev.target.selected) {
       return;
     }
+    this.setResult(ev.target.key, undefined);
 
     this._updateConfigParameter(ev.target, Number(ev.target.selected));
   }
@@ -321,20 +358,41 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     if (Number(this._config![ev.target.key].value) === value) {
       return;
     }
+    this.setResult(ev.target.key, undefined);
     this.debouncedUpdate(ev.target, value);
   }
 
-  private _updateConfigParameter(target, value) {
+  private async _updateConfigParameter(target, value) {
     const nodeId = getNodeId(this._device!);
-    setNodeConfigParameter(
-      this.hass,
-      this.configEntryId!,
-      nodeId!,
-      target.property,
-      value,
-      target.propertyKey ? target.propertyKey : undefined
-    );
-    this._config![target.key].value = value;
+    try {
+      const result = await setNodeConfigParameter(
+        this.hass,
+        this.configEntryId!,
+        nodeId!,
+        target.property,
+        value,
+        target.propertyKey ? target.propertyKey : undefined
+      );
+      this._config![target.key].value = value;
+
+      this.setResult(target.key, result.status);
+    } catch (error) {
+      this.setError(target.key, error.message);
+    }
+  }
+
+  private setResult(key: string, value: string | undefined) {
+    if (value === undefined) {
+      delete this._results[key];
+      this.requestUpdate();
+    } else {
+      this._results = { ...this._results, [key]: { status: value } };
+    }
+  }
+
+  private setError(key: string, message: string) {
+    const errorParam = { status: "error", error: message };
+    this._results = { ...this._results, [key]: errorParam };
   }
 
   private get _device(): DeviceRegistryEntry | undefined {
@@ -365,10 +423,22 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
     );
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`
+        .accepted {
+          color: var(--success-color);
+        }
+
+        .queued {
+          color: var(--warning-color);
+        }
+
+        .error {
+          color: var(--error-color);
+        }
+
         .secondary {
           color: var(--secondary-text-color);
         }

@@ -4,18 +4,11 @@ import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
@@ -48,7 +41,7 @@ const sortKeys = (a: string, b: string) => {
 class SystemHealthCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _info?: SystemHealthInfo;
+  @state() private _info?: SystemHealthInfo;
 
   protected render(): TemplateResult {
     if (!this.hass) {
@@ -122,9 +115,7 @@ class SystemHealthCard extends LitElement {
           sections.push(
             html`
               <div class="card-header">
-                <h3>
-                  ${domainToName(this.hass.localize, domain)}
-                </h3>
+                <h3>${domainToName(this.hass.localize, domain)}</h3>
                 ${!domainInfo.manage_url
                   ? ""
                   : html`
@@ -262,7 +253,7 @@ class SystemHealthCard extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       table {
         width: 100%;

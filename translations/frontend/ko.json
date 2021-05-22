@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "알 수 없는 오류가 발생했습니다",
+            "error_addon_no_ingress": "해당 애드온은 인그레스를 지원하지 않습니다.",
             "error_addon_not_found": "애드온을 찾을 수 없습니다",
             "faq_link": "내 Home Assistant 자주 묻는 질문",
             "not_supported": "이 리디렉션은 Home Assistant 인스턴스에서 지원되지 않습니다. {link}에서 지원되는 리디렉션과 리디렉션이 도입된 버전을 확인해주세요."
@@ -383,6 +384,7 @@
             "create": "생성하기",
             "create_blocked_not_running": "시스템이 {state} 상태이기 때문에 지금은 스냅숏을 생성할 수 없습니다.",
             "create_snapshot": "스냅숏 생성하기",
+            "created": "생성됨",
             "description": "스냅숏을 사용하면 Home Assistant 인스턴스의 모든 데이터를 쉽게 백업하고 복원할 수 있습니다.",
             "enter_password": "비밀번호를 입력해주세요.",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Home Assistant, Supervisor 및 호스트의 공식 업데이트를 가져옵니다",
                 "ram_usage": "Supervisor RAM 사용량",
                 "reload_supervisor": "Supervisor 다시 읽어오기",
+                "search": "검색",
                 "share_diagnostics": "진단 정보 공유하기",
                 "share_diagnostics_description": "충돌 보고서 및 진단 정보를 공유합니다.",
                 "share_diagonstics_description": "Supervisor에서 예기치 않은 오류가 발생한 경우 충돌 보고서 및 진단 정보를 자동으로 공유하시겠습니까? {line_break} 공유된 내용으로 발생된 문제를 해결할 수 있으며, 해당 정보는 Home Assistant Core 팀에서만 접근할 수 있을 뿐, 다른 사람과 공유되지 않습니다.{line_break} 데이터에는 개인정보 및 민감한 정보가 포함되어 있지 않으므로 언제든지 설정에서 이 정보를 사용하지 않도록 설정할 수 있습니다.",
@@ -561,8 +564,11 @@
             },
             "light": {
                 "brightness": "밝기",
+                "cold_white_value": "주광색 밝기",
+                "color_brightness": "색상 밝기",
                 "color_temperature": "색온도",
                 "effect": "효과",
+                "warm_white_value": "전구색 밝기",
                 "white_value": "흰색 값"
             },
             "lock": {
@@ -886,6 +892,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "통합구성요소 설명서",
                 "required": "이 입력란은 필수 요소입니다",
                 "service_data": "서비스 데이터",
                 "target": "대상",
@@ -1193,7 +1200,22 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "기기 재구성 중"
+                "attribute": "속성",
+                "battery_device_warning": "재구성하기 전에 배터리 전원 장치의 절전 모드를 해제해야 합니다. 절전 모드를 해제하는 방법은 기기 설명서를 참조하십시오.",
+                "bind_header": "묶기",
+                "button_hide": "세부 정보 숨기기",
+                "button_show": "세부 정보 표시",
+                "cluster_header": "클러스터",
+                "configuration_complete": "장치 재구성이 완료되었습니다.",
+                "configuration_failed": "장치 재구성에 실패했습니다. 로그에서 정보를 확인할 수 있습니다.",
+                "configuring_alt": "구성",
+                "heading": "기기 재구성 중",
+                "in_progress": "장치가 재구성 중입니다. 시간이 좀 걸릴 수 있습니다.",
+                "introduction": "Zigbee 네트워크에서 장치를 재구성합니다. 장치가 올바르게 작동하지 않는 경우에 이 기능을 사용하십시오.",
+                "min_max_change": "최소/최대/변경",
+                "reporting_header": "보고",
+                "run_in_background": "이 대화 상자를 닫을 수 있으며 재구성은 백그라운드에서 계속됩니다.",
+                "start_reconfiguration": "재구성 시작"
             }
         },
         "duration": {
@@ -1256,7 +1278,8 @@
                     "caption": "영역",
                     "data_table": {
                         "area": "영역",
-                        "devices": "기기"
+                        "devices": "기기",
+                        "entities": "구성요소"
                     },
                     "delete": {
                         "confirmation_text": "이 영역에 속한 모든 기기가 할당 해제됩니다.",
@@ -1268,8 +1291,10 @@
                         "create": "만들기",
                         "default_name": "새로운 영역",
                         "delete": "삭제하기",
+                        "linked_entities_caption": "구성요소",
                         "name": "이름",
                         "name_required": "이름은 필수 요소입니다",
+                        "no_linked_entities": "이 영역에 등록된 구성요소가 없습니다.",
                         "unknown_error": "알 수 없는 오류",
                         "update": "업데이트"
                     },
@@ -1724,10 +1749,16 @@
                         "remote": {
                             "access_is_being_prepared": "원격 접속이 준비 중입니다. 준비가 되면 알려드리겠습니다.",
                             "certificate_info": "인증서 정보",
+                            "connected": "연결됨",
                             "info": "Home Assistant Cloud는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다.",
                             "instance_is_available": "구성요소는 다음의 주소에서 사용할 수 있습니다.",
                             "instance_will_be_available": "토글을 활성화하여 다음의 주소에서 구성요소를 사용해보세요.",
                             "link_learn_how_it_works": "작동 방식에 대해 알아보기",
+                            "not_connected": "연결되지 않음",
+                            "remote_enabled": {
+                                "caption": "자동 연결",
+                                "description": "이 옵션을 활성화하면 Home Assistant 인스턴스에 항상 원격으로 액세스 할 수 있습니다."
+                            },
                             "title": "원격 제어"
                         },
                         "sign_out": "로그 아웃",
@@ -1893,11 +1924,11 @@
                                     },
                                     "usage_supervisor": {
                                         "description": "이름, 버전 그리고 기타 정보.",
-                                        "title": "사용된 통합 구성요소 및 애드온"
+                                        "title": "사용된 통합구성요소 및 애드온"
                                     },
                                     "usage": {
                                         "description": "이름과 버전 정보.",
-                                        "title": "사용된 통합 구성요소"
+                                        "title": "사용된 통합구성요소"
                                     }
                                 }
                             },
@@ -2089,7 +2120,7 @@
                     "show": "표시하기"
                 },
                 "hassio": {
-                    "button": "구성하기"
+                    "button": "구성"
                 },
                 "header": "Home Assistant 구성하기",
                 "helpers": {
@@ -2138,6 +2169,7 @@
                     "license": "Apache 2.0 License에 따라 게시",
                     "path_configuration": "configuration.yaml의 위치: {path}",
                     "server": "서버",
+                    "setup_time": "설정 시간",
                     "source": "소스:",
                     "system_health_error": "시스템 상태보기 구성요소가 로드되지 않았습니다. configuration.yaml에 'system_health:'를 추가해주세요.",
                     "system_health": {
@@ -2160,6 +2192,7 @@
                         "configure": "구성",
                         "delete": "삭제하기",
                         "delete_confirm": "이 통합 구성요소를 제거하시겠습니까?",
+                        "depends_on_cloud": "클라우드 서비스",
                         "device_unavailable": "기기 사용불가",
                         "devices": "{count} {count, plural,\none{개의 기기}\nother{개의 기기}\n}",
                         "disable_restart_confirm": "이 통합 구성요소를 비활성화하려면 Home Assistant를 다시 시작해주세요",
@@ -2184,6 +2217,7 @@
                         "no_area": "영역 없음",
                         "not_loaded": "로드되지 않음",
                         "options": "옵션",
+                        "provided_by_custom_integration": "사용자 통합구성요소",
                         "reload": "다시 읽어오기",
                         "reload_confirm": "통합 구성요소를 다시 읽어 들였습니다",
                         "reload_restart_confirm": "이 통합 구성요소를 다시 읽어 들일려면 Home Assistant를 다시 시작해주세요",
@@ -2215,6 +2249,7 @@
                         },
                         "finish": "완료",
                         "loading_first_time": "통합 구성요소가 설치되는 동안 기다려주세요",
+                        "next": "다음",
                         "not_all_required_fields": "필수 입력란이 모두 채워지지 않았습니다.",
                         "not_loaded": "통합 구성요소를 불러올 수 없습니다. Home Assistant를 다시 시작해주세요.",
                         "pick_flow_step": {
@@ -2553,6 +2588,8 @@
                         "add_scene": "씬 추가하기",
                         "delete_confirm": "이 씬을 삭제하시겠습니까?",
                         "delete_scene": "씬 삭제하기",
+                        "duplicate": "복제",
+                        "duplicate_scene": "씬 복제",
                         "edit_scene": "씬 편집하기",
                         "header": "씬 편집기",
                         "headers": {
@@ -2785,6 +2822,15 @@
                         "manufacturer_code_override": "제조업체 코드 재정의",
                         "value": "값"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "바로 가기",
+                        "update_button": "구성 업데이트",
+                        "zha_options": {
+                            "default_light_transition": "조명 전환 시간 기본 값(초)",
+                            "enable_identify_on_join": "장치가 네트워크에 연결될 때 식별 효과 활성화",
+                            "title": "전역 옵션"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "구성이 완료되었습니다",
                         "CONFIGURED_status_text": "초기화 중",
@@ -2872,6 +2918,8 @@
                         "follow_device_instructions": "기기를 연결하려면 기기의 설명서를 따라주세요.",
                         "inclusion_failed": "노드를 추가할 수 없습니다. 자세한 내용은 로그를 확인해주세요.",
                         "inclusion_finished": "노드가 추가되었습니다. 백그라운드에서 노드 설정을 마치면 모든 구성요소가 표시되는 데 몇 분 정도 걸릴 수 있습니다.",
+                        "interview_failed": "장치 인터뷰에 실패했습니다. 로그에서 추가 정보를 확인할 수 있습니다.",
+                        "interview_started": "장치가 인터뷰중입니다. 시간이 좀 걸릴 수 있습니다.",
                         "introduction": "이 마법사는 Z-Wave 네트워크에 노드를 추가하는 과정을 안내해드립니다.",
                         "secure_inclusion_warning": "보안 기기에는 추가 대역폭이 필요합니다. 보안 기기가 너무 많으면 Z-Wave 네트워크의 속도가 느려질 수 있습니다. 잠금장치나 차고 문 개폐기와 같이 보안이 필요한 기기에만 보안 포함을 사용하는 것이 좋습니다.",
                         "start_inclusion": "연결 시작하기",
@@ -2880,7 +2928,7 @@
                         "use_secure_inclusion": "암호화 연결 사용하기",
                         "view_device": "기기 보기"
                     },
-                    "button": "구성하기",
+                    "button": "구성",
                     "common": {
                         "add_node": "노드 추가하기",
                         "close": "닫기",
@@ -2904,12 +2952,18 @@
                         "server_version": "서버 버전"
                     },
                     "device_info": {
-                        "device_config": "기기 구성하기",
+                        "device_config": "기기 구성",
                         "node_ready": "노드 준비",
                         "node_status": "노드 상태",
                         "zwave_info": "Z-Wave 정보"
                     },
+                    "logs": {
+                        "log_level": "로그 레벨",
+                        "subscribed_to_logs": "Z-Wave JS 로그 메시지 수신 ...",
+                        "title": "Z-Wave JS 로그"
+                    },
                     "navigation": {
+                        "logs": "로그",
                         "network": "네트워크"
                     },
                     "network_status": {
@@ -2924,6 +2978,9 @@
                         "header": "Z-Wave 기기 구성",
                         "introduction": "선택한 기기(노드)의 매개 변수를 관리하고 조정합니다.",
                         "parameter_is_read_only": "이 매개 변수는 읽기 전용입니다.",
+                        "set_param_accepted": "매개 변수가 업데이트되었습니다.",
+                        "set_param_error": "오류가 발생했습니다.",
+                        "set_param_queued": "장치의 절전모드가 해제되면 매개 변수가 업데이트됩니다.",
                         "zwave_js_device_database": "Z-Wave JS 기기 데이터베이스"
                     },
                     "node_status": {
@@ -2932,6 +2989,16 @@
                         "awake": "절전해제",
                         "dead": "사용불가",
                         "unknown": "알 수 없음"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "재인터뷰를 시작하기 전에 배터리 전원 장치의 절전 모드를 해제해야 합니다. 절전 모드를 해제하는 방법은 기기 설명서를 참조하십시오.",
+                        "in_progress": "장치가 인터뷰중입니다. 시간이 좀 걸릴 수 있습니다.",
+                        "interview_complete": "장치 인터뷰가 완료되었습니다.",
+                        "interview_failed": "장치 인터뷰에 실패했습니다. 로그에서 정보를 확인할 수 있습니다.",
+                        "introduction": "Z-Wave 네트워크 상의 장치를 다시 인터뷰합니다. 장치가 사라지거나 오동작할 경우에 이 기능을 사용하십시오.",
+                        "run_in_background": "이 대화 상자를 닫을 수 있으며 인터뷰는 백그라운드에서 계속됩니다.",
+                        "start_reinterview": "재인터뷰 시작",
+                        "title": "Z-Wave 장치 재인터뷰"
                     },
                     "remove_node": {
                         "cancel_exclusion": "제외 취소하기",

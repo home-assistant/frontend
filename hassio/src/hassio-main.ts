@@ -1,7 +1,11 @@
-import { customElement, html, property, PropertyValues } from "lit-element";
+import { html, PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../../src/common/config/version";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
+import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
+import { mainWindow } from "../../src/common/dom/get_main_window";
+import { navigate } from "../../src/common/navigate";
 import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
@@ -44,12 +48,24 @@ export class HassioMain extends SupervisorBaseElement {
     // We changed the navigate event to fire directly on the window, as that's
     // where we are listening for it. However, the older panel_custom will
     // listen on this element for navigation events, so we need to forward them.
-    window.addEventListener("location-changed", (ev) =>
+
+    // Joakim - April 26, 2021
+    // Due to changes in behavior in Google Chrome, we changed navigate to listen on the top element
+    mainWindow.addEventListener("location-changed", (ev) =>
       // @ts-ignore
       fireEvent(this, ev.type, ev.detail, {
         bubbles: false,
       })
     );
+
+    // Paulus - May 17, 2021
+    // Convert the <a> tags to native nav in Home Assistant < 2021.6
+    document.body.addEventListener("click", (ev) => {
+      const href = isNavigationClick(ev);
+      if (href) {
+        navigate(document.body, href);
+      }
+    });
 
     // Forward haptic events to parent window.
     window.addEventListener("haptic", (ev) => {
