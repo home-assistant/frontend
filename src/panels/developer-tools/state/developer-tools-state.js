@@ -82,12 +82,15 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         .entities td {
           padding: 4px;
           min-width: 200px;
-          word-break: break-word;
+          word-break: break-all;
         }
         .entities ha-svg-icon {
           --mdc-icon-size: 20px;
           padding: 4px;
           cursor: pointer;
+        }
+        .entities td:nth-child(1) {
+          min-width: 300px;
         }
         .entities td:nth-child(3) {
           white-space: pre-wrap;
