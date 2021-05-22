@@ -64,6 +64,9 @@ class HaChartBase extends mixinBehaviors(
         :host([rtl]) .chartTooltip {
           direction: rtl;
         }
+        .chartLegend {
+          font-family: var(--mdc-typography-font-family, inherit);
+        }
         .chartLegend ul,
         .chartTooltip ul {
           display: inline-block;
@@ -407,6 +410,8 @@ class HaChartBase extends mixinBehaviors(
         return;
       }
       this._customTooltips({ opacity: 0 });
+      Chart.defaults.global.defaultFontFamily =
+        "var(--mdc-typography-font-family, Roboto, sans-serif)";
       const plugins = [{ afterRender: () => this._setRendered(true) }];
       let options = {
         responsive: true,
@@ -429,10 +434,10 @@ class HaChartBase extends mixinBehaviors(
           spanGaps: true,
         },
         elements: {
-          font: "12px 'Roboto', 'sans-serif'",
+          font: "12px var(--mdc-typography-font-family, Roboto, sans-serif)",
         },
         ticks: {
-          fontFamily: "'Roboto', 'sans-serif'",
+          fontFamily: "var(--mdc-typography-font-family, Roboto, sans-serif)",
         },
       };
       options = Chart.helpers.merge(options, this.data.options);
