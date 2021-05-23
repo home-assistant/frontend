@@ -2662,7 +2662,7 @@
             "title": "Z-Wave JS Logs",
             "log_level": "Log Level",
             "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
-            "log_level_changed": "Log level changed to: {level}"
+            "log_level_changed": "Log Level changed to: {level}"
           }
         }
       },
