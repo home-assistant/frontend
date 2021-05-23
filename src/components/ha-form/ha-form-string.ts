@@ -69,7 +69,8 @@ export class HaFormString extends LitElement implements HaFormElement {
         `;
   }
 
-  private _toggleUnmaskedPassword(): void {
+  private _toggleUnmaskedPassword(ev: Event): void {
+    ev.preventDefault(); // Only needed for webcomponent polyfill
     this._unmaskedPassword = !this._unmaskedPassword;
   }
 

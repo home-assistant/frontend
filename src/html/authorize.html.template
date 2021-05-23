@@ -41,6 +41,18 @@
 
     <%= renderTemplate('_js_base') %>
     <%= renderTemplate('_preload_roboto') %>
+    <script>
+      // Force enable web components polyfill so password managers work (#3133)
+      if ("customElements" in window) window.customElements.forcePolyfill = true;
+      ShadyDOM = { force: true };
+      document.write("<script src='/static/polyfills/webcomponents-bundle.js'><"+"/script>");
+    </script>
+    <style>
+      /* Polyfill :host styles */
+      ha-icon-next { width: var(--mdc-icon-size, 24px); height: var(--mdc-icon-size, 24px); }
+      /* Polyfill styles that are misapplied since ShadowDOM's isolation no longer exists */
+      p { margin-top: 1em; }
+    </style>
 
     <script crossorigin="use-credentials">
       import("<%= latestPageJS %>");
