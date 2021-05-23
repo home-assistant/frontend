@@ -122,6 +122,11 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
       return;
     }
     setZWaveJSLogLevel(this.hass!, this.configEntryId, ev.target.selected);
+    this._textarea!.value += `${this.hass.localize(
+      "ui.panel.config.zwave_js.logs.log_level_changed",
+      "level",
+      ev.target.selected
+    )}\n`;
   }
 
   static get styles(): CSSResultArray {
