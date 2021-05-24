@@ -15,13 +15,11 @@ import type { HaCheckbox } from "./ha-checkbox";
 import "./ha-settings-row";
 import "./ha-icon";
 
-function format_addresses(
+const format_addresses = (
   addresses: IPv6ConfiguredAddress[] | IPv4ConfiguredAddress[]
-) {
-  return addresses.map(
+): TemplateResult => addresses.map(
     (address) => html`<span>${address.address}/${address.network_prefix}</span>`
-  );
-}
+  )
 
 function format_auto_detected_interfaces(adapters: Adapter[]) {
   return adapters.map((adapter) =>
