@@ -126,8 +126,8 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     this._logConfig.level = selected;
     this._textarea!.value += `${this.hass.localize(
       "ui.panel.config.zwave_js.logs.log_level_changed",
-      "level",
-      selected.charAt(0).toUpperCase() + selected.slice(1)
+      {level:
+      selected.charAt(0).toUpperCase() + selected.slice(1)}
     )}\n`;
   }
 
