@@ -17,16 +17,20 @@ import "./ha-icon";
 
 const format_addresses = (
   addresses: IPv6ConfiguredAddress[] | IPv4ConfiguredAddress[]
-): TemplateResult => addresses.map(
+): TemplateResult[] =>
+  addresses.map(
     (address) => html`<span>${address.address}/${address.network_prefix}</span>`
-  )
+  );
 
-const format_auto_detected_interfaces = (adapters: Adapter[]): TemplateResult | string => adapters.map((adapter) =>
+const format_auto_detected_interfaces = (
+  adapters: Adapter[]
+): TemplateResult[] =>
+  adapters.map((adapter) =>
     adapter.auto
       ? html`${adapter.name} (${format_addresses(adapter.ipv4)}
         ${format_addresses(adapter.ipv6)} )`
-      : ""
-  )
+      : html``
+  );
 
 declare global {
   interface HASSDomEvents {
