@@ -37,78 +37,56 @@ export const applyThemesOnElement = (
   let themeRules: Partial<ThemeVars> = {};
 
   if (themeSettings) {
-    // Determine the primary and accent colors. Fallbacks are the HA default blue and orange
-    // or the derived "darkStyles" values, depending on the light vs dark mode.
-    let primaryColor;
-    let accentColor;
-    if (selectedTheme === "default") {
-      // User selected colors
-      primaryColor = themeSettings.primaryColor;
-      accentColor = themeSettings.accentColor;
-    } else if (selectedTheme && themes.themes[selectedTheme]) {
-      // Try in that order:
-      // 1. Theme value from the selected mode
-      // 2. Mode-independent theme value
-      // 3. HA default colors (implicit)
-      if (themeSettings.dark) {
-        primaryColor =
-          themes.themes[selectedTheme].modes?.dark?.["primary-color"];
-        accentColor =
-          themes.themes[selectedTheme].modes?.dark?.["accent-color"];
-      } else {
-        primaryColor =
-          themes.themes[selectedTheme].modes?.light?.["primary-color"];
-        accentColor =
-          themes.themes[selectedTheme].modes?.light?.["accent-color"];
-      }
-
-      // Mode-independent theme value as fallback
-      primaryColor =
-        primaryColor || themes.themes[selectedTheme]["primary-color"];
-      accentColor =
-        primaryColor || themes.themes[selectedTheme]["accent-color"];
-    }
-
     if (themeSettings.dark) {
       cacheKey = `${cacheKey}__dark`;
       themeRules = darkStyles;
+    }
+
+    if (selectedTheme === "default") {
+      // Determine the primary and accent colors from the current settings.
+      // Fallbacks are implicitly the HA default blue and orange or the
+      // derived "darkStyles" values, depending on the light vs dark mode.
+      const primaryColor = themeSettings.primaryColor;
+      const accentColor = themeSettings.accentColor;
+
+      if (themeSettings.dark) {
+        if (primaryColor && !("app-header-background-color" in themeRules)) {
+          themeRules["app-header-background-color"] = hexBlend(
+            primaryColor,
+            "#121212",
+            8
+          );
+        }
+      }
 
       if (primaryColor) {
-        themeRules["app-header-background-color"] = hexBlend(
-          primaryColor,
-          "#121212",
-          8
-        );
+        cacheKey = `${cacheKey}__primary_${primaryColor}`;
+        const rgbPrimaryColor = hex2rgb(primaryColor);
+        const labPrimaryColor = rgb2lab(rgbPrimaryColor);
+        themeRules["primary-color"] = primaryColor;
+        const rgbLightPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
+        themeRules["light-primary-color"] = rgb2hex(rgbLightPrimaryColor);
+        themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
+        themeRules["text-primary-color"] =
+          rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
+        themeRules["text-light-primary-color"] =
+          rgbContrast(rgbLightPrimaryColor, [33, 33, 33]) < 6
+            ? "#fff"
+            : "#212121";
+        themeRules["state-icon-color"] = themeRules["dark-primary-color"];
       }
-    }
+      if (accentColor) {
+        cacheKey = `${cacheKey}__accent_${accentColor}`;
+        themeRules["accent-color"] = accentColor;
+        const rgbAccentColor = hex2rgb(accentColor);
+        themeRules["text-accent-color"] =
+          rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
+      }
 
-    if (primaryColor) {
-      cacheKey = `${cacheKey}__primary_${primaryColor}`;
-      const rgbPrimaryColor = hex2rgb(primaryColor);
-      const labPrimaryColor = rgb2lab(rgbPrimaryColor);
-      themeRules["primary-color"] = primaryColor;
-      const rgbLightPrimaryColor = lab2rgb(labBrighten(labPrimaryColor));
-      themeRules["light-primary-color"] = rgb2hex(rgbLightPrimaryColor);
-      themeRules["dark-primary-color"] = lab2hex(labDarken(labPrimaryColor));
-      themeRules["text-primary-color"] =
-        rgbContrast(rgbPrimaryColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
-      themeRules["text-light-primary-color"] =
-        rgbContrast(rgbLightPrimaryColor, [33, 33, 33]) < 6
-          ? "#fff"
-          : "#212121";
-      themeRules["state-icon-color"] = themeRules["dark-primary-color"];
-    }
-    if (accentColor) {
-      cacheKey = `${cacheKey}__accent_${accentColor}`;
-      themeRules["accent-color"] = accentColor;
-      const rgbAccentColor = hex2rgb(accentColor);
-      themeRules["text-accent-color"] =
-        rgbContrast(rgbAccentColor, [33, 33, 33]) < 6 ? "#fff" : "#212121";
-    }
-
-    // Nothing was changed
-    if (element._themes?.cacheKey === cacheKey) {
-      return;
+      // Nothing was changed
+      if (element._themes?.cacheKey === cacheKey) {
+        return;
+      }
     }
   }
 
@@ -117,12 +95,13 @@ export const applyThemesOnElement = (
     const { modes, ...baseThemeRules } = themes.themes[selectedTheme];
     themeRules = { ...themeRules, ...baseThemeRules };
 
-    // If dark is requested, check if the theme actually supports dark mode. Otherwise we
-    // fall back to the light mode.
-    if (themeSettings?.dark && modes?.dark)
-      themeRules = { ...themeRules, ...modes?.dark };
-    else {
-      themeRules = { ...themeRules, ...modes?.light };
+    // Apply theme vars for the specific mode if available
+    if (modes) {
+      if (themeSettings?.dark) {
+        themeRules = { ...themeRules, ...modes.dark };
+      } else {
+        themeRules = { ...themeRules, ...modes.light };
+      }
     }
   }
 
