@@ -3756,7 +3756,7 @@
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
       "show_more": "Show more information about this",
-      "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending",
+      "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
       "update": "Update",
       "version": "Version",
       "error": {
@@ -3782,7 +3782,7 @@
       "addon_new_version": "New version available",
       "addon_running": "Add-on is running",
       "addon_stopped": "Add-on is stopped",
-      "addons": "Add-ons",
+      "addons": "Installed add-ons",
       "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
     },
     "store": {
