@@ -2192,7 +2192,7 @@
                         "configure": "选项",
                         "delete": "删除",
                         "delete_confirm": "您确定要删除此集成吗？",
-                        "depends_on_cloud": "取决于云端",
+                        "depends_on_cloud": "依赖云端服务",
                         "device_unavailable": "设备不可用",
                         "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
                         "disable_restart_confirm": "重启 Home Assistant 以完成此集成的禁用",
