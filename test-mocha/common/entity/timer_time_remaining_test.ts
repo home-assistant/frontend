@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import * as sinon from "sinon";
 
-import { timerTimeRemaining } from "../../../src/common/entity/timer_time_remaining";
+import { timerTimeRemaining } from "../../../src/data/timer";
 
 describe("timerTimeRemaining", () => {
   it("works with idle timers", () => {
