@@ -24,12 +24,12 @@ const format_addresses = (
 
 const format_auto_detected_interfaces = (
   adapters: Adapter[]
-): TemplateResult[] =>
+): Array<TemplateResult | string> =>
   adapters.map((adapter) =>
     adapter.auto
       ? html`${adapter.name} (${format_addresses(adapter.ipv4)}
         ${format_addresses(adapter.ipv6)} )`
-      : html``
+      : ""
   );
 
 declare global {
