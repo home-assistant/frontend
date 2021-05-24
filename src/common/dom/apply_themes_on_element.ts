@@ -49,14 +49,12 @@ export const applyThemesOnElement = (
       const primaryColor = themeSettings.primaryColor;
       const accentColor = themeSettings.accentColor;
 
-      if (themeSettings.dark) {
-        if (primaryColor && !("app-header-background-color" in themeRules)) {
+      if (themeSettings.dark && primaryColor) {
           themeRules["app-header-background-color"] = hexBlend(
             primaryColor,
             "#121212",
             8
           );
-        }
       }
 
       if (primaryColor) {
@@ -90,7 +88,7 @@ export const applyThemesOnElement = (
     }
   }
 
-  if (selectedTheme && themes.themes[selectedTheme]) {
+ if (selectedTheme && selectedTheme !== "default" && themes.themes[selectedTheme]) {
     // Apply theme vars that are relevant for all modes (but extract the "modes" section first)
     const { modes, ...baseThemeRules } = themes.themes[selectedTheme];
     themeRules = { ...themeRules, ...baseThemeRules };
