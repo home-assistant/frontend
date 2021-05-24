@@ -21,14 +21,12 @@ const format_addresses = (
     (address) => html`<span>${address.address}/${address.network_prefix}</span>`
   )
 
-function format_auto_detected_interfaces(adapters: Adapter[]) {
-  return adapters.map((adapter) =>
+const format_auto_detected_interfaces = (adapters: Adapter[]): TemplateResult | string => adapters.map((adapter) =>
     adapter.auto
       ? html`${adapter.name} (${format_addresses(adapter.ipv4)}
         ${format_addresses(adapter.ipv6)} )`
       : ""
-  );
-}
+  )
 
 declare global {
   interface HASSDomEvents {
