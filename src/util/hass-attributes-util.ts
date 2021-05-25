@@ -1,3 +1,14 @@
+import { html, TemplateResult } from "lit";
+import { until } from "lit/directives/until";
+import checkValidDate from "../common/datetime/check_valid_date";
+import { formatDate } from "../common/datetime/format_date";
+import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
+import { isDate } from "../common/string/is_date";
+import { isTimestamp } from "../common/string/is_timestamp";
+import { HomeAssistant } from "../types";
+
+let jsYamlPromise: Promise<typeof import("js-yaml")>;
+
 const hassAttributeUtil = {
   DOMAIN_DEVICE_CLASS: {
     binary_sensor: [
@@ -129,4 +140,60 @@ export function formatAttributeName(value: string): string {
     .replace(/\bmac\b/g, "MAC")
     .replace(/\bgps\b/g, "GPS");
   return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+export function formatAttributeValue(
+  hass: HomeAssistant,
+  value: any
+): string | TemplateResult {
+  if (value === null) {
+    return "-";
+  }
+
+  // YAML handling
+  if (
+    (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
+    (!Array.isArray(value) && value instanceof Object)
+  ) {
+    if (!jsYamlPromise) {
+      jsYamlPromise = import("js-yaml");
+    }
+    const yaml = jsYamlPromise.then((jsYaml) => jsYaml.safeDump(value));
+    return html`<pre>${until(yaml, "")}</pre>`;
+  }
+
+  if (typeof value === "string") {
+    // URL handling
+    if (value.startsWith("http")) {
+      try {
+        // If invalid URL, exception will be raised
+        const url = new URL(value);
+        if (url.protocol === "http:" || url.protocol === "https:")
+          return html`<a target="_blank" rel="noreferrer" href="${value}"
+            >${value}</a
+          >`;
+      } catch (_) {
+        // Nothing to do here
+      }
+    }
+
+    // Date handling
+    if (isDate(value, true)) {
+      // Timestamp handling
+      if (isTimestamp(value)) {
+        const date = new Date(value);
+        if (checkValidDate(date)) {
+          return formatDateTimeWithSeconds(date, hass.locale);
+        }
+      }
+
+      // Value was not a timestamp, so only do date formatting
+      const date = new Date(value);
+      if (checkValidDate(date)) {
+        return formatDate(date, hass.locale);
+      }
+    }
+  }
+
+  return Array.isArray(value) ? value.join(", ") : value;
 }
