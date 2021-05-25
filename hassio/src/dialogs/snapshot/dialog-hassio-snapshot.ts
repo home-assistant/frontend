@@ -88,6 +88,7 @@ class HassioSnapshotDialog
           fixed
           slot="primaryAction"
           @action=${this._handleMenuAction}
+          @closing=${(ev: Event) => ev.stopPropagation()}
         >
           <mwc-icon-button slot="trigger" alt="menu">
             <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
