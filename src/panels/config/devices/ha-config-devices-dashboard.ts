@@ -68,6 +68,30 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   @state() private _numHiddenDevices = 0;
 
+  private _ignoreLocationChange = false;
+
+  public constructor() {
+    super();
+    window.addEventListener("location-changed", () => {
+      if (this._ignoreLocationChange) {
+        this._ignoreLocationChange = false;
+        return;
+      }
+      if (
+        window.location.search.substring(1) !== this._searchParms.toString()
+      ) {
+        this._searchParms = new URLSearchParams(window.location.search);
+      }
+    });
+    window.addEventListener("popstate", () => {
+      if (
+        window.location.search.substring(1) !== this._searchParms.toString()
+      ) {
+        this._searchParms = new URLSearchParams(window.location.search);
+      }
+    });
+  }
+
   private _activeFilters = memoizeOne(
     (
       entries: ConfigEntry[],
@@ -78,10 +102,6 @@ export class HaConfigDeviceDashboard extends LitElement {
       filters.forEach((value, key) => {
         switch (key) {
           case "config_entry": {
-            // If we are requested to show the devices for a given config entry,
-            // also show the disabled ones by default.
-            this._showDisabled = true;
-
             const configEntry = entries.find(
               (entry) => entry.entry_id === value
             );
@@ -118,7 +138,6 @@ export class HaConfigDeviceDashboard extends LitElement {
     ) => {
       // Some older installations might have devices pointing at invalid entryIDs
       // So we guard for that.
-
       let outputDevices: DeviceRowData[] = devices;
 
       const deviceLookup: { [deviceId: string]: DeviceRegistryEntry } = {};
@@ -315,14 +334,14 @@ export class HaConfigDeviceDashboard extends LitElement {
     }
   );
 
-  public constructor() {
-    super();
-    window.addEventListener("location-changed", () => {
-      this._searchParms = new URLSearchParams(window.location.search);
-    });
-    window.addEventListener("popstate", () => {
-      this._searchParms = new URLSearchParams(window.location.search);
-    });
+  public willUpdate(changedProps) {
+    if (changedProps.has("_searchParms")) {
+      if (this._searchParms.get("config_entry")) {
+        // If we are requested to show the devices for a given config entry,
+        // also show the disabled ones by default.
+        this._showDisabled = true;
+      }
+    }
   }
 
   protected render(): TemplateResult {
@@ -435,6 +454,7 @@ export class HaConfigDeviceDashboard extends LitElement {
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const deviceId = ev.detail.id;
+    this._ignoreLocationChange = true;
     navigate(this, `/config/devices/device/${deviceId}`);
   }
 

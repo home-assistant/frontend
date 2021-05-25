@@ -173,8 +173,8 @@ export class HaDataTable extends LitElement {
     this.updateComplete.then(() => this._calcTableHeight());
   }
 
-  protected updated(properties: PropertyValues) {
-    super.updated(properties);
+  public willUpdate(properties: PropertyValues) {
+    super.willUpdate(properties);
 
     if (properties.has("columns")) {
       this._filterable = Object.values(this.columns).some(
@@ -342,6 +342,10 @@ export class HaDataTable extends LitElement {
                     layout: Layout1d,
                     // @ts-expect-error
                     renderItem: (row: DataTableRowData, index) => {
+                      // not sure how this happens...
+                      if (!row) {
+                        return "";
+                      }
                       if (row.append) {
                         return html`
                           <div class="mdc-data-table__row">${row.content}</div>
@@ -474,15 +478,16 @@ export class HaDataTable extends LitElement {
     }
 
     if (this.appendRow || this.hasFab) {
-      this._items = [...data];
+      const items = [...data];
 
       if (this.appendRow) {
-        this._items.push({ append: true, content: this.appendRow });
+        items.push({ append: true, content: this.appendRow });
       }
 
       if (this.hasFab) {
-        this._items.push({ empty: true });
+        items.push({ empty: true });
       }
+      this._items = items;
     } else {
       this._items = data;
     }
