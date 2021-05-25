@@ -39,7 +39,7 @@ export const applyThemesOnElement = (
   if (themeSettings) {
     if (themeSettings.dark) {
       cacheKey = `${cacheKey}__dark`;
-      themeRules = darkStyles;
+      themeRules = { ...darkStyles };
     }
 
     if (selectedTheme === "default") {
