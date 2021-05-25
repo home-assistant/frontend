@@ -391,10 +391,18 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   public constructor() {
     super();
     window.addEventListener("location-changed", () => {
-      this._searchParms = new URLSearchParams(window.location.search);
+      if (
+        window.location.search.substring(1) !== this._searchParms.toString()
+      ) {
+        this._searchParms = new URLSearchParams(window.location.search);
+      }
     });
     window.addEventListener("popstate", () => {
-      this._searchParms = new URLSearchParams(window.location.search);
+      if (
+        window.location.search.substring(1) !== this._searchParms.toString()
+      ) {
+        this._searchParms = new URLSearchParams(window.location.search);
+      }
     });
   }
 
@@ -623,8 +631,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     loadEntityEditorDialog();
   }
 
-  protected updated(changedProps): void {
-    super.updated(changedProps);
+  public willUpdate(changedProps): void {
+    super.willUpdate(changedProps);
     const oldHass = changedProps.get("hass");
     let changed = false;
     if (!this.hass || !this._entities) {

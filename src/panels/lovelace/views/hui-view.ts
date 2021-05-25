@@ -88,8 +88,8 @@ export class HUIView extends ReactiveElement {
     return this;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     /*
       We need to handle the following use cases:
@@ -112,8 +112,11 @@ export class HUIView extends ReactiveElement {
             oldLovelace.config.views[this.index]))
     ) {
       this._initializeConfig();
-      return;
     }
+  }
+
+  protected update(changedProperties) {
+    super.update(changedProperties);
 
     // If no layout element, we're still creating one
     if (this._layoutElement) {
@@ -149,7 +152,7 @@ export class HUIView extends ReactiveElement {
       changedProperties.has("hass") &&
       (!oldHass ||
         this.hass.themes !== oldHass.themes ||
-        this.hass.selectedTheme !== oldHass.selectedTheme)
+        this.hass.selectedThemeSettings !== oldHass.selectedThemeSettings)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
     }

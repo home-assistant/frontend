@@ -47,7 +47,13 @@ function initialize(
 ) {
   const style = document.createElement("style");
 
-  style.innerHTML = "body{margin:0}";
+  style.innerHTML = `body { margin:0; } 
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #111111;
+      color: #e1e1e1;
+    }
+  }`;
   document.head.appendChild(style);
 
   const config = panel.config._panel_custom;

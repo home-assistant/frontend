@@ -120,8 +120,14 @@
             }
         },
         "snapshot": {
+            "created": "Criado",
             "folder": {
                 "homeassistant": "Configuração do Home Assistant"
+            }
+        },
+        "system": {
+            "supervisor": {
+                "search": "Procurar"
             }
         }
     },
@@ -694,6 +700,12 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Alterar o nome do dispositivo"
                 }
+            },
+            "zha_reconfigure_device": {
+                "attribute": "Atributo",
+                "bind_header": "Vinculação",
+                "min_max_change": "min/máx/mudança",
+                "reporting_header": "Relatório"
             }
         },
         "duration": {
@@ -732,7 +744,8 @@
                     "caption": "Áreas",
                     "data_table": {
                         "area": "Área",
-                        "devices": "Dispositivos"
+                        "devices": "Dispositivos",
+                        "entities": "Entidades"
                     },
                     "delete": {
                         "confirmation_text": "Todos os dispositivos nesta área ficarão sem designação.",
@@ -744,6 +757,7 @@
                         "create": "Criar",
                         "default_name": "Nova Zona",
                         "delete": "Excluir",
+                        "linked_entities_caption": "Entidades",
                         "name": "Nome",
                         "name_required": "Nome é obrigatório",
                         "unknown_error": "Erro desconhecido",
@@ -1131,10 +1145,15 @@
                         "remote": {
                             "access_is_being_prepared": "O acesso remoto está sendo preparado. Vamos notificá-lo quando estiver pronto.",
                             "certificate_info": "Informações do certificado",
+                            "connected": "Conectado",
                             "info": "O Home Assistant Cloud fornece uma conexão remota segura à sua instância enquanto estiver fora de casa.",
                             "instance_is_available": "Sua instância está disponível em",
                             "instance_will_be_available": "Sua instância estará disponível em",
                             "link_learn_how_it_works": "Aprenda como funciona",
+                            "not_connected": "Não Conectado",
+                            "remote_enabled": {
+                                "caption": "Conectar automaticamente"
+                            },
                             "title": "Controle Remoto"
                         },
                         "sign_out": "Sair",
@@ -1475,6 +1494,7 @@
                     "license": "Publicado sob a licença Apache 2.0",
                     "path_configuration": "Caminho para configuration.yaml: {path}",
                     "server": "servidor",
+                    "setup_time": "Tempo de configuração",
                     "source": "Código fonte:",
                     "system_health_error": "O componente System Health não foi carregado. Adicione 'system_health:' ao configuration.yaml",
                     "system_health": {
@@ -1524,6 +1544,7 @@
                         },
                         "finish": "Terminar",
                         "loading_first_time": "Aguarde enquanto a integração está sendo instalada",
+                        "next": "Próximo",
                         "not_all_required_fields": "Nem todos os campos obrigatórios são preenchidos.",
                         "submit": "Enviar"
                     },
@@ -1785,6 +1806,8 @@
                         "add_scene": "Adicionar cena",
                         "delete_confirm": "Tem certeza de que deseja excluir esta cena?",
                         "delete_scene": "Excluir cena",
+                        "duplicate": "Duplicado",
+                        "duplicate_scene": "Cena duplicada",
                         "edit_scene": "Editar cena",
                         "header": "Editor de cena",
                         "headers": {
@@ -2081,6 +2104,14 @@
                     "home_zone_core_config": "A localização da sua zona Casa é editável na página de configuração geral. O raio da zona inicial ainda não pode ser editado a partir do frontend. Deseja ir para a configuração geral?",
                     "introduction": "As zonas permitem especificar determinadas regiões da Terra. Quando uma pessoa está dentro de uma zona, o estado assume o nome da zona. As zonas também podem ser usadas como gatilho ou condição nas configurações de automações.",
                     "no_zones_created_yet": "Parece que você ainda não criou nenhuma zona."
+                },
+                "zwave_js": {
+                    "logs": {
+                        "log_level": "Nível de Log"
+                    },
+                    "navigation": {
+                        "logs": "Logs"
+                    }
                 },
                 "zwave": {
                     "button": "Configurar",
@@ -2970,6 +3001,17 @@
                     "link_promo": "Aprenda sobre temas",
                     "primary_color": "Cor Principal",
                     "reset": "Redefinir"
+                },
+                "time_format": {
+                    "description": "Escolha como os horários são formatados.",
+                    "dropdown_label": "Formato de hora",
+                    "formats": {
+                        "12": "Horas",
+                        "24": "Horas",
+                        "language": "Auto (usar configuração de idioma)",
+                        "system": "Use a localidade do sistema"
+                    },
+                    "header": "Formato de hora"
                 },
                 "vibrate": {
                     "description": "Ative ou desative a vibração neste dispositivo ao controlar dispositivos.",

@@ -4,6 +4,7 @@ import { atLeastVersion } from "../../src/common/config/version";
 import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
 import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
+import { mainWindow } from "../../src/common/dom/get_main_window";
 import { navigate } from "../../src/common/navigate";
 import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
@@ -50,7 +51,7 @@ export class HassioMain extends SupervisorBaseElement {
 
     // Joakim - April 26, 2021
     // Due to changes in behavior in Google Chrome, we changed navigate to listen on the top element
-    top.addEventListener("location-changed", (ev) =>
+    mainWindow.addEventListener("location-changed", (ev) =>
       // @ts-ignore
       fireEvent(this, ev.type, ev.detail, {
         bubbles: false,
@@ -102,25 +103,27 @@ export class HassioMain extends SupervisorBaseElement {
 
   private _applyTheme() {
     let themeName: string;
-    let options: Partial<HomeAssistant["selectedTheme"]> | undefined;
+    let themeSettings:
+      | Partial<HomeAssistant["selectedThemeSettings"]>
+      | undefined;
 
     if (atLeastVersion(this.hass.config.version, 0, 114)) {
       themeName =
-        this.hass.selectedTheme?.theme ||
+        this.hass.selectedThemeSettings?.theme ||
         (this.hass.themes.darkMode && this.hass.themes.default_dark_theme
           ? this.hass.themes.default_dark_theme!
           : this.hass.themes.default_theme);
 
-      options = this.hass.selectedTheme;
-      if (themeName === "default" && options?.dark === undefined) {
-        options = {
-          ...this.hass.selectedTheme,
+      themeSettings = this.hass.selectedThemeSettings;
+      if (themeSettings?.dark === undefined) {
+        themeSettings = {
+          ...this.hass.selectedThemeSettings,
           dark: this.hass.themes.darkMode,
         };
       }
     } else {
       themeName =
-        ((this.hass.selectedTheme as unknown) as string) ||
+        ((this.hass.selectedThemeSettings as unknown) as string) ||
         this.hass.themes.default_theme;
     }
 
@@ -128,7 +131,7 @@ export class HassioMain extends SupervisorBaseElement {
       this.parentElement,
       this.hass.themes,
       themeName,
-      options
+      themeSettings
     );
   }
 }

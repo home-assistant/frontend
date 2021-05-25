@@ -83,10 +83,10 @@ export class OriginalStatesStrategy {
     info: Parameters<LovelaceDashboardStrategy["generateDashboard"]>[0]
   ): ReturnType<LovelaceDashboardStrategy["generateDashboard"]> {
     return {
+      title: info.hass.config.location_name,
       views: [
         {
           strategy: { type: "original-states" },
-          title: info.hass.config.location_name,
         },
       ],
     };

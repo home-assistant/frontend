@@ -40,8 +40,8 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   public setConfig(_config: LovelaceViewConfig): void {}
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     if (this.lovelace?.editMode && !editCodeLoaded) {
       editCodeLoaded = true;

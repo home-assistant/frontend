@@ -12,6 +12,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -22,22 +23,13 @@ import "./state-badge";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
-const rowRenderer = (root: HTMLElement, _owner, model: { item: string }) => {
-  if (!root.firstElementChild) {
-    root.innerHTML = `
-      <style>
-        paper-item {
-          margin: -10px;
-          padding: 0;
-        }
-      </style>
-      <paper-item></paper-item>
-    `;
-  }
-  root.querySelector("paper-item")!.textContent = formatAttributeName(
-    model.item
-  );
-};
+const rowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
+    paper-item {
+      margin: -5px -10px;
+      padding: 0;
+    }
+  </style>
+  <paper-item>${formatAttributeName(item)}</paper-item>`;
 
 @customElement("ha-entity-attribute-picker")
 class HaEntityAttributePicker extends LitElement {
@@ -82,8 +74,8 @@ class HaEntityAttributePicker extends LitElement {
       <vaadin-combo-box-light
         .value=${this._value}
         .allowCustomValue=${this.allowCustomValue}
-        .renderer=${rowRenderer}
         attr-for-value="bind-value"
+        ${comboBoxRenderer(rowRenderer)}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
       >

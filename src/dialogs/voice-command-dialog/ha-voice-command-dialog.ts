@@ -117,9 +117,13 @@ export class HaVoiceCommandDialog extends LitElement {
                     href="${this._agentInfo.onboarding.url}"
                     target="_blank"
                     rel="noreferrer"
-                    ><mwc-button unelevated>Yes!</mwc-button></a
+                    ><mwc-button unelevated
+                      >${this.hass.localize("ui.common.yes")}!</mwc-button
+                    ></a
                   >
-                  <mwc-button outlined>No</mwc-button>
+                  <mwc-button outlined
+                    >${this.hass.localize("ui.common.no")}</mwc-button
+                  >
                 </div>
               </div>
             `
@@ -155,7 +159,7 @@ export class HaVoiceCommandDialog extends LitElement {
         <div class="input">
           <paper-input
             @keyup=${this._handleKeyUp}
-            label="${this.hass!.localize(
+            .label="${this.hass.localize(
               `ui.dialogs.voice_command.${
                 SpeechRecognition ? "label_voice" : "label"
               }`

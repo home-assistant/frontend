@@ -1,6 +1,6 @@
 import {
   fetchTranslationPreferences,
-  FrontendTranslationData,
+  FrontendLocaleData,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
@@ -55,21 +55,24 @@ export function findAvailableLanguage(language: string) {
  */
 export async function getUserLocale(
   hass: HomeAssistant
-): Promise<Partial<FrontendTranslationData>> {
+): Promise<Partial<FrontendLocaleData>> {
   const result = await fetchTranslationPreferences(hass);
   const language = result?.language;
   const number_format = result?.number_format;
+  const time_format = result?.time_format;
   if (language) {
     const availableLanguage = findAvailableLanguage(language);
     if (availableLanguage) {
       return {
         language: availableLanguage,
         number_format,
+        time_format,
       };
     }
   }
   return {
     number_format,
+    time_format,
   };
 }
 

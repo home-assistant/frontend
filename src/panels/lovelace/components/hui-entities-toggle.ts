@@ -22,8 +22,8 @@ class HuiEntitiesToggle extends LitElement {
 
   @state() private _toggleEntities?: string[];
 
-  public updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
     if (changedProperties.has("entities")) {
       this._toggleEntities = this.entities!.filter(
         (entityId) =>

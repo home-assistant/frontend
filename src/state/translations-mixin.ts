@@ -7,6 +7,7 @@ import {
   getHassTranslationsPre109,
   NumberFormat,
   saveTranslationPreferences,
+  TimeFormat,
   TranslationCategory,
 } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
@@ -27,6 +28,9 @@ declare global {
     };
     "hass-number-format-select": {
       number_format: NumberFormat;
+    };
+    "hass-time-format-select": {
+      time_format: TimeFormat;
     };
   }
 }
@@ -64,6 +68,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.addEventListener("hass-number-format-select", (e) => {
         this._selectNumberFormat((e as CustomEvent).detail, true);
       });
+      this.addEventListener("hass-time-format-select", (e) => {
+        this._selectTimeFormat((e as CustomEvent).detail, true);
+      });
       this._loadCoreTranslations(getLocalLanguage());
     }
 
@@ -94,6 +101,13 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         ) {
           // We just got number_format from backend, no need to save back
           this._selectNumberFormat(locale.number_format, false);
+        }
+        if (
+          locale?.time_format &&
+          this.hass!.locale.time_format !== locale.time_format
+        ) {
+          // We just got time_format from backend, no need to save back
+          this._selectTimeFormat(locale.time_format, false);
         }
       });
 
@@ -127,6 +141,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     ) {
       this._updateHass({
         locale: { ...this.hass!.locale, number_format: number_format },
+      });
+      if (saveToBackend) {
+        saveTranslationPreferences(this.hass!, this.hass!.locale);
+      }
+    }
+
+    private _selectTimeFormat(time_format: TimeFormat, saveToBackend: boolean) {
+      this._updateHass({
+        locale: { ...this.hass!.locale, time_format: time_format },
       });
       if (saveToBackend) {
         saveTranslationPreferences(this.hass!, this.hass!.locale);

@@ -1,8 +1,12 @@
 import { navigate } from "../common/navigate";
+import {
+  DEFAULT_ACCENT_COLOR,
+  DEFAULT_PRIMARY_COLOR,
+} from "../resources/ha-style";
 import { HomeAssistant } from "../types";
 
-export const defaultRadiusColor = "#FF9800";
-export const homeRadiusColor = "#03a9f4";
+export const defaultRadiusColor = DEFAULT_ACCENT_COLOR;
+export const homeRadiusColor = DEFAULT_PRIMARY_COLOR;
 export const passiveRadiusColor = "#9b9b9b";
 
 export interface Zone {

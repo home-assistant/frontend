@@ -4008,6 +4008,17 @@
                     "primary_color": "Colore principale",
                     "reset": "Reset"
                 },
+                "time_format": {
+                    "description": "Scegli come vengono formattate le ore.",
+                    "dropdown_label": "Formato orario",
+                    "formats": {
+                        "12": "12 ore (AM/PM)",
+                        "24": "24 ore",
+                        "language": "Automatico (usa l'impostazione della lingua)",
+                        "system": "Usa le impostazioni locali del sistema"
+                    },
+                    "header": "Formato orario"
+                },
                 "vibrate": {
                     "description": "Abilitare o disabilitare la vibrazione su questo dispositivo durante il controllo dei dispositivi.",
                     "header": "Vibrazione"

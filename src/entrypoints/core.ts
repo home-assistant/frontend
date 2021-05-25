@@ -25,6 +25,9 @@ import { subscribeUser } from "../data/ws-user";
 import type { ExternalAuth } from "../external_app/external_auth";
 import "../resources/safari-14-attachshadow-patch";
 import { HomeAssistant } from "../types";
+import { MAIN_WINDOW_NAME } from "../data/main_window";
+
+window.name = MAIN_WINDOW_NAME;
 
 declare global {
   interface Window {

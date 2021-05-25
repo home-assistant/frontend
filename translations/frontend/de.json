@@ -2300,7 +2300,7 @@
                 "logs": {
                     "caption": "Logs",
                     "clear": "Löschen",
-                    "custom_integration": "benutzerdefiniert integration",
+                    "custom_integration": "benutzerdefinierte Integration",
                     "description": "Home Assistant Logs einsehen",
                     "details": "Protokolldetails ({level})",
                     "error_from_custom_integration": "benutzerdefinierte",
@@ -2917,7 +2917,9 @@
                         "controller_in_inclusion_mode": "Ihr Z-Wave-Controller befindet sich jetzt im Inklusionsmodus.",
                         "follow_device_instructions": "Befolge die mit dem Gerät gelieferten Anweisungen, um die Kopplung am Gerät auszulösen.",
                         "inclusion_failed": "Der Knoten konnte nicht hinzugefügt werden. Bitte überprüfe die Protokolle für weitere Informationen.",
-                        "inclusion_finished": "Der Knoten wurde hinzugefügt. Es kann einige Minuten dauern, bis alle Einheiten angezeigt werden, da der Knoten im Hintergrund fertig eingerichtet wird.",
+                        "inclusion_finished": "Der Knoten wurde hinzugefügt.",
+                        "interview_failed": "Das Geräteinterview ist fehlgeschlagen. Zusätzliche Informationen sind möglicherweise in den Logs verfügbar.",
+                        "interview_started": "Das Gerät wird gerade eingerichtet. Dies könnte eine Weile dauern.",
                         "introduction": "Dieser Assistent führt dich durch das Hinzufügen eines Knotens zu deinem Z-Wave-Netzwerk.",
                         "secure_inclusion_warning": "Sichere Geräte benötigen zusätzliche Bandbreite; zu viele sichere Geräte können Ihr Z-Wave-Netzwerk ausbremsen. Wir empfehlen, die sichere Einbindung nur für Geräte zu verwenden, die sie benötigen, wie Schlösser oder Garagentoröffner.",
                         "start_inclusion": "Starten der Erfassung",
@@ -4005,6 +4007,17 @@
                     "link_promo": "Erfahre mehr über Themen",
                     "primary_color": "Primärfarbe",
                     "reset": "zurücksetzen"
+                },
+                "time_format": {
+                    "description": "Wähle aus, wie Zeiten formatiert werden sollen.",
+                    "dropdown_label": "Zeitformat",
+                    "formats": {
+                        "12": "12 Stunden (AM/PM)",
+                        "24": "24 Stunden",
+                        "language": "Auto (Spracheinstellung verwenden)",
+                        "system": "Systemeinstellungen verwenden"
+                    },
+                    "header": "Zeitformat"
                 },
                 "vibrate": {
                     "description": "Aktiviere oder deaktiviere die Vibration an diesem Gerät, wenn du Geräte steuerst.",

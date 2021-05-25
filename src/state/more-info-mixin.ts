@@ -12,14 +12,6 @@ declare global {
   }
 }
 
-let moreInfoImportPromise;
-const importMoreInfo = () => {
-  if (!moreInfoImportPromise) {
-    moreInfoImportPromise = import("../dialogs/more-info/ha-more-info-dialog");
-  }
-  return moreInfoImportPromise;
-};
-
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     protected firstUpdated(changedProps: PropertyValues) {
@@ -27,7 +19,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.addEventListener("hass-more-info", (ev) => this._handleMoreInfo(ev));
 
       // Load it once we are having the initial rendering done.
-      importMoreInfo();
+      import("../dialogs/more-info/ha-more-info-dialog");
     }
 
     private async _handleMoreInfo(ev: HASSDomEvent<MoreInfoDialogParams>) {
@@ -38,7 +30,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         {
           entityId: ev.detail.entityId,
         },
-        importMoreInfo
+        () => import("../dialogs/more-info/ha-more-info-dialog")
       );
     }
   };
