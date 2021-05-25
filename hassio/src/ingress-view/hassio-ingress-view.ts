@@ -11,6 +11,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
+import { nextRender } from "../../../src/common/util/render-status";
 import {
   fetchHassioAddonInfo,
   HassioAddonDetails,
@@ -95,6 +96,7 @@ class HassioIngressView extends LitElement {
             text: extractApiErrorMessage(err),
             title: requestedAddon,
           });
+          await nextRender();
           history.back();
           return;
         }
@@ -103,6 +105,7 @@ class HassioIngressView extends LitElement {
             text: this.supervisor.localize("my.error_addon_no_ingress"),
             title: addonInfo.name,
           });
+          await nextRender();
           history.back();
         } else {
           navigate(`/hassio/ingress/${addonInfo.slug}`, { replace: true });
@@ -140,6 +143,7 @@ class HassioIngressView extends LitElement {
         text: "Unable to fetch add-on info to start Ingress",
         title: "Supervisor",
       });
+      await nextRender();
       history.back();
       return;
     }
@@ -149,6 +153,7 @@ class HassioIngressView extends LitElement {
         text: "Add-on does not support Ingress",
         title: addon.name,
       });
+      await nextRender();
       history.back();
       return;
     }
@@ -157,8 +162,9 @@ class HassioIngressView extends LitElement {
       await showAlertDialog(this, {
         text: "Add-on is not running. Please start it first",
         title: addon.name,
-        confirm: () => navigate(`/hassio/addon/${addon.slug}`),
       });
+      await nextRender();
+      navigate(`/hassio/addon/${addon.slug}/info`, { replace: true });
       return;
     }
 
@@ -171,6 +177,7 @@ class HassioIngressView extends LitElement {
         text: "Unable to create an Ingress session",
         title: addon.name,
       });
+      await nextRender();
       history.back();
       return;
     }
