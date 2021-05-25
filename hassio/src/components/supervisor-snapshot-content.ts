@@ -252,7 +252,7 @@ export class SupervisorSnapshotContent extends LitElement {
         margin: 4px 12px 8px 0;
       }
       ha-formfield {
-        display: block;
+        display: contents;
       }
       supervisor-formfield-label {
         display: inline-flex;
@@ -272,6 +272,9 @@ export class SupervisorSnapshotContent extends LitElement {
       }
       .security {
         margin-top: 16px;
+      }
+      .snapshot-types {
+        display: flex;
       }
     `;
   }
