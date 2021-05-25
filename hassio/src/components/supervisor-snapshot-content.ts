@@ -286,13 +286,12 @@ export class SupervisorSnapshotContent extends LitElement {
       templates.push(html`<ha-formfield
         .label=${html`<supervisor-formfield-label
           .label=${item.name}
-          .iconPath=${section === "folders" ? mdiFolder : mdiPuzzle}
-          .imageUrl=${section === "folders"
-            ? undefined
-            : atLeastVersion(this.hass.config.version, 0, 105) &&
-              this.supervisor!.addon.addons.find(
-                (addon) => addon.slug === item.slug
-              )?.icon
+          .iconPath=${section === "addons" ? mdiPuzzle : mdiFolder}
+          .imageUrl=${section === "addons" &&
+          atLeastVersion(this.hass.config.version, 0, 105) &&
+          this.supervisor!.addon.addons.find(
+            (addon) => addon.slug === item.slug
+          )?.icon
             ? `/api/hassio/addons/${item.slug}/icon`
             : undefined}
           .version=${item.version}
