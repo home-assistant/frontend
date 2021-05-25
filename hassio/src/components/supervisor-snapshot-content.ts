@@ -347,11 +347,10 @@ export class SupervisorSnapshotContent extends LitElement {
   private _updateSectionEntry(ev): void {
     const item = ev.currentTarget.item;
     const section = ev.currentTarget.section;
-    this[section] = this[section].map((entry) => ({
+    this[section] = this[section].map((entry) => entry.slug === item.slug ? {
       ...entry,
-      checked:
-        entry.slug === item.slug ? ev.currentTarget.checked : entry.checked,
-    }));
+      checked: ev.currentTarget.checked,
+    } : entry);
   }
 }
 
