@@ -323,7 +323,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         text-align: center;
       }
       .error {
-        color: red;
+        color: var(--error-color);
       }
     `;
   }

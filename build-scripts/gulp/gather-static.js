@@ -51,6 +51,14 @@ function copyPolyfills(staticDir) {
     npmPath("@webcomponents/webcomponentsjs/webcomponents-bundle.js.map"),
     staticPath("polyfills/")
   );
+  copyFileDir(
+    npmPath("@webcomponents/webcomponentsjs/bundles/webcomponents-sd.js"),
+    staticPath("polyfills/")
+  );
+  copyFileDir(
+    npmPath("@webcomponents/webcomponentsjs/bundles/webcomponents-sd.js.map"),
+    staticPath("polyfills/")
+  );
 }
 
 function copyLoaderJS(staticDir) {

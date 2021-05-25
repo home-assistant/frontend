@@ -200,7 +200,7 @@ class OnboardingCreateUser extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       .error {
-        color: red;
+        color: var(--error-color);
       }
 
       .action {

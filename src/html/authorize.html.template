@@ -38,15 +38,12 @@
       </div>
       <ha-authorize><p>Initializing</p></ha-authorize>
     </div>
-
-    <%= renderTemplate('_js_base') %>
-    <%= renderTemplate('_preload_roboto') %>
     <script>
       // Force enable web components polyfill so password managers work (#3133)
-      if ("customElements" in window) window.customElements.forcePolyfill = true;
       ShadyDOM = { force: true };
-      document.write("<script src='/static/polyfills/webcomponents-bundle.js'><"+"/script>");
     </script>
+    <%= renderTemplate('_js_base') %>
+    <%= renderTemplate('_preload_roboto') %>
     <style>
       /* Polyfill :host styles */
       ha-icon-next { width: var(--mdc-icon-size, 24px); height: var(--mdc-icon-size, 24px); }

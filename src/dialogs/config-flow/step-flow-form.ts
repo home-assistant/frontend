@@ -187,7 +187,7 @@ class StepFlowForm extends LitElement {
       configFlowContentStyles,
       css`
         .error {
-          color: red;
+          color: var(--error-color);
         }
 
         .submit-spinner {

@@ -98,7 +98,7 @@
     "@vibrant/core": "^3.2.1-alpha.1",
     "@vibrant/quantizer-mmcq": "^3.2.1-alpha.1",
     "@vue/web-component-wrapper": "^1.2.0",
-    "@webcomponents/webcomponentsjs": "^2.2.7",
+    "@webcomponents/webcomponentsjs": "^2.5.0",
     "chart.js": "^2.9.4",
     "chartjs-chart-timeline": "^0.4.0",
     "comlink": "^4.3.0",
@@ -238,7 +238,7 @@
   "_comment": "Polymer fixed to 3.1 because 3.2 throws on logbook page",
   "_comment_2": "Fix in https://github.com/Polymer/polymer/pull/5569",
   "resolutions": {
-    "@webcomponents/webcomponentsjs": "^2.2.10",
+    "@webcomponents/webcomponentsjs": "^2.5.0",
     "@polymer/polymer": "3.1.0",
     "lit-html": "2.0.0-rc.3",
     "lit-element": "3.0.0-rc.2"
