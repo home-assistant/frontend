@@ -66,7 +66,6 @@ export class HaDeviceActionsOzw extends LitElement {
 
   private async _nodeDetailsClicked() {
     navigate(
-      this,
       `/config/ozw/network/${this.ozw_instance}/node/${this.node_id}/dashboard`
     );
   }

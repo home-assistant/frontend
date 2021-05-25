@@ -88,7 +88,7 @@ class OZWNetworkNodes extends LitElement {
 
   protected firstUpdated() {
     if (!this.ozwInstance) {
-      navigate(this, "/config/ozw/dashboard", true);
+      navigate("/config/ozw/dashboard", { replace: true });
     } else if (this.hass) {
       this._fetchData();
     }
@@ -117,7 +117,7 @@ class OZWNetworkNodes extends LitElement {
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const nodeId = ev.detail.id;
-    navigate(this, `/config/ozw/network/${this.ozwInstance}/node/${nodeId}`);
+    navigate(`/config/ozw/network/${this.ozwInstance}/node/${nodeId}`);
   }
 
   static get styles(): CSSResultGroup {

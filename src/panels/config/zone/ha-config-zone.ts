@@ -269,7 +269,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       ["storage", "default"].includes(this.hass.config.config_source);
     this._fetchData();
     if (this.route.path === "/new") {
-      navigate(this, "/config/zone", true);
+      navigate("/config/zone", { replace: true });
       this._createZone();
     }
   }
@@ -399,7 +399,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     ) {
       return;
     }
-    navigate(this, "/config/core");
+    navigate("/config/core");
   }
 
   private async _createEntry(values: ZoneMutableParams) {

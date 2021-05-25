@@ -88,7 +88,7 @@ function initialize(
           if (window.parent.customPanel) {
             window.parent.customPanel.navigate(
               window.location.pathname,
-              ev.detail ? ev.detail.replace : false
+              ev.detail
             );
           }
         });
@@ -122,7 +122,7 @@ function initialize(
   document.body.addEventListener("click", (ev) => {
     const href = isNavigationClick(ev);
     if (href) {
-      navigate(document.body, href);
+      navigate(href);
     }
   });
 }

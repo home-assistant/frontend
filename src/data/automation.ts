@@ -241,12 +241,9 @@ let inititialAutomationEditorData: Partial<AutomationConfig> | undefined;
 export const getAutomationConfig = (hass: HomeAssistant, id: string) =>
   hass.callApi<AutomationConfig>("GET", `config/automation/config/${id}`);
 
-export const showAutomationEditor = (
-  el: HTMLElement,
-  data?: Partial<AutomationConfig>
-) => {
+export const showAutomationEditor = (data?: Partial<AutomationConfig>) => {
   inititialAutomationEditorData = data;
-  navigate(el, "/config/automation/edit/new");
+  navigate("/config/automation/edit/new");
 };
 
 export const getAutomationEditorInitData = () => {

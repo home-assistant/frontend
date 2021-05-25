@@ -439,7 +439,7 @@ export class ZwaveMigration extends LitElement {
   }
 
   private _navigateOzw() {
-    navigate(this, "/config/ozw");
+    navigate("/config/ozw");
   }
 
   private _networkStopped(): void {

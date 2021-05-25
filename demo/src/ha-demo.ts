@@ -70,7 +70,7 @@ class HaDemo extends HomeAssistantAppEl {
         }
 
         e.preventDefault();
-        navigate(this, href);
+        navigate(href);
       },
       { capture: true }
     );

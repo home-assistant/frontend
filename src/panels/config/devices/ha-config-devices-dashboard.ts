@@ -455,7 +455,7 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const deviceId = ev.detail.id;
     this._ignoreLocationChange = true;
-    navigate(this, `/config/devices/device/${deviceId}`);
+    navigate(`/config/devices/device/${deviceId}`);
   }
 
   private _showDisabledChanged(ev: CustomEvent<RequestSelectedDetail>) {
@@ -473,7 +473,7 @@ export class HaConfigDeviceDashboard extends LitElement {
     if (
       this._activeFilters(this.entries, this._searchParms, this.hass.localize)
     ) {
-      navigate(this, window.location.pathname, true);
+      navigate(window.location.pathname, { replace: true });
     }
     this._showDisabled = true;
   }

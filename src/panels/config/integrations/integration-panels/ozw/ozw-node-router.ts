@@ -68,11 +68,10 @@ class OZWNodeRouter extends HassRouterPage {
     if (this._configEntry && !searchParams.has("config_entry")) {
       searchParams.append("config_entry", this._configEntry);
       navigate(
-        this,
         `${this.routeTail.prefix}${
           this.routeTail.path
         }?${searchParams.toString()}`,
-        true
+        { replace: true }
       );
     }
   }
