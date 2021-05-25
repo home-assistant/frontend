@@ -63,7 +63,7 @@ export class HassioMain extends SupervisorBaseElement {
     document.body.addEventListener("click", (ev) => {
       const href = isNavigationClick(ev);
       if (href) {
-        navigate(document.body, href);
+        navigate(href);
       }
     });
 

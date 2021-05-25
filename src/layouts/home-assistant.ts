@@ -45,7 +45,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     const path = curPath();
 
     if (["", "/"].includes(path)) {
-      navigate(this, `/${getStorageDefaultPanelUrlPath()}`, true);
+      navigate(`/${getStorageDefaultPanelUrlPath()}`, { replace: true });
     }
     this._route = {
       prefix: "",
@@ -106,7 +106,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     window.addEventListener("click", (ev) => {
       const href = isNavigationClick(ev);
       if (href) {
-        navigate(this, href);
+        navigate(href);
       }
     });
   }

@@ -533,7 +533,7 @@ export class HaConfigDevicePage extends LitElement {
     this._entities(this.deviceId, this.entities).forEach((entity) => {
       entities[entity.entity_id] = "";
     });
-    showSceneEditor(this, {
+    showSceneEditor({
       entities,
     });
   }

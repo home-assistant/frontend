@@ -108,7 +108,7 @@ class DialogNewAutomation extends LitElement implements HassDialog {
     replaceDialog();
     showThingtalkDialog(this, {
       callback: (config: Partial<AutomationConfig> | undefined) =>
-        showAutomationEditor(this, config),
+        showAutomationEditor(config),
       input: this.shadowRoot!.querySelector("paper-input")!.value as string,
     });
     this.closeDialog();
@@ -117,13 +117,13 @@ class DialogNewAutomation extends LitElement implements HassDialog {
   private async _blueprintPicked(ev: CustomEvent) {
     this.closeDialog();
     await nextRender();
-    showAutomationEditor(this, { use_blueprint: { path: ev.detail.value } });
+    showAutomationEditor({ use_blueprint: { path: ev.detail.value } });
   }
 
   private async _blank() {
     this.closeDialog();
     await nextRender();
-    showAutomationEditor(this);
+    showAutomationEditor();
   }
 
   static get styles(): CSSResultGroup {
