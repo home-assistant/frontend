@@ -125,11 +125,12 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         <div class="info">
           <span class="value"
             >${"attribute" in this._config
-              ? formatAttributeValue(
-                  this.hass,
-                  stateObj.attributes[this._config.attribute!] ??
-                    this.hass.localize("state.default.unknown")
-                )
+              ? stateObj.attributes[this._config.attribute!] !== undefined
+                ? formatAttributeValue(
+                    this.hass,
+                    stateObj.attributes[this._config.attribute!]
+                  )
+                : this.hass.localize("state.default.unknown")
               : stateObj.attributes.unit_of_measurement
               ? formatNumber(stateObj.state, this.hass.locale)
               : computeStateDisplay(
