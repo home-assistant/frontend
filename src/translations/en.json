@@ -522,6 +522,9 @@
       "calendar": {
         "my_calendars": "My Calendars",
         "today": "Today"
+      },
+      "attributes": {
+        "expansion_header": "Attributes"
       }
     },
     "dialogs": {

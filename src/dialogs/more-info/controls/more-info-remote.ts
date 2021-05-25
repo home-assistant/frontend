@@ -48,6 +48,7 @@ class MoreInfoRemote extends LitElement {
         : ""}
 
       <ha-attributes
+        .hass=${this.hass}
         .stateObj=${this.stateObj}
         .extraFilters=${filterExtraAttributes}
       ></ha-attributes>

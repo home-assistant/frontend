@@ -1,19 +1,25 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { until } from "lit/directives/until";
 import { haStyle } from "../resources/styles";
+import { HomeAssistant } from "../types";
 import hassAttributeUtil, {
   formatAttributeName,
 } from "../util/hass-attributes-util";
+import "./ha-expansion-panel";
 
 let jsYamlPromise: Promise<typeof import("js-yaml")>;
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property() public stateObj?: HassEntity;
 
   @property({ attribute: "extra-filters" }) public extraFilters?: string;
+
+  @state() private _expanded = false;
 
   protected render(): TemplateResult {
     if (!this.stateObj) {
@@ -30,24 +36,37 @@ class HaAttributes extends LitElement {
     }
 
     return html`
-      <hr />
-      <div>
-        ${attributes.map(
-          (attribute) => html`
-            <div class="data-entry">
-              <div class="key">${formatAttributeName(attribute)}</div>
-              <div class="value">${this.formatAttribute(attribute)}</div>
-            </div>
-          `
+      <ha-expansion-panel
+        .header=${this.hass.localize(
+          "ui.components.attributes.expansion_header"
         )}
-        ${this.stateObj.attributes.attribution
-          ? html`
-              <div class="attribution">
-                ${this.stateObj.attributes.attribution}
-              </div>
-            `
-          : ""}
-      </div>
+        outlined
+        @expanded-will-change=${this.expandedChanged}
+      >
+        <div class="attribute-container">
+          ${this._expanded
+            ? html`
+                ${attributes.map(
+                  (attribute) => html`
+                    <div class="data-entry">
+                      <div class="key">${formatAttributeName(attribute)}</div>
+                      <div class="value">
+                        ${this.formatAttribute(attribute)}
+                      </div>
+                    </div>
+                  `
+                )}
+                ${this.stateObj.attributes.attribution
+                  ? html`
+                      <div class="attribution">
+                        ${this.stateObj.attributes.attribution}
+                      </div>
+                    `
+                  : ""}
+              `
+            : ""}
+        </div>
+      </ha-expansion-panel>
     `;
   }
 
@@ -55,6 +74,9 @@ class HaAttributes extends LitElement {
     return [
       haStyle,
       css`
+        .attribute-container {
+          margin-bottom: 8px;
+        }
         .data-entry {
           display: flex;
           flex-direction: row;
@@ -134,6 +156,10 @@ class HaAttributes extends LitElement {
       }
     }
     return Array.isArray(value) ? value.join(", ") : value;
+  }
+
+  private expandedChanged(ev) {
+    this._expanded = ev.detail.expanded;
   }
 }
 
