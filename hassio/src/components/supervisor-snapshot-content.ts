@@ -1,3 +1,4 @@
+import "./supervisor-formfield-label";
 import { mdiFolder, mdiHomeAssistant, mdiPuzzle } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -149,20 +150,24 @@ export class SupervisorSnapshotContent extends LitElement {
       ${this.snapshot && this.snapshotType === "partial"
         ? html`
             ${this.snapshot.homeassistant
-              ? html`<div
-                  class="checkbox-row"
-                  @click=${() => {
-                    this.homeAssistant = !this.homeAssistant;
-                  }}
-                >
-                  <ha-checkbox .checked=${this.homeAssistant}> </ha-checkbox>
-                  <ha-svg-icon .path=${mdiHomeAssistant} class="icon">
-                  </ha-svg-icon>
-                  <span class="item-name">Home Assistant</span>
-                  <span class="item-version">
-                    (${this.snapshot.homeassistant})
-                  </span>
-                </div>`
+              ? html`
+                  <ha-formfield
+                    .label=${html`<supervisor-formfield-label
+                      label="Home Assistant"
+                      .iconPath=${mdiHomeAssistant}
+                      .version=${this.snapshot.homeassistant}
+                    >
+                    </supervisor-formfield-label>`}
+                  >
+                    <ha-checkbox
+                      .checked=${this.homeAssistant}
+                      @click=${() => {
+                        this.homeAssistant = !this.homeAssistant;
+                      }}
+                    >
+                    </ha-checkbox>
+                  </ha-formfield>
+                `
               : ""}
           `
         : ""}
@@ -170,31 +175,38 @@ export class SupervisorSnapshotContent extends LitElement {
         ? html`
             ${this.folders?.length
               ? html`
-                  <div
-                    class="checkbox-row"
-                    @click=${() =>
-                      this._toggleSection("folders", this.folders!)}
+                  <ha-formfield
+                    .label=${html`<supervisor-formfield-label
+                      .label=${this.supervisor.localize("snapshot.folders")}
+                      .iconPath=${mdiFolder}
+                    >
+                    </supervisor-formfield-label>`}
                   >
                     <ha-checkbox
                       .indeterminate=${this._sectionIndeterminate(this.folders)}
                       .checked=${this._sectionCheked(this.folders)}
+                      @click=${() =>
+                        this._toggleSection("folders", this.folders!)}
                     >
                     </ha-checkbox>
-                    <ha-svg-icon .path=${mdiFolder} class="icon"></ha-svg-icon>
-                    ${this.supervisor.localize("snapshot.folders")}
-                  </div>
+                  </ha-formfield>
                   <div class="section-content">
                     ${this.folders.map(
                       (item) => html`
-                        <div
-                          class="checkbox-row"
-                          @click=${() => this._updateFolder(item)}
+                        <ha-formfield
+                          .label=${html`<supervisor-formfield-label
+                            .label=${item.name}
+                            .iconPath=${mdiFolder}
+                          >
+                          </supervisor-formfield-label>`}
                         >
-                          <ha-checkbox .checked=${item.checked}> </ha-checkbox>
-                          <ha-svg-icon .path=${mdiFolder} class="icon">
-                          </ha-svg-icon>
-                          ${item.name}
-                        </div>
+                          <ha-checkbox
+                            .item=${item}
+                            .checked=${item.checked}
+                            @click=${this._updateFolder}
+                          >
+                          </ha-checkbox>
+                        </ha-formfield>
                       `
                     )}
                   </div>
@@ -202,28 +214,28 @@ export class SupervisorSnapshotContent extends LitElement {
               : ""}
             ${this.addons?.length
               ? html`
-                  <div
-                    class="checkbox-row"
-                    @click=${() => this._toggleSection("addons", this.addons!)}
+                  <ha-formfield
+                    .label=${html`<supervisor-formfield-label
+                      .label=${this.supervisor.localize("snapshot.addons")}
+                      .iconPath=${mdiPuzzle}
+                    >
+                    </supervisor-formfield-label>`}
                   >
                     <ha-checkbox
                       .indeterminate=${this._sectionIndeterminate(this.addons)}
                       .checked=${this._sectionCheked(this.addons)}
+                      @click=${() =>
+                        this._toggleSection("addons", this.addons!)}
                     >
                     </ha-checkbox>
-                    <ha-svg-icon .path=${mdiPuzzle} class="icon"></ha-svg-icon>
-                    ${this.supervisor.localize("snapshot.addons")}
-                  </div>
+                  </ha-formfield>
                   <div class="section-content">
                     ${this.addons.map(
                       (item) => html`
-                        <div
-                          class="checkbox-row"
-                          @click=${() => this._updateAddon(item)}
-                        >
-                          <ha-checkbox .checked=${item.checked}> </ha-checkbox>
-                          <div class="addon">
-                            ${atLeastVersion(
+                        <ha-formfield
+                          .label=${html`<supervisor-formfield-label
+                            .label=${item.name}
+                            .imageUrl=${atLeastVersion(
                               this.hass.config.version,
                               0,
                               105
@@ -231,20 +243,20 @@ export class SupervisorSnapshotContent extends LitElement {
                             this.supervisor?.addon.addons.find(
                               (addon) => addon.slug === item.slug
                             )?.icon
-                              ? html`<img
-                                  loading="lazy"
-                                  .src="/api/hassio/addons/${item.slug}/icon"
-                                  class="icon"
-                                />`
-                              : html`<ha-svg-icon
-                                  .path=${mdiPuzzle}
-                                  class="icon"
-                                >
-                                </ha-svg-icon>`}
-                            <span class="item-name">${item.name}</span>
-                            <span class="item-version">(${item.version})</span>
-                          </div>
-                        </div>
+                              ? `/api/hassio/addons/${item.slug}/icon`
+                              : undefined}
+                            .iconPath=${mdiPuzzle}
+                            .version=${item.version}
+                          >
+                          </supervisor-formfield-label>`}
+                        >
+                          <ha-checkbox
+                            .item=${item}
+                            .checked=${item.checked}
+                            @click=${this._updateAddon}
+                          >
+                          </ha-checkbox>
+                        </ha-formfield>
                       `
                     )}
                   </div>
@@ -288,39 +300,27 @@ export class SupervisorSnapshotContent extends LitElement {
         display: block;
         margin: 4px 12px 8px 0;
       }
-      .details,
-      .item-version {
-        color: var(--secondary-text-color);
+      ha-formfield {
+        display: block;
       }
-      .icon {
-        max-height: 22px;
-        max-width: 22px;
-        margin-right: 8px;
-      }
-      .checkbox-row {
-        display: flex;
+      supervisor-formfield-label {
+        display: inline-flex;
         align-items: center;
-        font-size: 0.875rem;
-        cursor: pointer;
       }
-      .item-name {
-        margin-right: 4px;
+      paper-input[type="password"] {
+        display: block;
+        margin: 4px 0 4px 16px;
+      }
+      .details {
+        color: var(--secondary-text-color);
       }
       .section-content {
         display: flex;
         flex-direction: column;
         margin-left: 16px;
       }
-      .addon {
-        display: inline-flex;
-        align-items: center;
-      }
       .security {
         margin-top: 16px;
-      }
-      paper-input[type="password"] {
-        display: block;
-        margin: 4px 0 4px 16px;
       }
     `;
   }
@@ -362,7 +362,8 @@ export class SupervisorSnapshotContent extends LitElement {
     }));
   }
 
-  private _updateFolder(item: CheckboxItem): void {
+  private _updateFolder(ev: any): void {
+    const item = ev.currentTarget.item;
     this.folders = this.folders?.map((folder) => {
       if (folder.slug === item.slug) {
         folder.checked = !folder.checked;
@@ -371,7 +372,8 @@ export class SupervisorSnapshotContent extends LitElement {
     });
   }
 
-  private _updateAddon(item: AddonCheckboxItem): void {
+  private _updateAddon(ev: any): void {
+    const item = ev.currentTarget.item;
     this.addons = this.addons?.map((addon) => {
       if (addon.slug === item.slug) {
         addon.checked = !addon.checked;
