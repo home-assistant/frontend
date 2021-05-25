@@ -103,25 +103,27 @@ export class HassioMain extends SupervisorBaseElement {
 
   private _applyTheme() {
     let themeName: string;
-    let options: Partial<HomeAssistant["selectedTheme"]> | undefined;
+    let themeSettings:
+      | Partial<HomeAssistant["selectedThemeSettings"]>
+      | undefined;
 
     if (atLeastVersion(this.hass.config.version, 0, 114)) {
       themeName =
-        this.hass.selectedTheme?.theme ||
+        this.hass.selectedThemeSettings?.theme ||
         (this.hass.themes.darkMode && this.hass.themes.default_dark_theme
           ? this.hass.themes.default_dark_theme!
           : this.hass.themes.default_theme);
 
-      options = this.hass.selectedTheme;
-      if (themeName === "default" && options?.dark === undefined) {
-        options = {
-          ...this.hass.selectedTheme,
+      themeSettings = this.hass.selectedThemeSettings;
+      if (themeSettings?.dark === undefined) {
+        themeSettings = {
+          ...this.hass.selectedThemeSettings,
           dark: this.hass.themes.darkMode,
         };
       }
     } else {
       themeName =
-        ((this.hass.selectedTheme as unknown) as string) ||
+        ((this.hass.selectedThemeSettings as unknown) as string) ||
         this.hass.themes.default_theme;
     }
 
@@ -129,7 +131,7 @@ export class HassioMain extends SupervisorBaseElement {
       this.parentElement,
       this.hass.themes,
       themeName,
-      options
+      themeSettings
     );
   }
 }
