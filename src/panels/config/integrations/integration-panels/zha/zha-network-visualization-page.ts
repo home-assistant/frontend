@@ -9,7 +9,7 @@ import {
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { Network, Edge, Node, EdgeOptions } from "vis-network";
+import { Network, Edge, Node, EdgeOptions } from "vis-network/peer";
 import "../../../../../common/search/search-input";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
