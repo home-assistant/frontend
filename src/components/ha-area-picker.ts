@@ -14,7 +14,9 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
@@ -42,36 +44,20 @@ import { HomeAssistant } from "../types";
 import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./ha-svg-icon";
 
-const rowRenderer = (
-  root: HTMLElement,
-  _owner,
-  model: { item: AreaRegistryEntry }
-) => {
-  if (!root.firstElementChild) {
-    root.innerHTML = `
-      <style>
-        paper-item {
-          margin: -10px 0;
-          padding: 0;
-        }
-        paper-item.add-new {
-            font-weight: 500;
-        }
-      </style>
-      <paper-item>
-        <paper-item-body two-line>
-          <div class='name'>[[item.name]]</div>
-        </paper-item-body>
-      </paper-item>
-      `;
-  }
-  root.querySelector(".name")!.textContent = model.item.name!;
-  if (model.item.area_id === "add_new") {
-    root.querySelector("paper-item")!.className = "add-new";
-  } else {
-    root.querySelector("paper-item")!.classList.remove("add-new");
-  }
-};
+const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (
+  item
+) => html`<style>
+    paper-item {
+      margin: -10px 0;
+      padding: 0;
+    }
+    paper-item.add-new {
+      font-weight: 500;
+    }
+  </style>
+  <paper-item class=${classMap({ "add-new": item.area_id === "add_new" })}>
+    <paper-item-body two-line>${item.name}</paper-item-body>
+  </paper-item>`;
 
 @customElement("ha-area-picker")
 export class HaAreaPicker extends SubscribeMixin(LitElement) {
@@ -340,8 +326,8 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
         item-id-path="area_id"
         item-label-path="name"
         .value=${this._value}
-        .renderer=${rowRenderer}
         .disabled=${this.disabled}
+        ${comboBoxRenderer(rowRenderer)}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._areaChanged}
       >
