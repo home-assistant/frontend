@@ -2916,7 +2916,7 @@
                         "controller_in_inclusion_mode": "Váš ovladač Z-Wave je nyní v režimu začlenění.",
                         "follow_device_instructions": "Podle pokynů dodaných se zařízením aktivujte párování na zařízení.",
                         "inclusion_failed": "Uzel nelze přidat. Další informace najdete v protokolech.",
-                        "inclusion_finished": "Uzel byl přidán. Může trvat několik minut, než se všechny entity zobrazí, když dokončíme nastavení uzlu na pozadí.",
+                        "inclusion_finished": "Uzel byl přidán.",
                         "introduction": "Tento průvodce vás provede přidáním uzlu do vaší sítě Z-Wave.",
                         "secure_inclusion_warning": "Zabezpečená zařízení vyžadují větší šířku pásma; příliš mnoho zabezpečených zařízení může zpomalit vaši síť Z-Wave. Bezpečné začlenění doporučujeme používat pouze u zařízení, která to vyžadují, jako jsou zámky nebo otvírače garážových vrat.",
                         "start_inclusion": "Zahájit začlenění",
@@ -4000,6 +4000,17 @@
                     "link_promo": "Další info o motivech",
                     "primary_color": "Základní barva",
                     "reset": "Obnovit"
+                },
+                "time_format": {
+                    "description": "Zvolte způsob formátování času.",
+                    "dropdown_label": "Formát času",
+                    "formats": {
+                        "12": "12hodinový (AM/PM)",
+                        "24": "24hodinový",
+                        "language": "Automaticky (dle nastaveného jazyka)",
+                        "system": "Dle systému"
+                    },
+                    "header": "Formát času"
                 },
                 "vibrate": {
                     "description": "Povolit nebo zakázat vibrace na tomto zařízení při ovládání ostatních zařízení.",
