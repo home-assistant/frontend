@@ -54,7 +54,7 @@ const createRollupConfig = ({
       }),
       commonjs({
         namedExports: {
-          "js-yaml": ["safeDump", "safeLoad"],
+          "js-yaml": ["dump", "load"],
         },
       }),
       json(),

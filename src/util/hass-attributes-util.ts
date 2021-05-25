@@ -7,7 +7,7 @@ import { isDate } from "../common/string/is_date";
 import { isTimestamp } from "../common/string/is_timestamp";
 import { HomeAssistant } from "../types";
 
-let jsYamlPromise: Promise<typeof import("js-yaml")>;
+let jsYamlPromise: Promise<typeof import("../resources/js-yaml-dump")>;
 
 const hassAttributeUtil = {
   DOMAIN_DEVICE_CLASS: {
@@ -156,9 +156,9 @@ export function formatAttributeValue(
     (!Array.isArray(value) && value instanceof Object)
   ) {
     if (!jsYamlPromise) {
-      jsYamlPromise = import("js-yaml");
+      jsYamlPromise = import("../resources/js-yaml-dump");
     }
-    const yaml = jsYamlPromise.then((jsYaml) => jsYaml.safeDump(value));
+    const yaml = jsYamlPromise.then((jsYaml) => jsYaml.dump(value));
     return html`<pre>${until(yaml, "")}</pre>`;
   }
 

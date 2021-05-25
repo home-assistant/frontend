@@ -1,4 +1,4 @@
-import { safeDump } from "js-yaml";
+import { dump } from "js-yaml";
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../src/components/ha-card";
@@ -56,7 +56,7 @@ export class DemoAutomationDescribeAction extends LitElement {
           (conf) => html`
             <div class="action">
               <span>${describeAction(this.hass, conf as any)}</span>
-              <pre>${safeDump(conf)}</pre>
+              <pre>${dump(conf)}</pre>
             </div>
           `
         )}

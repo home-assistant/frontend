@@ -9,7 +9,7 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { safeDump, safeLoad } from "js-yaml";
+import { dump, load } from "js-yaml";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
@@ -332,7 +332,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._entityId = state.entity_id;
     this._entity = state;
     this._state = state.state;
-    this._stateAttributes = safeDump(state.attributes);
+    this._stateAttributes = dump(state.attributes);
     ev.preventDefault();
   }
 
@@ -349,7 +349,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     }
     this._entity = state;
     this._state = state.state;
-    this._stateAttributes = safeDump(state.attributes);
+    this._stateAttributes = dump(state.attributes);
   }
 
   entityMoreInfo(ev) {
@@ -493,7 +493,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
       (!Array.isArray(value) && value instanceof Object)
     ) {
-      return `\n${safeDump(value)}`;
+      return `\n${dump(value)}`;
     }
     return Array.isArray(value) ? value.join(", ") : value;
   }
@@ -508,7 +508,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _computeParsedStateAttributes(stateAttributes) {
     try {
-      return stateAttributes.trim() ? safeLoad(stateAttributes) : {};
+      return stateAttributes.trim() ? load(stateAttributes) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }

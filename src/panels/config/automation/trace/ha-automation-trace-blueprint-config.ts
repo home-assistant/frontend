@@ -1,4 +1,4 @@
-import { safeDump } from "js-yaml";
+import { dump } from "js-yaml";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../../components/ha-code-editor";
@@ -15,7 +15,7 @@ export class HaAutomationTraceBlueprintConfig extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-code-editor
-        .value=${safeDump(this.trace.blueprint_inputs || "").trimRight()}
+        .value=${dump(this.trace.blueprint_inputs || "").trimRight()}
         readOnly
       ></ha-code-editor>
     `;
