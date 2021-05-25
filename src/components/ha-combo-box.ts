@@ -6,31 +6,20 @@ import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-listbox/paper-listbox";
 import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
 
-const defaultRowRenderer = (
-  root: HTMLElement,
-  _owner,
-  model: { item: any }
-) => {
-  if (!root.firstElementChild) {
-    root.innerHTML = `
-    <style>
-      paper-item {
-        margin: -5px -10px;
-        padding: 0;
-      }
-    </style>
-    <paper-item></paper-item>
-    `;
-  }
-
-  root.querySelector("paper-item")!.textContent = model.item;
-};
+const defaultRowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
+    paper-item {
+      margin: -5px -10px;
+      padding: 0;
+    }
+  </style>
+  <paper-item>${item}</paper-item>`;
 
 @customElement("ha-combo-box")
 export class HaComboBox extends LitElement {
@@ -53,11 +42,7 @@ export class HaComboBox extends LitElement {
 
   @property({ attribute: "item-id-path" }) public itemIdPath?: string;
 
-  @property() public renderer?: (
-    root: HTMLElement,
-    owner: HTMLElement,
-    model: { item: any }
-  ) => void;
+  @property() public renderer?: ComboBoxLitRenderer<any>;
 
   @property({ type: Boolean }) public disabled?: boolean;
 
@@ -90,9 +75,9 @@ export class HaComboBox extends LitElement {
         .value=${this.value}
         .items=${this.items}
         .filteredItems=${this.filteredItems}
-        .renderer=${this.renderer || defaultRowRenderer}
         .allowCustomValue=${this.allowCustomValue}
         .disabled=${this.disabled}
+        ${comboBoxRenderer(this.renderer || defaultRowRenderer)}
         @opened-changed=${this._openedChanged}
         @filter-changed=${this._filterChanged}
         @value-changed=${this._valueChanged}
