@@ -185,8 +185,8 @@ export class SupervisorSnapshotContent extends LitElement {
                     <ha-checkbox
                       .indeterminate=${this._sectionIndeterminate(this.folders)}
                       .checked=${this._sectionCheked(this.folders)}
-                      @click=${() =>
-                        this._toggleSection("folders", this.folders!)}
+                      .section=${"folders"}
+                      @change=${this._toggleSection}
                     >
                     </ha-checkbox>
                   </ha-formfield>
@@ -203,7 +203,7 @@ export class SupervisorSnapshotContent extends LitElement {
                           <ha-checkbox
                             .item=${item}
                             .checked=${item.checked}
-                            @click=${this._updateFolder}
+                            @change=${this._updateFolder}
                           >
                           </ha-checkbox>
                         </ha-formfield>
@@ -224,8 +224,8 @@ export class SupervisorSnapshotContent extends LitElement {
                     <ha-checkbox
                       .indeterminate=${this._sectionIndeterminate(this.addons)}
                       .checked=${this._sectionCheked(this.addons)}
-                      @click=${() =>
-                        this._toggleSection("addons", this.addons!)}
+                      .section=${"addons"}
+                      @change=${this._toggleSection}
                     >
                     </ha-checkbox>
                   </ha-formfield>
@@ -253,7 +253,7 @@ export class SupervisorSnapshotContent extends LitElement {
                           <ha-checkbox
                             .item=${item}
                             .checked=${item.checked}
-                            @click=${this._updateAddon}
+                            @change=${this._updateAddon}
                           >
                           </ha-checkbox>
                         </ha-formfield>
@@ -265,18 +265,15 @@ export class SupervisorSnapshotContent extends LitElement {
           `
         : ""}
       ${!this.snapshot
-        ? html`<div class="checkbox-row security"
-        @click=${this._toggleHasPassword}
+        ? html`<ha-formfield
+            .label=${this.supervisor.localize("snapshot.password_protection")}
           >
             <ha-checkbox
               .checked=${this.snapshotHasPassword}
+              @change=${this._toggleHasPassword}
             >
-            </ha-checkbox>
-            <span>
-            ${this.supervisor.localize("snapshot.password_protection")}
-              </span>
-            </span>
-            </div>`
+            </ha-checkbox
+          ></ha-formfield>`
         : ""}
       ${this.snapshotHasPassword
         ? html`
@@ -350,33 +347,32 @@ export class SupervisorSnapshotContent extends LitElement {
     return checked.length !== 0 && checked.length !== items.length;
   }
 
-  private _toggleSection(section: "addons" | "folders", items): void {
-    const shouldCheck =
-      this._sectionIndeterminate(items) || !this._sectionCheked(items);
+  private _toggleSection(ev): void {
+    const section = ev.currentTarget.section;
 
-    items = items.map((item) => ({ ...item, checked: shouldCheck }));
-
-    this[section] = items.map((item) => ({
-      ...item,
-      checked: shouldCheck,
-    }));
+    this[section] = (section === "addons" ? this.addons : this.folders)!.map(
+      (item) => ({
+        ...item,
+        checked: ev.currentTarget.checked,
+      })
+    );
   }
 
-  private _updateFolder(ev: any): void {
+  private _updateFolder(ev): void {
     const item = ev.currentTarget.item;
     this.folders = this.folders?.map((folder) => {
       if (folder.slug === item.slug) {
-        folder.checked = !folder.checked;
+        folder.checked = ev.currentTarget.checked;
       }
       return folder;
     });
   }
 
-  private _updateAddon(ev: any): void {
+  private _updateAddon(ev): void {
     const item = ev.currentTarget.item;
     this.addons = this.addons?.map((addon) => {
       if (addon.slug === item.slug) {
-        addon.checked = !addon.checked;
+        addon.checked = ev.currentTarget.checked;
       }
       return addon;
     });
