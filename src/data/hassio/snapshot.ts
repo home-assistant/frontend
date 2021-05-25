@@ -42,11 +42,10 @@ export interface HassioFullSnapshotCreateParams {
   name: string;
   password?: string;
 }
-export interface HassioPartialSnapshotCreateParams {
-  name: string;
+export interface HassioPartialSnapshotCreateParams
+  extends HassioFullSnapshotCreateParams {
   folders?: string[];
   addons?: string[];
-  password?: string;
   homeassistant?: boolean;
 }
 
