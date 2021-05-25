@@ -1,15 +1,13 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { until } from "lit/directives/until";
 import { haStyle } from "../resources/styles";
 import { HomeAssistant } from "../types";
 import hassAttributeUtil, {
   formatAttributeName,
+  formatAttributeValue,
 } from "../util/hass-attributes-util";
 import "./ha-expansion-panel";
-
-let jsYamlPromise: Promise<typeof import("js-yaml")>;
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {
@@ -124,38 +122,7 @@ class HaAttributes extends LitElement {
       return "-";
     }
     const value = this.stateObj.attributes[attribute];
-    return this.formatAttributeValue(value);
-  }
-
-  private formatAttributeValue(value: any): string | TemplateResult {
-    if (value === null) {
-      return "-";
-    }
-    // YAML handling
-    if (
-      (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
-      (!Array.isArray(value) && value instanceof Object)
-    ) {
-      if (!jsYamlPromise) {
-        jsYamlPromise = import("js-yaml");
-      }
-      const yaml = jsYamlPromise.then((jsYaml) => jsYaml.safeDump(value));
-      return html` <pre>${until(yaml, "")}</pre> `;
-    }
-    // URL handling
-    if (typeof value === "string" && value.startsWith("http")) {
-      try {
-        // If invalid URL, exception will be raised
-        const url = new URL(value);
-        if (url.protocol === "http:" || url.protocol === "https:")
-          return html`<a target="_blank" rel="noreferrer" href="${value}"
-            >${value}</a
-          >`;
-      } catch (_) {
-        // Nothing to do here
-      }
-    }
-    return Array.isArray(value) ? value.join(", ") : value;
+    return formatAttributeValue(this.hass, value);
   }
 
   private expandedChanged(ev) {
