@@ -30,6 +30,10 @@ class ConfigNetwork extends LitElement {
   @state() private _error?: string;
 
   protected render(): TemplateResult {
+    if (!this.hass.userData?.showAdvanced) {
+      return html``;
+    }
+
     const error = this._error
       ? this._error
       : !isComponentLoaded(this.hass, "network")
