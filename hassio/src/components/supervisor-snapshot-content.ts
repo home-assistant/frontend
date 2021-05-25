@@ -299,9 +299,8 @@ export class SupervisorSnapshotContent extends LitElement {
         <ha-checkbox
           .item=${item}
           .checked=${item.checked}
-          @click=${section === "folders"
-            ? this._updateFolder
-            : this._updateAddon}
+          .section=${section}
+          @change=${this._updateSectionEntry}
         >
         </ha-checkbox>
       </ha-formfield>`);
@@ -345,24 +344,14 @@ export class SupervisorSnapshotContent extends LitElement {
     );
   }
 
-  private _updateFolder(ev): void {
+  private _updateSectionEntry(ev): void {
     const item = ev.currentTarget.item;
-    this.folders = this.folders?.map((folder) => {
-      if (folder.slug === item.slug) {
-        folder.checked = !folder.checked;
-      }
-      return folder;
-    });
-  }
-
-  private _updateAddon(ev): void {
-    const item = ev.currentTarget.item;
-    this.addons = this.addons?.map((addon) => {
-      if (addon.slug === item.slug) {
-        addon.checked = !addon.checked;
-      }
-      return addon;
-    });
+    const section = ev.currentTarget.section;
+    this[section] = this[section].map((entry) => ({
+      ...entry,
+      checked:
+        entry.slug === item.slug ? ev.currentTarget.checked : entry.checked,
+    }));
   }
 }
 
