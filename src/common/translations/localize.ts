@@ -1,4 +1,4 @@
-import { shouldPolyfill } from "@formatjs/intl-pluralrules/should-polyfill";
+import { shouldPolyfill } from "@formatjs/intl-pluralrules/lib/should-polyfill";
 import IntlMessageFormat from "intl-messageformat";
 import { Resources } from "../../types";
 
