@@ -52,11 +52,7 @@ const createRollupConfig = ({
         browser: true,
         rootDir: paths.polymer_dir,
       }),
-      commonjs({
-        namedExports: {
-          "js-yaml": ["safeDump", "safeLoad"],
-        },
-      }),
+      commonjs(),
       json(),
       babel({
         ...bundle.babelOptions({ latestBuild }),

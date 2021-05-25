@@ -1,7 +1,7 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { safeLoad } from "js-yaml";
+import { load } from "js-yaml";
 import { createCardElement } from "../../../src/panels/lovelace/create-element/create-card-element";
 
 class DemoCard extends PolymerElement {
@@ -80,7 +80,7 @@ class DemoCard extends PolymerElement {
       card.removeChild(card.lastChild);
     }
 
-    const el = this._createCardElement(safeLoad(config.config)[0]);
+    const el = this._createCardElement(load(config.config)[0]);
     card.appendChild(el);
     this._getSize(el);
   }

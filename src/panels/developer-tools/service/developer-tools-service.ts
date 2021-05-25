@@ -1,6 +1,6 @@
 import { mdiHelpCircle } from "@mdi/js";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
-import { safeLoad } from "js-yaml";
+import { load } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -361,9 +361,9 @@ class HaPanelDevService extends LitElement {
     const example = {};
     fields.forEach((field) => {
       if (field.example) {
-        let value = "";
+        let value: any = "";
         try {
-          value = safeLoad(field.example);
+          value = load(field.example);
         } catch (err) {
           value = field.example;
         }

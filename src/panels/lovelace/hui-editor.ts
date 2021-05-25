@@ -2,7 +2,7 @@ import { undoDepth } from "@codemirror/history";
 import "@material/mwc-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import { safeDump, safeLoad } from "js-yaml";
+import { dump, load } from "js-yaml";
 import {
   css,
   CSSResultGroup,
@@ -104,7 +104,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this.yamlEditor.value = safeDump(this.lovelace!.rawConfig);
+    this.yamlEditor.value = dump(this.lovelace!.rawConfig);
   }
 
   protected updated(changedProps: PropertyValues) {
@@ -122,7 +122,7 @@ class LovelaceFullConfigEditor extends LitElement {
         ),
         action: {
           action: () => {
-            this.yamlEditor.value = safeDump(this.lovelace!.rawConfig);
+            this.yamlEditor.value = dump(this.lovelace!.rawConfig);
           },
           text: this.hass!.localize(
             "ui.panel.lovelace.editor.raw_editor.reload"
@@ -258,7 +258,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
     let config: LovelaceConfig;
     try {
-      config = safeLoad(value);
+      config = load(value) as LovelaceConfig;
     } catch (err) {
       showAlertDialog(this, {
         text: this.hass.localize(

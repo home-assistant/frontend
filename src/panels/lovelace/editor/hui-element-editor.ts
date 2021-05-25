@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { safeDump, safeLoad } from "js-yaml";
+import { dump, load } from "js-yaml";
 import {
   css,
   CSSResultGroup,
@@ -77,7 +77,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
 
   public get yaml(): string {
     if (!this._yaml) {
-      this._yaml = safeDump(this._config);
+      this._yaml = dump(this._config);
     }
     return this._yaml || "";
   }
@@ -85,7 +85,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
   public set yaml(_yaml: string) {
     this._yaml = _yaml;
     try {
-      this._config = safeLoad(this.yaml);
+      this._config = load(this.yaml) as any;
       this._errors = undefined;
     } catch (err) {
       this._errors = [err.message];
