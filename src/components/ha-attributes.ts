@@ -41,11 +41,10 @@ class HaAttributes extends LitElement {
           "ui.components.attributes.expansion_header"
         )}
         outlined
-        @expanded-changed=${this.expandedChanged}
+        @expanded-will-change=${this.expandedChanged}
       >
-      <div class="attribute-container"></div>
-        ${
-          this._expanded
+        <div class="attribute-container">
+          ${this._expanded
             ? html`
                 ${attributes.map(
                   (attribute) => html`
@@ -65,8 +64,7 @@ class HaAttributes extends LitElement {
                     `
                   : ""}
               `
-            : ""
-        }
+            : ""}
         </div>
       </ha-expansion-panel>
     `;
