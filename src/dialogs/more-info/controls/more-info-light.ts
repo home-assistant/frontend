@@ -553,8 +553,6 @@ class MoreInfoLight extends LitElement {
 
       .content > * {
         width: 100%;
-        max-height: 84px;
-        overflow: hidden;
       }
 
       .color_temp {
