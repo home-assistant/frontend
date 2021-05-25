@@ -3,12 +3,17 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
+import { formatDate } from "../../../src/common/datetime/format_date";
 import { formatDateTime } from "../../../src/common/datetime/format_date_time";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-radio";
 import type { HaRadio } from "../../../src/components/ha-radio";
-import { HassioSnapshotDetail } from "../../../src/data/hassio/snapshot";
+import {
+  HassioFullSnapshotCreateParams,
+  HassioPartialSnapshotCreateParams,
+  HassioSnapshotDetail,
+} from "../../../src/data/hassio/snapshot";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { HomeAssistant } from "../../../src/types";
@@ -100,8 +105,10 @@ export class SupervisorSnapshotContent extends LitElement {
     if (!this.supervisor) {
       return html``;
     }
-    const foldersSection = this._getSection("folders");
-    const addonsSection = this._getSection("addons");
+    const foldersSection =
+      this.snapshotType === "partial" ? this._getSection("folders") : undefined;
+    const addonsSection =
+      this.snapshotType === "partial" ? this._getSection("addons") : undefined;
 
     return html`
       ${this.snapshot
@@ -120,35 +127,35 @@ export class SupervisorSnapshotContent extends LitElement {
           >
           </paper-input>`}
       ${!this.snapshot || this.snapshot.type === "full"
-        ? html`<div class="snapshot-types">
-            <div>
+        ? html`<div class="sub-header">
               ${!this.snapshot
                 ? this.supervisor.localize("snapshot.type")
                 : this.supervisor.localize("snapshot.select_type")}
             </div>
-            <ha-formfield
-              .label=${this.supervisor.localize("snapshot.full_snapshot")}
-            >
-              <ha-radio
-                @change=${this._handleRadioValueChanged}
-                value="full"
-                name="snapshotType"
-                .checked=${this.snapshotType === "full"}
+            <div class="snapshot-types">
+              <ha-formfield
+                .label=${this.supervisor.localize("snapshot.full_snapshot")}
               >
-              </ha-radio>
-            </ha-formfield>
-            <ha-formfield
-              .label=${this.supervisor!.localize("snapshot.partial_snapshot")}
-            >
-              <ha-radio
-                @change=${this._handleRadioValueChanged}
-                value="partial"
-                name="snapshotType"
-                .checked=${this.snapshotType === "partial"}
+                <ha-radio
+                  @change=${this._handleRadioValueChanged}
+                  value="full"
+                  name="snapshotType"
+                  .checked=${this.snapshotType === "full"}
+                >
+                </ha-radio>
+              </ha-formfield>
+              <ha-formfield
+                .label=${this.supervisor!.localize("snapshot.partial_snapshot")}
               >
-              </ha-radio>
-            </ha-formfield>
-          </div>`
+                <ha-radio
+                  @change=${this._handleRadioValueChanged}
+                  value="partial"
+                  name="snapshotType"
+                  .checked=${this.snapshotType === "partial"}
+                >
+                </ha-radio>
+              </ha-formfield>
+            </div>`
         : ""}
       ${this.snapshot && this.snapshotType === "partial"
         ? html`
@@ -176,7 +183,7 @@ export class SupervisorSnapshotContent extends LitElement {
         : ""}
       ${this.snapshotType === "partial"
         ? html`
-            ${foldersSection.templates.length
+            ${foldersSection?.templates.length
               ? html`
                   <ha-formfield
                     .label=${html`<supervisor-formfield-label
@@ -196,7 +203,7 @@ export class SupervisorSnapshotContent extends LitElement {
                   <div class="section-content">${foldersSection.templates}</div>
                 `
               : ""}
-            ${addonsSection.templates.length
+            ${addonsSection?.templates.length
               ? html`
                   <ha-formfield
                     .label=${html`<supervisor-formfield-label
@@ -276,11 +283,57 @@ export class SupervisorSnapshotContent extends LitElement {
       .snapshot-types {
         display: flex;
       }
+      .sub-header {
+        margin-top: 8px;
+      }
     `;
+  }
+
+  public snapshotDetails():
+    | HassioPartialSnapshotCreateParams
+    | HassioFullSnapshotCreateParams {
+    const data: any = {};
+
+    if (!this.snapshot) {
+      data.name = this.snapshotName || formatDate(new Date(), this.hass.locale);
+    }
+
+    if (this.snapshotHasPassword) {
+      data.password = this.snapshotPassword;
+    }
+
+    if (this.snapshotType === "full") {
+      return data;
+    }
+
+    const addons = this.addons
+      ?.filter((addon) => addon.checked)
+      .map((addon) => addon.slug);
+    const folders = this.folders
+      ?.filter((folder) => folder.checked)
+      .map((folder) => folder.slug);
+
+    if (addons?.length) {
+      data.addons = addons;
+    }
+    if (folders?.length) {
+      data.folders = folders;
+    }
+    if (this.homeAssistant) {
+      data.homeassistant = this.homeAssistant;
+    }
+
+    return data;
   }
 
   private _getSection(section: string) {
     const templates: TemplateResult[] = [];
+    const addons =
+      section === "addons"
+        ? new Map(
+            this.supervisor!.addon.addons.map((item) => [item.slug, item])
+          )
+        : undefined;
     let checkedItems = 0;
     this[section].forEach((item) => {
       templates.push(html`<ha-formfield
@@ -289,9 +342,7 @@ export class SupervisorSnapshotContent extends LitElement {
           .iconPath=${section === "addons" ? mdiPuzzle : mdiFolder}
           .imageUrl=${section === "addons" &&
           atLeastVersion(this.hass.config.version, 0, 105) &&
-          this.supervisor!.addon.addons.find(
-            (addon) => addon.slug === item.slug
-          )?.icon
+          addons?.get(item.slug)?.icon
             ? `/api/hassio/addons/${item.slug}/icon`
             : undefined}
           .version=${item.version}

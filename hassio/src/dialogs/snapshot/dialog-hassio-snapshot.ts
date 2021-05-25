@@ -39,7 +39,7 @@ class HassioSnapshotDialog
 
   @state() private _restoringSnapshot = false;
 
-  @query("supervisor-snapshot-content", true)
+  @query("supervisor-snapshot-content")
   private _snapshotContent!: SupervisorSnapshotContent;
 
   public async showDialog(params: HassioSnapshotDialogParams) {
@@ -128,16 +128,17 @@ class HassioSnapshotDialog
   }
 
   private async _restoreClicked() {
+    const snapshotDetails = this._snapshotContent.snapshotDetails();
     this._restoringSnapshot = true;
     if (this._snapshotContent.snapshotType === "full") {
-      await this._fullRestoreClicked();
+      await this._fullRestoreClicked(snapshotDetails);
     } else {
-      await this._partialRestoreClicked();
+      await this._partialRestoreClicked(snapshotDetails);
     }
     this._restoringSnapshot = false;
   }
 
-  private async _partialRestoreClicked() {
+  private async _partialRestoreClicked(snapshotDetails) {
     if (
       this._dialogParams?.supervisor !== undefined &&
       this._dialogParams?.supervisor.info.state !== "running"
@@ -158,36 +159,13 @@ class HassioSnapshotDialog
       return;
     }
 
-    const addons = this._snapshotContent
-      .addons!.filter((addon) => addon.checked)
-      .map((addon) => addon.slug);
-
-    const folders = this._snapshotContent
-      .folders!.filter((folder) => folder.checked)
-      .map((folder) => folder.slug);
-
-    const data: {
-      homeassistant: boolean;
-      addons: any;
-      folders: any;
-      password?: string;
-    } = {
-      homeassistant: this._snapshotContent.homeAssistant,
-      addons,
-      folders,
-    };
-
-    if (this._snapshot!.protected) {
-      data.password = this._snapshotContent.snapshotPassword;
-    }
-
     if (!this._dialogParams?.onboarding) {
       this.hass
         .callApi(
           "POST",
 
           `hassio/snapshots/${this._snapshot!.slug}/restore/partial`,
-          data
+          snapshotDetails
         )
         .then(
           () => {
@@ -201,13 +179,13 @@ class HassioSnapshotDialog
       fireEvent(this, "restoring");
       fetch(`/api/hassio/snapshots/${this._snapshot!.slug}/restore/partial`, {
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify(snapshotDetails),
       });
       this.closeDialog();
     }
   }
 
-  private async _fullRestoreClicked() {
+  private async _fullRestoreClicked(snapshotDetails) {
     if (
       this._dialogParams?.supervisor !== undefined &&
       this._dialogParams?.supervisor.info.state !== "running"
@@ -229,15 +207,12 @@ class HassioSnapshotDialog
       return;
     }
 
-    const data = this._snapshot!.protected
-      ? { password: this._snapshotContent.snapshotPassword }
-      : undefined;
     if (!this._dialogParams?.onboarding) {
       this.hass
         .callApi(
           "POST",
           `hassio/snapshots/${this._snapshot!.slug}/restore/full`,
-          data
+          snapshotDetails
         )
         .then(
           () => {
@@ -251,7 +226,7 @@ class HassioSnapshotDialog
       fireEvent(this, "restoring");
       fetch(`/api/hassio/snapshots/${this._snapshot!.slug}/restore/full`, {
         method: "POST",
-        body: JSON.stringify(data),
+        body: JSON.stringify(snapshotDetails),
       });
       this.closeDialog();
     }

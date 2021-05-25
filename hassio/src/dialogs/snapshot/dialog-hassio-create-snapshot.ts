@@ -1,7 +1,6 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { formatDate } from "../../../../src/common/datetime/format_date";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
@@ -9,8 +8,6 @@ import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   createHassioFullSnapshot,
   createHassioPartialSnapshot,
-  HassioFullSnapshotCreateParams,
-  HassioPartialSnapshotCreateParams,
 } from "../../../../src/data/hassio/snapshot";
 import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
@@ -29,7 +26,7 @@ class HassioCreateSnapshotDialog extends LitElement {
 
   @state() private _creatingSnapshot = false;
 
-  @query("supervisor-snapshot-content", true)
+  @query("supervisor-snapshot-content")
   private _snapshotContent!: SupervisorSnapshotContent;
 
   public showDialog(params: HassioCreateSnapshotDialogParams) {
@@ -93,6 +90,7 @@ class HassioCreateSnapshotDialog extends LitElement {
       });
       return;
     }
+    const snapshotDetails = this._snapshotContent.snapshotDetails();
     this._creatingSnapshot = true;
 
     this._error = "";
@@ -106,31 +104,12 @@ class HassioCreateSnapshotDialog extends LitElement {
       this._creatingSnapshot = false;
       return;
     }
-    const name =
-      this._snapshotContent.snapshotName ||
-      formatDate(new Date(), this.hass.locale);
 
     try {
       if (this._snapshotContent.snapshotType === "full") {
-        const data: HassioFullSnapshotCreateParams = { name };
-        if (this._snapshotContent.snapshotHasPassword) {
-          data.password = this._snapshotContent.snapshotPassword;
-        }
-        await createHassioFullSnapshot(this.hass, data);
+        await createHassioFullSnapshot(this.hass, snapshotDetails);
       } else {
-        const data: HassioPartialSnapshotCreateParams = {
-          name,
-          folders: this._snapshotContent
-            .folders!.filter((folder) => folder.checked)
-            .map((folder) => folder.slug),
-          addons: this._snapshotContent
-            .addons!.filter((addon) => addon.checked)
-            .map((addon) => addon.slug),
-        };
-        if (this._snapshotContent.snapshotHasPassword) {
-          data.password = this._snapshotContent.snapshotPassword;
-        }
-        await createHassioPartialSnapshot(this.hass, data);
+        await createHassioPartialSnapshot(this.hass, snapshotDetails);
       }
 
       this._dialogParams!.onCreate();
