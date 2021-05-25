@@ -1131,18 +1131,10 @@
     "@formatjs/ecma402-abstract" "1.9.1"
     tslib "^2.1.0"
 
-"@formatjs/intl-getcanonicallocales@1.7.0":
+"@formatjs/intl-getcanonicallocales@1.7.0", "@formatjs/intl-getcanonicallocales@^1.5.10":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@formatjs/intl-getcanonicallocales/-/intl-getcanonicallocales-1.7.0.tgz#f864cc8228976599719d0a8212a1e6d7c846b38d"
   integrity sha512-3pQjp+WCHrFfkUeSuw//LIx/orcykopZX4U/2kY1jTYhATVJbKdU8Rl5V2/d+fw1naKjKYoIjIXGn85Ti396+A==
-  dependencies:
-    cldr-core "38"
-    tslib "^2.1.0"
-
-"@formatjs/intl-getcanonicallocales@^1.5.10":
-  version "1.5.10"
-  resolved "https://registry.yarnpkg.com/@formatjs/intl-getcanonicallocales/-/intl-getcanonicallocales-1.5.10.tgz#f57f12f19fd28a241767986b081331f8b26fb18b"
-  integrity sha512-tFqGxZ9HkAzphupybyCKdWHzL1ge/sY8TtzEK57Hs3RCxrv/y+VxIPrE+Izw2oCFowQBz76cyi0zT6PjHuWArA==
   dependencies:
     cldr-core "38"
     tslib "^2.1.0"
@@ -12235,19 +12227,7 @@ term-size@^1.2.0:
   dependencies:
     execa "^0.7.0"
 
-terser-webpack-plugin@^5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/terser-webpack-plugin/-/terser-webpack-plugin-5.1.1.tgz#7effadee06f7ecfa093dbbd3e9ab23f5f3ed8673"
-  integrity sha512-5XNNXZiR8YO6X6KhSGXfY0QrGrCRlSwAEjIIrlRQR4W8nP69TaJUlh3bkuac6zzgspiGPfKEHcY295MMVExl5Q==
-  dependencies:
-    jest-worker "^26.6.2"
-    p-limit "^3.1.0"
-    schema-utils "^3.0.0"
-    serialize-javascript "^5.0.1"
-    source-map "^0.6.1"
-    terser "^5.5.1"
-
-terser-webpack-plugin@^5.1.2:
+terser-webpack-plugin@^5.1.1, terser-webpack-plugin@^5.1.2:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/terser-webpack-plugin/-/terser-webpack-plugin-5.1.2.tgz#51d295eb7cc56785a67a372575fdc46e42d5c20c"
   integrity sha512-6QhDaAiVHIQr5Ab3XUWZyDmrIPCHMiqJVljMF91YKyqwKkL5QHnYMkrMBy96v9Z7ev1hGhSEw1HQZc2p/s5Z8Q==
@@ -12272,15 +12252,6 @@ terser@^5.0.0, terser@^5.7.0:
   version "5.7.0"
   resolved "https://registry.yarnpkg.com/terser/-/terser-5.7.0.tgz#a761eeec206bc87b605ab13029876ead938ae693"
   integrity sha512-HP5/9hp2UaZt5fYkuhNBR8YyRcT8juw8+uFbAme53iN9hblvKnLUTKkmwJG6ocWpIKf8UK4DoeWG4ty0J6S6/g==
-  dependencies:
-    commander "^2.20.0"
-    source-map "~0.7.2"
-    source-map-support "~0.5.19"
-
-terser@^5.5.1:
-  version "5.6.0"
-  resolved "https://registry.yarnpkg.com/terser/-/terser-5.6.0.tgz#138cdf21c5e3100b1b3ddfddf720962f88badcd2"
-  integrity sha512-vyqLMoqadC1uR0vywqOZzriDYzgEkNJFK4q9GeyOBHIbiECHiWLKcWfbQWAUaPfxkjDhapSlZB9f7fkMrvkVjA==
   dependencies:
     commander "^2.20.0"
     source-map "~0.7.2"
@@ -13041,12 +13012,7 @@ vue2-daterange-picker@^0.5.1:
   dependencies:
     vue "^2.6.10"
 
-vue@^2.6.10:
-  version "2.6.11"
-  resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.11.tgz#76594d877d4b12234406e84e35275c6d514125c5"
-  integrity sha512-VfPwgcGABbGAue9+sfrD4PuwFar7gPb1yl1UK1MwXoQPAw0BKSqWfoYCT/ThFrdEVWoI51dBuyCoiNU9bZDZxQ==
-
-vue@^2.6.12:
+vue@^2.6.10, vue@^2.6.12:
   version "2.6.12"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.12.tgz#f5ebd4fa6bd2869403e29a896aed4904456c9123"
   integrity sha512-uhmLFETqPPNyuLLbsKz6ioJ4q7AZHzD8ZVFNATNyICSZouqP2Sz0rotWQC8UNBF6VGSCs5abnKJoStA6JbCbfg==
