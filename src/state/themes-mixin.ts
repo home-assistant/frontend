@@ -67,14 +67,15 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (!this.hass) {
         return;
       }
-      const themeName =
-        this.hass.selectedThemeSettings?.theme ||
-        (darkPreferred && this.hass.themes.default_dark_theme
-          ? this.hass.themes.default_dark_theme!
-          : this.hass.themes.default_theme);
 
       let themeSettings: Partial<HomeAssistant["selectedThemeSettings"]> = this
         .hass!.selectedThemeSettings;
+
+      const themeName =
+        themeSettings?.theme ||
+        (darkPreferred && this.hass.themes.default_dark_theme
+          ? this.hass.themes.default_dark_theme!
+          : this.hass.themes.default_theme);
 
       let darkMode =
         themeSettings?.dark === undefined ? darkPreferred : themeSettings?.dark;
@@ -84,18 +85,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           ? this.hass.themes.themes[themeSettings.theme]
           : undefined;
 
-      if (selectedTheme) {
-        // Override dark mode selection depending on what the theme actually provides.
-        // Leave the selection as-is if the theme supports the requested mode.
-        if (darkMode && !selectedTheme.modes?.dark) {
-          darkMode = false;
-        } else if (
-          !darkMode &&
-          !selectedTheme.modes?.light &&
-          selectedTheme.modes?.dark
-        ) {
-          darkMode = true;
-        }
+      if (selectedTheme && darkMode && !selectedTheme.modes) {
+        darkMode = false;
       }
 
       themeSettings = { ...this.hass.selectedThemeSettings, dark: darkMode };
