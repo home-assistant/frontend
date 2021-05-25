@@ -94,7 +94,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
   }
 
   openZonesEditor() {
-    navigate(this, "/config/zone");
+    navigate("/config/zone");
   }
 
   fitMap() {

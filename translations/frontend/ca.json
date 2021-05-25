@@ -3955,7 +3955,7 @@
                     "header": "Mòduls d'autenticació amb múltiples passos"
                 },
                 "number_format": {
-                    "description": "Trieu el format dels números.",
+                    "description": "Tria el format dels números.",
                     "dropdown_label": "Format dels números",
                     "formats": {
                         "comma_decimal": "1,234,567.89",
@@ -4007,6 +4007,17 @@
                     "link_promo": "Crea temes personalitzats",
                     "primary_color": "Color primari",
                     "reset": "Restablir"
+                },
+                "time_format": {
+                    "description": "Tria el format de data i hora.",
+                    "dropdown_label": "Format de data i hora",
+                    "formats": {
+                        "12": "12 hores (AM/PM)",
+                        "24": "24 hores",
+                        "language": "Automàtic (utilitza la configuració d'idioma)",
+                        "system": "Utilitza la configuració regional del sistema"
+                    },
+                    "header": "Format de data i hora"
                 },
                 "vibrate": {
                     "description": "Activa o desactiva la vibració en d'aquest dispositiu.",

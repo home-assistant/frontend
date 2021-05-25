@@ -46,11 +46,8 @@ interface BlueprintMetaDataPath extends BlueprintMetaData {
 }
 
 const createNewFunctions = {
-  automation: (
-    context: HaBlueprintOverview,
-    blueprintMeta: BlueprintMetaDataPath
-  ) => {
-    showAutomationEditor(context, {
+  automation: (blueprintMeta: BlueprintMetaDataPath) => {
+    showAutomationEditor({
       alias: blueprintMeta.name,
       use_blueprint: { path: blueprintMeta.path },
     });
@@ -183,7 +180,7 @@ class HaBlueprintOverview extends LitElement {
     super.firstUpdated(changedProps);
     if (this.route.path === "/import") {
       const url = extractSearchParam("blueprint_url");
-      navigate(this, "/config/blueprint/dashboard", true);
+      navigate("/config/blueprint/dashboard", { replace: true });
       if (url) {
         this._addBlueprint(url);
       }
@@ -280,7 +277,7 @@ class HaBlueprintOverview extends LitElement {
 
   private _createNew(ev) {
     const blueprint = ev.currentTarget.blueprint as BlueprintMetaDataPath;
-    createNewFunctions[blueprint.domain](this, blueprint);
+    createNewFunctions[blueprint.domain](blueprint);
   }
 
   private _share(ev) {

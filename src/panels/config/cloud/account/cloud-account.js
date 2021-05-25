@@ -92,7 +92,9 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 <paper-item-body
                   >[[localize('ui.panel.config.cloud.account.connection_status')]]</paper-item-body
                 >
-                <div class="status">[[cloudStatus.cloud]]</div>
+                <div class="status">
+                  [[_computeConnectionStatus(cloudStatus.cloud)]]
+                </div>
               </div>
 
               <div class="card-actions">
@@ -189,10 +191,12 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._fetchSubscriptionInfo();
   }
 
-  _computeRemoteConnected(connected) {
-    return connected
+  _computeConnectionStatus(status) {
+    return status === "connected"
       ? this.hass.localize("ui.panel.config.cloud.account.connected")
-      : this.hass.localize("ui.panel.config.cloud.account.not_connected");
+      : status === "disconnected"
+      ? this.hass.localize("ui.panel.config.cloud.account.not_connected")
+      : this.hass.localize("ui.panel.config.cloud.account.connecting");
   }
 
   async _fetchSubscriptionInfo() {

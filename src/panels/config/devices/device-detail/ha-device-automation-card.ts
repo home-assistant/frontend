@@ -72,12 +72,12 @@ export abstract class HaDeviceAutomationCard<
       return;
     }
     if (this.script) {
-      showScriptEditor(this, { sequence: [automation as DeviceAction] });
+      showScriptEditor({ sequence: [automation as DeviceAction] });
       return;
     }
     const data = {};
     data[this.type] = [automation];
-    showAutomationEditor(this, data);
+    showAutomationEditor(data);
   }
 
   static get styles(): CSSResultGroup {

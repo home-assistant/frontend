@@ -191,7 +191,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     ): [
       Map<string, ConfigEntryExtended[]>,
       ConfigEntryExtended[],
-      Map<string, ConfigEntryExtended[]>
+      Map<string, ConfigEntryExtended[]>,
+      // Counter for disabled integrations since the tuple element above will
+      // be grouped by the integration name and therefore not provide a valid count
+      number
     ] => {
       const filteredConfigEnties = this._filterConfigEntries(
         configEntries,
@@ -210,6 +213,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
         groupByIntegration(filteredConfigEnties),
         ignored,
         groupByIntegration(disabled),
+        disabled.length,
       ];
     }
   );
@@ -267,6 +271,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       groupedConfigEntries,
       ignoredConfigEntries,
       disabledConfigEntries,
+      disabledCount,
     ] = this._filterGroupConfigEntries(this._configEntries, this._filter);
     const configEntriesInProgress = this._filterConfigEntriesInProgress(
       this._configEntriesInProgress,
@@ -338,11 +343,11 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
                     "ui.panel.config.integrations.search"
                   )}
                 ></search-input>
-                ${!this._showDisabled && disabledConfigEntries.size
+                ${!this._showDisabled && disabledCount
                   ? html`<div class="active-filters">
                       ${this.hass.localize(
                         "ui.panel.config.integrations.disable.disabled_integrations",
-                        { number: disabledConfigEntries.size }
+                        { number: disabledCount }
                       )}
                       <mwc-button
                         @click=${this._toggleShowDisabled}
@@ -594,7 +599,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   private async _handleAdd(localizePromise: Promise<LocalizeFunc>) {
     const domain = extractSearchParam("domain");
-    navigate(this, "/config/integrations", true);
+    navigate("/config/integrations", { replace: true });
     if (!domain) {
       return;
     }

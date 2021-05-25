@@ -306,7 +306,7 @@ export class MoreInfoDialog extends LitElement {
       idToPassThroughUrl = stateObj.attributes.id;
     }
 
-    navigate(this, `/config/${domain}/edit/${idToPassThroughUrl}`);
+    navigate(`/config/${domain}/edit/${idToPassThroughUrl}`);
     this.closeDialog();
   }
 

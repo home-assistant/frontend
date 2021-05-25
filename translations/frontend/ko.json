@@ -4008,6 +4008,17 @@
                     "primary_color": "주 색상",
                     "reset": "초기화"
                 },
+                "time_format": {
+                    "description": "시간 형식을 선택하십시오.",
+                    "dropdown_label": "시간 형식",
+                    "formats": {
+                        "12": "12시간(오전/오후)",
+                        "24": "24시간",
+                        "language": "자동 (언어 설정 사용)",
+                        "system": "시스템 로케일 사용"
+                    },
+                    "header": "시간 형식"
+                },
                 "vibrate": {
                     "description": "기기를 제어할 때 이 기기에서 진동을 활성화 또는 비활성화합니다.",
                     "header": "진동 효과"

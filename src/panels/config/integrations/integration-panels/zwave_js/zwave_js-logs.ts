@@ -118,10 +118,16 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     if (ev.target === undefined || this._logConfig === undefined) {
       return;
     }
-    if (this._logConfig.level === ev.target.selected) {
+    const selected = ev.target.selected;
+    if (this._logConfig.level === selected) {
       return;
     }
-    setZWaveJSLogLevel(this.hass!, this.configEntryId, ev.target.selected);
+    setZWaveJSLogLevel(this.hass!, this.configEntryId, selected);
+    this._logConfig.level = selected;
+    this._textarea!.value += `${this.hass.localize(
+      "ui.panel.config.zwave_js.logs.log_level_changed",
+      { level: selected.charAt(0).toUpperCase() + selected.slice(1) }
+    )}\n`;
   }
 
   static get styles(): CSSResultArray {

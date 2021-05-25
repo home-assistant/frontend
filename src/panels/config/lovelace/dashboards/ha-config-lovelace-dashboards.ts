@@ -239,8 +239,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _navigate(ev: Event) {
     ev.stopPropagation();
-    const url = `/${(ev.target as any).urlPath}`;
-    navigate(this, url);
+    navigate(`/${(ev.target as any).urlPath}`);
   }
 
   private _editDashboard(ev: CustomEvent) {

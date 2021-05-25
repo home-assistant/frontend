@@ -117,7 +117,10 @@ export class HaTab extends LitElement {
       }
 
       :host([narrow]) {
-        padding: 0 16px;
+        min-width: 0;
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
       }
     `;
   }

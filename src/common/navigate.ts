@@ -4,13 +4,17 @@ import { mainWindow } from "./dom/get_main_window";
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "location-changed": {
-      replace: boolean;
-    };
+    "location-changed": NavigateOptions;
   }
 }
 
-export const navigate = (_node: any, path: string, replace = false) => {
+export interface NavigateOptions {
+  replace?: boolean;
+}
+
+export const navigate = (path: string, options?: NavigateOptions) => {
+  const replace = options?.replace || false;
+
   if (__DEMO__) {
     if (replace) {
       mainWindow.history.replaceState(
