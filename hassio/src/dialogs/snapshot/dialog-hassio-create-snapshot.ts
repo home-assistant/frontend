@@ -48,7 +48,7 @@ class HassioCreateSnapshotDialog extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing=${this.closeDialog}
+        @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
           this._dialogParams.supervisor.localize("snapshot.create_snapshot")
