@@ -11,10 +11,10 @@ import { HassBaseEl } from "./hass-base-mixin";
 declare global {
   // for add event listener
   interface HTMLElementEventMap {
-    settheme: HASSDomEvent<Partial<HomeAssistant["selectedTheme"]>>;
+    settheme: HASSDomEvent<Partial<HomeAssistant["selectedThemeSettings"]>>;
   }
   interface HASSDomEvents {
-    settheme: Partial<HomeAssistant["selectedTheme"]>;
+    settheme: Partial<HomeAssistant["selectedThemeSettings"]>;
   }
 }
 
@@ -28,7 +28,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
         this._updateHass({
-          selectedTheme: { ...this.hass!.selectedTheme!, ...ev.detail },
+          selectedThemeSettings: {
+            ...this.hass!.selectedThemeSettings!,
+            ...ev.detail,
+          },
         });
         this._applyTheme(mql.matches);
         storeState(this.hass!);
@@ -60,41 +63,57 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       });
     }
 
-    private _applyTheme(dark: boolean) {
+    private _applyTheme(darkPreferred: boolean) {
       if (!this.hass) {
         return;
       }
       const themeName =
-        this.hass.selectedTheme?.theme ||
-        (dark && this.hass.themes.default_dark_theme
+        this.hass.selectedThemeSettings?.theme ||
+        (darkPreferred && this.hass.themes.default_dark_theme
           ? this.hass.themes.default_dark_theme!
           : this.hass.themes.default_theme);
 
-      let options: Partial<HomeAssistant["selectedTheme"]> = this.hass!
-        .selectedTheme;
+      let themeSettings: Partial<HomeAssistant["selectedThemeSettings"]> = this
+        .hass!.selectedThemeSettings;
 
-      if (themeName === "default" && options?.dark === undefined) {
-        options = {
-          ...this.hass.selectedTheme!,
-          dark,
-        };
+      let darkMode =
+        themeSettings?.dark === undefined ? darkPreferred : themeSettings?.dark;
+
+      const selectedTheme =
+        themeSettings?.theme !== undefined
+          ? this.hass.themes.themes[themeSettings.theme]
+          : undefined;
+
+      if (selectedTheme) {
+        // Override dark mode selection depending on what the theme actually provides.
+        // Leave the selection as-is if the theme supports the requested mode.
+        if (darkMode && !selectedTheme.modes?.dark) {
+          darkMode = false;
+        } else if (
+          !darkMode &&
+          !selectedTheme.modes?.light &&
+          selectedTheme.modes?.dark
+        ) {
+          darkMode = true;
+        }
       }
+
+      themeSettings = { ...this.hass.selectedThemeSettings, dark: darkMode };
 
       applyThemesOnElement(
         document.documentElement,
         this.hass.themes,
         themeName,
-        options
+        themeSettings
       );
 
-      const darkMode =
-        themeName === "default"
-          ? !!options?.dark
-          : !!(dark && this.hass.themes.default_dark_theme);
+      // Now determine value that should be stored in the local storage settings
+      darkMode =
+        darkMode || !!(darkPreferred && this.hass.themes.default_dark_theme);
 
       if (darkMode !== this.hass.themes.darkMode) {
         this._updateHass({
-          themes: { ...this.hass.themes, darkMode },
+          themes: { ...this.hass.themes!, darkMode },
         });
 
         const schemeMeta = document.querySelector("meta[name=color-scheme]");
