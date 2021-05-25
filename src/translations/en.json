@@ -1780,6 +1780,7 @@
             "integrations_introduction2": "Check the website for ",
             "integrations_link_all_features": " all available features",
             "connected": "Connected",
+            "connecting": "Connecting...",
             "not_connected": "Not Connected",
             "fetching_subscription": "Fetching subscription...",
             "tts": {
