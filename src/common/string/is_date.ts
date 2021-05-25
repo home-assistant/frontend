@@ -8,4 +8,4 @@ const regExp = new RegExp(regExpString + "$/");
 const regExpNoStringEnd = new RegExp(regExpString + "/");
 
 export const isDate = (input: string, allowCharsAfterDate = false): boolean =>
-  allowCharsAfterDate ? regExp.test(input) : regExpNoStringEnd.test(input);
+  allowCharsAfterDate ? regExpNoStringEnd.test(input) : regExp.test(input);
