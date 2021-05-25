@@ -73,7 +73,7 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
               ></hui-timestamp-display>`
             : typeof attribute === "number"
             ? formatNumber(attribute, this.hass.locale)
-            : formatAttributeValue(this.hass, attribute ?? "-")}
+            : attribute !== undefined ? formatAttributeValue(this.hass, attribute) : "-"}
           ${this._config.suffix}
         </div>
       </hui-generic-entity-row>
