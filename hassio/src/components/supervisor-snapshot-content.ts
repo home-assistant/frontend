@@ -76,19 +76,23 @@ export class SupervisorSnapshotContent extends LitElement {
 
   @property() public snapshotPassword = "";
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this.folders = _computeFolders(
-      this.snapshot
-        ? this.snapshot.folders
-        : ["homeassistant", "ssl", "share", "media", "addons/local"]
-    );
-    this.addons = _computeAddons(
-      this.snapshot ? this.snapshot.addons : this.supervisor?.supervisor.addons
-    );
-    this.snapshotType = this.snapshot?.type || "full";
-    this.snapshotName = this.snapshot?.name || "";
-    this.snapshotHasPassword = this.snapshot?.protected || false;
+  public willUpdate(changedProps) {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      this.folders = _computeFolders(
+        this.snapshot
+          ? this.snapshot.folders
+          : ["homeassistant", "ssl", "share", "media", "addons/local"]
+      );
+      this.addons = _computeAddons(
+        this.snapshot
+          ? this.snapshot.addons
+          : this.supervisor?.supervisor.addons
+      );
+      this.snapshotType = this.snapshot?.type || "full";
+      this.snapshotName = this.snapshot?.name || "";
+      this.snapshotHasPassword = this.snapshot?.protected || false;
+    }
   }
 
   protected render(): TemplateResult {
@@ -172,7 +176,7 @@ export class SupervisorSnapshotContent extends LitElement {
                       this._toggleSection("folders", this.folders!)}
                   >
                     <ha-checkbox
-                      ?indeterminate=${this._sectionIndeterminate(this.folders)}
+                      .indeterminate=${this._sectionIndeterminate(this.folders)}
                       .checked=${this._sectionCheked(this.folders)}
                     >
                     </ha-checkbox>
@@ -203,7 +207,7 @@ export class SupervisorSnapshotContent extends LitElement {
                     @click=${() => this._toggleSection("addons", this.addons!)}
                   >
                     <ha-checkbox
-                      ?indeterminate=${this._sectionIndeterminate(this.addons)}
+                      .indeterminate=${this._sectionIndeterminate(this.addons)}
                       .checked=${this._sectionCheked(this.addons)}
                     >
                     </ha-checkbox>
