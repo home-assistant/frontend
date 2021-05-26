@@ -83,12 +83,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         .entities td {
           padding: 4px;
           min-width: 200px;
-          word-break: break-all;
+          word-break: break-word;
         }
         .entities ha-svg-icon {
           --mdc-icon-size: 20px;
           padding: 4px;
           cursor: pointer;
+          flex-shrink: 0;
+          margin-right: 8px;
         }
         .entities td:nth-child(1) {
           min-width: 300px;
@@ -107,9 +109,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           display: flex;
           flex-direction: column;
         }
-
-        .entities .friendly_name {
-          word-break: break-word;
+        .entities .id-name-row {
+          display: flex;
+          align-items: center;
         }
 
         :host([narrow]) .state-wrapper {
@@ -221,7 +223,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <tr>
               <td>
                 <div class="id-name-container">
-                  <div>
+                  <div class="id-name-row">
                     <ha-svg-icon
                       on-click="copyEntity"
                       alt="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
@@ -232,14 +234,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                       >[[entity.entity_id]]</a
                     >
                   </div>
-                  <div>
+                  <div class="id-name-row">
                     <ha-svg-icon
                       on-click="entityMoreInfo"
                       alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                       title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                       path="[[informationOutlineIcon()]]"
                     ></ha-svg-icon>
-                    <span class="secondary friendly_name">
+                    <span class="secondary">
                       [[entity.attributes.friendly_name]]
                     </span>
                   </div>
