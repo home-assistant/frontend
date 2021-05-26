@@ -1,4 +1,0 @@
---require test-mocha/testconf.js
---recursive
---timeout 10000
-test-mocha/**/*.ts

@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import { assert } from "chai";
 
 import { getViewEntities } from "../../../src/common/entity/get_view_entities";
 
