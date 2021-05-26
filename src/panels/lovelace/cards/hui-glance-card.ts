@@ -256,10 +256,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         tabindex=${ifDefined(
           hasAction(entityConf.tap_action) ? "0" : undefined
         )}
-        .title=${name}
       >
         ${this._config!.show_name
-          ? html` <div class="name">${name}</div> `
+          ? html` <div class="name" .title=${name}>${name}</div> `
           : ""}
         ${this._config!.show_icon
           ? html`
