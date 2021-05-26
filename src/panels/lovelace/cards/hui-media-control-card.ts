@@ -325,12 +325,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   protected firstUpdated(): void {
-    this._measureCard();
     this._attachObserver();
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._measureCard();
+    }
 
     if (
       !this._config ||
@@ -351,6 +354,35 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       this._backgroundColor = undefined;
       return;
     }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    const oldImage =
+      oldHass?.states[this._config.entity]?.attributes.entity_picture_local ||
+      oldHass?.states[this._config.entity]?.attributes.entity_picture;
+
+    if (!this._image) {
+      this._foregroundColor = undefined;
+      this._backgroundColor = undefined;
+      return;
+    }
+
+    if (this._image !== oldImage) {
+      this._setColors();
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this._stateObj ||
+      (!changedProps.has("_config") && !changedProps.has("hass"))
+    ) {
+      return;
+    }
+
+    const stateObj = this._stateObj;
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
@@ -383,20 +415,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     ) {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
-    }
-
-    const oldImage =
-      oldHass?.states[this._config.entity]?.attributes.entity_picture_local ||
-      oldHass?.states[this._config.entity]?.attributes.entity_picture;
-
-    if (!this._image) {
-      this._foregroundColor = undefined;
-      this._backgroundColor = undefined;
-      return;
-    }
-
-    if (this._image !== oldImage) {
-      this._setColors();
     }
   }
 
