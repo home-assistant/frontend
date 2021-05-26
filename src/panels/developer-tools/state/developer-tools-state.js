@@ -10,7 +10,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { safeDump, safeLoad } from "js-yaml";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
-import { fuzzySequentialMatch } from "../../../common/string/filter/sequence-matching";
+import { isPatternInWord } from "../../../common/string/filter/filter";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
@@ -395,18 +395,33 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
+    const _entityFilterLength = _entityFilter.length;
+    const _entityFilterLow = _entityFilter.toLowerCase();
+
     return Object.keys(hass.states)
       .map((key) => hass.states[key])
       .filter((value) => {
-        // Prepare words (entity ID + friendly name) for the fuzzy search to check against the filter
-        const words = [value.entity_id];
-        if (value.attributes.friendly_name !== undefined) {
-          words.push(value.attributes.friendly_name);
-        }
-
         if (
           _entityFilter &&
-          fuzzySequentialMatch(_entityFilter, { strings: words }) === undefined
+          !isPatternInWord(
+            _entityFilterLow,
+            0,
+            _entityFilterLength,
+            value.entity_id.toLowerCase(),
+            0,
+            value.entity_id.length,
+            true
+          ) &&
+          value.attributes.friendly_name !== undefined &&
+          !isPatternInWord(
+            _entityFilterLow,
+            0,
+            _entityFilterLength,
+            value.attributes.friendly_name.toLowerCase(),
+            0,
+            value.attributes.friendly_name.length,
+            true
+          )
         ) {
           return false;
         }
