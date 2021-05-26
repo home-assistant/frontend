@@ -194,7 +194,10 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
           invertOnOff,
         ]);
       }
-      datasets.push({ data: dataRow, entity_id: stateInfo.entity_id });
+      datasets.push({
+        data: dataRow,
+        entity_id: stateInfo.entity_id,
+      });
       labels.push(entityDisplay);
     });
 
@@ -234,6 +237,9 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
                   fontStyle: "bold",
                 },
               },
+              categoryPercentage: undefined,
+              barPercentage: undefined,
+              time: { format: undefined },
             },
           ],
           yAxes: [
@@ -242,9 +248,16 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
                 yaxe.maxWidth = yaxe.chart.width * 0.18;
               },
               position: this._computeRTL ? "right" : "left",
+              categoryPercentage: undefined,
+              barPercentage: undefined,
+              time: { format: undefined },
             },
           ],
         },
+      },
+      datasets: {
+        categoryPercentage: 0.8,
+        barPercentage: 0.9,
       },
       data: {
         labels: labels,
