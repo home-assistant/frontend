@@ -4,6 +4,7 @@ import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { slugify } from "../../../../src/common/string/slugify";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-button-menu";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
@@ -287,10 +288,9 @@ class HassioSnapshotDialog
       }
     }
 
-    const name = this._computeName.replace(/[^a-z0-9]+/gi, "_");
     const a = document.createElement("a");
     a.href = signedPath.path;
-    a.download = `Hass_io_${name}.tar`;
+    a.download = `home_assistant_snapshot_${slugify(this._computeName)}.tar`;
     this.shadowRoot!.appendChild(a);
     a.click();
     this.shadowRoot!.removeChild(a);
