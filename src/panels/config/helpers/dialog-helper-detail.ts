@@ -68,7 +68,7 @@ export class DialogHelperDetail extends LitElement {
     return html`
       <ha-dialog
         .open=${this._opened}
-        @closing=${this.closeDialog}
+        @closed=${this.closeDialog}
         class=${classMap({ "button-left": !this._platform })}
         scrimClickAction
         escapeKeyAction

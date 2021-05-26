@@ -63,7 +63,8 @@ class HassioSnapshotDialog
     return html`
       <ha-dialog
         open
-        @closing=${this.closeDialog}
+        scrimClickAction
+        @closed=${this.closeDialog}
         .heading=${createCloseHeading(this.hass, this._computeName)}
       >
         ${this._restoringSnapshot
@@ -88,7 +89,7 @@ class HassioSnapshotDialog
           fixed
           slot="primaryAction"
           @action=${this._handleMenuAction}
-          @closing=${(ev: Event) => ev.stopPropagation()}
+          @closed=${(ev: Event) => ev.stopPropagation()}
         >
           <mwc-icon-button slot="trigger" alt="menu">
             <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>

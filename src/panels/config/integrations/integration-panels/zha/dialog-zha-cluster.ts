@@ -61,7 +61,7 @@ class DialogZHACluster extends LitElement {
       <ha-dialog
         open
         hideActions
-        @closing="${this._close}"
+        @closed="${this._close}"
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize("ui.panel.config.zha.clusters.header")
