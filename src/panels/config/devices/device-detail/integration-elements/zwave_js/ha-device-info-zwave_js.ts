@@ -1,23 +1,20 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
-  getIdentifiersFromDevice,
   fetchNodeStatus,
+  getIdentifiersFromDevice,
+  nodeStatus,
   ZWaveJSNode,
   ZWaveJSNodeIdentifiers,
-  nodeStatus,
 } from "../../../../../../data/zwave_js";
-
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 
@@ -27,13 +24,13 @@ export class HaDeviceInfoZWaveJS extends LitElement {
 
   @property() public device!: DeviceRegistryEntry;
 
-  @internalProperty() private _entryId?: string;
+  @state() private _entryId?: string;
 
-  @internalProperty() private _nodeId?: number;
+  @state() private _nodeId?: number;
 
-  @internalProperty() private _homeId?: string;
+  @state() private _homeId?: string;
 
-  @internalProperty() private _node?: ZWaveJSNode;
+  @state() private _node?: ZWaveJSNode;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
@@ -95,7 +92,7 @@ export class HaDeviceInfoZWaveJS extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

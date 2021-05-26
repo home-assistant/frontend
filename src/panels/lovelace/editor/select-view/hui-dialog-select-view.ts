@@ -1,13 +1,7 @@
 import "@polymer/paper-item/paper-item";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/dialog/ha-paper-dialog";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-paper-dropdown-menu";
@@ -17,7 +11,6 @@ import {
   LovelaceConfig,
   LovelaceDashboard,
 } from "../../../../data/lovelace";
-import { fireEvent } from "../../../../common/dom/fire_event";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import "../../components/hui-views-list";
@@ -27,13 +20,13 @@ import type { SelectViewDialogParams } from "./show-select-view-dialog";
 export class HuiDialogSelectView extends LitElement {
   public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: SelectViewDialogParams;
+  @state() private _params?: SelectViewDialogParams;
 
-  @internalProperty() private _dashboards: LovelaceDashboard[] = [];
+  @state() private _dashboards: LovelaceDashboard[] = [];
 
-  @internalProperty() private _urlPath?: string | null;
+  @state() private _urlPath?: string | null;
 
-  @internalProperty() private _config?: LovelaceConfig;
+  @state() private _config?: LovelaceConfig;
 
   public showDialog(params: SelectViewDialogParams): void {
     this._config = params.lovelaceConfig;
@@ -138,7 +131,7 @@ export class HuiDialogSelectView extends LitElement {
     this.closeDialog();
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

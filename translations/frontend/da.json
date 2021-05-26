@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Der opstod en ukendt fejl",
+            "error_addon_no_ingress": "Tilføjelsesprogrammet understøtter ikke ingress",
             "error_addon_not_found": "Tilføjelsesprogrammet blev ikke fundet",
             "faq_link": "Ofte stillede spørgsmål om Home Assistant",
             "not_supported": "Denne omdirigering understøttes ikke af din Home Assistant installation. Kontroller {link} for de understøttede omdirigeringer og den version, de blev introduceret i."
@@ -383,6 +384,7 @@
             "create": "Opret",
             "create_blocked_not_running": "Det er ikke muligt at oprette et snapshot lige nu, fordi systemet er i tilstanden {state}.",
             "create_snapshot": "Opret snapshot",
+            "created": "Oprettet",
             "description": "Snapshots giver dig mulighed for nemt at sikkerhedskopiere og gendanne alle data fra dit instans af Home Assistant.",
             "enter_password": "Venligst indtast et kodeord.",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Få stabile opdateringer til Home Assistant, Supervisor og værtsmaskinen",
                 "ram_usage": "Supervisor RAM forbrug",
                 "reload_supervisor": "Genindlæs Supervisor",
+                "search": "Søg",
                 "share_diagnostics": "Del diagnostik",
                 "share_diagnostics_description": "Del oplysninger om nedbrud og diagnosticeringsinformationer.",
                 "share_diagonstics_description": "Ønsker du automatisk at dele rapporter og fejlfindingsoplysninger når supervisoren oplever uventede fejl? {line_break} Dette vil lade os løse problemerne, informationerne er kun tilgængelige for Home Assistant Core teamet og vil ikke blive delt med andre. {line_break} Dataene indeholder ikke private/følsomme informationer og du kan slå det fra i indstillingerne til hver en tid.",
@@ -473,6 +476,7 @@
                 "unhealthy_title": "Din installation er usund",
                 "unsupported_description": "Nedenfor er en liste over problemer, der er fundet med din installation. Klik på linkene for at lære, hvordan du kan løse problemerne.",
                 "unsupported_reason": {
+                    "apparmor": "AppArmor er ikke aktiveret på værten",
                     "container": "Containere, der erfaringsmæssigt giver problemer",
                     "content-trust": "Validering af indholds-tillid er deaktiveret",
                     "dbus": "DBUS",
@@ -560,8 +564,11 @@
             },
             "light": {
                 "brightness": "Lysstyrke",
+                "cold_white_value": "kold hvid lysstyrke",
+                "color_brightness": "Farvetemperatur",
                 "color_temperature": "Farvetemperatur",
                 "effect": "Effekt",
+                "warm_white_value": "Varm hvid lysstyrke",
                 "white_value": "Hvidværdi"
             },
             "lock": {
@@ -840,6 +847,14 @@
                 "label": "Billede",
                 "unsupported_format": "Ikke-understøttet format, vælg venligst et JPEG-, PNG- eller GIF-billede."
             },
+            "related-filter-menu": {
+                "filter_by_area": "Filtrer efter område",
+                "filter_by_device": "Filtrer efter enhed",
+                "filter_by_entity": "Filtrer efter entitet",
+                "filtered_by_area": "område: {area_name}",
+                "filtered_by_device": "enhed: {device_name}",
+                "filtered_by_entity": "entitet: {entity_name}"
+            },
             "related-items": {
                 "area": "Område",
                 "automation": "En del af følgende automatiseringer",
@@ -877,6 +892,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Dokumentation for integration",
                 "required": "Dette felt er påkrævet",
                 "service_data": "Service data",
                 "target": "Mål",
@@ -1117,7 +1133,7 @@
                         "min_max": "Genindlæs min / max entiteter",
                         "mqtt": "Genindlæs manuelt konfigurerede MQTT-entiteter",
                         "person": "Genindlæs personer",
-                        "ping": "Genindlæs ping sensorentiteter",
+                        "ping": "Genindlæs ping sensor entiteter",
                         "reload": "Genindlæs {domain}",
                         "rest": "Genindlæs REST entiteter og REST notifikationstjenester",
                         "rpi_gpio": "Genindlæs Raspberry Pi GPIO entiteter",
@@ -1182,6 +1198,24 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Skift enhedsnavn"
                 }
+            },
+            "zha_reconfigure_device": {
+                "attribute": "Attribut",
+                "battery_device_warning": "Du er nødt til at tænde for batteridrevne enheder før du stater konfigurationen. Læs mere i manualen til din enhed for at få mere information",
+                "bind_header": "Binding",
+                "button_hide": "Skjul detaljer",
+                "button_show": "Vis detaljer",
+                "cluster_header": "Klynge",
+                "configuration_complete": "Konfiguration af enheden er færdig",
+                "configuration_failed": "konfuguration af enheden fejlede.  Yderligere information kam findes i logfilerne  ",
+                "configuring_alt": "Konfigurerer",
+                "heading": "Omkonfigurering af enhed",
+                "in_progress": "Enheden rekonfigureres. Dette kan tage noget tid",
+                "introduction": "Konfigurer en enhed på dit Zigbee netværk. Brug denne mulighed hvos din enhed ikke virker korrekt",
+                "min_max_change": "Min/maks/ændre",
+                "reporting_header": "Rapportering",
+                "run_in_background": "Du kan lukke denne dialogboks.Konfigurationen fortsætter i baggrunden",
+                "start_reconfiguration": "Start konfiguration"
             }
         },
         "duration": {
@@ -1202,6 +1236,14 @@
                 "key_wrong_type": "Den angivne værdi for \"{key}\" understøttes ikke af den visuelle editor. Vi understøtter ( {type_correct} ) men modtog ( {type_wrong} ).",
                 "no_template_editor_support": "Skabeloner understøttes ikke i visuel editor",
                 "no_type_provided": "Der er ikke angivet nogen type."
+            },
+            "supervisor": {
+                "ask": "Anmod om hjælp",
+                "observer": "Kontroller observatøren",
+                "reboot": "Prøv at genstarte værten",
+                "system_health": "Kontroller systemets sundhed",
+                "title": "Supervisor panelet kunne ikke indlæses!",
+                "wait": "Hvis du lige er startet, skal du sørge for, at du har givet Supervisor tid til at starte."
             }
         },
         "login-form": {
@@ -1219,10 +1261,12 @@
         "notification_toast": {
             "connection_lost": "Forbindelse afbrudt. Opretter forbindelse igen...",
             "dismiss": "Afvis",
+            "integration_starting": "Starter {integration}, ikke alt vil være tilgængeligt, før det er færdigt.",
             "service_call_failed": "Kunne ikke kalde tjenesten {service}.",
             "started": "Home Assistant er startet!",
             "starting": "Home Assistant starter. Nogle funktioner er måske ikke tilgængelige før opstarten er færdig.",
-            "triggered": "Udløste {name}"
+            "triggered": "Udløste {name}",
+            "wrapping_up_startup": "Færdigører opstarten af Home Assistant. Nogle funktioner er måske ikke tilgængelige før opstarten er færdig."
         },
         "panel": {
             "config": {
@@ -1234,7 +1278,8 @@
                     "caption": "Områder",
                     "data_table": {
                         "area": "Område",
-                        "devices": "Enheder"
+                        "devices": "Enheder",
+                        "entities": "Entiteter"
                     },
                     "delete": {
                         "confirmation_text": "Alle enheder i dette område vil blive utildelte.",
@@ -1246,8 +1291,10 @@
                         "create": "Opret",
                         "default_name": "Nyt område",
                         "delete": "Slet",
+                        "linked_entities_caption": "Entiteter",
                         "name": "Navn",
                         "name_required": "Navn er påkrævet",
+                        "no_linked_entities": "Der er ingen entiteter forbundet til dette område",
                         "unknown_error": "Ukendt fejl",
                         "update": "Opdater"
                     },
@@ -1586,7 +1633,7 @@
                         "delete_automation": "Slet automatisering",
                         "delete_confirm": "Er du sikker på, at du vil slette denne automatisering?",
                         "dev_automation": "Fejlfindingsautomatisering",
-                        "dev_only_editable": "Kun automatiseringer defineret i automations.yaml kan debugges.",
+                        "dev_only_editable": "Kun automatiseringer, der har fået tildelt et unikt ID, kan fejlsøges.",
                         "duplicate": "Kopier",
                         "duplicate_automation": "Kopier automatisering",
                         "edit_automation": "Rediger automatisering",
@@ -1677,7 +1724,7 @@
                         "google": {
                             "config_documentation": "Konfigurationsdokumentation",
                             "devices_pin": "Pinkode til sikkerhedsenheder",
-                            "enable_ha_skill": "Aktivér Home Assistant-skill til Google Assistant",
+                            "enable_ha_skill": "Aktivér \"Home Assistant Cloud skill for Google Assistant\"",
                             "enable_state_reporting": "Aktivér tilstandsrapportering",
                             "enter_pin_error": "Pin kunne ikke gemmes:",
                             "enter_pin_hint": "Indtast en pinkode for at bruge sikkerhedsenheder",
@@ -1685,6 +1732,8 @@
                             "info": "Med Google Assistant-integrationen til Home Assistant Cloud kan du styre alle dine Home Assistant-enheder via enhver Google Assistant-aktiveret enhed.",
                             "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsændringer af eksponerede entiteter til Google. Dette giver dig mulighed for altid at se de seneste tilstande i Google-appen.",
                             "manage_entities": "Administrer entiteter",
+                            "not_configured_text": "Inden du kan bruge Google Assistant, skal du aktivere \"Home Assistant Cloud skill for Google Assistant\" i Google Home-appen.",
+                            "not_configured_title": "Google Assistent er ikke aktiveret",
                             "security_devices": "Sikkerhedsenheder",
                             "sync_entities": "Synkroniser entiteter til Google",
                             "sync_entities_404_message": "Kunne ikke synkronisere dine entiteter til Google. Sig til Google \"Hey Google, synkronisér mine enheder\" for at synkronisere dine entiteter.",
@@ -1700,10 +1749,16 @@
                         "remote": {
                             "access_is_being_prepared": "Fjernadgang forberedes. Vi giver dig besked, når den er klar.",
                             "certificate_info": "Certifikatoplysninger",
+                            "connected": "Tilsluttet",
                             "info": "Home Assistant Cloud leverer en sikker fjernforbindelse til din instans, når du er væk fra hjemmet.",
                             "instance_is_available": "Din instans er tilgængelig på",
                             "instance_will_be_available": "Din instans vil være tilgængelig på",
                             "link_learn_how_it_works": "Lær hvordan det fungerer",
+                            "not_connected": "Ikke tilsluttet",
+                            "remote_enabled": {
+                                "caption": "Forbind automatisk",
+                                "description": "Slå denne indstilling til for at sikre din Home Assistant applikation er tilgængelig udefra "
+                            },
                             "title": "Fjernadgang"
                         },
                         "sign_out": "Log ud",
@@ -1847,6 +1902,36 @@
                     "description": "Ændre Home Assistants generelle konfiguration",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "documentation": "Før du aktiverer dette, skal du sørge for at besøge dokumentationssiden {link} for at forstå, hvilke data du sender, og hvordan de opbevares og anvendes.",
+                                "header": "Analytics",
+                                "instance_id": "Instans-id: {huuid}",
+                                "introduction": "Del dine installationsoplysninger med os for at gøre Home Assistant bedre og hjælpe os med at overbevise producenter om at tilføje lokale funktioner, der fokuserer på beskyttelse af personlige oplysninger.",
+                                "learn_more": "Sådan behandler vi dine data",
+                                "needs_base": "Du skal aktivere basisanalyser, for at denne indstilling er tilgængelig",
+                                "preference": {
+                                    "base": {
+                                        "description": "Instans-id, version og installationstype.",
+                                        "title": "Basisanalyser"
+                                    },
+                                    "diagnostics": {
+                                        "description": "Del fejlrapporter, hvis der opstår uventede fejl.",
+                                        "title": "Diagnostik"
+                                    },
+                                    "statistics": {
+                                        "description": "Samlet antal anvendte enheder, brugere og andre data.",
+                                        "title": "Brugsstatistikker"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "Navne, versioner og funktioner.",
+                                        "title": "Anvendte integrationer og tilføjelsesprogrammer"
+                                    },
+                                    "usage": {
+                                        "description": "Navne og versionsoplysninger.",
+                                        "title": "Anvendte integrationer"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Editor er deaktiveret, fordi config er gemt i 'configuration.yaml'.",
                                 "elevation": "Højde",
@@ -2034,6 +2119,9 @@
                     "filtering_by": "Filtrering efter",
                     "show": "Vis"
                 },
+                "hassio": {
+                    "button": "Konfigurer"
+                },
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
                     "caption": "Hjælpere",
@@ -2081,6 +2169,7 @@
                     "license": "Udgivet under Apache 2.0-licensen",
                     "path_configuration": "Sti til 'configuration.yaml': {path}",
                     "server": "server",
+                    "setup_time": "Opsætningstid",
                     "source": "Kilde:",
                     "system_health_error": "System Health-komponenten er ikke indlæst. Føj 'system_health:' til 'config.yaml'",
                     "system_health": {
@@ -2099,8 +2188,11 @@
                     "caption": "Integrationer",
                     "config_entry": {
                         "area": "I {area}",
+                        "check_the_logs": "Kontroller logfilerne",
+                        "configure": "Konfigurer",
                         "delete": "Slet",
                         "delete_confirm": "Er du sikker på, at du vil fjerne denne integration?",
+                        "depends_on_cloud": "Afhængig af Cloud tjenester",
                         "device_unavailable": "Enheden er utilgængelig",
                         "devices": "{count} {count, plural,\n  one {enhed}\n  other {enheder}\n}",
                         "disable_restart_confirm": "Genstart Home Assistant for at fuldføre deaktivering af denne integration",
@@ -2120,15 +2212,26 @@
                         "entity_unavailable": "Entiteten er utilgængelig",
                         "firmware": "Firmware: {version}",
                         "hub": "Forbundet via",
+                        "logs": "logfiler",
                         "manuf": "af {manufacturer}",
                         "no_area": "Intet område",
+                        "not_loaded": "Ikke indlæst",
                         "options": "Indstillinger",
+                        "provided_by_custom_integration": "Leveret af en brugerdefineret integration",
                         "reload": "Genindlæs",
                         "reload_confirm": "Integrationen blev genindlæst",
                         "reload_restart_confirm": "Genstart Home Assistant for at fuldføre genindlæsningen af integrationen",
                         "rename": "Omdøb",
                         "restart_confirm": "Genstart Home Assistant for at fuldføre fjernelsen af denne integration",
                         "services": "{count} {count, plural,\n  one {tjeneste}\n  other {tjenester}\n}",
+                        "state": {
+                            "failed_unload": "Det lykkedes ikke at fjerne",
+                            "loaded": "Indlæst",
+                            "migration_error": "Migrationsfejl",
+                            "not_loaded": "Ikke indlæst",
+                            "setup_error": "Konfigurationen mislykkedes",
+                            "setup_retry": "Forsøger konfigurationen igen"
+                        },
                         "system_options": "Systemindstillinger",
                         "unnamed_entry": "Unavngivet post"
                     },
@@ -2146,7 +2249,9 @@
                         },
                         "finish": "Afslut",
                         "loading_first_time": "Vent mens integrationen installeres",
+                        "next": "Næste",
                         "not_all_required_fields": "Ikke alle påkrævede felter er udfyldt.",
+                        "not_loaded": "Integrationen kunne ikke indlæses, prøv at genstarte Home Assistant.",
                         "pick_flow_step": {
                             "new_flow": "Nej, konfigurer en anden forekomst af {integration}",
                             "title": "Vi opdagede disse, vil du oprette dem?"
@@ -2195,8 +2300,17 @@
                 "logs": {
                     "caption": "Logs",
                     "clear": "Ryd",
+                    "custom_integration": "brugerdefineret integration",
                     "description": "Se logs for Home Assistant",
                     "details": "Logdetaljer ({level})",
+                    "error_from_custom_integration": "Denne fejl stammer fra en brugerdefineret integration.",
+                    "level": {
+                        "critical": "KRITISK",
+                        "debug": "DEBUG",
+                        "error": "FEJL",
+                        "info": "INFO",
+                        "warning": "ADVARSEL"
+                    },
                     "load_full_log": "Indlæs fuld Home Assistant-log",
                     "loading_log": "Indlæser fejllog...",
                     "multiple_messages": "beskeden forekom først kl. {time} og ses {counter} gange",
@@ -2561,7 +2675,7 @@
                             "min_max": "Genindlæs min / max entiteter",
                             "mqtt": "Genindlæs manuelt konfigurerede MQTT-entiteter",
                             "person": "Genindlæs personer",
-                            "ping": "Genindlæs ping sensorentiteter",
+                            "ping": "Genindlæs ping sensor entiteter",
                             "reload": "Genindlæs {domain}",
                             "rest": "Genindlæs REST entiteter og REST notifikationstjenester",
                             "rpi_gpio": "Genindlæs Raspberry Pi GPIO entiteter",
@@ -2706,6 +2820,15 @@
                         "manufacturer_code_override": "Brugerdefineret producentkode",
                         "value": "Værdi"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Genveje",
+                        "update_button": "Opdater konfiguration",
+                        "zha_options": {
+                            "default_light_transition": "Standard overgangstid for lys (sekunder)",
+                            "enable_identify_on_join": "Aktiver identifikation, når enheder tilsluttes netværket",
+                            "title": "Globale indstillinger"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "Konfiguration fuldført",
                         "CONFIGURED_status_text": "Initialiserer",
@@ -2830,7 +2953,13 @@
                         "node_status": "Nodestatus",
                         "zwave_info": "Z-Wave-info"
                     },
+                    "logs": {
+                        "log_level": "Log niveau",
+                        "subscribed_to_logs": "Abboner på Z-Wave JS Log beskeder",
+                        "title": "Z-Wave JS-logfiler"
+                    },
                     "navigation": {
+                        "logs": "Logfiler",
                         "network": "Netværk"
                     },
                     "network_status": {
@@ -2845,6 +2974,9 @@
                         "header": "Konfiguration af Z-Wave-enhed",
                         "introduction": "Administrer og juster enheds (node) specifikke konfigurationsparametre for den valgte enhed",
                         "parameter_is_read_only": "Denne parameter er skrivebeskyttet.",
+                        "set_param_accepted": "Parameteren er blevet opdateret.",
+                        "set_param_error": "Der opstod en fejl",
+                        "set_param_queued": "Parameterændringen er sat i kø, og vil blive udført når enheden vågner",
                         "zwave_js_device_database": "Z-Wave JS-enhedsdatabasen"
                     },
                     "node_status": {
@@ -2853,6 +2985,16 @@
                         "awake": "Vågen",
                         "dead": "Død",
                         "unknown": "Ukendt"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Du skal vække batteridrevne enheder, inden du starter forespørgslen. Se enhedens manual for instruktioner om, hvordan du vækker enheden.",
+                        "in_progress": "Enheden forespørges. Dette kan tage noget tid.",
+                        "interview_complete": "Enhedsinformationsudveksling er færdig",
+                        "interview_failed": "Forespørgsel af enheden er mislykkedes. Der kan være yderligere oplysninger i logfilerne.",
+                        "introduction": "Gentag forespørgsel af en enhed på dit Z-Wave-netværk. Brug denne funktion, hvis enheden har manglende eller forkert funktionalitet.",
+                        "run_in_background": "Du kan lukke denne dialog og forespørgslen fortsætter i baggrunden.",
+                        "start_reinterview": "Gentag forespørgsel",
+                        "title": "Gentag forespørgsel af en Z-Wave enhed"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Annuller udelukkelse",
@@ -3004,7 +3146,7 @@
                         "attributes": "Egenskaber",
                         "copy_id": "Kopier ID til Udklipsholder",
                         "current_entities": "Aktuelle entiteter",
-                        "description1": "Sæt repræsentationen af en enhed i Home Assistant.",
+                        "description1": "Tilpas tilstanden for en enhed i Home Assistant.",
                         "description2": "Dette vil ikke kommunikere med den faktiske enhed.",
                         "entity": "Entitet",
                         "filter_attributes": "Filtrer egenskaber",
@@ -3315,7 +3457,7 @@
                             "name": "Billedentitet"
                         },
                         "picture-glance": {
-                            "description": "Billedblik-kortet viser et billede og den tilsvarende entitetstilstand som et ikon. Entiteterne på højre side tillader at skifte handlinger, andre viser dialogboksen for mere information.",
+                            "description": "Billedblik-kortet viser et billede og den tilsvarende tilstand for en entitet som et ikon. Entiteterne på højre side tillader at skifte handlinger, andre viser dialogboksen for mere information.",
                             "name": "Billedblik",
                             "state_entity": "Entitet status"
                         },
@@ -3693,6 +3835,10 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Næste",
+                    "intro": "Del analysedata fra din installation. Delte data vil være offentligt tilgængelige på {link}"
+                },
                 "core-config": {
                     "button_detect": "Detekter",
                     "finish": "Næste",
@@ -3702,12 +3848,14 @@
                     "location_name": "Navn på din Home Assistant-installation",
                     "location_name_default": "Hjem"
                 },
+                "finish": "Afslut",
                 "integration": {
                     "finish": "Afslut",
                     "intro": "Enheder og tjenester er repræsenteret i Home Assistant som integrationer. Du kan konfigurere dem nu eller gøre det senere fra konfigurationsskærmen.",
                     "more_integrations": "Mere"
                 },
                 "intro": "Er du klar til at vække dit hjem til live, genvinde dit privatliv og blive medlem af et verdensomspændende fællesskab af tinkerers?",
+                "next": "Næste",
                 "restore": {
                     "description": "Alternativt kan du gendanne fra et tidligere snapshot.",
                     "hide_log": "Skjul fuld log",

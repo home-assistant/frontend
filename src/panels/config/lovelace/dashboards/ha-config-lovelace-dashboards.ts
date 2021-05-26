@@ -1,14 +1,7 @@
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { navigate } from "../../../../common/navigate";
 import { compare } from "../../../../common/string/compare";
@@ -46,7 +39,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _dashboards: LovelaceDashboard[] = [];
+  @state() private _dashboards: LovelaceDashboard[] = [];
 
   private _columns = memoize(
     (narrow: boolean, _language, dashboards): DataTableColumnContainer => {
@@ -246,8 +239,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
 
   private _navigate(ev: Event) {
     ev.stopPropagation();
-    const url = `/${(ev.target as any).urlPath}`;
-    navigate(this, url);
+    navigate(`/${(ev.target as any).urlPath}`);
   }
 
   private _editDashboard(ev: CustomEvent) {

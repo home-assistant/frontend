@@ -1,17 +1,15 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
-import { ripple } from "@material/mwc-ripple/ripple-directive";
-import "./ha-icon";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   TemplateResult,
   unsafeCSS,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
+import "./ha-icon";
 
 declare global {
   // for fire event
@@ -34,7 +32,7 @@ export class HaChip extends LitElement {
               <slot name="icon"></slot>
             </div>`
           : null}
-        <div class="mdc-chip__ripple" .ripple="${ripple()}"></div>
+        <div class="mdc-chip__ripple"></div>
         <span role="gridcell">
           <span role="button" tabindex="0" class="mdc-chip__primary-action">
             <span class="mdc-chip__text"><slot></slot></span>
@@ -44,7 +42,7 @@ export class HaChip extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ${unsafeCSS(chipStyles)}
       .mdc-chip {

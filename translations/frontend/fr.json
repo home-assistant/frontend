@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Une erreur inconnue s'est produite",
+            "error_addon_no_ingress": "L’add-on demandé ne prend pas en charge l’entrée",
             "error_addon_not_found": "Module complémentaire introuvable",
             "faq_link": "FAQ de My Home Assistant",
             "not_supported": "Cette redirection n'est pas prise en charge par votre instance Home Assistant. Vérifiez le {link} pour les redirections prises en charge et la version dans laquelle elles ont été introduites."
@@ -383,6 +384,7 @@
             "create": "Créer",
             "create_blocked_not_running": "La création d’un instantané n’est pas possible en ce moment car le système est en état {state}.",
             "create_snapshot": "Créer un instantané",
+            "created": "créé",
             "description": "Les instantanés vous permettent de sauvegarder et de restaurer facilement toutes les données de votre instance Home Assistant.",
             "enter_password": "Veuillez entrer un mot de passe.",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "Obtenez des mises à jour stables pour l'assistant domestique, le Superviseur et l'hôte",
                 "ram_usage": "Utilisation de la RAM du Superviseur",
                 "reload_supervisor": "Recharger le Superviseur",
+                "search": "Recherche",
                 "share_diagnostics": "Partager les diagnostics",
                 "share_diagnostics_description": "Partagez les rapports d'incident et les informations de diagnostic.",
                 "share_diagonstics_description": "Souhaitez-vous partager automatiquement les rapports d'erreur et les informations de diagnostic lorsque le Superviseur rencontre des erreurs inattendues? {line_break} Cela nous permettra de résoudre les problèmes, les informations ne sont accessibles qu'à l'équipe Home Assistant Core et ne seront pas partagées avec d'autres. {line_break} Les données n'incluent aucune information privée / sensible et vous pouvez désactiver cela dans les paramètres à tout moment.",
@@ -1258,12 +1261,12 @@
         "notification_toast": {
             "connection_lost": "Connexion perdue. Reconnexion en cours ...",
             "dismiss": "Ignorer",
-            "intergration_starting": "Démarrage de {integration}, tout ne sera pas disponible tant qu'il n'aura pas terminé",
+            "integration_starting": "Démarrage de {integration}, tout ne sera pas disponible tant qu'il n'aura pas terminé",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
             "started": "Home Assistant a démarré !",
             "starting": "Home Assistant est en cours de démarrage, tout ne sera pas disponible tant qu’il n’aura pas terminé.",
             "triggered": "{name} déclenché",
-            "wrapping_up_startup": "En terminant le démarrage, tout ne sera pas disponible tant qu'il ne sera pas terminé."
+            "wrapping_up_startup": "Finalisation du démarrage, tout ne sera pas disponible tant qu'il ne sera pas terminé."
         },
         "panel": {
             "config": {
@@ -1746,10 +1749,16 @@
                         "remote": {
                             "access_is_being_prepared": "L'accès à distance est en préparation. Nous vous informerons quand ce sera prêt.",
                             "certificate_info": "Informations sur le certificat",
+                            "connected": "Connecté",
                             "info": "Home Assistant Cloud fournit une connexion à distance sécurisée à votre instance lorsque vous n'êtes pas chez vous.",
                             "instance_is_available": "Votre instance est disponible à l'adresse",
                             "instance_will_be_available": "Votre instance sera disponible sur",
                             "link_learn_how_it_works": "Apprenez comment ça marche",
+                            "not_connected": "Non connecté",
+                            "remote_enabled": {
+                                "caption": "Se connecter automatiquement",
+                                "description": "Activez cette option pour vous assurer que votre instance de Home Assistant est toujours accessible à distance."
+                            },
                             "title": "Contrôle à distance"
                         },
                         "sign_out": "Déconnexion",
@@ -2206,7 +2215,7 @@
                         "logs": "journaux",
                         "manuf": "par {manufacturer}",
                         "no_area": "Pas de zone",
-                        "not_loaded": "Non chargé, vérifiez le {logs_link}",
+                        "not_loaded": "Non chargé",
                         "options": "Options",
                         "provided_by_custom_integration": "Fourni par une intégration personnalisée",
                         "reload": "Recharger",
@@ -2240,6 +2249,7 @@
                         },
                         "finish": "Terminer",
                         "loading_first_time": "Veuillez patienter pendant que l'intégration est en cours d'installation",
+                        "next": "Suivant",
                         "not_all_required_fields": "Tous les champs obligatoires ne sont pas renseignés.",
                         "not_loaded": "Cette intégration ne peut être chargée, essayez de redémarrer Home Assistant",
                         "pick_flow_step": {
@@ -3993,6 +4003,16 @@
                     "link_promo": "En savoir plus sur les thèmes",
                     "primary_color": "Couleur primaire",
                     "reset": "Réinitialiser"
+                },
+                "time_format": {
+                    "description": "Définir le formatage des nombres",
+                    "dropdown_label": "Format de l'heure",
+                    "formats": {
+                        "12": "12 heures (AM / PM)",
+                        "24": "24 heures",
+                        "system": "Utiliser les paramètres régionaux du système"
+                    },
+                    "header": "Format de l'heure"
                 },
                 "vibrate": {
                     "description": "Activer ou désactiver les vibrations sur cet appareil lors du contrôle des périphériques.",

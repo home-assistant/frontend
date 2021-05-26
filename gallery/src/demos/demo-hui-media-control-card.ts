@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  PropertyValues,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, query } from "lit/decorators";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
 import { createMediaPlayerEntities } from "../data/media_players";

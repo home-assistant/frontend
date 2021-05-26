@@ -1,14 +1,6 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { computeTooltip } from "../common/compute-tooltip";
@@ -22,7 +14,7 @@ import { ImageElementConfig, LovelaceElement } from "./types";
 export class HuiImageElement extends LitElement implements LovelaceElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ImageElementConfig;
+  @state() private _config?: ImageElementConfig;
 
   public setConfig(config: ImageElementConfig): void {
     if (!config) {
@@ -66,7 +58,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host(.clickable) {
         cursor: pointer;

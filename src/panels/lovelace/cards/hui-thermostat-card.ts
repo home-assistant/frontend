@@ -3,18 +3,15 @@ import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   svg,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -74,9 +71,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ThermostatCardConfig;
+  @state() private _config?: ThermostatCardConfig;
 
-  @internalProperty() private _setTemp?: number | number[];
+  @state() private _setTemp?: number | number[];
 
   @query("ha-card") private _card?: HaCard;
 
@@ -303,8 +300,24 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
 
     if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
-      this._setTemp = this._getSetTemp(stateObj);
       this._rescale_svg();
+    }
+  }
+
+  public willUpdate(changedProps: PropertyValues) {
+    if (!this.hass || !this._config || !changedProps.has("hass")) {
+      return;
+    }
+
+    const stateObj = this.hass.states[this._config.entity];
+    if (!stateObj) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
+      this._setTemp = this._getSetTemp(stateObj);
     }
   }
 
@@ -421,7 +434,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

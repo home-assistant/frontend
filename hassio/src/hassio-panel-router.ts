@@ -1,4 +1,4 @@
-import { customElement, property } from "lit-element";
+import { customElement, property } from "lit/decorators";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
 import {
   HassRouterPage,

@@ -1,15 +1,8 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import type { HomeAssistant } from "../../../../types";
-import type { LogbookEntry } from "../../../../data/logbook";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../components/trace/hat-logbook-note";
+import type { LogbookEntry } from "../../../../data/logbook";
+import type { HomeAssistant } from "../../../../types";
 import "../../../logbook/ha-logbook";
 
 @customElement("ha-automation-trace-logbook")
@@ -36,7 +29,7 @@ export class HaAutomationTraceLogbook extends LitElement {
         </div>`;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         .padded-box {

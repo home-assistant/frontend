@@ -10,14 +10,13 @@ import {
 } from "leaflet";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   LeafletModuleType,
@@ -286,12 +285,11 @@ export class HaLocationsEditor extends LitElement {
           [location.latitude, location.longitude],
           options
         )
-          .addEventListener(
-            "dragend",
-            // @ts-ignore
-            (ev: DragEndEvent) => this._updateLocation(ev)
+          .addEventListener("dragend", (ev: DragEndEvent) =>
+            this._updateLocation(ev)
           )
           .addEventListener(
+            // @ts-ignore
             "click",
             // @ts-ignore
             (ev: MouseEvent) => this._markerClicked(ev)
@@ -304,7 +302,7 @@ export class HaLocationsEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

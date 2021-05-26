@@ -1,14 +1,7 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
@@ -197,6 +190,7 @@ class MoreInfoVacuum extends LitElement {
         : ""}
 
       <ha-attributes
+        .hass=${this.hass}
         .stateObj=${this.stateObj}
         .extraFilters=${filterExtraAttributes}
       ></ha-attributes>
@@ -224,7 +218,7 @@ class MoreInfoVacuum extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         line-height: 1.5;

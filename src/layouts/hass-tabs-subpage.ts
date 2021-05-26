@@ -1,21 +1,17 @@
 import "@material/mwc-ripple";
 import {
   css,
-  CSSResult,
-  customElement,
-  eventOptions,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, eventOptions, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { restoreScroll } from "../common/decorators/restore-scroll";
-import { navigate } from "../common/navigate";
 import { LocalizeFunc } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
 import "../components/ha-icon";
@@ -62,7 +58,7 @@ class HassTabsSubpage extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public rtl = false;
 
-  @internalProperty() private _activeTab?: PageNavigation;
+  @state() private _activeTab?: PageNavigation;
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
@@ -88,30 +84,29 @@ class HassTabsSubpage extends LitElement {
       return shownTabs.map(
         (page) =>
           html`
-            <ha-tab
-              .hass=${this.hass}
-              @click=${this._tabTapped}
-              .path=${page.path}
-              .active=${page === activeTab}
-              .narrow=${this.narrow}
-              .name=${page.translationKey
-                ? localizeFunc(page.translationKey)
-                : page.name}
-            >
-              ${page.iconPath
-                ? html`<ha-svg-icon
-                    slot="icon"
-                    .path=${page.iconPath}
-                  ></ha-svg-icon>`
-                : html`<ha-icon slot="icon" .icon=${page.icon}></ha-icon>`}
-            </ha-tab>
+            <a href=${page.path}>
+              <ha-tab
+                .hass=${this.hass}
+                .active=${page === activeTab}
+                .narrow=${this.narrow}
+                .name=${page.translationKey
+                  ? localizeFunc(page.translationKey)
+                  : page.name}
+              >
+                ${page.iconPath
+                  ? html`<ha-svg-icon
+                      slot="icon"
+                      .path=${page.iconPath}
+                    ></ha-svg-icon>`
+                  : html`<ha-icon slot="icon" .icon=${page.icon}></ha-icon>`}
+              </ha-tab>
+            </a>
           `
       );
     }
   );
 
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues) {
     if (changedProperties.has("route")) {
       this._activeTab = this.tabs.find((tab) =>
         `${this.route.prefix}${this.route.path}`.includes(tab.path)
@@ -125,6 +120,7 @@ class HassTabsSubpage extends LitElement {
         this.rtl = computeRTL(this.hass);
       }
     }
+    super.willUpdate(changedProperties);
   }
 
   protected render(): TemplateResult {
@@ -147,6 +143,14 @@ class HassTabsSubpage extends LitElement {
                 .hass=${this.hass}
                 .narrow=${this.narrow}
               ></ha-menu-button>
+            `
+          : this.backPath
+          ? html`
+              <a href=${this.backPath}>
+                <ha-icon-button-arrow-prev
+                  .hass=${this.hass}
+                ></ha-icon-button-arrow-prev>
+              </a>
             `
           : html`
               <ha-icon-button-arrow-prev
@@ -185,15 +189,7 @@ class HassTabsSubpage extends LitElement {
     this._savedScrollPos = (e.target as HTMLDivElement).scrollTop;
   }
 
-  private _tabTapped(ev: Event): void {
-    navigate(this, (ev.currentTarget as any).path);
-  }
-
   private _backTapped(): void {
-    if (this.backPath) {
-      navigate(this, this.backPath);
-      return;
-    }
     if (this.backCallback) {
       this.backCallback();
       return;
@@ -201,7 +197,7 @@ class HassTabsSubpage extends LitElement {
     history.back();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;
@@ -225,11 +221,18 @@ class HassTabsSubpage extends LitElement {
         height: var(--header-height);
         background-color: var(--sidebar-background-color);
         font-weight: 400;
-        color: var(--sidebar-text-color);
         border-bottom: 1px solid var(--divider-color);
         padding: 0 16px;
         box-sizing: border-box;
       }
+      .toolbar a {
+        color: var(--sidebar-text-color);
+        text-decoration: none;
+      }
+      :host([narrow]) .toolbar a {
+        width: 25%;
+      }
+
       #tabbar {
         display: flex;
         font-size: 14px;
@@ -243,7 +246,7 @@ class HassTabsSubpage extends LitElement {
         box-sizing: border-box;
         background-color: var(--sidebar-background-color);
         border-top: 1px solid var(--divider-color);
-        justify-content: space-between;
+        justify-content: space-around;
         z-index: 2;
         font-size: 12px;
         width: 100%;

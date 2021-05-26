@@ -1,15 +1,7 @@
-import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { dump } from "js-yaml";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 
 @customElement("mqtt-discovery-payload")
 class MQTTDiscoveryPayload extends LitElement {
@@ -19,7 +11,7 @@ class MQTTDiscoveryPayload extends LitElement {
 
   @property() public summary!: string;
 
-  @internalProperty() private _open = false;
+  @state() private _open = false;
 
   protected render(): TemplateResult {
     return html`
@@ -39,7 +31,7 @@ class MQTTDiscoveryPayload extends LitElement {
     const payload = this.payload;
     return html`
       ${this.showAsYaml
-        ? html` <pre>${safeDump(payload)}</pre> `
+        ? html` <pre>${dump(payload)}</pre> `
         : html` <pre>${JSON.stringify(payload, null, 2)}</pre> `}
     `;
   }
@@ -48,7 +40,7 @@ class MQTTDiscoveryPayload extends LitElement {
     this._open = !this._open;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .expander {
         cursor: pointer;

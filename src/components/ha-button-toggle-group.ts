@@ -1,15 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
 import "./ha-svg-icon";
@@ -56,7 +49,7 @@ export class HaButtonToggleGroup extends LitElement {
     fireEvent(this, "value-changed", { value: this.active });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         display: flex;

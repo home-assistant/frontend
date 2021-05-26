@@ -1,4 +1,4 @@
-import { customElement } from "lit-element";
+import { customElement } from "lit/decorators";
 import { CallServiceConfig } from "../entity-rows/types";
 import { HuiButtonRow } from "./hui-button-row";
 

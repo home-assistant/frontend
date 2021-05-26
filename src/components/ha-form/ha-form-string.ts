@@ -1,17 +1,9 @@
+import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-svg-icon";
 import type {
@@ -19,7 +11,6 @@ import type {
   HaFormStringData,
   HaFormStringSchema,
 } from "./ha-form";
-import "@material/mwc-icon-button/mwc-icon-button";
 
 @customElement("ha-form-string")
 export class HaFormString extends LitElement implements HaFormElement {
@@ -31,7 +22,7 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @internalProperty() private _unmaskedPassword = false;
+  @state() private _unmaskedPassword = false;
 
   @query("paper-input") private _input?: HTMLElement;
 
@@ -104,7 +95,7 @@ export class HaFormString extends LitElement implements HaFormElement {
     return "text";
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       mwc-icon-button {
         --mdc-icon-button-size: 24px;

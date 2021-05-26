@@ -1,15 +1,12 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -110,13 +107,13 @@ export class EntityRegistrySettingsHelper extends LitElement {
 
   @property() public entry!: ExtEntityRegistryEntry;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _item?: Helper | null;
+  @state() private _item?: Helper | null;
 
-  @internalProperty() private _submitting?: boolean;
+  @state() private _submitting?: boolean;
 
-  @internalProperty() private _componentLoaded?: boolean;
+  @state() private _componentLoaded?: boolean;
 
   @query("ha-registry-basic-editor")
   private _registryEditor?: HaEntityRegistryBasicEditor;
@@ -242,7 +239,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -1,16 +1,8 @@
 import "@material/mwc-button";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/ha-circular-progress";
@@ -44,17 +36,17 @@ import { EditViewDialogParams } from "./show-edit-view-dialog";
 export class HuiDialogEditView extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _params?: EditViewDialogParams;
+  @state() private _params?: EditViewDialogParams;
 
-  @internalProperty() private _config?: LovelaceViewConfig;
+  @state() private _config?: LovelaceViewConfig;
 
-  @internalProperty() private _badges?: LovelaceBadgeConfig[];
+  @state() private _badges?: LovelaceBadgeConfig[];
 
-  @internalProperty() private _cards?: LovelaceCardConfig[];
+  @state() private _cards?: LovelaceCardConfig[];
 
-  @internalProperty() private _saving = false;
+  @state() private _saving = false;
 
-  @internalProperty() private _curTab?: string;
+  @state() private _curTab?: string;
 
   private _curTabIndex = 0;
 
@@ -236,7 +228,7 @@ export class HuiDialogEditView extends LitElement {
         deleteView(this._params.lovelace!.config, this._params.viewIndex!)
       );
       this.closeDialog();
-      navigate(this, `/${window.location.pathname.split("/")[1]}`);
+      navigate(`/${window.location.pathname.split("/")[1]}`);
     } catch (err) {
       showAlertDialog(this, {
         text: `Deleting failed: ${err.message}`,
@@ -347,7 +339,7 @@ export class HuiDialogEditView extends LitElement {
     return this._params!.viewIndex === undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

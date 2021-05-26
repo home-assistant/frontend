@@ -1,14 +1,6 @@
 import { mdiClose } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-header-bar";
 import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
@@ -23,7 +15,7 @@ export class DialogHassioSnapshotUpload
   implements HassDialog<HassioSnapshotUploadDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: HassioSnapshotUploadDialogParams;
+  @state() private _params?: HassioSnapshotUploadDialogParams;
 
   public async showDialog(
     params: HassioSnapshotUploadDialogParams
@@ -78,7 +70,7 @@ export class DialogHassioSnapshotUpload
     this.closeDialog();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

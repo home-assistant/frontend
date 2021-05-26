@@ -1,4 +1,5 @@
-import { LitElement, css, html, customElement } from "lit-element";
+import { css, html, LitElement } from "lit";
+import { customElement } from "lit/decorators";
 
 @customElement("hat-logbook-note")
 class HatLogbookNote extends LitElement {

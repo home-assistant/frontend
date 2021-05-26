@@ -1,11 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/entity/ha-entity-picker";
 import "../../../../../components/ha-formfield";
 import "../../../../../components/ha-radio";
@@ -24,7 +19,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
 
   @property() public trigger!: TimeTrigger;
 
-  @internalProperty() private _inputMode?: boolean;
+  @state() private _inputMode?: boolean;
 
   public static get defaultConfig() {
     return { at: "" };

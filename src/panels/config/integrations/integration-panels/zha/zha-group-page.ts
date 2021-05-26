@@ -1,15 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
@@ -46,16 +37,16 @@ export class ZHAGroupPage extends LitElement {
 
   @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @internalProperty() private _processingAdd = false;
+  @state() private _processingAdd = false;
 
-  @internalProperty() private _processingRemove = false;
+  @state() private _processingRemove = false;
 
-  @internalProperty()
+  @state()
   private _filteredDeviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @internalProperty() private _selectedDevicesToAdd: string[] = [];
+  @state() private _selectedDevicesToAdd: string[] = [];
 
-  @internalProperty() private _selectedDevicesToRemove: string[] = [];
+  @state() private _selectedDevicesToRemove: string[] = [];
 
   @query("#addMembers", true)
   private _zhaAddMembersDataTable!: ZHADeviceEndpointDataTable;
@@ -282,10 +273,10 @@ export class ZHAGroupPage extends LitElement {
 
   private async _deleteGroup(): Promise<void> {
     await removeGroups(this.hass, [this.groupId]);
-    navigate(this, `/config/zha/groups`, true);
+    navigate(`/config/zha/groups`, { replace: true });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         hass-subpage {

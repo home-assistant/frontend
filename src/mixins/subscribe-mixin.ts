@@ -1,12 +1,13 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { property, PropertyValues, UpdatingElement } from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { property } from "lit/decorators";
 import { Constructor, HomeAssistant } from "../types";
 
 export interface HassSubscribeElement {
   hassSubscribe(): UnsubscribeFunc[];
 }
 
-export const SubscribeMixin = <T extends Constructor<UpdatingElement>>(
+export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
   superClass: T
 ) => {
   class SubscribeClass extends superClass {

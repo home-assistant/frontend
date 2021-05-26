@@ -1,12 +1,4 @@
-import {
-  customElement,
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  internalProperty,
-  property,
-} from "lit-element";
+import { html, css, LitElement, TemplateResult } from "lit";
 import "../../../src/components/ha-card";
 import "../../../src/components/trace/hat-script-graph";
 import "../../../src/components/trace/hat-trace-timeline";
@@ -15,6 +7,7 @@ import { HomeAssistant } from "../../../src/types";
 import { DemoTrace } from "../data/traces/types";
 import { basicTrace } from "../data/traces/basic_trace";
 import { motionLightTrace } from "../data/traces/motion-light-trace";
+import { customElement, property, state } from "lit/decorators";
 
 const traces: DemoTrace[] = [basicTrace, motionLightTrace];
 
@@ -22,7 +15,7 @@ const traces: DemoTrace[] = [basicTrace, motionLightTrace];
 export class DemoAutomationTrace extends LitElement {
   @property({ attribute: false }) hass?: HomeAssistant;
 
-  @internalProperty() private _selected = {};
+  @state() private _selected = {};
 
   protected render(): TemplateResult {
     if (!this.hass) {

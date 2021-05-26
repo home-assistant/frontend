@@ -1,16 +1,8 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-input";
 import { InputDateTime } from "../../../../data/input_datetime";
@@ -25,11 +17,11 @@ class HaInputDateTimeForm extends LitElement {
 
   private _item?: InputDateTime;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _icon!: string;
+  @state() private _icon!: string;
 
-  @internalProperty() private _mode!: "date" | "time" | "datetime";
+  @state() private _mode!: "date" | "time" | "datetime";
 
   set item(item: InputDateTime) {
     this._item = item;
@@ -145,7 +137,7 @@ class HaInputDateTimeForm extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

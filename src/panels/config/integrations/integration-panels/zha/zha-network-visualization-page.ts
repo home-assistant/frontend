@@ -1,14 +1,4 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 
 import "@material/mwc-button";
 import { navigate } from "../../../../../common/navigate";
@@ -19,7 +9,7 @@ import {
 } from "../../../../../data/zha";
 import "../../../../../layouts/hass-tabs-subpage";
 import type { HomeAssistant, Route } from "../../../../../types";
-import { Network, Edge, Node, EdgeOptions } from "vis-network";
+import { Network, Edge, Node, EdgeOptions } from "vis-network/peer";
 import "../../../../../common/search/search-input";
 import "../../../../../components/device/ha-device-picker";
 import "../../../../../components/ha-button-menu";
@@ -30,6 +20,7 @@ import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import { zhaTabs } from "./zha-config-dashboard";
+import { customElement, property, query, state } from "lit/decorators";
 
 @customElement("zha-network-visualization-page")
 export class ZHANetworkVisualizationPage extends LitElement {
@@ -47,19 +38,19 @@ export class ZHANetworkVisualizationPage extends LitElement {
   @query("#visualization", true)
   private _visualization?: HTMLElement;
 
-  @internalProperty()
+  @state()
   private _devices: Map<string, ZHADevice> = new Map();
 
-  @internalProperty()
+  @state()
   private _devicesByDeviceId: Map<string, ZHADevice> = new Map();
 
-  @internalProperty()
+  @state()
   private _nodes: Node[] = [];
 
-  @internalProperty()
+  @state()
   private _network?: Network;
 
-  @internalProperty()
+  @state()
   private _filter?: string;
 
   private _autoZoom = true;
@@ -109,11 +100,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       if (ieee) {
         const device = this._devices.get(ieee);
         if (device) {
-          navigate(
-            this,
-            `/config/devices/device/${device.device_reg_id}`,
-            false
-          );
+          navigate(`/config/devices/device/${device.device_reg_id}`);
         }
       }
     });
@@ -361,7 +348,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     this._autoZoom = (ev.target as HaCheckbox).checked;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         .header {

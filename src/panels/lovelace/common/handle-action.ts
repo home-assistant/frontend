@@ -101,7 +101,7 @@ export const handleAction = async (
     }
     case "navigate":
       if (actionConfig.navigation_path) {
-        navigate(node, actionConfig.navigation_path);
+        navigate(actionConfig.navigation_path);
       } else {
         showToast(node, {
           message: hass.localize(

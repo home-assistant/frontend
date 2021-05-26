@@ -1,14 +1,19 @@
-import { customElement, property, UpdatingElement } from "lit-element";
+import { ReactiveElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { renderMarkdown } from "../resources/render-markdown";
 
 @customElement("ha-markdown-element")
-class HaMarkdownElement extends UpdatingElement {
+class HaMarkdownElement extends ReactiveElement {
   @property() public content?;
 
   @property({ type: Boolean }) public allowSvg = false;
 
   @property({ type: Boolean }) public breaks = false;
+
+  protected createRenderRoot() {
+    return this;
+  }
 
   protected update(changedProps) {
     super.update(changedProps);

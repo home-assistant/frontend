@@ -1,16 +1,8 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { array, assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
@@ -38,7 +30,7 @@ export class HuiAlarmPanelCardEditor
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: AlarmPanelCardConfig;
+  @state() private _config?: AlarmPanelCardConfig;
 
   public setConfig(config: AlarmPanelCardConfig): void {
     assert(config, cardConfigStruct);
@@ -94,9 +86,9 @@ export class HuiAlarmPanelCardEditor
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <span>Used States</span> ${this._states.map(
-          (state, index) => html`
+          (entityState, index) => html`
             <div class="states">
-              <paper-item>${state}</paper-item>
+              <paper-item>${entityState}</paper-item>
               <ha-icon
                 class="deleteState"
                 .value="${index}"
@@ -113,7 +105,9 @@ export class HuiAlarmPanelCardEditor
           @value-changed="${this._stateAdded}"
         >
           <paper-listbox slot="dropdown-content">
-            ${states.map((state) => html` <paper-item>${state}</paper-item> `)}
+            ${states.map(
+              (entityState) => html` <paper-item>${entityState}</paper-item> `
+            )}
           </paper-listbox>
         </paper-dropdown-menu>
         <hui-theme-select-editor
@@ -126,7 +120,7 @@ export class HuiAlarmPanelCardEditor
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

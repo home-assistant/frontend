@@ -1,16 +1,21 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import { property, PropertyValues, UpdatingElement } from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { property } from "lit/decorators";
 import dynamicContentUpdater from "../../common/dom/dynamic_content_updater";
 import { importMoreInfoControl } from "../../panels/lovelace/custom-card-helpers";
 import { HomeAssistant } from "../../types";
 import { stateMoreInfoType } from "./state_more_info_control";
 
-class MoreInfoContent extends UpdatingElement {
+class MoreInfoContent extends ReactiveElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property({ attribute: false }) public stateObj?: HassEntity;
 
   private _detachedChild?: ChildNode;
+
+  protected createRenderRoot() {
+    return this;
+  }
 
   // This is not a lit element, but an updating element, so we implement update
   protected update(changedProps: PropertyValues): void {
@@ -54,3 +59,9 @@ class MoreInfoContent extends UpdatingElement {
 }
 
 customElements.define("more-info-content", MoreInfoContent);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "more-info-content": MoreInfoContent;
+  }
+}

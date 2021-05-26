@@ -1,20 +1,15 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
 import { sanitizeUrl } from "@braintree/sanitize-url";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { navigate } from "../../common/navigate";
-import { HomeAssistant, Route } from "../../types";
 import {
   createSearchParam,
   extractSearchParamsObject,
 } from "../../common/url/search-params";
-import "../../layouts/hass-error-screen";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { domainToName } from "../../data/integration";
+import "../../layouts/hass-error-screen";
+import { HomeAssistant, Route } from "../../types";
 import { documentationUrl } from "../../util/documentation-url";
 
 const REDIRECTS: Redirects = {
@@ -167,7 +162,7 @@ class HaPanelMy extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() public _error?: string;
+  @state() public _error?: string;
 
   connectedCallback() {
     super.connectedCallback();
@@ -178,11 +173,9 @@ class HaPanelMy extends LitElement {
         this._error = "no_supervisor";
         return;
       }
-      navigate(
-        this,
-        `/hassio/_my_redirect/${path}${window.location.search}`,
-        true
-      );
+      navigate(`/hassio/_my_redirect/${path}${window.location.search}`, {
+        replace: true,
+      });
       return;
     }
 
@@ -209,7 +202,7 @@ class HaPanelMy extends LitElement {
       return;
     }
 
-    navigate(this, url, true);
+    navigate(url, { replace: true });
   }
 
   protected render() {

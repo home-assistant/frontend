@@ -1,4 +1,4 @@
-import { css } from "lit-element";
+import { css } from "lit";
 
 export const sortableStyles = css`
   #sortable a:nth-of-type(2n) paper-icon-item {

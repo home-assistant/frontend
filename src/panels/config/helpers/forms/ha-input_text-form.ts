@@ -1,16 +1,8 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-input";
 import { InputText } from "../../../../data/input_text";
@@ -25,17 +17,17 @@ class HaInputTextForm extends LitElement {
 
   private _item?: InputText;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _icon!: string;
+  @state() private _icon!: string;
 
-  @internalProperty() private _max?: number;
+  @state() private _max?: number;
 
-  @internalProperty() private _min?: number;
+  @state() private _min?: number;
 
-  @internalProperty() private _mode?: string;
+  @state() private _mode?: string;
 
-  @internalProperty() private _pattern?: string;
+  @state() private _pattern?: string;
 
   set item(item: InputText) {
     this._item = item;
@@ -177,7 +169,7 @@ class HaInputTextForm extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

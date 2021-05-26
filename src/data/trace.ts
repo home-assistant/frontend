@@ -1,5 +1,5 @@
 import { strStartsWith } from "../common/string/starts-with";
-import { HomeAssistant, Context } from "../types";
+import { Context, HomeAssistant } from "../types";
 import {
   BlueprintAutomationConfig,
   ManualAutomationConfig,

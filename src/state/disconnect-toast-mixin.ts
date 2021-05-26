@@ -4,14 +4,14 @@ import {
   STATE_STARTING,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
+import {
+  BootstrapIntegrationsTimings,
+  subscribeBootstrapIntegrations,
+} from "../data/bootstrap_integrations";
+import { domainToName } from "../data/integration";
 import { Constructor } from "../types";
 import { showToast } from "../util/toast";
 import { HassBaseEl } from "./hass-base-mixin";
-import { domainToName } from "../data/integration";
-import {
-  subscribeBootstrapIntegrations,
-  BootstrapIntegrationsTimings,
-} from "../data/bootstrap_integrations";
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
@@ -20,7 +20,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
-      import("../managers/notification-manager");
+      setTimeout(() => import("../managers/notification-manager"), 5000);
     }
 
     updated(changedProperties) {
@@ -112,7 +112,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       showToast(this, {
         message:
           this.hass!.localize(
-            "ui.notification_toast.intergration_starting",
+            "ui.notification_toast.integration_starting",
             "integration",
             domainToName(this.hass!.localize, integration)
           ) ||

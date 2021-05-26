@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "发生未知错误",
+            "error_addon_no_ingress": "请求的加载项不支持 ingress",
             "error_addon_not_found": "未找到加载项",
             "faq_link": "我的 Home Assistant 常见问题",
             "not_supported": "您的 Home Assistant 不支持此重定向。请查阅{link}以获取受支持的重定向及其引入的版本。"
@@ -383,6 +384,7 @@
             "create": "创建",
             "create_blocked_not_running": "现在无法创建快照，因为系统处于{state}状态。",
             "create_snapshot": "创建快照",
+            "created": "创建于",
             "description": "“快照”使您可以轻松地备份和还原 Home Assistant 实例的所有数据。",
             "enter_password": "请输入密码。",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "获取 Home Assistant、Supervisor 和主机的稳定版更新",
                 "ram_usage": "Supervisor 内存使用率",
                 "reload_supervisor": "重载 Supervisor",
+                "search": "搜索",
                 "share_diagnostics": "共享诊断信息",
                 "share_diagnostics_description": "共享崩溃报告和诊断信息。",
                 "share_diagonstics_description": "您想要在 Supervisor 遇到异常错误时，共享崩溃报告和诊断信息吗？{line_break}这将帮助我们解决问题，此信息仅限 Home Assistant Core 团队访问，不会共享给他人。{line_break}此信息不包含私密、敏感信息，您可以随时在设置中将其禁用。",
@@ -1258,7 +1261,7 @@
         "notification_toast": {
             "connection_lost": "连接中断。正在重新连接...",
             "dismiss": "关闭",
-            "intergration_starting": "正在启动 {integration}。在启动完成前，部分功能暂不可用。",
+            "integration_starting": "正在启动 {integration}。在启动完成前，部分功能暂不可用。",
             "service_call_failed": "调用服务 {service} 失败。",
             "started": "Home Assistant 已启动！",
             "starting": "Home Assistant 正在启动。在启动完成前，部分功能暂不可用。",
@@ -2166,7 +2169,7 @@
                     "license": "根据 Apache 2.0 许可发布",
                     "path_configuration": "configuration.yaml 路径：{path}",
                     "server": "服务器",
-                    "setup_time": "安装时间",
+                    "setup_time": "启动时长",
                     "source": "源：",
                     "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml",
                     "system_health": {
@@ -2189,7 +2192,7 @@
                         "configure": "选项",
                         "delete": "删除",
                         "delete_confirm": "您确定要删除此集成吗？",
-                        "depends_on_cloud": "取决于云端",
+                        "depends_on_cloud": "依赖云端服务",
                         "device_unavailable": "设备不可用",
                         "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
                         "disable_restart_confirm": "重启 Home Assistant 以完成此集成的禁用",
@@ -2246,6 +2249,7 @@
                         },
                         "finish": "完成",
                         "loading_first_time": "正在安装集成，请稍候",
+                        "next": "下一步",
                         "not_all_required_fields": "请填写所有必填字段",
                         "not_loaded": "集成未能加载，请尝试重启 Home Assistant。",
                         "pick_flow_step": {
@@ -2584,6 +2588,8 @@
                         "add_scene": "添加场景",
                         "delete_confirm": "您确定要删除此场景吗？",
                         "delete_scene": "删除场景",
+                        "duplicate": "制作副本",
+                        "duplicate_scene": "复制场景",
                         "edit_scene": "编辑场景",
                         "header": "场景编辑器",
                         "headers": {
@@ -2911,7 +2917,9 @@
                         "controller_in_inclusion_mode": "您的 Z-Wave 控制器现在处于 inclusion 模式。",
                         "follow_device_instructions": "请按照设备说明书，触发设备配对。",
                         "inclusion_failed": "无法添加该节点。请查看日志以了解更多信息。",
-                        "inclusion_finished": "节点已添加。需要花费几分钟在后台完成节点设置，然后才能显示出所有实体。",
+                        "inclusion_finished": "节点已添加。",
+                        "interview_failed": "设备协商失败。日志中会有更多信息。",
+                        "interview_started": "设备正在重新协商。可能需要一段时间。",
                         "introduction": "此向导将指导您向 Z-Wave 网络添加节点。",
                         "secure_inclusion_warning": "安全设备需要额外的带宽；安全设备过多可能会降低 Z-Wave 网络的速度。建议仅当设备需要时才使用 secure inclusion，例如门锁和车库开门器。",
                         "start_inclusion": "开始 inclusion",
@@ -3142,8 +3150,8 @@
                         "attributes": "属性",
                         "copy_id": "将 ID 复制到剪贴板",
                         "current_entities": "现有实体",
-                        "description1": "设置设备在 Home Assistant 中的呈现方式。",
-                        "description2": "这将不影响实际设备。",
+                        "description1": "此处可设置实体在 Home Assistant 中的状态。",
+                        "description2": "此操作只会改变实体在系统中显示的状态，而不会改变实际设备的状态。",
                         "entity": "实体",
                         "filter_attributes": "输入筛选属性",
                         "filter_entities": "输入筛选实体",
@@ -3515,7 +3523,7 @@
                         "duplicate": "复制卡片",
                         "edit": "编辑",
                         "header": "卡片配置",
-                        "move": "移动",
+                        "move": "移动到视图",
                         "move_after": "向后移动卡片",
                         "move_before": "向前移动卡片",
                         "options": "更多选项",
@@ -3999,6 +4007,17 @@
                     "link_promo": "了解主题",
                     "primary_color": "主色调",
                     "reset": "重置"
+                },
+                "time_format": {
+                    "description": "选择时间的格式。",
+                    "dropdown_label": "时间格式",
+                    "formats": {
+                        "12": "12 小时（上午/下午）",
+                        "24": "24 小时",
+                        "language": "自动（使用语言设置）",
+                        "system": "使用系统区域设置"
+                    },
+                    "header": "时间格式"
                 },
                 "vibrate": {
                     "description": "控制设备时，在此设备上启用或禁用振动。",

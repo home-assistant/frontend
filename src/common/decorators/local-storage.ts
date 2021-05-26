@@ -1,5 +1,5 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { PropertyDeclaration, UpdatingElement } from "lit-element";
+import { PropertyDeclaration, ReactiveElement } from "lit";
 import type { ClassElement } from "../../types";
 
 type Callback = (oldValue: any, newValue: any) => void;
@@ -93,7 +93,7 @@ export const LocalStorage = (
 
   storage.addFromStorage(storageKey);
 
-  const subscribe = (el: UpdatingElement): UnsubscribeFunc =>
+  const subscribe = (el: ReactiveElement): UnsubscribeFunc =>
     storage.subscribeChanges(storageKey!, (oldValue) => {
       el.requestUpdate(clsElement.key, oldValue);
     });
@@ -101,7 +101,7 @@ export const LocalStorage = (
   const getValue = (): any =>
     storage.hasKey(storageKey!) ? storage.getValue(storageKey!) : initVal;
 
-  const setValue = (el: UpdatingElement, value: any) => {
+  const setValue = (el: ReactiveElement, value: any) => {
     let oldValue: unknown | undefined;
     if (property) {
       oldValue = getValue();
@@ -117,7 +117,7 @@ export const LocalStorage = (
     placement: "prototype",
     key: clsElement.key,
     descriptor: {
-      set(this: UpdatingElement, value: unknown) {
+      set(this: ReactiveElement, value: unknown) {
         setValue(this, value);
       },
       get() {
@@ -126,7 +126,7 @@ export const LocalStorage = (
       enumerable: true,
       configurable: true,
     },
-    finisher(cls: typeof UpdatingElement) {
+    finisher(cls: typeof ReactiveElement) {
       if (property) {
         const connectedCallback = cls.prototype.connectedCallback;
         const disconnectedCallback = cls.prototype.disconnectedCallback;

@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-card")
 export class HaCard extends LitElement {
@@ -14,7 +7,7 @@ export class HaCard extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public outlined = false;
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         background: var(

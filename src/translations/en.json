@@ -522,6 +522,9 @@
       "calendar": {
         "my_calendars": "My Calendars",
         "today": "Today"
+      },
+      "attributes": {
+        "expansion_header": "Attributes"
       }
     },
     "dialogs": {
@@ -870,7 +873,7 @@
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting, not everything will be available until it is finished.",
       "wrapping_up_startup": "Wrapping up startup, not everything will be available until it is finished.",
-      "intergration_starting": "Starting {integration}, not everything will be available until it is finished.",
+      "integration_starting": "Starting {integration}, not everything will be available until it is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss"
     },
@@ -1680,6 +1683,8 @@
             "show_info_scene": "Show info about scene",
             "delete_scene": "Delete scene",
             "delete_confirm": "Are you sure you want to delete this scene?",
+            "duplicate_scene": "Duplicate scene",
+            "duplicate": "Duplicate",
             "headers": {
               "name": "Name"
             }
@@ -1775,6 +1780,7 @@
             "integrations_introduction2": "Check the website for ",
             "integrations_link_all_features": " all available features",
             "connected": "Connected",
+            "connecting": "Connecting...",
             "not_connected": "Not Connected",
             "fetching_subscription": "Fetching subscription...",
             "tts": {
@@ -2631,8 +2637,10 @@
             "controller_in_inclusion_mode": "Your Z-Wave controller is now in inclusion mode.",
             "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
             "inclusion_failed": "The node could not be added. Please check the logs for more information.",
-            "inclusion_finished": "The node has been added. It may take a few minutes for all entities to show up as we finish setting up the node in the background.",
-            "view_device": "View Device"
+            "inclusion_finished": "The node has been added.",
+            "view_device": "View Device",
+            "interview_started": "The device is being interviewed. This may take some time.",
+            "interview_failed": "The device interview failed. Additional information may be available in the logs."
           },
           "remove_node": {
             "title": "Remove a Z-Wave Node",
@@ -2657,7 +2665,8 @@
           "logs": {
             "title": "Z-Wave JS Logs",
             "log_level": "Log Level",
-            "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages..."
+            "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
+            "log_level_changed": "Log Level changed to: {level}"
           }
         }
       },
@@ -3209,6 +3218,17 @@
             "none": "None"
           }
         },
+        "time_format": {
+          "header": "Time Format",
+          "dropdown_label": "Time format",
+          "description": "Choose how times are formatted.",
+          "formats": {
+            "language": "Auto (use language setting)",
+            "system": "Use system locale",
+            "12": "12 hours (AM/PM)",
+            "24": "24 hours"
+          }
+        },
         "themes": {
           "header": "Theme",
           "error_no_theme": "No themes available.",
@@ -3261,8 +3281,8 @@
           "header": "Refresh Tokens",
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
           "token_title": "Refresh token for {clientId}",
-          "created_at": "Created at {date}",
-          "last_used": "Last used at {date} from {location}",
+          "created_at": "Created {date}",
+          "last_used": "Last used {date} from {location}",
           "not_used": "Has never been used",
           "confirm_delete": "Are you sure you want to delete the refresh token for {name}?",
           "delete_failed": "Failed to delete the refresh token.",
@@ -3741,7 +3761,7 @@
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
       "show_more": "Show more information about this",
-      "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending",
+      "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
       "update": "Update",
       "version": "Version",
       "error": {
@@ -3767,7 +3787,7 @@
       "addon_new_version": "New version available",
       "addon_running": "Add-on is running",
       "addon_stopped": "Add-on is stopped",
-      "addons": "Add-ons",
+      "addons": "Installed add-ons",
       "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
     },
     "store": {
@@ -3786,7 +3806,8 @@
       "not_supported": "[%key:ui::panel::my::not_supported%]",
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "error": "[%key:ui::panel::my::error%]",
-      "error_addon_not_found": "Add-on not found"
+      "error_addon_not_found": "Add-on not found",
+      "error_addon_no_ingress": "The requested add-on does not support ingress"
     },
     "system": {
       "log": {
@@ -3813,6 +3834,7 @@
         "share_diagnostics_description": "Share crash reports and diagnostic information.",
         "reload_supervisor": "Reload Supervisor",
         "warning": "WARNING",
+        "search": "Search",
         "beta_warning": "Beta releases are for testers and early adopters and can contain unstable code changes",
         "beta_backup": "Make sure you have backups of your data before you activate this feature.",
         "beta_release_items": "This includes beta releases for:",
@@ -3878,14 +3900,16 @@
       "upload_snapshot": "Upload snapshot",
       "create_snapshot": "Create snapshot",
       "create": "Create",
-      "name": "Name",
-      "type": "Type",
+      "created": "Created",
+      "name": "Snapshot name",
+      "type": "Snapshot type",
+      "select_type": "Select what to restore",
       "security": "Security",
       "full_snapshot": "Full snapshot",
       "partial_snapshot": "Partial snapshot",
       "addons": "Add-ons",
       "folders": "Folders",
-      "password": "Password",
+      "password": "Snapshot password",
       "password_protection": "Password protection",
       "password_protected": "password protected",
       "enter_password": "Please enter a password.",

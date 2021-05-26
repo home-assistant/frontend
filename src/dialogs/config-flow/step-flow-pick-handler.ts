@@ -1,18 +1,10 @@
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 import Fuse from "fuse.js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { styleMap } from "lit-html/directives/style-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../common/search/search-input";
@@ -46,7 +38,7 @@ class StepFlowPickHandler extends LitElement {
 
   @property() public showAdvanced?: boolean;
 
-  @internalProperty() private _filter?: string;
+  @state() private _filter?: string;
 
   private _width?: number;
 
@@ -175,7 +167,7 @@ class StepFlowPickHandler extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`

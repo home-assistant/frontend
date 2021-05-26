@@ -2,15 +2,8 @@ import "@material/mwc-button/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
-import { html } from "lit-html";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-blueprint-picker";
@@ -44,7 +37,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
 
   @property() public stateObj?: HassEntity;
 
-  @internalProperty() private _blueprints?: Blueprints;
+  @state() private _blueprints?: Blueprints;
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -270,7 +263,7 @@ export class HaBlueprintAutomationEditor extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

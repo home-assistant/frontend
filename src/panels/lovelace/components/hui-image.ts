@@ -1,17 +1,14 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { styleMap } from "lit-html/directives/style-map";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { STATES_OFF } from "../../../common/const";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-camera-stream";
@@ -50,9 +47,9 @@ export class HuiImage extends LitElement {
 
   @property() public darkModeFilter?: string;
 
-  @internalProperty() private _loadError?: boolean;
+  @state() private _loadError?: boolean;
 
-  @internalProperty() private _cameraImageSrc?: string;
+  @state() private _cameraImageSrc?: string;
 
   @query("img") private _image!: HTMLImageElement;
 
@@ -78,7 +75,7 @@ export class HuiImage extends LitElement {
     }
     const ratio = this.aspectRatio ? parseAspectRatio(this.aspectRatio) : null;
     const stateObj = this.entity ? this.hass.states[this.entity] : undefined;
-    const state = stateObj ? stateObj.state : UNAVAILABLE;
+    const entityState = stateObj ? stateObj.state : UNAVAILABLE;
 
     // Figure out image source to use
     let imageSrc: string | undefined;
@@ -93,7 +90,7 @@ export class HuiImage extends LitElement {
         imageSrc = this._cameraImageSrc;
       }
     } else if (this.stateImage) {
-      const stateImage = this.stateImage[state];
+      const stateImage = this.stateImage[entityState];
 
       if (stateImage) {
         imageSrc = stateImage;
@@ -118,12 +115,12 @@ export class HuiImage extends LitElement {
       filter += this.darkModeFilter;
     }
 
-    if (this.stateFilter && this.stateFilter[state]) {
-      filter += this.stateFilter[state];
+    if (this.stateFilter && this.stateFilter[entityState]) {
+      filter += this.stateFilter[entityState];
     }
 
     if (!filter && this.entity) {
-      const isOff = !stateObj || STATES_OFF.includes(state);
+      const isOff = !stateObj || STATES_OFF.includes(entityState);
       filter = isOff && imageFallback ? DEFAULT_FILTER : "";
     }
 
@@ -237,7 +234,7 @@ export class HuiImage extends LitElement {
     );
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       img {
         display: block;

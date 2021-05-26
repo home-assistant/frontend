@@ -1,13 +1,13 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "./ha-icon";
 
 class HaLabelBadge extends LitElement {
@@ -60,7 +60,7 @@ class HaLabelBadge extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         .badge-container {

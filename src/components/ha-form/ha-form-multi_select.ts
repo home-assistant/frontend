@@ -4,17 +4,8 @@ import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-ripple/paper-ripple";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-icon";
 import {
@@ -33,7 +24,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @internalProperty() private _init = false;
+  @state() private _init = false;
 
   @query("paper-menu-button", true) private _input?: HTMLElement;
 
@@ -140,7 +131,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     );
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-menu-button {
         display: block;

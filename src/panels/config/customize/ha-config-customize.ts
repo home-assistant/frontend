@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResult,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property } from "lit/decorators";
 import "../../../components/ha-card";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
@@ -80,7 +74,7 @@ class HaConfigCustomize extends LitElement {
     this._selectedEntityId = routeSegments.length > 1 ? routeSegments[1] : "";
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

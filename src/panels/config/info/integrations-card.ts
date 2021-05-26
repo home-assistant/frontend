@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../components/ha-card";
 import {
@@ -27,11 +19,11 @@ class IntegrationsCard extends LitElement {
 
   @property({ type: Boolean }) public narrow = false;
 
-  @internalProperty() private _manifests?: {
+  @state() private _manifests?: {
     [domain: string]: IntegrationManifest;
   };
 
-  @internalProperty() private _setups?: {
+  @state() private _setups?: {
     [domain: string]: IntegrationSetup;
   };
 
@@ -152,7 +144,7 @@ class IntegrationsCard extends LitElement {
     this._setups = setups;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       table {
         width: 100%;

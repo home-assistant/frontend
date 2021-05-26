@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  eventOptions,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, eventOptions, property } from "lit/decorators";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
@@ -62,7 +54,7 @@ class HassSubpage extends LitElement {
     history.back();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

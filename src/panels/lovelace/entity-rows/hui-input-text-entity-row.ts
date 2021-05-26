@@ -1,15 +1,13 @@
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { UNAVAILABLE } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
@@ -22,7 +20,7 @@ import { EntityConfig, LovelaceRow } from "./types";
 class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -83,7 +81,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
     ev.target.blur();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         cursor: pointer;

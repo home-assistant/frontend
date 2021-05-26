@@ -1,16 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-listbox/paper-listbox";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  internalProperty,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import "../../../../../components/buttons/ha-call-service-button";
@@ -34,6 +25,7 @@ import { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page
 import { compare } from "../../../../../common/string/compare";
 import { getIeeeTail } from "./functions";
 import { slugify } from "../../../../../common/string/slugify";
+import { customElement, property, state } from "lit/decorators";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
@@ -43,7 +35,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow?: boolean;
 
-  @internalProperty() private _entities: EntityRegistryEntry[] = [];
+  @state() private _entities: EntityRegistryEntry[] = [];
 
   private _deviceEntities = memoizeOne(
     (
@@ -206,7 +198,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

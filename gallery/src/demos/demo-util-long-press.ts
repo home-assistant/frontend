@@ -1,5 +1,6 @@
 import "@material/mwc-button";
-import { customElement, html, LitElement, TemplateResult } from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement } from "lit/decorators";
 import "../../../src/components/ha-card";
 import { ActionHandlerEvent } from "../../../src/data/lovelace";
 import { actionHandler } from "../../../src/panels/lovelace/common/directives/action-handler-directive";

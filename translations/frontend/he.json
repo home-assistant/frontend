@@ -183,7 +183,7 @@
                 "text": "האם ברצונך לאתחל את התוסף עם השינויים שלך?"
             },
             "update": {
-                "create_snapshot": "צור נקודת גיבוי עבור {name}",
+                "create_snapshot": "צור נקודת גיבוי עבור {name} לפני העדכון",
                 "snapshot": "נקודת גיבוי",
                 "snapshotting": "יוצר נקודת גיבוי עבור {name}",
                 "updating": "מעדכן את {name} לגרסה {version}"
@@ -898,7 +898,7 @@
         "notification_toast": {
             "connection_lost": "החיבור אבד. מתחבר מחדש...",
             "dismiss": "בטל",
-            "intergration_starting": "מפעיל את {integration} , לא הכל יהיה זמין עד לסיום.",
+            "integration_starting": "מפעיל את {integration} , לא הכל יהיה זמין עד לסיום.",
             "service_call_failed": "נכשלה הקריאה לשירות {service} .",
             "started": "Home Assistant עלה!",
             "starting": "Home Assistant בעלייה, ייתכן שלא הכל יהיה זמין עד שהעליה תסתיים",
