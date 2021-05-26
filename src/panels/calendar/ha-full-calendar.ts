@@ -90,9 +90,9 @@ export class HAFullCalendar extends LitElement {
 
   @property() public initialView: FullCalendarView = "dayGridMonth";
 
-  @state() private calendar?: Calendar;
+  private calendar?: Calendar;
 
-  @state() private _activeView?: FullCalendarView;
+  @state() private _activeView = this.initialView;
 
   public updateSize(): void {
     this.calendar?.updateSize();
@@ -181,8 +181,8 @@ export class HAFullCalendar extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
 
     if (!this.calendar) {
       return;
@@ -215,8 +215,6 @@ export class HAFullCalendar extends LitElement {
       locale: this.hass.language,
       initialView: this.initialView,
     };
-
-    this._activeView = this.initialView;
 
     config.dateClick = (info) => this._handleDateClick(info);
     config.eventClick = (info) => this._handleEventClick(info);

@@ -65,8 +65,13 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     this._resizeObserver?.unobserve(this);
   }
 
+  public willUpdate(): void {
+    if (!this.hasUpdated) {
+      this._measureCard();
+    }
+  }
+
   protected firstUpdated(): void {
-    this._measureCard();
     this._attachObserver();
   }
 
