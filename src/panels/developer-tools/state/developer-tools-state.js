@@ -10,6 +10,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { safeDump, safeLoad } from "js-yaml";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
+import { fuzzySequentialMatch } from "../../../common/string/filter/sequence-matching";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
@@ -19,10 +20,6 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
-import {
-  fuzzySequentialMatch,
-  ScorableTextItem,
-} from "../../../common/string/filter/sequence-matching";
 
 const ERROR_SENTINEL = {};
 /*
@@ -109,6 +106,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         .entities .id-name-container {
           display: flex;
           flex-direction: column;
+        }
+
+        .entities .friendly_name {
+          word-break: break-word;
         }
 
         :host([narrow]) .state-wrapper {
@@ -238,7 +239,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                       title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                       path="[[informationOutlineIcon()]]"
                     ></ha-svg-icon>
-                    <span class="secondary">
+                    <span class="secondary friendly_name">
                       [[entity.attributes.friendly_name]]
                     </span>
                   </div>
