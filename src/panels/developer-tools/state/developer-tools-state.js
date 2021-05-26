@@ -376,15 +376,13 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
-    const entityFilterRegExp = RegExp(
+    const entityFilterRegExp = _entityFilter && RegExp(
       _entityFilter.toLowerCase().replace(/\*/g, ".*")
     );
 
     return Object.keys(hass.states)
-      .map(function (key) {
-        return hass.states[key];
-      })
-      .filter(function (value) {
+      .map((key) => hass.states[key])
+      .filter((value) => {
         // 1. If there is no entity filter => nothing to check
         // 2. If we have a match for the entity ID => we do not have to look further
         // 3. If entity ID does not match => check the friendly name => if there is none,
