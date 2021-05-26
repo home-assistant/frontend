@@ -241,6 +241,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const name =
+      "name" in entityConf ? entityConf.name : computeStateName(stateObj);
+
     return html`
       <div
         class="entity"
@@ -253,15 +256,10 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         tabindex=${ifDefined(
           hasAction(entityConf.tap_action) ? "0" : undefined
         )}
+        .title=${name}
       >
         ${this._config!.show_name
-          ? html`
-              <div class="name">
-                ${"name" in entityConf
-                  ? entityConf.name
-                  : computeStateName(stateObj)}
-              </div>
-            `
+          ? html` <div class="name">${name}</div> `
           : ""}
         ${this._config!.show_icon
           ? html`

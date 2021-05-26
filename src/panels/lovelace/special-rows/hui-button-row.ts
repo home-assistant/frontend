@@ -50,6 +50,9 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
         ? this.hass.states[this._config.entity]
         : undefined;
 
+    const name =
+      this._config.name || (stateObj ? computeStateName(stateObj) : "");
+
     return html`
       <ha-icon
         .icon=${this._config.icon ||
@@ -57,9 +60,7 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
       >
       </ha-icon>
       <div class="flex">
-        <div>
-          ${this._config.name || (stateObj ? computeStateName(stateObj) : "")}
-        </div>
+        <div .title=${name}>${name}</div>
         <mwc-button
           @action=${this._handleAction}
           .actionHandler=${actionHandler({

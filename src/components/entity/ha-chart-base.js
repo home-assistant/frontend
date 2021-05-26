@@ -128,7 +128,11 @@ class HaChartBase extends mixinBehaviors(
           <div class="chartLegend">
             <ul>
               <template is="dom-repeat" items="[[metas]]">
-                <li on-click="_legendClick" data-hidden$="[[item.hidden]]">
+                <li
+                  on-click="_legendClick"
+                  data-hidden$="[[item.hidden]]"
+                  title$="[[item.label]]"
+                >
                   <em style$="background-color:[[item.bgColor]]"></em>
                   [[item.label]]
                 </li>

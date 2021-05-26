@@ -251,7 +251,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               </div>
             </div>
           </div>
-          <div id="info">
+          <div id="info" .title=${name}>
             <div id="modes">
               ${(stateObj.attributes.hvac_modes || [])
                 .concat()

@@ -173,7 +173,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
               </div>
             </div>
           </div>
-          <div id="info">${name}</div>
+          <div id="info" .title=${name}>${name}</div>
         </div>
       </ha-card>
     `;

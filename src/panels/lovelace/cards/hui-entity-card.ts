@@ -110,12 +110,12 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       ? this._config.attribute in stateObj.attributes
       : !UNAVAILABLE_STATES.includes(stateObj.state);
 
+    const name = this._config.name || computeStateName(stateObj);
+
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">
         <div class="header">
-          <div class="name">
-            ${this._config.name || computeStateName(stateObj)}
-          </div>
+          <div class="name" .title=${name}>${name}</div>
           <div class="icon">
             <ha-icon
               .icon=${this._config.icon || stateIcon(stateObj)}

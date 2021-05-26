@@ -96,6 +96,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     const brightness =
       Math.round((stateObj.attributes.brightness / 255) * 100) || 0;
 
+    const name = this._config.name || computeStateName(stateObj);
+
     return html`
       <ha-card>
         <mwc-icon-button
@@ -145,7 +147,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
             </div>
           </div>
 
-          <div id="info">
+          <div id="info" .title=${name}>
             ${UNAVAILABLE_STATES.includes(stateObj.state)
               ? html`
                   <div>
@@ -157,7 +159,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   </div>
                 `
               : html` <div class="brightness">%</div> `}
-            ${this._config.name || computeStateName(stateObj)}
+            ${name}
           </div>
         </div>
       </ha-card>
