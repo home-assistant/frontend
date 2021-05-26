@@ -1261,7 +1261,7 @@
         "notification_toast": {
             "connection_lost": "Forbindelse afbrudt. Opretter forbindelse igen...",
             "dismiss": "Afvis",
-            "intergration_starting": "Starter {integration}, ikke alt vil være tilgængeligt, før det er færdigt.",
+            "integration_starting": "Starter {integration}, ikke alt vil være tilgængeligt, før det er færdigt.",
             "service_call_failed": "Kunne ikke kalde tjenesten {service}.",
             "started": "Home Assistant er startet!",
             "starting": "Home Assistant starter. Nogle funktioner er måske ikke tilgængelige før opstarten er færdig.",

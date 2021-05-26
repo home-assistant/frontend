@@ -1224,7 +1224,7 @@
         "notification_toast": {
             "connection_lost": "接続が切れました。再接続中...",
             "dismiss": "閉じる",
-            "intergration_starting": "{integration}を開始すると、完了するまですべてが利用できるわけではありません。",
+            "integration_starting": "{integration}を開始すると、完了するまですべてが利用できるわけではありません。",
             "service_call_failed": "サービス{service}の呼び出しに失敗しました。",
             "started": "ホームアシスタントが開始されました！",
             "starting": "Home Assistantが起動中です。全て利用可能なるまでもうしばらくお待ち下さい。",

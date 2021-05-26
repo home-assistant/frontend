@@ -1160,7 +1160,7 @@
         },
         "notification_toast": {
             "connection_lost": "Връзката е прекъсната. Повторно свързване...",
-            "intergration_starting": "Стартиране на {integration}, не всичко ще бъде налично, докато процесът не приключи.",
+            "integration_starting": "Стартиране на {integration}, не всичко ще бъде налично, докато процесът не приключи.",
             "service_call_failed": "Неуспешно повикване на услуга {service}.",
             "started": "Home Assistant стартира успешно!",
             "starting": "Home Assistant стартира, не всичко ще е на разположение, докато не приключи.",

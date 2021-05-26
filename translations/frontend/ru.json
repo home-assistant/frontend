@@ -403,7 +403,8 @@
             "password_protected": "защищено паролем",
             "password_protection": "Защита паролем",
             "security": "Безопасность",
-            "type": "Тип",
+            "select_type": "Выберите, что нужно восстановить",
+            "type": "Тип снимка",
             "upload_snapshot": "Загрузить снимок"
         },
         "store": {
@@ -1264,7 +1265,7 @@
         "notification_toast": {
             "connection_lost": "Соединение потеряно. Повторное подключение...",
             "dismiss": "Закрыть",
-            "intergration_starting": "{integration} запускается, пока что не всё может быть доступно.",
+            "integration_starting": "{integration} запускается, пока что не всё может быть доступно.",
             "service_call_failed": "Не удалось вызвать службу {service}.",
             "started": "Home Assistant работает!",
             "starting": "Home Assistant запускается, пока что не всё может быть доступно.",
