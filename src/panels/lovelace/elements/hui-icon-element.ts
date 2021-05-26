@@ -1,13 +1,6 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-icon";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -21,7 +14,7 @@ import { IconElementConfig, LovelaceElement } from "./types";
 export class HuiIconElement extends LitElement implements LovelaceElement {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: IconElementConfig;
+  @state() private _config?: IconElementConfig;
 
   public setConfig(config: IconElementConfig): void {
     if (!config.icon) {
@@ -56,7 +49,7 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         cursor: pointer;

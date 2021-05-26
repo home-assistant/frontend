@@ -1,32 +1,24 @@
+import "@material/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { caseInsensitiveCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-card";
-import "../../../../components/ha-switch";
 import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-switch";
 import {
   CloudStatusLoggedIn,
   CloudTTSInfo,
   getCloudTTSInfo,
   updateCloudPref,
 } from "../../../../data/cloud";
-import type { HomeAssistant } from "../../../../types";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { translationMetadata } from "../../../../resources/translations-metadata";
-import { caseInsensitiveCompare } from "../../../../common/string/compare";
-import memoizeOne from "memoize-one";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import type { HomeAssistant } from "../../../../types";
 import { showTryTtsDialog } from "./show-dialog-cloud-tts-try";
 
 @customElement("cloud-tts-pref")
@@ -35,9 +27,9 @@ export class CloudTTSPref extends LitElement {
 
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  @internalProperty() private savingPreferences = false;
+  @state() private savingPreferences = false;
 
-  @internalProperty() private ttsInfo?: CloudTTSInfo;
+  @state() private ttsInfo?: CloudTTSInfo;
 
   protected render(): TemplateResult {
     if (!this.cloudStatus) {
@@ -231,7 +223,7 @@ export class CloudTTSPref extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

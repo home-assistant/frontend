@@ -1,15 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { canRun, ScriptEntity } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
@@ -22,7 +20,7 @@ import { ActionRowConfig, LovelaceRow } from "./types";
 class HuiScriptEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ActionRowConfig;
+  @state() private _config?: ActionRowConfig;
 
   public setConfig(config: ActionRowConfig): void {
     if (!config) {
@@ -78,7 +76,7 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       mwc-button:last-child {
         margin-right: -0.57em;

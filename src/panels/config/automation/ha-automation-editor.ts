@@ -13,16 +13,14 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-input/paper-textarea";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { navigate } from "../../../common/navigate";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button-menu";
@@ -75,7 +73,7 @@ declare global {
 export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public automationId!: string;
+  @property() public automationId: string | null = null;
 
   @property() public automations!: AutomationEntity[];
 
@@ -85,15 +83,15 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @internalProperty() private _config?: AutomationConfig;
+  @state() private _config?: AutomationConfig;
 
-  @internalProperty() private _dirty = false;
+  @state() private _dirty = false;
 
-  @internalProperty() private _errors?: string;
+  @state() private _errors?: string;
 
-  @internalProperty() private _entityId?: string;
+  @state() private _entityId?: string;
 
-  @internalProperty() private _mode: "gui" | "yaml" = "gui";
+  @state() private _mode: "gui" | "yaml" = "gui";
 
   @query("ha-yaml-editor", true) private _editor?: HaYamlEditor;
 
@@ -178,14 +176,14 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
             aria-label=${this.hass.localize(
               "ui.panel.config.automation.picker.delete_automation"
             )}
-            class=${classMap({ warning: this.automationId })}
+            class=${classMap({ warning: Boolean(this.automationId) })}
             graphic="icon"
           >
             ${this.hass.localize(
               "ui.panel.config.automation.picker.delete_automation"
             )}
             <ha-svg-icon
-              class=${classMap({ warning: this.automationId })}
+              class=${classMap({ warning: Boolean(this.automationId) })}
               slot="graphic"
               .path=${mdiDelete}
             >
@@ -349,7 +347,10 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
 
   private async _loadConfig() {
     try {
-      const config = await getAutomationConfig(this.hass, this.automationId);
+      const config = await getAutomationConfig(
+        this.hass,
+        this.automationId as string
+      );
 
       // Normalize data: ensure trigger, action and condition are lists
       // Happens when people copy paste their automations into the config
@@ -449,7 +450,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       // Wait for dialog to complate closing
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
-    showAutomationEditor(this, {
+    showAutomationEditor({
       ...this._config,
       id: undefined,
       alias: `${this._config?.alias} (${this.hass.localize(
@@ -470,7 +471,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
   }
 
   private async _delete() {
-    await deleteAutomation(this.hass, this.automationId);
+    await deleteAutomation(this.hass, this.automationId as string);
     history.back();
   }
 
@@ -502,7 +503,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
         this._dirty = false;
 
         if (!this.automationId) {
-          navigate(this, `/config/automation/edit/${id}`, true);
+          navigate(`/config/automation/edit/${id}`, { replace: true });
         }
       },
       (errors) => {
@@ -519,7 +520,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
     this._saveAutomation();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -1,10 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+import { html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
 import { DeviceRegistryEntry } from "../../data/device_registry";
 import { EntityRegistryEntry } from "../../data/entity_registry";
@@ -22,7 +17,7 @@ export class HaAreaSelector extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() public _configEntries?: ConfigEntry[];
+  @state() public _configEntries?: ConfigEntry[];
 
   @property({ type: Boolean }) public disabled = false;
 

@@ -4,19 +4,21 @@ import { RippleHandlers } from "@material/mwc-ripple/ripple-handlers";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import {
   customElement,
   eventOptions,
-  html,
-  internalProperty,
-  LitElement,
   property,
-  PropertyValues,
   queryAsync,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
-import { styleMap } from "lit-html/directives/style-map";
+  state,
+} from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
+import { styleMap } from "lit/directives/style-map";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeActiveState } from "../../../common/entity/compute_active_state";
@@ -71,11 +73,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ButtonCardConfig;
+  @state() private _config?: ButtonCardConfig;
 
   @queryAsync("mwc-ripple") private _ripple!: Promise<Ripple | null>;
 
-  @internalProperty() private _shouldRenderRipple = false;
+  @state() private _shouldRenderRipple = false;
 
   public getCardSize(): number {
     return (
@@ -247,7 +249,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     this._rippleHandlers.endFocus();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         cursor: pointer;

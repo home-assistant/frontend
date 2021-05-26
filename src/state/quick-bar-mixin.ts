@@ -1,10 +1,10 @@
-import type { Constructor, PropertyValues } from "lit-element";
+import type { PropertyValues } from "lit";
 import tinykeys from "tinykeys";
 import {
   QuickBarParams,
   showQuickBar,
 } from "../dialogs/quick-bar/show-dialog-quick-bar";
-import { HomeAssistant } from "../types";
+import { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import { HassElement } from "./hass-element";
 

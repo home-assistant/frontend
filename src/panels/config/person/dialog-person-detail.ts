@@ -1,14 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/entity/ha-entities-picker";
@@ -50,25 +43,25 @@ const cropOptions: CropOptions = {
 class DialogPersonDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _userId?: string;
+  @state() private _userId?: string;
 
-  @internalProperty() private _user?: User;
+  @state() private _user?: User;
 
-  @internalProperty() private _isAdmin?: boolean;
+  @state() private _isAdmin?: boolean;
 
-  @internalProperty() private _deviceTrackers!: string[];
+  @state() private _deviceTrackers!: string[];
 
-  @internalProperty() private _picture!: string | null;
+  @state() private _picture!: string | null;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: PersonDetailDialogParams;
+  @state() private _params?: PersonDetailDialogParams;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
-  @internalProperty() private _personExists = false;
+  @state() private _personExists = false;
 
   private _deviceTrackersAvailable = memoizeOne((hass) =>
     Object.keys(hass.states).some(
@@ -438,7 +431,7 @@ class DialogPersonDetail extends LitElement {
     this._params = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

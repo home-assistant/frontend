@@ -440,57 +440,43 @@ export const demoLovelaceTeachingbirds: DemoConfig["lovelace"] = () => ({
           type: "horizontal-stack",
         },
         {
+          type: "grid",
+          columns: 2,
           cards: [
             {
-              cards: [
-                {
-                  graph: "line",
-                  type: "sensor",
-                  entity: "sensor.temperature_bedroom",
-                },
-                {
-                  graph: "line",
-                  type: "sensor",
-                  name: "S's room",
-                  entity: "sensor.temperature_stefan",
-                },
-              ],
-              type: "horizontal-stack",
+              graph: "line",
+              type: "sensor",
+              entity: "sensor.temperature_bedroom",
             },
             {
-              cards: [
-                {
-                  graph: "line",
-                  type: "sensor",
-                  entity: "sensor.temperature_passage",
-                },
-                {
-                  graph: "line",
-                  type: "sensor",
-                  name: "Bathroom",
-                  entity: "sensor.temperature_downstairs_bathroom",
-                },
-              ],
-              type: "horizontal-stack",
+              graph: "line",
+              type: "sensor",
+              name: "S's room",
+              entity: "sensor.temperature_stefan",
             },
             {
-              cards: [
-                {
-                  graph: "line",
-                  type: "sensor",
-                  entity: "sensor.temperature_storage",
-                },
-                {
-                  graph: "line",
-                  type: "sensor",
-                  name: "Refrigerator",
-                  entity: "sensor.refrigerator",
-                },
-              ],
-              type: "horizontal-stack",
+              graph: "line",
+              type: "sensor",
+              entity: "sensor.temperature_passage",
+            },
+            {
+              graph: "line",
+              type: "sensor",
+              name: "Bathroom",
+              entity: "sensor.temperature_downstairs_bathroom",
+            },
+            {
+              graph: "line",
+              type: "sensor",
+              entity: "sensor.temperature_storage",
+            },
+            {
+              graph: "line",
+              type: "sensor",
+              name: "Refrigerator",
+              entity: "sensor.refrigerator",
             },
           ],
-          type: "vertical-stack",
         },
         {
           entities: [

@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
 import "../ha-formfield";
@@ -39,7 +33,7 @@ export class HaBooleanSelector extends LitElement {
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-formfield {
         width: 100%;

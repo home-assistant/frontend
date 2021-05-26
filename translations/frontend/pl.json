@@ -287,7 +287,7 @@
             "reset_defaults": "Przywróć domyślne",
             "reset_options": "Resetuj opcje",
             "restart": "Uruchom ponownie",
-            "restart_name": "Uruchom ponownie {name}",
+            "restart_name": "Uruchom ponownie",
             "running_version": "Aktualnie używasz wersji {version}",
             "save": "Zapisz",
             "show_more": "Pokaż więcej informacji na ten temat",
@@ -303,7 +303,7 @@
             },
             "restart": {
                 "text": "Czy na pewno chcesz ponownie uruchomić {name}?",
-                "title": "Uruchom ponownie {name}"
+                "title": "Uruchom ponownie"
             },
             "update": {
                 "text": "Czy na pewno chcesz zaktualizować {name} do wersji {version}?",
@@ -314,7 +314,7 @@
             "addon_new_version": "Nowa wersja dostępna",
             "addon_running": "Dodatek jest uruchomiony",
             "addon_stopped": "Dodatek jest zatrzymany",
-            "addons": "Dodatki",
+            "addons": "Zainstalowane dodatki",
             "no_addons": "Nie masz jeszcze zainstalowanych żadnych dodatków. Przejdź do sklepu z dodatkami, aby rozpocząć!"
         },
         "dialog": {
@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "Wystąpił nieznany błąd",
+            "error_addon_no_ingress": "Żądany dodatek nie obsługuje osadzania",
             "error_addon_not_found": "Nie znaleziono dodatku",
             "faq_link": "Mój Home Assistant - często zadawane pytania",
             "not_supported": "To przekierowanie nie jest obsługiwane przez Twoją instancję Home Assistanta. Sprawdź {link} aby znaleźć obsługiwane przekierowania i wersję, w której zostały wprowadzone."
@@ -383,6 +384,7 @@
             "create": "Utwórz",
             "create_blocked_not_running": "Tworzenie snapshota nie jest teraz możliwe, ponieważ system jest w {state}.",
             "create_snapshot": "Utwórz snapshot",
+            "created": "Utworzony",
             "description": "Snapshoty umożliwiają łatwe tworzenie kopii zapasowych i przywracanie wszystkich danych instancji Home Assistant.",
             "enter_password": "Proszę wprowadzić hasło",
             "folder": {
@@ -434,8 +436,8 @@
                 "ip_address": "Adres IP",
                 "new_hostname": "Wprowadź nową nazwę hosta:",
                 "operating_system": "System operacyjny",
-                "reboot_host": "Uruchom ponownie hosta",
-                "shutdown_host": "Zamknij hosta",
+                "reboot_host": "Uruchom ponownie",
+                "shutdown_host": "Wyłącz",
                 "used_space": "Zajęte miejsce"
             },
             "log": {
@@ -457,7 +459,8 @@
                 "leave_beta_action": "Opuść kanał beta",
                 "leave_beta_description": "Pobieraj stabilne aktualizacje dla Home Assistanta, Supervisora i hosta",
                 "ram_usage": "Zużycie pamięci przez Supervisora",
-                "reload_supervisor": "Wczytaj ponownie Supervisor",
+                "reload_supervisor": "Wczytaj ponownie",
+                "search": "Szukaj",
                 "share_diagnostics": "Udostępnij dane diagnostyczne",
                 "share_diagnostics_description": "Udostępniaj raporty o awariach i informacje diagnostyczne.",
                 "share_diagonstics_description": "Czy chcesz automatycznie udostępniać raporty o awariach i informacje diagnostyczne, gdy Supervisor napotka nieoczekiwane błędy? {line_break} Pozwoli nam to rozwiązać problemy, informacje są dostępne tylko dla głównego zespołu Home Assistant Core i nie będą udostępniane innym. {line_break} Dane nie zawierają żadnych prywatnych/wrażliwych informacji i możesz to wyłączyć w ustawieniach w dowolnym momencie.",
@@ -716,6 +719,9 @@
                 "no_areas": "Nie masz żadnych obszarów",
                 "no_match": "Nie znaleziono pasujących obszarów",
                 "show_areas": "Pokaż obszary"
+            },
+            "attributes": {
+                "expansion_header": "Atrybuty"
             },
             "blueprint-picker": {
                 "add_user": "Dodaj użytkownika",
@@ -1258,7 +1264,7 @@
         "notification_toast": {
             "connection_lost": "Utracono połączenie. Łączę ponownie...",
             "dismiss": "Ukryj",
-            "intergration_starting": "{integration} uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
+            "integration_starting": "{integration} uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
             "service_call_failed": "Nie udało się wywołać usługi {service}.",
             "started": "Home Assistant uruchomił się!",
             "starting": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
@@ -2166,7 +2172,7 @@
                     "license": "Opublikowany na licencji Apache 2.0",
                     "path_configuration": "Ścieżka do pliku configuration.yaml: {path}",
                     "server": "serwer",
-                    "setup_time": "Ustawienia czasu",
+                    "setup_time": "Czas konfiguracji",
                     "source": "Źródło:",
                     "system_health_error": "Komponent kondycji systemu nie jest wczytany. Dodaj 'system_health:' do pliku configuration.yaml",
                     "system_health": {
@@ -2585,6 +2591,8 @@
                         "add_scene": "Dodaj scenę",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę scenę?",
                         "delete_scene": "Usuń scenę",
+                        "duplicate": "Duplikuj",
+                        "duplicate_scene": "Duplikuj scenę",
                         "edit_scene": "Edytuj scenę",
                         "header": "Edytor scen",
                         "headers": {
@@ -2912,7 +2920,9 @@
                         "controller_in_inclusion_mode": "Kontroler Z-Wave jest teraz w trybie dodawania węzła.",
                         "follow_device_instructions": "Postępuj zgodnie ze wskazówkami dołączonymi do urządzenia, aby wywołać dodawanie do sieci.",
                         "inclusion_failed": "Nie można dodać węzła. Sprawdź logi, aby uzyskać więcej informacji.",
-                        "inclusion_finished": "Węzeł został dodany. Trwa kończenie konfiguracji węzła w tle, dodawanie encji urządzenia może zająć kilka minut.",
+                        "inclusion_finished": "Węzeł został dodany.",
+                        "interview_failed": "Odpytywanie urządzenia nie powiodło się. Dodatkowe informacje mogą być dostępne w logach.",
+                        "interview_started": "Urządzenie jest odpytywane. To może zająć trochę czasu.",
                         "introduction": "Ten kreator poprowadzi Cię przez proces dodawania węzła do sieci Z-Wave.",
                         "secure_inclusion_warning": "Bezpieczne węzły wymagają dodatkowej przepustowości; zbyt wiele bezpiecznych węzłów może spowolnić twoją sieć Z-Wave. Zalecamy używanie bezpiecznego dodawania tylko w przypadku urządzeń, które tego wymagają, takich jak zamki lub urządzenia sterujące bramami garażowymi.",
                         "start_inclusion": "Rozpocznij dodawanie węzła",
@@ -2952,7 +2962,7 @@
                     },
                     "logs": {
                         "log_level": "Poziom loga",
-                        "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS ...",
+                        "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS...",
                         "title": "Logi Z-Wave JS"
                     },
                     "navigation": {
@@ -4000,6 +4010,17 @@
                     "link_promo": "Dowiedz się więcej o motywach",
                     "primary_color": "Kolor podstawowy",
                     "reset": "Zresetuj"
+                },
+                "time_format": {
+                    "description": "Wybierz sposób formatowania czasu.",
+                    "dropdown_label": "Format czasu",
+                    "formats": {
+                        "12": "12-godzinny (AM / PM)",
+                        "24": "24-godzinny",
+                        "language": "Auto (użyj ustawień języka)",
+                        "system": "Użyj ustawień regionalnych systemu"
+                    },
+                    "header": "Format czasu"
                 },
                 "vibrate": {
                     "description": "Włącz lub wyłącz wibracje na tym urządzeniu podczas sterowania urządzeniami.",

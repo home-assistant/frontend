@@ -1,30 +1,22 @@
-import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { dump } from "js-yaml";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
+import "../../../../components/ha-code-editor";
+import "../../../../components/ha-icon-button";
+import type { NodeInfo } from "../../../../components/trace/hat-graph";
+import "../../../../components/trace/hat-logbook-note";
+import { LogbookEntry } from "../../../../data/logbook";
 import {
   ActionTraceStep,
   AutomationTraceExtended,
   ChooseActionTraceStep,
   getDataFromPath,
 } from "../../../../data/trace";
-import "../../../../components/ha-icon-button";
-import "../../../../components/ha-code-editor";
-import type { NodeInfo } from "../../../../components/trace/hat-graph";
-import "../../../../components/trace/hat-logbook-note";
 import { HomeAssistant } from "../../../../types";
-import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
-import { LogbookEntry } from "../../../../data/logbook";
-import { traceTabStyles } from "./styles";
 import "../../../logbook/ha-logbook";
+import { traceTabStyles } from "./styles";
 
 @customElement("ha-automation-trace-path-details")
 export class HaAutomationTracePathDetails extends LitElement {
@@ -38,12 +30,11 @@ export class HaAutomationTracePathDetails extends LitElement {
 
   @property() public logbookEntries!: LogbookEntry[];
 
+  @property() renderedNodes: Record<string, any> = {};
+
   @property() public trackedNodes!: Record<string, any>;
 
-  @internalProperty() private _view:
-    | "config"
-    | "changed_variables"
-    | "logbook" = "config";
+  @state() private _view: "config" | "changed_variables" | "logbook" = "config";
 
   protected render(): TemplateResult {
     return html`
@@ -102,12 +93,12 @@ export class HaAutomationTracePathDetails extends LitElement {
     const parts: TemplateResult[][] = [];
 
     let active = false;
-    const childConditionsPrefix = `${this.selected.path}/conditions/`;
 
     for (const curPath of Object.keys(this.trace.trace)) {
-      // Include all child conditions too
+      // Include all trace results until the next rendered node.
+      // Rendered nodes also include non-chosen choose paths.
       if (active) {
-        if (!curPath.startsWith(childConditionsPrefix)) {
+        if (curPath in this.renderedNodes) {
           break;
         }
       } else if (curPath === this.selected.path) {
@@ -132,9 +123,7 @@ export class HaAutomationTracePathDetails extends LitElement {
           return html`
             ${curPath === this.selected.path
               ? ""
-              : html`<h2>
-                  Condition ${curPath.substr(childConditionsPrefix.length)}
-                </h2>`}
+              : html`<h2>${curPath.substr(this.selected.path.length + 1)}</h2>`}
             ${data.length === 1 ? "" : html`<h3>Iteration ${idx + 1}</h3>`}
             Executed:
             ${formatDateTimeWithSeconds(
@@ -143,13 +132,13 @@ export class HaAutomationTracePathDetails extends LitElement {
             )}<br />
             ${result
               ? html`Result:
-                  <pre>${safeDump(result)}</pre>`
+                  <pre>${dump(result)}</pre>`
               : error
               ? html`<div class="error">Error: ${error}</div>`
               : ""}
             ${Object.keys(rest).length === 0
               ? ""
-              : html`<pre>${safeDump(rest)}</pre>`}
+              : html`<pre>${dump(rest)}</pre>`}
           `;
         })
       );
@@ -165,7 +154,7 @@ export class HaAutomationTracePathDetails extends LitElement {
     const config = getDataFromPath(this.trace!.config, this.selected.path);
     return config
       ? html`<ha-code-editor
-          .value=${safeDump(config).trimRight()}
+          .value=${dump(config).trimRight()}
           readOnly
         ></ha-code-editor>`
       : "Unable to find config";
@@ -182,9 +171,7 @@ export class HaAutomationTracePathDetails extends LitElement {
             ${idx > 0 ? html`<p>Iteration ${idx + 1}</p>` : ""}
             ${Object.keys(trace.changed_variables || {}).length === 0
               ? "No variables changed"
-              : html`<pre>
-${safeDump(trace.changed_variables).trimRight()}</pre
-                >`}
+              : html`<pre>${dump(trace.changed_variables).trimRight()}</pre>`}
           `
         )}
       </div>
@@ -254,7 +241,7 @@ ${safeDump(trace.changed_variables).trimRight()}</pre
     this._view = ev.target.view;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       traceTabStyles,
       css`

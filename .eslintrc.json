@@ -28,9 +28,7 @@
     "__BUILD__": false,
     "__VERSION__": false,
     "__STATIC_PATH__": false,
-    "Polymer": true,
-    "webkitSpeechRecognition": false,
-    "ResizeObserver": false
+    "Polymer": true
   },
   "env": {
     "browser": true,

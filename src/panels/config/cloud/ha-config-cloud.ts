@@ -1,5 +1,5 @@
 import { PolymerElement } from "@polymer/polymer";
-import { customElement, internalProperty, property } from "lit-element";
+import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../common/navigate";
 import { CloudStatus } from "../../../data/cloud";
 import {
@@ -67,9 +67,9 @@ class HaConfigCloud extends HassRouterPage {
     },
   };
 
-  @internalProperty() private _flashMessage = "";
+  @state() private _flashMessage = "";
 
-  @internalProperty() private _loginEmail = "";
+  @state() private _loginEmail = "";
 
   private _resolveCloudStatusLoaded!: () => void;
 
@@ -81,7 +81,7 @@ class HaConfigCloud extends HassRouterPage {
     super.firstUpdated(changedProps);
     this.addEventListener("cloud-done", (ev) => {
       this._flashMessage = (ev as any).detail.flashMessage;
-      navigate(this, "/config/cloud/login");
+      navigate("/config/cloud/login");
     });
   }
 
@@ -95,7 +95,7 @@ class HaConfigCloud extends HassRouterPage {
       if (oldStatus === undefined) {
         this._resolveCloudStatusLoaded();
       } else if (oldStatus.logged_in !== this.cloudStatus.logged_in) {
-        navigate(this, this.route.prefix, true);
+        navigate(this.route.prefix, { replace: true });
       }
     }
   }

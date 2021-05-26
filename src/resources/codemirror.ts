@@ -1,24 +1,24 @@
+import { indentLess, indentMore } from "@codemirror/commands";
 import { HighlightStyle, tags } from "@codemirror/highlight";
-import { EditorView, KeyBinding } from "@codemirror/view";
-import { StreamLanguage } from "@codemirror/stream-parser";
 import { jinja2 } from "@codemirror/legacy-modes/mode/jinja2";
 import { yaml } from "@codemirror/legacy-modes/mode/yaml";
-import { indentLess, indentMore } from "@codemirror/commands";
 import { Compartment } from "@codemirror/state";
+import { StreamLanguage } from "@codemirror/stream-parser";
+import { EditorView, KeyBinding } from "@codemirror/view";
 
-export {
-  keymap,
-  highlightActiveLine,
-  drawSelection,
-  EditorView,
-} from "@codemirror/view";
-export { EditorState, Prec } from "@codemirror/state";
 export { defaultKeymap } from "@codemirror/commands";
 export { lineNumbers } from "@codemirror/gutter";
-export { searchKeymap, highlightSelectionMatches } from "@codemirror/search";
+export { HighlightStyle, tags } from "@codemirror/highlight";
 export { history, historyKeymap } from "@codemirror/history";
 export { rectangularSelection } from "@codemirror/rectangular-selection";
-export { HighlightStyle, tags } from "@codemirror/highlight";
+export { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
+export { EditorState, Prec } from "@codemirror/state";
+export {
+  drawSelection,
+  EditorView,
+  highlightActiveLine,
+  keymap,
+} from "@codemirror/view";
 
 export const langs = {
   jinja2: StreamLanguage.define(jinja2),

@@ -1,11 +1,6 @@
-import { safeDump } from "js-yaml";
-import {
-  customElement,
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { dump } from "js-yaml";
+import { html, css, LitElement, TemplateResult } from "lit";
+import { customElement } from "lit/decorators";
 import "../../../src/components/ha-card";
 import { describeTrigger } from "../../../src/data/automation_i18n";
 
@@ -34,7 +29,7 @@ export class DemoAutomationDescribeTrigger extends LitElement {
           (conf) => html`
             <div class="trigger">
               <span>${describeTrigger(conf as any)}</span>
-              <pre>${safeDump(conf)}</pre>
+              <pre>${dump(conf)}</pre>
             </div>
           `
         )}

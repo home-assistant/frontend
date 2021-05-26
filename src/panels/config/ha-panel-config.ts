@@ -22,12 +22,8 @@ import {
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { PolymerElement } from "@polymer/polymer";
-import {
-  customElement,
-  internalProperty,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
@@ -316,11 +312,11 @@ class HaPanelConfig extends HassRouterPage {
     },
   };
 
-  @internalProperty() private _wideSidebar = false;
+  @state() private _wideSidebar = false;
 
-  @internalProperty() private _wide = false;
+  @state() private _wide = false;
 
-  @internalProperty() private _cloudStatus?: CloudStatus;
+  @state() private _cloudStatus?: CloudStatus;
 
   private _listeners: Array<() => void> = [];
 

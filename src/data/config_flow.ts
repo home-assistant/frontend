@@ -13,6 +13,7 @@ export const DISCOVERY_SOURCES = [
   "zeroconf",
   "discovery",
   "mqtt",
+  "hassio",
 ];
 
 export const ATTENTION_SOURCES = ["reauth"];

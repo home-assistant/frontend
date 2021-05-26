@@ -1,18 +1,9 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { domainIcon } from "../../../common/entity/domain_icon";
@@ -49,15 +40,15 @@ const HELPERS = {
 export class DialogHelperDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _item?: Helper;
+  @state() private _item?: Helper;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _platform?: string;
+  @state() private _platform?: string;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
   @query(".form") private _form?: HTMLDivElement;
 
@@ -77,7 +68,7 @@ export class DialogHelperDetail extends LitElement {
     return html`
       <ha-dialog
         .open=${this._opened}
-        @closing=${this.closeDialog}
+        @closed=${this.closeDialog}
         class=${classMap({ "button-left": !this._platform })}
         scrimClickAction
         escapeKeyAction
@@ -207,7 +198,7 @@ export class DialogHelperDetail extends LitElement {
     this._error = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

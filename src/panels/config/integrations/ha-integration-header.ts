@@ -1,14 +1,8 @@
-import "../../../components/ha-svg-icon";
-import { mdiPackageVariant, mdiCloud } from "@mdi/js";
+import { mdiCloud, mdiPackageVariant } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  html,
-  customElement,
-  property,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import "../../../components/ha-svg-icon";
 import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";

@@ -3,15 +3,9 @@ import "@material/mwc-icon-button";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
-import {
-  css,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
-import { cache } from "lit-html/directives/cache";
+import { css, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import {
   DOMAINS_MORE_INFO_NO_HISTORY,
@@ -31,11 +25,11 @@ import { haStyleDialog } from "../../resources/styles";
 import "../../state-summary/state-card-content";
 import { HomeAssistant } from "../../types";
 import { showConfirmationDialog } from "../generic/show-dialog-box";
+import { replaceDialog } from "../make-dialog-manager";
 import "./controls/more-info-default";
 import "./ha-more-info-history";
 import "./ha-more-info-logbook";
 import "./more-info-content";
-import { replaceDialog } from "../make-dialog-manager";
 
 const DOMAINS_NO_INFO = ["camera", "configurator"];
 /**
@@ -58,9 +52,9 @@ export class MoreInfoDialog extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public large = false;
 
-  @internalProperty() private _entityId?: string | null;
+  @state() private _entityId?: string | null;
 
-  @internalProperty() private _currTabIndex = 0;
+  @state() private _currTabIndex = 0;
 
   public showDialog(params: MoreInfoDialogParams) {
     this._entityId = params.entityId;
@@ -312,7 +306,7 @@ export class MoreInfoDialog extends LitElement {
       idToPassThroughUrl = stateObj.attributes.id;
     }
 
-    navigate(this, `/config/${domain}/edit/${idToPassThroughUrl}`);
+    navigate(`/config/${domain}/edit/${idToPassThroughUrl}`);
     this.closeDialog();
   }
 

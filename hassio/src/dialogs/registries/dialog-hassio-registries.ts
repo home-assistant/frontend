@@ -3,16 +3,8 @@ import "@material/mwc-icon-button/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDelete } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-svg-icon";
@@ -39,21 +31,21 @@ class HassioRegistriesDialog extends LitElement {
     username: string;
   }[];
 
-  @internalProperty() private _registry?: string;
+  @state() private _registry?: string;
 
-  @internalProperty() private _username?: string;
+  @state() private _username?: string;
 
-  @internalProperty() private _password?: string;
+  @state() private _password?: string;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _addingRegistry = false;
+  @state() private _addingRegistry = false;
 
   protected render(): TemplateResult {
     return html`
       <ha-dialog
         .open=${this._opened}
-        @closing=${this.closeDialog}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -220,7 +212,7 @@ class HassioRegistriesDialog extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

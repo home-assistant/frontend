@@ -1,16 +1,7 @@
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import deepFreeze from "deep-freeze";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import "../../../../components/dialog/ha-paper-dialog";
 import "../../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
@@ -28,11 +19,11 @@ import { SuggestCardDialogParams } from "./show-suggest-card-dialog";
 export class HuiDialogSuggestCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: SuggestCardDialogParams;
+  @state() private _params?: SuggestCardDialogParams;
 
-  @internalProperty() private _cardConfig?: LovelaceCardConfig[];
+  @state() private _cardConfig?: LovelaceCardConfig[];
 
-  @internalProperty() private _saving = false;
+  @state() private _saving = false;
 
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
@@ -123,7 +114,7 @@ export class HuiDialogSuggestCard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

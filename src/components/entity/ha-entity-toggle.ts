@@ -1,23 +1,22 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { property, state } from "lit/decorators";
 import { STATES_OFF } from "../../common/const";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../data/entity";
 import { forwardHaptic } from "../../data/haptics";
 import { HomeAssistant } from "../../types";
+import "../ha-formfield";
 import "../ha-icon-button";
 import "../ha-switch";
-import "../ha-formfield";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined &&
@@ -32,7 +31,7 @@ export class HaEntityToggle extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() private _isOn = false;
+  @state() private _isOn = false;
 
   protected render(): TemplateResult {
     if (!this.stateObj) {
@@ -81,7 +80,8 @@ export class HaEntityToggle extends LitElement {
     this.addEventListener("click", (ev) => ev.stopPropagation());
   }
 
-  protected updated(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
     if (changedProps.has("stateObj")) {
       this._isOn = isOn(this.stateObj);
     }
@@ -148,7 +148,7 @@ export class HaEntityToggle extends LitElement {
     }, 2000);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         white-space: nowrap;

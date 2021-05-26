@@ -1,27 +1,19 @@
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  html,
-  property,
-  customElement,
-  LitElement,
-  CSSResultArray,
-  internalProperty,
-  query,
-} from "lit-element";
-import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-listbox/paper-listbox";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultArray, html, LitElement } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import {
   fetchZWaveJSLogConfig,
   setZWaveJSLogLevel,
   subscribeZWaveJSLogs,
   ZWaveJSLogConfig,
 } from "../../../../../data/zwave_js";
+import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
+import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
 import { configTabs } from "./zwave_js-config-router";
-import "../../../../../layouts/hass-tabs-subpage";
-import { haStyle } from "../../../../../resources/styles";
 
 @customElement("zwave_js-logs")
 class ZWaveJSLogs extends SubscribeMixin(LitElement) {
@@ -33,7 +25,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   @property() public configEntryId!: string;
 
-  @internalProperty() private _logConfig?: ZWaveJSLogConfig;
+  @state() private _logConfig?: ZWaveJSLogConfig;
 
   @query("textarea", true) private _textarea?: HTMLTextAreaElement;
 
@@ -126,10 +118,16 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     if (ev.target === undefined || this._logConfig === undefined) {
       return;
     }
-    if (this._logConfig.level === ev.target.selected) {
+    const selected = ev.target.selected;
+    if (this._logConfig.level === selected) {
       return;
     }
-    setZWaveJSLogLevel(this.hass!, this.configEntryId, ev.target.selected);
+    setZWaveJSLogLevel(this.hass!, this.configEntryId, selected);
+    this._logConfig.level = selected;
+    this._textarea!.value += `${this.hass.localize(
+      "ui.panel.config.zwave_js.logs.log_level_changed",
+      { level: selected.charAt(0).toUpperCase() + selected.slice(1) }
+    )}\n`;
   }
 
   static get styles(): CSSResultArray {

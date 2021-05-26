@@ -2,14 +2,13 @@
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   TemplateResult,
   unsafeCSS,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-chip";
 
@@ -48,7 +47,7 @@ export class HaChipSet extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ${unsafeCSS(chipStyles)}
 

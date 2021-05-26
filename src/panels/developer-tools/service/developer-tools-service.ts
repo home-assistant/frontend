@@ -1,15 +1,8 @@
 import { mdiHelpCircle } from "@mdi/js";
 import { ERR_CONNECTION_LOST } from "home-assistant-js-websocket";
-import { safeLoad } from "js-yaml";
-import {
-  css,
-  CSSResultArray,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-} from "lit-element";
+import { load } from "js-yaml";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { LocalStorage } from "../../../common/decorators/local-storage";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -42,7 +35,7 @@ class HaPanelDevService extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private _uiAvailable = true;
+  @state() private _uiAvailable = true;
 
   @LocalStorage("panel-dev-service-state-service-data", true)
   private _serviceData?: ServiceAction = { service: "", target: {}, data: {} };
@@ -368,9 +361,9 @@ class HaPanelDevService extends LitElement {
     const example = {};
     fields.forEach((field) => {
       if (field.example) {
-        let value = "";
+        let value: any = "";
         try {
-          value = safeLoad(field.example);
+          value = load(field.example);
         } catch (err) {
           value = field.example;
         }
@@ -381,7 +374,7 @@ class HaPanelDevService extends LitElement {
     this._yamlEditor?.setValue(this._serviceData);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

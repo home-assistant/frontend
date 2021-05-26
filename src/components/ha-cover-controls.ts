@@ -1,16 +1,14 @@
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { computeCloseIcon, computeOpenIcon } from "../common/entity/cover_icon";
 import { UNAVAILABLE } from "../data/entity";
 import type { HomeAssistant } from "../types";
@@ -23,10 +21,10 @@ class HaCoverControls extends LitElement {
 
   @property({ attribute: false }) public stateObj!: HassEntity;
 
-  @internalProperty() private _entityObj?: CoverEntity;
+  @state() private _entityObj?: CoverEntity;
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     if (changedProperties.has("stateObj")) {
       this._entityObj = new CoverEntity(this.hass, this.stateObj);
@@ -114,7 +112,7 @@ class HaCoverControls extends LitElement {
     this._entityObj.stopCover();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .state {
         white-space: nowrap;

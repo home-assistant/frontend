@@ -5,10 +5,10 @@ import {
 } from "../common/dom/apply_themes_on_element";
 import { computeLocalize } from "../common/translations/localize";
 import { DEFAULT_PANEL } from "../data/panel";
-import { NumberFormat } from "../data/translation";
+import { NumberFormat, TimeFormat } from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
-import { getTranslation, getLocalLanguage } from "../util/hass-translation";
+import { getLocalLanguage, getTranslation } from "../util/hass-translation";
 import { demoConfig } from "./demo_config";
 import { demoPanels } from "./demo_panels";
 import { demoServices } from "./demo_services";
@@ -215,6 +215,7 @@ export const provideHass = (
     locale: {
       language: localLanguage,
       number_format: NumberFormat.language,
+      time_format: TimeFormat.language,
     },
     resources: null as any,
     localize: () => "",
@@ -276,7 +277,7 @@ export const provideHass = (
     mockTheme(theme) {
       invalidateThemeCache();
       hass().updateHass({
-        selectedTheme: { theme: theme ? "mock" : "default" },
+        selectedThemeSettings: { theme: theme ? "mock" : "default" },
         themes: {
           ...hass().themes,
           themes: {
@@ -284,11 +285,11 @@ export const provideHass = (
           },
         },
       });
-      const { themes, selectedTheme } = hass();
+      const { themes, selectedThemeSettings } = hass();
       applyThemesOnElement(
         document.documentElement,
         themes,
-        selectedTheme!.theme
+        selectedThemeSettings!.theme
       );
     },
 

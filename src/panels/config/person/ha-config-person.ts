@@ -1,15 +1,8 @@
 import { mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -47,9 +40,9 @@ class HaConfigPerson extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _storageItems?: Person[];
+  @state() private _storageItems?: Person[];
 
-  @internalProperty() private _configItems?: Person[];
+  @state() private _configItems?: Person[];
 
   private _usersLoad?: Promise<User[]>;
 
@@ -265,7 +258,7 @@ class HaConfigPerson extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

@@ -1,5 +1,6 @@
-import { css, customElement, html, LitElement, property } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 
 @customElement("ha-config-section")
 export class HaConfigSection extends LitElement {

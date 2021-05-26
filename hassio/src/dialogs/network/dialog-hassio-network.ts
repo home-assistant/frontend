@@ -6,17 +6,9 @@ import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiClose } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { cache } from "lit-html/directives/cache";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
@@ -54,23 +46,23 @@ export class DialogHassioNetwork
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
-  @internalProperty() private _accessPoints?: AccessPoints;
+  @state() private _accessPoints?: AccessPoints;
 
-  @internalProperty() private _curTabIndex = 0;
+  @state() private _curTabIndex = 0;
 
-  @internalProperty() private _dirty = false;
+  @state() private _dirty = false;
 
-  @internalProperty() private _interface?: NetworkInterface;
+  @state() private _interface?: NetworkInterface;
 
-  @internalProperty() private _interfaces!: NetworkInterface[];
+  @state() private _interfaces!: NetworkInterface[];
 
-  @internalProperty() private _params?: HassioNetworkDialogParams;
+  @state() private _params?: HassioNetworkDialogParams;
 
-  @internalProperty() private _processing = false;
+  @state() private _processing = false;
 
-  @internalProperty() private _scanning = false;
+  @state() private _scanning = false;
 
-  @internalProperty() private _wifiConfiguration?: WifiConfiguration;
+  @state() private _wifiConfiguration?: WifiConfiguration;
 
   public async showDialog(params: HassioNetworkDialogParams): Promise<void> {
     this._params = params;
@@ -543,7 +535,7 @@ export class DialogHassioNetwork
     this._wifiConfiguration![id] = value;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

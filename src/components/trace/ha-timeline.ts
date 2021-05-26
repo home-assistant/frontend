@@ -1,13 +1,6 @@
 import { mdiCircleOutline } from "@mdi/js";
-import {
-  LitElement,
-  customElement,
-  html,
-  css,
-  property,
-  TemplateResult,
-  internalProperty,
-} from "lit-element";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { buttonLinkStyle } from "../../resources/styles";
 import "../ha-svg-icon";
 
@@ -23,7 +16,7 @@ export class HaTimeline extends LitElement {
 
   @property({ attribute: false }) public moreItems?: TemplateResult[];
 
-  @internalProperty() private _showMore = false;
+  @state() private _showMore = false;
 
   protected render() {
     return html`

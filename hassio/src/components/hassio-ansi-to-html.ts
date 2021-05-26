@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 
 interface State {
   bold: boolean;
@@ -25,7 +18,7 @@ class HassioAnsiToHtml extends LitElement {
     return html`${this._parseTextToColoredPre(this.content)}`;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       pre {
         overflow-x: auto;

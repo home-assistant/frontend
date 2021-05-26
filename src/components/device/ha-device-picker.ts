@@ -3,16 +3,13 @@ import "@polymer/paper-item/paper-item-body";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -34,8 +31,9 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
-import type { HaComboBox } from "../ha-combo-box";
 import "../ha-combo-box";
+import type { HaComboBox } from "../ha-combo-box";
+import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 
 interface Device {
   name: string;
@@ -47,27 +45,18 @@ export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
 ) => boolean;
 
-const rowRenderer = (root: HTMLElement, _owner, model: { item: Device }) => {
-  if (!root.firstElementChild) {
-    root.innerHTML = `
-    <style>
-      paper-item {
-        margin: -10px 0;
-        padding: 0;
-      }
-    </style>
-    <paper-item>
-      <paper-item-body two-line="">
-        <div class='name'>[[item.name]]</div>
-        <div secondary>[[item.area]]</div>
-      </paper-item-body>
-    </paper-item>
-    `;
-  }
-
-  root.querySelector(".name")!.textContent = model.item.name!;
-  root.querySelector("[secondary]")!.textContent = model.item.area!;
-};
+const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`<style>
+    paper-item {
+      margin: -10px 0;
+      padding: 0;
+    }
+  </style>
+  <paper-item>
+    <paper-item-body two-line>
+      ${item.name}
+      <span secondary>${item.area}</span>
+    </paper-item-body>
+  </paper-item>`;
 
 @customElement("ha-device-picker")
 export class HaDevicePicker extends SubscribeMixin(LitElement) {
@@ -111,7 +100,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public disabled?: boolean;
 
-  @internalProperty() private _opened?: boolean;
+  @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
 
@@ -326,7 +315,7 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     }, 0);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-input > mwc-icon-button {
         --mdc-icon-button-size: 24px;

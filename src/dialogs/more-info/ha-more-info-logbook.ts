@@ -1,24 +1,16 @@
-import {
-  css,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { closeDialog } from "../make-dialog-manager";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
-import { TraceContexts, loadTraceContexts } from "../../data/trace";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
+import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import "../../panels/logbook/ha-logbook";
-import { haStyle, haStyleScrollbar } from "../../resources/styles";
+import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
+import { closeDialog } from "../make-dialog-manager";
 
 @customElement("ha-more-info-logbook")
 export class MoreInfoLogbook extends LitElement {
@@ -26,11 +18,11 @@ export class MoreInfoLogbook extends LitElement {
 
   @property() public entityId!: string;
 
-  @internalProperty() private _logbookEntries?: LogbookEntry[];
+  @state() private _logbookEntries?: LogbookEntry[];
 
-  @internalProperty() private _traceContexts?: TraceContexts;
+  @state() private _traceContexts?: TraceContexts;
 
-  @internalProperty() private _persons = {};
+  @state() private _persons = {};
 
   private _lastLogbookDate?: Date;
 
@@ -60,7 +52,6 @@ export class MoreInfoLogbook extends LitElement {
           : this._logbookEntries.length
           ? html`
               <ha-logbook
-                class="ha-scrollbar"
                 narrow
                 no-icon
                 no-name
@@ -157,7 +148,6 @@ export class MoreInfoLogbook extends LitElement {
   static get styles() {
     return [
       haStyle,
-      haStyleScrollbar,
       css`
         .no-entries {
           text-align: center;
@@ -165,12 +155,11 @@ export class MoreInfoLogbook extends LitElement {
           color: var(--secondary-text-color);
         }
         ha-logbook {
-          max-height: 250px;
-          overflow: auto;
+          --logbook-max-height: 250px;
         }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-logbook {
-            max-height: unset;
+            --logbook-max-height: unset;
           }
         }
         ha-circular-progress {

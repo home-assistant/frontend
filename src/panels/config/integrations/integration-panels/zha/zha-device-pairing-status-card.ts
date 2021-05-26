@@ -1,16 +1,8 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/entity/state-badge";
 import "../../../../../components/ha-area-picker";
@@ -36,7 +28,7 @@ class ZHADevicePairingStatusCard extends LitElement {
 
   @property({ type: Boolean }) public narrow?: boolean;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
   protected render(): TemplateResult {
     if (!this.hass || !this.device) {
@@ -102,7 +94,7 @@ class ZHADevicePairingStatusCard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

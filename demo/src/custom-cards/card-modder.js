@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { LitElement } from "lit-element";
+import { LitElement } from "lit";
 import "./card-tools";
 
 class CardModder extends LitElement {

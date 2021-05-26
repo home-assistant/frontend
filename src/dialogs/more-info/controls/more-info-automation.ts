@@ -1,14 +1,7 @@
 import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../components/ha-relative-time";
 import { triggerAutomationActions } from "../../../data/automation";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -50,7 +43,7 @@ class MoreInfoAutomation extends LitElement {
     triggerAutomationActions(this.hass, this.stateObj!.entity_id);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .flex {
         display: flex;

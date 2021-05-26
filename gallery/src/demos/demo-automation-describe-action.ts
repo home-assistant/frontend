@@ -1,12 +1,6 @@
-import { safeDump } from "js-yaml";
-import {
-  customElement,
-  html,
-  css,
-  LitElement,
-  TemplateResult,
-  property,
-} from "lit-element";
+import { dump } from "js-yaml";
+import { html, css, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../src/components/ha-card";
 import { describeAction } from "../../../src/data/script_i18n";
 import { provideHass } from "../../../src/fake_data/provide_hass";
@@ -62,7 +56,7 @@ export class DemoAutomationDescribeAction extends LitElement {
           (conf) => html`
             <div class="action">
               <span>${describeAction(this.hass, conf as any)}</span>
-              <pre>${safeDump(conf)}</pre>
+              <pre>${dump(conf)}</pre>
             </div>
           `
         )}

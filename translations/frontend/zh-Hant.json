@@ -292,7 +292,7 @@
             "save": "儲存",
             "show_more": "顯示關於此更詳細資訊",
             "update": "更新",
-            "update_available": "{count, plural,\n  one {個更新}\n  other {{count} 個更新}\n}等候中",
+            "update_available": "{count, plural,\n  one {個更新}\n  other {{count}個更新}\n}等候中",
             "version": "安裝版本",
             "yes": "是"
         },
@@ -314,7 +314,7 @@
             "addon_new_version": "新版本可供下載",
             "addon_running": "附加元件執行中",
             "addon_stopped": "附加元件已停止",
-            "addons": "附加元件",
+            "addons": "安裝附加元件",
             "no_addons": "目前似乎沒有安裝任何附加元件。點選下方附加元件商店以新增！"
         },
         "dialog": {
@@ -366,6 +366,7 @@
         },
         "my": {
             "error": "發生未知錯誤",
+            "error_addon_no_ingress": "所要求的附加元件不支援 ingress",
             "error_addon_not_found": "找不到附加元件",
             "faq_link": "Home Assistant 常見問答集",
             "not_supported": "Home Assistant 不支援此重新導向。點選 {link} 獲取支援之重新導向與版本。"
@@ -383,6 +384,7 @@
             "create": "新增",
             "create_blocked_not_running": "由於系統為 {state} 狀態，無法製作系統備份。",
             "create_snapshot": "製作系統備份",
+            "created": "建立",
             "description": "系統備份可供您快速的備份與還原 Home Assistant 所有資料。",
             "enter_password": "請輸入密碼。",
             "folder": {
@@ -458,6 +460,7 @@
                 "leave_beta_description": "取得 Home Assistant、Supervisor 與主機穩定更新版",
                 "ram_usage": "Supervisor RAM 使用率",
                 "reload_supervisor": "重新載入 Supervisor",
+                "search": "搜尋",
                 "share_diagnostics": "分享診斷資料",
                 "share_diagnostics_description": "分享當機回報與診斷資訊。",
                 "share_diagonstics_description": "是否要於 Supervisor 遭遇未知錯誤時、自動分享當機回報與診斷資訊？{line_break} 此些訊息將協助我們修正問題、所提供的資訊僅供 Home Assistant Core 團隊分析使用、將不會與其他人員共享。{line_break} 所提供的資料並不包含任何私人/敏感資訊，您可以於之後隨時關閉此設定。",
@@ -629,7 +632,7 @@
                     "humidity": "濕度",
                     "precipitation": "降雨量",
                     "temperature": "溫度",
-                    "visibility": "顯示選項",
+                    "visibility": "能見度",
                     "wind_speed": "風速"
                 },
                 "cardinal_direction": {
@@ -1258,7 +1261,7 @@
         "notification_toast": {
             "connection_lost": "連線中斷。重新連線中...",
             "dismiss": "關閉",
-            "intergration_starting": "{integration} 正在啟動，在完成載入前、可能無法顯示所有功能。",
+            "integration_starting": "{integration} 正在啟動，在完成載入前、可能無法顯示所有功能。",
             "service_call_failed": "服務 {service} 執行失敗。",
             "started": "Home Assistant 已啟動！",
             "starting": "Home Assistant 正在啟動，在完成載入前、可能無法顯示所有功能。",
@@ -2246,6 +2249,7 @@
                         },
                         "finish": "完成",
                         "loading_first_time": "請稍候、正在安裝整合",
+                        "next": "下一步",
                         "not_all_required_fields": "所有所需欄位都需要填寫。",
                         "not_loaded": "整合無法載入，請重啟 Home Assistant。",
                         "pick_flow_step": {
@@ -2584,6 +2588,8 @@
                         "add_scene": "新增場景",
                         "delete_confirm": "確定要刪除此場景？",
                         "delete_scene": "刪除場景",
+                        "duplicate": "複製",
+                        "duplicate_scene": "複製場景",
                         "edit_scene": "編輯場景",
                         "header": "場景編輯器",
                         "headers": {
@@ -2911,7 +2917,9 @@
                         "controller_in_inclusion_mode": "Z-Wave 控制器目前處於登記模式。",
                         "follow_device_instructions": "跟隨裝置隨附的說明書以觸發裝置上的配對功能。",
                         "inclusion_failed": "節點無法新增，請參閱日誌以獲得更詳細資訊。",
-                        "inclusion_finished": "節點已經新增。由於於後台完成設定、可能需要一點時間以讓所有節點進行顯示。",
+                        "inclusion_finished": "節點已經新增。",
+                        "interview_failed": "裝置探訪失敗。日誌中可能包含其他相關資訊。",
+                        "interview_started": "正在探訪裝置，可能需要一點時間。",
                         "introduction": "導引將帶領你於 Z-Wave 網路中新增節點。",
                         "secure_inclusion_warning": "加密裝置需要額外的頻寬，過多的加密裝置可能拖慢您的 Z-Wave 網路。建議您僅於需要時才使用加密裝置登記、例如門鎖或車庫開門裝置。",
                         "start_inclusion": "開始登記",
@@ -3999,6 +4007,17 @@
                     "link_promo": "關於此主題",
                     "primary_color": "主色彩",
                     "reset": "重置"
+                },
+                "time_format": {
+                    "description": "選擇時間顯示格式。",
+                    "dropdown_label": "時間格式",
+                    "formats": {
+                        "12": "12 小時制（AM/PM）",
+                        "24": "24 小時制",
+                        "language": "自動（使用語言設定）",
+                        "system": "使用系統位置"
+                    },
+                    "header": "時間格式"
                 },
                 "vibrate": {
                     "description": "當控制裝置時、開啟或關閉此裝置震動。",

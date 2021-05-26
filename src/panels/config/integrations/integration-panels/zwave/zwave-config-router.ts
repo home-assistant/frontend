@@ -1,10 +1,10 @@
-import { customElement, property } from "lit-element";
+import { customElement, property } from "lit/decorators";
+import { navigate } from "../../../../../common/navigate";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../../../types";
-import { navigate } from "../../../../../common/navigate";
 
 @customElement("zwave-config-router")
 class ZWaveConfigRouter extends HassRouterPage {
@@ -46,11 +46,10 @@ class ZWaveConfigRouter extends HassRouterPage {
     if (this._configEntry && !searchParams.has("config_entry")) {
       searchParams.append("config_entry", this._configEntry);
       navigate(
-        this,
         `${this.routeTail.prefix}${
           this.routeTail.path
         }?${searchParams.toString()}`,
-        true
+        { replace: true }
       );
     }
   }

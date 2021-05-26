@@ -802,6 +802,7 @@
                 }
             },
             "service-control": {
+                "integration_doc": "Integrációs dokumentáció",
                 "required": "Ez a mező kötelező",
                 "service_data": "Szolgáltatás adatai",
                 "target": "Célok",
@@ -1157,6 +1158,7 @@
                         "create": "Létrehozás",
                         "default_name": "Új Terület",
                         "delete": "Törlés",
+                        "linked_entities_caption": "Entitások",
                         "name": "Név",
                         "name_required": "Név szükséges",
                         "unknown_error": "Ismeretlen hiba",
@@ -2048,6 +2050,7 @@
                         },
                         "finish": "Befejezés",
                         "loading_first_time": "Kérlek várj, amíg az integráció telepítésre kerül",
+                        "next": "Következő",
                         "not_all_required_fields": "Nincs kitöltve minden szükséges mező.",
                         "pick_flow_step": {
                             "title": "Felfedeztük ezeket, be akarod állítani őket?"
@@ -2606,6 +2609,13 @@
                         "manufacturer_code_override": "Gyártói kód felülbírálása",
                         "value": "Érték"
                     },
+                    "configuration_page": {
+                        "shortcuts_title": "Parancsikonok",
+                        "update_button": "Beállítások frissítése",
+                        "zha_options": {
+                            "title": "Globális beállítások"
+                        }
+                    },
                     "device_pairing_card": {
                         "CONFIGURED": "A konfigurálás befejeződött",
                         "CONFIGURED_status_text": "Inicializálás",
@@ -2716,7 +2726,8 @@
                     "node_config": {
                         "error_device_not_found": "Az eszköz nem található",
                         "header": "Z-Wave eszköz konfigurálása",
-                        "parameter_is_read_only": "Ez a paraméter csak olvasható"
+                        "parameter_is_read_only": "Ez a paraméter csak olvasható",
+                        "set_param_error": "Hiba történt."
                     },
                     "node_status": {
                         "unknown": "Ismeretlen"

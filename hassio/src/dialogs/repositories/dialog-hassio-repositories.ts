@@ -5,17 +5,8 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
@@ -37,15 +28,15 @@ class HassioRepositoriesDialog extends LitElement {
 
   @query("#repository_input", true) private _optionInput?: PaperInputElement;
 
-  @internalProperty() private _repositories?: HassioAddonRepository[];
+  @state() private _repositories?: HassioAddonRepository[];
 
-  @internalProperty() private _dialogParams?: HassioRepositoryDialogParams;
+  @state() private _dialogParams?: HassioRepositoryDialogParams;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _processing = false;
+  @state() private _processing = false;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
   public async showDialog(
     dialogParams: HassioRepositoryDialogParams
@@ -76,7 +67,7 @@ class HassioRepositoriesDialog extends LitElement {
     return html`
       <ha-dialog
         .open=${this._opened}
-        @closing=${this.closeDialog}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -137,7 +128,7 @@ class HassioRepositoriesDialog extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,

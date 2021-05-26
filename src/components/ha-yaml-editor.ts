@@ -1,12 +1,6 @@
-import { safeDump, safeLoad } from "js-yaml";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { dump, load } from "js-yaml";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-code-editor";
 
@@ -32,11 +26,11 @@ export class HaYamlEditor extends LitElement {
 
   @property() public label?: string;
 
-  @internalProperty() private _yaml = "";
+  @state() private _yaml = "";
 
   public setValue(value): void {
     try {
-      this._yaml = value && !isEmpty(value) ? safeDump(value) : "";
+      this._yaml = value && !isEmpty(value) ? dump(value) : "";
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(err, value);
@@ -73,7 +67,7 @@ export class HaYamlEditor extends LitElement {
 
     if (this._yaml) {
       try {
-        parsed = safeLoad(this._yaml);
+        parsed = load(this._yaml);
       } catch (err) {
         // Invalid YAML
         isValid = false;

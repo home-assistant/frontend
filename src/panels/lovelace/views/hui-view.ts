@@ -1,10 +1,5 @@
-import {
-  customElement,
-  internalProperty,
-  property,
-  PropertyValues,
-  UpdatingElement,
-} from "lit-element";
+import { PropertyValues, ReactiveElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/entity/ha-state-label-badge";
 import "../../../components/ha-svg-icon";
@@ -39,7 +34,7 @@ declare global {
 }
 
 @customElement("hui-view")
-export class HUIView extends UpdatingElement {
+export class HUIView extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace!: Lovelace;
@@ -48,9 +43,9 @@ export class HUIView extends UpdatingElement {
 
   @property({ type: Number }) public index!: number;
 
-  @internalProperty() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
+  @state() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
-  @internalProperty() private _badges: LovelaceBadge[] = [];
+  @state() private _badges: LovelaceBadge[] = [];
 
   private _layoutElementType?: string;
 
@@ -89,8 +84,12 @@ export class HUIView extends UpdatingElement {
     return element;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  protected createRenderRoot() {
+    return this;
+  }
+
+  public willUpdate(changedProperties: PropertyValues): void {
+    super.willUpdate(changedProperties);
 
     /*
       We need to handle the following use cases:
@@ -113,8 +112,11 @@ export class HUIView extends UpdatingElement {
             oldLovelace.config.views[this.index]))
     ) {
       this._initializeConfig();
-      return;
     }
+  }
+
+  protected update(changedProperties) {
+    super.update(changedProperties);
 
     // If no layout element, we're still creating one
     if (this._layoutElement) {
@@ -150,7 +152,7 @@ export class HUIView extends UpdatingElement {
       changedProperties.has("hass") &&
       (!oldHass ||
         this.hass.themes !== oldHass.themes ||
-        this.hass.selectedTheme !== oldHass.selectedTheme)
+        this.hass.selectedThemeSettings !== oldHass.selectedThemeSettings)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
     }

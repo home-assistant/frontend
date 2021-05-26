@@ -2,13 +2,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import {
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
@@ -134,7 +129,7 @@ export default class HaAutomationConditionEditor extends LitElement {
     fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

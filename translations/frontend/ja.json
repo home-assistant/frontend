@@ -377,6 +377,7 @@
             "create": "作成",
             "create_blocked_not_running": "システムが {state} 状態であるため、スナップショットの作成は現在できません。",
             "create_snapshot": "スナップショットの作成",
+            "created": "作成",
             "description": "スナップショットでは、Home Assistantインスタンスのすべてのデータを簡単にバックアップして復元することができます。",
             "enter_password": "パスワードを入力してください。",
             "folder": {
@@ -452,6 +453,7 @@
                 "leave_beta_description": "Home Assistant、Supervisor、およびホストの安定した更新を取得する",
                 "ram_usage": "SupervisorのRAM使用量",
                 "reload_supervisor": "リロード Supervisor",
+                "search": "検索",
                 "share_diagnostics": "診断の共有",
                 "share_diagnostics_description": "クラッシュ レポートと診断情報を共有します。",
                 "share_diagonstics_description": "スーパーバイザで予期しないエラーが発生したときに、クラッシュ レポートと診断情報を自動的に共有しますか?{line_break}これにより、問題を解決することができ、情報はホームアシスタントコアチームにのみアクセス可能であり、他の人と共有されません。{line_break}データには、個人情報や機密情報は含まれていないので、いつでも設定でこれを無効にすることができます。",
@@ -1109,7 +1111,7 @@
                         "input_text": "入力テキストを再読み込み",
                         "min_max": "最小/最大エンティティをリロードします",
                         "mqtt": "mqttエンティティをリロードします",
-                        "person": "人の再読込",
+                        "person": "人",
                         "ping": "pingバイナリセンサーエンティティをリロードします",
                         "reload": "{domain}をリロードします",
                         "rest": "残りのエンティティをリロードし通知します",
@@ -1222,12 +1224,12 @@
         "notification_toast": {
             "connection_lost": "接続が切れました。再接続中...",
             "dismiss": "閉じる",
-            "intergration_starting": "{integration}を開始すると、完了するまですべてが利用できるわけではありません。",
+            "integration_starting": "{integration}を開始すると、完了するまですべてが利用できるわけではありません。",
             "service_call_failed": "サービス{service}の呼び出しに失敗しました。",
             "started": "ホームアシスタントが開始されました！",
             "starting": "Home Assistantが起動中です。全て利用可能なるまでもうしばらくお待ち下さい。",
             "triggered": "トリガーしました {name}",
-            "wrapping_up_startup": "スタートアップを総括すると、完成するまですべてが公開されるわけではありません。"
+            "wrapping_up_startup": "スタートアップの締めくくりとして、終了するまですべてが利用できるわけではありません。"
         },
         "panel": {
             "config": {
@@ -2612,7 +2614,7 @@
                             "introduction": "Home Assistant の一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
                             "min_max": "最小/最大エンティティを再読み込み",
                             "mqtt": "mqtt エンティティの再読み込み",
-                            "person": "人の再読込",
+                            "person": "人",
                             "ping": "ping バイナリ センサー エンティティの再読み込み",
                             "reload": "{domain} の再読み込み",
                             "rest": "残りのエンティティの再読み込み",
@@ -2757,6 +2759,12 @@
                         "clusters": "クラスター",
                         "manufacturer_code_override": "製造元コードの上書き",
                         "value": "バリュー"
+                    },
+                    "configuration_page": {
+                        "zha_options": {
+                            "default_light_transition": "デフォルトのライト遷移時間(秒)",
+                            "enable_identify_on_join": "デバイスがネットワークに参加する際に、識別効果を有効にする"
+                        }
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "設定の完了",
@@ -2905,6 +2913,9 @@
                         "awake": "起きている",
                         "dead": "停止中",
                         "unknown": "不明"
+                    },
+                    "reinterview_node": {
+                        "title": "Z-Waveデバイスへの再インタビュー"
                     },
                     "remove_node": {
                         "cancel_exclusion": "除外をキャンセルする",

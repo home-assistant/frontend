@@ -1,14 +1,6 @@
 import "@material/mwc-button/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/ha-circular-progress";
@@ -28,15 +20,15 @@ import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry
 class DialogConfigEntrySystemOptions extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _disableNewEntities!: boolean;
+  @state() private _disableNewEntities!: boolean;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: ConfigEntrySystemOptionsDialogParams;
+  @state() private _params?: ConfigEntrySystemOptionsDialogParams;
 
-  @internalProperty() private _loading = false;
+  @state() private _loading = false;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
   public async showDialog(
     params: ConfigEntrySystemOptionsDialogParams
@@ -154,7 +146,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

@@ -20,12 +20,9 @@ export const SCENE_IGNORED_DOMAINS = [
 
 let inititialSceneEditorData: Partial<SceneConfig> | undefined;
 
-export const showSceneEditor = (
-  el: HTMLElement,
-  data?: Partial<SceneConfig>
-) => {
+export const showSceneEditor = (data?: Partial<SceneConfig>) => {
   inititialSceneEditorData = data;
-  navigate(el, "/config/scene/edit/new");
+  navigate("/config/scene/edit/new");
 };
 
 export const getSceneEditorInitData = () => {
@@ -39,6 +36,7 @@ export interface SceneEntity extends HassEntityBase {
 }
 
 export interface SceneConfig {
+  id?: string;
   name: string;
   icon?: string;
   entities: SceneEntities;

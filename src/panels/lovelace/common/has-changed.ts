@@ -1,4 +1,4 @@
-import { PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
 import { HomeAssistant } from "../../../types";
 import { processConfigEntities } from "./process-config-entities";
 

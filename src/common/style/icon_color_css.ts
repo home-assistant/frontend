@@ -1,4 +1,4 @@
-import { css } from "lit-element";
+import { css } from "lit";
 
 export const iconColorCSS = css`
   ha-icon[data-domain="alert"][data-state="on"],

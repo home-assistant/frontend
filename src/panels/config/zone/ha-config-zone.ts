@@ -1,4 +1,3 @@
-import "../../../components/ha-fab";
 import "@material/mwc-icon-button";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
@@ -8,22 +7,20 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
 import { compare } from "../../../common/string/compare";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import "../../../components/map/ha-locations-editor";
 import type {
@@ -62,13 +59,13 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   @property() public route!: Route;
 
-  @internalProperty() private _storageItems?: Zone[];
+  @state() private _storageItems?: Zone[];
 
-  @internalProperty() private _stateItems?: HassEntity[];
+  @state() private _stateItems?: HassEntity[];
 
-  @internalProperty() private _activeEntry = "";
+  @state() private _activeEntry = "";
 
-  @internalProperty() private _canEditCore = false;
+  @state() private _canEditCore = false;
 
   @query("ha-locations-editor") private _map?: HaLocationsEditor;
 
@@ -76,22 +73,25 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private _getZones = memoizeOne(
     (storageItems: Zone[], stateItems: HassEntity[]): MarkerLocation[] => {
-      const stateLocations: MarkerLocation[] = stateItems.map((state) => ({
-        id: state.entity_id,
-        icon: state.attributes.icon,
-        name: state.attributes.friendly_name || state.entity_id,
-        latitude: state.attributes.latitude,
-        longitude: state.attributes.longitude,
-        radius: state.attributes.radius,
-        radius_color:
-          state.entity_id === "zone.home"
-            ? homeRadiusColor
-            : state.attributes.passive
-            ? passiveRadiusColor
-            : defaultRadiusColor,
-        location_editable: state.entity_id === "zone.home" && this._canEditCore,
-        radius_editable: false,
-      }));
+      const stateLocations: MarkerLocation[] = stateItems.map(
+        (entityState) => ({
+          id: entityState.entity_id,
+          icon: entityState.attributes.icon,
+          name: entityState.attributes.friendly_name || entityState.entity_id,
+          latitude: entityState.attributes.latitude,
+          longitude: entityState.attributes.longitude,
+          radius: entityState.attributes.radius,
+          radius_color:
+            entityState.entity_id === "zone.home"
+              ? homeRadiusColor
+              : entityState.attributes.passive
+              ? passiveRadiusColor
+              : defaultRadiusColor,
+          location_editable:
+            entityState.entity_id === "zone.home" && this._canEditCore,
+          radius_editable: false,
+        })
+      );
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
         ...zone,
         radius_color: zone.passive ? passiveRadiusColor : defaultRadiusColor,
@@ -161,22 +161,26 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                 `
               )}
               ${this._stateItems.map(
-                (state) => html`
+                (stateObject) => html`
                   <paper-icon-item
-                    data-id=${state.entity_id}
+                    data-id=${stateObject.entity_id}
                     @click=${this._stateItemClicked}
                   >
-                    <ha-icon .icon=${state.attributes.icon} slot="item-icon">
+                    <ha-icon
+                      .icon=${stateObject.attributes.icon}
+                      slot="item-icon"
+                    >
                     </ha-icon>
                     <paper-item-body>
-                      ${state.attributes.friendly_name || state.entity_id}
+                      ${stateObject.attributes.friendly_name ||
+                      stateObject.entity_id}
                     </paper-item-body>
                     <div style="display:inline-block">
                       <mwc-icon-button
-                        .entityId=${state.entity_id}
+                        .entityId=${stateObject.entity_id}
                         @click=${this._openCoreConfig}
                         disabled=${ifDefined(
-                          state.entity_id === "zone.home" &&
+                          stateObject.entity_id === "zone.home" &&
                             this.narrow &&
                             this._canEditCore
                             ? undefined
@@ -184,7 +188,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                         )}
                       >
                         <ha-svg-icon
-                          .path=${state.entity_id === "zone.home" &&
+                          .path=${stateObject.entity_id === "zone.home" &&
                           this.narrow &&
                           this._canEditCore
                             ? mdiPencil
@@ -192,7 +196,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                         ></ha-svg-icon>
                       </mwc-icon-button>
                       <paper-tooltip animation-delay="0" position="left">
-                        ${state.entity_id === "zone.home"
+                        ${stateObject.entity_id === "zone.home"
                           ? this.hass.localize(
                               `ui.panel.config.zone.${
                                 this.narrow
@@ -265,7 +269,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       ["storage", "default"].includes(this.hass.config.config_source);
     this._fetchData();
     if (this.route.path === "/new") {
-      navigate(this, "/config/zone", true);
+      navigate("/config/zone", { replace: true });
       this._createZone();
     }
   }
@@ -395,7 +399,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     ) {
       return;
     }
-    navigate(this, "/config/core");
+    navigate("/config/core");
   }
 
   private async _createEntry(values: ZoneMutableParams) {
@@ -462,7 +466,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       hass-loading-screen {
         --app-header-background-color: var(--sidebar-background-color);

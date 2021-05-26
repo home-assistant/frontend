@@ -1,12 +1,6 @@
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 
 export const createEntityNotFoundWarning = (
@@ -27,7 +21,7 @@ export class HuiWarning extends LitElement {
     return html` <slot></slot> `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

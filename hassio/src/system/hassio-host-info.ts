@@ -2,16 +2,9 @@ import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
-import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { dump } from "js-yaml";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
@@ -240,7 +233,7 @@ class HassioHostInfo extends LitElement {
       const content = await fetchHassioHardwareInfo(this.hass);
       showHassioMarkdownDialog(this, {
         title: this.supervisor.localize("system.host.hardware"),
-        content: `<pre>${safeDump(content, { indent: 2 })}</pre>`,
+        content: `<pre>${dump(content, { indent: 2 })}</pre>`,
       });
     } catch (err) {
       showAlertDialog(this, {
@@ -415,7 +408,7 @@ class HassioHostInfo extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       hassioStyle,

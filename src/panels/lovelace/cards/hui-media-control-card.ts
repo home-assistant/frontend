@@ -4,18 +4,15 @@ import "@polymer/paper-progress/paper-progress";
 import type { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { styleMap } from "lit-html/directives/style-map";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -75,21 +72,21 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _config?: MediaControlCardConfig;
+  @state() private _config?: MediaControlCardConfig;
 
-  @internalProperty() private _foregroundColor?: string;
+  @state() private _foregroundColor?: string;
 
-  @internalProperty() private _backgroundColor?: string;
+  @state() private _backgroundColor?: string;
 
-  @internalProperty() private _narrow = false;
+  @state() private _narrow = false;
 
-  @internalProperty() private _veryNarrow = false;
+  @state() private _veryNarrow = false;
 
-  @internalProperty() private _cardHeight = 0;
+  @state() private _cardHeight = 0;
 
   @query("paper-progress") private _progressBar?: PaperProgressElement;
 
-  @internalProperty() private _marqueeActive = false;
+  @state() private _marqueeActive = false;
 
   private _progressInterval?: number;
 
@@ -172,17 +169,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       width: `${this._cardHeight}px`,
     };
 
-    const state = stateObj.state;
+    const entityState = stateObj.state;
 
-    const isOffState = state === "off";
+    const isOffState = entityState === "off";
     const isUnavailable =
-      UNAVAILABLE_STATES.includes(state) ||
-      (state === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
+      UNAVAILABLE_STATES.includes(entityState) ||
+      (entityState === "off" && !supportsFeature(stateObj, SUPPORT_TURN_ON));
     const hasNoImage = !this._image;
     const controls = computeMediaControls(stateObj);
     const showControls =
       controls &&
-      (!this._veryNarrow || isOffState || state === "idle" || state === "on");
+      (!this._veryNarrow ||
+        isOffState ||
+        entityState === "idle" ||
+        entityState === "on");
 
     const mediaDescription = computeMediaDescription(stateObj);
 
@@ -325,12 +325,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   protected firstUpdated(): void {
-    this._measureCard();
     this._attachObserver();
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+
+    if (!this.hasUpdated) {
+      this._measureCard();
+    }
 
     if (
       !this._config ||
@@ -351,6 +354,35 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       this._backgroundColor = undefined;
       return;
     }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    const oldImage =
+      oldHass?.states[this._config.entity]?.attributes.entity_picture_local ||
+      oldHass?.states[this._config.entity]?.attributes.entity_picture;
+
+    if (!this._image) {
+      this._foregroundColor = undefined;
+      this._backgroundColor = undefined;
+      return;
+    }
+
+    if (this._image !== oldImage) {
+      this._setColors();
+    }
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    if (
+      !this._config ||
+      !this.hass ||
+      !this._stateObj ||
+      (!changedProps.has("_config") && !changedProps.has("hass"))
+    ) {
+      return;
+    }
+
+    const stateObj = this._stateObj;
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
@@ -383,20 +415,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     ) {
       clearInterval(this._progressInterval);
       this._progressInterval = undefined;
-    }
-
-    const oldImage =
-      oldHass?.states[this._config.entity]?.attributes.entity_picture_local ||
-      oldHass?.states[this._config.entity]?.attributes.entity_picture;
-
-    if (!this._image) {
-      this._foregroundColor = undefined;
-      this._backgroundColor = undefined;
-      return;
-    }
-
-    if (this._image !== oldImage) {
-      this._setColors();
     }
   }
 
@@ -552,7 +570,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         overflow: hidden;

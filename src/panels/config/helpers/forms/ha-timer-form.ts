@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-input";
 import { DurationDict, Timer } from "../../../../data/timer";
@@ -22,11 +14,11 @@ class HaTimerForm extends LitElement {
 
   private _item?: Timer;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _icon!: string;
+  @state() private _icon!: string;
 
-  @internalProperty() private _duration!: string | number | DurationDict;
+  @state() private _duration!: string | number | DurationDict;
 
   set item(item: Timer) {
     this._item = item;
@@ -111,7 +103,7 @@ class HaTimerForm extends LitElement {
     });
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

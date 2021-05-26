@@ -1,22 +1,15 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../common/datetime/format_date";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { formatTime } from "../../../common/datetime/format_time";
 import relativeTime from "../../../common/datetime/relative_time";
-import { FrontendTranslationData } from "../../../data/translation";
+import { FrontendLocaleData } from "../../../data/translation";
 import { HomeAssistant } from "../../../types";
 import { TimestampRenderingFormats } from "./types";
 
 const FORMATS: {
-  [key: string]: (ts: Date, lang: FrontendTranslationData) => string;
+  [key: string]: (ts: Date, lang: FrontendLocaleData) => string;
 } = {
   date: formatDate,
   datetime: formatDateTime,
@@ -32,7 +25,7 @@ class HuiTimestampDisplay extends LitElement {
 
   @property() public format?: TimestampRenderingFormats;
 
-  @internalProperty() private _relative?: string;
+  @state() private _relative?: string;
 
   private _connected?: boolean;
 

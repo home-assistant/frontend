@@ -1,16 +1,14 @@
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import {
   css,
-  CSSResultArray,
-  customElement,
-  eventOptions,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { scroll } from "lit-virtualizer";
+} from "lit";
+import { customElement, eventOptions, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../../common/const";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
@@ -22,8 +20,8 @@ import { computeRTL, emitRTLDirection } from "../../common/util/compute_rtl";
 import "../../components/entity/state-badge";
 import "../../components/ha-circular-progress";
 import "../../components/ha-relative-time";
-import { TraceContexts } from "../../data/trace";
 import { LogbookEntry } from "../../data/logbook";
+import { TraceContexts } from "../../data/trace";
 import { haStyle, haStyleScrollbar } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 
@@ -101,7 +99,9 @@ class HaLogbook extends LitElement {
         ${this.virtualize
           ? scroll({
               items: this.entries,
-              renderItem: (item: LogbookEntry, index?: number) =>
+              layout: Layout1d,
+              // @ts-expect-error
+              renderItem: (item: LogbookEntry, index) =>
                 this._renderLogbookItem(item, index),
             })
           : this.entries.map((item, index) =>
@@ -254,7 +254,7 @@ class HaLogbook extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleScrollbar,
@@ -349,7 +349,11 @@ class HaLogbook extends LitElement {
           color: var(--primary-color);
         }
 
-        .uni-virtualizer-host {
+        .container {
+          max-height: var(--logbook-max-height);
+        }
+
+        :host([virtualize]) .container {
           display: block;
           position: relative;
           contain: strict;
@@ -357,7 +361,7 @@ class HaLogbook extends LitElement {
           overflow: auto;
         }
 
-        .uni-virtualizer-host > * {
+        .container > * {
           box-sizing: border-box;
         }
 

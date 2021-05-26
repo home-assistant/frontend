@@ -1,4 +1,4 @@
-import { customElement } from "lit-element";
+import { customElement } from "lit/decorators";
 import { HuiConditionalBase } from "../components/hui-conditional-base";
 import { createRowElement } from "../create-element/create-row-element";
 import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
