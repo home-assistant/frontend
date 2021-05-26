@@ -30,20 +30,17 @@ class ConfigNetwork extends LitElement {
   @state() private _error?: string;
 
   protected render(): TemplateResult {
-    if (!this.hass.userData?.showAdvanced) {
+    if (
+      !this.hass.userData?.showAdvanced ||
+      !isComponentLoaded(this.hass, "network")
+    ) {
       return html``;
     }
-
-    const error = this._error
-      ? this._error
-      : !isComponentLoaded(this.hass, "network")
-      ? "Network integration not loaded"
-      : undefined;
 
     return html`
       <ha-card header="Network">
         <div class="card-content">
-          ${error ? html`<div class="error">${error}</div>` : ""}
+          ${this._error ? html`<div class="error">${this._error}</div>` : ""}
           <p>
             Configure which network adapters integrations will use. Currently
             this setting only affects multicast traffic. A restart is required
