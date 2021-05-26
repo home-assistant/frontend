@@ -349,6 +349,10 @@ class HaLogbook extends LitElement {
           color: var(--primary-color);
         }
 
+        .container {
+          max-height: var(--logbook-max-height);
+        }
+
         :host([virtualize]) .container {
           display: block;
           position: relative;

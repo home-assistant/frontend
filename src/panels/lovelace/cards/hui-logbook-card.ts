@@ -290,7 +290,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
         ha-logbook {
           height: 385px;
-          overflow: auto;
           display: block;
         }
 
