@@ -19,6 +19,10 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../styles/polymer-ha-style";
+import {
+  fuzzySequentialMatch,
+  ScorableTextItem,
+} from "../../../common/string/filter/sequence-matching";
 
 const ERROR_SENTINEL = {};
 /*
@@ -100,6 +104,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         .entities a {
           color: var(--primary-color);
+        }
+
+        .entities .id-name-container {
+          display: flex;
+          flex-direction: column;
         }
 
         :host([narrow]) .state-wrapper {
@@ -210,23 +219,30 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           <template is="dom-repeat" items="[[_entities]]" as="entity">
             <tr>
               <td>
-                <ha-svg-icon
-                  on-click="entityMoreInfo"
-                  alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                  title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                  path="[[informationOutlineIcon()]]"
-                ></ha-svg-icon>
-                <ha-svg-icon
-                  on-click="copyEntity"
-                  alt="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
-                  title="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
-                  path="[[clipboardOutlineIcon()]]"
-                ></ha-svg-icon>
-                <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
-                <br /><br />
-                <span class="secondary">
-                  [[entity.attributes.friendly_name]]
-                </span>
+                <div class="id-name-container">
+                  <div>
+                    <ha-svg-icon
+                      on-click="copyEntity"
+                      alt="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                      title="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                      path="[[clipboardOutlineIcon()]]"
+                    ></ha-svg-icon>
+                    <a href="#" on-click="entitySelected"
+                      >[[entity.entity_id]]</a
+                    >
+                  </div>
+                  <div>
+                    <ha-svg-icon
+                      on-click="entityMoreInfo"
+                      alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                      title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                      path="[[informationOutlineIcon()]]"
+                    ></ha-svg-icon>
+                    <span class="secondary">
+                      [[entity.attributes.friendly_name]]
+                    </span>
+                  </div>
+                </div>
               </td>
               <td>[[entity.state]]</td>
               <template
@@ -376,24 +392,18 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
-    const entityFilterRegExp = _entityFilter && RegExp(
-      _entityFilter.toLowerCase().replace(/\*/g, ".*")
-    );
-
     return Object.keys(hass.states)
       .map((key) => hass.states[key])
       .filter((value) => {
-        // 1. If there is no entity filter => nothing to check
-        // 2. If we have a match for the entity ID => we do not have to look further
-        // 3. If entity ID does not match => check the friendly name => if there is none,
-        //    this entity is not relevant for rendering => return false
+        // Prepare words (entity ID + friendly name) for the fuzzy search to check against the filter
+        const words = [value.entity_id];
+        if (value.attributes.friendly_name !== undefined) {
+          words.push(value.attributes.friendly_name);
+        }
+
         if (
           _entityFilter &&
-          !entityFilterRegExp.test(value.entity_id) &&
-          (value.attributes.friendly_name === undefined ||
-            !entityFilterRegExp.test(
-              value.attributes.friendly_name.toLowerCase()
-            ))
+          fuzzySequentialMatch(_entityFilter, { strings: words }) === undefined
         ) {
           return false;
         }
