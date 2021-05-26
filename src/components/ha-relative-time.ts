@@ -9,6 +9,10 @@ class HaRelativeTime extends ReactiveElement {
 
   @property({ attribute: false }) public datetime?: string | Date;
 
+  @property({ attribute: false }) public includeTense?: boolean;
+
+  @property({ attribute: false }) public abbreviate?: boolean;
+
   private _interval?: number;
 
   public disconnectedCallback(): void {
@@ -57,7 +61,8 @@ class HaRelativeTime extends ReactiveElement {
     } else {
       this.innerHTML = relativeTime(
         new Date(this.datetime),
-        this.hass.localize
+        this.hass.localize,
+        { includeTense: this.includeTense, abbreviate: this.abbreviate }
       );
     }
   }

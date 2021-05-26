@@ -14,6 +14,7 @@ export default function relativeTime(
   options: {
     compareTime?: Date;
     includeTense?: boolean;
+    abbreviate?: boolean;
   } = {}
 ): string {
   const compareTime = options.compareTime || new Date();
@@ -39,7 +40,9 @@ export default function relativeTime(
   }
 
   return localize(
-    options.includeTense === false
+    options.abbreviate === true
+      ? `ui.components.relative_time.abbreviated_duration.${unit}`
+      : options.includeTense === false
       ? `ui.components.relative_time.duration.${unit}`
       : `ui.components.relative_time.${tense}_duration.${unit}`,
     "count",

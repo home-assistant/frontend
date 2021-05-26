@@ -74,6 +74,14 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   state_color?: boolean;
 }
 
+export interface ButtonStateCardConfig extends LovelaceCardConfig {
+  entity?: string;
+  theme?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
 export interface ButtonCardConfig extends LovelaceCardConfig {
   entity?: string;
   name?: string;
@@ -86,6 +94,17 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
   state_color?: boolean;
   show_state?: boolean;
+}
+
+export interface SquareCardConfig extends LovelaceCardConfig {
+  entity: string;
+  name?: string;
+  icon?: string;
+  theme?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+  state_color?: boolean;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {

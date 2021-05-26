@@ -12,7 +12,8 @@ export const computeStateDisplay = (
   localize: LocalizeFunc,
   stateObj: HassEntity,
   locale: FrontendLocaleData,
-  state?: string
+  state?: string,
+  expanded?: boolean
 ): string => {
   const compareState = state !== undefined ? state : stateObj.state;
 
@@ -77,7 +78,7 @@ export const computeStateDisplay = (
     return formatNumber(compareState, locale);
   }
 
-  return (
+  let computedState =
     // Return device class translation
     (stateObj.attributes.device_class &&
       localize(
@@ -86,6 +87,20 @@ export const computeStateDisplay = (
     // Return default translation
     localize(`component.${domain}.state._.${compareState}`) ||
     // We don't know! Return the raw state.
-    compareState
-  );
+    compareState;
+
+  if (expanded && domain === "climate") {
+    computedState += " - ";
+    if (stateObj.attributes.target_temp_low) {
+      computedState +=
+        stateObj.attributes.target_temp_low +
+        "°/" +
+        stateObj.attributes.target_temp_high +
+        "°";
+    } else {
+      computedState += stateObj.attributes.temperature + "°";
+    }
+  }
+
+  return computedState;
 };

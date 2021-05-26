@@ -82,6 +82,24 @@ export const domainIcon = (
       return stateObj?.state === "above_horizon"
         ? FIXED_DOMAIN_ICONS[domain]
         : "hass:weather-night";
+
+    case "climate":
+      switch (compareState) {
+        case "auto":
+          return "hass:calendar-sync";
+        case "heat_cool":
+          return "hass:autorenew";
+        case "heat":
+          return "hass:fire";
+        case "cool":
+          return "hass:snowflake";
+        case "off":
+          return "hass:power";
+        case "fan_only":
+          return "hass:fan";
+        case "dry":
+          return "hass:water-percent";
+      }
   }
 
   if (domain in FIXED_DOMAIN_ICONS) {

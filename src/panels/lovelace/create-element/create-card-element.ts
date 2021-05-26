@@ -9,6 +9,7 @@ import "../cards/hui-history-graph-card";
 import "../cards/hui-horizontal-stack-card";
 import "../cards/hui-light-card";
 import "../cards/hui-sensor-card";
+import "../cards/hui-square-card";
 import "../cards/hui-thermostat-card";
 import "../cards/hui-vertical-stack-card";
 import "../cards/hui-weather-forecast-card";
@@ -28,6 +29,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "horizontal-stack",
   "light",
   "sensor",
+  "square",
   "thermostat",
   "vertical-stack",
   "weather-forecast",

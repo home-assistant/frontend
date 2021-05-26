@@ -421,6 +421,13 @@
       "relative_time": {
         "never": "Never",
         "just_now": "Just now",
+        "abbreviated_duration": {
+          "second": "{count}s",
+          "minute": "{count}m",
+          "hour": "{count}h",
+          "day": "{count}d",
+          "week": "{count}w"
+        },
         "duration": {
           "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
           "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
