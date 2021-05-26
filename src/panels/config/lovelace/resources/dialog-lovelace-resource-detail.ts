@@ -66,7 +66,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing=${this._close}
+        @closed=${this._close}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
