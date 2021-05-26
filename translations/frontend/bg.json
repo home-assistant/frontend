@@ -1598,6 +1598,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Свързан",
+                        "connecting": "Свързване...",
                         "connection_status": "Състояние на връзката с облака",
                         "fetching_subscription": "Извличане на абонамент...",
                         "google": {

@@ -314,7 +314,7 @@
             "addon_new_version": "Nueva versión disponible",
             "addon_running": "El complemento se está ejecutando",
             "addon_stopped": "El complemento está detenido",
-            "addons": "Complementos",
+            "addons": "Complementos instalados",
             "no_addons": "Aún no tienes ningún complemento instalado. ¡Dirígete a la tienda de complementos para comenzar!"
         },
         "dialog": {
@@ -396,14 +396,15 @@
             },
             "folders": "Carpetas",
             "full_snapshot": "Instantánea completa",
-            "name": "Nombre",
+            "name": "Nombre de la instantánea",
             "no_snapshots": "Aún no tienes instantáneas.",
             "partial_snapshot": "Instantánea parcial",
-            "password": "Contraseña",
+            "password": "Contraseña de la instantánea",
             "password_protected": "protegida por contraseña",
             "password_protection": "Protección con contraseña",
             "security": "Seguridad",
-            "type": "Tipo",
+            "select_type": "Selecciona qué restaurar",
+            "type": "Tipo de instantánea",
             "upload_snapshot": "Subir instantánea"
         },
         "store": {
@@ -719,6 +720,9 @@
                 "no_areas": "No tienes áreas",
                 "no_match": "No se han encontrado áreas coincidentes",
                 "show_areas": "Mostrar áreas"
+            },
+            "attributes": {
+                "expansion_header": "Atributos"
             },
             "blueprint-picker": {
                 "add_user": "Añadir usuario",
@@ -1719,6 +1723,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Conectado",
+                        "connecting": "Conectando...",
                         "connection_status": "Estado de conexión a la nube",
                         "fetching_subscription": "Obteniendo suscripción...",
                         "google": {
@@ -2959,6 +2964,7 @@
                     },
                     "logs": {
                         "log_level": "Nivel de registro",
+                        "log_level_changed": "Nivel de registro cambiado a: {level}",
                         "subscribed_to_logs": "Suscrito a los mensajes de registro de Z-Wave JS...",
                         "title": "Registros de Z-Wave JS"
                     },
