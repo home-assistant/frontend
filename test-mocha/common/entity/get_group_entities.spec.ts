@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import { assert } from "chai";
 
 import { getGroupEntities } from "../../../src/common/entity/get_group_entities";
 

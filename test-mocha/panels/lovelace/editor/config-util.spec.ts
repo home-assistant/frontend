@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import { assert } from "chai";
 
 import {
   swapCard,
@@ -43,7 +43,7 @@ describe("swapCard", () => {
     };
 
     const result = swapCard(config, [0, 0], [1, 1]);
-    const expected = {
+    const expected: LovelaceConfig = {
       views: [
         {
           cards: [{ type: "v2-c2" }, { type: "v1-c2" }],
@@ -69,7 +69,7 @@ describe("moveCard", () => {
     };
 
     const result = moveCard(config, [1, 0], [0]);
-    const expected = {
+    const expected: LovelaceConfig = {
       views: [
         {
           cards: [{ type: "card1" }],
@@ -95,7 +95,7 @@ describe("moveCard", () => {
     };
 
     const result = moveCard(config, [1, 0], [0]);
-    const expected = {
+    const expected: LovelaceConfig = {
       views: [
         {
           cards: [{ type: "v1-c1" }, { type: "v1-c2" }, { type: "v2-c1" }],
@@ -147,7 +147,7 @@ describe("swapView", () => {
     };
 
     const result = swapView(config, 1, 0);
-    const expected = {
+    const expected: LovelaceConfig = {
       views: [
         {
           title: "view2",
@@ -177,7 +177,7 @@ describe("swapView", () => {
     };
 
     const result = swapView(config, 0, 0);
-    const expected = {
+    const expected: LovelaceConfig = {
       views: [
         {
           title: "view1",
