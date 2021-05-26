@@ -111,7 +111,7 @@
     "google-timezones-json": "^1.0.2",
     "hls.js": "^1.0.3",
     "home-assistant-js-websocket": "^5.10.0",
-    "idb-keyval": "^3.2.0",
+    "idb-keyval": "^5.0.5",
     "intl-messageformat": "^9.6.13",
     "js-yaml": "^4.1.0",
     "leaflet": "^1.7.1",
