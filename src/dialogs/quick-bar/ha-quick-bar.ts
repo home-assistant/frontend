@@ -223,6 +223,9 @@ export class QuickBar extends LitElement {
   }
 
   private _renderItem(item: QuickBarItem, index?: number) {
+    if (!item) {
+      return undefined;
+    }
     return isCommandItem(item)
       ? this._renderCommandItem(item, index)
       : this._renderEntityItem(item as EntityItem, index);
