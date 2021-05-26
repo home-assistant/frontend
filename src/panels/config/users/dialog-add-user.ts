@@ -84,7 +84,7 @@ export class DialogAddUser extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing=${this._close}
+        @closed=${this._close}
         scrimClickAction
         escapeKeyAction
         .heading=${this.hass.localize("ui.panel.config.users.add_user.caption")}
