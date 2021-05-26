@@ -5,7 +5,7 @@ import { fuzzyScore } from "./filter";
  *   in that order, allowing for skipping. Ex: "chdr" exists in "chandelier")
  *
  * @param {string} filter - Sequence of letters to check for
- * @param {string} word - Word to check for sequence
+ * @param {ScorableTextItem} item - Item against whose strings will be checked
  *
  * @return {number} Score representing how well the word matches the filter. Return of 0 means no match.
  */
