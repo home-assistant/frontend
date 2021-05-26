@@ -292,7 +292,7 @@
             "save": "儲存",
             "show_more": "顯示關於此更詳細資訊",
             "update": "更新",
-            "update_available": "{count, plural,\n  one {個更新}\n  other {{count} 個更新}\n}等候中",
+            "update_available": "{count, plural,\n  one {個更新}\n  other {{count}個更新}\n}等候中",
             "version": "安裝版本",
             "yes": "是"
         },
@@ -314,7 +314,7 @@
             "addon_new_version": "新版本可供下載",
             "addon_running": "附加元件執行中",
             "addon_stopped": "附加元件已停止",
-            "addons": "附加元件",
+            "addons": "安裝附加元件",
             "no_addons": "目前似乎沒有安裝任何附加元件。點選下方附加元件商店以新增！"
         },
         "dialog": {

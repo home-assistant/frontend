@@ -396,14 +396,15 @@
             },
             "folders": "Folders",
             "full_snapshot": "Full snapshot",
-            "name": "Name",
+            "name": "Snapshot name",
             "no_snapshots": "You don't have any snapshots yet.",
             "partial_snapshot": "Partial snapshot",
-            "password": "Password",
+            "password": "Snapshot password",
             "password_protected": "password protected",
             "password_protection": "Password protection",
             "security": "Security",
-            "type": "Type",
+            "select_type": "Select what to restore",
+            "type": "Snapshot type",
             "upload_snapshot": "Upload snapshot"
         },
         "store": {
@@ -719,6 +720,9 @@
                 "no_areas": "You don't have any areas",
                 "no_match": "No matching areas found",
                 "show_areas": "Show areas"
+            },
+            "attributes": {
+                "expansion_header": "Attributes"
             },
             "blueprint-picker": {
                 "add_user": "Add user",
@@ -1719,6 +1723,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Connected",
+                        "connecting": "Connecting...",
                         "connection_status": "Cloud connection status",
                         "fetching_subscription": "Fetching subscription...",
                         "google": {
@@ -2959,6 +2964,7 @@
                     },
                     "logs": {
                         "log_level": "Log Level",
+                        "log_level_changed": "Log Level changed to: {level}",
                         "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
                         "title": "Z-Wave JS Logs"
                     },

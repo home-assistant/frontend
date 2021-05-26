@@ -292,7 +292,7 @@
             "save": "Lagre",
             "show_more": "Vis mer informasjon om dette",
             "update": "Oppdater",
-            "update_available": "{count, plural,\n  one {Oppdatering}\n  other {{count} Oppdateringer}\n} venter",
+            "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
             "version": "Versjon",
             "yes": "Ja"
         },
@@ -314,7 +314,7 @@
             "addon_new_version": "Ny versjon tilgjengelig",
             "addon_running": "Tillegget kjører",
             "addon_stopped": "Tillegget er stoppet",
-            "addons": "Tillegg",
+            "addons": "Installerte tillegg",
             "no_addons": "Du har ikke installert tilleggsprogrammer ennå. Gå over til tilleggsbutikken for å komme i gang!"
         },
         "dialog": {

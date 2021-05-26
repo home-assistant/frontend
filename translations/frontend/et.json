@@ -292,7 +292,7 @@
             "save": "Salvesta",
             "show_more": "Kuva selle kohta rohkem teavet",
             "update": "Uuenda",
-            "update_available": "{count, plural,\n  one {värskendus}\n  other {{count] värskendust}\n} on saadaval",
+            "update_available": "{count, plural,\n  one {uuendus}\n  other {{count} uuendust}\n} on saadaval",
             "version": "Versioon",
             "yes": "Jah"
         },
@@ -314,7 +314,7 @@
             "addon_new_version": "Uus versioon on saadaval",
             "addon_running": "Lisandmoodul töötab",
             "addon_stopped": "Lisandmoodul on peatatud",
-            "addons": "Lisandmoodulid",
+            "addons": "Paigaldatud lisandmoodulid",
             "no_addons": "Ühtegi lisandmoodulit pole veel paigaldatud. Alustamiseks mine lisandmoodulite hoidlasse!"
         },
         "dialog": {
@@ -396,14 +396,15 @@
             },
             "folders": "Kaustad",
             "full_snapshot": "Täielik hetktõmmis",
-            "name": "Nimi",
+            "name": "Hetktõmmise nimi",
             "no_snapshots": "Sul pole veel ühtegi hetktõmmist.",
             "partial_snapshot": "Osaline hetktõmmis",
-            "password": "Salasõna",
+            "password": "Hetktõmmise salasõna",
             "password_protected": "salasõnaha kaitstud",
             "password_protection": "Salasõnaga kaitstud",
             "security": "Turvalisus",
-            "type": "Tüüp",
+            "select_type": "Vali mida taastada",
+            "type": "Hetktõmmise tüüp",
             "upload_snapshot": "Hetktõmmise üleslaadimine"
         },
         "store": {
@@ -719,6 +720,9 @@
                 "no_areas": "Alad puuduvad",
                 "no_match": "Sobivaid alasid ei leitud",
                 "show_areas": "Näita alasid"
+            },
+            "attributes": {
+                "expansion_header": "Atribuudid"
             },
             "blueprint-picker": {
                 "add_user": "Lisa kasutaja",
@@ -1719,6 +1723,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Ühendatud",
+                        "connecting": "Ühendun...",
                         "connection_status": "Pilveühenduse olek",
                         "fetching_subscription": "Tellimuse andmete toomine ...",
                         "google": {
@@ -2959,6 +2964,7 @@
                     },
                     "logs": {
                         "log_level": "Logimise tase",
+                        "log_level_changed": "Silumisteave on muudetud: {level}",
                         "subscribed_to_logs": "Z-Wave JS Logi sõnumite tellimine...",
                         "title": "Z-Wave JS logid"
                     },
