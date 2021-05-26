@@ -412,8 +412,8 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
-    const _entityFilterLength = _entityFilter.length;
-    const _entityFilterLow = _entityFilter.toLowerCase();
+    const _entityFilterLength = _entityFilter && _entityFilter.length;
+    const _entityFilterLow = _entityFilter && _entityFilter.toLowerCase();
 
     return Object.keys(hass.states)
       .map((key) => hass.states[key])
@@ -429,16 +429,16 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             value.entity_id.length,
             true
           ) &&
-          value.attributes.friendly_name !== undefined &&
-          !isPatternInWord(
-            _entityFilterLow,
-            0,
-            _entityFilterLength,
-            value.attributes.friendly_name.toLowerCase(),
-            0,
-            value.attributes.friendly_name.length,
-            true
-          )
+          (value.attributes.friendly_name === undefined ||
+            !isPatternInWord(
+              _entityFilterLow,
+              0,
+              _entityFilterLength,
+              value.attributes.friendly_name.toLowerCase(),
+              0,
+              value.attributes.friendly_name.length,
+              true
+            ))
         ) {
           return false;
         }
