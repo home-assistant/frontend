@@ -11,6 +11,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { dump, load } from "js-yaml";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
+import { isPatternInWord } from "../../../common/string/filter/filter";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
@@ -91,6 +92,12 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           --mdc-icon-size: 20px;
           padding: 4px;
           cursor: pointer;
+          flex-shrink: 0;
+          margin-right: 8px;
+        }
+        .entities td:nth-child(1) {
+          min-width: 300px;
+          width: 30%;
         }
         .entities td:nth-child(3) {
           white-space: pre-wrap;
@@ -99,6 +106,15 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         .entities a {
           color: var(--primary-color);
+        }
+
+        .entities .id-name-container {
+          display: flex;
+          flex-direction: column;
+        }
+        .entities .id-name-row {
+          display: flex;
+          align-items: center;
         }
 
         :host([narrow]) .state-wrapper {
@@ -219,19 +235,30 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           <template is="dom-repeat" items="[[_entities]]" as="entity">
             <tr>
               <td>
-                <ha-svg-icon
-                  on-click="entityMoreInfo"
-                  alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                  title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                  path="[[informationOutlineIcon()]]"
-                ></ha-svg-icon>
-                <ha-svg-icon
-                  on-click="copyEntity"
-                  alt="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
-                  title="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
-                  path="[[clipboardOutlineIcon()]]"
-                ></ha-svg-icon>
-                <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
+                <div class="id-name-container">
+                  <div class="id-name-row">
+                    <ha-svg-icon
+                      on-click="copyEntity"
+                      alt="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                      title="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                      path="[[clipboardOutlineIcon()]]"
+                    ></ha-svg-icon>
+                    <a href="#" on-click="entitySelected"
+                      >[[entity.entity_id]]</a
+                    >
+                  </div>
+                  <div class="id-name-row">
+                    <ha-svg-icon
+                      on-click="entityMoreInfo"
+                      alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                      title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                      path="[[informationOutlineIcon()]]"
+                    ></ha-svg-icon>
+                    <span class="secondary">
+                      [[entity.attributes.friendly_name]]
+                    </span>
+                  </div>
+                </div>
               </td>
               <td>[[entity.state]]</td>
               <template
@@ -385,12 +412,34 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
+    const _entityFilterLength = _entityFilter.length;
+    const _entityFilterLow = _entityFilter.toLowerCase();
+
     return Object.keys(hass.states)
-      .map(function (key) {
-        return hass.states[key];
-      })
-      .filter(function (value) {
-        if (!value.entity_id.includes(_entityFilter.toLowerCase())) {
+      .map((key) => hass.states[key])
+      .filter((value) => {
+        if (
+          _entityFilter &&
+          !isPatternInWord(
+            _entityFilterLow,
+            0,
+            _entityFilterLength,
+            value.entity_id.toLowerCase(),
+            0,
+            value.entity_id.length,
+            true
+          ) &&
+          value.attributes.friendly_name !== undefined &&
+          !isPatternInWord(
+            _entityFilterLow,
+            0,
+            _entityFilterLength,
+            value.attributes.friendly_name.toLowerCase(),
+            0,
+            value.attributes.friendly_name.length,
+            true
+          )
+        ) {
           return false;
         }
 
