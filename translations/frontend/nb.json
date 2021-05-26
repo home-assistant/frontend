@@ -396,14 +396,15 @@
             },
             "folders": "Mapper",
             "full_snapshot": "Full sikkerhetskopi",
-            "name": "Navn",
+            "name": "Navn på øyeblikksbilde",
             "no_snapshots": "Du har ingen sikkerhetskopier ennå",
             "partial_snapshot": "Delvis sikkerhetskopi",
-            "password": "Passord",
+            "password": "Passord for øyeblikksbilde",
             "password_protected": "Passordbeskyttet",
             "password_protection": "Passordbeskyttelse",
             "security": "Sikkerhet",
-            "type": "",
+            "select_type": "Velg hva du vil gjenopprette",
+            "type": "Type øyeblikksbilde",
             "upload_snapshot": "Last opp sikkerhetskopi"
         },
         "store": {
@@ -719,6 +720,9 @@
                 "no_areas": "Du har ingen områder",
                 "no_match": "Fant ingen samsvarende områder",
                 "show_areas": "Vis områder"
+            },
+            "attributes": {
+                "expansion_header": "Attributter"
             },
             "blueprint-picker": {
                 "add_user": "Legg til bruker",
@@ -1261,7 +1265,7 @@
         "notification_toast": {
             "connection_lost": "Mistet forbindelsen. Kobler til på nytt...",
             "dismiss": "Avvis",
-            "intergration_starting": "Starter {integration}. Ikke alt er tilgjengelig før lasting er ferdig.",
+            "integration_starting": "Starter {integration}. Ikke alt er tilgjengelig før lasting er ferdig.",
             "service_call_failed": "Kunne ikke tilkalle tjenesten: {service}",
             "started": "Home Assistant har startet!",
             "starting": "Home Assistant starter, alt er ikke tilgjengelig før starten er fullført.",
@@ -1719,6 +1723,7 @@
                             "title": ""
                         },
                         "connected": "Tilkoblet",
+                        "connecting": "Kobler til...",
                         "connection_status": "Status for skytilkobling",
                         "fetching_subscription": "Henter abonnement...",
                         "google": {
@@ -2959,6 +2964,7 @@
                     },
                     "logs": {
                         "log_level": "Loggnivå",
+                        "log_level_changed": "Loggnivå endret til: {level}",
                         "subscribed_to_logs": "Abonnerer på Z-Wave JS-loggmeldinger ...",
                         "title": "Z-Wave JS-logger"
                     },
