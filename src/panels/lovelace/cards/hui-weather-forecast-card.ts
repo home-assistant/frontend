@@ -186,6 +186,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
 
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
+    const name = this._config.name || computeStateName(stateObj);
 
     return html`
       <ha-card
@@ -217,9 +218,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                   this.hass.locale
                 )}
               </div>
-              <div class="name">
-                ${this._config.name || computeStateName(stateObj)}
-              </div>
+              <div class="name" .title=${name}>${name}</div>
             </div>
             <div class="temp-attribute">
               <div class="temp">
