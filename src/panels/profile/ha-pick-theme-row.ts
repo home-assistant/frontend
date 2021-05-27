@@ -41,9 +41,9 @@ export class HaPickThemeRow extends LitElement {
     const hasThemes =
       this.hass.themes.themes && Object.keys(this.hass.themes.themes).length;
     const curTheme =
-      this.hass.selectedThemeSettings?.theme || this.hass.themes.default_theme;
+      this.hass.selectedTheme?.theme || this.hass.themes.default_theme;
 
-    const themeSettings = this.hass.selectedThemeSettings;
+    const themeSettings = this.hass.selectedTheme;
 
     return html`
       <ha-settings-row .narrow=${this.narrow}>
@@ -162,8 +162,7 @@ export class HaPickThemeRow extends LitElement {
       (!oldHass || oldHass.themes.themes !== this.hass.themes.themes);
     const selectedThemeChanged =
       changedProperties.has("hass") &&
-      (!oldHass ||
-        oldHass.selectedThemeSettings !== this.hass.selectedThemeSettings);
+      (!oldHass || oldHass.selectedTheme !== this.hass.selectedTheme);
 
     if (themesChanged) {
       this._themeNames = ["Backend-selected", "default"].concat(
@@ -173,16 +172,16 @@ export class HaPickThemeRow extends LitElement {
 
     if (selectedThemeChanged) {
       if (
-        this.hass.selectedThemeSettings &&
-        this._themeNames.indexOf(this.hass.selectedThemeSettings.theme) > 0
+        this.hass.selectedTheme &&
+        this._themeNames.indexOf(this.hass.selectedTheme.theme) > 0
       ) {
         this._selectedThemeIndex = this._themeNames.indexOf(
-          this.hass.selectedThemeSettings.theme
+          this.hass.selectedTheme.theme
         );
         this._selectedTheme = this.hass.themes.themes[
-          this.hass.selectedThemeSettings.theme
+          this.hass.selectedTheme.theme
         ];
-      } else if (!this.hass.selectedThemeSettings) {
+      } else if (!this.hass.selectedTheme) {
         this._selectedThemeIndex = 0;
       }
     }
@@ -220,7 +219,7 @@ export class HaPickThemeRow extends LitElement {
   private _handleThemeSelection(ev: CustomEvent) {
     const theme = ev.detail.item.theme;
     if (theme === "Backend-selected") {
-      if (this.hass.selectedThemeSettings?.theme) {
+      if (this.hass.selectedTheme?.theme) {
         fireEvent(this, "settheme", {
           theme: "",
           primaryColor: undefined,
