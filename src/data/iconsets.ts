@@ -1,4 +1,4 @@
-import { clear, get, set, createStore } from "idb-keyval";
+import { clear, get, set, createStore, promisifyRequest } from "idb-keyval";
 import { iconMetadata } from "../resources/icon-metadata";
 import { IconMeta } from "../types";
 
@@ -14,27 +14,34 @@ export const iconStore = createStore("hass-icon-db", "mdi-icon-store");
 
 export const MDI_PREFIXES = ["mdi", "hass", "hassio", "hademo"];
 
-let toRead: Array<[string, (iconPath: string) => void, () => void]> = [];
+let toRead: Array<
+  [string, (iconPath: Promise<string>) => void, () => void]
+> = [];
 
 // Queue up as many icon fetches in 1 transaction
 export const getIcon = (iconName: string) =>
-  new Promise<string>((resolve, reject) => {
+  new Promise<Promise<string>>((resolve, reject) => {
     toRead.push([iconName, resolve, reject]);
 
     if (toRead.length > 1) {
       return;
     }
 
-    const results: Array<[(iconPath: string) => void, IDBRequest]> = [];
+    const results: Array<
+      [(iconPath: Promise<string>) => void, Promise<string>]
+    > = [];
 
     iconStore("readonly", (store) => {
       for (const [iconName_, resolve_] of toRead) {
-        results.push([resolve_, store.get(iconName_)]);
+        results.push([
+          resolve_,
+          promisifyRequest<string>(store.get(iconName_)),
+        ]);
       }
     })
       .then(() => {
-        for (const [resolve_, request] of results) {
-          resolve_(request.result);
+        for (const [resolve_, result] of results) {
+          resolve_(result);
         }
       })
       .catch(() => {
