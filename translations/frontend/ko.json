@@ -403,6 +403,7 @@
             "password_protected": "비밀번호로 보호됨",
             "password_protection": "비밀번호 보호",
             "security": "보안",
+            "select_type": "복원 할 항목 선택",
             "type": "유형",
             "upload_snapshot": "스냅숏 올리기"
         },
@@ -719,6 +720,9 @@
                 "no_areas": "영역이 존재하지 않습니다",
                 "no_match": "일치하는 영역을 찾을 수 없습니다",
                 "show_areas": "영역 표시하기"
+            },
+            "attributes": {
+                "expansion_header": "속성"
             },
             "blueprint-picker": {
                 "add_user": "사용자 추가하기",
@@ -1719,6 +1723,7 @@
                             "title": "Alexa"
                         },
                         "connected": "연결됨",
+                        "connecting": "연결 중 ...",
                         "connection_status": "클라우드 연결 상태",
                         "fetching_subscription": "구독 정보를 가져오는 중…",
                         "google": {
@@ -2959,6 +2964,7 @@
                     },
                     "logs": {
                         "log_level": "로그 레벨",
+                        "log_level_changed": "로그 레벨이 변경되었습니다: {level}",
                         "subscribed_to_logs": "Z-Wave JS 로그 메시지 수신 ...",
                         "title": "Z-Wave JS 로그"
                     },

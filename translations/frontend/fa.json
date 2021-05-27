@@ -45,6 +45,7 @@
                 "away": "بیرون",
                 "boost": "افزایش",
                 "comfort": "آسایش",
+                "eco": "اکو",
                 "home": "خانه",
                 "none": "هیچ کدام",
                 "sleep": "خواب"
@@ -100,6 +101,27 @@
         }
     },
     "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "پیش فرض",
+                    "header": "صوتی",
+                    "input": "ورودی",
+                    "output": "خروجی"
+                },
+                "network": {
+                    "disabled": "غیر فعال",
+                    "header": "شبکه",
+                    "host": "میزبان"
+                },
+                "options": {
+                    "edit_in_ui": "ویرایش در رابط کاربری",
+                    "edit_in_yaml": "ویرایش در YAML",
+                    "header": "تنظیمات",
+                    "show_unused_optional": "گزینه های پیکربندی اختیاری استفاده نشده را نشان دهید"
+                }
+            }
+        },
         "common": {
             "close": "بستن"
         }

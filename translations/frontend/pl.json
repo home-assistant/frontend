@@ -396,14 +396,15 @@
             },
             "folders": "Foldery",
             "full_snapshot": "Pełny snapshot",
-            "name": "Nazwa",
+            "name": "Nazwa snapshota",
             "no_snapshots": "Nie masz jeszcze żadnych snapshotów.",
             "partial_snapshot": "Częściowy snapshot",
-            "password": "Hasło",
+            "password": "Hasło snapshota",
             "password_protected": "chroniony hasłem",
             "password_protection": "Ochrona hasłem",
             "security": "Bezpieczeństwo",
-            "type": "Typ",
+            "select_type": "Wybierz, co przywrócić",
+            "type": "Typ snapshota",
             "upload_snapshot": "Prześlij snapshota"
         },
         "store": {
@@ -1722,6 +1723,7 @@
                             "title": "Alexa"
                         },
                         "connected": "połączono",
+                        "connecting": "Łączenie...",
                         "connection_status": "Status połączenia z chmurą",
                         "fetching_subscription": "Pobieranie subskrypcji…",
                         "google": {
@@ -2962,6 +2964,7 @@
                     },
                     "logs": {
                         "log_level": "Poziom loga",
+                        "log_level_changed": "Poziom dziennika zmieniony na: {level}",
                         "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS...",
                         "title": "Logi Z-Wave JS"
                     },
