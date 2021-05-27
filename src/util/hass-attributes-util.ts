@@ -101,6 +101,7 @@ hassAttributeUtil.LOGIC_STATE_ATTRIBUTES = {
   supported_features: undefined,
   attribution: undefined,
   restored: undefined,
+  editable: undefined,
   custom_ui_more_info: { type: "string" },
   custom_ui_state_card: { type: "string" },
   device_class: {
@@ -109,6 +110,13 @@ hassAttributeUtil.LOGIC_STATE_ATTRIBUTES = {
     description: "Device class",
     domains: ["binary_sensor", "cover", "humidifier", "sensor", "switch"],
   },
+  state_class: {
+    type: "array",
+    options: { sensor: ["measurement"] },
+    description: "State class",
+    domains: ["sensor"],
+  },
+  last_reset: undefined,
   assumed_state: {
     type: "boolean",
     domains: [
