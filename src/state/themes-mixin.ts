@@ -11,10 +11,10 @@ import { HassBaseEl } from "./hass-base-mixin";
 declare global {
   // for add event listener
   interface HTMLElementEventMap {
-    settheme: HASSDomEvent<Partial<HomeAssistant["selectedThemeSettings"]>>;
+    settheme: HASSDomEvent<Partial<HomeAssistant["selectedTheme"]>>;
   }
   interface HASSDomEvents {
-    settheme: Partial<HomeAssistant["selectedThemeSettings"]>;
+    settheme: Partial<HomeAssistant["selectedTheme"]>;
   }
 }
 
@@ -28,8 +28,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
         this._updateHass({
-          selectedThemeSettings: {
-            ...this.hass!.selectedThemeSettings!,
+          selectedTheme: {
+            ...this.hass!.selectedTheme!,
             ...ev.detail,
           },
         });
@@ -68,8 +68,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return;
       }
 
-      let themeSettings: Partial<HomeAssistant["selectedThemeSettings"]> = this
-        .hass!.selectedThemeSettings;
+      let themeSettings: Partial<HomeAssistant["selectedTheme"]> = this.hass!
+        .selectedTheme;
 
       const themeName =
         themeSettings?.theme ||
@@ -89,7 +89,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         darkMode = false;
       }
 
-      themeSettings = { ...this.hass.selectedThemeSettings, dark: darkMode };
+      themeSettings = { ...this.hass.selectedTheme, dark: darkMode };
 
       applyThemesOnElement(
         document.documentElement,
