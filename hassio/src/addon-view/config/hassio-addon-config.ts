@@ -3,6 +3,7 @@ import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import "@polymer/iron-autogrow-textarea/iron-autogrow-textarea";
+import { DEFAULT_SCHEMA, Type } from "js-yaml";
 import {
   css,
   CSSResultGroup,
@@ -11,7 +12,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
@@ -27,6 +28,7 @@ import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
+  validateHassioAddonOption,
 } from "../../../../src/data/hassio/addon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
@@ -37,6 +39,13 @@ import { suggestAddonRestart } from "../../dialogs/suggestAddonRestart";
 import { hassioStyle } from "../../resources/hassio-style";
 
 const SUPPORTED_UI_TYPES = ["string", "select", "boolean", "integer", "float"];
+
+const ADDON_YAML_SCHEMA = DEFAULT_SCHEMA.extend([
+  new Type("!secret", {
+    kind: "scalar",
+    construct: (data) => `!secret ${data}`,
+  }),
+]);
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
@@ -125,6 +134,7 @@ class HassioAddonConfig extends LitElement {
               ></ha-form>`
             : html` <ha-yaml-editor
                 @value-changed=${this._configChanged}
+                .schema=${ADDON_YAML_SCHEMA}
               ></ha-yaml-editor>`}
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
           ${!this._yamlMode ||
@@ -269,6 +279,14 @@ class HassioAddonConfig extends LitElement {
     this._error = undefined;
 
     try {
+      const validation = await validateHassioAddonOption(
+        this.hass,
+        this.addon.slug,
+        this._editor?.value
+      );
+      if (!validation.valid) {
+        throw Error(validation.message);
+      }
       await setHassioAddonOption(this.hass, this.addon.slug, {
         options: this._yamlMode ? this._editor?.value : this._options,
       });
