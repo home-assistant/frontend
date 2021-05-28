@@ -201,10 +201,9 @@ export class HassioSnapshots extends LitElement {
               slot="header"
             >
               <p class="selected-txt">
-                ${this.supervisor.localize(
-                  "snapshot.selected",
-                  {number: this._selectedSnapshots.length}
-                )}
+                ${this.supervisor.localize("snapshot.selected", {
+                  number: this._selectedSnapshots.length,
+                })}
               </p>
               <div class="header-btns">
                 ${!this.narrow
@@ -281,10 +280,9 @@ export class HassioSnapshots extends LitElement {
   private async _deleteSelected() {
     const confirm = await showConfirmationDialog(this, {
       title: this.supervisor.localize("snapshot.delete_snapshot_title"),
-      text: this.supervisor.localize(
-        "snapshot.delete_snapshot_text",
-        {number: this._selectedSnapshots.length}
-      ),
+      text: this.supervisor.localize("snapshot.delete_snapshot_text", {
+        number: this._selectedSnapshots.length,
+      }),
       confirmText: this.supervisor.localize("snapshot.delete_snapshot_confirm"),
     });
 
