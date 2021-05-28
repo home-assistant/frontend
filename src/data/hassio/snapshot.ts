@@ -130,6 +130,21 @@ export const createHassioFullSnapshot = async (
   );
 };
 
+export const removeSnapshot = async (hass: HomeAssistant, slug: string) => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: `/snapshots/${slug}/remove`,
+      method: "post",
+    });
+    return;
+  }
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/snapshots/${slug}/remove`
+  );
+};
+
 export const createHassioPartialSnapshot = async (
   hass: HomeAssistant,
   data: HassioPartialSnapshotCreateParams
