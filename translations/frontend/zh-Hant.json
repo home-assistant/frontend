@@ -2964,7 +2964,7 @@
                     },
                     "logs": {
                         "log_level": "日誌記錄等級",
-                        "log_level_changed": "紀錄等級變更為：{level}",
+                        "log_level_changed": "日誌等級變更為：{level}",
                         "subscribed_to_logs": "訂閱 Z-Wave JS 日誌訊息...",
                         "title": "Z-Wave JS 日誌"
                     },
