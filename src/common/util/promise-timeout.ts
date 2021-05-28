@@ -1,7 +1,7 @@
 export const promiseTimeout = (ms: number, promise: Promise<any>) => {
   const timeout = new Promise((_resolve, reject) => {
     setTimeout(() => {
-      reject("Timed out in " + ms + "ms.");
+      reject(`Timed out in ${ms} ms.`);
     }, ms);
   });
 
