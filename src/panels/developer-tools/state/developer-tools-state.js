@@ -11,7 +11,6 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { dump, load } from "js-yaml";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
-import { isPatternInWord } from "../../../common/string/filter/filter";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
@@ -412,64 +411,60 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   }
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
-    const _entityFilterLength = _entityFilter && _entityFilter.length;
-    const _entityFilterLow = _entityFilter && _entityFilter.toLowerCase();
+    const entityFilterRegExp =
+      _entityFilter && RegExp(_entityFilter.replace(/\*/g, ".*"), "i");
+
+    const stateFilterRegExp =
+      _stateFilter && RegExp(_stateFilter.replace(/\*/g, ".*"), "i");
+
+    let keyFilterRegExp;
+    let valueFilterRegExp;
+    let multiMode = false;
+
+    if (_attributeFilter) {
+      const colonIndex = _attributeFilter.indexOf(":");
+      multiMode = colonIndex !== -1;
+
+      const keyFilter = multiMode
+        ? _attributeFilter.substring(0, colonIndex).trim()
+        : _attributeFilter;
+      const valueFilter = multiMode
+        ? _attributeFilter.substring(colonIndex + 1).trim()
+        : _attributeFilter;
+
+      keyFilterRegExp = RegExp(keyFilter.replace(/\*/g, ".*"), "i");
+      valueFilterRegExp = multiMode
+        ? RegExp(valueFilter.replace(/\*/g, ".*"), "i")
+        : keyFilterRegExp;
+    }
 
     return Object.keys(hass.states)
       .map((key) => hass.states[key])
       .filter((value) => {
         if (
-          _entityFilter &&
-          !isPatternInWord(
-            _entityFilterLow,
-            0,
-            _entityFilterLength,
-            value.entity_id.toLowerCase(),
-            0,
-            value.entity_id.length,
-            true
-          ) &&
+          entityFilterRegExp &&
+          !entityFilterRegExp.test(value.entity_id) &&
           (value.attributes.friendly_name === undefined ||
-            !isPatternInWord(
-              _entityFilterLow,
-              0,
-              _entityFilterLength,
-              value.attributes.friendly_name.toLowerCase(),
-              0,
-              value.attributes.friendly_name.length,
-              true
-            ))
+            !entityFilterRegExp.test(value.attributes.friendly_name))
         ) {
           return false;
         }
 
-        if (!value.state.toLowerCase().includes(_stateFilter.toLowerCase())) {
+        if (stateFilterRegExp && !stateFilterRegExp.test(value.state)) {
           return false;
         }
 
-        if (_attributeFilter !== "") {
-          const attributeFilter = _attributeFilter.toLowerCase();
-          const colonIndex = attributeFilter.indexOf(":");
-          const multiMode = colonIndex !== -1;
-
-          let keyFilter = attributeFilter;
-          let valueFilter = attributeFilter;
-
-          if (multiMode) {
-            // we need to filter keys and values separately
-            keyFilter = attributeFilter.substring(0, colonIndex).trim();
-            valueFilter = attributeFilter.substring(colonIndex + 1).trim();
-          }
-
+        if (keyFilterRegExp && valueFilterRegExp) {
           const attributeKeys = Object.keys(value.attributes);
 
           for (let i = 0; i < attributeKeys.length; i++) {
             const key = attributeKeys[i];
 
-            if (key.includes(keyFilter) && !multiMode) {
+            const match = keyFilterRegExp.test(key);
+            if (match && !multiMode) {
               return true; // in single mode we're already satisfied with this match
             }
-            if (!key.includes(keyFilter) && multiMode) {
+            if (!match && multiMode) {
               continue;
             }
 
@@ -477,7 +472,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
             if (
               attributeValue !== undefined &&
-              JSON.stringify(attributeValue).toLowerCase().includes(valueFilter)
+              valueFilterRegExp.test(JSON.stringify(attributeValue))
             ) {
               return true;
             }
