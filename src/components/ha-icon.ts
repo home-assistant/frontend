@@ -125,6 +125,7 @@ export class HaIcon extends LitElement {
       databaseIcon = await getIcon(iconName);
     } catch (_err) {
       // Firefox in private mode doesn't support IDB
+      // iOS Safari sometimes doesn't open the DB
       databaseIcon = undefined;
     }
 
