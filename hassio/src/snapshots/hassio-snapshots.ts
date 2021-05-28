@@ -303,6 +303,7 @@ export class HassioSnapshots extends LitElement {
         title: this.supervisor.localize("snapshot.failed_to_delete"),
         text: extractApiErrorMessage(err),
       });
+      return;
     }
     await reloadHassioSnapshots(this.hass);
     this._snapshots = await fetchHassioSnapshots(this.hass);
