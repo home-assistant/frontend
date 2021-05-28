@@ -203,8 +203,7 @@ export class HassioSnapshots extends LitElement {
               <p class="selected-txt">
                 ${this.supervisor.localize(
                   "snapshot.selected",
-                  "number",
-                  this._selectedSnapshots.length
+                  {number: this._selectedSnapshots.length}
                 )}
               </p>
               <div class="header-btns">
@@ -284,8 +283,7 @@ export class HassioSnapshots extends LitElement {
       title: this.supervisor.localize("snapshot.delete_snapshot_title"),
       text: this.supervisor.localize(
         "snapshot.delete_snapshot_text",
-        "number",
-        this._selectedSnapshots.length
+        {number: this._selectedSnapshots.length}
       ),
       confirmText: this.supervisor.localize("snapshot.delete_snapshot_confirm"),
     });
