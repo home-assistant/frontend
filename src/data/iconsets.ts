@@ -31,7 +31,6 @@ export const getIcon = (iconName: string) =>
     promiseTimeout(
       1000,
       iconStore("readonly", (store) => {
-        console.log("open store");
         for (const [iconName_, resolve_, reject_] of toRead) {
           promisifyRequest<string | undefined>(store.get(iconName_))
             .then((icon) => resolve_(icon))
