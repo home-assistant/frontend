@@ -236,10 +236,13 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
                 major: {
                   fontStyle: "bold",
                 },
+                autoSkipPadding: 50,
               },
               categoryPercentage: undefined,
               barPercentage: undefined,
-              time: { format: undefined },
+              time: {
+                format: undefined,
+              },
             },
           ],
           yAxes: [
