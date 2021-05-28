@@ -1,15 +1,17 @@
 import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical, mdiPlus } from "@mdi/js";
+import { mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
 import {
+  css,
   CSSResultGroup,
   html,
   LitElement,
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import relativeTime from "../../../src/common/datetime/relative_time";
@@ -17,18 +19,25 @@ import { HASSDomEvent } from "../../../src/common/dom/fire_event";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
+  SelectionChangedEvent,
 } from "../../../src/components/data-table/ha-data-table";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-fab";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import {
   fetchHassioSnapshots,
   friendlyFolderName,
   HassioSnapshot,
   reloadHassioSnapshots,
+  removeSnapshot,
 } from "../../../src/data/hassio/snapshot";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
-import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../src/layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import { showHassioCreateSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-create-snapshot";
@@ -49,9 +58,14 @@ export class HassioSnapshots extends LitElement {
 
   @property({ type: Boolean }) public isWide!: boolean;
 
-  private _firstUpdatedCalled = false;
+  @state() private _selectedSnapshots: string[] = [];
 
   @state() private _snapshots?: HassioSnapshot[] = [];
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
+
+  private _firstUpdatedCalled = false;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -153,7 +167,9 @@ export class HassioSnapshots extends LitElement {
         .data=${this._snapshotData(this._snapshots || [])}
         id="slug"
         @row-click=${this._handleRowClicked}
+        @selection-changed=${this._handleSelectionChanged}
         clickable
+        selectable
         hasFab
         main-page
         supervisor
@@ -175,6 +191,47 @@ export class HassioSnapshots extends LitElement {
               </mwc-list-item>`
             : ""}
         </ha-button-menu>
+
+        ${this._selectedSnapshots.length
+          ? html`<div
+              class=${classMap({
+                "header-toolbar": this.narrow,
+                "table-header": !this.narrow,
+              })}
+              slot="header"
+            >
+              <p class="selected-txt">
+                ${this.supervisor.localize(
+                  "snapshot.selected",
+                  "number",
+                  this._selectedSnapshots.length
+                )}
+              </p>
+              <div class="header-btns">
+                ${!this.narrow
+                  ? html`
+                      <mwc-button
+                        @click=${this._deleteSelected}
+                        class="warning"
+                      >
+                        ${this.supervisor.localize("snapshot.delete_selected")}
+                      </mwc-button>
+                    `
+                  : html`
+                      <mwc-icon-button
+                        id="delete-btn"
+                        class="warning"
+                        @click=${this._deleteSelected}
+                      >
+                        <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
+                      </mwc-icon-button>
+                      <paper-tooltip animation-delay="0" for="delete-btn">
+                        ${this.supervisor.localize("snapshot.delete_selected")}
+                      </paper-tooltip>
+                    `}
+              </div>
+            </div> `
+          : ""}
 
         <ha-fab
           slot="fab"
@@ -199,6 +256,12 @@ export class HassioSnapshots extends LitElement {
     }
   }
 
+  private _handleSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selectedSnapshots = ev.detail.value;
+  }
+
   private _showUploadSnapshotDialog() {
     showSnapshotUploadDialog(this, {
       showSnapshot: (slug: string) =>
@@ -214,6 +277,36 @@ export class HassioSnapshots extends LitElement {
   private async fetchSnapshots() {
     await reloadHassioSnapshots(this.hass);
     this._snapshots = await fetchHassioSnapshots(this.hass);
+  }
+
+  private async _deleteSelected() {
+    const confirm = await showConfirmationDialog(this, {
+      title: this.supervisor.localize("snapshot.delete_snapshot_title"),
+      text: this.supervisor.localize(
+        "snapshot.delete_snapshot_text",
+        "number",
+        this._selectedSnapshots.length
+      ),
+      confirmText: this.supervisor.localize("snapshot.delete_snapshot_confirm"),
+    });
+
+    if (!confirm) {
+      return;
+    }
+
+    try {
+      await Promise.all(
+        this._selectedSnapshots.map((slug) => removeSnapshot(this.hass, slug))
+      );
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this.supervisor.localize("snapshot.failed_to_delete"),
+        text: extractApiErrorMessage(err),
+      });
+    }
+    await reloadHassioSnapshots(this.hass);
+    this._snapshots = await fetchHassioSnapshots(this.hass);
+    this._dataTable.clearSelection();
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
@@ -244,7 +337,45 @@ export class HassioSnapshots extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return [haStyle, hassioStyle];
+    return [
+      haStyle,
+      hassioStyle,
+      css`
+        .table-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          height: 58px;
+          border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        }
+        .header-toolbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: var(--secondary-text-color);
+          position: relative;
+          top: -4px;
+        }
+        .selected-txt {
+          font-weight: bold;
+          padding-left: 16px;
+          color: var(--primary-text-color);
+        }
+        .table-header .selected-txt {
+          margin-top: 20px;
+        }
+        .header-toolbar .selected-txt {
+          font-size: 16px;
+        }
+        .header-toolbar .header-btns {
+          margin-right: -12px;
+        }
+        .header-btns > mwc-button,
+        .header-btns > mwc-icon-button {
+          margin: 8px;
+        }
+      `,
+    ];
   }
 }
 
