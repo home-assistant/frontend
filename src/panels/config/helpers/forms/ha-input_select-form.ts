@@ -196,9 +196,6 @@ class HaInputSelectForm extends LitElement {
         mwc-button {
           margin-left: 8px;
         }
-        ha-paper-dropdown-menu {
-          display: block;
-        }
       `,
     ];
   }

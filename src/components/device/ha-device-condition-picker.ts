@@ -4,7 +4,6 @@ import {
   fetchDeviceConditions,
   localizeDeviceAutomationCondition,
 } from "../../data/device_automation";
-import "../ha-paper-dropdown-menu";
 import { HaDeviceAutomationPicker } from "./ha-device-automation-picker";
 
 @customElement("ha-device-condition-picker")
