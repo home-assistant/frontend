@@ -292,7 +292,7 @@
             "save": "Uložit",
             "show_more": "Zobrazit o tom více informací",
             "update": "Aktualizovat",
-            "update_available": "{count, plural,\n  one {Aktualizace}\n  few {{count} aktualizace}\n  other {{count} aktualizací}\n}",
+            "update_available": "{count, plural,\n  one {Čekající aktualizace}\n  few {{count} čekající aktualizace}\n  other {{count} čekajících aktualizací}\n}",
             "version": "Verze",
             "yes": "Ano"
         },
@@ -314,7 +314,7 @@
             "addon_new_version": "K dispozici je nová verze",
             "addon_running": "Doplněk je spuštěn",
             "addon_stopped": "Doplněk je zastaven",
-            "addons": "Doplňky",
+            "addons": "Nainstalované doplňky",
             "no_addons": "Zatím nemáte nainstalované žádné doplňky. Chcete-li začít, přejděte do obchodu s doplňky."
         },
         "dialog": {
@@ -396,14 +396,15 @@
             },
             "folders": "Složky",
             "full_snapshot": "Úplná záloha",
-            "name": "Název",
+            "name": "Název zálohy",
             "no_snapshots": "Zatím nemáte žádné zálohy.",
             "partial_snapshot": "Částečná záloha",
-            "password": "Heslo",
+            "password": "Heslo zálohy",
             "password_protected": "chráněno heslem",
             "password_protection": "Ochrana heslem",
             "security": "Zabezpečení",
-            "type": "Typ",
+            "select_type": "Vyberte, co chcete obnovit",
+            "type": "Typ zálohy",
             "upload_snapshot": "Nahrát zálohu"
         },
         "store": {
@@ -719,6 +720,9 @@
                 "no_areas": "Nemáte žádné oblasti",
                 "no_match": "Nebyly nalezeny žádné odpovídající oblasti",
                 "show_areas": "Zobrazit oblasti"
+            },
+            "attributes": {
+                "expansion_header": "Atributy"
             },
             "blueprint-picker": {
                 "add_user": "Přidat uživatele",
@@ -1719,6 +1723,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Připojeno",
+                        "connecting": "Připojování...",
                         "connection_status": "Stav cloudového připojení",
                         "fetching_subscription": "Načítání předplatného ...",
                         "google": {
@@ -2956,6 +2961,7 @@
                     },
                     "logs": {
                         "log_level": "Úroveň protokolu",
+                        "log_level_changed": "Úroveň protokolu změněna na: {level}",
                         "title": "Z-Wave JS protokoly"
                     },
                     "navigation": {

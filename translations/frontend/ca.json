@@ -292,7 +292,7 @@
             "save": "Desa",
             "show_more": "Mostra més informació al respecte",
             "update": "Actualitza",
-            "update_available": "{count, plural,\n  one {Actualització pendent}\n  other {{count} Actualitzacions pendents}\n}",
+            "update_available": "{count, plural,\n  one {Actualització pendent}\n  other {{count} actualitzacions pendents}\n}",
             "version": "Versió",
             "yes": "Sí"
         },
@@ -314,7 +314,7 @@
             "addon_new_version": "Nova versió disponible",
             "addon_running": "El complement s'està executant",
             "addon_stopped": "El complement està aturat",
-            "addons": "Complements",
+            "addons": "Complements instal·lats",
             "no_addons": "Encara no tens cap complement instal·lat. Vés al directori de complements per començar!"
         },
         "dialog": {
@@ -396,14 +396,15 @@
             },
             "folders": "Carpetes",
             "full_snapshot": "Instantània completa",
-            "name": "Nom",
+            "name": "Nom de la instantània",
             "no_snapshots": "Encara no tens instantànies.",
             "partial_snapshot": "Instantània parcial",
-            "password": "Contrasenya",
+            "password": "Contrasenya de la instantània",
             "password_protected": "protegit amb contrasenya",
             "password_protection": "Protecció amb contrasenya",
             "security": "Seguretat",
-            "type": "Tipus",
+            "select_type": "Selecciona què vols restaurar",
+            "type": "Tipus d'instantània",
             "upload_snapshot": "Puja instantània"
         },
         "store": {
@@ -719,6 +720,9 @@
                 "no_areas": "No tens cap àrea",
                 "no_match": "No s'han trobat àrees coincidents",
                 "show_areas": "Mostra àrees"
+            },
+            "attributes": {
+                "expansion_header": "Atributs"
             },
             "blueprint-picker": {
                 "add_user": "Afegeix usuari",
@@ -1719,6 +1723,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Connectat",
+                        "connecting": "Connectant...",
                         "connection_status": "Estat de connexió amb Cloud",
                         "fetching_subscription": "Obtenint subscripció...",
                         "google": {
@@ -2959,6 +2964,7 @@
                     },
                     "logs": {
                         "log_level": "Nivell dels registres",
+                        "log_level_changed": "Nivell de registre canviat a: {level}",
                         "subscribed_to_logs": "Subscrit a missatges de registre Z-Wave JS...",
                         "title": "Registres de Z-Wave JS"
                     },
