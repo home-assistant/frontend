@@ -314,7 +314,7 @@
             "addon_new_version": "Nieuwe versie beschikbaar",
             "addon_running": "Add-on wordt uitgevoerd",
             "addon_stopped": "Add-on is gestopt",
-            "addons": "Add-ons",
+            "addons": "Geïnstalleerde add-ons",
             "no_addons": "Je hebt nog geen add-ons geïnstalleerd. Ga naar de add-on store om te beginnen!"
         },
         "dialog": {
@@ -396,14 +396,15 @@
             },
             "folders": "Mappen",
             "full_snapshot": "Volledige snapshot",
-            "name": "Naam",
+            "name": "Snapshot naam",
             "no_snapshots": "Je hebt nog geen snapshots.",
             "partial_snapshot": "Gedeeltelijke snapshot",
-            "password": "Wachtwoord",
+            "password": "Snapshot wachtwoord",
             "password_protected": "beveiligd met wachtwoord",
             "password_protection": "Wachtwoord bescherming",
             "security": "Beveiliging",
-            "type": "Type",
+            "select_type": "Selecteer wat u wilt herstellen",
+            "type": "Snapshot type",
             "upload_snapshot": "Upload snapshot"
         },
         "store": {
@@ -719,6 +720,9 @@
                 "no_areas": "Je hebt geen gebieden",
                 "no_match": "Geen overeenkomende gebieden gevonden",
                 "show_areas": "Toon gebieden"
+            },
+            "attributes": {
+                "expansion_header": "Attributen"
             },
             "blueprint-picker": {
                 "add_user": "Gebruiker toevoegen",
@@ -1719,6 +1723,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Verbonden",
+                        "connecting": "Verbinden...",
                         "connection_status": "Cloud verbindingsstatus",
                         "fetching_subscription": "Abonnement ophalen...",
                         "google": {
@@ -2959,6 +2964,7 @@
                     },
                     "logs": {
                         "log_level": "Log niveau",
+                        "log_level_changed": "Logboekniveau gewijzigd in: {level}",
                         "subscribed_to_logs": "Geabonneerd op Z-Wave JS log berichten ...",
                         "title": "Z-Wave JS Logs"
                     },

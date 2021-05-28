@@ -31,7 +31,7 @@ export const applyThemesOnElement = (
   element,
   themes: HomeAssistant["themes"],
   selectedTheme?: string,
-  themeSettings?: Partial<HomeAssistant["selectedThemeSettings"]>
+  themeSettings?: Partial<HomeAssistant["selectedTheme"]>
 ) => {
   let cacheKey = selectedTheme;
   let themeRules: Partial<ThemeVars> = {};

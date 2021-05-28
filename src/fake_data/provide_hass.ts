@@ -277,7 +277,7 @@ export const provideHass = (
     mockTheme(theme) {
       invalidateThemeCache();
       hass().updateHass({
-        selectedThemeSettings: { theme: theme ? "mock" : "default" },
+        selectedTheme: { theme: theme ? "mock" : "default" },
         themes: {
           ...hass().themes,
           themes: {
@@ -285,11 +285,11 @@ export const provideHass = (
           },
         },
       });
-      const { themes, selectedThemeSettings } = hass();
+      const { themes, selectedTheme } = hass();
       applyThemesOnElement(
         document.documentElement,
         themes,
-        selectedThemeSettings!.theme
+        selectedTheme!.theme
       );
     },
 

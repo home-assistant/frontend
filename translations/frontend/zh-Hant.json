@@ -396,14 +396,15 @@
             },
             "folders": "資料夾",
             "full_snapshot": "全系統備份",
-            "name": "名稱",
+            "name": "系統備份名稱",
             "no_snapshots": "目前沒有任何系統備份",
             "partial_snapshot": "部分系統備份",
-            "password": "密碼",
+            "password": "系統備份密碼",
             "password_protected": "密碼保護未顯示",
             "password_protection": "密碼保護",
             "security": "加密",
-            "type": "類型",
+            "select_type": "選擇所要回復內容",
+            "type": "系統備份類型",
             "upload_snapshot": "上傳系統備份"
         },
         "store": {
@@ -719,6 +720,9 @@
                 "no_areas": "目前沒有任何分區",
                 "no_match": "找不到相符分區",
                 "show_areas": "顯示分區"
+            },
+            "attributes": {
+                "expansion_header": "屬性"
             },
             "blueprint-picker": {
                 "add_user": "新增使用者",
@@ -1719,6 +1723,7 @@
                             "title": "Alexa"
                         },
                         "connected": "已連接",
+                        "connecting": "連線中...",
                         "connection_status": "雲服務連線狀態",
                         "fetching_subscription": "取得訂閱狀態中...",
                         "google": {
@@ -2959,6 +2964,7 @@
                     },
                     "logs": {
                         "log_level": "日誌記錄等級",
+                        "log_level_changed": "日誌等級變更為：{level}",
                         "subscribed_to_logs": "訂閱 Z-Wave JS 日誌訊息...",
                         "title": "Z-Wave JS 日誌"
                     },
