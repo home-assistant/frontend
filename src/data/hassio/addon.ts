@@ -212,13 +212,15 @@ export const setHassioAddonOption = async (
 
 export const validateHassioAddonOption = async (
   hass: HomeAssistant,
-  slug: string
+  slug: string,
+  data?: any
 ): Promise<{ message: string; valid: boolean }> => {
   if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
     return hass.callWS({
       type: "supervisor/api",
       endpoint: `/addons/${slug}/options/validate`,
       method: "post",
+      data,
     });
   }
 
