@@ -1,4 +1,5 @@
-import { clear, get, set, createStore } from "idb-keyval";
+import { clear, get, set, createStore, promisifyRequest } from "idb-keyval";
+import { promiseTimeout } from "../common/util/promise-timeout";
 import { iconMetadata } from "../resources/icon-metadata";
 import { IconMeta } from "../types";
 
@@ -14,33 +15,34 @@ export const iconStore = createStore("hass-icon-db", "mdi-icon-store");
 
 export const MDI_PREFIXES = ["mdi", "hass", "hassio", "hademo"];
 
-let toRead: Array<[string, (iconPath: string) => void, () => void]> = [];
+let toRead: Array<
+  [string, (iconPath: string | undefined) => void, (e: any) => void]
+> = [];
 
 // Queue up as many icon fetches in 1 transaction
 export const getIcon = (iconName: string) =>
-  new Promise<string>((resolve, reject) => {
+  new Promise<string | undefined>((resolve, reject) => {
     toRead.push([iconName, resolve, reject]);
 
     if (toRead.length > 1) {
       return;
     }
 
-    const results: Array<[(iconPath: string) => void, IDBRequest]> = [];
-
-    iconStore("readonly", (store) => {
-      for (const [iconName_, resolve_] of toRead) {
-        results.push([resolve_, store.get(iconName_)]);
-      }
-    })
-      .then(() => {
-        for (const [resolve_, request] of results) {
-          resolve_(request.result);
+    promiseTimeout(
+      1000,
+      iconStore("readonly", (store) => {
+        for (const [iconName_, resolve_, reject_] of toRead) {
+          promisifyRequest<string | undefined>(store.get(iconName_))
+            .then((icon) => resolve_(icon))
+            .catch((e) => reject_(e));
         }
       })
-      .catch(() => {
+    )
+      .catch((e) => {
         // Firefox in private mode doesn't support IDB
+        // Safari sometime doesn't open the DB so we time out
         for (const [, , reject_] of toRead) {
-          reject_();
+          reject_(e);
         }
       })
       .finally(() => {
