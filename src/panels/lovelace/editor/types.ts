@@ -9,8 +9,10 @@ import {
   object,
   optional,
   string,
+  type,
   union,
 } from "superstruct";
+import { custom } from "../../../common/structs/is-custom-type";
 import {
   ActionConfig,
   LovelaceCardConfig,
@@ -242,6 +244,10 @@ const attributeEntitiesRowConfigStruct = object({
   name: optional(string()),
 });
 
+const customRowConfigStruct = type({
+  type: custom(),
+});
+
 export const entitiesConfigStruct = union([
   object({
     entity: string(),
@@ -265,4 +271,5 @@ export const entitiesConfigStruct = union([
   buttonsEntitiesRowConfigStruct,
   attributeEntitiesRowConfigStruct,
   callServiceEntitiesRowConfigStruct,
+  customRowConfigStruct,
 ]);
