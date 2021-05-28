@@ -438,8 +438,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         : keyFilterRegExp;
     }
 
-    return Object.keys(hass.states)
-      .map((key) => hass.states[key])
+    return Object.values(hass.states)
       .filter((value) => {
         if (
           entityFilterRegExp &&
@@ -455,11 +454,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
 
         if (keyFilterRegExp && valueFilterRegExp) {
-          const attributeKeys = Object.keys(value.attributes);
-
-          for (let i = 0; i < attributeKeys.length; i++) {
-            const key = attributeKeys[i];
-
+          for (const [key, attributeValue] of Object.entries(
+            value.attributes
+          )) {
             const match = keyFilterRegExp.test(key);
             if (match && !multiMode) {
               return true; // in single mode we're already satisfied with this match
@@ -467,8 +464,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             if (!match && multiMode) {
               continue;
             }
-
-            const attributeValue = value.attributes[key];
 
             if (
               attributeValue !== undefined &&
