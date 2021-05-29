@@ -150,9 +150,6 @@ class HassioRepositoriesDialog extends LitElement {
         mwc-button {
           margin-left: 8px;
         }
-        ha-paper-dropdown-menu {
-          display: block;
-        }
         ha-circular-progress {
           display: block;
           margin: 32px;
