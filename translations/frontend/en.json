@@ -385,8 +385,13 @@
             "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
             "create_snapshot": "Create snapshot",
             "created": "Created",
+            "delete_selected": "Delete selected snapshots",
+            "delete_snapshot_confirm": "delete",
+            "delete_snapshot_text": "Do you want to delete {number} {number, plural,\n  one {snapshot}\n  other {snapshots}\n}?",
+            "delete_snapshot_title": "Delete snapshot",
             "description": "Snapshots allow you to easily backup and restore all data of your Home Assistant instance.",
             "enter_password": "Please enter a password.",
+            "failed_to_delete": "Failed to delete",
             "folder": {
                 "addons/local": "Local add-ons",
                 "homeassistant": "Home Assistant configuration",
@@ -404,6 +409,7 @@
             "password_protection": "Password protection",
             "security": "Security",
             "select_type": "Select what to restore",
+            "selected": "{number} selected",
             "type": "Snapshot type",
             "upload_snapshot": "Upload snapshot"
         },
