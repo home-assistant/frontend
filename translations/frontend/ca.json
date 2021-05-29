@@ -385,8 +385,13 @@
             "create_blocked_not_running": "Ara mateix no és possible crear una instantània perquè el sistema es troba en estat {state}.",
             "create_snapshot": "Crea instantània",
             "created": "Creada",
+            "delete_selected": "Suprimeix les instantànies seleccionades",
+            "delete_snapshot_confirm": "suprimeix",
+            "delete_snapshot_text": "Vols suprimir {number} {number, plural,\n  one {instantània}\n  other {instantànies}\n}?",
+            "delete_snapshot_title": "Suprimeix instantània",
             "description": "Les instantànies et permeten fer una còpia de seguretat i recuperar les dades de la teva instància de Home Assistant.",
             "enter_password": "Introdueix una contrasenya.",
+            "failed_to_delete": "No s'ha pogut suprimir",
             "folder": {
                 "addons/local": "Complements locals",
                 "homeassistant": "Configuració de Home Assistant",
@@ -404,6 +409,7 @@
             "password_protection": "Protecció amb contrasenya",
             "security": "Seguretat",
             "select_type": "Selecciona què vols restaurar",
+            "selected": "{number} seleccionada/es",
             "type": "Tipus d'instantània",
             "upload_snapshot": "Puja instantània"
         },

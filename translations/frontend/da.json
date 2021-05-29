@@ -3786,7 +3786,7 @@
                     "working": "Vent venligst"
                 },
                 "initializing": "Initialiserer",
-                "logging_in_to_with": "Logger ind på ** {locationName} ** med ** {authProviderName} **.",
+                "logging_in_to_with": "Logger ind på **{locationName}** med **{authProviderName}**.",
                 "logging_in_with": "Log ind med **{authProviderName}**.",
                 "pick_auth_provider": "Eller log ind med"
             },
