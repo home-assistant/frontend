@@ -45,7 +45,6 @@ import "../ha-button-menu";
 import "../ha-card";
 import "../ha-circular-progress";
 import "../ha-fab";
-import "../ha-paper-dropdown-menu";
 import "../ha-svg-icon";
 
 declare global {
