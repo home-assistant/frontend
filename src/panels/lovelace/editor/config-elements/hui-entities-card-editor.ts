@@ -9,6 +9,7 @@ import {
   array,
   assert,
   boolean,
+  literal,
   number,
   object,
   optional,
@@ -29,23 +30,23 @@ import type { HomeAssistant } from "../../../../types";
 import type { EntitiesCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
-import { headerFooterConfigStructs } from "../../header-footer/types";
+import { headerFooterConfigStructs } from "../../header-footer/structs";
 import type { LovelaceCardEditor } from "../../types";
 import "../header-footer-editor/hui-header-footer-editor";
 import "../hui-entities-card-row-editor";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
+import { actionConfigStruct } from "../structs/action-struct";
+import { entitiesConfigStruct } from "../structs/entities-struct";
 import {
-  actionConfigStruct,
   EditorTarget,
   EditSubElementEvent,
-  entitiesConfigStruct,
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const buttonEntitiesRowConfigStruct = object({
-  type: string(),
+  type: literal("button"),
   name: string(),
   action_name: optional(string()),
   tap_action: actionConfigStruct,
@@ -54,7 +55,7 @@ const buttonEntitiesRowConfigStruct = object({
 });
 
 const castEntitiesRowConfigStruct = object({
-  type: string(),
+  type: literal("cast"),
   view: union([string(), number()]),
   dashboard: optional(string()),
   name: optional(string()),
@@ -63,7 +64,7 @@ const castEntitiesRowConfigStruct = object({
 });
 
 const callServiceEntitiesRowConfigStruct = object({
-  type: string(),
+  type: literal("call-service"),
   name: string(),
   service: string(),
   icon: optional(string()),
@@ -72,7 +73,7 @@ const callServiceEntitiesRowConfigStruct = object({
 });
 
 const conditionalEntitiesRowConfigStruct = object({
-  type: string(),
+  type: literal("conditional"),
   row: any(),
   conditions: array(
     object({
@@ -84,24 +85,24 @@ const conditionalEntitiesRowConfigStruct = object({
 });
 
 const dividerEntitiesRowConfigStruct = object({
-  type: string(),
+  type: literal("divider"),
   style: optional(any()),
 });
 
 const sectionEntitiesRowConfigStruct = object({
-  type: string(),
+  type: literal("section"),
   label: optional(string()),
 });
 
 const webLinkEntitiesRowConfigStruct = object({
-  type: string(),
+  type: literal("weblink"),
   url: string(),
   name: optional(string()),
   icon: optional(string()),
 });
 
 const buttonsEntitiesRowConfigStruct = object({
-  type: string(),
+  type: literal("buttons"),
   entities: array(
     union([
       object({
@@ -116,12 +117,19 @@ const buttonsEntitiesRowConfigStruct = object({
 });
 
 const attributeEntitiesRowConfigStruct = object({
-  type: string(),
+  type: literal("attribute"),
   entity: string(),
   attribute: string(),
   prefix: optional(string()),
   suffix: optional(string()),
   name: optional(string()),
+});
+
+const textEntitiesRowConfigStruct = object({
+  type: literal("text"),
+  name: string(),
+  text: string(),
+  icon: optional(string()),
 });
 
 const customRowConfigStruct = type({
@@ -139,6 +147,7 @@ const entitiesRowConfigStruct = union([
   buttonsEntitiesRowConfigStruct,
   attributeEntitiesRowConfigStruct,
   callServiceEntitiesRowConfigStruct,
+  textEntitiesRowConfigStruct,
   customRowConfigStruct,
 ]);
 
