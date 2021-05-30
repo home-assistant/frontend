@@ -54,17 +54,17 @@ class HaAttributes extends LitElement {
                     </div>
                   `
                 )}
-                ${this.stateObj.attributes.attribution
-                  ? html`
-                      <div class="attribution">
-                        ${this.stateObj.attributes.attribution}
-                      </div>
-                    `
-                  : ""}
               `
             : ""}
         </div>
       </ha-expansion-panel>
+      ${this.stateObj.attributes.attribution
+        ? html`
+            <div class="attribution">
+              ${this.stateObj.attributes.attribution}
+            </div>
+          `
+        : ""}
     `;
   }
 
@@ -91,6 +91,7 @@ class HaAttributes extends LitElement {
         .attribution {
           color: var(--secondary-text-color);
           text-align: center;
+          margin-top: 16px;
         }
         pre {
           font-family: inherit;
