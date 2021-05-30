@@ -1,4 +1,4 @@
-import "@thomasloven/round-slider";
+import "@thomasloven/round-slider/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,

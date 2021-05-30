@@ -1,5 +1,5 @@
 import { mdiDotsVertical } from "@mdi/js";
-import "@thomasloven/round-slider";
+import "@thomasloven/round-slider/round-slider";
 import {
   css,
   CSSResultGroup,
