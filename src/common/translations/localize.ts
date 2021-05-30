@@ -86,11 +86,15 @@ export const computeLocalize = async (
       | undefined;
 
     if (!translatedMessage) {
-      translatedMessage = new IntlMessageFormat(
-        translatedValue,
-        language,
-        formats
-      );
+      try {
+        translatedMessage = new IntlMessageFormat(
+          translatedValue,
+          language,
+          formats
+        );
+      } catch (err) {
+        return "Translation error: " + err.message;
+      }
       cache._localizationCache[messageKey] = translatedMessage;
     }
 
