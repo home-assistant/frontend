@@ -12,6 +12,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { dump, load } from "js-yaml";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { escapeRegExp } from "../../../common/string/escape_regexp";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
@@ -412,10 +413,12 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
     const entityFilterRegExp =
-      _entityFilter && RegExp(_entityFilter.replace(/\*/g, ".*"), "i");
+      _entityFilter &&
+      RegExp(escapeRegExp(_entityFilter).replace(/\\\*/g, ".*"), "i");
 
     const stateFilterRegExp =
-      _stateFilter && RegExp(_stateFilter.replace(/\*/g, ".*"), "i");
+      _stateFilter &&
+      RegExp(escapeRegExp(_stateFilter).replace(/\\\*/g, ".*"), "i");
 
     let keyFilterRegExp;
     let valueFilterRegExp;
@@ -432,9 +435,12 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         ? _attributeFilter.substring(colonIndex + 1).trim()
         : _attributeFilter;
 
-      keyFilterRegExp = RegExp(keyFilter.replace(/\*/g, ".*"), "i");
+      keyFilterRegExp = RegExp(
+        escapeRegExp(keyFilter).replace(/\\\*/g, ".*"),
+        "i"
+      );
       valueFilterRegExp = multiMode
-        ? RegExp(valueFilter.replace(/\*/g, ".*"), "i")
+        ? RegExp(escapeRegExp(valueFilter).replace(/\\\*/g, ".*"), "i")
         : keyFilterRegExp;
     }
 
