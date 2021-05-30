@@ -1,10 +1,11 @@
 import { refine, string } from "superstruct";
 
-const isCustom = (value: string) => {
+const isCustomType = (value: string) => {
   if (value.startsWith("custom:")) {
     return true;
   }
   return false;
 };
 
-export const custom = () => refine(string(), "custom element type", isCustom);
+export const customType = () =>
+  refine(string(), "custom element type", isCustomType);

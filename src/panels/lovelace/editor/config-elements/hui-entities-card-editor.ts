@@ -5,15 +5,19 @@ import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
+  any,
   array,
   assert,
   boolean,
+  number,
   object,
   optional,
   string,
+  type,
   union,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { customType } from "../../../../common/structs/is-custom-type";
 import { entityId } from "../../../../common/structs/is-entity-id";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
@@ -32,12 +36,111 @@ import "../hui-entities-card-row-editor";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import {
+  actionConfigStruct,
   EditorTarget,
   EditSubElementEvent,
   entitiesConfigStruct,
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+
+const buttonEntitiesRowConfigStruct = object({
+  type: string(),
+  name: string(),
+  action_name: optional(string()),
+  tap_action: actionConfigStruct,
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+});
+
+const castEntitiesRowConfigStruct = object({
+  type: string(),
+  view: union([string(), number()]),
+  dashboard: optional(string()),
+  name: optional(string()),
+  icon: optional(string()),
+  hide_if_unavailable: optional(boolean()),
+});
+
+const callServiceEntitiesRowConfigStruct = object({
+  type: string(),
+  name: string(),
+  service: string(),
+  icon: optional(string()),
+  action_name: optional(string()),
+  service_data: optional(any()),
+});
+
+const conditionalEntitiesRowConfigStruct = object({
+  type: string(),
+  row: any(),
+  conditions: array(
+    object({
+      entity: string(),
+      state: optional(string()),
+      state_not: optional(string()),
+    })
+  ),
+});
+
+const dividerEntitiesRowConfigStruct = object({
+  type: string(),
+  style: optional(any()),
+});
+
+const sectionEntitiesRowConfigStruct = object({
+  type: string(),
+  label: optional(string()),
+});
+
+const webLinkEntitiesRowConfigStruct = object({
+  type: string(),
+  url: string(),
+  name: optional(string()),
+  icon: optional(string()),
+});
+
+const buttonsEntitiesRowConfigStruct = object({
+  type: string(),
+  entities: array(
+    union([
+      object({
+        entity: string(),
+        icon: optional(string()),
+        image: optional(string()),
+        name: optional(string()),
+      }),
+      string(),
+    ])
+  ),
+});
+
+const attributeEntitiesRowConfigStruct = object({
+  type: string(),
+  entity: string(),
+  attribute: string(),
+  prefix: optional(string()),
+  suffix: optional(string()),
+  name: optional(string()),
+});
+
+const customRowConfigStruct = type({
+  type: customType(),
+});
+
+const entitiesRowConfigStruct = union([
+  entitiesConfigStruct,
+  buttonEntitiesRowConfigStruct,
+  castEntitiesRowConfigStruct,
+  conditionalEntitiesRowConfigStruct,
+  dividerEntitiesRowConfigStruct,
+  sectionEntitiesRowConfigStruct,
+  webLinkEntitiesRowConfigStruct,
+  buttonsEntitiesRowConfigStruct,
+  attributeEntitiesRowConfigStruct,
+  callServiceEntitiesRowConfigStruct,
+  customRowConfigStruct,
+]);
 
 const cardConfigStruct = object({
   type: string(),
@@ -47,7 +150,7 @@ const cardConfigStruct = object({
   icon: optional(string()),
   show_header_toggle: optional(boolean()),
   state_color: optional(boolean()),
-  entities: array(entitiesConfigStruct),
+  entities: array(entitiesRowConfigStruct),
   header: optional(headerFooterConfigStructs),
   footer: optional(headerFooterConfigStructs),
 });
