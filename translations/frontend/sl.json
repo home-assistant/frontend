@@ -1490,7 +1490,7 @@
                     "picker": {
                         "filter": {
                             "filter": "Filter",
-                            "hidden_devices": "{number} {number, plural,\n  one {skrita naprava}\n  two {skriti napravi}\n  few {skrite naprave}\n  many {skritih naprav}\n}",
+                            "hidden_devices": "{number} {number, plural,\n  one {skrita naprava}\n  two {skriti napravi}\n  few {skrite naprave}\n  other {skritih naprav}\n}",
                             "show_all": "Prikaži vse",
                             "show_disabled": "Prikaži onemogočene naprave"
                         },
@@ -1530,7 +1530,7 @@
                         },
                         "filter": {
                             "filter": "Filter",
-                            "hidden_entities": "{number} {number, plural,\n  one {skrita entiteta}\n  two {skriti entiteti}\n  few {skrite entitete}\n  many {skritih entitet}\n}",
+                            "hidden_entities": "{number} {number, plural,\n  one {skrita entiteta}\n  two {skriti entiteti}\n  few {skrite entitete}\n  other {skritih entitet}\n}",
                             "show_all": "Pokaži vse",
                             "show_disabled": "Pokaži onemogočene entitete",
                             "show_readonly": "Prikaži entitete \"samo za branje\"",
