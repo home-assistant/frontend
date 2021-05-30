@@ -387,7 +387,7 @@
             "created": "Gemaakt",
             "delete_selected": "Verwijder geselecteerde snapshots",
             "delete_snapshot_confirm": "verwijder",
-            "delete_snapshot_text": "Wilt je {number} {number, plural,\n  one {snapshot}\n  other {snapshots}\n} verwijderen?",
+            "delete_snapshot_text": "Wilt u {number} {number, plural,\n  one {snapshot}\n  other {snapshots}\n} verwijderen?",
             "delete_snapshot_title": "Verwijder snapshot",
             "description": "Met snapshots kunt u gemakkelijk een back-up maken van alle gegevens van uw Home Assistant en ze herstellen.",
             "enter_password": "Voer een wachtwoord in.",

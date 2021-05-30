@@ -314,7 +314,7 @@
             "addon_new_version": "Nuova versione disponibile",
             "addon_running": "Il componente aggiuntivo è in esecuzione",
             "addon_stopped": "Il componente aggiuntivo viene arrestato",
-            "addons": "Componenti aggiuntivi",
+            "addons": "Componenti aggiuntivi installati",
             "no_addons": "Non hai ancora installato alcun componente aggiuntivo. Vai al negozio di componenti aggiuntivi per iniziare!"
         },
         "dialog": {
@@ -385,8 +385,13 @@
             "create_blocked_not_running": "La creazione di un'istantanea non è al momento possibile perché il sistema è nello stato {state}.",
             "create_snapshot": "Crea istantanea",
             "created": "Creato",
+            "delete_selected": "Elimina le istantanee selezionate",
+            "delete_snapshot_confirm": "Elimina",
+            "delete_snapshot_text": "Vuoi eliminare {number} {number, plural,\n  one {istantanea}\n  other {istantanee}\n}?",
+            "delete_snapshot_title": "Elimina istantanea",
             "description": "Le istantanee ti consentono di eseguire facilmente il backup e il ripristino di tutti i dati dell'istanza di Home Assistant.",
             "enter_password": "Immettere una password.",
+            "failed_to_delete": "Impossibile eliminare",
             "folder": {
                 "addons/local": "Componenti aggiuntivi locali",
                 "homeassistant": "Configurazione di Home Assistant",
@@ -396,14 +401,16 @@
             },
             "folders": "Cartelle",
             "full_snapshot": "Istantanea completa",
-            "name": "Nome",
+            "name": "Nome dell'istantanea",
             "no_snapshots": "Non hai ancora nessuna istantanea.",
             "partial_snapshot": "Istantanea parziale",
-            "password": "Password",
+            "password": "Password dell'istantanea",
             "password_protected": "protetto da password",
             "password_protection": "Protezione con password",
             "security": "Sicurezza",
-            "type": "Tipo",
+            "select_type": "Seleziona cosa ripristinare",
+            "selected": "{number} selezionato/i",
+            "type": "Tipo di istantanea",
             "upload_snapshot": "Invia istantanea"
         },
         "store": {
@@ -719,6 +726,9 @@
                 "no_areas": "Non hai aree",
                 "no_match": "Non sono state trovate aree corrispondenti",
                 "show_areas": "Mostra le aree"
+            },
+            "attributes": {
+                "expansion_header": "Attributi"
             },
             "blueprint-picker": {
                 "add_user": "Aggiungi utente",
@@ -1719,6 +1729,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Connesso",
+                        "connecting": "In collegamento...",
                         "connection_status": "Stato della connessione cloud",
                         "fetching_subscription": "Recupero iscrizione in corso...",
                         "google": {
@@ -2959,6 +2970,7 @@
                     },
                     "logs": {
                         "log_level": "Livello di registro",
+                        "log_level_changed": "Livello di registro modificato in: {level}",
                         "subscribed_to_logs": "Sottoscrizione al registro dei messaggi di Z-Wave JS ...",
                         "title": "Registri Z-Wave JS"
                     },

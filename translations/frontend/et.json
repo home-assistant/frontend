@@ -385,8 +385,13 @@
             "create_blocked_not_running": "Hetktõmmise loomine pole praegu võimalik kuna süsteem on olekus {state}.",
             "create_snapshot": "Loo hetktõmmis",
             "created": "Loodud",
+            "delete_selected": "Kustuta valitud hetktõmmised",
+            "delete_snapshot_confirm": "kustuta",
+            "delete_snapshot_text": "Kas kustutada {number} {number, plural,\n  one {hetktõmmis}\n  other {hetktõmmist}\n}?",
+            "delete_snapshot_title": "Kustuta hetktõmmis",
             "description": "Hetktõmmised võimaldavad hõlpsalt varundada ja taastada kõik Home Assistanti andmed.",
             "enter_password": "Sisesta salasõna.",
+            "failed_to_delete": "Kustutamine nurjus",
             "folder": {
                 "addons/local": "Kohalikud lisandmoodulid",
                 "homeassistant": "Home Assistanti sätted",
@@ -404,6 +409,7 @@
             "password_protection": "Salasõnaga kaitstud",
             "security": "Turvalisus",
             "select_type": "Vali mida taastada",
+            "selected": "{number} valitud",
             "type": "Hetktõmmise tüüp",
             "upload_snapshot": "Hetktõmmise üleslaadimine"
         },
