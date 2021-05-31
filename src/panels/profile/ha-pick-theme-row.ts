@@ -17,7 +17,6 @@ import "../../components/ha-paper-dropdown-menu";
 import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
 import "../../components/ha-settings-row";
-import { Theme } from "../../data/ws-themes";
 import {
   DEFAULT_PRIMARY_COLOR,
   DEFAULT_ACCENT_COLOR,
@@ -32,10 +31,6 @@ export class HaPickThemeRow extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @state() _themeNames: string[] = [];
-
-  @state() _selectedThemeIndex = 0;
-
-  @state() _selectedTheme?: Theme;
 
   protected render(): TemplateResult {
     const hasThemes =
@@ -72,7 +67,8 @@ export class HaPickThemeRow extends LitElement {
         >
           <paper-listbox
             slot="dropdown-content"
-            .selected=${this._selectedThemeIndex}
+            .selected=${this.hass.selectedTheme?.theme || "Backend-selected"}
+            attr-for-selected="theme"
             @iron-select=${this._handleThemeSelection}
           >
             ${this._themeNames.map(
@@ -81,8 +77,7 @@ export class HaPickThemeRow extends LitElement {
           </paper-listbox>
         </ha-paper-dropdown-menu>
       </ha-settings-row>
-      ${curTheme === "default" ||
-      (this._selectedTheme && this._supportsModeSelection(this._selectedTheme))
+      ${curTheme === "default" || this._supportsModeSelection(curTheme)
         ? html` <div class="inputs">
             <ha-formfield
               .label=${this.hass.localize(
@@ -155,35 +150,16 @@ export class HaPickThemeRow extends LitElement {
     `;
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues) {
     const oldHass = changedProperties.get("hass") as undefined | HomeAssistant;
     const themesChanged =
       changedProperties.has("hass") &&
       (!oldHass || oldHass.themes.themes !== this.hass.themes.themes);
-    const selectedThemeChanged =
-      changedProperties.has("hass") &&
-      (!oldHass || oldHass.selectedTheme !== this.hass.selectedTheme);
 
     if (themesChanged) {
       this._themeNames = ["Backend-selected", "default"].concat(
         Object.keys(this.hass.themes.themes).sort()
       );
-    }
-
-    if (selectedThemeChanged) {
-      if (
-        this.hass.selectedTheme &&
-        this._themeNames.indexOf(this.hass.selectedTheme.theme) > 0
-      ) {
-        this._selectedThemeIndex = this._themeNames.indexOf(
-          this.hass.selectedTheme.theme
-        );
-        this._selectedTheme = this.hass.themes.themes[
-          this.hass.selectedTheme.theme
-        ];
-      } else if (!this.hass.selectedTheme) {
-        this._selectedThemeIndex = 0;
-      }
     }
   }
 
@@ -199,8 +175,8 @@ export class HaPickThemeRow extends LitElement {
     });
   }
 
-  private _supportsModeSelection(theme: Theme): boolean {
-    return theme.modes?.light !== undefined && theme.modes?.dark !== undefined;
+  private _supportsModeSelection(themeName: string): boolean {
+    return "modes" in this.hass.themes.themes[themeName];
   }
 
   private _handleDarkMode(ev: CustomEvent) {

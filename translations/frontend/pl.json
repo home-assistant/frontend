@@ -385,8 +385,13 @@
             "create_blocked_not_running": "Tworzenie snapshota nie jest teraz możliwe, ponieważ system jest w {state}.",
             "create_snapshot": "Utwórz snapshot",
             "created": "Utworzony",
+            "delete_selected": "Usuń wybrane snapshoty",
+            "delete_snapshot_confirm": "usuń",
+            "delete_snapshot_text": "Czy chcesz usunąć {number} {number, plural,\n  one {snapshota}\n  few {snapshoty}\n  many {snapshotów}\n  other {snapshoty}\n}?",
+            "delete_snapshot_title": "Usuń snapshota",
             "description": "Snapshoty umożliwiają łatwe tworzenie kopii zapasowych i przywracanie wszystkich danych instancji Home Assistant.",
             "enter_password": "Proszę wprowadzić hasło",
+            "failed_to_delete": "Nie udało się usunąć",
             "folder": {
                 "addons/local": "Folder Local add-ons",
                 "homeassistant": "Folder konfiguracji Home Assistant",
@@ -404,6 +409,7 @@
             "password_protection": "Ochrona hasłem",
             "security": "Bezpieczeństwo",
             "select_type": "Wybierz, co przywrócić",
+            "selected": "wybrano {number}",
             "type": "Typ snapshota",
             "upload_snapshot": "Prześlij snapshota"
         },

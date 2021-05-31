@@ -1,33 +1,17 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import {
-  array,
-  assert,
-  number,
-  object,
-  optional,
-  string,
-  union,
-} from "superstruct";
+import { array, assert, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { entityId } from "../../../../common/structs/is-entity-id";
 import { HomeAssistant } from "../../../../types";
 import { HistoryGraphCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
+import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
-
-const entitiesConfigStruct = union([
-  object({
-    entity: entityId(),
-    name: optional(string()),
-  }),
-  entityId(),
-]);
 
 const cardConfigStruct = object({
   type: string(),

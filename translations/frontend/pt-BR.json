@@ -121,9 +121,16 @@
         },
         "snapshot": {
             "created": "Criado",
+            "delete_selected": "Excluir snapshots selecionados",
+            "delete_snapshot_confirm": "Excluir",
+            "delete_snapshot_text": "Deseja excluir {number} {number, plural,\n  one {snapshot}\n  other {snapshots}\n}?",
+            "delete_snapshot_title": "Excluir snapshot",
+            "failed_to_delete": "Falha ao excluir",
             "folder": {
                 "homeassistant": "Configuração do Home Assistant"
-            }
+            },
+            "select_type": "Selecione o que restaurar",
+            "selected": "{number} selecionado"
         },
         "system": {
             "supervisor": {
@@ -337,6 +344,9 @@
                 "no_areas": "Você não possui áreas",
                 "no_match": "Não foram encontradas áreas com esta configuração",
                 "show_areas": "Mostrar áreas"
+            },
+            "attributes": {
+                "expansion_header": "Atributos"
             },
             "blueprint-picker": {
                 "add_user": "Adicionar Usuário",
@@ -1117,6 +1127,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Conectado",
+                        "connecting": "Conectando ...",
                         "connection_status": "Status de conexão com a Cloud",
                         "fetching_subscription": "Buscando assinatura…",
                         "google": {
@@ -1152,7 +1163,8 @@
                             "link_learn_how_it_works": "Aprenda como funciona",
                             "not_connected": "Não Conectado",
                             "remote_enabled": {
-                                "caption": "Conectar automaticamente"
+                                "caption": "Conectar automaticamente",
+                                "description": "Ative esta opção para garantir que a instância do Home Assistant esteja sempre acessível remotamente."
                             },
                             "title": "Controle Remoto"
                         },
@@ -1806,8 +1818,8 @@
                         "add_scene": "Adicionar cena",
                         "delete_confirm": "Tem certeza de que deseja excluir esta cena?",
                         "delete_scene": "Excluir cena",
-                        "duplicate": "Duplicado",
-                        "duplicate_scene": "Cena duplicada",
+                        "duplicate": "Duplicar",
+                        "duplicate_scene": "Duplicar cena",
                         "edit_scene": "Editar cena",
                         "header": "Editor de cena",
                         "headers": {
@@ -2107,7 +2119,9 @@
                 },
                 "zwave_js": {
                     "logs": {
-                        "log_level": "Nível de Log"
+                        "log_level": "Nível de Log",
+                        "subscribed_to_logs": "Inscrito em mensagens de log JS do Z-Wave ...",
+                        "title": "Logs Z-Wave JS"
                     },
                     "navigation": {
                         "logs": "Logs"
@@ -3006,9 +3020,9 @@
                     "description": "Escolha como os horários são formatados.",
                     "dropdown_label": "Formato de hora",
                     "formats": {
-                        "12": "Horas",
-                        "24": "Horas",
-                        "language": "Auto (usar configuração de idioma)",
+                        "12": "12 horas (AM/PM)",
+                        "24": "24 horas",
+                        "language": "Automático (usar configuração de idioma)",
                         "system": "Use a localidade do sistema"
                     },
                     "header": "Formato de hora"

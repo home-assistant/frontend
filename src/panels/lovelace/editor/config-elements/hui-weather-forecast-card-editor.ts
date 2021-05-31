@@ -11,11 +11,8 @@ import { HomeAssistant } from "../../../../types";
 import { WeatherForecastCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import {
-  actionConfigStruct,
-  EditorTarget,
-  EntitiesEditorEvent,
-} from "../types";
+import { actionConfigStruct } from "../structs/action-struct";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({

@@ -292,7 +292,7 @@
             "save": "Opslaan",
             "show_more": "Toon meer informatie hierover",
             "update": "Update",
-            "update_available": "Er {count, plural, one {staat een update} other {{count} staan updates}} klaar",
+            "update_available": "{count, plural, one {Een update staat} other {{count} updates staan}} klaar",
             "version": "Versie",
             "yes": "Ja"
         },
@@ -385,8 +385,13 @@
             "create_blocked_not_running": "Het maken van een snapshot is nu niet mogelijk omdat het systeem in {state} staat.",
             "create_snapshot": "Maak snapshot",
             "created": "Gemaakt",
+            "delete_selected": "Verwijder geselecteerde snapshots",
+            "delete_snapshot_confirm": "verwijder",
+            "delete_snapshot_text": "Wilt u {number} {number, plural,\n  one {snapshot}\n  other {snapshots}\n} verwijderen?",
+            "delete_snapshot_title": "Verwijder snapshot",
             "description": "Met snapshots kunt u gemakkelijk een back-up maken van alle gegevens van uw Home Assistant en ze herstellen.",
             "enter_password": "Voer een wachtwoord in.",
+            "failed_to_delete": "Verwijderen mislukt",
             "folder": {
                 "addons/local": "Lokale invoegtoepassingen",
                 "homeassistant": "Home Assistant configuratie",
@@ -404,6 +409,7 @@
             "password_protection": "Wachtwoord bescherming",
             "security": "Beveiliging",
             "select_type": "Selecteer wat u wilt herstellen",
+            "selected": "{number} geselecteerd",
             "type": "Snapshot type",
             "upload_snapshot": "Upload snapshot"
         },
@@ -4021,7 +4027,7 @@
                         "12": "12 uur (AM/PM)",
                         "24": "24 uur",
                         "language": "Automatisch (taalinstelling gebruiken)",
-                        "system": "Systeemlokalen gebruiken"
+                        "system": "Gebruik systeemlandinstelling"
                     },
                     "header": "Tijdformaat"
                 },
