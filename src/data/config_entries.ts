@@ -14,6 +14,7 @@ export interface ConfigEntry {
     | "failed_unload";
   supports_options: boolean;
   supports_unload: boolean;
+  system_options: ConfigEntrySystemOptions;
   disabled_by: "user" | null;
   reason: string | null;
 }
@@ -70,15 +71,6 @@ export const enableConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
     type: "config_entries/disable",
     entry_id: configEntryId,
     disabled_by: null,
-  });
-
-export const getConfigEntrySystemOptions = (
-  hass: HomeAssistant,
-  configEntryId: string
-) =>
-  hass.callWS<ConfigEntrySystemOptions>({
-    type: "config_entries/system_options/list",
-    entry_id: configEntryId,
   });
 
 export const updateConfigEntrySystemOptions = (

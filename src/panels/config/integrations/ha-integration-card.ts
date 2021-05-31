@@ -110,6 +110,7 @@ export class HaIntegrationCard extends LitElement {
             : undefined}
           .localizedDomainName=${item ? item.localized_domain_name : undefined}
           .manifest=${this.manifest}
+          .configEntry=${item}
         >
           ${this.items.length > 1
             ? html`
@@ -467,6 +468,10 @@ export class HaIntegrationCard extends LitElement {
     showConfigEntrySystemOptionsDialog(this, {
       entry: configEntry,
       manifest: this.manifest,
+      entryUpdated: (entry) =>
+        fireEvent(this, "entry-updated", {
+          entry,
+        }),
     });
   }
 

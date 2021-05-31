@@ -5,6 +5,7 @@ import { IntegrationManifest } from "../../data/integration";
 export interface ConfigEntrySystemOptionsDialogParams {
   entry: ConfigEntry;
   manifest?: IntegrationManifest;
+  entryUpdated(entry: ConfigEntry): void;
 }
 
 export const loadConfigEntrySystemOptionsDialog = () =>

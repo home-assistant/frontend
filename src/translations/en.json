@@ -759,9 +759,9 @@
       "config_entry_system_options": {
         "title": "System Options for {integration}",
         "enable_new_entities_label": "Enable newly added entities.",
-        "enable_new_entities_description": "If disabled, newly discovered entities for {integration} will not be automatically added to Home Assistant.",
+        "enable_new_entities_description": "If newly discovered devices for {integration} should be automatically added.",
         "enable_polling_label": "Enable polling for updates.",
-        "enable_polling_description": "If disabled, Home Assistant will not automatically poll {integration} entities for updates.",
+        "enable_polling_description": "If Home Assistant should automatically poll {integration} entities for updates.",
         "restart_home_assistant": "You need to restart Home Assistant for your changes to take effect.",
         "update": "Update"
       },
@@ -2185,6 +2185,7 @@
             },
             "provided_by_custom_integration": "Provided by a custom integration",
             "depends_on_cloud": "Depends on the cloud",
+            "disabled_polling": "Automatic polling for updated data disabled",
             "state": {
               "loaded": "Loaded",
               "setup_error": "Failed to set up",
