@@ -71,7 +71,6 @@
     "@polymer/iron-label": "^3.0.1",
     "@polymer/iron-overlay-behavior": "^3.0.2",
     "@polymer/iron-resizable-behavior": "^3.0.1",
-    "@polymer/paper-card": "^3.0.1",
     "@polymer/paper-checkbox": "^3.1.0",
     "@polymer/paper-dialog": "^3.0.1",
     "@polymer/paper-dialog-behavior": "^3.0.1",
