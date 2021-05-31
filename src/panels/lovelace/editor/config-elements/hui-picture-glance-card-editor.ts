@@ -16,11 +16,9 @@ import "../../components/hui-theme-select-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
-import {
-  actionConfigStruct,
-  EditorTarget,
-  entitiesConfigStruct,
-} from "../types";
+import { actionConfigStruct } from "../structs/action-struct";
+import { entitiesConfigStruct } from "../structs/entities-struct";
+import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
