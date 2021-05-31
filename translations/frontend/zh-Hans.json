@@ -387,7 +387,7 @@
             "created": "创建于",
             "delete_selected": "删除选定的快照",
             "delete_snapshot_confirm": "删除",
-            "delete_snapshot_text": "您是否要删除{number}个快照？",
+            "delete_snapshot_text": "是否要删除这 {number} 个快照？",
             "delete_snapshot_title": "删除快照",
             "description": "“快照”使您可以轻松地备份和还原 Home Assistant 实例的所有数据。",
             "enter_password": "请输入密码。",
@@ -408,8 +408,8 @@
             "password_protected": "密码保护",
             "password_protection": "密码保护",
             "security": "安全性",
-            "select_type": "选择要还原的内容",
-            "selected": "选择了 {number} 项",
+            "select_type": "请选择要还原的内容",
+            "selected": "已选择 {number} 项",
             "type": "类型",
             "upload_snapshot": "上传快照"
         },
@@ -580,8 +580,8 @@
             },
             "lock": {
                 "code": "密码",
-                "lock": "上锁",
-                "unlock": "开锁"
+                "lock": "锁定",
+                "unlock": "解锁"
             },
             "media_player": {
                 "browse_media": "浏览媒体",
@@ -798,13 +798,13 @@
                     "was_closed": "已关闭",
                     "was_connected": "已连接",
                     "was_disconnected": "已断开",
-                    "was_locked": "已上锁",
+                    "was_locked": "已锁定",
                     "was_low": "较低",
                     "was_normal": "正常",
                     "was_opened": "已打开",
                     "was_plugged_in": "已插入",
                     "was_safe": "[%key_id:6884522%]",
-                    "was_unlocked": "已打开",
+                    "was_unlocked": "已解锁",
                     "was_unplugged": "已拔出",
                     "was_unsafe": "[%key_id:6884523%]"
                 },
@@ -1129,7 +1129,7 @@
                         "command_line": "命令行实体",
                         "core": "位置和自定义",
                         "filesize": "文件大小实体",
-                        "filter": "筛选实体",
+                        "filter": "Filter 实体",
                         "generic": "通用 IP 摄像机实体",
                         "generic_thermostat": "通用恒温器实体",
                         "group": "分组、分组实体及其通知服务",
@@ -1803,7 +1803,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "您在configuration.yaml中配置了实体过滤器，因此无法用此UI修改被公开的实体名单。",
+                        "banner": "由于您在 configuration.yaml 中配置了实体过滤器，无法通过此 UI 修改要开放的实体。",
                         "dont_expose_entity": "使实体不可发现",
                         "expose": "向Alexa发送你的位置",
                         "expose_entity": "使实体可发现",
@@ -2672,7 +2672,7 @@
                             "command_line": "命令行实体",
                             "core": "位置和自定义",
                             "filesize": "文件大小实体",
-                            "filter": "筛选实体",
+                            "filter": "Filter 实体",
                             "generic": "通用 IP 摄像机实体",
                             "generic_thermostat": "通用恒温器实体",
                             "group": "分组、分组实体及其通知服务",
@@ -2970,7 +2970,7 @@
                     },
                     "logs": {
                         "log_level": "日志级别",
-                        "log_level_changed": "日志级别更改为： {level}",
+                        "log_level_changed": "日志级别更改为: {level}",
                         "subscribed_to_logs": "已订阅 Z-Wave JS 日志消息...",
                         "title": "Z-Wave JS 日志"
                     },
