@@ -385,8 +385,13 @@
             "create_blocked_not_running": "Å lage en sikkerhetskopi er ikke mulig akkurat nå fordi systemet er i {state} status",
             "create_snapshot": "Opprett sikkerhetskopi",
             "created": "Opprettet",
+            "delete_selected": "Slett valgte sikkerhetskopier",
+            "delete_snapshot_confirm": "slett",
+            "delete_snapshot_text": "Vl du slette {number} {number, plural,\n  one {sikkerhetskopi}\n  other {sikkerhetskopier}\n}?",
+            "delete_snapshot_title": "Slett sikkerhetskopi",
             "description": "Sikkerhetskopier lar deg enkelt sikkerhetskopiere og gjenopprette alle dataene fra din Home Assistant forekomst",
             "enter_password": "Vennligst skriv inn et passord",
+            "failed_to_delete": "Kunne ikke slette",
             "folder": {
                 "addons/local": "Lokale tillegg",
                 "homeassistant": "Home Assistant-konfigurasjon",
@@ -404,6 +409,7 @@
             "password_protection": "Passordbeskyttelse",
             "security": "Sikkerhet",
             "select_type": "Velg hva du vil gjenopprette",
+            "selected": "{number} valgt",
             "type": "Type øyeblikksbilde",
             "upload_snapshot": "Last opp sikkerhetskopi"
         },

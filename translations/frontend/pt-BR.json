@@ -713,9 +713,20 @@
             },
             "zha_reconfigure_device": {
                 "attribute": "Atributo",
+                "battery_device_warning": "Você precisará despertar os dispositivos alimentados por bateria antes de iniciar o processo de reconfiguração. Consulte o manual do seu dispositivo para obter instruções sobre como despertar o dispositivo.",
                 "bind_header": "Vinculação",
+                "button_hide": "Ocultar detalhes",
+                "button_show": "Mostrar detalhes",
+                "cluster_header": "Cluster",
+                "configuration_complete": "Reconfiguração do dispositivo concluída.",
+                "configuration_failed": "A reconfiguração do dispositivo falhou. Informações adicionais podem estar disponíveis nos logs.",
+                "configuring_alt": "Configurando",
+                "in_progress": "O dispositivo está sendo reconfigurado. Isto pode levar algum tempo.",
+                "introduction": "Reconfigure um dispositivo em sua rede Zigbee. Use este recurso se o seu dispositivo não estiver funcionando corretamente.",
                 "min_max_change": "min/máx/mudança",
-                "reporting_header": "Relatório"
+                "reporting_header": "Relatório",
+                "run_in_background": "Você pode fechar esta caixa de diálogo e a reconfiguração continuará em segundo plano.",
+                "start_reconfiguration": "Iniciar reconfiguração"
             }
         },
         "duration": {
@@ -770,6 +781,7 @@
                         "linked_entities_caption": "Entidades",
                         "name": "Nome",
                         "name_required": "Nome é obrigatório",
+                        "no_linked_entities": "Não há entidades vinculadas a esta área.",
                         "unknown_error": "Erro desconhecido",
                         "update": "Atualizar"
                     },
@@ -2120,6 +2132,7 @@
                 "zwave_js": {
                     "logs": {
                         "log_level": "Nível de Log",
+                        "log_level_changed": "Nível de Log mudou para: {level}",
                         "subscribed_to_logs": "Inscrito em mensagens de log JS do Z-Wave ...",
                         "title": "Logs Z-Wave JS"
                     },

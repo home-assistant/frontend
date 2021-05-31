@@ -1,5 +1,12 @@
 import "@polymer/paper-tooltip/paper-tooltip";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  nothing,
+  LitElement,
+  TemplateResult,
+} from "lit";
 import { customElement, state, property } from "lit/decorators";
 import {
   Adapter,
@@ -17,18 +24,19 @@ import "./ha-icon";
 
 const format_addresses = (
   addresses: IPv6ConfiguredAddress[] | IPv4ConfiguredAddress[]
-): TemplateResult[] =>
-  addresses.map(
-    (address) => html`<span>${address.address}/${address.network_prefix}</span>`
-  );
+): TemplateResult =>
+  html`${addresses.map((address, i) => [
+    html`<span>${address.address}/${address.network_prefix}</span>`,
+    i < addresses.length - 1 ? ", " : nothing,
+  ])}`;
 
 const format_auto_detected_interfaces = (
   adapters: Adapter[]
 ): Array<TemplateResult | string> =>
   adapters.map((adapter) =>
     adapter.auto
-      ? html`${adapter.name} (${format_addresses(adapter.ipv4)}
-        ${format_addresses(adapter.ipv6)} )`
+      ? html`${adapter.name}
+        (${format_addresses([...adapter.ipv4, ...adapter.ipv6])})`
       : ""
   );
 
@@ -88,8 +96,7 @@ export class HaNetwork extends LitElement {
                     : ""}
                 </span>
                 <span slot="description">
-                  ${format_addresses(adapter.ipv4)}
-                  ${format_addresses(adapter.ipv6)}
+                  ${format_addresses([...adapter.ipv4, ...adapter.ipv6])}
                 </span>
               </ha-settings-row>`
           )
