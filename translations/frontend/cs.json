@@ -385,8 +385,13 @@
             "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
             "create_snapshot": "Vytvořit zálohu",
             "created": "Vytvořeno",
+            "delete_selected": "Smazat vybrané zálohy",
+            "delete_snapshot_confirm": "smazat",
+            "delete_snapshot_text": "Chcete smazat {number} {number, plural,\n  one {zálohu}\n  few {zálohy}\n  other {záloh}\n}?",
+            "delete_snapshot_title": "Smazat zálohu",
             "description": "Zálohy umožňují snadno zálohovat a obnovovat všechna data vaší instance Home Assistant.",
             "enter_password": "Prosím zadejte heslo.",
+            "failed_to_delete": "Smazání se nezdařilo",
             "folder": {
                 "addons/local": "Místní doplňky",
                 "homeassistant": "Nastavení Home Asistent",
@@ -404,6 +409,7 @@
             "password_protection": "Ochrana heslem",
             "security": "Zabezpečení",
             "select_type": "Vyberte, co chcete obnovit",
+            "selected": "{number} vybraných",
             "type": "Typ zálohy",
             "upload_snapshot": "Nahrát zálohu"
         },
