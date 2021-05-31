@@ -11,7 +11,7 @@ import { EntityCardConfig } from "../../cards/types";
 import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
-import { headerFooterConfigStructs } from "../../header-footer/types";
+import { headerFooterConfigStructs } from "../../header-footer/structs";
 import { LovelaceCardEditor } from "../../types";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";

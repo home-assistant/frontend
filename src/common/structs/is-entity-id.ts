@@ -1,11 +1,6 @@
 import { refine, string } from "superstruct";
 
-const isEntityId = (value: string): boolean => {
-  if (!value.includes(".")) {
-    return false;
-  }
-  return true;
-};
+const isEntityId = (value: string): boolean => value.includes(".");
 
 export const entityId = () =>
   refine(string(), "entity ID (domain.entity)", isEntityId);
