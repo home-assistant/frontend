@@ -28,7 +28,6 @@ const createConfigEntry = (
   title,
   source: "zeroconf",
   state: "loaded",
-  connection_class: "local_push",
   supports_options: false,
   supports_unload: true,
   disabled_by: null,

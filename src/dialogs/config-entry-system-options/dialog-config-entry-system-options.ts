@@ -14,6 +14,7 @@ import {
 } from "../../data/config_entries";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { showAlertDialog } from "../generic/show-dialog-box";
 import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
 
 @customElement("dialog-config-entry-system-options")
@@ -21,6 +22,8 @@ class DialogConfigEntrySystemOptions extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _disableNewEntities!: boolean;
+
+  @state() private _disablePolling!: boolean;
 
   @state() private _error?: string;
 
@@ -40,8 +43,9 @@ class DialogConfigEntrySystemOptions extends LitElement {
       this.hass,
       params.entry.entry_id
     );
-    this._loading = false;
     this._disableNewEntities = systemOptions.disable_new_entities;
+    this._disablePolling = systemOptions.disable_polling;
+    this._loading = false;
   }
 
   public closeDialog(): void {
@@ -99,9 +103,35 @@ class DialogConfigEntrySystemOptions extends LitElement {
                       .checked=${!this._disableNewEntities}
                       @change=${this._disableNewEntitiesChanged}
                       .disabled=${this._submitting}
-                    >
-                    </ha-switch>
+                    ></ha-switch>
                   </ha-formfield>
+                  ${this._allowUpdatePolling()
+                    ? html`
+                        <ha-formfield
+                          .label=${html`<p>
+                              ${this.hass.localize(
+                                "ui.dialogs.config_entry_system_options.enable_polling_label"
+                              )}
+                            </p>
+                            <p class="secondary">
+                              ${this.hass.localize(
+                                "ui.dialogs.config_entry_system_options.enable_polling_description",
+                                "integration",
+                                this.hass.localize(
+                                  `component.${this._params.entry.domain}.title`
+                                ) || this._params.entry.domain
+                              )}
+                            </p>`}
+                          .dir=${computeRTLDirection(this.hass)}
+                        >
+                          <ha-switch
+                            .checked=${!this._disablePolling}
+                            @change=${this._disablePollingChanged}
+                            .disabled=${this._submitting}
+                          ></ha-switch>
+                        </ha-formfield>
+                      `
+                    : ""}
                 </div>
               `}
         </div>
@@ -123,21 +153,45 @@ class DialogConfigEntrySystemOptions extends LitElement {
     `;
   }
 
+  private _allowUpdatePolling() {
+    return (
+      this._params!.manifest &&
+      (this._params!.manifest.iot_class === "local_polling" ||
+        this._params!.manifest.iot_class === "cloud_polling")
+    );
+  }
+
   private _disableNewEntitiesChanged(ev: Event): void {
     this._error = undefined;
     this._disableNewEntities = !(ev.target as HaSwitch).checked;
   }
 
+  private _disablePollingChanged(ev: Event): void {
+    this._error = undefined;
+    this._disablePolling = !(ev.target as HaSwitch).checked;
+  }
+
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
+    const data: Parameters<typeof updateConfigEntrySystemOptions>[2] = {
+      disable_new_entities: this._disableNewEntities,
+    };
+    if (this._allowUpdatePolling()) {
+      data.disable_polling = this._disablePolling;
+    }
     try {
-      await updateConfigEntrySystemOptions(
+      const result = await updateConfigEntrySystemOptions(
         this.hass,
         this._params!.entry.entry_id,
-        {
-          disable_new_entities: this._disableNewEntities,
-        }
+        data
       );
+      if (result.require_restart) {
+        await showAlertDialog(this, {
+          text: this.hass.localize(
+            "ui.dialogs.config_entry_system_options.restart_home_assistant"
+          ),
+        });
+      }
       this._params = undefined;
     } catch (err) {
       this._error = err.message || "Unknown error";

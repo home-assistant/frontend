@@ -760,6 +760,9 @@
         "title": "System Options for {integration}",
         "enable_new_entities_label": "Enable newly added entities.",
         "enable_new_entities_description": "If disabled, newly discovered entities for {integration} will not be automatically added to Home Assistant.",
+        "enable_polling_label": "Enable polling for updates.",
+        "enable_polling_description": "If disabled, Home Assistant will not automatically poll {integration} entities for updates.",
+        "restart_home_assistant": "You need to restart Home Assistant for your changes to take effect.",
         "update": "Update"
       },
       "zha_reconfigure_device": {

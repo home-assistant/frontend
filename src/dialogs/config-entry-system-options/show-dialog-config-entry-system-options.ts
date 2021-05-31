@@ -1,12 +1,10 @@
 import { fireEvent } from "../../common/dom/fire_event";
 import { ConfigEntry } from "../../data/config_entries";
+import { IntegrationManifest } from "../../data/integration";
 
 export interface ConfigEntrySystemOptionsDialogParams {
   entry: ConfigEntry;
-  // updateEntry: (
-  //   updates: Partial<EntityRegistryEntryUpdateParams>
-  // ) => Promise<unknown>;
-  // removeEntry: () => Promise<boolean>;
+  manifest?: IntegrationManifest;
 }
 
 export const loadConfigEntrySystemOptionsDialog = () =>

@@ -466,6 +466,7 @@ export class HaIntegrationCard extends LitElement {
   private _showSystemOptions(configEntry: ConfigEntry) {
     showConfigEntrySystemOptionsDialog(this, {
       entry: configEntry,
+      manifest: this.manifest,
     });
   }
 
