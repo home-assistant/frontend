@@ -33,7 +33,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           .then(() => {
             const el = document.createElement("ha-store-auth-card");
             this.provideHass(el);
-            this.shadowRoot!.appendChild(el);
+            document.body.appendChild(el);
           });
       }
     }
