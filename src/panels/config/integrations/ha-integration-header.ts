@@ -1,8 +1,9 @@
-import { mdiCloud, mdiPackageVariant } from "@mdi/js";
+import { mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-svg-icon";
+import { ConfigEntry } from "../../../data/config_entries";
 import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -20,6 +21,8 @@ export class HaIntegrationHeader extends LitElement {
   @property() public label!: string;
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
+
+  @property({ attribute: false }) public configEntry?: ConfigEntry;
 
   protected render(): TemplateResult {
     let primary: string;
@@ -56,6 +59,15 @@ export class HaIntegrationHeader extends LitElement {
           mdiCloud,
           this.hass.localize(
             "ui.panel.config.integrations.config_entry.depends_on_cloud"
+          ),
+        ]);
+      }
+
+      if (this.configEntry?.system_options.disable_polling) {
+        icons.push([
+          mdiSyncOff,
+          this.hass.localize(
+            "ui.panel.config.integrations.config_entry.disabled_polling"
           ),
         ]);
       }

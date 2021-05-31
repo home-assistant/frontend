@@ -12,9 +12,9 @@ export interface ConfigEntry {
     | "setup_retry"
     | "not_loaded"
     | "failed_unload";
-  connection_class: string;
   supports_options: boolean;
   supports_unload: boolean;
+  system_options: ConfigEntrySystemOptions;
   disabled_by: "user" | null;
   reason: string | null;
 }
@@ -25,6 +25,7 @@ export interface ConfigEntryMutableParams {
 
 export interface ConfigEntrySystemOptions {
   disable_new_entities: boolean;
+  disable_polling: boolean;
 }
 
 export const getConfigEntries = (hass: HomeAssistant) =>
@@ -72,21 +73,15 @@ export const enableConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
     disabled_by: null,
   });
 
-export const getConfigEntrySystemOptions = (
-  hass: HomeAssistant,
-  configEntryId: string
-) =>
-  hass.callWS<ConfigEntrySystemOptions>({
-    type: "config_entries/system_options/list",
-    entry_id: configEntryId,
-  });
-
 export const updateConfigEntrySystemOptions = (
   hass: HomeAssistant,
   configEntryId: string,
   params: Partial<ConfigEntrySystemOptions>
 ) =>
-  hass.callWS({
+  hass.callWS<{
+    require_restart: boolean;
+    system_options: ConfigEntrySystemOptions;
+  }>({
     type: "config_entries/system_options/update",
     entry_id: configEntryId,
     ...params,
