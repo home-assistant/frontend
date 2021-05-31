@@ -83,6 +83,7 @@ module.exports.babelOptions = ({ latestBuild }) => ({
 module.exports.babelExclude = () => [
   require.resolve("@mdi/js/mdi.js"),
   require.resolve("hls.js"),
+  require.resolve("vis-network/peer/esm/vis-network.js"),
 ];
 
 const outputPath = (outputRoot, latestBuild) =>
