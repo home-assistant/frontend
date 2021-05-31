@@ -244,9 +244,6 @@ class HassioRegistriesDialog extends LitElement {
         mwc-list-item span[slot="secondary"] {
           color: var(--secondary-text-color);
         }
-        ha-paper-dropdown-menu {
-          display: block;
-        }
       `,
     ];
   }

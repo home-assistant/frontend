@@ -385,8 +385,13 @@
             "create_blocked_not_running": "Создание снимка сейчас невозможно, потому что система находится в состоянии {state}.",
             "create_snapshot": "Создать снимок",
             "created": "Создан",
+            "delete_selected": "Удалить выбранные снимки",
+            "delete_snapshot_confirm": "удалить",
+            "delete_snapshot_text": "Вы уверены, что хотите удалить {number} {number, plural,\n  one {снимок}\n  few {снимка}\n  many {снимков}\n  other {снимков}\n}?",
+            "delete_snapshot_title": "Удалить снимок",
             "description": "Снимок файловой системы (snapshot) позволяет легко создавать и восстанавливать резервную копию всех данных Вашего Home Assistant.",
             "enter_password": "Пожалуйста, введите пароль.",
+            "failed_to_delete": "Не удалось удалить",
             "folder": {
                 "addons/local": "Локальные дополнения",
                 "homeassistant": "Home Assistant",
@@ -403,7 +408,8 @@
             "password_protected": "защищено паролем",
             "password_protection": "Защита паролем",
             "security": "Безопасность",
-            "select_type": "Выберите, что нужно восстановить",
+            "select_type": "Выберите что нужно восстановить",
+            "selected": "Выбрано: {number}",
             "type": "Тип снимка",
             "upload_snapshot": "Загрузить снимок"
         },

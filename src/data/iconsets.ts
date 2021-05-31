@@ -36,18 +36,16 @@ export const getIcon = (iconName: string) =>
             .then((icon) => resolve_(icon))
             .catch((e) => reject_(e));
         }
-      })
-    )
-      .catch((e) => {
-        // Firefox in private mode doesn't support IDB
-        // Safari sometime doesn't open the DB so we time out
-        for (const [, , reject_] of toRead) {
-          reject_(e);
-        }
-      })
-      .finally(() => {
         toRead = [];
-      });
+      })
+    ).catch((e) => {
+      // Firefox in private mode doesn't support IDB
+      // Safari sometime doesn't open the DB so we time out
+      for (const [, , reject_] of toRead) {
+        reject_(e);
+      }
+      toRead = [];
+    });
   });
 
 export const findIconChunk = (icon: string): string => {

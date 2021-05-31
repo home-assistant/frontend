@@ -385,8 +385,13 @@
             "create_blocked_not_running": "No es posible crear una instantánea en este momento porque el sistema está en el estado {state}.",
             "create_snapshot": "Crear instantánea",
             "created": "Creada",
+            "delete_selected": "Eliminar instantáneas seleccionadas",
+            "delete_snapshot_confirm": "Eliminar",
+            "delete_snapshot_text": "¿Deseas eliminar {number} {number, plural,\n  one {instantánea}\n  other {instantáneas}\n}?",
+            "delete_snapshot_title": "Eliminar instantánea",
             "description": "Las instantáneas te permiten realizar copias de seguridad y restaurar fácilmente todos los datos de tu instancia de Home Assistant.",
             "enter_password": "Por favor, introduce una contraseña.",
+            "failed_to_delete": "No se pudo eliminar",
             "folder": {
                 "addons/local": "Complementos locales",
                 "homeassistant": "Configuración de Home Assistant",
@@ -404,6 +409,7 @@
             "password_protection": "Protección con contraseña",
             "security": "Seguridad",
             "select_type": "Selecciona qué restaurar",
+            "selected": "{number} {number, plural,\n one {seleccionada}\n other {seleccionadas}\n}",
             "type": "Tipo de instantánea",
             "upload_snapshot": "Subir instantánea"
         },

@@ -385,8 +385,13 @@
             "create_blocked_not_running": "现在无法创建快照，因为系统处于{state}状态。",
             "create_snapshot": "创建快照",
             "created": "创建于",
+            "delete_selected": "删除选定的快照",
+            "delete_snapshot_confirm": "删除",
+            "delete_snapshot_text": "您是否要删除{number}个快照？",
+            "delete_snapshot_title": "删除快照",
             "description": "“快照”使您可以轻松地备份和还原 Home Assistant 实例的所有数据。",
             "enter_password": "请输入密码。",
+            "failed_to_delete": "删除失败",
             "folder": {
                 "addons/local": "本地加载项",
                 "homeassistant": "Home Assistant 配置",
@@ -403,6 +408,8 @@
             "password_protected": "密码保护",
             "password_protection": "密码保护",
             "security": "安全性",
+            "select_type": "选择要还原的内容",
+            "selected": "选择了 {number} 项",
             "type": "类型",
             "upload_snapshot": "上传快照"
         },
@@ -573,8 +580,8 @@
             },
             "lock": {
                 "code": "密码",
-                "lock": "锁定",
-                "unlock": "解锁"
+                "lock": "上锁",
+                "unlock": "开锁"
             },
             "media_player": {
                 "browse_media": "浏览媒体",
@@ -720,6 +727,9 @@
                 "no_match": "未找到相关区域",
                 "show_areas": "显示区域"
             },
+            "attributes": {
+                "expansion_header": "属性"
+            },
             "blueprint-picker": {
                 "add_user": "添加用户",
                 "remove_user": "删除用户",
@@ -788,13 +798,13 @@
                     "was_closed": "已关闭",
                     "was_connected": "已连接",
                     "was_disconnected": "已断开",
-                    "was_locked": "已锁定",
+                    "was_locked": "已上锁",
                     "was_low": "较低",
                     "was_normal": "正常",
                     "was_opened": "已打开",
                     "was_plugged_in": "已插入",
                     "was_safe": "[%key_id:6884522%]",
-                    "was_unlocked": "已解锁",
+                    "was_unlocked": "已打开",
                     "was_unplugged": "已拔出",
                     "was_unsafe": "[%key_id:6884523%]"
                 },
@@ -1119,7 +1129,7 @@
                         "command_line": "命令行实体",
                         "core": "位置和自定义",
                         "filesize": "文件大小实体",
-                        "filter": "filter 实体",
+                        "filter": "筛选实体",
                         "generic": "通用 IP 摄像机实体",
                         "generic_thermostat": "通用恒温器实体",
                         "group": "分组、分组实体及其通知服务",
@@ -1719,6 +1729,7 @@
                             "title": "Alexa"
                         },
                         "connected": "已连接",
+                        "connecting": "正在连接...",
                         "connection_status": "云连接状态",
                         "fetching_subscription": "正在获取订阅...",
                         "google": {
@@ -1792,7 +1803,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "由于已在configuration.yaml中配置了实体过滤器，因此无法编辑通过此UI公开哪些实体。",
+                        "banner": "您在configuration.yaml中配置了实体过滤器，因此无法用此UI修改被公开的实体名单。",
                         "dont_expose_entity": "使实体不可发现",
                         "expose": "向Alexa发送你的位置",
                         "expose_entity": "使实体可发现",
@@ -2041,7 +2052,7 @@
                         "filter": {
                             "filter": "筛选",
                             "hidden_devices": "{number} 个隐藏设备",
-                            "show_all": "显示全部",
+                            "show_all": "全部显示",
                             "show_disabled": "显示已禁用的设备"
                         },
                         "search": "搜索设备"
@@ -2081,7 +2092,7 @@
                         "filter": {
                             "filter": "筛选",
                             "hidden_entities": "{number} 个隐藏{number, plural,\n  one {实体}\n  other {实体}\n}",
-                            "show_all": "显示全部",
+                            "show_all": "全部显示",
                             "show_disabled": "显示已禁用的实体",
                             "show_readonly": "显示只读实体",
                             "show_unavailable": "显示不可用的实体"
@@ -2661,7 +2672,7 @@
                             "command_line": "命令行实体",
                             "core": "位置和自定义",
                             "filesize": "文件大小实体",
-                            "filter": "filter 实体",
+                            "filter": "筛选实体",
                             "generic": "通用 IP 摄像机实体",
                             "generic_thermostat": "通用恒温器实体",
                             "group": "分组、分组实体及其通知服务",
@@ -2959,6 +2970,7 @@
                     },
                     "logs": {
                         "log_level": "日志级别",
+                        "log_level_changed": "日志级别更改为： {level}",
                         "subscribed_to_logs": "已订阅 Z-Wave JS 日志消息...",
                         "title": "Z-Wave JS 日志"
                     },

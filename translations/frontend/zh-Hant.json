@@ -385,8 +385,13 @@
             "create_blocked_not_running": "由於系統為 {state} 狀態，無法製作系統備份。",
             "create_snapshot": "製作系統備份",
             "created": "建立",
+            "delete_selected": "刪除已選擇系統備份",
+            "delete_snapshot_confirm": "刪除",
+            "delete_snapshot_text": "是否要刪除 {number} {number, plural,\n  one {個系統備份}\n  other {個系統備份}\n}？",
+            "delete_snapshot_title": "刪除系統備份",
             "description": "系統備份可供您快速的備份與還原 Home Assistant 所有資料。",
             "enter_password": "請輸入密碼。",
+            "failed_to_delete": "刪除失敗",
             "folder": {
                 "addons/local": "本地附加元件",
                 "homeassistant": "Home Assistant 設定",
@@ -404,6 +409,7 @@
             "password_protection": "密碼保護",
             "security": "加密",
             "select_type": "選擇所要回復內容",
+            "selected": "已選擇 {number} 個",
             "type": "系統備份類型",
             "upload_snapshot": "上傳系統備份"
         },
