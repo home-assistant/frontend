@@ -385,8 +385,13 @@
             "create_blocked_not_running": "시스템이 {state} 상태이기 때문에 지금은 스냅숏을 생성할 수 없습니다.",
             "create_snapshot": "스냅숏 생성하기",
             "created": "생성됨",
+            "delete_selected": "선택한 스냅샷 삭제",
+            "delete_snapshot_confirm": "삭제",
+            "delete_snapshot_text": "{number} {number, plural,\n  one{개의 스냅샷}\n  other{개의 스냅샷}\n}를 삭제하시겠습니까?",
+            "delete_snapshot_title": "스냅샷 삭제",
             "description": "스냅숏을 사용하면 Home Assistant 인스턴스의 모든 데이터를 쉽게 백업하고 복원할 수 있습니다.",
             "enter_password": "비밀번호를 입력해주세요.",
+            "failed_to_delete": "삭제하지 못했습니다.",
             "folder": {
                 "addons/local": "로컬 애드온",
                 "homeassistant": "Home Assistant 구성 내용",
@@ -404,6 +409,7 @@
             "password_protection": "비밀번호 보호",
             "security": "보안",
             "select_type": "복원 할 항목 선택",
+            "selected": "{number}개 선택됨",
             "type": "유형",
             "upload_snapshot": "스냅숏 올리기"
         },
