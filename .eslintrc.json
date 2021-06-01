@@ -104,5 +104,6 @@
     "lit/attribute-value-entities": 0
   },
   "plugins": ["disable", "import", "lit", "prettier", "@typescript-eslint"],
-  "processor": "disable/disable"
+  "processor": "disable/disable",
+  "ignorePatterns": ["src/resources/lit-virtualizer/*"]
 }
