@@ -57,7 +57,6 @@ const createRollupConfig = ({
       babel({
         ...bundle.babelOptions({ latestBuild }),
         extensions,
-        exclude: bundle.babelExclude(),
         babelHelpers: isWDS ? "inline" : "bundled",
       }),
       string({
