@@ -340,11 +340,10 @@ export class HaDataTable extends LitElement {
                   ${scroll({
                     items: this._items,
                     layout: Layout1d,
-                    // @ts-expect-error
                     renderItem: (row: DataTableRowData, index) => {
                       // not sure how this happens...
                       if (!row) {
-                        return "";
+                        return html``;
                       }
                       if (row.append) {
                         return html`
