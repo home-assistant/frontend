@@ -77,11 +77,12 @@ class ConfigNetwork extends LitElement {
       const coreNetowrk = await getNetworkConfig(this.hass);
       if (isComponentLoaded(this.hass, "hassio")) {
         const supervisorNetwork = await fetchNetworkInfo(this.hass);
-        if (supervisorNetwork.interfaces.length) {
+        const interfaces = new Set(
+          supervisorNetwork.interfaces.map((int) => int.interface)
+        );
+        if (interfaces.size) {
           coreNetowrk.adapters = coreNetowrk.adapters.filter((adapter) =>
-            supervisorNetwork.interfaces.some(
-              (int) => int.interface === adapter.name
-            )
+            interfaces.has(adapter.name)
           );
         }
       }
