@@ -1,4 +1,4 @@
-import { Layout1d, scroll } from "@lit-labs/virtualizer";
+import { Layout1d, scroll } from "../../resources/lit-virtualizer";
 import deepClone from "deep-clone-simple";
 import {
   css,
@@ -340,11 +340,10 @@ export class HaDataTable extends LitElement {
                   ${scroll({
                     items: this._items,
                     layout: Layout1d,
-                    // @ts-expect-error
                     renderItem: (row: DataTableRowData, index) => {
                       // not sure how this happens...
                       if (!row) {
-                        return "";
+                        return html``;
                       }
                       if (row.append) {
                         return html`
