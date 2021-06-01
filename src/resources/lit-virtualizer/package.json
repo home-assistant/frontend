@@ -1,6 +1,6 @@
 {
   "name": "@lit-labs/virtualizer",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Virtual scrolling for Lit",
   "license": "BSD-3-Clause",
   "main": "lit-virtualizer.js",
