@@ -52,13 +52,15 @@ export const reloadConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
     require_restart: boolean;
   }>("POST", `config/config_entries/entry/${configEntryId}/reload`);
 
+export interface DisableConfigEntryResult {
+  require_restart: boolean;
+}
+
 export const disableConfigEntry = (
   hass: HomeAssistant,
   configEntryId: string
 ) =>
-  hass.callWS<{
-    require_restart: boolean;
-  }>({
+  hass.callWS<DisableConfigEntryResult>({
     type: "config_entries/disable",
     entry_id: configEntryId,
     disabled_by: "user",
