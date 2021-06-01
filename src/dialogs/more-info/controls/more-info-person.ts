@@ -33,6 +33,7 @@ class MoreInfoPerson extends LitElement {
             <ha-map
               .hass=${this.hass}
               .entities=${this._entityArray(this.stateObj.entity_id)}
+              autoFit
             ></ha-map>
           `
         : ""}
