@@ -353,15 +353,7 @@ class HaLogbook extends LitElement {
         }
 
         :host([virtualize]) .container {
-          display: block;
-          position: relative;
-          contain: strict;
           height: 100%;
-          overflow: auto;
-        }
-
-        .container > * {
-          box-sizing: border-box;
         }
 
         .narrow .entry {
