@@ -170,7 +170,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
         });
       }
       this._params!.entryUpdated(result.config_entry);
-      this.closeDialog()
+      this.closeDialog();
     } catch (err) {
       this._error = err.message || "Unknown error";
     } finally {
