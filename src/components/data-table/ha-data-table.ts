@@ -246,7 +246,7 @@ export class HaDataTable extends LitElement {
           aria-rowcount=${this._filteredData.length + 1}
           style=${styleMap({
             height: this.autoHeight
-              ? `${(this._filteredData.length || 1) * 53 + 57}px`
+              ? `${(this._filteredData.length || 1) * 53 + 53}px`
               : `calc(100% - ${this._headerHeight}px)`,
           })}
         >
@@ -919,13 +919,11 @@ export class HaDataTable extends LitElement {
           color: var(--secondary-text-color);
         }
         .scroller {
-          display: flex;
-          position: relative;
-          contain: strict;
           height: calc(100% - 57px);
         }
-        .mdc-data-table__table:not(.auto-height) .scroller {
-          overflow: auto;
+
+        .mdc-data-table__table.auto-height .scroller {
+          overflow-y: hidden !important;
         }
         .grows {
           flex-grow: 1;
