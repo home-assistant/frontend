@@ -31,10 +31,8 @@ const createConfigEntry = (
   supports_options: false,
   supports_unload: true,
   disabled_by: null,
-  system_options: {
-    disable_new_entities: false,
-    disable_polling: false,
-  },
+  pref_disable_new_entities: false,
+  pref_disable_polling: false,
   reason: null,
   ...override,
 });
@@ -68,10 +66,7 @@ const optionsFlowEntry = createConfigEntry("Options Flow", {
   supports_options: true,
 });
 const disabledPollingEntry = createConfigEntry("Disabled Polling", {
-  system_options: {
-    disable_new_entities: false,
-    disable_polling: true,
-  },
+  pref_disable_polling: true,
 });
 const setupErrorEntry = createConfigEntry("Setup Error", {
   state: "setup_error",

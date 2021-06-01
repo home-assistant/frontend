@@ -229,7 +229,7 @@ class HassTabsSubpage extends LitElement {
         color: var(--sidebar-text-color);
         text-decoration: none;
       }
-      :host([narrow]) .toolbar a {
+      .bottom-bar a {
         width: 25%;
       }
 
