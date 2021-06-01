@@ -377,7 +377,10 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
                 major: {
                   fontStyle: "bold",
                 },
+                source: "auto",
+                sampleSize: 5,
                 autoSkipPadding: 20,
+                maxRotation: 0,
               },
             },
           ],

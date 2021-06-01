@@ -638,18 +638,6 @@ export class QuickBar extends LitElement {
           margin-left: 8px;
         }
 
-        .uni-virtualizer-host {
-          display: block;
-          position: relative;
-          contain: strict;
-          overflow: auto;
-          height: 100%;
-        }
-
-        .uni-virtualizer-host > * {
-          box-sizing: border-box;
-        }
-
         mwc-list-item {
           width: 100%;
         }

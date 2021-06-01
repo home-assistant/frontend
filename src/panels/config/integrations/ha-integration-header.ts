@@ -63,7 +63,7 @@ export class HaIntegrationHeader extends LitElement {
         ]);
       }
 
-      if (this.configEntry?.system_options.disable_polling) {
+      if (this.configEntry?.pref_disable_polling) {
         icons.push([
           mdiSyncOff,
           this.hass.localize(
