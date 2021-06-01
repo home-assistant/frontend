@@ -9,13 +9,14 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import "../../../components/ha-network";
 import "../../../components/ha-card";
 import "../../../components/ha-checkbox";
+import "../../../components/ha-network";
 import "../../../components/ha-settings-row";
+import { fetchNetworkInfo } from "../../../data/hassio/network";
 import {
-  NetworkConfig,
   getNetworkConfig,
+  NetworkConfig,
   setNetworkConfig,
 } from "../../../data/network";
 import { haStyle } from "../../../resources/styles";
@@ -73,7 +74,18 @@ class ConfigNetwork extends LitElement {
   private async _load() {
     this._error = undefined;
     try {
-      this._networkConfig = await getNetworkConfig(this.hass);
+      const coreNetowrk = await getNetworkConfig(this.hass);
+      if (isComponentLoaded(this.hass, "hassio")) {
+        const supervisorNetwork = await fetchNetworkInfo(this.hass);
+        if (supervisorNetwork.interfaces.length) {
+          coreNetowrk.adapters = coreNetowrk.adapters.filter((adapter) =>
+            supervisorNetwork.interfaces.some(
+              (int) => int.interface === adapter.name
+            )
+          );
+        }
+      }
+      this._networkConfig = coreNetowrk;
     } catch (err) {
       this._error = err.message || err;
     }
