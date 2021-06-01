@@ -7,7 +7,10 @@ import "../../components/ha-dialog";
 import "../../components/ha-formfield";
 import "../../components/ha-switch";
 import type { HaSwitch } from "../../components/ha-switch";
-import { updateConfigEntrySystemOptions } from "../../data/config_entries";
+import {
+  ConfigEntryMutableParams,
+  updateConfigEntry,
+} from "../../data/config_entries";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
 import { showAlertDialog } from "../generic/show-dialog-box";
@@ -32,8 +35,8 @@ class DialogConfigEntrySystemOptions extends LitElement {
   ): Promise<void> {
     this._params = params;
     this._error = undefined;
-    this._disableNewEntities = params.entry.system_options.disable_new_entities;
-    this._disablePolling = params.entry.system_options.disable_polling;
+    this._disableNewEntities = params.entry.pref_disable_new_entities;
+    this._disablePolling = params.entry.pref_disable_polling;
   }
 
   public closeDialog(): void {
@@ -147,14 +150,14 @@ class DialogConfigEntrySystemOptions extends LitElement {
 
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
-    const data: Parameters<typeof updateConfigEntrySystemOptions>[2] = {
-      disable_new_entities: this._disableNewEntities,
+    const data: ConfigEntryMutableParams = {
+      pref_disable_new_entities: this._disableNewEntities,
     };
     if (this._allowUpdatePolling()) {
-      data.disable_polling = this._disablePolling;
+      data.pref_disable_polling = this._disablePolling;
     }
     try {
-      const result = await updateConfigEntrySystemOptions(
+      const result = await updateConfigEntry(
         this.hass,
         this._params!.entry.entry_id,
         data
@@ -166,14 +169,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
           ),
         });
       }
-      const curEntry = this._params!.entry;
-      this._params!.entryUpdated({
-        ...curEntry,
-        system_options: {
-          ...curEntry.system_options,
-          ...data,
-        },
-      });
+      this._params!.entryUpdated(result.config_entry);
       this._params = undefined;
     } catch (err) {
       this._error = err.message || "Unknown error";

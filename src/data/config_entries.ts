@@ -14,19 +14,18 @@ export interface ConfigEntry {
     | "failed_unload";
   supports_options: boolean;
   supports_unload: boolean;
-  system_options: ConfigEntrySystemOptions;
+  pref_disable_new_entities: boolean;
+  pref_disable_polling: boolean;
   disabled_by: "user" | null;
   reason: string | null;
 }
 
-export interface ConfigEntryMutableParams {
-  title: string;
-}
-
-export interface ConfigEntrySystemOptions {
-  disable_new_entities: boolean;
-  disable_polling: boolean;
-}
+export type ConfigEntryMutableParams = Partial<
+  Pick<
+    ConfigEntry,
+    "title" | "pref_disable_new_entities" | "pref_disable_polling"
+  >
+>;
 
 export const getConfigEntries = (hass: HomeAssistant) =>
   hass.callApi<ConfigEntry[]>("GET", "config/config_entries/entry");
@@ -34,9 +33,9 @@ export const getConfigEntries = (hass: HomeAssistant) =>
 export const updateConfigEntry = (
   hass: HomeAssistant,
   configEntryId: string,
-  updatedValues: Partial<ConfigEntryMutableParams>
+  updatedValues: ConfigEntryMutableParams
 ) =>
-  hass.callWS<ConfigEntry>({
+  hass.callWS<{ require_restart: boolean; config_entry: ConfigEntry }>({
     type: "config_entries/update",
     entry_id: configEntryId,
     ...updatedValues,
@@ -71,18 +70,4 @@ export const enableConfigEntry = (hass: HomeAssistant, configEntryId: string) =>
     type: "config_entries/disable",
     entry_id: configEntryId,
     disabled_by: null,
-  });
-
-export const updateConfigEntrySystemOptions = (
-  hass: HomeAssistant,
-  configEntryId: string,
-  params: Partial<ConfigEntrySystemOptions>
-) =>
-  hass.callWS<{
-    require_restart: boolean;
-    system_options: ConfigEntrySystemOptions;
-  }>({
-    type: "config_entries/system_options/update",
-    entry_id: configEntryId,
-    ...params,
   });

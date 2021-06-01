@@ -567,10 +567,10 @@ export class HaIntegrationCard extends LitElement {
     if (newName === null) {
       return;
     }
-    const newEntry = await updateConfigEntry(this.hass, configEntry.entry_id, {
+    const result = await updateConfigEntry(this.hass, configEntry.entry_id, {
       title: newName,
     });
-    fireEvent(this, "entry-updated", { entry: newEntry });
+    fireEvent(this, "entry-updated", { entry: result.config_entry });
   }
 
   static get styles(): CSSResultGroup {
