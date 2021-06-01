@@ -3549,9 +3549,12 @@
         "core-config": {
           "intro": "Hello {name}, welcome to Home Assistant. How would you like to name your home?",
           "intro_location": "We would like to know where you live. This information will help with displaying information and setting up sun-based automations. This data is never shared outside of your network.",
-          "intro_location_detect": "We can help you fill in this information by making a one-time request to an external service.",
           "location_name": "Name of your Home Assistant installation",
           "location_name_default": "Home",
+          "detect_manual": "Manually set location",
+          "detect_auto": "Auto detect location",
+          "location_service": "We use our own public location service to detect your location based on your IP address.",
+          "location_service_detect": "We can help you fill in this information by making a one-time request to our own public location service.",
           "button_detect": "Detect",
           "finish": "Next"
         },

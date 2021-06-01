@@ -1,3 +1,5 @@
+import "../components/ha-radio";
+import "../components/ha-formfield";
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -17,6 +19,7 @@ import {
 import { onboardCoreConfigStep } from "../data/onboarding";
 import type { PolymerChangedEvent } from "../polymer-types";
 import type { HomeAssistant } from "../types";
+import { Radio } from "@material/mwc-radio";
 
 const amsterdam = [52.3731339, 4.8903147];
 const mql = matchMedia("(prefers-color-scheme: dark)");
@@ -26,6 +29,8 @@ class OnboardingCoreConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public onboardingLocalize!: LocalizeFunc;
+
+  @state() private _autoDetect = true;
 
   @state() private _working = false;
 
@@ -66,10 +71,43 @@ class OnboardingCoreConfig extends LitElement {
           )}
         </p>
 
-        <div class="row">
+        <ha-formfield
+          .label=${this.onboardingLocalize(
+            "ui.panel.page-onboarding.core-config.detect_auto"
+          )}
+        >
+          <ha-radio
+            @change=${this._handleDetectionModeChanged}
+            name="detection_mode"
+            value="auto"
+            ?checked=${this._autoDetect}
+          ></ha-radio>
+        </ha-formfield>
+        <ha-formfield
+          .label=${this.onboardingLocalize(
+            "ui.panel.page-onboarding.core-config.detect_manual"
+          )}
+        >
+          <ha-radio
+            @change=${this._handleDetectionModeChanged}
+            name="detection_mode"
+            value="manual"
+            ?checked=${!this._autoDetect}
+          ></ha-radio>
+        </ha-formfield>
+
+        ${this._autoDetect
+          ? html`<div class="row secondary">
+              <div>
+                ${this.onboardingLocalize(
+                  "ui.panel.page-onboarding.core-config.location_service"
+                )}
+              </div>
+            </div>`
+          : html`<div class="row">
           <div>
             ${this.onboardingLocalize(
-              "ui.panel.page-onboarding.core-config.intro_location_detect"
+              "ui.panel.page-onboarding.core-config.location_service_detect"
             )}
           </div>
           <mwc-button @click=${this._detect}>
@@ -155,16 +193,21 @@ class OnboardingCoreConfig extends LitElement {
             </div>
           </paper-radio-button>
         </paper-radio-group>
-      </div>
+      </div>`}
 
-      <div class="footer">
-        <mwc-button @click=${this._save} .disabled=${this._working}>
-          ${this.onboardingLocalize(
-            "ui.panel.page-onboarding.core-config.finish"
-          )}
-        </mwc-button>
+        <div class="footer">
+          <mwc-button @click=${this._save} .disabled=${this._working}>
+            ${this.onboardingLocalize(
+              "ui.panel.page-onboarding.core-config.finish"
+            )}
+          </mwc-button>
+        </div>
       </div>
     `;
+  }
+
+  private _handleDetectionModeChanged(ev: Event) {
+    this._autoDetect = (ev.target as Radio).value === "auto";
   }
 
   protected firstUpdated(changedProps) {
@@ -240,6 +283,7 @@ class OnboardingCoreConfig extends LitElement {
         this._timeZone = values.time_zone;
       }
     } catch (err) {
+      this._autoDetect = false;
       alert(`Failed to detect location information: ${err.message}`);
     } finally {
       this._working = false;
@@ -248,6 +292,14 @@ class OnboardingCoreConfig extends LitElement {
 
   private async _save(ev) {
     ev.preventDefault();
+    if (this._autoDetect) {
+      await this._detect();
+      if (!this._autoDetect) {
+        // We set _autoDetect to false in _detect if it failed
+        return;
+      }
+    }
+
     this._working = true;
     try {
       const location = this._locationValue;
