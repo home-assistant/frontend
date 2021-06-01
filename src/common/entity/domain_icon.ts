@@ -89,8 +89,6 @@ export const domainIcon = (
   }
 
   // eslint-disable-next-line
-  console.warn(
-    "Unable to find icon for domain " + domain + " (" + stateObj + ")"
-  );
+  console.warn(`Unable to find icon for domain ${domain}`);
   return DEFAULT_DOMAIN_ICON;
 };
