@@ -38,10 +38,12 @@ class HassioDashboard extends LitElement {
           <hassio-update
             .hass=${this.hass}
             .supervisor=${this.supervisor}
+            .narrow=${this.narrow}
           ></hassio-update>
           <hassio-addons
             .hass=${this.hass}
             .supervisor=${this.supervisor}
+            .narrow=${this.narrow}
           ></hassio-addons>
         </div>
       </hass-tabs-subpage>
@@ -57,6 +59,7 @@ class HassioDashboard extends LitElement {
           margin: 4px;
           display: flex;
           max-width: 1500px;
+          justify-content: center;
         }
         .content > * {
           display: block;

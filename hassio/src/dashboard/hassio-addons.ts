@@ -1,4 +1,4 @@
-import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
+import { mdiArrowUpBoldCircle, mdiPlay, mdiPuzzle, mdiStop } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
@@ -17,18 +17,26 @@ class HassioAddons extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
+  @property({ type: Boolean }) public narrow!: boolean;
+
   protected render(): TemplateResult {
     return html`<ha-card
       .header=${this.supervisor.localize("dashboard.addons")}
     >
-      <div class="addons">
+      <div class="addons" ?narrow=${this.narrow}>
         ${this.supervisor.supervisor.addons.map(
           (addon) => html`<div class="addon">
             <div class="icon">
+              <div class="overlay">
+                <ha-svg-icon
+                  .title=${addon.state}
+                  .path=${addon.state === "started" ? mdiPlay : mdiStop}
+                >
+                </ha-svg-icon>
+              </div>
               ${addon.icon && atLeastVersion(this.hass.config.version, 0, 105)
                 ? html`<img src="/api/hassio/addons/${addon.slug}/icon" />`
                 : html`<ha-svg-icon .path=${mdiPuzzle}></ha-svg-icon>`}
-              <div class="overlay"></div>
             </div>
             <div class="name">${addon.name}</div>
           </div>`
@@ -105,13 +113,18 @@ class HassioAddons extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        :root {
-          display: block;
-          max-width: 400px;
+        .addons {
+          display: grid;
+          grid-template-columns: repeat(4, auto);
+          padding-bottom: 16px;
+        }
+        .addons[narrow] {
+          grid-template-columns: repeat(2, auto);
         }
         .addon {
           text-align: center;
           max-width: 100px;
+          padding: 8px;
         }
         .icon > *:not(.overlay) {
           position: relative;
@@ -120,6 +133,20 @@ class HassioAddons extends LitElement {
           margin: auto;
           --mdc-icon-size: 60px;
           display: flex;
+        }
+        .icon {
+          margin-bottom: 4px;
+        }
+        .overlay {
+          position: absolute;
+          z-index: 2;
+          --mdc-icon-size: 24px;
+          color: var(--secondary-text-color);
+          background-color: var(--secondary-background-color);
+          opacity: 0.6;
+          border-radius: 100%;
+          margin-left: 12px;
+          border: 1px var(--secondary-text-color) solid;
         }
       `,
     ];

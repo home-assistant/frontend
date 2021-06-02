@@ -42,6 +42,8 @@ export class HassioUpdate extends LitElement {
 
   @property({ attribute: false }) public supervisor!: Supervisor;
 
+  @property({ type: Boolean }) public narrow!: boolean;
+
   private _pendingUpdates = memoizeOne(
     (supervisor: Supervisor): number =>
       Object.keys(supervisor).filter(
@@ -70,12 +72,6 @@ export class HassioUpdate extends LitElement {
         )}
           🎉"
       >
-        ${this._renderUpdateRow({
-          type: "core",
-          heading: "Home Assistant Core",
-          version: "XXX",
-          icon: mdiHomeAssistant,
-        })}
         ${this.supervisor.addon.addons
           .filter((addon) => addon.update_available)
           .map((addon) =>
