@@ -46,7 +46,8 @@ export class HassioUpdate extends LitElement {
     (supervisor: Supervisor): number =>
       Object.keys(supervisor).filter(
         (value) => supervisor[value].update_available
-      ).length
+      ).length +
+      supervisor.addon.addons.filter((addon) => addon.update_available).length
   );
 
   protected render(): TemplateResult {
@@ -60,15 +61,24 @@ export class HassioUpdate extends LitElement {
     }
 
     return html`
+      <ha-card
+        .header="${this.supervisor.localize(
+          "common.update_available",
+          "count",
+          updatesAvailable
+        )}
+          🎉"
+      >
+        <ha-settings-row two-lines>
+          <span slot="prefix">
+            <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
+          </span>
+          <span slot="heading"> Home Assistant Core </span>
+          <span slot="description"> Version XXX is available </span>
+        </ha-settings-row>
+      </ha-card>
       <div class="content">
-        <h1>
-          ${this.supervisor.localize(
-            "common.update_available",
-            "count",
-            updatesAvailable
-          )}
-          🎉
-        </h1>
+        <h1></h1>
         <div class="card-group">
           ${this._renderUpdateCard(
             "Home Assistant Core",

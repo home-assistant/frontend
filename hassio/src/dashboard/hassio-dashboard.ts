@@ -5,6 +5,7 @@ import "../../../src/layouts/hass-tabs-subpage";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
 import { supervisorTabs } from "../hassio-tabs";
+import { hassioStyle } from "../resources/hassio-style";
 import "./hassio-addons";
 import "./hassio-update";
 
@@ -32,6 +33,7 @@ class HassioDashboard extends LitElement {
         <span slot="header">
           ${this.supervisor.localize("panel.dashboard")}
         </span>
+
         <div class="content">
           <hassio-update
             .hass=${this.hass}
@@ -49,9 +51,15 @@ class HassioDashboard extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyle,
+      hassioStyle,
       css`
         .content {
-          margin: 0 auto;
+          display: flex;
+          max-width: 1500px;
+        }
+        .content > * {
+          display: block;
+          min-width: 400px;
         }
       `,
     ];
