@@ -929,8 +929,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "關閉後，{integration} 新發現的實體將不會自動新增至 Home Assistant。",
+                "enable_new_entities_description": "關閉後，{integration} 新發現的實體將不會自動新增。",
                 "enable_new_entities_label": "啟用新增實體",
+                "enable_polling_description": "是否讓 Home Assistant 自動輪詢 {integration} 實體以獲得更新。",
+                "enable_polling_label": "開啟自動輪詢更新。",
+                "restart_home_assistant": "需要重啟 Home Assistant 才能使變更生效。",
                 "title": "{integration} 系統選項",
                 "update": "更新"
             },
@@ -2217,6 +2220,7 @@
                             },
                             "disabled_cause": "由 {cause} 關閉。"
                         },
+                        "disabled_polling": "自動輪詢更新資料已關閉。",
                         "documentation": "相關文件",
                         "enable_restart_confirm": "重啟 Home Assistant 以完成整合開啟",
                         "entities": "{count} {count, plural,\n  one {個實體}\n  other {個實體}\n}",

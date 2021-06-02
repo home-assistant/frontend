@@ -2076,7 +2076,8 @@
                     "scripts": "Scripts",
                     "unknown_error": "Unknown error",
                     "unnamed_device": "Unnamed device",
-                    "update": "Update"
+                    "update": "Update",
+                    "update_device_error": "Updating the device failed"
                 },
                 "entities": {
                     "caption": "Entities",
@@ -2209,6 +2210,7 @@
                         "depends_on_cloud": "Depends on the cloud",
                         "device_unavailable": "Device unavailable",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+                        "disable_error": "Enabling or disabling of the integration failed",
                         "disable_restart_confirm": "Restart Home Assistant to finish disabling this integration",
                         "disable": {
                             "disable_confirm": "Are you sure you want to disable this config entry? Its devices and entities will be disabled.",

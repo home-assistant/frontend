@@ -931,6 +931,9 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Se disabilitato, le entità appena rilevate per {integration} non verranno automaticamente aggiunte a Home Assistant.",
                 "enable_new_entities_label": "Abilita nuove entità aggiunte.",
+                "enable_polling_description": "Se disabilitato, Home Assistant non richiederà più in automatico aggiornamenti alle entità dell'integrazione {integration}.",
+                "enable_polling_label": "Abilita il polling per gli aggiornamenti.",
+                "restart_home_assistant": "È necessario riavviare Home Assistant affinché le modifiche abbiano effetto.",
                 "title": "Opzioni di sistema per {integration}",
                 "update": "Aggiorna"
             },
@@ -2215,8 +2218,9 @@
                                 "integration": "Integrazione",
                                 "user": "utente"
                             },
-                            "disabled_cause": "Disabilitato da {causa}"
+                            "disabled_cause": "Disabilitato da {cause}"
                         },
+                        "disabled_polling": "Polling automatico per i dati aggiornati disabilitato",
                         "documentation": "Documentazione",
                         "enable_restart_confirm": "Riavvia Home Assistant per completare l'attivazione di questa integrazione",
                         "entities": "{count} {count, plural, \none {entità}\nother {entità }\n}",
