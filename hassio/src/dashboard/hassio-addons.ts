@@ -125,6 +125,7 @@ class HassioAddons extends LitElement {
           text-align: center;
           max-width: 100px;
           padding: 8px;
+          cursor: pointer;
         }
         .icon > *:not(.overlay) {
           position: relative;
