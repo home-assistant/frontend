@@ -1,9 +1,16 @@
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMagnify } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
+import type { PaperInputElement } from "@polymer/paper-input/paper-input";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, query } from "lit/decorators";
 import "../../components/ha-svg-icon";
 import { fireEvent } from "../dom/fire_event";
 
@@ -27,18 +34,11 @@ class SearchInput extends LitElement {
     this.shadowRoot!.querySelector("paper-input")!.focus();
   }
 
+  @query("paper-input", true) private _input!: PaperInputElement;
+
   protected render(): TemplateResult {
     return html`
-      <style>
-        .no-underline:not(.focused) {
-          --paper-input-container-underline: {
-            display: none;
-            height: 0;
-          }
-        }
-      </style>
       <paper-input
-        class=${classMap({ "no-underline": this.noUnderline })}
         .autofocus=${this.autofocus}
         .label=${this.label || "Search"}
         .value=${this.filter}
@@ -60,6 +60,14 @@ class SearchInput extends LitElement {
         `}
       </paper-input>
     `;
+  }
+
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("noUnderline")) {
+      (this._input.inputElement!.parentElement!.shadowRoot!.querySelector(
+        "div.unfocused-line"
+      ) as HTMLElement).style.display = this.noUnderline ? "none" : "block";
+    }
   }
 
   private async _filterChanged(value: string) {
