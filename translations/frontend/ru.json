@@ -929,8 +929,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "{integration} будет автоматически добавлять в Home Assistant вновь обнаруженные объекты",
+                "enable_new_entities_description": "Home Assistant будет автоматически добавлять новые обнаруженные устройства {integration}",
                 "enable_new_entities_label": "Добавлять новые объекты",
+                "enable_polling_description": "Home Assistant будет автоматически опрашивать объекты {integration} для получения обновлений",
+                "enable_polling_label": "Включить опрос для получения обновлений",
+                "restart_home_assistant": "Чтобы изменения вступили в силу, нужно перезапустить Home Assistant.",
                 "title": "{integration}",
                 "update": "Обновить"
             },
@@ -2217,6 +2220,7 @@
                             },
                             "disabled_cause": "Деактивировано {cause}"
                         },
+                        "disabled_polling": "Автоматический опрос для получения обновленных данных отключен",
                         "documentation": "Документация",
                         "enable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить подключение этой интеграции.",
                         "entities": "{count} {count, plural,\n  one {объект}\n  few {объекта}\n  many {объектов}\n  other {объектов}\n}",
