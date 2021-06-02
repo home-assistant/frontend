@@ -68,10 +68,17 @@ export class HassioUpdate extends LitElement {
         .header="${this.supervisor.localize(
           "common.update_available",
           "count",
-          updatesAvailable
+          updatesAvailable + 1
         )}
           🎉"
       >
+        ${this._renderUpdateRow({
+          type: "os",
+          heading: "Home Assistant Operating system",
+          icon: mdiHomeAssistant,
+          version: "5",
+          version_latest: "6",
+        })}
         ${this.supervisor.addon.addons
           .filter((addon) => addon.update_available)
           .map((addon) =>
@@ -79,6 +86,7 @@ export class HassioUpdate extends LitElement {
               type: "addon",
               heading: addon.name,
               version: addon.version_latest,
+              version_latest: addon.version,
               image: addon.icon
                 ? `/api/hassio/addons/${addon.slug}/icon`
                 : undefined,
@@ -123,6 +131,7 @@ export class HassioUpdate extends LitElement {
     type: "supervisor" | "os" | "core" | "addon";
     heading: string;
     version: string;
+    version_latest: string;
     icon?: string;
     image?: string;
     release_notes?: string;
@@ -139,7 +148,7 @@ export class HassioUpdate extends LitElement {
         </div>
         <paper-item-body two-line>
           ${options.heading}
-          <div secondary>Version ${options.version} is available</div>
+          <div secondary>Version ${options.version_latest} is available</div>
         </paper-item-body>
       </paper-icon-item>
       <div class="update-row-actions" ?narrow=${false}>

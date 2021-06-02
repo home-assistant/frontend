@@ -25,7 +25,11 @@ class HassioAddons extends LitElement {
     >
       <div class="addons" ?narrow=${this.narrow}>
         ${this.supervisor.supervisor.addons.map(
-          (addon) => html`<div class="addon">
+          (addon) => html`<div
+            class="addon"
+            @click=${this._addonTapped}
+            .addon=${addon}
+          >
             <div class="icon">
               <div class="overlay">
                 <ha-svg-icon
@@ -124,7 +128,7 @@ class HassioAddons extends LitElement {
         .addon {
           text-align: center;
           max-width: 100px;
-          padding: 8px;
+          padding: 0 8px;
           cursor: pointer;
         }
         .icon > *:not(.overlay) {
