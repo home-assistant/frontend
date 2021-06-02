@@ -63,7 +63,10 @@ class SearchInput extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("noUnderline")) {
+    if (
+      changedProps.has("noUnderline") &&
+      (this.noUnderline || changedProps.get("noUnderline") !== undefined)
+    ) {
       (this._input.inputElement!.parentElement!.shadowRoot!.querySelector(
         "div.unfocused-line"
       ) as HTMLElement).style.display = this.noUnderline ? "none" : "block";
