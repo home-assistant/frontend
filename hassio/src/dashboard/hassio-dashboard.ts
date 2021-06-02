@@ -59,7 +59,7 @@ class HassioDashboard extends LitElement {
         }
         .content > * {
           display: block;
-          min-width: 400px;
+          min-width: 500px;
         }
       `,
     ];

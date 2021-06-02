@@ -69,13 +69,21 @@ export class HassioUpdate extends LitElement {
         )}
           🎉"
       >
-        <ha-settings-row two-lines>
-          <span slot="prefix">
-            <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
-          </span>
-          <span slot="heading"> Home Assistant Core </span>
-          <span slot="description"> Version XXX is available </span>
-        </ha-settings-row>
+        ${this._renderUpdateRow({
+          type: "core",
+          heading: "Home Assistant Core",
+          version: "XXX",
+          icon: mdiHomeAssistant,
+        })}
+        ${this.supervisor.addon.addons
+          .filter((addon) => addon.update_available)
+          .map((addon) =>
+            this._renderUpdateRow({
+              type: "addon",
+              heading: addon.name,
+              version: addon.version_latest,
+            })
+          )}
       </ha-card>
       <div class="content">
         <h1></h1>
@@ -108,6 +116,32 @@ export class HassioUpdate extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  private _renderUpdateRow(options: {
+    type: "supervisor" | "os" | "core" | "addon";
+    heading: string;
+    version: string;
+    icon?: string;
+    image?: string;
+    release_notes?: string;
+    slug?: string;
+  }): TemplateResult {
+    return html`<div class="update-row">
+      <paper-icon-item>
+        <div class="icon" slot="item-icon">
+          <ha-svg-icon .path=${options.icon}></ha-svg-icon>
+        </div>
+        <paper-item-body two-line>
+          ${options.heading}
+          <div secondary>Version ${options.version} is available</div>
+        </paper-item-body>
+      </paper-icon-item>
+      <div class="update-row-actions" ?narrow=${false}>
+        <mwc-button>Releaese notes</mwc-button>
+        <mwc-button>Update</mwc-button>
+      </div>
+    </div>`;
   }
 
   private _renderUpdateCard(
@@ -241,31 +275,18 @@ export class HassioUpdate extends LitElement {
       haStyle,
       hassioStyle,
       css`
+        .update-row,
+        paper-icon-item {
+          display: flex;
+          align-items: center;
+        }
+
+        .update-row {
+          padding: 8px;
+          justify-content: space-between;
+        }
         .icon {
-          --mdc-icon-size: 48px;
-          float: right;
-          margin: 0 0 2px 10px;
-          color: var(--primary-text-color);
-        }
-        .update-heading {
-          font-size: var(--paper-font-subhead_-_font-size);
-          font-weight: 500;
-          margin-bottom: 0.5em;
-          color: var(--primary-text-color);
-        }
-        .card-content {
-          height: calc(100% - 47px);
-          box-sizing: border-box;
-        }
-        .card-actions {
-          text-align: right;
-        }
-        a {
-          text-decoration: none;
-        }
-        ha-settings-row {
-          padding: 0;
-          --paper-item-body-two-line-min-height: 32px;
+          margin-right: 8px;
         }
       `,
     ];
