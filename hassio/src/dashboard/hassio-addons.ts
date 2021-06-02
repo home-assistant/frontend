@@ -18,6 +18,23 @@ class HassioAddons extends LitElement {
   @property({ attribute: false }) public supervisor!: Supervisor;
 
   protected render(): TemplateResult {
+    return html`<ha-card
+      .header=${this.supervisor.localize("dashboard.addons")}
+    >
+      <div class="addons">
+        ${this.supervisor.supervisor.addons.map(
+          (addon) => html`<div class="addon">
+            <div class="icon">
+              ${addon.icon && atLeastVersion(this.hass.config.version, 0, 105)
+                ? html`<img src="/api/hassio/addons/${addon.slug}/icon" />`
+                : html`<ha-svg-icon .path=${mdiPuzzle}></ha-svg-icon>`}
+              <div class="overlay"></div>
+            </div>
+            <div class="name">${addon.name}</div>
+          </div>`
+        )}
+      </div>
+    </ha-card>`;
     return html`
       <div class="content">
         <h1>${this.supervisor.localize("dashboard.addons")}</h1>
@@ -88,8 +105,21 @@ class HassioAddons extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        ha-card {
-          cursor: pointer;
+        :root {
+          display: block;
+          max-width: 400px;
+        }
+        .addon {
+          text-align: center;
+          max-width: 100px;
+        }
+        .icon > *:not(.overlay) {
+          position: relative;
+          max-height: 60px;
+          max-width: 60px;
+          margin: auto;
+          --mdc-icon-size: 60px;
+          display: flex;
         }
       `,
     ];

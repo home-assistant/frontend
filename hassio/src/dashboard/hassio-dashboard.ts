@@ -54,12 +54,14 @@ class HassioDashboard extends LitElement {
       hassioStyle,
       css`
         .content {
+          margin: 4px;
           display: flex;
           max-width: 1500px;
         }
         .content > * {
           display: block;
           min-width: 500px;
+          margin: 4px;
         }
       `,
     ];

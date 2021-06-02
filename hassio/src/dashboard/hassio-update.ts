@@ -47,7 +47,8 @@ export class HassioUpdate extends LitElement {
       Object.keys(supervisor).filter(
         (value) => supervisor[value].update_available
       ).length +
-      supervisor.addon.addons.filter((addon) => addon.update_available).length
+      supervisor.supervisor.addons.filter((addon) => addon.update_available)
+        .length
   );
 
   protected render(): TemplateResult {
@@ -134,7 +135,7 @@ export class HassioUpdate extends LitElement {
     return html`<div class="update-row">
       <paper-icon-item>
         <div class="icon" slot="item-icon">
-          ${options.image
+          ${options.image && atLeastVersion(this.hass.config.version, 0, 104)
             ? html`<img src="${options.image}" />`
             : options.icon
             ? html`<ha-svg-icon .path=${options.icon}></ha-svg-icon>`
