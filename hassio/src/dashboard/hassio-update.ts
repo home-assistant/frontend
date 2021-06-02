@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { mdiHomeAssistant } from "@mdi/js";
+import { mdiHomeAssistant, mdiPuzzle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -82,6 +82,10 @@ export class HassioUpdate extends LitElement {
               type: "addon",
               heading: addon.name,
               version: addon.version_latest,
+              image: addon.icon
+                ? `/api/hassio/addons/${addon.slug}/icon`
+                : undefined,
+              icon: mdiPuzzle,
             })
           )}
       </ha-card>
@@ -130,7 +134,11 @@ export class HassioUpdate extends LitElement {
     return html`<div class="update-row">
       <paper-icon-item>
         <div class="icon" slot="item-icon">
-          <ha-svg-icon .path=${options.icon}></ha-svg-icon>
+          ${options.image
+            ? html`<img src="${options.image}" />`
+            : options.icon
+            ? html`<ha-svg-icon .path=${options.icon}></ha-svg-icon>`
+            : ""}
         </div>
         <paper-item-body two-line>
           ${options.heading}
@@ -285,8 +293,11 @@ export class HassioUpdate extends LitElement {
           padding: 8px;
           justify-content: space-between;
         }
-        .icon {
-          margin-right: 8px;
+        .icon > * {
+          max-height: 32px;
+          max-width: 32px;
+          margin-right: 16px;
+          --mdc-icon-size: 32px;
         }
       `,
     ];
