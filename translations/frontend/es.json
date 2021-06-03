@@ -2076,7 +2076,8 @@
                     "scripts": "Scripts",
                     "unknown_error": "Error desconocido",
                     "unnamed_device": "Dispositivo sin nombre",
-                    "update": "Actualizar"
+                    "update": "Actualizar",
+                    "update_device_error": "Error al actualizar el dispositivo"
                 },
                 "entities": {
                     "caption": "Entidades",
@@ -2209,6 +2210,7 @@
                         "depends_on_cloud": "Depende de la nube",
                         "device_unavailable": "Dispositivo no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
+                        "disable_error": "Error al habilitar o deshabilitar la integración",
                         "disable_restart_confirm": "Reinicia Home Assistant para terminar de deshabilitar esta integración",
                         "disable": {
                             "disable_confirm": "¿Estás seguro de que deseas deshabilitar esta entrada de configuración? Sus dispositivos y entidades estarán deshabilitados.",

@@ -2076,7 +2076,8 @@
                     "scripts": "腳本",
                     "unknown_error": "未知錯誤",
                     "unnamed_device": "未命名的裝置",
-                    "update": "更新"
+                    "update": "更新",
+                    "update_device_error": "更新裝置失敗"
                 },
                 "entities": {
                     "caption": "實體",
@@ -2209,6 +2210,7 @@
                         "depends_on_cloud": "跟隨雲服務",
                         "device_unavailable": "裝置不可用",
                         "devices": "{count} {count, plural,\n  one {個裝置}\n  other {個裝置}\n}",
+                        "disable_error": "開啟或關閉整合失敗",
                         "disable_restart_confirm": "重啟 Home Assistant 以完成整合關閉",
                         "disable": {
                             "disable_confirm": "確定要關閉此設定實體？其裝置與實體將會關閉。",

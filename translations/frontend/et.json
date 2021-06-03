@@ -2076,7 +2076,8 @@
                     "scripts": "Skriptid",
                     "unknown_error": "Tundmatu viga",
                     "unnamed_device": "Nimetu seade",
-                    "update": "Uuenda"
+                    "update": "Uuenda",
+                    "update_device_error": "Seadme värskendamine nurjus"
                 },
                 "entities": {
                     "caption": "Olemite register",
@@ -2209,6 +2210,7 @@
                         "depends_on_cloud": "Sõltub pilveteenusest",
                         "device_unavailable": "Seade pole saadaval",
                         "devices": "{count} {count, plural,\n  one {seade}\n  other {seadet}\n}",
+                        "disable_error": "Sidumise lubamine või keelamine nurjus",
                         "disable_restart_confirm": "Taaskäivita Home Assistant, et lõpetada selle sidumise keelamine",
                         "disable": {
                             "disable_confirm": "Kas soovid selle seadistuskirje kindlasti keelata? Selle seadmed ja üksused keelatakse.",
