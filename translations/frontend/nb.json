@@ -929,8 +929,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Hvis den er deaktivert, blir ikke nyoppdagede entiteter for {integration} automatisk lagt til i Home Assistant.",
+                "enable_new_entities_description": "Hvis nylig oppdagede enheter for {integration} skal legges til automatisk.",
                 "enable_new_entities_label": "Aktiver entiteter som nylig er lagt til.",
+                "enable_polling_description": "Hvis Home Assistant automatisk skal avstemme {integration} enheter for oppdateringer.",
+                "enable_polling_label": "Aktiver avstemning for oppdateringer.",
+                "restart_home_assistant": "Du må starte Home Assistant på nytt for at endringene skal tre i kraft.",
                 "title": "Systemalternativer for {integration}",
                 "update": "Oppdater"
             },
@@ -2073,7 +2076,8 @@
                     "scripts": "Skript",
                     "unknown_error": "Ukjent feil",
                     "unnamed_device": "Enhet uten navn",
-                    "update": "Oppdater"
+                    "update": "Oppdater",
+                    "update_device_error": "Oppdatering av enheten mislyktes"
                 },
                 "entities": {
                     "caption": "Entiteter",
@@ -2206,6 +2210,7 @@
                         "depends_on_cloud": "Avhenger av skyen",
                         "device_unavailable": "Enheten er utilgjengelig",
                         "devices": "{count} {count, plural,\n  one {enhet}\n  other {enheter}\n}",
+                        "disable_error": "Aktivering eller deaktivering av integrasjonen mislyktes",
                         "disable_restart_confirm": "Start Home Assistant på nytt for å fullføre deaktiveringen av denne integreringen",
                         "disable": {
                             "disable_confirm": "Er du sikker på at du vil deaktivere denne config-oppføringen? Enhetene og enhetene deaktiveres.",
@@ -2217,6 +2222,7 @@
                             },
                             "disabled_cause": "Deaktivert av {cause}"
                         },
+                        "disabled_polling": "Automatisk avstemning for oppdaterte data deaktivert",
                         "documentation": "Dokumentasjon",
                         "enable_restart_confirm": "Start Home Assistant på nytt for å fullføre aktiveringen av denne integreringen",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",

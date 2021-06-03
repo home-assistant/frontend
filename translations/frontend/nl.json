@@ -931,6 +931,9 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Indien uitgeschakeld, worden nieuwe entiteiten van {integration} niet automatisch aan Home Assistant toegevoegd.",
                 "enable_new_entities_label": "Voeg nieuwe entiteiten automatisch toe",
+                "enable_polling_description": "Of Home Assistant automatisch moet pollen voor updates voor {integration} entiteiten",
+                "enable_polling_label": "Schakel polling voor updates in.",
+                "restart_home_assistant": "U moet Home Assistant opnieuw starten om uw wijzigingen door te voeren.",
                 "title": "Systeeminstellingen voor {integration}",
                 "update": "Bijwerken"
             },
@@ -2217,6 +2220,7 @@
                             },
                             "disabled_cause": "Uitgeschakeld door {cause}"
                         },
+                        "disabled_polling": "Automatische polling voor bijgewerkte gegevens uitgeschakeld",
                         "documentation": "Documentatie",
                         "enable_restart_confirm": "Start Home Assistant opnieuw op om het opzetten van deze integratie te voltooien",
                         "entities": "{count} {count, plural,\n  one {entiteit}\n  other {entiteiten}\n}",

@@ -929,8 +929,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Si está deshabilitada, las nuevas entidades que se descubran para {integration} no se añadirán automáticamente a Home Assistant.",
+                "enable_new_entities_description": "Si los dispositivos recién descubiertos para {integration} deberían agregarse automáticamente.",
                 "enable_new_entities_label": "Habilitar entidades recién añadidas.",
+                "enable_polling_description": "Si Home Assistant debería sondear automáticamente las entidades de {integration} para obtener actualizaciones.",
+                "enable_polling_label": "Habilitar el sondeo de actualizaciones.",
+                "restart_home_assistant": "Debes reiniciar Home Assistant para que los cambios surtan efecto.",
                 "title": "Opciones del sistema para {integration}",
                 "update": "Actualizar"
             },
@@ -2073,7 +2076,8 @@
                     "scripts": "Scripts",
                     "unknown_error": "Error desconocido",
                     "unnamed_device": "Dispositivo sin nombre",
-                    "update": "Actualizar"
+                    "update": "Actualizar",
+                    "update_device_error": "Error al actualizar el dispositivo"
                 },
                 "entities": {
                     "caption": "Entidades",
@@ -2206,6 +2210,7 @@
                         "depends_on_cloud": "Depende de la nube",
                         "device_unavailable": "Dispositivo no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
+                        "disable_error": "Error al habilitar o deshabilitar la integración",
                         "disable_restart_confirm": "Reinicia Home Assistant para terminar de deshabilitar esta integración",
                         "disable": {
                             "disable_confirm": "¿Estás seguro de que deseas deshabilitar esta entrada de configuración? Sus dispositivos y entidades estarán deshabilitados.",
@@ -2217,6 +2222,7 @@
                             },
                             "disabled_cause": "Deshabilitada por {cause}"
                         },
+                        "disabled_polling": "Sondeo automático para datos actualizados deshabilitado",
                         "documentation": "Documentación",
                         "enable_restart_confirm": "Reinicia Home Assistant para terminar de habilitar esta integración",
                         "entities": "{count} {count, plural,\n  one {entidad}\n  other {entidades}\n}",

@@ -71,6 +71,9 @@
       import("<%= latestAppJS %>");
       window.customPanelJS = "<%= latestCustomPanelJS %>";
       window.latestJS = true;
+      if (!window.globalThis) {
+        window.globalThis = window;
+      }
     </script>
     <script>
     {% for extra_module in extra_modules -%}

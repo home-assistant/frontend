@@ -929,8 +929,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Si es desactiva, les entitats descobertes recentment per a {integration} no s'afegiran automàticament a Home Assistant.",
+                "enable_new_entities_description": "Si està activat, les noves entitats descobertes per {integration} s'afegiran automàticament a Home Assistant.",
                 "enable_new_entities_label": "Activa entitats afegides recentment.",
+                "enable_polling_description": "Si Home Assistant ha de sondejar automàticament {integration} per obtenir actualitzacions de les entitats.",
+                "enable_polling_label": "Activa el sondeig per obtenir actualitzacions.",
+                "restart_home_assistant": "Has de reiniciar Home Assistant per aplicar els canvis.",
                 "title": "Opcions del sistema per a {integration}",
                 "update": "Actualitza"
             },
@@ -1388,7 +1391,7 @@
                                     "type_select": "Tipus de repetició",
                                     "type": {
                                         "count": {
-                                            "label": "Compta"
+                                            "label": "Comptador"
                                         },
                                         "until": {
                                             "conditions": "Condicions de \"Fins que\"",
@@ -1540,7 +1543,7 @@
                             "delete_confirm": "Segur que vols eliminar-ho?",
                             "duplicate": "Duplica",
                             "header": "Disparadors",
-                            "introduction": "Els activadors són les regles que fan que es dispari una automatització. Pots definir més d'un activador per a cada automatització. Una vegada s'iniciï un activador, Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
+                            "introduction": "Els disparadors són les regles que fan que s'executi una automatització. Pots definir més d'un disparador per a cada automatització. Una vegada salti un disparador, Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
                             "learn_more": "Més informació sobre els activadors",
                             "name": "Disparador",
                             "type_select": "Tipus de disparador",
@@ -2073,7 +2076,8 @@
                     "scripts": "Programes (scripts)",
                     "unknown_error": "Error desconegut",
                     "unnamed_device": "Dispositiu sense nom",
-                    "update": "Actualitza"
+                    "update": "Actualitza",
+                    "update_device_error": "No s'ha pogut actualitzar el dispositiu"
                 },
                 "entities": {
                     "caption": "Entitats",
@@ -2206,6 +2210,7 @@
                         "depends_on_cloud": "Depèn del núvol",
                         "device_unavailable": "Dispositiu no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositiu}\n  other {dispositius}\n}",
+                        "disable_error": "S'ha produït un error en activar o desactivar la integració",
                         "disable_restart_confirm": "Reinicia Home Assistant per acabar de desactivar aquesta integració",
                         "disable": {
                             "disable_confirm": "Estàs segur que vols desactivar aquesta entrada de configuració? Els seus dispositius i entitats es desactivaran.",
@@ -2217,6 +2222,7 @@
                             },
                             "disabled_cause": "Desactivada per {cause}"
                         },
+                        "disabled_polling": "Sondeig automàtic per l'obtenció de dades actualitzades desactivat",
                         "documentation": "Documentació",
                         "enable_restart_confirm": "Reinicia Home Assistant per acabar d'activar aquesta integració",
                         "entities": "{count} {count, plural,\n  one {entitat}\n  other {entitats}\n}",
