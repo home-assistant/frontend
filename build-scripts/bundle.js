@@ -52,6 +52,7 @@ module.exports.terserOptions = (latestBuild) => ({
 
 module.exports.babelOptions = ({ latestBuild }) => ({
   babelrc: false,
+  compact: false,
   presets: [
     !latestBuild && [
       "@babel/preset-env",
@@ -78,12 +79,6 @@ module.exports.babelOptions = ({ latestBuild }) => ({
     ["@babel/plugin-proposal-class-properties", { loose: true }],
   ].filter(Boolean),
 });
-
-// Are already ES5, cause warnings when babelified.
-module.exports.babelExclude = () => [
-  require.resolve("@mdi/js/mdi.js"),
-  require.resolve("hls.js"),
-];
 
 const outputPath = (outputRoot, latestBuild) =>
   path.resolve(outputRoot, latestBuild ? "frontend_latest" : "frontend_es5");
