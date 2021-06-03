@@ -97,7 +97,7 @@ class HassioIngressView extends LitElement {
             title: requestedAddon,
           });
           await nextRender();
-          history.back();
+          navigate("/hassio/store", { replace: true });
           return;
         }
         if (!addonInfo.ingress) {
