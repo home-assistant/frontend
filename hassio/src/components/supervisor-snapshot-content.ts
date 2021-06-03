@@ -85,6 +85,8 @@ export class SupervisorSnapshotContent extends LitElement {
 
   @property() public snapshotPassword = "";
 
+  @property() public confirmSnapshotPassword = "";
+
   public willUpdate(changedProps) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
@@ -249,6 +251,18 @@ export class SupervisorSnapshotContent extends LitElement {
               @value-changed=${this._handleTextValueChanged}
             >
             </paper-input>
+            ${!this.snapshot
+              ? html` <paper-input
+                  .label=${this.supervisor.localize(
+                    "snapshot.confirm_password"
+                  )}
+                  type="password"
+                  name="confirmSnapshotPassword"
+                  .value=${this.confirmSnapshotPassword}
+                  @value-changed=${this._handleTextValueChanged}
+                >
+                </paper-input>`
+              : ""}
           `
         : ""}
     `;
@@ -303,6 +317,9 @@ export class SupervisorSnapshotContent extends LitElement {
 
     if (this.snapshotHasPassword) {
       data.password = this.snapshotPassword;
+      if (!this.snapshot) {
+        data.confirm_password = this.confirmSnapshotPassword;
+      }
     }
 
     if (this.snapshotType === "full") {
