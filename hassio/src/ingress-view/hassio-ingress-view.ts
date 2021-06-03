@@ -128,10 +128,12 @@ class HassioIngressView extends LitElement {
       return;
     }
 
-    const addon = this.route.path.substr(1);
+    const addon = this.route.path.substr(1).split("/")[0];
 
     const oldRoute = changedProps.get("route") as this["route"] | undefined;
-    const oldAddon = oldRoute ? oldRoute.path.substr(1) : undefined;
+    const oldAddon = oldRoute
+      ? oldRoute.path.substr(1).split("/")[0]
+      : undefined;
 
     if (addon && addon !== oldAddon) {
       this._fetchData(addon);
