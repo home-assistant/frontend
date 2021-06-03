@@ -18,7 +18,8 @@ const _filterDevices = memoizeOne(
     hardware.devices
       .filter(
         (device) =>
-          (showAdvanced || ["tty", "input"].includes(device.subsystem)) &&
+          (showAdvanced ||
+            ["tty", "gpio", "input"].includes(device.subsystem)) &&
           (device.by_id?.toLowerCase().includes(filter) ||
             device.name.toLowerCase().includes(filter) ||
             device.dev_path.toLocaleLowerCase().includes(filter) ||
