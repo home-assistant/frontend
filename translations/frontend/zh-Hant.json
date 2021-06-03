@@ -929,8 +929,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "關閉後，{integration} 新發現的實體將不會自動新增至 Home Assistant。",
+                "enable_new_entities_description": "關閉後，{integration} 新發現的實體將不會自動新增。",
                 "enable_new_entities_label": "啟用新增實體",
+                "enable_polling_description": "是否讓 Home Assistant 自動輪詢 {integration} 實體以獲得更新。",
+                "enable_polling_label": "開啟自動輪詢更新。",
+                "restart_home_assistant": "需要重啟 Home Assistant 才能使變更生效。",
                 "title": "{integration} 系統選項",
                 "update": "更新"
             },
@@ -2073,7 +2076,8 @@
                     "scripts": "腳本",
                     "unknown_error": "未知錯誤",
                     "unnamed_device": "未命名的裝置",
-                    "update": "更新"
+                    "update": "更新",
+                    "update_device_error": "更新裝置失敗"
                 },
                 "entities": {
                     "caption": "實體",
@@ -2206,6 +2210,7 @@
                         "depends_on_cloud": "跟隨雲服務",
                         "device_unavailable": "裝置不可用",
                         "devices": "{count} {count, plural,\n  one {個裝置}\n  other {個裝置}\n}",
+                        "disable_error": "開啟或關閉整合失敗",
                         "disable_restart_confirm": "重啟 Home Assistant 以完成整合關閉",
                         "disable": {
                             "disable_confirm": "確定要關閉此設定實體？其裝置與實體將會關閉。",
@@ -2217,6 +2222,7 @@
                             },
                             "disabled_cause": "由 {cause} 關閉。"
                         },
+                        "disabled_polling": "自動輪詢更新資料已關閉。",
                         "documentation": "相關文件",
                         "enable_restart_confirm": "重啟 Home Assistant 以完成整合開啟",
                         "entities": "{count} {count, plural,\n  one {個實體}\n  other {個實體}\n}",

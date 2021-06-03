@@ -929,8 +929,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Kui see on keelatud ei lisata äsja avastatud sidumise {integration} olemeid automaatselt Home Assistant'i.",
+                "enable_new_entities_description": "Kas lisada äsja avastatud sidumise {integration} olemed automaatselt Home Assistant'i.",
                 "enable_new_entities_label": "Luba äsja lisatud olemid.",
+                "enable_polling_description": "Kas Home Assistant peaks automaatselt küsitlema {integration} üksusi uuenduste saamiseks.",
+                "enable_polling_label": "Luba värskenduste jaoks küsitlus.",
+                "restart_home_assistant": "Muudatuste jõustumiseks pead Home Assistanti taaskäivitama.",
                 "title": "Süsteemi valikud {integration} jaoks",
                 "update": "Uuenda"
             },
@@ -2073,7 +2076,8 @@
                     "scripts": "Skriptid",
                     "unknown_error": "Tundmatu viga",
                     "unnamed_device": "Nimetu seade",
-                    "update": "Uuenda"
+                    "update": "Uuenda",
+                    "update_device_error": "Seadme värskendamine nurjus"
                 },
                 "entities": {
                     "caption": "Olemite register",
@@ -2206,6 +2210,7 @@
                         "depends_on_cloud": "Sõltub pilveteenusest",
                         "device_unavailable": "Seade pole saadaval",
                         "devices": "{count} {count, plural,\n  one {seade}\n  other {seadet}\n}",
+                        "disable_error": "Sidumise lubamine või keelamine nurjus",
                         "disable_restart_confirm": "Taaskäivita Home Assistant, et lõpetada selle sidumise keelamine",
                         "disable": {
                             "disable_confirm": "Kas soovid selle seadistuskirje kindlasti keelata? Selle seadmed ja üksused keelatakse.",
@@ -2217,6 +2222,7 @@
                             },
                             "disabled_cause": "Keelatud {cause} põhjusel"
                         },
+                        "disabled_polling": "Uuendatud andmete automaatne päring on välja lülitatud",
                         "documentation": "Vaata dokumentatsiooni",
                         "enable_restart_confirm": "Selle sidumise lubamise lõpetamiseks taaskäivita Home Assistant",
                         "entities": "{count} {count, plural,\n  one {olem}\n  other{olemit}\n}",

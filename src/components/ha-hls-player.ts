@@ -13,6 +13,11 @@ import { nextRender } from "../common/util/render-status";
 import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
 
+type HlsLite = Omit<
+  HlsType,
+  "subtitleTrackController" | "audioTrackController" | "emeController"
+>;
+
 @customElement("ha-hls-player")
 class HaHLSPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -39,7 +44,7 @@ class HaHLSPlayer extends LitElement {
 
   @state() private _attached = false;
 
-  private _hlsPolyfillInstance?: HlsType;
+  private _hlsPolyfillInstance?: HlsLite;
 
   private _useExoPlayer = false;
 
@@ -103,7 +108,8 @@ class HaHLSPlayer extends LitElement {
     const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
-    const Hls = (await import("hls.js")).default;
+    const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.min.js"))
+      .default;
     let hlsSupported = Hls.isSupported();
 
     if (!hlsSupported) {
@@ -182,7 +188,7 @@ class HaHLSPlayer extends LitElement {
     url: string
   ) {
     const hls = new Hls({
-      liveBackBufferLength: 60,
+      backBufferLength: 60,
       fragLoadingTimeOut: 30000,
       manifestLoadingTimeOut: 30000,
       levelLoadingTimeOut: 30000,

@@ -47,7 +47,6 @@ const createWebpackConfig = ({
       rules: [
         {
           test: /\.m?js$|\.ts$/,
-          exclude: bundle.babelExclude(),
           use: {
             loader: "babel-loader",
             options: bundle.babelOptions({ latestBuild }),

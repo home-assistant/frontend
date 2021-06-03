@@ -36,7 +36,9 @@ export class HaPickThemeRow extends LitElement {
     const hasThemes =
       this.hass.themes.themes && Object.keys(this.hass.themes.themes).length;
     const curTheme =
-      this.hass.selectedTheme?.theme || this.hass.themes.default_theme;
+      this.hass.selectedTheme?.theme || this.hass.themes.darkMode
+        ? this.hass.themes.default_dark_theme || this.hass.themes.default_theme
+        : this.hass.themes.default_theme;
 
     const themeSettings = this.hass.selectedTheme;
 

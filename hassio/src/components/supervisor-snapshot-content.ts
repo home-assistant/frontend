@@ -44,6 +44,9 @@ const _computeFolders = (folders): CheckboxItem[] => {
   if (folders.includes("share")) {
     list.push({ slug: "share", name: "Share", checked: false });
   }
+  if (folders.includes("media")) {
+    list.push({ slug: "media", name: "Media", checked: false });
+  }
   if (folders.includes("addons/local")) {
     list.push({ slug: "addons/local", name: "Local add-ons", checked: false });
   }

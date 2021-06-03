@@ -929,8 +929,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "如果禁用，从 {integration} 新发现的实体将不会自动添加到 Home Assistant。",
+                "enable_new_entities_description": "是否将 {integration} 新发现的实体自动添加到 Home Assistant。",
                 "enable_new_entities_label": "启用新添加的实体。",
+                "enable_polling_description": "是否让 Home Assistant 轮询 {integration} 的实体，以便更新其状态。",
+                "enable_polling_label": "启用轮询刷新。",
+                "restart_home_assistant": "需要重新启动 Home Assistant 才能使更改生效。",
                 "title": "{integration} 系统选项",
                 "update": "更新"
             },
@@ -2073,7 +2076,8 @@
                     "scripts": "脚本",
                     "unknown_error": "未知错误",
                     "unnamed_device": "未命名设备",
-                    "update": "更新"
+                    "update": "更新",
+                    "update_device_error": "更新设备失败"
                 },
                 "entities": {
                     "caption": "实体注册表",
@@ -2115,7 +2119,7 @@
                             "confirm_title": "您要删除这 {number} 个实体吗？"
                         },
                         "search": "搜索实体",
-                        "selected": "选择了 {number} 项",
+                        "selected": "已选择 {number} 项",
                         "status": {
                             "disabled": "已禁用",
                             "ok": "确定",
@@ -2206,6 +2210,7 @@
                         "depends_on_cloud": "依赖云端服务",
                         "device_unavailable": "设备不可用",
                         "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
+                        "disable_error": "启用/禁用集成失败",
                         "disable_restart_confirm": "重启 Home Assistant 以完成此集成的禁用",
                         "disable": {
                             "disable_confirm": "您确定要禁用此配置条目吗？其设备和实体也将被禁用。",
@@ -2217,6 +2222,7 @@
                             },
                             "disabled_cause": "通过{cause}禁用"
                         },
+                        "disabled_polling": "自动轮询刷新数据已禁用",
                         "documentation": "文档",
                         "enable_restart_confirm": "重启 Home Assistant 以完成此集成的启用",
                         "entities": "{count} {count, plural,\n  one {个实体}\n  other {个实体}\n}",

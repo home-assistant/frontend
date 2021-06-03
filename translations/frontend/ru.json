@@ -394,7 +394,7 @@
             "failed_to_delete": "Не удалось удалить",
             "folder": {
                 "addons/local": "Локальные дополнения",
-                "homeassistant": "Home Assistant",
+                "homeassistant": "Home Assistant configuration",
                 "media": "Media",
                 "share": "Share",
                 "ssl": "SSL"
@@ -411,7 +411,7 @@
             "select_type": "Выберите что нужно восстановить",
             "selected": "Выбрано: {number}",
             "type": "Тип снимка",
-            "upload_snapshot": "Загрузить снимок"
+            "upload_snapshot": "Загрузить снимок на сервер"
         },
         "store": {
             "missing_addons": "Пропали дополнения? Активируйте расширенный режим на странице Вашего профиля пользователя",
@@ -929,8 +929,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "{integration} будет автоматически добавлять в Home Assistant вновь обнаруженные объекты",
+                "enable_new_entities_description": "Home Assistant будет автоматически добавлять новые обнаруженные устройства {integration}",
                 "enable_new_entities_label": "Добавлять новые объекты",
+                "enable_polling_description": "Home Assistant будет автоматически опрашивать объекты {integration} для получения обновлений",
+                "enable_polling_label": "Включить опрос для получения обновлений",
+                "restart_home_assistant": "Чтобы изменения вступили в силу, нужно перезапустить Home Assistant.",
                 "title": "{integration}",
                 "update": "Обновить"
             },
@@ -2073,7 +2076,8 @@
                     "scripts": "Скрипты",
                     "unknown_error": "Неизвестная ошибка.",
                     "unnamed_device": "Устройство без названия",
-                    "update": "Обновить"
+                    "update": "Обновить",
+                    "update_device_error": "Не удалось обновить устройство"
                 },
                 "entities": {
                     "caption": "Объекты",
@@ -2206,6 +2210,7 @@
                         "depends_on_cloud": "Зависит от облачных сервисов",
                         "device_unavailable": "Устройство недоступно",
                         "devices": "{count} {count, plural,\n  one {устройство}\n  few {устройства}\n  many {устройств}\n  other {устройств}\n}",
+                        "disable_error": "Не удалось активировать или деактивировать интеграцию",
                         "disable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить деактивацию этой интеграции.",
                         "disable": {
                             "disable_confirm": "Вы уверены, что хотите деактивировать эту запись конфигурации? Её дочерние устройства и объекты будут также деактивированы.",
@@ -2217,6 +2222,7 @@
                             },
                             "disabled_cause": "Деактивировано {cause}"
                         },
+                        "disabled_polling": "Автоматический опрос для получения обновленных данных отключен",
                         "documentation": "Документация",
                         "enable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить подключение этой интеграции.",
                         "entities": "{count} {count, plural,\n  one {объект}\n  few {объекта}\n  many {объектов}\n  other {объектов}\n}",
