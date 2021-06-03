@@ -43,7 +43,6 @@ import "../components/supervisor-metric";
 import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
 import { showHassioHardwareDialog } from "../dialogs/hardware/show-dialog-hassio-hardware";
 import { hassioStyle } from "../resources/hassio-style";
-import { nextRender } from "../../../src/common/util/render-status";
 
 @customElement("hassio-host-info")
 class HassioHostInfo extends LitElement {
@@ -239,7 +238,6 @@ class HassioHostInfo extends LitElement {
         ),
         text: extractApiErrorMessage(err),
       });
-      await nextRender();
       return;
     }
     showHassioHardwareDialog(this, { supervisor: this.supervisor, hardware });

@@ -85,47 +85,45 @@ class HassioHardwareDialog extends LitElement {
           </search-input>
         </div>
 
-        ${devices
-          .sort((a, b) => compare(a.name, b.name))
-          .map(
-            (device) =>
-              html`<ha-expansion-panel .header=${device.name} outlined>
-                <div class="device-property">
-                  <span>
-                    ${this._dialogParams!.supervisor.localize(
-                      "dialog.hardware.subsystem"
-                    )}:
-                  </span>
-                  <span>${device.subsystem}</span>
-                </div>
-                <div class="device-property">
-                  <span>
-                    ${this._dialogParams!.supervisor.localize(
-                      "dialog.hardware.device_path"
-                    )}:
-                  </span>
-                  <code>${device.dev_path}</code>
-                </div>
-                ${device.by_id
-                  ? html` <div class="device-property">
-                      <span>
-                        ${this._dialogParams!.supervisor.localize(
-                          "dialog.hardware.id"
-                        )}:
-                      </span>
-                      <code>${device.by_id}</code>
-                    </div>`
-                  : ""}
-                <div class="attributes">
-                  <span>
-                    ${this._dialogParams!.supervisor.localize(
-                      "dialog.hardware.attributes"
-                    )}:
-                  </span>
-                  <pre>${dump(device.attributes, { indent: 2 })}</pre>
-                </div>
-              </ha-expansion-panel>`
-          )}
+        ${devices.map(
+          (device) =>
+            html`<ha-expansion-panel .header=${device.name} outlined>
+              <div class="device-property">
+                <span>
+                  ${this._dialogParams!.supervisor.localize(
+                    "dialog.hardware.subsystem"
+                  )}:
+                </span>
+                <span>${device.subsystem}</span>
+              </div>
+              <div class="device-property">
+                <span>
+                  ${this._dialogParams!.supervisor.localize(
+                    "dialog.hardware.device_path"
+                  )}:
+                </span>
+                <code>${device.dev_path}</code>
+              </div>
+              ${device.by_id
+                ? html` <div class="device-property">
+                    <span>
+                      ${this._dialogParams!.supervisor.localize(
+                        "dialog.hardware.id"
+                      )}:
+                    </span>
+                    <code>${device.by_id}</code>
+                  </div>`
+                : ""}
+              <div class="attributes">
+                <span>
+                  ${this._dialogParams!.supervisor.localize(
+                    "dialog.hardware.attributes"
+                  )}:
+                </span>
+                <pre>${dump(device.attributes, { indent: 2 })}</pre>
+              </div>
+            </ha-expansion-panel>`
+        )}
       </ha-dialog>
     `;
   }
@@ -168,6 +166,10 @@ class HassioHardwareDialog extends LitElement {
         code {
           font-size: 85%;
           padding: 0.2em 0.4em;
+        }
+        search-input {
+          margin: 0 16px;
+          display: block;
         }
         .device-property {
           display: flex;
