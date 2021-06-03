@@ -14,14 +14,17 @@ import { HomeAssistant } from "../../../../src/types";
 import { HassioHardwareDialogParams } from "./show-dialog-hassio-hardware";
 
 const _filterDevices = memoizeOne(
-  (hardware: HassioHardwareInfo, filter: string) =>
+  (showAdvanced: boolean, hardware: HassioHardwareInfo, filter: string) =>
     hardware.devices
       .filter(
         (device) =>
-          device.by_id?.toLowerCase().includes(filter) ||
-          device.name.toLowerCase().includes(filter) ||
-          device.dev_path.toLocaleLowerCase().includes(filter) ||
-          JSON.stringify(device.attributes).toLocaleLowerCase().includes(filter)
+          (showAdvanced || ["tty", "input"].includes(device.subsystem)) &&
+          (device.by_id?.toLowerCase().includes(filter) ||
+            device.name.toLowerCase().includes(filter) ||
+            device.dev_path.toLocaleLowerCase().includes(filter) ||
+            JSON.stringify(device.attributes)
+              .toLocaleLowerCase()
+              .includes(filter))
       )
       .sort((a, b) => compare(a.name, b.name))
 );
@@ -49,6 +52,7 @@ class HassioHardwareDialog extends LitElement {
     }
 
     const devices = _filterDevices(
+      this.hass.userData?.showAdvanced || false,
       this._dialogParams.hardware,
       (this._filter || "").toLowerCase()
     );
