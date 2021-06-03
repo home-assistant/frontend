@@ -48,6 +48,9 @@
       window.providersPromise = fetch("/auth/providers", {
         credentials: "same-origin",
       });
+      if (!window.globalThis) {
+        window.globalThis = window;
+      }
     </script>
 
     <script>
