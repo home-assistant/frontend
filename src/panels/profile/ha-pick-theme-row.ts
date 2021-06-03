@@ -32,6 +32,8 @@ export class HaPickThemeRow extends LitElement {
 
   @state() _themeNames: string[] = [];
 
+  private _listboxValue?: string;
+
   protected render(): TemplateResult {
     const hasThemes =
       this.hass.themes.themes && Object.keys(this.hass.themes.themes).length;
@@ -176,6 +178,13 @@ export class HaPickThemeRow extends LitElement {
   }
 
   private _supportsModeSelection(themeName: string): boolean {
+    // Backend-selected themes should not allow the user to switch the mode,
+    // since the backend themes are set per mode. To detect that, we need
+    // to look at the actual selected listbox entry, since the `curTheme`
+    // will be the "real" theme name that the backend provides for "Backend-selected".
+    if (this._listboxValue === "Backend-selected") {
+      return false;
+    }
     return "modes" in this.hass.themes.themes[themeName];
   }
 
@@ -194,6 +203,7 @@ export class HaPickThemeRow extends LitElement {
 
   private _handleThemeSelection(ev: CustomEvent) {
     const theme = ev.detail.item.theme;
+    this._listboxValue = theme;
     if (theme === "Backend-selected") {
       if (this.hass.selectedTheme?.theme) {
         fireEvent(this, "settheme", {
