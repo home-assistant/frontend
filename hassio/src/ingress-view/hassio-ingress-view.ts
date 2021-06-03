@@ -106,7 +106,14 @@ class HassioIngressView extends LitElement {
             title: addonInfo.name,
           });
           await nextRender();
-          history.back();
+          navigate(`/hassio/addon/${addonInfo.slug}/info`, { replace: true });
+        } else if (addonInfo.state !== "started") {
+          await showAlertDialog(this, {
+            text: this.supervisor.localize("my.error_addon_not_started"),
+            title: addonInfo.name,
+          });
+          await nextRender();
+          navigate(`/hassio/addon/${addonInfo.slug}/info`, { replace: true });
         } else {
           navigate(`/hassio/ingress/${addonInfo.slug}`, { replace: true });
         }
