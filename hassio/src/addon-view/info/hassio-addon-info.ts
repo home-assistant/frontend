@@ -50,6 +50,10 @@ import {
   fetchHassioStats,
   HassioStats,
 } from "../../../../src/data/hassio/common";
+import {
+  fetchHassioSnapshots,
+  HassioSnapshot,
+} from "../../../../src/data/hassio/snapshot";
 import { StoreAddon } from "../../../../src/data/supervisor/store";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import {
@@ -61,6 +65,7 @@ import { HomeAssistant } from "../../../../src/types";
 import { bytesToString } from "../../../../src/util/bytes-to-string";
 import "../../components/hassio-card-content";
 import "../../components/supervisor-metric";
+import { showHassioAddonRestoreDialog } from "../../dialogs/addon/show-dialog-hassio-addon-restore";
 import { showHassioMarkdownDialog } from "../../dialogs/markdown/show-dialog-hassio-markdown";
 import { showDialogSupervisorUpdate } from "../../dialogs/update/show-dialog-update";
 import { hassioStyle } from "../../resources/hassio-style";
@@ -81,6 +86,8 @@ class HassioAddonInfo extends LitElement {
   @property({ attribute: false }) public addon!: HassioAddonDetails;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
+
+  @property({ attribute: false }) public snapshots?: HassioSnapshot[];
 
   @state() private _metrics?: HassioStats;
 
@@ -626,6 +633,11 @@ class HassioAddonInfo extends LitElement {
                     ${this.supervisor.localize("addon.dashboard.install")}
                   </ha-progress-button>
                 `}
+            ${this.snapshots?.length
+              ? html`<mwc-button @click=${this._restoreClicked}>
+                  ${this.supervisor.localize("addon.dashboard.restore")}
+                </mwc-button>`
+              : ""}
           </div>
           <div>
             ${this.addon.version
@@ -698,6 +710,11 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _loadData(): Promise<void> {
+    const snapshots = await fetchHassioSnapshots(this.hass);
+    this.snapshots = snapshots.filter((snapshot) =>
+      snapshot.content.addons.includes(this.addon.slug)
+    );
+
     if (this.addon.state === "started") {
       this._metrics = await fetchHassioStats(
         this.hass,
@@ -998,6 +1015,22 @@ class HassioAddonInfo extends LitElement {
       path: "update",
     };
     fireEvent(this, "hass-api-called", eventdata);
+  }
+
+  private async _restoreClicked(): Promise<void> {
+    showHassioAddonRestoreDialog(this, {
+      supervisor: this.supervisor,
+      snapshots: this.snapshots || [],
+      addon: this.addon,
+      onRestore: () => {
+        const eventdata = {
+          success: true,
+          response: undefined,
+          path: "update",
+        };
+        fireEvent(this, "hass-api-called", eventdata);
+      },
+    });
   }
 
   private async _startClicked(ev: CustomEvent): Promise<void> {

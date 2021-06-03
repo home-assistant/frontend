@@ -39,7 +39,7 @@ export interface HassioSnapshotDetail extends HassioSnapshot {
 }
 
 export interface HassioFullSnapshotCreateParams {
-  name: string;
+  name?: string;
   password?: string;
 }
 export interface HassioPartialSnapshotCreateParams
@@ -193,4 +193,27 @@ export const uploadSnapshot = async (
     throw new Error(`${resp.status} ${resp.statusText}`);
   }
   return resp.json();
+};
+
+export const supervisorRestorePartialSnapshot = async (
+  hass: HomeAssistant,
+  slug: string,
+  data: HassioPartialSnapshotCreateParams
+) => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: `/snapshots/${slug}/restore/partial`,
+      method: "post",
+      timeout: null,
+      data,
+    });
+    return;
+  }
+
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/snapshots/${slug}/restore/partial`,
+    data
+  );
 };

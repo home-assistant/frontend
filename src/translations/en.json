@@ -3630,6 +3630,7 @@
         "restart": "restart",
         "start": "start",
         "stop": "stop",
+        "restore": "restore",
         "install": "install",
         "uninstall": "uninstall",
         "rebuild": "rebuild",
@@ -3978,6 +3979,16 @@
         "create_snapshot": "Create a snapshot of {name} before updating",
         "updating": "Updating {name} to version {version}",
         "snapshotting": "Creating snapshot of {name}"
+      },
+      "addon_restore": {
+        "title": "Restore {name}",
+        "description": "You have {count, plural,\n  one {one snapshot}\n  other {{count} snapshots}\n} that includes restore points for {name}",
+        "version": "Version {version}",
+        "no_version": "No version",
+        "restore": "Restore",
+        "password": "Password",
+        "protected": "The snapshot is password protected, please provide the password for it.",
+        "restore_in_progress": "Restore in progress"
       }
     }
   }
