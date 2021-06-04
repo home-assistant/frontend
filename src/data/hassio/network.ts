@@ -5,7 +5,7 @@ import { hassioApiResultExtractor, HassioResponse } from "./common";
 interface IpConfiguration {
   address: string[];
   gateway: string;
-  method: "disabled" | "static" | "auto";
+  method: "disabled" | "static" | "auto" | "link-local";
   nameservers: string[];
 }
 

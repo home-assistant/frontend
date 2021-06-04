@@ -3945,6 +3945,7 @@
         "static": "Static",
         "dhcp": "DHCP",
         "disabled": "Disabled",
+        "link-local": "link-local",
         "ip_netmask": "IP address/Netmask",
         "gateway": "Gateway address",
         "dns_servers": "DNS Servers",

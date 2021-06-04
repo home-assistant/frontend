@@ -339,6 +339,21 @@ export class DialogHassioNetwork
             >
             </ha-radio>
           </ha-formfield>
+          ${version === "ipv6"
+            ? html` <ha-formfield
+                .label=${this.supervisor.localize("dialog.network.link-local")}
+                class="warning"
+              >
+                <ha-radio
+                  @change=${this._handleRadioValueChanged}
+                  .version=${version}
+                  value="link-local"
+                  name="${version}method"
+                  .checked=${this._interface![version]?.method === "link-local"}
+                >
+                </ha-radio>
+              </ha-formfield>`
+            : ""}
         </div>
         ${this._interface![version].method === "static"
           ? html`
@@ -558,7 +573,7 @@ export class DialogHassioNetwork
 
         @media all and (min-width: 451px) and (min-height: 501px) {
           .container {
-            width: 400px;
+            width: 500px;
           }
         }
 
