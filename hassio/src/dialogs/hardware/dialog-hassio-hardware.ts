@@ -87,7 +87,11 @@ class HassioHardwareDialog extends LitElement {
 
         ${devices.map(
           (device) =>
-            html`<ha-expansion-panel .header=${device.name} outlined>
+            html`<ha-expansion-panel
+              .header=${device.name}
+              .secondary=${device.by_id || undefined}
+              outlined
+            >
               <div class="device-property">
                 <span>
                   ${this._dialogParams!.supervisor.localize(
