@@ -23,7 +23,7 @@ class HaExpansionPanel extends LitElement {
       <div class="summary" @click=${this._toggleContainer}>
         <slot class="header" name="header">
           ${this.header}
-          <slot class="secondary" name="secondary">${this.secondary} </slot>
+          <slot class="secondary" name="secondary">${this.secondary}</slot>
         </slot>
         <ha-svg-icon
           .path=${mdiChevronDown}
