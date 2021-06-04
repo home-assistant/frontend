@@ -368,6 +368,8 @@
             "error": "Si è verificato un errore sconosciuto",
             "error_addon_no_ingress": "Il componente aggiuntivo richiesto non supporta l'ingresso",
             "error_addon_not_found": "Componente aggiuntivo non trovato",
+            "error_addon_not_installed": "Il componente aggiuntivo richiesto non è installato. Si prega di installarlo prima di proseguire",
+            "error_addon_not_started": "Il componente aggiuntivo non è in esecuzione. Si prega di avviarlo prima di proseguire",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "Questo reindirizzamento non è supportato dall'istanza di Home Assistant. Controlla il {link} per i reindirizzamenti supportati e la versione in cui sono stati introdotti."
         },
@@ -2076,7 +2078,8 @@
                     "scripts": "Script",
                     "unknown_error": "Errore sconosciuto",
                     "unnamed_device": "Dispositivo senza nome",
-                    "update": "Aggiorna"
+                    "update": "Aggiorna",
+                    "update_device_error": "Aggiornamento del dispositivo non riuscito"
                 },
                 "entities": {
                     "caption": "Entità",
@@ -2209,6 +2212,7 @@
                         "depends_on_cloud": "Dipende dal cloud",
                         "device_unavailable": "Dispositivo non disponibile",
                         "devices": "{count} {count, plural, \none {dispositivo}\nother {dispositivi}\n}",
+                        "disable_error": "Abilitazione o disabilitazione dell'integrazione non riuscita",
                         "disable_restart_confirm": "Riavvia Home Assistant per terminare la disabilitazione di questa integrazione",
                         "disable": {
                             "disable_confirm": "Sei sicuro di voler disabilitare questa voce di configurazione? I suoi dispositivi ed entità saranno disabilitati.",

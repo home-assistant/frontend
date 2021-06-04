@@ -351,6 +351,9 @@
             "create_blocked_not_running": "Създаването на снапшот в момента не е възможно, тъй като системата е в състояние {state}.",
             "create_snapshot": "Създаване на снапшот",
             "created": "Създаден",
+            "delete_selected": "Изтриване на избраните снапшоти",
+            "delete_snapshot_confirm": "Изтрий",
+            "delete_snapshot_title": "Изтриване на снапшот",
             "description": "Снапшотите ви позволяват лесно да архивирате и възстановявате всички данни от вашия екземпляр на Home Assistant.",
             "enter_password": "Моля, въведете парола.",
             "folder": {
@@ -369,6 +372,7 @@
             "password_protected": "защитен с парола",
             "password_protection": "Защита с парола",
             "security": "Сигурност",
+            "selected": "{number} избрани",
             "type": "Тип",
             "upload_snapshot": "Качване на снапшот"
         },
@@ -874,6 +878,7 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Ако е изключено, новооткритите обекти за {integration} няма да бъдат автоматично добавяни в Home Assistant",
                 "enable_new_entities_label": "Активирай новодобавените обекти.",
+                "restart_home_assistant": "Трябва да рестартирате Home Assistant, за да влязат в сила промените.",
                 "title": "Системни опции за {integration}",
                 "update": "Актуализация"
             },
