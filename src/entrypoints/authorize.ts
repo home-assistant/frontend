@@ -3,6 +3,7 @@ import "../resources/compatibility";
 import "@polymer/polymer/lib/elements/dom-if";
 import "@polymer/polymer/lib/elements/dom-repeat";
 import "../auth/ha-authorize";
+import "../auth/ha-password-manager-polyfill";
 import "../resources/ha-style";
 import "../resources/roboto";
 import "../resources/safari-14-attachshadow-patch";
