@@ -113,6 +113,8 @@ class HassioCreateSnapshotDialog extends LitElement {
       return;
     }
 
+    delete snapshotDetails.confirm_password;
+
     try {
       if (this._snapshotContent.snapshotType === "full") {
         await createHassioFullSnapshot(this.hass, snapshotDetails);
