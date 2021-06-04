@@ -268,7 +268,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
   );
 
   private _getHistoryPaths = memoizeOne(
-    (config: MapCardConfig, history?: HassEntity[][]) => {
+    (
+      config: MapCardConfig,
+      history?: HassEntity[][]
+    ): HaMapPaths[] | undefined => {
       if (!config.hours_to_show || !history) {
         return undefined;
       }
@@ -295,6 +298,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         paths.push({
           points,
           color: this._getColor(entityStates[0].entity_id),
+          gradualOpacity: 0.8,
         });
       }
       return paths;

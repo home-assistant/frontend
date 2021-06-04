@@ -24,15 +24,18 @@ import { installResizeObserver } from "../../panels/lovelace/common/install-resi
 
 const getEntityId = (entity: string | HaMapEntity): string =>
   typeof entity === "string" ? entity : entity.entity_id;
+
 export interface HaMapPaths {
   points: LatLngTuple[];
-  color: string;
+  color?: string;
+  gradualOpacity?: number;
 }
 
 export interface HaMapEntity {
   entity_id: string;
   color: string;
 }
+
 @customElement("ha-map")
 export class HaMap extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -53,7 +56,6 @@ export class HaMap extends ReactiveElement {
 
   public leafletMap?: Map;
 
-  // eslint-disable-next-line
   private Leaflet?: LeafletModuleType;
 
   private _tileLayer?: TileLayer;
@@ -230,34 +232,59 @@ export class HaMap extends ReactiveElement {
     );
 
     this.paths.forEach((path) => {
-      for (
-        let markerIndex = 0;
-        markerIndex < path.points.length - 1;
-        markerIndex++
-      ) {
-        const opacityStep = 0.8 / (path.points.length - 2);
-        const opacity = 0.8 + markerIndex * opacityStep;
+      let opacityStep: number;
+      let baseOpacity: number;
+      if (path.gradualOpacity) {
+        opacityStep = path.gradualOpacity / (path.points.length - 2);
+        baseOpacity = 1 - path.gradualOpacity;
+      }
 
-        // DRAW path dots
+      for (
+        let pointIndex = 0;
+        pointIndex < path.points.length - 1;
+        pointIndex++
+      ) {
+        const opacity = path.gradualOpacity
+          ? baseOpacity! + pointIndex * opacityStep!
+          : undefined;
+
+        // DRAW point
         this._mapPaths.push(
-          Leaflet!.circleMarker(path.points[markerIndex], {
+          Leaflet!.circleMarker(path.points[pointIndex], {
             radius: 3,
             color: path.color || darkPrimaryColor,
             opacity,
+            fillOpacity: opacity,
             interactive: false,
           })
         );
 
-        // DRAW path lines
+        // DRAW line between this and next point
         this._mapPaths.push(
           Leaflet!.polyline(
-            [path.points[markerIndex], path.points[markerIndex + 1]],
+            [path.points[pointIndex], path.points[pointIndex + 1]],
             {
               color: path.color || darkPrimaryColor,
               opacity,
               interactive: false,
             }
           )
+        );
+      }
+      const pointIndex = path.points.length - 1;
+      if (pointIndex >= 0) {
+        const opacity = path.gradualOpacity
+          ? baseOpacity! + pointIndex * opacityStep!
+          : undefined;
+        // DRAW end path point
+        this._mapPaths.push(
+          Leaflet!.circleMarker(path.points[pointIndex], {
+            radius: 3,
+            color: path.color || darkPrimaryColor,
+            opacity,
+            fillOpacity: opacity,
+            interactive: false,
+          })
         );
       }
       this._mapPaths.forEach((marker) => map.addLayer(marker));
