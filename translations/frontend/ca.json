@@ -284,7 +284,7 @@
             "refresh": "Actualitza",
             "release_notes": "Notes de la versió",
             "reload": "Torna a carregar",
-            "reset_defaults": "Restableix als valors per defecte",
+            "reset_defaults": "Restableix els valors per defecte",
             "reset_options": "Opcions de reinici",
             "restart": "Reinicia",
             "restart_name": "Reinicia {name}",
@@ -368,6 +368,8 @@
             "error": "S'ha produït un error desconegut",
             "error_addon_no_ingress": "El complement sol·licitat no admet ingress",
             "error_addon_not_found": "No s'ha trobat el complement",
+            "error_addon_not_installed": "El complement sol·licitat no està instal·lat. Instal·la'l primer",
+            "error_addon_not_started": "El complement sol·licitat no s'està executant. Inicia'l primer",
             "faq_link": "Preguntes freqüents de My Home Assistant",
             "not_supported": "La instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
         },
@@ -3714,7 +3716,7 @@
             },
             "page-authorize": {
                 "abort_intro": "S'ha avortat l'inici de sessió",
-                "authorizing_client": "Esteu a punt de permetre l'accés a la vostra instància de Home Assistant al client {clientId}.",
+                "authorizing_client": "Estàs a punt de concedir al client {clientId} l'accés a la teva instància de Home Assistant.",
                 "form": {
                     "error": "Error: {error}",
                     "next": "Següent",
@@ -3808,7 +3810,7 @@
                     "working": "Si us plau, espereu"
                 },
                 "initializing": "S'està inicialitzant",
-                "logging_in_to_with": "S'escriuen els registes amb **{authProviderName}** a **{locationName}**.",
+                "logging_in_to_with": "Iniciant sessió a **{locationName}** amb **{authProviderName}**.",
                 "logging_in_with": "Iniciant sessió amb **{authProviderName}**.",
                 "pick_auth_provider": "O bé inicieu sessió amb"
             },

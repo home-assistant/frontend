@@ -2076,7 +2076,8 @@
                     "scripts": "Scripts",
                     "unknown_error": "Onbekende fout",
                     "unnamed_device": "Naamloos apparaat",
-                    "update": "Bijwerken"
+                    "update": "Bijwerken",
+                    "update_device_error": "Updaten van het apparaat mislukt"
                 },
                 "entities": {
                     "caption": "Entiteiten",

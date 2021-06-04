@@ -1806,7 +1806,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "由于您在 configuration.yaml 中配置了实体过滤器，无法通过此 UI 修改要开放的实体。",
+                        "banner": "无法通过此 UI 修改要开放的实体，因为您在 configuration.yaml 中配置了实体过滤器。",
                         "dont_expose_entity": "使实体不可发现",
                         "expose": "向Alexa发送你的位置",
                         "expose_entity": "使实体可发现",
