@@ -230,41 +230,43 @@ export class SupervisorSnapshotContent extends LitElement {
               : ""}
           `
         : ""}
-      ${!this.snapshot
-        ? html`<ha-formfield
-            .label=${this.supervisor.localize("snapshot.password_protection")}
-          >
-            <ha-checkbox
-              .checked=${this.snapshotHasPassword}
-              @change=${this._toggleHasPassword}
+      <div class="security">
+        ${!this.snapshot
+          ? html`<ha-formfield
+              .label=${this.supervisor.localize("snapshot.password_protection")}
             >
-            </ha-checkbox
-          ></ha-formfield>`
-        : ""}
-      ${this.snapshotHasPassword
-        ? html`
-            <paper-input
-              .label=${this.supervisor.localize("snapshot.password")}
-              type="password"
-              name="snapshotPassword"
-              .value=${this.snapshotPassword}
-              @value-changed=${this._handleTextValueChanged}
-            >
-            </paper-input>
-            ${!this.snapshot
-              ? html` <paper-input
-                  .label=${this.supervisor.localize(
-                    "snapshot.confirm_password"
-                  )}
-                  type="password"
-                  name="confirmSnapshotPassword"
-                  .value=${this.confirmSnapshotPassword}
-                  @value-changed=${this._handleTextValueChanged}
-                >
-                </paper-input>`
-              : ""}
-          `
-        : ""}
+              <ha-checkbox
+                .checked=${this.snapshotHasPassword}
+                @change=${this._toggleHasPassword}
+              >
+              </ha-checkbox>
+            </ha-formfield>`
+          : ""}
+        ${this.snapshotHasPassword
+          ? html`
+              <paper-input
+                .label=${this.supervisor.localize("snapshot.password")}
+                type="password"
+                name="snapshotPassword"
+                .value=${this.snapshotPassword}
+                @value-changed=${this._handleTextValueChanged}
+              >
+              </paper-input>
+              ${!this.snapshot
+                ? html` <paper-input
+                    .label=${this.supervisor.localize(
+                      "snapshot.confirm_password"
+                    )}
+                    type="password"
+                    name="confirmSnapshotPassword"
+                    .value=${this.confirmSnapshotPassword}
+                    @value-changed=${this._handleTextValueChanged}
+                  >
+                  </paper-input>`
+                : ""}
+            `
+          : ""}
+      </div>
     `;
   }
 
@@ -284,7 +286,7 @@ export class SupervisorSnapshotContent extends LitElement {
       }
       paper-input[type="password"] {
         display: block;
-        margin: 4px 0 4px 16px;
+        margin: 4px 0;
       }
       .details {
         color: var(--secondary-text-color);
@@ -295,7 +297,7 @@ export class SupervisorSnapshotContent extends LitElement {
         margin-left: 16px;
       }
       .security {
-        margin-top: 16px;
+        margin-top: 24px;
       }
       .snapshot-types {
         display: flex;
