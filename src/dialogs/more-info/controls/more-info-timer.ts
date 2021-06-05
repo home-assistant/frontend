@@ -17,11 +17,6 @@ class MoreInfoTimer extends LitElement {
     }
 
     return html`
-      <ha-attributes
-        .hass=${this.hass}
-        .stateObj=${this.stateObj}
-        extra-filters="remaining"
-      ></ha-attributes>
       <div class="actions">
         ${this.stateObj.state === "idle" || this.stateObj.state === "paused"
           ? html`
@@ -57,6 +52,11 @@ class MoreInfoTimer extends LitElement {
             `
           : ""}
       </div>
+      <ha-attributes
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+        extra-filters="remaining"
+      ></ha-attributes>
     `;
   }
 
