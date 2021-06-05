@@ -368,6 +368,8 @@
             "error": "發生未知錯誤",
             "error_addon_no_ingress": "所要求的附加元件不支援 ingress",
             "error_addon_not_found": "找不到附加元件",
+            "error_addon_not_installed": "所要求的附加元件未安裝，請先進行安裝。",
+            "error_addon_not_started": "所要求的附加元件未執行，請先進行啟動。",
             "faq_link": "Home Assistant 常見問答集",
             "not_supported": "Home Assistant 不支援此重新導向。點選 {link} 獲取支援之重新導向與版本。"
         },
@@ -2719,7 +2721,7 @@
                         "validation": {
                             "check_config": "檢查設定內容",
                             "heading": "設定驗證",
-                            "introduction": "如果您對設定進行了一些更改、並且想確保設定有無錯誤，可以選擇驗證設定內容。",
+                            "introduction": "如果您對設定進行了部分更改、並且想確保設定有無錯誤，可以選擇驗證設定內容。",
                             "invalid": "設定無效",
                             "valid": "設定檔內容檢查正確"
                         }

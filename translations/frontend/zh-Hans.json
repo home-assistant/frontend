@@ -368,6 +368,8 @@
             "error": "发生未知错误",
             "error_addon_no_ingress": "请求的加载项不支持 ingress",
             "error_addon_not_found": "未找到加载项",
+            "error_addon_not_installed": "请求的加载项尚未安装，请先安装",
+            "error_addon_not_started": "请求的加载项未运行，请先运行",
             "faq_link": "我的 Home Assistant 常见问题",
             "not_supported": "您的 Home Assistant 不支持此重定向。请查阅{link}以获取受支持的重定向及其引入的版本。"
         },
@@ -2719,7 +2721,7 @@
                         "validation": {
                             "check_config": "检查配置",
                             "heading": "配置检查",
-                            "introduction": "此处可以帮助您检验最新修改的配置文件有效性",
+                            "introduction": "此处可以帮助您检验最新修改的配置文件的有效性。",
                             "invalid": "配置无效",
                             "valid": "配置有效！"
                         }
