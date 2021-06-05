@@ -20,6 +20,8 @@ export class PasswordManagerPolyfill {
     this._polyfill = document.createElement("form");
     this._polyfill.setAttribute("aria-hidden", "true");
     this._polyfill.className = "password-manager-polyfill";
+    // The left+top and input styles position the polyfill fields directly over the existing ones
+    // This makes sure password managers place their UI elements in the correct spot
     this._polyfill.innerHTML = `
       <input id="username" />
       <input id="password" type="password" />
@@ -27,9 +29,15 @@ export class PasswordManagerPolyfill {
       <style>
         .password-manager-polyfill {
           position: absolute;
+          top: 170px;
+          left: 50%;
           width: 0;
           height: 0;
           overflow: hidden;
+        }
+        .password-manager-polyfill input {
+          width: 210px;
+          height: 60px;
         }
       </style>
     `;
