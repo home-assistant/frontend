@@ -162,9 +162,9 @@ export class SupervisorSnapshotContent extends LitElement {
               </ha-formfield>
             </div>`
         : ""}
-      ${this.snapshot && this.snapshotType === "partial"
-        ? html`
-            ${this.snapshot.homeassistant
+      ${this.snapshotType === "partial"
+        ? html`<div class="partial-picker">
+            ${this.snapshot && this.snapshot.homeassistant
               ? html`
                   <ha-formfield
                     .label=${html`<supervisor-formfield-label
@@ -184,10 +184,6 @@ export class SupervisorSnapshotContent extends LitElement {
                   </ha-formfield>
                 `
               : ""}
-          `
-        : ""}
-      ${this.snapshotType === "partial"
-        ? html`
             ${foldersSection?.templates.length
               ? html`
                   <ha-formfield
@@ -228,65 +224,65 @@ export class SupervisorSnapshotContent extends LitElement {
                   <div class="section-content">${addonsSection.templates}</div>
                 `
               : ""}
+          </div> `
+        : ""}
+      ${!this.snapshot
+        ? html`<ha-formfield
+            class="password"
+            .label=${this.supervisor.localize("snapshot.password_protection")}
+          >
+            <ha-checkbox
+              .checked=${this.snapshotHasPassword}
+              @change=${this._toggleHasPassword}
+            >
+            </ha-checkbox>
+          </ha-formfield>`
+        : ""}
+      ${this.snapshotHasPassword
+        ? html`
+            <paper-input
+              .label=${this.supervisor.localize("snapshot.password")}
+              type="password"
+              name="snapshotPassword"
+              .value=${this.snapshotPassword}
+              @value-changed=${this._handleTextValueChanged}
+            >
+            </paper-input>
+            ${!this.snapshot
+              ? html` <paper-input
+                  .label=${this.supervisor.localize(
+                    "snapshot.confirm_password"
+                  )}
+                  type="password"
+                  name="confirmSnapshotPassword"
+                  .value=${this.confirmSnapshotPassword}
+                  @value-changed=${this._handleTextValueChanged}
+                >
+                </paper-input>`
+              : ""}
           `
         : ""}
-      <div class="security">
-        ${!this.snapshot
-          ? html`<ha-formfield
-              .label=${this.supervisor.localize("snapshot.password_protection")}
-            >
-              <ha-checkbox
-                .checked=${this.snapshotHasPassword}
-                @change=${this._toggleHasPassword}
-              >
-              </ha-checkbox>
-            </ha-formfield>`
-          : ""}
-        ${this.snapshotHasPassword
-          ? html`
-              <paper-input
-                .label=${this.supervisor.localize("snapshot.password")}
-                type="password"
-                name="snapshotPassword"
-                .value=${this.snapshotPassword}
-                @value-changed=${this._handleTextValueChanged}
-              >
-              </paper-input>
-              ${!this.snapshot
-                ? html` <paper-input
-                    .label=${this.supervisor.localize(
-                      "snapshot.confirm_password"
-                    )}
-                    type="password"
-                    name="confirmSnapshotPassword"
-                    .value=${this.confirmSnapshotPassword}
-                    @value-changed=${this._handleTextValueChanged}
-                  >
-                  </paper-input>`
-                : ""}
-            `
-          : ""}
-      </div>
     `;
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-checkbox {
-        --mdc-checkbox-touch-target-size: 16px;
+      .partial-picker ha-formfield {
         display: block;
-        margin: 4px 12px 8px 0;
       }
-      ha-formfield {
-        display: contents;
+      .partial-picker ha-checkbox {
+        --mdc-checkbox-touch-target-size: 32px;
+      }
+      .partial-picker {
+        display: block;
+        margin: 0px -6px;
+        padding-right: 6px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--divider-color);
       }
       supervisor-formfield-label {
         display: inline-flex;
         align-items: center;
-      }
-      paper-input[type="password"] {
-        display: block;
-        margin: 4px 0;
       }
       .details {
         color: var(--secondary-text-color);
@@ -294,16 +290,15 @@ export class SupervisorSnapshotContent extends LitElement {
       .section-content {
         display: flex;
         flex-direction: column;
-        margin-left: 16px;
+        margin-left: 30px;
       }
-      .security {
-        margin-top: 12px;
-        padding-top: 12px;
-        border-top: 1px solid var(--divider-color);
+      ha-formfield.password {
+        display: block;
+        margin: 0 -14px -16px;
       }
       .snapshot-types {
         display: flex;
-        margin-left: -16px;
+        margin-left: -13px;
       }
       .sub-header {
         margin-top: 8px;
