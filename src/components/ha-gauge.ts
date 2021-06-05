@@ -7,13 +7,13 @@ import { afterNextRender } from "../common/util/render-status";
 import { FrontendLocaleData } from "../data/translation";
 import { getValueInPercentage, normalize } from "../util/calculate";
 
+// Workaround for https://github.com/home-assistant/frontend/issues/6467
+import { isSafari } from "../util/is_safari";
+
 const getAngle = (value: number, min: number, max: number) => {
   const percentage = getValueInPercentage(normalize(value, min, max), min, max);
   return (percentage * 180) / 100;
 };
-
-// Workaround for https://github.com/home-assistant/frontend/issues/6467
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 @customElement("ha-gauge")
 export class Gauge extends LitElement {

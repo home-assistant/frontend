@@ -22,7 +22,7 @@ import {
 import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
-import { fileDownload } from "../../../../src/util/filedownload";
+import { fileDownload } from "../../../../src/util/file_download";
 import "../../components/supervisor-snapshot-content";
 import type { SupervisorSnapshotContent } from "../../components/supervisor-snapshot-content";
 import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";

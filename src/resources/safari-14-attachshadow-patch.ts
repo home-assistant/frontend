@@ -1,7 +1,6 @@
 // https://github.com/home-assistant/frontend/pull/7031
-const isSafari14 = /^((?!chrome|android).)*version\/14\.0\s.*safari/i.test(
-  navigator.userAgent
-);
+import { isSafari14 } from "../util/is_safari";
+
 if (isSafari14) {
   const origAttachShadow = window.Element.prototype.attachShadow;
   window.Element.prototype.attachShadow = function (init) {
