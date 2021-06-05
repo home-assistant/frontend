@@ -8,7 +8,7 @@ import { FrontendLocaleData } from "../data/translation";
 import { getValueInPercentage, normalize } from "../util/calculate";
 
 // Workaround for https://github.com/home-assistant/frontend/issues/6467
-import { isSafari } from "../util/is_safari";
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 const getAngle = (value: number, min: number, max: number) => {
   const percentage = getValueInPercentage(normalize(value, min, max), min, max);
