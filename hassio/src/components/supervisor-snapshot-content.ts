@@ -297,10 +297,13 @@ export class SupervisorSnapshotContent extends LitElement {
         margin-left: 16px;
       }
       .security {
-        margin-top: 24px;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--divider-color);
       }
       .snapshot-types {
         display: flex;
+        margin-left: -16px;
       }
       .sub-header {
         margin-top: 8px;
