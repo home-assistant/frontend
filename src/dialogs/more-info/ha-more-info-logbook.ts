@@ -26,6 +26,8 @@ export class MoreInfoLogbook extends LitElement {
 
   private _lastLogbookDate?: Date;
 
+  private _error = false;
+
   private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
   }, 10000);
@@ -42,7 +44,11 @@ export class MoreInfoLogbook extends LitElement {
 
     return html`
       ${isComponentLoaded(this.hass, "logbook")
-        ? !this._logbookEntries
+        ? this._error
+          ? html`<div class="no-entries">
+              ${this.hass.localize("ui.components.logbook.retrieval_error")}
+            </div>`
+          : !this._logbookEntries
           ? html`
               <ha-circular-progress
                 active
@@ -116,21 +122,25 @@ export class MoreInfoLogbook extends LitElement {
       this._lastLogbookDate ||
       new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
     const now = new Date();
-    const [newEntries, traceContexts] = await Promise.all([
-      getLogbookData(
-        this.hass,
-        lastDate.toISOString(),
-        now.toISOString(),
-        this.entityId,
-        true
-      ),
-      loadTraceContexts(this.hass),
-    ]);
-    this._logbookEntries = this._logbookEntries
-      ? [...newEntries, ...this._logbookEntries]
-      : newEntries;
-    this._lastLogbookDate = now;
-    this._traceContexts = traceContexts;
+    try {
+      const [newEntries, traceContexts] = await Promise.all([
+        getLogbookData(
+          this.hass,
+          lastDate.toISOString(),
+          now.toISOString(),
+          this.entityId,
+          true
+        ),
+        loadTraceContexts(this.hass),
+      ]);
+      this._logbookEntries = this._logbookEntries
+        ? [...newEntries, ...this._logbookEntries]
+        : newEntries;
+      this._lastLogbookDate = now;
+      this._traceContexts = traceContexts;
+    } catch (err) {
+      this._error = true;
+    }
   }
 
   private _fetchPersonNames() {

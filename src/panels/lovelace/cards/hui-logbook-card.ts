@@ -63,6 +63,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   private _lastLogbookDate?: Date;
 
+  private _error = false;
+
   private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
   }, 10000);
@@ -184,7 +186,13 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         class=${classMap({ "no-header": !this._config!.title })}
       >
         <div class="content">
-          ${!this._logbookEntries
+          ${this._error
+            ? html`
+                <div class="no-entries">
+                  ${this.hass.localize("ui.components.logbook.retrieval_error")}
+                </div>
+              `
+            : !this._logbookEntries
             ? html`
                 <ha-circular-progress
                   active
@@ -229,23 +237,27 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     const lastDate = this._lastLogbookDate || hoursToShowDate;
     const now = new Date();
 
-    const newEntries = await getLogbookData(
-      this.hass,
-      lastDate.toISOString(),
-      now.toISOString(),
-      this._configEntities!.map((entity) => entity.entity).toString(),
-      true
-    );
+    try {
+      const newEntries = await getLogbookData(
+        this.hass,
+        lastDate.toISOString(),
+        now.toISOString(),
+        this._configEntities!.map((entity) => entity.entity).toString(),
+        true
+      );
 
-    const logbookEntries = this._logbookEntries
-      ? [...newEntries, ...this._logbookEntries]
-      : newEntries;
+      const logbookEntries = this._logbookEntries
+        ? [...newEntries, ...this._logbookEntries]
+        : newEntries;
 
-    this._logbookEntries = logbookEntries.filter(
-      (logEntry) => new Date(logEntry.when) > hoursToShowDate
-    );
+      this._logbookEntries = logbookEntries.filter(
+        (logEntry) => new Date(logEntry.when) > hoursToShowDate
+      );
 
-    this._lastLogbookDate = now;
+      this._lastLogbookDate = now;
+    } catch (err) {
+      this._error = true;
+    }
   }
 
   private _fetchPersonNames() {
