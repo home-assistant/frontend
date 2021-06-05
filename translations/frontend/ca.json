@@ -2721,7 +2721,7 @@
                         "validation": {
                             "check_config": "Comprova la configuració",
                             "heading": "Validació de la configuració",
-                            "introduction": "Valida la configuració si recentment has fet algun canvi a la configuració i vols assegurar-te de que sigui vàlida.",
+                            "introduction": "Valida la configuració si recentment n'has fet algun canvi i vols assegurar-te de que sigui vàlida.",
                             "invalid": "Configuració invàlida",
                             "valid": "Configuració vàlida!"
                         }

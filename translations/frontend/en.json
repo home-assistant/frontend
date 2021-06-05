@@ -2721,7 +2721,7 @@
                         "validation": {
                             "check_config": "Check configuration",
                             "heading": "Configuration validation",
-                            "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
+                            "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid.",
                             "invalid": "Configuration invalid",
                             "valid": "Configuration valid!"
                         }

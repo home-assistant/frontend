@@ -368,6 +368,8 @@
             "error": "Viga",
             "error_addon_no_ingress": "Valitud lisandmoodul ei toeta ingressi",
             "error_addon_not_found": "Lisandmoodulit ei leitud",
+            "error_addon_not_installed": "Soovitud lisandmoodul pole pigaldatud. Alustamiseks paigalda see",
+            "error_addon_not_started": "Soovitud lisandmoodul ei tööta. Alustamiseks käivita see",
             "faq_link": "KKK viide",
             "not_supported": "pole toetatud"
         },
@@ -929,7 +931,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Kas lisada äsja avastatud sidumise {integration} olemed automaatselt Home Assistant'i.",
+                "enable_new_entities_description": "Kas lisada äsja avastatud sidumise {integration} olemeid automaatselt Home Assistant'i.",
                 "enable_new_entities_label": "Luba äsja lisatud olemid.",
                 "enable_polling_description": "Kas Home Assistant peaks automaatselt küsitlema {integration} üksusi uuenduste saamiseks.",
                 "enable_polling_label": "Luba värskenduste jaoks küsitlus.",
@@ -2719,7 +2721,7 @@
                         "validation": {
                             "check_config": "Kontrolli seadeid",
                             "heading": "Seadete kontrollimine",
-                            "introduction": "Kontrolli oma seadeid kui oled neis hiljuti muutusi teinud ja tahad veenduda, et kõik on korrektne",
+                            "introduction": "Kontrolli oma seadeid kui oled neis hiljuti muutusi teinud ja tahad veenduda, et kõik on korrektne.",
                             "invalid": "Konfiguratsioon on vigane",
                             "valid": "Konfiguratsioon on korrektne!"
                         }
