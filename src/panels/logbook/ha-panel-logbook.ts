@@ -48,7 +48,7 @@ export class HaPanelLogbook extends LitElement {
 
   @state() private _userIdToName = {};
 
-  @state() private _traceContexts: TraceContexts = {};
+  @state() private _traceContexts?: TraceContexts = {};
 
   public constructor() {
     super();
