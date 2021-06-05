@@ -13,10 +13,6 @@ export const fileDownload = (
 
   element.shadowRoot!.appendChild(a);
 
-  a.addEventListener("click", () => {
-    element.shadowRoot!.removeChild(a);
-  });
-
   if (isSafari || isAndroid) {
     // Directy calling a.click() is not working in mobile, fireing a MouseEvent is used as a workaround.
     // https://github.com/home-assistant/frontend/issues/9374
@@ -24,4 +20,5 @@ export const fileDownload = (
   } else {
     a.click();
   }
+  element.shadowRoot!.removeChild(a);
 };
