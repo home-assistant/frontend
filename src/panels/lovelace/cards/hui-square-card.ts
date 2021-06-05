@@ -5,16 +5,18 @@ import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
-  customElement,
-  eventOptions,
   html,
-  state,
   LitElement,
-  property,
   PropertyValues,
-  queryAsync,
   TemplateResult,
 } from "lit";
+import {
+  customElement,
+  eventOptions,
+  property,
+  queryAsync,
+  state,
+} from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { DOMAINS_TOGGLE } from "../../../common/const";
