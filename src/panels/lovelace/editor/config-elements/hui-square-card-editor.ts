@@ -7,7 +7,7 @@ import {
   LitElement,
   property,
   TemplateResult,
-} from "lit-element";
+} from "lit";
 import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
