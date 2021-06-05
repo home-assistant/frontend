@@ -1,63 +1,74 @@
-// All children of ha-authorize with Shadow DOM roots
-const SHADOW_ELEMENTS =
-  "ha-auth-flow, ha-form, ha-form-string, paper-input, paper-input-container, iron-input, mwc-button";
+import { DataEntryFlowStep } from "../data/data_entry_flow";
 
-function findThroughShadowDOM(root, querySelector) {
-  // Finds children of root, even across shadow DOM boundaries.
-  const results = [...root.querySelectorAll(querySelector)];
-  root.querySelectorAll(SHADOW_ELEMENTS).forEach((el) => {
-    results.push(...findThroughShadowDOM(el.shadowRoot, querySelector));
-  });
-  return results;
+const ENABLED_HANDLERS = [
+  "homeassistant",
+  "legacy_api_password",
+  "command_line",
+];
+
+export class PasswordManagerPolyfill {
+  private _polyfill: HTMLFormElement;
+
+  private _username: HTMLInputElement;
+
+  private _password: HTMLInputElement;
+
+  private _justPassword = false;
+
+  // Add a form element to the page that password managers can see
+  constructor(ondata: (data: any) => void, onsubmit: (ev: Event) => void) {
+    this._polyfill = document.createElement("form");
+    this._polyfill.setAttribute("aria-hidden", "true");
+    this._polyfill.className = "password-manager-polyfill";
+    this._polyfill.innerHTML = `
+      <input id="username" />
+      <input id="password" type="password" />
+      <input type="submit"/>
+      <style>
+        .password-manager-polyfill {
+          position: absolute;
+          width: 0;
+          height: 0;
+          overflow: hidden;
+        }
+      </style>
+    `;
+    this._username = this._polyfill.querySelector("#username")!;
+    this._password = this._polyfill.querySelector("#password")!;
+
+    this._polyfill.addEventListener("submit", (ev) => onsubmit(ev));
+    this._polyfill.addEventListener("input", () => {
+      if (this._justPassword) {
+        ondata({ password: this._password.value });
+      } else {
+        ondata({
+          username: this._username.value,
+          password: this._password.value,
+        });
+      }
+    });
+  }
+
+  public setStep(step: DataEntryFlowStep) {
+    const [handler, _handler_id] = step.handler;
+    if (
+      step.type === "form" &&
+      ENABLED_HANDLERS.includes(handler) &&
+      step.step_id === "init"
+    ) {
+      // disable username field for login flows with just a password
+      this._justPassword = handler === "legacy_api_password";
+      this._username.style.display = this._justPassword ? "none" : "block";
+      if (!document.body.contains(this._polyfill)) {
+        document.body.appendChild(this._polyfill);
+      }
+    } else if (document.body.contains(this._polyfill)) {
+      document.body.removeChild(this._polyfill);
+    }
+  }
+
+  public update(stepData: any) {
+    this._username.value = stepData.username ?? "";
+    this._password.value = stepData.password ?? "";
+  }
 }
-
-const passwordManagerPolyfill = document.createElement("form");
-passwordManagerPolyfill.setAttribute("aria-hidden", "true");
-passwordManagerPolyfill.id = "password-manager-polyfill";
-passwordManagerPolyfill.innerHTML = `
-<input id="username" />
-<input id="password" type="password" />
-<input type="submit"/>
-<style>
-  #password-manager-polyfill {
-    position: absolute;
-    width: 0;
-    height: 0;
-    overflow: hidden;
-  }
-</style>
-`;
-document.body.appendChild(passwordManagerPolyfill);
-
-passwordManagerPolyfill.addEventListener("submit", (ev) => {
-  ev.preventDefault();
-  // Click the next button after a delay allowing the inputs to update.
-  // The delay also allows the user to see the fields were filled before they disappear.
-  setTimeout(() => {
-    const authorizeRoot = document.querySelector("ha-authorize")!.shadowRoot;
-    findThroughShadowDOM(authorizeRoot, "button")[0].click();
-  }, 300);
-});
-
-passwordManagerPolyfill.addEventListener("input", (ev) => {
-  const authorizeRoot = document.querySelector("ha-authorize")!.shadowRoot;
-  const inputs = findThroughShadowDOM(authorizeRoot, "input");
-  if (inputs.length !== 2) {
-    throw new Error("Username and Password fields not found on page");
-  }
-  const target = ev.target! as HTMLInputElement;
-  // The event notifies the parent element the password field has changed.
-  const event = new Event("input", { bubbles: true });
-  // Update the fields after some delay so that the username field has time to
-  // update before the password is set. This way, when password is set, both fields are passed together.
-  setTimeout(() => {
-    if (target.id === "username") {
-      inputs[0].value = target.value;
-      inputs[0].dispatchEvent(event);
-    }
-    if (target.id === "password") {
-      inputs[1].value = target.value;
-      inputs[1].dispatchEvent(event);
-    }
-  }, 1);
-});
