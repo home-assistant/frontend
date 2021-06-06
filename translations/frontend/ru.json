@@ -402,10 +402,10 @@
                 "ssl": "SSL"
             },
             "folders": "Папки",
-            "full_snapshot": "Полный",
+            "full_snapshot": "Все файлы",
             "name": "Название",
             "no_snapshots": "Не найдено ни одного снимка",
-            "partial_snapshot": "Выборочный",
+            "partial_snapshot": "Выбрать из списка",
             "password": "Пароль",
             "password_protected": "защищено паролем",
             "password_protection": "Защита паролем",
