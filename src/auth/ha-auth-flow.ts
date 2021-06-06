@@ -7,7 +7,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { PasswordManagerPolyfill } from "./ha-password-manager-polyfill";
+import "./ha-password-manager-polyfill";
 import { property, state } from "lit/decorators";
 import "../components/ha-form/ha-form";
 import "../components/ha-markdown";
@@ -37,22 +37,16 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   @state() private _errorMessage?: string;
 
-  @state() private _pmPolyfill: PasswordManagerPolyfill;
-
-  constructor() {
-    super();
-    this._pmPolyfill = new PasswordManagerPolyfill(
-      (newData) => {
-        this._stepData = newData;
-      },
-      (ev) => {
-        this._handleSubmit(ev);
-      }
-    );
-  }
-
   protected render() {
-    return html` <form>${this._renderForm()}</form> `;
+    return html`
+      <form>${this._renderForm()}</form>
+      <ha-password-manager-polyfill
+        .step=${this._step}
+        .stepData=${this._stepData}
+        @submit=${this._handleSubmit}
+        @value-changed=${this._stepDataChanged}
+      ></ha-password-manager-polyfill>
+    `;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -243,9 +237,6 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       this._stepData = stepData;
     }
 
-    this._pmPolyfill.setStep(this._step);
-    this._pmPolyfill.update(this._stepData);
-
     await this.updateComplete;
     // 100ms to give all the form elements time to initialize.
     setTimeout(() => {
@@ -258,7 +249,6 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   private _stepDataChanged(ev: CustomEvent) {
     this._stepData = ev.detail.value;
-    this._pmPolyfill.update(this._stepData);
   }
 
   private _computeStepDescription(step: DataEntryFlowStepForm) {

@@ -1,3 +1,8 @@
+import "@polymer/iron-input";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
+import { HaFormSchema } from "../components/ha-form/ha-form";
 import { DataEntryFlowStep } from "../data/data_entry_flow";
 
 const ENABLED_HANDLERS = [
@@ -6,77 +11,80 @@ const ENABLED_HANDLERS = [
   "command_line",
 ];
 
-export class PasswordManagerPolyfill {
-  private _polyfill: HTMLFormElement;
+@customElement("ha-password-manager-polyfill")
+export class HaPasswordManagerPolyfill extends LitElement {
+  @property() public step?: DataEntryFlowStep;
 
-  private _username: HTMLInputElement;
+  @property() public stepData: any;
 
-  private _password: HTMLInputElement;
-
-  private _justPassword = false;
-
-  // Add a form element to the page that password managers can see
-  constructor(ondata: (data: any) => void, onsubmit: (ev: Event) => void) {
-    this._polyfill = document.createElement("form");
-    this._polyfill.setAttribute("aria-hidden", "true");
-    this._polyfill.className = "password-manager-polyfill";
-    // The left+top and input styles position the polyfill fields directly over the existing ones
-    // This makes sure password managers place their UI elements in the correct spot
-    this._polyfill.innerHTML = `
-      <input id="username" />
-      <input id="password" type="password" />
-      <input type="submit"/>
-      <style>
-        .password-manager-polyfill {
-          position: absolute;
-          top: 170px;
-          left: 50%;
-          width: 0;
-          height: 0;
-          overflow: hidden;
-        }
-        .password-manager-polyfill input {
-          width: 210px;
-          height: 60px;
-        }
-      </style>
-    `;
-    this._username = this._polyfill.querySelector("#username")!;
-    this._password = this._polyfill.querySelector("#password")!;
-
-    this._polyfill.addEventListener("submit", (ev) => onsubmit(ev));
-    this._polyfill.addEventListener("input", () => {
-      if (this._justPassword) {
-        ondata({ password: this._password.value });
-      } else {
-        ondata({
-          username: this._username.value,
-          password: this._password.value,
-        });
-      }
-    });
+  protected createRenderRoot() {
+    // Add under document body so the element isn't placed inside any shadow roots
+    return document.body;
   }
 
-  public setStep(step: DataEntryFlowStep) {
-    const [handler, _handler_id] = step.handler;
-    if (
-      step.type === "form" &&
-      ENABLED_HANDLERS.includes(handler) &&
-      step.step_id === "init"
-    ) {
-      // disable username field for login flows with just a password
-      this._justPassword = handler === "legacy_api_password";
-      this._username.style.display = this._justPassword ? "none" : "block";
-      if (!document.body.contains(this._polyfill)) {
-        document.body.appendChild(this._polyfill);
-      }
-    } else if (document.body.contains(this._polyfill)) {
-      document.body.removeChild(this._polyfill);
+  // Making this static for Lit doesn't work since Lit places these in the shadow dom
+  styles = `
+    .password-manager-polyfill {
+      position: absolute;
+      top: 170px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      overflow: hidden;
     }
+    .password-manager-polyfill input {
+      width: 210px;
+      height: 60px;
+    }
+  `;
+
+  protected render(): TemplateResult {
+    if (
+      this.step &&
+      this.step.type === "form" &&
+      this.step.step_id === "init" &&
+      ENABLED_HANDLERS.includes(this.step.handler[0])
+    ) {
+      return html`
+        <form
+          class="password-manager-polyfill"
+          aria-hidden="true"
+          @submit=${this._handleSubmit}
+        >
+          ${this.step.data_schema.map((input) => this.render_input(input))}
+          <input type="submit" />
+          <style>
+            ${this.styles}
+          </style>
+        </form>
+      `;
+    }
+    return html``;
   }
 
-  public update(stepData: any) {
-    this._username.value = stepData.username ?? "";
-    this._password.value = stepData.password ?? "";
+  private render_input(schema: HaFormSchema): TemplateResult {
+    const inputType = schema.name.includes("password") ? "password" : "text";
+    // Iron-input needed for reliable updating of the input value
+    if (schema.type === "string") {
+      return html`<iron-input bind-value=${this.stepData[schema.name]}>
+        <input
+          id=${schema.name}
+          type=${inputType}
+          @input=${this._valueChanged}
+        />
+      </iron-input>`;
+    }
+    return html``;
+  }
+
+  private _handleSubmit(ev: Event) {
+    ev.preventDefault();
+    fireEvent(this, "submit");
+  }
+
+  private _valueChanged(ev: Event) {
+    const target = ev.target! as HTMLInputElement;
+    this.stepData[target.id] = target.value;
+    fireEvent(this, "value-changed", { value: { ...this.stepData } });
   }
 }
