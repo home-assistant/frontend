@@ -10,10 +10,11 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { throttle } from "../../../common/util/throttle";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
+import { fetchPersons } from "../../../data/person";
+import { fetchUsers } from "../../../data/user";
 import { getLogbookData, LogbookEntry } from "../../../data/logbook";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
@@ -57,11 +58,13 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   @state() private _logbookEntries?: LogbookEntry[];
 
-  @state() private _persons = {};
-
   @state() private _configEntities?: EntityConfig[];
 
+  @state() private _userIdToName = {};
+
   private _lastLogbookDate?: Date;
+
+  private _fetchUserDone?: Promise<unknown>;
 
   private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
@@ -114,13 +117,74 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   }
 
   protected firstUpdated(): void {
-    this._fetchPersonNames();
+    if (this.hass) {
+      this._fetchUserDone = this._fetchUserNames(this.hass);
+    }
   }
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
+    this._updateData(changedProperties);
+  }
+
+  protected render(): TemplateResult {
+    if (!this.hass || !this._config) {
+      return html``;
+    }
+
+    if (!isComponentLoaded(this.hass, "logbook")) {
+      return html`
+        <hui-warning>
+          ${this.hass.localize(
+            "ui.components.logbook.component_not_loaded"
+          )}</hui-warning
+        >
+      `;
+    }
+
+    return html`
+      <ha-card
+        .header=${this._config!.title}
+        class=${classMap({ "no-header": !this._config!.title })}
+      >
+        <div class="content">
+          ${!this._logbookEntries
+            ? html`
+                <ha-circular-progress
+                  active
+                  alt=${this.hass.localize("ui.common.loading")}
+                ></ha-circular-progress>
+              `
+            : this._logbookEntries.length
+            ? html`
+                <ha-logbook
+                  narrow
+                  relative-time
+                  virtualize
+                  .hass=${this.hass}
+                  .entries=${this._logbookEntries}
+                  .userIdToName=${this._userIdToName}
+                ></ha-logbook>
+              `
+            : html`
+                <div class="no-entries">
+                  ${this.hass.localize(
+                    "ui.components.logbook.entries_not_found"
+                  )}
+                </div>
+              `}
+        </div>
+      </ha-card>
+    `;
+  }
+
+  private async _updateData(changedProperties: PropertyValues) {
     if (!this._config || !this.hass) {
       return;
+    }
+
+    if (this._fetchUserDone) {
+      await this._fetchUserDone;
     }
 
     const configChanged = changedProperties.has("_config");
@@ -163,57 +227,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult {
-    if (!this.hass || !this._config) {
-      return html``;
-    }
-
-    if (!isComponentLoaded(this.hass, "logbook")) {
-      return html`
-        <hui-warning>
-          ${this.hass.localize(
-            "ui.components.logbook.component_not_loaded"
-          )}</hui-warning
-        >
-      `;
-    }
-
-    return html`
-      <ha-card
-        .header=${this._config!.title}
-        class=${classMap({ "no-header": !this._config!.title })}
-      >
-        <div class="content">
-          ${!this._logbookEntries
-            ? html`
-                <ha-circular-progress
-                  active
-                  alt=${this.hass.localize("ui.common.loading")}
-                ></ha-circular-progress>
-              `
-            : this._logbookEntries.length
-            ? html`
-                <ha-logbook
-                  narrow
-                  relative-time
-                  virtualize
-                  .hass=${this.hass}
-                  .entries=${this._logbookEntries}
-                  .userIdToName=${this._persons}
-                ></ha-logbook>
-              `
-            : html`
-                <div class="no-entries">
-                  ${this.hass.localize(
-                    "ui.components.logbook.entries_not_found"
-                  )}
-                </div>
-              `}
-        </div>
-      </ha-card>
-    `;
-  }
-
   private async _getLogBookData() {
     if (
       !this.hass ||
@@ -248,20 +261,38 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     this._lastLogbookDate = now;
   }
 
-  private _fetchPersonNames() {
-    if (!this.hass) {
-      return;
+  private async _fetchUserNames(hass: HomeAssistant) {
+    const userIdToName = {};
+
+    // Start loading all the data
+    const personProm = fetchPersons(hass);
+    const userProm = hass.user!.is_admin && fetchUsers(hass);
+
+    // Process persons
+    const persons = await personProm;
+
+    for (const person of persons.storage) {
+      if (person.user_id) {
+        userIdToName[person.user_id] = person.name;
+      }
+    }
+    for (const person of persons.config) {
+      if (person.user_id) {
+        userIdToName[person.user_id] = person.name;
+      }
     }
 
-    Object.values(this.hass!.states).forEach((entity) => {
-      if (
-        entity.attributes.user_id &&
-        computeStateDomain(entity) === "person"
-      ) {
-        this._persons[entity.attributes.user_id] =
-          entity.attributes.friendly_name;
+    // Process users
+    if (userProm) {
+      const users = await userProm;
+      for (const user of users) {
+        if (!(user.id in userIdToName)) {
+          userIdToName[user.id] = user.name;
+        }
       }
-    });
+    }
+
+    this._userIdToName = userIdToName;
   }
 
   static get styles(): CSSResultGroup {
