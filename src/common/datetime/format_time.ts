@@ -7,7 +7,7 @@ import { useAmPm } from "./use_am_pm";
 const formatTimeMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
-      hour: "numeric",
+      hour: useAmPm(locale) ? "numeric" : "2-digit",
       minute: "2-digit",
       hour12: useAmPm(locale),
     })
@@ -22,7 +22,7 @@ export const formatTime = toLocaleTimeStringSupportsOptions
 const formatTimeWithSecondsMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
-      hour: "numeric",
+      hour: useAmPm(locale) ? "numeric" : "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hour12: useAmPm(locale),
@@ -39,7 +39,7 @@ const formatTimeWeekdayMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
       weekday: "long",
-      hour: "numeric",
+      hour: useAmPm(locale) ? "numeric" : "2-digit",
       minute: "2-digit",
       hour12: useAmPm(locale),
     })
