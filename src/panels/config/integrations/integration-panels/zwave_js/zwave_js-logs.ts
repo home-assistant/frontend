@@ -1,5 +1,6 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-listbox/paper-listbox";
+import { mdiDownload } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultArray, html, LitElement } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
@@ -24,6 +25,8 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property() public configEntryId!: string;
+
+  @property() public startDateTime = new Date();
 
   @state() private _logConfig?: ZWaveJSLogConfig;
 
@@ -92,6 +95,17 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
                   `
                 : ""}
             </div>
+            <div>
+              <mwc-icon-button
+                label="Download Logs"
+                @click=${this._downloadLogs}
+              >
+                <ha-svg-icon
+                  .title="Download Logs"
+                  .path=${mdiDownload}
+                ></ha-svg-icon>
+              </mwc-icon-button>
+            </div>
           </ha-card>
           <textarea readonly></textarea>
         </div>
@@ -112,6 +126,15 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
       this.hass!,
       this.configEntryId
     );
+  }
+
+  private _downloadLogs() {
+    const aEl = document.createElement("a");
+    aEl.download = `zwave_js logs ${this.startDateTime.toISOString()} to ${new Date().toISOString()}.log`;
+    aEl.href = `data:text/plain;charset=utf-8,${encodeURI(
+      this._textarea!.value
+    )}`;
+    aEl.click();
   }
 
   private _dropdownSelected(ev) {
