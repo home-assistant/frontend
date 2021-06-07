@@ -3980,6 +3980,14 @@
         "create_snapshot": "Create a snapshot of {name} before updating",
         "updating": "Updating {name} to version {version}",
         "snapshotting": "Creating snapshot of {name}"
+      },
+      "hardware": {
+        "title": "Hardware",
+        "search": "Search hardware",
+        "subsystem": "Subsystem",
+        "id": "ID",
+        "attributes": "Attributes",
+        "device_path": "Device path"
       }
     }
   }
