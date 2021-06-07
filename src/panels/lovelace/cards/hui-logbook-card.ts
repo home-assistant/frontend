@@ -124,7 +124,48 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
-    this._updateData(changedProperties);
+    if (!this._config || !this.hass) {
+      return;
+    }
+
+    const configChanged = changedProperties.has("_config");
+    const hassChanged = changedProperties.has("hass");
+    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProperties.get("_config") as LogbookCardConfig;
+
+    if (
+      (hassChanged && oldHass?.themes !== this.hass.themes) ||
+      (configChanged && oldConfig?.theme !== this._config.theme)
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+
+    if (
+      configChanged &&
+      (oldConfig?.entities !== this._config.entities ||
+        oldConfig?.hours_to_show !== this._config!.hours_to_show)
+    ) {
+      this._logbookEntries = undefined;
+      this._lastLogbookDate = undefined;
+
+      if (!this._configEntities) {
+        return;
+      }
+
+      this._throttleGetLogbookEntries();
+      return;
+    }
+
+    if (
+      oldHass &&
+      this._configEntities!.some(
+        (entity) =>
+          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+      )
+    ) {
+      // wait for commit of data (we only account for the default setting of 1 sec)
+      setTimeout(this._throttleGetLogbookEntries, 1000);
+    }
   }
 
   protected render(): TemplateResult {
@@ -178,55 +219,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private async _updateData(changedProperties: PropertyValues) {
-    if (!this._config || !this.hass) {
-      return;
-    }
-
-    if (this._fetchUserDone) {
-      await this._fetchUserDone;
-    }
-
-    const configChanged = changedProperties.has("_config");
-    const hassChanged = changedProperties.has("hass");
-    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
-    const oldConfig = changedProperties.get("_config") as LogbookCardConfig;
-
-    if (
-      (hassChanged && oldHass?.themes !== this.hass.themes) ||
-      (configChanged && oldConfig?.theme !== this._config.theme)
-    ) {
-      applyThemesOnElement(this, this.hass.themes, this._config.theme);
-    }
-
-    if (
-      configChanged &&
-      (oldConfig?.entities !== this._config.entities ||
-        oldConfig?.hours_to_show !== this._config!.hours_to_show)
-    ) {
-      this._logbookEntries = undefined;
-      this._lastLogbookDate = undefined;
-
-      if (!this._configEntities) {
-        return;
-      }
-
-      this._throttleGetLogbookEntries();
-      return;
-    }
-
-    if (
-      oldHass &&
-      this._configEntities!.some(
-        (entity) =>
-          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
-      )
-    ) {
-      // wait for commit of data (we only account for the default setting of 1 sec)
-      setTimeout(this._throttleGetLogbookEntries, 1000);
-    }
-  }
-
   private async _getLogBookData() {
     if (
       !this.hass ||
@@ -242,13 +234,16 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     const lastDate = this._lastLogbookDate || hoursToShowDate;
     const now = new Date();
 
-    const newEntries = await getLogbookData(
-      this.hass,
-      lastDate.toISOString(),
-      now.toISOString(),
-      this._configEntities!.map((entity) => entity.entity).toString(),
-      true
-    );
+    const [newEntries] = await Promise.all([
+      getLogbookData(
+        this.hass,
+        lastDate.toISOString(),
+        now.toISOString(),
+        this._configEntities!.map((entity) => entity.entity).toString(),
+        true
+      ),
+      this._fetchUserDone,
+    ]);
 
     const logbookEntries = this._logbookEntries
       ? [...newEntries, ...this._logbookEntries]
