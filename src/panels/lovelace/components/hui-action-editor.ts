@@ -34,7 +34,7 @@ export class HuiActionEditor extends LitElement {
 
   get _navigation_path(): string {
     const config = this.config as NavigateActionConfig | undefined;
-    return config.navigation_path || "";
+    return config?.navigation_path || "";
   }
 
   get _url_path(): string {
