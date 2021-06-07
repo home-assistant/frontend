@@ -9,6 +9,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-button-toggle-group";
@@ -27,11 +28,6 @@ import {
   SUPPORT_EFFECT,
 } from "../../../data/light";
 import type { HomeAssistant } from "../../../types";
-
-const toggleButtons = [
-  { label: "Color", value: "color" },
-  { label: "Temperature", value: LightColorModes.COLOR_TEMP },
-];
 
 @customElement("more-info-light")
 class MoreInfoLight extends LitElement {
@@ -59,7 +55,10 @@ class MoreInfoLight extends LitElement {
 
   @state() private _colorPickerColor?: [number, number, number];
 
-  @state() private _mode?: "color" | LightColorModes.COLOR_TEMP;
+  @state() private _mode?:
+    | "color"
+    | LightColorModes.COLOR_TEMP
+    | LightColorModes.WHITE;
 
   protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
@@ -69,6 +68,11 @@ class MoreInfoLight extends LitElement {
     const supportsTemp = lightSupportsColorMode(
       this.stateObj,
       LightColorModes.COLOR_TEMP
+    );
+
+    const supportsWhite = lightSupportsColorMode(
+      this.stateObj,
+      LightColorModes.WHITE
     );
 
     const supportsRgbww = lightSupportsColorMode(
@@ -101,10 +105,10 @@ class MoreInfoLight extends LitElement {
         ${this.stateObj.state === "on"
           ? html`
               ${supportsTemp || supportsColor ? html`<hr />` : ""}
-              ${supportsTemp && supportsColor
+              ${supportsColor && (supportsTemp || supportsWhite)
                 ? html`<ha-button-toggle-group
                     fullWidth
-                    .buttons=${toggleButtons}
+                    .buttons=${this._toggleButtons(supportsTemp, supportsWhite)}
                     .active=${this._mode}
                     @value-changed=${this._modeChanged}
                   ></ha-button-toggle-group>`
@@ -300,6 +304,19 @@ class MoreInfoLight extends LitElement {
     }
   }
 
+  private _toggleButtons = memoizeOne(
+    (supportsTemp: boolean, supportsWhite: boolean) => {
+      const modes = [{ label: "Color", value: "color" }];
+      if (supportsTemp) {
+        modes.push({ label: "Temperature", value: LightColorModes.COLOR_TEMP });
+      }
+      if (supportsWhite) {
+        modes.push({ label: "White", value: LightColorModes.WHITE });
+      }
+      return modes;
+    }
+  );
+
   private _modeChanged(ev: CustomEvent) {
     this._mode = ev.detail.value;
   }
@@ -325,6 +342,14 @@ class MoreInfoLight extends LitElement {
     }
 
     this._brightnessSliderValue = bri;
+
+    if (this._mode === LightColorModes.WHITE) {
+      this.hass.callService("light", "turn_on", {
+        entity_id: this.stateObj!.entity_id,
+        white: Math.min(255, Math.round((bri * 255) / 100)),
+      });
+      return;
+    }
 
     if (this._brightnessAdjusted) {
       const rgb =
