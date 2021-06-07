@@ -22,6 +22,7 @@ import {
 import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
+import { fileDownload } from "../../../../src/util/file_download";
 import "../../components/supervisor-snapshot-content";
 import type { SupervisorSnapshotContent } from "../../components/supervisor-snapshot-content";
 import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";
@@ -288,12 +289,11 @@ class HassioSnapshotDialog
       }
     }
 
-    const a = document.createElement("a");
-    a.href = signedPath.path;
-    a.download = `home_assistant_snapshot_${slugify(this._computeName)}.tar`;
-    this.shadowRoot!.appendChild(a);
-    a.click();
-    this.shadowRoot!.removeChild(a);
+    fileDownload(
+      this,
+      signedPath.path,
+      `home_assistant_snapshot_${slugify(this._computeName)}.tar`
+    );
   }
 
   private get _computeName() {
