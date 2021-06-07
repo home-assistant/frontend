@@ -80,6 +80,9 @@
       window.stepsPromise = fetch("/api/onboarding", {
         credentials: "same-origin",
       });
+      if (!window.globalThis) {
+        window.globalThis = window;
+      }
     </script>
 
     <script>

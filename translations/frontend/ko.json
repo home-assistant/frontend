@@ -368,6 +368,8 @@
             "error": "알 수 없는 오류가 발생했습니다",
             "error_addon_no_ingress": "해당 애드온은 인그레스를 지원하지 않습니다.",
             "error_addon_not_found": "애드온을 찾을 수 없습니다",
+            "error_addon_not_installed": "해당 애드온은 설치되어있지 않습니다. 애드온을 설치해주세요.",
+            "error_addon_not_started": "해당 애드온은 실행중이지 않습니다. 애드온을 실행해주세요.",
             "faq_link": "내 Home Assistant 자주 묻는 질문",
             "not_supported": "이 리디렉션은 Home Assistant 인스턴스에서 지원되지 않습니다. {link}에서 지원되는 리디렉션과 리디렉션이 도입된 버전을 확인해주세요."
         },
@@ -387,7 +389,7 @@
             "created": "생성됨",
             "delete_selected": "선택한 스냅샷 삭제",
             "delete_snapshot_confirm": "삭제",
-            "delete_snapshot_text": "{number} {number, plural,\n  one{개의 스냅샷}\n  other{개의 스냅샷}\n}를 삭제하시겠습니까?",
+            "delete_snapshot_text": "{number} {number, plural,\n  one{개의 스냅샷}\n  other{개의 스냅샷}\n} 삭제하시겠습니까?",
             "delete_snapshot_title": "스냅샷 삭제",
             "description": "스냅숏을 사용하면 Home Assistant 인스턴스의 모든 데이터를 쉽게 백업하고 복원할 수 있습니다.",
             "enter_password": "비밀번호를 입력해주세요.",
@@ -2076,7 +2078,8 @@
                     "scripts": "스크립트",
                     "unknown_error": "알 수 없는 오류",
                     "unnamed_device": "이름이 없는 기기",
-                    "update": "업데이트"
+                    "update": "업데이트",
+                    "update_device_error": "장치 업데이트 실패"
                 },
                 "entities": {
                     "caption": "구성요소",
@@ -2209,6 +2212,7 @@
                         "depends_on_cloud": "클라우드 서비스",
                         "device_unavailable": "기기 사용불가",
                         "devices": "{count} {count, plural,\none{개의 기기}\nother{개의 기기}\n}",
+                        "disable_error": "통합구성요소 활성화 혹은 비활성화 실패",
                         "disable_restart_confirm": "이 통합 구성요소를 비활성화하려면 Home Assistant를 다시 시작해주세요",
                         "disable": {
                             "disable_confirm": "이 구성 항목을 비활성화하시겠습니까? 해당 기기 및 구성요소가 비활성화됩니다.",

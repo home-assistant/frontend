@@ -1155,7 +1155,7 @@
           "section": {
             "validation": {
               "heading": "Configuration validation",
-              "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
+              "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid.",
               "check_config": "Check configuration",
               "valid": "Configuration valid!",
               "invalid": "Configuration invalid"
@@ -3813,6 +3813,8 @@
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "error": "[%key:ui::panel::my::error%]",
       "error_addon_not_found": "Add-on not found",
+      "error_addon_not_started": "The requested add-on are not running. Please start it first",
+      "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
       "error_addon_no_ingress": "The requested add-on does not support ingress"
     },
     "system": {
@@ -3980,6 +3982,14 @@
         "create_snapshot": "Create a snapshot of {name} before updating",
         "updating": "Updating {name} to version {version}",
         "snapshotting": "Creating snapshot of {name}"
+      },
+      "hardware": {
+        "title": "Hardware",
+        "search": "Search hardware",
+        "subsystem": "Subsystem",
+        "id": "ID",
+        "attributes": "Attributes",
+        "device_path": "Device path"
       }
     }
   }
