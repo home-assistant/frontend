@@ -226,6 +226,10 @@ export class SupervisorSnapshotContent extends LitElement {
               : ""}
           </div> `
         : ""}
+      ${this.snapshotType === "partial" &&
+      (!this.snapshot || this.snapshotHasPassword)
+        ? html`<hr />`
+        : ""}
       ${!this.snapshot
         ? html`<ha-formfield
             class="password"
@@ -276,13 +280,15 @@ export class SupervisorSnapshotContent extends LitElement {
       .partial-picker {
         display: block;
         margin: 0px -6px;
-        padding-right: 6px;
-        padding-bottom: 8px;
-        border-bottom: 1px solid var(--divider-color);
       }
       supervisor-formfield-label {
         display: inline-flex;
         align-items: center;
+      }
+      hr {
+        border-color: var(--divider-color);
+        border-bottom: none;
+        margin: 16px 0;
       }
       .details {
         color: var(--secondary-text-color);
