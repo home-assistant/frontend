@@ -3924,9 +3924,11 @@
       "addons": "Add-ons",
       "folders": "Folders",
       "password": "Snapshot password",
+      "confirm_password": "Confirm Snapshot password",
       "password_protection": "Password protection",
       "password_protected": "password protected",
       "enter_password": "Please enter a password.",
+      "passwords_not_matching": "The passwords does not match",
       "folder": {
         "homeassistant": "Home Assistant configuration",
         "ssl": "SSL",

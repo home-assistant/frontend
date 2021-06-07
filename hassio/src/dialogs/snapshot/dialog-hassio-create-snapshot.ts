@@ -95,16 +95,25 @@ class HassioCreateSnapshotDialog extends LitElement {
     this._creatingSnapshot = true;
 
     this._error = "";
-    if (
-      this._snapshotContent.snapshotHasPassword &&
-      !this._snapshotContent.snapshotPassword.length
-    ) {
+    if (snapshotDetails.password && !snapshotDetails.password.length) {
       this._error = this._dialogParams!.supervisor.localize(
         "snapshot.enter_password"
       );
       this._creatingSnapshot = false;
       return;
     }
+    if (
+      snapshotDetails.password &&
+      snapshotDetails.password !== snapshotDetails.confirm_password
+    ) {
+      this._error = this._dialogParams!.supervisor.localize(
+        "snapshot.passwords_not_matching"
+      );
+      this._creatingSnapshot = false;
+      return;
+    }
+
+    delete snapshotDetails.confirm_password;
 
     try {
       if (this._snapshotContent.snapshotType === "full") {
