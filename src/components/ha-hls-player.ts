@@ -55,6 +55,7 @@ class HaHLSPlayer extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    this._destroyPolyfill();
     this._attached = false;
   }
 
@@ -81,13 +82,6 @@ class HaHLSPlayer extends LitElement {
     const urlChanged = changedProps.has("url");
 
     if (!urlChanged && !attachedChanged) {
-      return;
-    }
-
-    // If we are no longer attached, destroy polyfill
-    if (attachedChanged && !this._attached) {
-      // Tear down existing polyfill, if available
-      this._destroyPolyfill();
       return;
     }
 
@@ -129,7 +123,8 @@ class HaHLSPlayer extends LitElement {
 
     // Parse playlist assuming it is a master playlist. Match group 1 is whether hevc, match group 2 is regular playlist url
     // See https://tools.ietf.org/html/rfc8216 for HLS spec details
-    const playlistRegexp = /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
+    const playlistRegexp =
+      /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
     const match = playlistRegexp.exec(masterPlaylist);
     const matchTwice = playlistRegexp.exec(masterPlaylist);
 
