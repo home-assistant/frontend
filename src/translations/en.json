@@ -3988,7 +3988,7 @@
         "version": "Version {version}",
         "no_version": "No version",
         "restore": "Restore",
-        "password": "Password",
+        "enter_password": "[%key:supervisor::snapshot::enter_password%]",
         "protected": "The snapshot is password protected, please provide the password for it.",
         "restore_in_progress": "Restore in progress"
       },
