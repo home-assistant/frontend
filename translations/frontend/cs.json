@@ -1169,7 +1169,7 @@
                     },
                     "types": {
                         "navigation": "Navigovat",
-                        "reload": "Znovu načíst",
+                        "reload": "Nově načíst",
                         "server_control": "Server"
                     }
                 },
@@ -3101,7 +3101,7 @@
                         "heal_node": "Uzdravit uzel",
                         "node_info": "Informace o uzlu",
                         "print_node": "Otisk uzlu",
-                        "refresh_entity": "Znovu načíst Entitu",
+                        "refresh_entity": "Nově načíst Entitu",
                         "refresh_node": "Obnovit uzel",
                         "remove_failed_node": "Odebrat selhaný uzel",
                         "remove_node": "Odebrat uzel",

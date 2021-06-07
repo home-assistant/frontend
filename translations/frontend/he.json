@@ -1687,7 +1687,7 @@
                         "file_name": "נתיב שרטוט",
                         "header": "יבוא שרטוט",
                         "import_btn": "תצוגה מקדימה של שרטוט",
-                        "import_header": "שרטוט \" {name} \"",
+                        "import_header": "שרטוט \"{name}\"",
                         "import_introduction_link": "באפשרותך לייבא שרטוטים של משתמשים אחרים מ- Github ומ {community_link}. הזן את כתובת ה- URL של השרטוט.",
                         "importing": "טוען שרטוט ...",
                         "raw_blueprint": "תוכן שרטוט",
@@ -1843,7 +1843,7 @@
                     },
                     "forgot_password": {
                         "check_your_email": "בדוק את הדואר האלקטרוני שלך לקבלת הוראות כיצד לאפס את סיסמתך.",
-                        "email": "כתובת דוא\"ל",
+                        "email": "דוא\"ל",
                         "email_error_msg": "דואר אלקטרוני לא חוקי",
                         "instructions": "הזן את כתובת הדוא\"ל שלך ואנו נשלח לך קישור כדי לאפס את הסיסמה שלך.",
                         "send_reset_email": "שלח אימייל לאיפוס",
@@ -1935,7 +1935,7 @@
                                         "title": "אבחון"
                                     },
                                     "statistics": {
-                                        "description": "סה\"כ ישויות בשימוש, משתמשים ואלמנטים אחרים.",
+                                        "description": "סך הכל ישויות בשימוש, משתמשים ואלמנטים אחרים.",
                                         "title": "סטטיסטיקות שימוש"
                                     },
                                     "usage_supervisor": {
@@ -2775,7 +2775,7 @@
                         "admin": "מנהל",
                         "caption": "הצג משתמש",
                         "change_password": "שינוי סיסמה",
-                        "confirm_user_deletion": "האם הינך בטוח/ה שברצונך למחוק את {name} ?",
+                        "confirm_user_deletion": "האם בוודאות ברצונך למחוק את {name}?",
                         "deactivate_user": "בטל את המשתמש",
                         "delete_user": "מחיקת משתמש",
                         "group": "קבוצה",
@@ -2784,7 +2784,7 @@
                         "new_password": "סיסמה חדשה",
                         "owner": "בעלים",
                         "password_changed": "הסיסמה שונתה בהצלחה",
-                        "system_generated": "נוצר ע\"י המערכת",
+                        "system_generated": "המערכת נוצרה",
                         "system_generated_users_not_editable": "לא ניתן לעדכן משתמשים שנוצרו על ידי המערכת.",
                         "system_generated_users_not_removable": "לא ניתן להסיר משתמשים שנוצרו על ידי המערכת.",
                         "unnamed_user": "משתמש ללא שם",
@@ -3690,7 +3690,7 @@
                     "confirm_delete": "למחוק תצוגה?",
                     "confirm_delete_existing_cards": "מחיקת תצוגה זו תסיר גם את הכרטיסים",
                     "confirm_delete_existing_cards_text": "האם אתה בטוח שברצונך למחוק את התצוגה '' {name} '' שלך? התצוגה כוללת {number} כרטיסים שיימחקו. לא ניתן לבטל פעולה זו.",
-                    "confirm_delete_text": "האם את/ה בטוח שברצונך למחוק את התצוגה \"{name}\"?"
+                    "confirm_delete_text": "האם בוודאות ברצונך למחוק את התצוגה \"{name}\"?"
                 },
                 "warning": {
                     "attribute_not_found": "השדה {attribute} אינו זמין ב־{entity}",
@@ -3810,7 +3810,7 @@
                     "working": "אנא המתן"
                 },
                 "initializing": "מאתחל",
-                "logging_in_to_with": "כניסה ל- ** {locationName} ** באמצעות ** {authProviderName} **.",
+                "logging_in_to_with": "כניסה אל **{locationName}** באמצעות **{authProviderName}**.",
                 "logging_in_with": "מתחבר עם **{authProviderName}**.",
                 "pick_auth_provider": "או התחבר עם"
             },
@@ -3835,7 +3835,7 @@
                             "information": "מידע",
                             "lights": "אורות",
                             "morning_commute": "נסיעת בוקר",
-                            "total_tv_time": "סה\"כ זמן טלוויזיה",
+                            "total_tv_time": "סך הכל זמן טלוויזיה",
                             "turn_tv_off": "כבה את הטלוויזיה",
                             "volume": "ווליום"
                         },
@@ -3919,7 +3919,7 @@
                     "submit": "שלח",
                     "success": "הסיסמה שונתה בהצלחה"
                 },
-                "current_user": "אתה מחובר כעת כ- {fullName} .",
+                "current_user": "אתה מחובר כעת כ-{fullName}.",
                 "customize_sidebar": {
                     "button": "ערוך",
                     "description": "באפשרותך גם ללחוץ לחיצה ארוכה על הכותרת של הסרגל הצידי כדי להפעיל מצב עריכה.",
