@@ -1,12 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../hassio/src/components/hassio-ansi-to-html";
 import { showHassioSnapshotDialog } from "../../hassio/src/dialogs/snapshot/show-dialog-hassio-snapshot";
 import { showSnapshotUploadDialog } from "../../hassio/src/dialogs/snapshot/show-dialog-snapshot-upload";
 import { navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
+import { fetchDiscoveryInformation } from "../data/discovery";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
 import { haStyle } from "../resources/styles";
@@ -25,6 +26,8 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
   @property() public language!: string;
 
   @property({ type: Boolean }) public restoring = false;
+
+  @state() private _uuid = "";
 
   protected render(): TemplateResult {
     return this.restoring
@@ -51,6 +54,9 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
+    fetchDiscoveryInformation().then((data) => {
+      this._uuid = data.uuid;
+    });
     makeDialogManager(this, this.shadowRoot!);
     setInterval(() => this._checkRestoreStatus(), 1000);
   }
@@ -58,11 +64,10 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
   private async _checkRestoreStatus(): Promise<void> {
     if (this.restoring) {
       try {
-        const response = await fetch("/api/hassio/supervisor/info", {
-          method: "GET",
-        });
-        if (response.status === 401) {
-          // If we get a unauthorized response, the restore is done
+        const response = await fetchDiscoveryInformation();
+
+        if (this._uuid && this._uuid !== response.uuid) {
+          // When the UUID changes, the restore is complete
           navigate("/", { replace: true });
           location.reload();
         }
