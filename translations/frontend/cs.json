@@ -368,6 +368,8 @@
             "error": "Nastala neznámá chyba",
             "error_addon_no_ingress": "Požadovaný doplněk nepodporuje ingress",
             "error_addon_not_found": "Doplněk nebyl nalezen",
+            "error_addon_not_installed": "Požadovaný doplněk není nainstalován. Nejprve jej prosím nainstalujte",
+            "error_addon_not_started": "Požadovaný doplněk není spuštěn. Nejprve jej prosím spusťte",
             "faq_link": "Časté dotazy týkající se My Home Assistant",
             "not_supported": "Toto přesměrování není vaší instancí Home Assistant podporováno. Zkontrolujte {link} pro podporovaná přesměrování a verzi, ve které byla zavedena."
         },
@@ -929,8 +931,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Pokud je zakázáno, nově objevené entity pro {integration} nebudou automaticky přidány do Home Assistant.",
+                "enable_new_entities_description": "Pokud se mají automaticky přidat nově objevená zařízení integrace {integration}.",
                 "enable_new_entities_label": "Povolit nově přidané entity.",
+                "enable_polling_description": "Má-li Home Assistant automaticky zjišťovat aktualizace entit integrace {integration}.",
+                "enable_polling_label": "Povolit dotazování na aktualizace.",
+                "restart_home_assistant": "Aby se změny projevily, je třeba restartovat Home Assistant.",
                 "title": "Upravit nastavení pro {integration}",
                 "update": "Aktualizovat"
             },
@@ -1164,7 +1169,7 @@
                     },
                     "types": {
                         "navigation": "Navigovat",
-                        "reload": "Znovu načíst",
+                        "reload": "Nově načíst",
                         "server_control": "Server"
                     }
                 },
@@ -2073,7 +2078,8 @@
                     "scripts": "Skripty",
                     "unknown_error": "Neznámá chyba",
                     "unnamed_device": "Nepojmenované zařízení",
-                    "update": "Aktualizovat"
+                    "update": "Aktualizovat",
+                    "update_device_error": "Aktualizace zařízení se nezdařila"
                 },
                 "entities": {
                     "caption": "Entity",
@@ -2206,6 +2212,7 @@
                         "depends_on_cloud": "Závisí na cloudu",
                         "device_unavailable": "Zařízení není dostupné",
                         "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
+                        "disable_error": "Povolení nebo zakázání integrace se nezdařilo",
                         "disable_restart_confirm": "Restartujte Home Assistant pro dokončení odstranění této integrace",
                         "disable": {
                             "disable_confirm": "Opravdu chcete zakázat tuto položku konfigurace? Její zařízení a entity budou zakázány.",
@@ -2217,6 +2224,7 @@
                             },
                             "disabled_cause": "Zakázáno {cause}"
                         },
+                        "disabled_polling": "Automatické dotazování na aktualizovaná data je zakázáno",
                         "documentation": "Dokumentace",
                         "enable_restart_confirm": "Restartujte Home Assistant pro dokončení přidání této integrace",
                         "entities": "{count} {count, plural,\n  one {entita}\n  other {entit}\n}",
@@ -2713,7 +2721,7 @@
                         "validation": {
                             "check_config": "Zkontrolujte konfiguraci",
                             "heading": "Ověření konfigurace",
-                            "introduction": "Pokud jste nedávno provedli změny konfigurace a chcete se ujistit, že je vše v pořádku, můžete zde konfiguraci ověřit",
+                            "introduction": "Pokud jste nedávno provedli nějaké změny v konfiguraci a chcete se ujistit, že jsou všechny platné, proveďte ověření konfigurace.",
                             "invalid": "Konfigurace není v pořádku!",
                             "valid": "Konfigurace je v pořádku!"
                         }
@@ -2928,6 +2936,7 @@
                         "follow_device_instructions": "Podle pokynů dodaných se zařízením aktivujte párování na zařízení.",
                         "inclusion_failed": "Uzel nelze přidat. Další informace najdete v protokolech.",
                         "inclusion_finished": "Uzel byl přidán.",
+                        "interview_failed": "Komunikace se zařízením se nezdařila. V logách mohou být k dispozici další informace.",
                         "introduction": "Tento průvodce vás provede přidáním uzlu do vaší sítě Z-Wave.",
                         "secure_inclusion_warning": "Zabezpečená zařízení vyžadují větší šířku pásma; příliš mnoho zabezpečených zařízení může zpomalit vaši síť Z-Wave. Bezpečné začlenění doporučujeme používat pouze u zařízení, která to vyžadují, jako jsou zámky nebo otvírače garážových vrat.",
                         "start_inclusion": "Zahájit začlenění",
@@ -3092,7 +3101,7 @@
                         "heal_node": "Uzdravit uzel",
                         "node_info": "Informace o uzlu",
                         "print_node": "Otisk uzlu",
-                        "refresh_entity": "Znovu načíst Entitu",
+                        "refresh_entity": "Nově načíst Entitu",
                         "refresh_node": "Obnovit uzel",
                         "remove_failed_node": "Odebrat selhaný uzel",
                         "remove_node": "Odebrat uzel",
@@ -3157,6 +3166,7 @@
                         "copy_id": "Zkopírovat ID do schránky",
                         "current_entities": "Současné entity",
                         "description1": "Nastavte stav zařízení v Home Assistant.",
+                        "description2": "Pokud entita patří k zařízení, neprobíhá s tímto zařízením žádná skutečná komunikace.",
                         "entity": "Entita",
                         "filter_attributes": "Filtrovat atributy",
                         "filter_entities": "Filtrovat entity",

@@ -367,6 +367,8 @@
         "my": {
             "error": "Ha ocurrido un error desconocido",
             "error_addon_not_found": "Complemento no encontrado",
+            "error_addon_not_installed": "El complemento solicitado no está instalado. Por favor instálelo primero",
+            "error_addon_not_started": "El complemento solicitado no se están ejecutando. Por favor inícielo antes.",
             "faq_link": "Mis preguntas frecuentes de Home Assistant",
             "not_supported": "Esta redirección no está soportada por su instancia de Home Assistant. Consulte las redirecciones soportadas y la versión en la que fueron introducidas en {link}."
         },
@@ -2031,7 +2033,8 @@
                     "scripts": "Scripts",
                     "unknown_error": "Error desconocido",
                     "unnamed_device": "Dispositivo sin nombre",
-                    "update": "Actualizar"
+                    "update": "Actualizar",
+                    "update_device_error": "Error al actualizar el dispositivo"
                 },
                 "entities": {
                     "caption": "Entidades",
@@ -2163,6 +2166,7 @@
                         "depends_on_cloud": "Depende de la nube",
                         "device_unavailable": "Dispositivo no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
+                        "disable_error": "Ha fallado la habilitación o deshabilitación de la integración",
                         "disable_restart_confirm": "Reinicie Home Assistant para terminar de deshabilitar esta integración",
                         "disable": {
                             "disable_confirm": "¿Está seguro de que desea deshabilitar esta entrada de configuración? Sus dispositivos y entidades serán deshabilitados.",

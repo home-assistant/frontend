@@ -368,6 +368,8 @@
             "error": "En ukjent feil har oppstått",
             "error_addon_no_ingress": "Det etterspurte tillegget støtter ikke inngang",
             "error_addon_not_found": "Tillegget ble ikke funnet",
+            "error_addon_not_installed": "Det forespurte tillegget er ikke installert. Vennligst installer den først",
+            "error_addon_not_started": "Det valgte tillegget kjører ikke. Vennligst start den først",
             "faq_link": "Vanlige spørsmål om Min Home Assistant",
             "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
         },
@@ -2719,7 +2721,7 @@
                         "validation": {
                             "check_config": "Sjekk konfigurasjonen",
                             "heading": "Validering av konfigurasjon",
-                            "introduction": "Valider konfigurasjonen hvis du nylig har gjort endringer i konfigurasjonen og vil forsikre deg om at den er gyldig",
+                            "introduction": "Bekreft konfigurasjonen hvis du nylig har gjort noen endringer i konfigurasjonen og vil være sikker på at den er gyldig.",
                             "invalid": "Ugyldig konfigurasjon",
                             "valid": "Gyldig konfigurasjon"
                         }
