@@ -114,7 +114,8 @@ class MoreInfoLight extends LitElement {
                   ></ha-button-toggle-group>`
                 : ""}
               ${supportsTemp &&
-              (!supportsColor || this._mode === LightColorModes.COLOR_TEMP)
+              ((!supportsColor && !supportsWhite) ||
+                this._mode === LightColorModes.COLOR_TEMP)
                 ? html`
                     <ha-labeled-slider
                       class="color_temp"
@@ -130,7 +131,8 @@ class MoreInfoLight extends LitElement {
                     ></ha-labeled-slider>
                   `
                 : ""}
-              ${supportsColor && (!supportsTemp || this._mode === "color")
+              ${supportsColor &&
+              ((!supportsTemp && !supportsWhite) || this._mode === "color")
                 ? html`
                     <div class="segmentationContainer">
                       <ha-color-picker
