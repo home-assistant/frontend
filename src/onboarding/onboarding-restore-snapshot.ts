@@ -4,9 +4,12 @@ import { customElement, property } from "lit/decorators";
 import "../../hassio/src/components/hassio-ansi-to-html";
 import { showHassioSnapshotDialog } from "../../hassio/src/dialogs/snapshot/show-dialog-hassio-snapshot";
 import { showSnapshotUploadDialog } from "../../hassio/src/dialogs/snapshot/show-dialog-snapshot-upload";
-import { navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
+import {
+  DiscoveryInformation,
+  fetchDiscoveryInformation,
+} from "../data/discovery";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
 import { haStyle } from "../resources/styles";
@@ -25,6 +28,9 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
   @property() public language!: string;
 
   @property({ type: Boolean }) public restoring = false;
+
+  @property({ attribute: false })
+  public discoveryInformation?: DiscoveryInformation;
 
   protected render(): TemplateResult {
     return this.restoring
@@ -58,13 +64,14 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
   private async _checkRestoreStatus(): Promise<void> {
     if (this.restoring) {
       try {
-        const response = await fetch("/api/hassio/supervisor/info", {
-          method: "GET",
-        });
-        if (response.status === 401) {
-          // If we get a unauthorized response, the restore is done
-          navigate("/", { replace: true });
-          location.reload();
+        const response = await fetchDiscoveryInformation();
+
+        if (
+          !this.discoveryInformation ||
+          this.discoveryInformation.uuid !== response.uuid
+        ) {
+          // When the UUID changes, the restore is complete
+          window.location.replace("/");
         }
       } catch (err) {
         // We fully expected issues with fetching info untill restore is complete.
@@ -76,6 +83,7 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
     showHassioSnapshotDialog(this, {
       slug,
       onboarding: true,
+      localize: this.localize,
     });
   }
 
