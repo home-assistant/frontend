@@ -4,7 +4,6 @@ import { customElement, property } from "lit/decorators";
 import "../../hassio/src/components/hassio-ansi-to-html";
 import { showHassioSnapshotDialog } from "../../hassio/src/dialogs/snapshot/show-dialog-hassio-snapshot";
 import { showSnapshotUploadDialog } from "../../hassio/src/dialogs/snapshot/show-dialog-snapshot-upload";
-import { navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
 import {
@@ -72,8 +71,7 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
           this.discoveryInformation.uuid !== response.uuid
         ) {
           // When the UUID changes, the restore is complete
-          navigate("/", { replace: true });
-          location.reload();
+          window.location.replace("/");
         }
       } catch (err) {
         // We fully expected issues with fetching info untill restore is complete.
