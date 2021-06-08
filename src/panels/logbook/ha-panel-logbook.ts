@@ -17,7 +17,6 @@ import {
   getLogbookData,
   LogbookEntry,
 } from "../../data/logbook";
-import { fetchPersons } from "../../data/person";
 import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
 import "../../layouts/ha-app-layout";

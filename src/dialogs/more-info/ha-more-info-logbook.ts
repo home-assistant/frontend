@@ -5,7 +5,6 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
-import { fetchPersons } from "../../data/person";
 import { fetchUsers } from "../../data/user";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
 import { loadTraceContexts, TraceContexts } from "../../data/trace";
