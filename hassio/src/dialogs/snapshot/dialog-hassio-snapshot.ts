@@ -5,6 +5,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { slugify } from "../../../../src/common/string/slugify";
+import { LocalizeFunc } from "../../../../src/common/translations/localize";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-header-bar";
@@ -84,6 +85,7 @@ class HassioSnapshotDialog
               .supervisor=${this._dialogParams.supervisor}
               .snapshot=${this._snapshot}
               .onboarding=${this._dialogParams.onboarding || false}
+              .localize=${this._dialogParams.localize}
             >
             </supervisor-snapshot-content>`}
         ${this._error ? html`<p class="error">Error: ${this._error}</p>` : ""}

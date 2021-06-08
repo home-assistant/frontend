@@ -7,7 +7,10 @@ import { showSnapshotUploadDialog } from "../../hassio/src/dialogs/snapshot/show
 import { navigate } from "../common/navigate";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
-import { fetchDiscoveryInformation } from "../data/discovery";
+import {
+  DiscoveryInformation,
+  fetchDiscoveryInformation,
+} from "../data/discovery";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
 import { haStyle } from "../resources/styles";
@@ -27,7 +30,8 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
 
   @property({ type: Boolean }) public restoring = false;
 
-  @state() private _uuid = "";
+  @property({ attribute: false })
+  public discoveryInformation?: DiscoveryInformation;
 
   protected render(): TemplateResult {
     return this.restoring
@@ -54,9 +58,6 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    fetchDiscoveryInformation().then((data) => {
-      this._uuid = data.uuid;
-    });
     makeDialogManager(this, this.shadowRoot!);
     setInterval(() => this._checkRestoreStatus(), 1000);
   }
@@ -66,7 +67,10 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
       try {
         const response = await fetchDiscoveryInformation();
 
-        if (this._uuid && this._uuid !== response.uuid) {
+        if (
+          !this.discoveryInformation ||
+          this.discoveryInformation.uuid !== response.uuid
+        ) {
           // When the UUID changes, the restore is complete
           navigate("/", { replace: true });
           location.reload();
@@ -81,6 +85,7 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
     showHassioSnapshotDialog(this, {
       slug,
       onboarding: true,
+      localize: this.localize,
     });
   }
 
