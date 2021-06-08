@@ -1,6 +1,7 @@
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
@@ -142,23 +143,19 @@ export class MoreInfoLogbook extends LitElement {
   private async _fetchUserNames(hass: HomeAssistant) {
     const userIdToName = {};
 
-    // Start loading all the data
-    const personProm = fetchPersons(hass);
+    // Start loading users
     const userProm = hass.user!.is_admin && fetchUsers(hass);
 
     // Process persons
-    const persons = await personProm;
-
-    for (const person of persons.storage) {
-      if (person.user_id) {
-        userIdToName[person.user_id] = person.name;
+    Object.values(hass.states).forEach((entity) => {
+      if (
+        entity.attributes.user_id &&
+        computeStateDomain(entity) === "person"
+      ) {
+        this._userIdToName[entity.attributes.user_id] =
+          entity.attributes.friendly_name;
       }
-    }
-    for (const person of persons.config) {
-      if (person.user_id) {
-        userIdToName[person.user_id] = person.name;
-      }
-    }
+    });
 
     // Process users
     if (userProm) {
