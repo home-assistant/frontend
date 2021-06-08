@@ -318,6 +318,14 @@
             "no_addons": "Нет установленных дополнений. Вы можете установить их из магазина дополнений."
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Атрибуты",
+                "device_path": "Путь к устройству",
+                "id": "ID",
+                "search": "Поиск оборудования",
+                "subsystem": "Подсистема",
+                "title": "Оборудование"
+            },
             "network": {
                 "connected_to": "Подключено к {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "Дополнения",
             "available_snapshots": "Доступные снимки",
+            "confirm_password": "Подтверждение пароля",
             "could_not_create": "Не удалось создать снимок",
             "create": "Создать",
             "create_blocked_not_running": "Создание снимка сейчас невозможно, потому что система находится в состоянии {state}.",
@@ -409,6 +418,7 @@
             "password": "Пароль",
             "password_protected": "защищено паролем",
             "password_protection": "Защита паролем",
+            "passwords_not_matching": "Пароли не совпадают",
             "security": "Безопасность",
             "select_type": "Выберите что нужно восстановить из этого снимка файловой системы",
             "selected": "Выбрано: {number}",

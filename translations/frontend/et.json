@@ -318,6 +318,14 @@
             "no_addons": "Ühtegi lisandmoodulit pole veel paigaldatud. Alustamiseks mine lisandmoodulite hoidlasse!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atribuudid",
+                "device_path": "Seadme asukoht",
+                "id": "ID",
+                "search": "Otsi riistvara",
+                "subsystem": "Alamsüsteem",
+                "title": "Riistvara"
+            },
             "network": {
                 "connected_to": "Ühendatud pääsupunktiga {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "Lisandmoodulid",
             "available_snapshots": "Saadaolevad hetktõmmised",
+            "confirm_password": "Hetktõmmise parooli kinnitamine",
             "could_not_create": "Hetktõmmise loomine nurjus",
             "create": "Loo",
             "create_blocked_not_running": "Hetktõmmise loomine pole praegu võimalik kuna süsteem on olekus {state}.",
@@ -409,6 +418,7 @@
             "password": "Hetktõmmise salasõna",
             "password_protected": "salasõnaha kaitstud",
             "password_protection": "Salasõnaga kaitstud",
+            "passwords_not_matching": "Salasõnad ei ühti",
             "security": "Turvalisus",
             "select_type": "Vali mida taastada",
             "selected": "{number} valitud",

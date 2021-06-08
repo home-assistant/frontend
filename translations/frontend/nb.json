@@ -318,6 +318,14 @@
             "no_addons": "Du har ikke installert tilleggsprogrammer ennå. Gå over til tilleggsbutikken for å komme i gang!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Attributter",
+                "device_path": "Bane til enhet",
+                "id": "ID",
+                "search": "Søk i maskinvare",
+                "subsystem": "Delsystem",
+                "title": "Maskinvare"
+            },
             "network": {
                 "connected_to": "Koblet til {ssid}",
                 "dhcp": "",

@@ -318,6 +318,14 @@
             "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Attributes",
+                "device_path": "Device path",
+                "id": "ID",
+                "search": "Search hardware",
+                "subsystem": "Subsystem",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Connected to {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "Add-ons",
             "available_snapshots": "Available Snapshots",
+            "confirm_password": "Confirm Snapshot password",
             "could_not_create": "Could not create snapshot",
             "create": "Create",
             "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
@@ -409,6 +418,7 @@
             "password": "Snapshot password",
             "password_protected": "password protected",
             "password_protection": "Password protection",
+            "passwords_not_matching": "The passwords does not match",
             "security": "Security",
             "select_type": "Select what to restore",
             "selected": "{number} selected",

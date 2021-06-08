@@ -285,6 +285,12 @@
             "no_addons": "Все още нямате инсталирани добавки. Насочете се към хранилището за добавки, за да започнете!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Атрибути",
+                "id": "ID",
+                "search": "Търсене на хардуер",
+                "title": "Хардуер"
+            },
             "network": {
                 "connected_to": "Свързан с {ssid}",
                 "dhcp": "DHCP",
@@ -346,6 +352,7 @@
         "snapshot": {
             "addons": "Добавки",
             "available_snapshots": "Налични снапшоти",
+            "confirm_password": "Потвърдете паролата за снапшота",
             "could_not_create": "Не можа да се създаде снапшот",
             "create": "Създаване",
             "create_blocked_not_running": "Създаването на снапшот в момента не е възможно, тъй като системата е в състояние {state}.",
@@ -353,7 +360,7 @@
             "created": "Създаден",
             "delete_selected": "Изтриване на избраните снапшоти",
             "delete_snapshot_confirm": "Изтрий",
-            "delete_snapshot_title": "Изтриване на снапшот",
+            "delete_snapshot_title": "Изтриване на снапшота",
             "description": "Снапшотите ви позволяват лесно да архивирате и възстановявате всички данни от вашия екземпляр на Home Assistant.",
             "enter_password": "Моля, въведете парола.",
             "folder": {
@@ -371,7 +378,9 @@
             "password": "Парола",
             "password_protected": "защитен с парола",
             "password_protection": "Защита с парола",
+            "passwords_not_matching": "Паролите не съвпадат",
             "security": "Сигурност",
+            "select_type": "Изберете какво да възстановите",
             "selected": "{number} избрани",
             "type": "Тип",
             "upload_snapshot": "Качване на снапшот"
@@ -1642,7 +1651,8 @@
                             "link_learn_how_it_works": "Научете как работи",
                             "not_connected": "Не е свързан",
                             "remote_enabled": {
-                                "caption": "Автоматично свързване"
+                                "caption": "Автоматично свързване",
+                                "description": "Активирайте тази опция, за да сте сигурни, че вашият Home Assistant е винаги достъпен от разстояние."
                             },
                             "title": "Дистанционен контрол"
                         },
