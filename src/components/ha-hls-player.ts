@@ -48,6 +48,7 @@ class HaHLSPlayer extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
+    this._startHls();
   }
 
   public disconnectedCallback() {
