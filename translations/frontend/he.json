@@ -318,6 +318,14 @@
             "no_addons": "עדיין לא מותקנות הרחבות. גשו לחנות ההרחבה כדי להתחיל!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "תכונות",
+                "device_path": "נתיב התקן",
+                "id": "מזהה",
+                "search": "חפש חומרה",
+                "subsystem": "תת מערכת",
+                "title": "חומרה"
+            },
             "network": {
                 "connected_to": "מחובר אל {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "תוספים",
             "available_snapshots": "גיבויים זמינים",
+            "confirm_password": "אישור סיסמת גיבוי",
             "could_not_create": "לא ניתן ליצור גיבוי",
             "create": "צור",
             "create_blocked_not_running": "יצירת גיבוי אינה אפשרית כרגע מכיוון שהמערכת במצב {state} .",
@@ -409,6 +418,7 @@
             "password": "סיסמה",
             "password_protected": "מוגן באמצעות סיסמה",
             "password_protection": "הגנה באמצעות סיסמה",
+            "passwords_not_matching": "הסיסמאות אינן תואמות",
             "security": "אבטחה",
             "select_type": "בחר מה לשחזר",
             "selected": "{number} נבחרו",

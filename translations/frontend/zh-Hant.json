@@ -318,6 +318,14 @@
             "no_addons": "目前似乎沒有安裝任何附加元件。點選下方附加元件商店以新增！"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "屬性",
+                "device_path": "裝置路徑",
+                "id": "ID",
+                "search": "搜尋硬體",
+                "subsystem": "子系統",
+                "title": "硬體"
+            },
             "network": {
                 "connected_to": "已連線至 {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "附加元件",
             "available_snapshots": "可用系統備份",
+            "confirm_password": "確認系統備份密碼",
             "could_not_create": "無法製作系統備份",
             "create": "新增",
             "create_blocked_not_running": "由於系統為 {state} 狀態，無法製作系統備份。",
@@ -409,6 +418,7 @@
             "password": "系統備份密碼",
             "password_protected": "密碼保護未顯示",
             "password_protection": "密碼保護",
+            "passwords_not_matching": "密碼不相符",
             "security": "加密",
             "select_type": "選擇所要回復內容",
             "selected": "已選擇 {number} 個",
