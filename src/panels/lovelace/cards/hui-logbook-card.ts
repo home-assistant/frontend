@@ -117,9 +117,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   }
 
   protected firstUpdated(): void {
-    if (this.hass) {
-      this._fetchUserPromise = this._fetchUserNames(this.hass);
-    }
+    this._fetchUserPromise = this._fetchUserNames();
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -256,14 +254,14 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     this._lastLogbookDate = now;
   }
 
-  private async _fetchUserNames(hass: HomeAssistant) {
+  private async _fetchUserNames() {
     const userIdToName = {};
 
     // Start loading users
-    const userProm = hass.user!.is_admin && fetchUsers(hass);
+    const userProm = this.hass!.user!.is_admin && fetchUsers(this.hass!);
 
     // Process persons
-    Object.values(hass.states).forEach((entity) => {
+    Object.values(this.hass!.states).forEach((entity) => {
       if (
         entity.attributes.user_id &&
         computeStateDomain(entity) === "person"

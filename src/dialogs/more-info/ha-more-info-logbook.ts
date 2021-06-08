@@ -73,9 +73,7 @@ export class MoreInfoLogbook extends LitElement {
   }
 
   protected firstUpdated(): void {
-    if (this.hass) {
-      this._fetchUserPromise = this._fetchUserNames(this.hass);
-    }
+    this._fetchUserPromise = this._fetchUserNames();
     this.addEventListener("click", (ev) => {
       if ((ev.composedPath()[0] as HTMLElement).tagName === "A") {
         setTimeout(() => closeDialog("ha-more-info-dialog"), 500);
@@ -139,14 +137,14 @@ export class MoreInfoLogbook extends LitElement {
     this._traceContexts = traceContexts;
   }
 
-  private async _fetchUserNames(hass: HomeAssistant) {
+  private async _fetchUserNames() {
     const userIdToName = {};
 
     // Start loading users
-    const userProm = hass.user!.is_admin && fetchUsers(hass);
+    const userProm = this.hass!.user!.is_admin && fetchUsers(this.hass!);
 
     // Process persons
-    Object.values(hass.states).forEach((entity) => {
+    Object.values(this.hass!.states).forEach((entity) => {
       if (
         entity.attributes.user_id &&
         computeStateDomain(entity) === "person"
