@@ -64,7 +64,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   private _lastLogbookDate?: Date;
 
-  private _fetchUserDone?: Promise<unknown>;
+  private _fetchUserPromise?: Promise<void>;
 
   private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
@@ -118,7 +118,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   protected firstUpdated(): void {
     if (this.hass) {
-      this._fetchUserDone = this._fetchUserNames(this.hass);
+      this._fetchUserPromise = this._fetchUserNames(this.hass);
     }
   }
 
@@ -242,7 +242,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         this._configEntities!.map((entity) => entity.entity).toString(),
         true
       ),
-      this._fetchUserDone,
+      this._fetchUserPromise,
     ]);
 
     const logbookEntries = this._logbookEntries

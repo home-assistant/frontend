@@ -28,7 +28,7 @@ export class MoreInfoLogbook extends LitElement {
 
   private _lastLogbookDate?: Date;
 
-  private _fetchUserDone?: Promise<unknown>;
+  private _fetchUserPromise?: Promise<void>;
 
   private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
@@ -75,7 +75,7 @@ export class MoreInfoLogbook extends LitElement {
 
   protected firstUpdated(): void {
     if (this.hass) {
-      this._fetchUserDone = this._fetchUserNames(this.hass);
+      this._fetchUserPromise = this._fetchUserNames(this.hass);
     }
     this.addEventListener("click", (ev) => {
       if ((ev.composedPath()[0] as HTMLElement).tagName === "A") {
@@ -131,7 +131,7 @@ export class MoreInfoLogbook extends LitElement {
         true
       ),
       loadTraceContexts(this.hass),
-      this._fetchUserDone,
+      this._fetchUserPromise,
     ]);
     this._logbookEntries = this._logbookEntries
       ? [...newEntries, ...this._logbookEntries]

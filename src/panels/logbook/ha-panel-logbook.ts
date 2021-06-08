@@ -45,7 +45,7 @@ export class HaPanelLogbook extends LitElement {
 
   @state() private _ranges?: DateRangePickerRanges;
 
-  private _fetchUserDone?: Promise<unknown>;
+  private _fetchUserPromise?: Promise<void>;
 
   @state() private _userIdToName = {};
 
@@ -137,7 +137,7 @@ export class HaPanelLogbook extends LitElement {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
 
-    this._fetchUserDone = this._fetchUserNames();
+    this._fetchUserPromise = this._fetchUserNames();
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -259,7 +259,7 @@ export class HaPanelLogbook extends LitElement {
         this._entityId
       ),
       isComponentLoaded(this.hass, "trace") ? loadTraceContexts(this.hass) : {},
-      this._fetchUserDone,
+      this._fetchUserPromise,
     ]);
 
     this._entries = entries;
