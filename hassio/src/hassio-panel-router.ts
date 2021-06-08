@@ -32,9 +32,7 @@ class HassioPanelRouter extends HassRouterPage {
       store: {
         tag: "hassio-addon-store",
       },
-      snapshots: {
-        tag: "hassio-snapshots",
-      },
+      snapshots: "backups",
       backups: {
         tag: "hassio-snapshots",
       },
