@@ -5,7 +5,6 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { slugify } from "../../../../src/common/string/slugify";
-import { LocalizeFunc } from "../../../../src/common/translations/localize";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-header-bar";
