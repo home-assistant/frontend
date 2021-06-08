@@ -119,14 +119,14 @@ export class SupervisorSnapshotContent extends LitElement {
       ${this.snapshot
         ? html`<div class="details">
             ${this.snapshot.type === "full"
-              ? this.supervisor.localize("snapshot.full_snapshot")
-              : this.supervisor.localize("snapshot.partial_snapshot")}
+              ? this.supervisor.localize("backup.full_backup")
+              : this.supervisor.localize("backup.partial_backup")}
             (${Math.ceil(this.snapshot.size * 10) / 10 + " MB"})<br />
             ${formatDateTime(new Date(this.snapshot.date), this.hass.locale)}
           </div>`
         : html`<paper-input
             name="snapshotName"
-            .label=${this.supervisor.localize("snapshot.name")}
+            .label=${this.supervisor.localize("backup.name")}
             .value=${this.snapshotName}
             @value-changed=${this._handleTextValueChanged}
           >
@@ -134,12 +134,12 @@ export class SupervisorSnapshotContent extends LitElement {
       ${!this.snapshot || this.snapshot.type === "full"
         ? html`<div class="sub-header">
               ${!this.snapshot
-                ? this.supervisor.localize("snapshot.type")
-                : this.supervisor.localize("snapshot.select_type")}
+                ? this.supervisor.localize("backup.type")
+                : this.supervisor.localize("backup.select_type")}
             </div>
             <div class="snapshot-types">
               <ha-formfield
-                .label=${this.supervisor.localize("snapshot.full_snapshot")}
+                .label=${this.supervisor.localize("backup.full_backup")}
               >
                 <ha-radio
                   @change=${this._handleRadioValueChanged}
@@ -150,7 +150,7 @@ export class SupervisorSnapshotContent extends LitElement {
                 </ha-radio>
               </ha-formfield>
               <ha-formfield
-                .label=${this.supervisor!.localize("snapshot.partial_snapshot")}
+                .label=${this.supervisor!.localize("backup.partial_backup")}
               >
                 <ha-radio
                   @change=${this._handleRadioValueChanged}
@@ -188,7 +188,7 @@ export class SupervisorSnapshotContent extends LitElement {
               ? html`
                   <ha-formfield
                     .label=${html`<supervisor-formfield-label
-                      .label=${this.supervisor.localize("snapshot.folders")}
+                      .label=${this.supervisor.localize("backup.folders")}
                       .iconPath=${mdiFolder}
                     >
                     </supervisor-formfield-label>`}
@@ -208,7 +208,7 @@ export class SupervisorSnapshotContent extends LitElement {
               ? html`
                   <ha-formfield
                     .label=${html`<supervisor-formfield-label
-                      .label=${this.supervisor.localize("snapshot.addons")}
+                      .label=${this.supervisor.localize("backup.addons")}
                       .iconPath=${mdiPuzzle}
                     >
                     </supervisor-formfield-label>`}
@@ -233,7 +233,7 @@ export class SupervisorSnapshotContent extends LitElement {
       ${!this.snapshot
         ? html`<ha-formfield
             class="password"
-            .label=${this.supervisor.localize("snapshot.password_protection")}
+            .label=${this.supervisor.localize("backup.password_protection")}
           >
             <ha-checkbox
               .checked=${this.snapshotHasPassword}
@@ -245,7 +245,7 @@ export class SupervisorSnapshotContent extends LitElement {
       ${this.snapshotHasPassword
         ? html`
             <paper-input
-              .label=${this.supervisor.localize("snapshot.password")}
+              .label=${this.supervisor.localize("backup.password")}
               type="password"
               name="snapshotPassword"
               .value=${this.snapshotPassword}
@@ -254,9 +254,7 @@ export class SupervisorSnapshotContent extends LitElement {
             </paper-input>
             ${!this.snapshot
               ? html` <paper-input
-                  .label=${this.supervisor.localize(
-                    "snapshot.confirm_password"
-                  )}
+                  .label=${this.supervisor.localize("backup.confirm_password")}
                   type="password"
                   name="confirmSnapshotPassword"
                   .value=${this.confirmSnapshotPassword}

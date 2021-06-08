@@ -1,4 +1,5 @@
 import { customElement, property } from "lit/decorators";
+import { navigate } from "../../src/common/navigate";
 import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
 import {
@@ -23,7 +24,7 @@ class HassioRouter extends HassRouterPage {
   protected routerOptions: RouterOptions = {
     // Hass.io has a page with tabs, so we route all non-matching routes to it.
     defaultPage: "dashboard",
-    initialLoad: () => this._redirectIngress(),
+    initialLoad: () => this._redirects(),
     showLoading: true,
     routes: {
       dashboard: {
@@ -31,6 +32,7 @@ class HassioRouter extends HassRouterPage {
         cache: true,
       },
       snapshots: "dashboard",
+      backups: "dashboard",
       store: "dashboard",
       system: "dashboard",
       addon: {
@@ -54,7 +56,7 @@ class HassioRouter extends HassRouterPage {
     const route = hassioPanel ? this.route : this.routeTail;
 
     if (hassioPanel && this.panel.config?.ingress) {
-      this._redirectIngress();
+      this._redirects();
       return;
     }
 
@@ -68,12 +70,14 @@ class HassioRouter extends HassRouterPage {
     }
   }
 
-  private async _redirectIngress() {
+  private async _redirects() {
     if (this.panel.config && this.panel.config.ingress) {
       this.route = {
         prefix: "/hassio",
         path: `/ingress/${this.panel.config.ingress}`,
       };
+    } else if (this.route?.path === "/snapshots") {
+      navigate("/hassio/backups", { replace: true });
     }
   }
 }

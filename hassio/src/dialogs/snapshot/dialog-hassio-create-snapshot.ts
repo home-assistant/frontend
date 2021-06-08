@@ -52,7 +52,7 @@ class HassioCreateSnapshotDialog extends LitElement {
         @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
-          this._dialogParams.supervisor.localize("snapshot.create_snapshot")
+          this._dialogParams.supervisor.localize("backup.create_backup")
         )}
       >
         ${this._creatingSnapshot
@@ -71,7 +71,7 @@ class HassioCreateSnapshotDialog extends LitElement {
           slot="primaryAction"
           @click=${this._createSnapshot}
         >
-          ${this._dialogParams.supervisor.localize("snapshot.create")}
+          ${this._dialogParams.supervisor.localize("backup.create")}
         </mwc-button>
       </ha-dialog>
     `;
@@ -81,10 +81,10 @@ class HassioCreateSnapshotDialog extends LitElement {
     if (this._dialogParams!.supervisor.info.state !== "running") {
       showAlertDialog(this, {
         title: this._dialogParams!.supervisor.localize(
-          "snapshot.could_not_create"
+          "backup.could_not_create"
         ),
         text: this._dialogParams!.supervisor.localize(
-          "snapshot.create_blocked_not_running",
+          "backup.create_blocked_not_running",
           "state",
           this._dialogParams!.supervisor.info.state
         ),
@@ -97,7 +97,7 @@ class HassioCreateSnapshotDialog extends LitElement {
     this._error = "";
     if (snapshotDetails.password && !snapshotDetails.password.length) {
       this._error = this._dialogParams!.supervisor.localize(
-        "snapshot.enter_password"
+        "backup.enter_password"
       );
       this._creatingSnapshot = false;
       return;
@@ -107,7 +107,7 @@ class HassioCreateSnapshotDialog extends LitElement {
       snapshotDetails.password !== snapshotDetails.confirm_password
     ) {
       this._error = this._dialogParams!.supervisor.localize(
-        "snapshot.passwords_not_matching"
+        "backup.passwords_not_matching"
       );
       this._creatingSnapshot = false;
       return;

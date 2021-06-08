@@ -189,7 +189,7 @@ export const uploadSnapshot = async (
   }
 
   if (resp.status === 413) {
-    throw new Error("Uploaded snapshot is too large");
+    throw new Error("Uploaded backup is too large");
   } else if (resp.status !== 200) {
     throw new Error(`${resp.status} ${resp.statusText}`);
   }

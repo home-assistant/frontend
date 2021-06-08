@@ -38,7 +38,7 @@ export class HassioUploadSnapshot extends LitElement {
         .uploading=${this._uploading}
         .icon=${mdiFolderUpload}
         accept="application/x-tar"
-        label="Upload snapshot"
+        label="Upload backup"
         @file-picked=${this._uploadFile}
         auto-open-file-dialog
       ></ha-file-upload>
@@ -50,7 +50,7 @@ export class HassioUploadSnapshot extends LitElement {
 
     if (file.size > MAX_FILE_SIZE) {
       showAlertDialog(this, {
-        title: "Snapshot file is too big",
+        title: "Bakcup file is too big",
         text: html`The maximum allowed filesize is 1GB.<br />
           <a
             href="https://www.home-assistant.io/hassio/haos_common_tasks/#restoring-a-snapshot-on-a-new-install"
@@ -65,7 +65,7 @@ export class HassioUploadSnapshot extends LitElement {
     if (!["application/x-tar"].includes(file.type)) {
       showAlertDialog(this, {
         title: "Unsupported file format",
-        text: "Please choose a Home Assistant snapshot file (.tar)",
+        text: "Please choose a Home Assistant backup file (.tar)",
         confirmText: "ok",
       });
       return;

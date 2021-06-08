@@ -3566,7 +3566,7 @@
           "finish": "Next"
         },
         "restore": {
-          "description": "Alternatively you can restore from a previous snapshot.",
+          "description": "Alternatively you can restore from a previous backup.",
           "in_progress": "Restore in progress",
           "show_log": "Show full log",
           "hide_log": "Hide full log"
@@ -3804,7 +3804,7 @@
     },
     "panel": {
       "dashboard": "Dashboard",
-      "snapshots": "Snapshots",
+      "backups": "Backups",
       "store": "Add-on Store",
       "system": "System"
     },
@@ -3899,43 +3899,32 @@
         "ram_usage": "Core RAM Usage"
       }
     },
-    "snapshot": {
-      "description": "Snapshots allow you to easily backup and restore all data of your Home Assistant instance.",
-      "available_snapshots": "Available Snapshots",
-      "no_snapshots": "You don't have any snapshots yet.",
-      "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
-      "delete_selected": "Delete selected snapshots",
-      "delete_snapshot_title": "Delete snapshot",
-      "delete_snapshot_text": "Do you want to delete {number} {number, plural,\n  one {snapshot}\n  other {snapshots}\n}?",
-      "delete_snapshot_confirm": "delete",
+    "backup": {
+      "no_backups": "You don't have any backups yet.",
+      "create_blocked_not_running": "Creating a backup is not possible right now because the system is in {state} state.",
+      "delete_selected": "Delete selected backups",
+      "delete_backup_title": "Delete backup",
+      "delete_backup_text": "Do you want to delete {number} {number, plural,\n  one {backup}\n  other {backups}\n}?",
+      "delete_backup_confirm": "delete",
       "selected": "{number} selected",
       "failed_to_delete": "Failed to delete",
-      "could_not_create": "Could not create snapshot",
-      "upload_snapshot": "Upload snapshot",
-      "create_snapshot": "Create snapshot",
+      "could_not_create": "Could not create backup",
+      "upload_backup": "Upload backup",
+      "create_backup": "Create backup",
       "create": "Create",
       "created": "Created",
-      "name": "Snapshot name",
-      "type": "Snapshot type",
+      "name": "Backup name",
+      "type": "Backup type",
       "select_type": "Select what to restore",
-      "security": "Security",
-      "full_snapshot": "Full snapshot",
-      "partial_snapshot": "Partial snapshot",
+      "full_backup": "Full backup",
+      "partial_backup": "Partial backup",
       "addons": "Add-ons",
       "folders": "Folders",
-      "password": "Snapshot password",
-      "confirm_password": "Confirm Snapshot password",
+      "password": "Backup password",
+      "confirm_password": "Confirm backup password",
       "password_protection": "Password protection",
-      "password_protected": "password protected",
       "enter_password": "Please enter a password.",
-      "passwords_not_matching": "The passwords does not match",
-      "folder": {
-        "homeassistant": "Home Assistant configuration",
-        "ssl": "SSL",
-        "share": "Share",
-        "media": "Media",
-        "addons/local": "Local add-ons"
-      }
+      "passwords_not_matching": "The passwords does not match"
     },
     "dialog": {
       "network": {
@@ -3978,10 +3967,10 @@
         "text": "Do you want to restart the add-on with your changes?"
       },
       "update": {
-        "snapshot": "Snapshot",
-        "create_snapshot": "Create a snapshot of {name} before updating",
+        "backup": "Backup",
+        "create_backup": "Create a backup of {name} before updating",
         "updating": "Updating {name} to version {version}",
-        "snapshotting": "Creating snapshot of {name}"
+        "creating_backup": "Creating backup of {name}"
       },
       "hardware": {
         "title": "Hardware",

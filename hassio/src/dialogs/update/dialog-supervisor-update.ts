@@ -84,12 +84,12 @@ class DialogSupervisorUpdate extends LitElement {
               <ha-settings-row>
                 <span slot="heading">
                   ${this._dialogParams.supervisor.localize(
-                    "dialog.update.snapshot"
+                    "dialog.update.backup"
                   )}
                 </span>
                 <span slot="description">
                   ${this._dialogParams.supervisor.localize(
-                    "dialog.update.create_snapshot",
+                    "dialog.update.create_backup",
                     "name",
                     this._dialogParams.name
                   )}
@@ -123,7 +123,7 @@ class DialogSupervisorUpdate extends LitElement {
                       this._dialogParams.version
                     )
                   : this._dialogParams.supervisor.localize(
-                      "dialog.update.snapshotting",
+                      "dialog.update.creating_backup",
                       "name",
                       this._dialogParams.name
                     )}
