@@ -92,7 +92,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           ? html`<onboarding-restore-snapshot
               .localize=${this.localize}
               .restoring=${this._restoring}
-              ._discoveryInformation=${this._discoveryInformation}
+              .discoveryInformation=${this._discoveryInformation}
               @restoring=${this._restoringSnapshot}
             >
             </onboarding-restore-snapshot>`
