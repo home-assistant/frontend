@@ -3570,15 +3570,15 @@
           "in_progress": "Restore in progress",
           "show_log": "Show full log",
           "hide_log": "Hide full log",
-          "full_snapshot": "[%key:supervisor::snapshot::full_snapshot%]",
-          "partial_snapshot": "[%key:supervisor::snapshot::partial_snapshot%]",
-          "type": "[%key:supervisor::snapshot::type%]",
-          "select_type": "[%key:supervisor::snapshot::select_type%]",
-          "folders": "[%key:supervisor::snapshot::folders%]",
-          "addons": "[%key:supervisor::snapshot::addons%]",
-          "password_protection": "[%key:supervisor::snapshot::password_protection%]",
-          "password": "[%key:supervisor::snapshot::password%]",
-          "confirm_password": "[%key:supervisor::snapshot::confirm_password%]"
+          "full_backup": "[%key:supervisor::backup::full_backup%]",
+          "partial_backup": "[%key:supervisor::backup::partial_backup%]",
+          "type": "[%key:supervisor::backup::type%]",
+          "select_type": "[%key:supervisor::backup::select_type%]",
+          "folders": "[%key:supervisor::backup::folders%]",
+          "addons": "[%key:supervisor::backup::addons%]",
+          "password_protection": "[%key:supervisor::backup::password_protection%]",
+          "password": "[%key:supervisor::backup::password%]",
+          "confirm_password": "[%key:supervisor::backup::confirm_password%]"
         }
       },
       "custom": {
