@@ -314,10 +314,18 @@
             "addon_new_version": "Neue Version verfügbar",
             "addon_running": "Add-on wird ausgeführt",
             "addon_stopped": "Add-on ist gestoppt",
-            "addons": "Add-ons",
+            "addons": "Installierte Add-ons",
             "no_addons": "Du hast noch keine Add-ons installiert. Gehe zum Add-on Store, um loszulegen!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Attribute",
+                "device_path": "Gerätepfad",
+                "id": "ID",
+                "search": "Hardware suchen",
+                "subsystem": "Subsystem",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Verbunden mit {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "Add-ons",
             "available_snapshots": "Verfügbare Datensicherungen",
+            "confirm_password": "Snapshot-Passwort bestätigen",
             "could_not_create": "Datensicherung konnte nicht erstellt werden",
             "create": "Erstellen",
             "create_blocked_not_running": "Das Erstellen eines Snapshots ist derzeit nicht möglich, da sich das System im Zustand {state} befindet.",
@@ -403,16 +412,17 @@
             },
             "folders": "Ordner",
             "full_snapshot": "Vollständige Datensicherung",
-            "name": "Name",
+            "name": "Snapshot-Name",
             "no_snapshots": "Du hast bisher keine Datensicherungen erstellt.",
             "partial_snapshot": "Selektive Datensicherung",
-            "password": "Passwort",
+            "password": "Snapshot-Passwort",
             "password_protected": "Passwort geschützt",
             "password_protection": "Passwortschutz",
+            "passwords_not_matching": "Passwörter stimmen nicht überein",
             "security": "Sicherheit",
             "select_type": "Wähle aus, was wiederhergestellt werden soll",
             "selected": "{number} ausgewählt",
-            "type": "Typ",
+            "type": "Snapshot-Typ",
             "upload_snapshot": "Datensicherung hochladen"
         },
         "store": {

@@ -366,9 +366,9 @@
                 "text": "Kas soovid lisandmooduli taaskäivitada rakendades muudatused?"
             },
             "update": {
-                "create_snapshot": "Enne {name} värskendamist loo hetktõmmis",
-                "snapshot": "Hetktõmmis",
-                "snapshotting": "Üksuse {name} hetktõmmise loomine",
+                "create_snapshot": "Enne {name} värskendamist loo varukoopia",
+                "snapshot": "Varukoopia",
+                "snapshotting": "Üksuse {name} varukoopia loomine",
                 "updating": "Üksuse {name} värskendamine versioonile {version}"
             }
         },
@@ -389,18 +389,18 @@
         },
         "snapshot": {
             "addons": "Lisandmoodulid",
-            "available_snapshots": "Saadaolevad hetktõmmised",
-            "confirm_password": "Hetktõmmise parooli kinnitamine",
-            "could_not_create": "Hetktõmmise loomine nurjus",
+            "available_snapshots": "Saadaolevad varukoopiad",
+            "confirm_password": "Varukoopia salasõna kinnitamine",
+            "could_not_create": "Varukoopia loomine nurjus",
             "create": "Loo",
-            "create_blocked_not_running": "Hetktõmmise loomine pole praegu võimalik kuna süsteem on olekus {state}.",
-            "create_snapshot": "Loo hetktõmmis",
+            "create_blocked_not_running": "Varukoopia loomine pole praegu võimalik kuna süsteem on olekus {state}.",
+            "create_snapshot": "Loo varukoopia",
             "created": "Loodud",
-            "delete_selected": "Kustuta valitud hetktõmmised",
+            "delete_selected": "Kustuta valitud varukoopiad",
             "delete_snapshot_confirm": "kustuta",
-            "delete_snapshot_text": "Kas kustutada {number} {number, plural,\n  one {hetktõmmis}\n  other {hetktõmmist}\n}?",
-            "delete_snapshot_title": "Kustuta hetktõmmis",
-            "description": "Hetktõmmised võimaldavad hõlpsalt varundada ja taastada kõik Home Assistanti andmed.",
+            "delete_snapshot_text": "Kas kustutada {number} {number, plural,\n  one {varukoopia}\n  other {varukoopiat}\n}?",
+            "delete_snapshot_title": "Kustuta varukoopia",
+            "description": "Varukoopiad võimaldavad hõlpsalt varundada ja taastada kõik Home Assistanti andmed.",
             "enter_password": "Sisesta salasõna.",
             "failed_to_delete": "Kustutamine nurjus",
             "folder": {
@@ -411,19 +411,19 @@
                 "ssl": "SSL"
             },
             "folders": "Kaustad",
-            "full_snapshot": "Täielik hetktõmmis",
-            "name": "Hetktõmmise nimi",
-            "no_snapshots": "Sul pole veel ühtegi hetktõmmist.",
-            "partial_snapshot": "Osaline hetktõmmis",
-            "password": "Hetktõmmise salasõna",
+            "full_snapshot": "Täielik varukoopia",
+            "name": "Varukoopia nimi",
+            "no_snapshots": "Sul pole veel ühtegi varukoopiat.",
+            "partial_snapshot": "Osaline varukoopia",
+            "password": "Varukoopia salasõna",
             "password_protected": "salasõnaha kaitstud",
             "password_protection": "Salasõnaga kaitstud",
             "passwords_not_matching": "Salasõnad ei ühti",
             "security": "Turvalisus",
             "select_type": "Vali mida taastada",
             "selected": "{number} valitud",
-            "type": "Hetktõmmise tüüp",
-            "upload_snapshot": "Hetktõmmise üleslaadimine"
+            "type": "Varukoopia tüüp",
+            "upload_snapshot": "Varukoopia üleslaadimine"
         },
         "store": {
             "missing_addons": "Ei näe lisandmooduleid? Luba täpsem režiim oma kasutajaprofiili lehel",
@@ -3891,10 +3891,19 @@
                 "intro": "Kas oled valmis oma kodu ellu äratama, oma privaatsust tagasi võitma ja ühinema ülemaailmse nokitsejate kogukonnaga?",
                 "next": "Järgmine",
                 "restore": {
-                    "description": "Teise võimalusena saad taastada eelmise hetktõmmise.",
+                    "addons": "Lisandmoodulid",
+                    "confirm_password": "Kinnita salasõna",
+                    "description": "Teise võimalusena saad taastada eelmise varukoopia.",
+                    "folders": "Kaustad",
+                    "full_snapshot": "Täielik varukoopia",
                     "hide_log": "Peida täielik logi",
                     "in_progress": "Toimub taastamine",
-                    "show_log": "Kuva täielik logi"
+                    "partial_snapshot": "Osaline varukoopia",
+                    "password": "Salasõna",
+                    "password_protection": "Salasõnaga kaitstud",
+                    "select_type": "Vali andmestiku tüüp",
+                    "show_log": "Kuva täielik logi",
+                    "type": "Andmestiku tüüp"
                 },
                 "user": {
                     "create_account": "Loo konto",
