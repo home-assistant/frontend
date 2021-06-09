@@ -390,6 +390,7 @@
         "snapshot": {
             "addons": "Tillegg",
             "available_snapshots": "Tilgjengelige sikkerhetskopier",
+            "confirm_password": "Bekreft passord for øyeblikksbilde",
             "could_not_create": "Kunne ikke opprette sikkerhetskopi",
             "create": "Opprett",
             "create_blocked_not_running": "Å lage en sikkerhetskopi er ikke mulig akkurat nå fordi systemet er i {state} status",
@@ -417,6 +418,7 @@
             "password": "Passord for øyeblikksbilde",
             "password_protected": "Passordbeskyttet",
             "password_protection": "Passordbeskyttelse",
+            "passwords_not_matching": "Passordene samsvarer ikke",
             "security": "Sikkerhet",
             "select_type": "Velg hva du vil gjenopprette",
             "selected": "{number} valgt",
