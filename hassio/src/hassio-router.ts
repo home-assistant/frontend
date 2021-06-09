@@ -24,14 +24,15 @@ class HassioRouter extends HassRouterPage {
   protected routerOptions: RouterOptions = {
     // Hass.io has a page with tabs, so we route all non-matching routes to it.
     defaultPage: "dashboard",
-    initialLoad: () => this._redirects(),
+    beforeRender: (page: string) =>
+      page === "snapshots" ? "backups" : undefined,
+    initialLoad: () => this._redirectIngress(),
     showLoading: true,
     routes: {
       dashboard: {
         tag: "hassio-panel",
         cache: true,
       },
-      snapshots: "dashboard",
       backups: "dashboard",
       store: "dashboard",
       system: "dashboard",
@@ -56,7 +57,7 @@ class HassioRouter extends HassRouterPage {
     const route = hassioPanel ? this.route : this.routeTail;
 
     if (hassioPanel && this.panel.config?.ingress) {
-      this._redirects();
+      this._redirectIngress();
       return;
     }
 
@@ -70,14 +71,12 @@ class HassioRouter extends HassRouterPage {
     }
   }
 
-  private async _redirects() {
+  private async _redirectIngress() {
     if (this.panel.config && this.panel.config.ingress) {
       this.route = {
         prefix: "/hassio",
         path: `/ingress/${this.panel.config.ingress}`,
       };
-    } else if (this.route?.path === "/snapshots") {
-      navigate("/hassio/backups", { replace: true });
     }
   }
 }

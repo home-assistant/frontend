@@ -11,7 +11,6 @@ import "./dashboard/hassio-dashboard";
 // Don't codesplit the others, because it breaks the UI when pushed to a Pi
 import "./snapshots/hassio-snapshots";
 import "./system/hassio-system";
-import { navigate } from "../../src/common/navigate";
 
 @customElement("hassio-panel-router")
 class HassioPanelRouter extends HassRouterPage {
@@ -24,7 +23,8 @@ class HassioPanelRouter extends HassRouterPage {
   @property({ type: Boolean }) public narrow!: boolean;
 
   protected routerOptions: RouterOptions = {
-    initialLoad: () => this._redirects(),
+    beforeRender: (page: string) =>
+      page === "snapshots" ? "backups" : undefined,
     routes: {
       dashboard: {
         tag: "hassio-dashboard",
@@ -32,7 +32,6 @@ class HassioPanelRouter extends HassRouterPage {
       store: {
         tag: "hassio-addon-store",
       },
-      snapshots: "backups",
       backups: {
         tag: "hassio-snapshots",
       },
@@ -47,12 +46,6 @@ class HassioPanelRouter extends HassRouterPage {
     el.supervisor = this.supervisor;
     el.route = this.route;
     el.narrow = this.narrow;
-  }
-
-  private async _redirects() {
-    if (this.route.path === "/snapshots") {
-      navigate("/hassio/backups", { replace: true });
-    }
   }
 }
 
