@@ -3569,7 +3569,16 @@
           "description": "Alternatively you can restore from a previous backup.",
           "in_progress": "Restore in progress",
           "show_log": "Show full log",
-          "hide_log": "Hide full log"
+          "hide_log": "Hide full log",
+          "full_snapshot": "[%key:supervisor::snapshot::full_snapshot%]",
+          "partial_snapshot": "[%key:supervisor::snapshot::partial_snapshot%]",
+          "type": "[%key:supervisor::snapshot::type%]",
+          "select_type": "[%key:supervisor::snapshot::select_type%]",
+          "folders": "[%key:supervisor::snapshot::folders%]",
+          "addons": "[%key:supervisor::snapshot::addons%]",
+          "password_protection": "[%key:supervisor::snapshot::password_protection%]",
+          "password": "[%key:supervisor::snapshot::password%]",
+          "confirm_password": "[%key:supervisor::snapshot::confirm_password%]"
         }
       },
       "custom": {
