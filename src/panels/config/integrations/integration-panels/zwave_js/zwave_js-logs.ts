@@ -26,8 +26,6 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   @property() public configEntryId!: string;
 
-  @property() public startDateTime = new Date();
-
   @state() private _logConfig?: ZWaveJSLogConfig;
 
   @query("textarea", true) private _textarea?: HTMLTextAreaElement;
@@ -130,7 +128,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   private _downloadLogs() {
     const aEl = document.createElement("a");
-    aEl.download = `zwave_js ${this.startDateTime.toISOString()} to ${new Date().toISOString()}.log`;
+    aEl.download = `zwave_js.log`;
     aEl.href = `data:text/plain;charset=utf-8,${encodeURI(
       this._textarea!.value
     )}`;
