@@ -130,7 +130,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   private _downloadLogs() {
     const aEl = document.createElement("a");
-    aEl.download = `zwave_js logs ${this.startDateTime.toISOString()} to ${new Date().toISOString()}.log`;
+    aEl.download = `zwave_js ${this.startDateTime.toISOString()} to ${new Date().toISOString()}.log`;
     aEl.href = `data:text/plain;charset=utf-8,${encodeURI(
       this._textarea!.value
     )}`;
