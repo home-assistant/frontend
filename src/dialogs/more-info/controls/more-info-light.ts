@@ -257,7 +257,7 @@ class MoreInfoLight extends LitElement {
       ) {
         this._mode = lightIsInColorMode(this.stateObj!)
           ? "color"
-          : LightColorModes.COLOR_TEMP;
+          : this.stateObj!.attributes.color_mode;
       }
 
       let brightnessAdjust = 100;
