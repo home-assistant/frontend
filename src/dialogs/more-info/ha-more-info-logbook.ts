@@ -141,10 +141,10 @@ export class MoreInfoLogbook extends LitElement {
     const userIdToName = {};
 
     // Start loading users
-    const userProm = this.hass!.user!.is_admin && fetchUsers(this.hass!);
+    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
 
     // Process persons
-    Object.values(this.hass!.states).forEach((entity) => {
+    Object.values(this.hass.states).forEach((entity) => {
       if (
         entity.attributes.user_id &&
         computeStateDomain(entity) === "person"
