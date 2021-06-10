@@ -55,10 +55,7 @@ class MoreInfoLight extends LitElement {
 
   @state() private _colorPickerColor?: [number, number, number];
 
-  @state() private _mode?:
-    | "color"
-    | LightColorModes.COLOR_TEMP
-    | LightColorModes.WHITE;
+  @state() private _mode?: "color" | LightColorModes;
 
   protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
