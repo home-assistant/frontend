@@ -29,37 +29,63 @@ export const computeStateDisplay = (
   const domain = computeStateDomain(stateObj);
 
   if (domain === "input_datetime") {
-    let date: Date;
-    if (!stateObj.attributes.has_time) {
+    if (state) {
+      // If trying to display an explicit state, need to parse the explict state to `Date` then format.
+      try {
+        if (!stateObj.attributes.has_time) {
+          // Only has date.
+          const dateTimeObj = new Date(state);
+          return formatDate(dateTimeObj, locale);
+        }
+        if (!stateObj.attributes.has_date) {
+          // Only has time.
+          const now = new Date();
+          const dateTiemString = now.toDateString() + " " + state;
+          const dateTimeObj = new Date(dateTiemString);
+          return formatTime(dateTimeObj, locale);
+        } 
+          // Has both date and time
+          return formatDateTime(new Date(state), locale);
+        
+      } catch {
+        // If `Date` constructor throws error, meaning the explict state isn't a valid date/time string,
+        // just return it.
+        return state;
+      }
+    } else {
+      // If not trying to display an explicit state, just format `stateObj.state`.
+      let date: Date;
+      if (!stateObj.attributes.has_time) {
+        date = new Date(
+          stateObj.attributes.year,
+          stateObj.attributes.month - 1,
+          stateObj.attributes.day
+        );
+        return formatDate(date, locale);
+      }
+      if (!stateObj.attributes.has_date) {
+        const now = new Date();
+        date = new Date(
+          // Due to bugs.chromium.org/p/chromium/issues/detail?id=797548
+          // don't use artificial 1970 year.
+          now.getFullYear(),
+          now.getMonth(),
+          now.getDay(),
+          stateObj.attributes.hour,
+          stateObj.attributes.minute
+        );
+        return formatTime(date, locale);
+      }
+
       date = new Date(
         stateObj.attributes.year,
         stateObj.attributes.month - 1,
-        stateObj.attributes.day
-      );
-      return formatDate(date, locale);
-    }
-    if (!stateObj.attributes.has_date) {
-      const now = new Date();
-      date = new Date(
-        // Due to bugs.chromium.org/p/chromium/issues/detail?id=797548
-        // don't use artificial 1970 year.
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDay(),
+        stateObj.attributes.day,
         stateObj.attributes.hour,
         stateObj.attributes.minute
       );
-      return formatTime(date, locale);
+      return formatDateTime(date, locale);
     }
-
-    date = new Date(
-      stateObj.attributes.year,
-      stateObj.attributes.month - 1,
-      stateObj.attributes.day,
-      stateObj.attributes.hour,
-      stateObj.attributes.minute
-    );
-    return formatDateTime(date, locale);
   }
 
   if (domain === "humidifier") {
