@@ -48,7 +48,9 @@ class HaHLSPlayer extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    this._startHls();
+    if (this.hasUpdated) {
+      this._startHls();
+    }
   }
 
   public disconnectedCallback() {
@@ -104,7 +106,7 @@ class HaHLSPlayer extends LitElement {
     }
 
     if (!hlsSupported) {
-      this._videoEl.innerHTML = this.hass.localize(
+      videoEl.innerHTML = this.hass.localize(
         "ui.components.media-browser.video_not_supported"
       );
       return;
