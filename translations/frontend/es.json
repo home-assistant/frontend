@@ -3891,10 +3891,19 @@
                 "intro": "¿Estás listo para despertar tu casa, reclamar tu privacidad y unirte a una comunidad mundial de pensadores?",
                 "next": "Siguiente",
                 "restore": {
+                    "addons": "Complementos",
+                    "confirm_password": "Confirma la contraseña de la instantánea",
                     "description": "Alternativamente, puedes restaurar desde una copia de seguridad anterior.",
+                    "folders": "Carpetas",
+                    "full_snapshot": "Instantánea completa",
                     "hide_log": "Ocultar registro completo",
                     "in_progress": "Restauración en curso",
-                    "show_log": "Mostrar registro completo"
+                    "partial_snapshot": "Instantánea parcial",
+                    "password": "Contraseña de la instantánea",
+                    "password_protection": "Protección con contraseña",
+                    "select_type": "Selecciona qué restaurar",
+                    "show_log": "Mostrar registro completo",
+                    "type": "Tipo de instantánea"
                 },
                 "user": {
                     "create_account": "Crear una cuenta",

@@ -318,6 +318,14 @@
             "no_addons": "您尚未安装任何加载项。去加载项商店看看吧！"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "属性",
+                "device_path": "设备路径",
+                "id": "ID",
+                "search": "搜索硬件",
+                "subsystem": "子系统",
+                "title": "硬件"
+            },
             "network": {
                 "connected_to": "已连接到 {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "加载项",
             "available_snapshots": "可用快照",
+            "confirm_password": "确认快照密码",
             "could_not_create": "未能创建快照",
             "create": "创建",
             "create_blocked_not_running": "现在无法创建快照，因为系统处于{state}状态。",
@@ -409,6 +418,7 @@
             "password": "密码",
             "password_protected": "密码保护",
             "password_protection": "密码保护",
+            "passwords_not_matching": "密码不匹配",
             "security": "安全性",
             "select_type": "请选择要还原的内容",
             "selected": "已选择 {number} 项",
@@ -3881,10 +3891,19 @@
                 "intro": "准备好唤醒你的家、找回你的隐私，并加入世界级的极客社区了吗？",
                 "next": "下一步",
                 "restore": {
+                    "addons": "加载项",
+                    "confirm_password": "确认快照密码",
                     "description": "或者，您也可以从以前的快照还原。",
+                    "folders": "文件夹",
+                    "full_snapshot": "完整快照",
                     "hide_log": "隐藏完整日志",
                     "in_progress": "正在还原",
-                    "show_log": "显示完整日志"
+                    "partial_snapshot": "部分快照",
+                    "password": "密码",
+                    "password_protection": "密码保护",
+                    "select_type": "请选择要还原的内容",
+                    "show_log": "显示完整日志",
+                    "type": "类型"
                 },
                 "user": {
                     "create_account": "创建帐户",
