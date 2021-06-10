@@ -1,9 +1,14 @@
-import "@polymer/iron-input";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { HaFormSchema } from "../components/ha-form/ha-form";
 import { DataEntryFlowStep } from "../data/data_entry_flow";
+
+declare global {
+  interface HASSDomEvents {
+    submit: undefined;
+  }
+}
 
 const ENABLED_HANDLERS = [
   "homeassistant",
@@ -64,15 +69,16 @@ export class HaPasswordManagerPolyfill extends LitElement {
 
   private render_input(schema: HaFormSchema): TemplateResult {
     const inputType = schema.name.includes("password") ? "password" : "text";
-    // Iron-input needed for reliable updating of the input value
     if (schema.type === "string") {
-      return html`<iron-input bind-value=${this.stepData[schema.name]}>
+      return html`
         <input
+          tabindex="-1"
           id=${schema.name}
           type=${inputType}
+          .value=${this.stepData[schema.name] || ""}
           @input=${this._valueChanged}
         />
-      </iron-input>`;
+      `;
     }
     return html``;
   }
