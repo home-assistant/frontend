@@ -46,6 +46,18 @@ documentContainer.innerHTML = `<custom-style>
       --state-icon-color: #44739e;
       --state-icon-active-color: #FDD835;
 
+      /* climate state colors */
+      --auto-color: green;
+      --eco-color: springgreen;
+      --cool-color: #2b9af9;
+      --heat-color: #ff8100;
+      --manual-color: #44739e;
+      --off-color: #8a8a8a;
+      --fan_only-color: #8a8a8a;
+      --dry-color: #efbd07;
+      --idle-color: #8a8a8a;
+      --unknown-color: #bac;
+
       /* background and sidebar */
       --card-background-color: #ffffff;
       --primary-background-color: #fafafa;
