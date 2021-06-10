@@ -48,6 +48,8 @@ export class HaMap extends ReactiveElement {
 
   @property({ type: Boolean }) public autoFit = false;
 
+  @property({ type: Boolean }) public fitZones?: boolean;
+
   @property({ type: Boolean }) public darkMode?: boolean;
 
   @property({ type: Number }) public zoom = 14;
@@ -184,6 +186,14 @@ export class HaMap extends ReactiveElement {
     let bounds = this.Leaflet.latLngBounds(
       this._mapItems ? this._mapItems.map((item) => item.getLatLng()) : []
     );
+
+    if (this.fitZones) {
+      this._mapZones?.forEach((zone) => {
+        bounds.extend(
+          "getBounds" in zone ? zone.getBounds() : zone.getLatLng()
+        );
+      });
+    }
 
     this.layers?.forEach((layer: any) => {
       bounds.extend(

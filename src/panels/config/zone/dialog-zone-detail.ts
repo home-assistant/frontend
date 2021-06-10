@@ -138,7 +138,6 @@ class DialogZoneDetail extends LitElement {
                 this._passive,
                 this._icon
               )}
-              fitZoneRadius
               @location-updated=${this._locationChanged}
               @radius-updated=${this._radiusChanged}
             ></ha-locations-editor>
