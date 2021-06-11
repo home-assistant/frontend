@@ -93,14 +93,14 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
                   `
                 : ""}
             </div>
-              <mwc-icon-button
-                label="Download Logs"
-                @click=${this._downloadLogs}
-              >
-                <ha-svg-icon
-                  .path=${mdiDownload}
-                ></ha-svg-icon>
-              </mwc-icon-button>
+            <mwc-icon-button
+              label=${this.hass.localize(
+                "ui.panel.config.zwave_js.logs.download_logs"
+              )}
+              @click=${this._downloadLogs}
+            >
+              <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
+            </mwc-icon-button>
           </ha-card>
           <textarea readonly></textarea>
         </div>
