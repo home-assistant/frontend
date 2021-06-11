@@ -14,6 +14,7 @@ import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
+import { fileDownload } from "../../../../../util/file_download";
 import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-logs")
@@ -124,12 +125,11 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
   }
 
   private _downloadLogs() {
-    const aEl = document.createElement("a");
-    aEl.download = `zwave_js.log`;
-    aEl.href = `data:text/plain;charset=utf-8,${encodeURI(
-      this._textarea!.value
-    )}`;
-    aEl.click();
+    fileDownload(
+      this,
+      `data:text/plain;charset=utf-8,${encodeURI(this._textarea!.value)}`,
+      `zwave_js.log`
+    );
   }
 
   private _dropdownSelected(ev) {
