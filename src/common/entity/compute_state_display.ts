@@ -34,19 +34,21 @@ export const computeStateDisplay = (
       try {
         if (!stateObj.attributes.has_time) {
           // Only has date.
-          const dateTimeObj = new Date(state);
-          return formatDate(dateTimeObj, locale);
+          const dateObj = new Date(state);
+          const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+          const adjustedDateObj = new Date(dateObj.getTime() + timezoneOffset);
+          return formatDate(adjustedDateObj, locale);
         }
         if (!stateObj.attributes.has_date) {
           // Only has time.
           const now = new Date();
           const dateTiemString = now.toDateString() + " " + state;
-          const dateTimeObj = new Date(dateTiemString);
-          return formatTime(dateTimeObj, locale);
-        } 
-          // Has both date and time
-          return formatDateTime(new Date(state), locale);
-        
+          const dateObj = new Date(dateTiemString);
+          return formatTime(dateObj, locale);
+        }
+        // Has both date and time
+        const dateObj = new Date(state);
+        return formatDateTime(dateObj, locale);
       } catch {
         // If `Date` constructor throws error, meaning the explict state isn't a valid date/time string,
         // just return it.
