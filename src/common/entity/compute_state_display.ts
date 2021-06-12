@@ -28,13 +28,20 @@ export const computeStateDisplay = (
 
   const domain = computeStateDomain(stateObj);
 
+  // Below logic for `input_datetime` works only if the frontend's (browser's) timezone is the same as core's.
+  // If frontend's timezone is different from core's, `input_datetime`s' state display computation will be incorrect.
+  // Needs further fixes for frontend to get core's timezone offset, in order to make computation correct all the time.
   if (domain === "input_datetime") {
     if (state) {
       // If trying to display an explicit state, need to parse the explict state to `Date` then format.
+      // Attributes aren't available, we have to use `state`.
       try {
         if (!stateObj.attributes.has_time) {
           // Only has date.
           const dateObj = new Date(state);
+          // When only date is passed to `Date` constructor, it uses UTC regardless frontend's timezone,
+          // so we need to compensate that timezone offset.
+          // Other usages of `Date` constructor uses frontend's timezone w/o problem, no compensation needed.
           const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
           const adjustedDateObj = new Date(dateObj.getTime() + timezoneOffset);
           return formatDate(adjustedDateObj, locale);
