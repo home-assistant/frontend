@@ -39,9 +39,9 @@ export const computeStateDisplay = (
         if (!stateObj.attributes.has_time) {
           // Only has date.
           const dateObj = new Date(state);
-          // When only date is passed to `Date` constructor, it uses UTC regardless frontend's timezone,
-          // so we need to compensate that timezone offset.
-          // Other usages of `Date` constructor uses frontend's timezone w/o problem, no compensation needed.
+          // When only date is passed to `Date` constructor, it uses UTC regardless of frontend's timezone,
+          // so we need to add the frontend's timezone offset.
+          // Other usages of `Date` constructor have both date and time in the string, frontend's timezone is used w/o problem.
           const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
           const adjustedDateObj = new Date(dateObj.getTime() + timezoneOffset);
           return formatDate(adjustedDateObj, locale);
@@ -53,7 +53,7 @@ export const computeStateDisplay = (
           const dateObj = new Date(dateTiemString);
           return formatTime(dateObj, locale);
         }
-        // Has both date and time
+        // Has both date and time.
         const dateObj = new Date(state);
         return formatDateTime(dateObj, locale);
       } catch {
@@ -62,7 +62,7 @@ export const computeStateDisplay = (
         return state;
       }
     } else {
-      // If not trying to display an explicit state, just format `stateObj.state`.
+      // If not trying to display an explicit state, create `Date` object from `stateObj`'s attributes then format.
       let date: Date;
       if (!stateObj.attributes.has_time) {
         date = new Date(
