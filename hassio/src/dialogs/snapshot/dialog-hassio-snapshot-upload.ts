@@ -51,9 +51,12 @@ export class DialogHassioSnapshotUpload
         <div slot="heading">
           <ha-header-bar>
             <span slot="title"> Upload snapshot </span>
-            <mwc-icon-button slot="actionItems" dialogAction="cancel">
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              .label=${this.hass.localize("common.close")}
+              .path=${mdiClose}
+              slot="actionItems"
+              dialogAction="cancel"
+            ></ha-icon-button>
           </ha-header-bar>
         </div>
         <hassio-upload-snapshot

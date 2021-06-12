@@ -64,15 +64,18 @@ class DialogSystemLogDetail extends LitElement {
     const showDocumentation =
       this._manifest &&
       (this._manifest.is_built_in ||
-        // Custom components with our offical docs should not link to our docs
+        // Custom components with our official docs should not link to our docs
         !this._manifest.documentation.includes("www.home-assistant.io"));
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} hideActions heading=${true}>
         <ha-header-bar slot="heading">
-          <mwc-icon-button slot="navigationIcon" dialogAction="cancel">
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
+          <ha-icon-button
+            slot="navigationIcon"
+            dialogAction="cancel"
+            .label=${this.hass.localize("ui.common.close")}
+            .path=${mdiClose}
+          ></ha-icon-button>
           <span slot="title">
             ${this.hass.localize(
               "ui.panel.config.logs.details",
@@ -84,9 +87,13 @@ class DialogSystemLogDetail extends LitElement {
               >`
             )}
           </span>
-          <mwc-icon-button id="copy" @click=${this._copyLog} slot="actionItems">
-            <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
-          </mwc-icon-button>
+          <ha-icon-button
+            id="copy"
+            @click=${this._copyLog}
+            slot="actionItems"
+            .label=${this.hass.localize("ui.panel.config.logs.copy")}
+            .path=${mdiContentCopy}
+          ></ha-icon-button>
         </ha-header-bar>
         ${this.isCustomIntegration
           ? html`<div class="custom">

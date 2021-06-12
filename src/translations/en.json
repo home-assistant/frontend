@@ -292,6 +292,7 @@
       "not_now": "Not now",
       "skip": "Skip",
       "menu": "Menu",
+      "help": "Help",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
       "error_required": "Required",
@@ -346,8 +347,10 @@
         }
       },
       "target-picker": {
+        "expand": "Expand",
         "expand_area_id": "Expand this area into the separate devices and entities that it contains. After expanding, it will not update the devices and entities when the area changes.",
         "expand_device_id": "Expand this device into the separate entities that it contains. After expanding, it will not update the entities when the device changes.",
+        "remove": "Remove",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
@@ -884,7 +887,9 @@
     "sidebar": {
       "external_app_configuration": "App Configuration",
       "sidebar_toggle": "Sidebar Toggle",
-      "done": "Done"
+      "done": "Done",
+      "hide_panel": "Hide panel",
+      "show_panel": "Show panel"
     },
     "panel": {
       "my": {
@@ -1063,6 +1068,7 @@
           "no_issues": "There are no new issues!",
           "clear": "Clear",
           "refresh": "Refresh",
+          "copy": "Copy log entry",
           "multiple_messages": "message first occurred at {time} and shows up {counter} times",
           "level": {
             "critical": "CRITICAL",
@@ -1584,6 +1590,13 @@
               "ambiguous_entities": "One or more devices have more than one matching entity, please pick the one you want to use.",
               "unknown_placeholder": "Unknown placeholder"
             }
+          },
+          "trace": {
+            "refresh": "[%key:ui::common::refresh%]",
+            "download_trace": "Download trace",
+            "edit_automation": "Edit automation",
+            "older_trace": "Older trace",
+            "newer_trace": "Newer trace"
           }
         },
         "blueprint": {
@@ -3786,6 +3799,7 @@
       "running_version": "You are currently running version {version}",
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
+      "menu": "[%key:ui::common::menu%]",
       "show_more": "Show more information about this",
       "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
       "update": "Update",

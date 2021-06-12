@@ -88,16 +88,19 @@ export class HaAutomationTrace extends LitElement {
     }
 
     const actionButtons = html`
-      <mwc-icon-button label="Refresh" @click=${() => this._loadTraces()}>
-        <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-      </mwc-icon-button>
-      <mwc-icon-button
+      <ha-icon-button
+        .label=${this.hass.localize("ui.panel.config.automation.trace.refresh")}
+        .path=${mdiRefresh}
+        @click=${() => this._loadTraces()}
+      ></ha-icon-button>
+      <ha-icon-button
+        .label=${this.hass.localize(
+          "ui.panel.config.automation.trace.download_trace"
+        )}
+        .path=${mdiDownload}
         .disabled=${!this._trace}
-        label="Download Trace"
         @click=${this._downloadTrace}
-      >
-        <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
-      </mwc-icon-button>
+      ></ha-icon-button>
     `;
 
     return html`
@@ -120,23 +123,28 @@ export class HaAutomationTrace extends LitElement {
                   class="linkButton"
                   href="/config/automation/edit/${this.automationId}"
                 >
-                  <mwc-icon-button label="Edit Automation" tabindex="-1">
-                    <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                  </mwc-icon-button>
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.automation.trace.edit_automation"
+                    )}
+                    .path=${mdiPencil}
+                    tabindex="-1"
+                  ></ha-icon-button>
                 </a>
               </div>`
             : ""}
           ${this._traces && this._traces.length > 0
             ? html`
                 <div>
-                  <mwc-icon-button
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.automation.trace.older_trace"
+                    )}
+                    .path=${mdiRayEndArrow}
                     .disabled=${this._traces[this._traces.length - 1].run_id ===
                     this._runId}
-                    label="Older trace"
                     @click=${this._pickOlderTrace}
-                  >
-                    <ha-svg-icon .path=${mdiRayEndArrow}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                   <select .value=${this._runId} @change=${this._pickTrace}>
                     ${repeat(
                       this._traces,
@@ -150,13 +158,14 @@ export class HaAutomationTrace extends LitElement {
                         </option>`
                     )}
                   </select>
-                  <mwc-icon-button
+                  <ha-icon-button
+                    .label=${this.hass!.localize(
+                      "ui.panel.config.automation.trace.newer_trace"
+                    )}
+                    .path=${mdiRayStartArrow}
                     .disabled=${this._traces[0].run_id === this._runId}
-                    label="Newer trace"
                     @click=${this._pickNewerTrace}
-                  >
-                    <ha-svg-icon .path=${mdiRayStartArrow}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 </div>
               `
             : ""}

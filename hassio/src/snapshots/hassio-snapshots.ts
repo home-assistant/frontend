@@ -179,9 +179,11 @@ export class HassioSnapshots extends LitElement {
           slot="toolbar-icon"
           @action=${this._handleAction}
         >
-          <mwc-icon-button slot="trigger" alt="menu">
-            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
+          <ha-icon-button
+            .label=${this.hass.localize("common.menu")}
+            .path=${mdiDotsVertical}
+            slot="trigger"
+          ></ha-icon-button>
           <mwc-list-item>
             ${this.supervisor?.localize("common.reload")}
           </mwc-list-item>
@@ -216,13 +218,15 @@ export class HassioSnapshots extends LitElement {
                       </mwc-button>
                     `
                   : html`
-                      <mwc-icon-button
+                      <ha-icon-button
+                        .label=${this.supervisor.localize(
+                          "snapshot.delete_selected"
+                        )}
+                        .path=${mdiDelete}
                         id="delete-btn"
                         class="warning"
                         @click=${this._deleteSelected}
-                      >
-                        <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                      </mwc-icon-button>
+                      ></ha-icon-button>
                       <paper-tooltip animation-delay="0" for="delete-btn">
                         ${this.supervisor.localize("snapshot.delete_selected")}
                       </paper-tooltip>

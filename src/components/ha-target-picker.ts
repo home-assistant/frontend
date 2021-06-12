@@ -259,17 +259,19 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${type === "entity_id"
           ? ""
           : html` <span role="gridcell">
-              <mwc-icon-button
+              <ha-icon-button
                 class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
                 tabindex="-1"
                 role="button"
-                .label=${"Expand"}
+                .label=${this.hass.localize(
+                  `ui.components.target-picker.expand`
+                )}
+                .path=${mdiUnfoldMoreVertical}
+                hideTooltip
                 .id=${id}
                 .type=${type}
                 @click=${this._handleExpand}
-              >
-                <ha-svg-icon .path=${mdiUnfoldMoreVertical}></ha-svg-icon>
-              </mwc-icon-button>
+              ></ha-icon-button>
               <paper-tooltip class="expand" animation-delay="0"
                 >${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
@@ -277,17 +279,17 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               >
             </span>`}
         <span role="gridcell">
-          <mwc-icon-button
+          <ha-icon-button
             class="mdc-chip__icon mdc-chip__icon--trailing"
             tabindex="-1"
             role="button"
-            .label=${"Remove"}
+            .label=${this.hass.localize(`ui.components.target-picker.expand`)}
+            .path=${mdiClose}
+            hideTooltip
             .id=${id}
             .type=${type}
             @click=${this._handleRemove}
-          >
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
+          ></ha-icon-button>
           <paper-tooltip animation-delay="0"
             >${this.hass.localize(
               `ui.components.target-picker.remove_${type}`

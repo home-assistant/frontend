@@ -100,9 +100,11 @@ class HassioAddonConfig extends LitElement {
           </h2>
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-              <mwc-icon-button slot="trigger">
-                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                .label=${this.hass.localize("common.menu")}
+                .path=${mdiDotsVertical}
+                slot="trigger"
+              ></ha-icon-button>
               <mwc-list-item .disabled=${!this._canShowSchema}>
                 ${this._yamlMode
                   ? this.supervisor.localize(

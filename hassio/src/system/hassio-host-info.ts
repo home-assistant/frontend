@@ -184,9 +184,11 @@ class HassioHostInfo extends LitElement {
             corner="BOTTOM_START"
             @action=${this._handleMenuAction}
           >
-            <mwc-icon-button slot="trigger">
-              <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              .label=${this.hass.localize("common.menu")}
+              .path=${mdiDotsVertical}
+              slot="trigger"
+            ></ha-icon-button>
             <mwc-list-item>
               ${this.supervisor.localize("system.host.hardware")}
             </mwc-list-item>

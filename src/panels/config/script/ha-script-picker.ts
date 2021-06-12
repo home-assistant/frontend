@@ -73,15 +73,14 @@ class HaScriptPicker extends LitElement {
           type: "icon-button",
           template: (_toggle, script) =>
             html`
-              <mwc-icon-button
+              <ha-icon-button
                 .script=${script}
-                title="${this.hass.localize(
+                .label="${this.hass.localize(
                   "ui.panel.config.script.picker.run_script"
                 )}"
+                .path=${mdiPlay}
                 @click=${(ev: Event) => this._runScript(ev)}
-              >
-                <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
-              </mwc-icon-button>
+              ></ha-icon-button>
             `,
         },
         icon: {
@@ -129,15 +128,14 @@ class HaScriptPicker extends LitElement {
         title: "",
         type: "icon-button",
         template: (_info, script) => html`
-          <mwc-icon-button
+          <ha-icon-button
             .script=${script}
             @click=${this._showInfo}
-            title="${this.hass.localize(
+            .label="${this.hass.localize(
               "ui.panel.config.script.picker.show_info"
             )}"
-          >
-            <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiInformationOutline}
+          ></ha-icon-button>
         `,
       };
       columns.edit = {
@@ -145,13 +143,12 @@ class HaScriptPicker extends LitElement {
         type: "icon-button",
         template: (_info, script: any) => html`
           <a href="/config/script/edit/${script.entity_id}">
-            <mwc-icon-button
-              title="${this.hass.localize(
+            <ha-icon-button
+              .label="${this.hass.localize(
                 "ui.panel.config.script.picker.edit_script"
               )}"
-            >
-              <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-            </mwc-icon-button>
+              .path=${mdiPencil}
+            ></ha-icon-button>
           </a>
         `,
       };
@@ -177,9 +174,12 @@ class HaScriptPicker extends LitElement {
         @clear-filter=${this._clearFilter}
         hasFab
       >
-        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
-          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-        </mwc-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize("ui.common.help")}
+          .path=${mdiHelpCircle}
+          @click=${this._showHelp}
+        ></ha-icon-button>
         <ha-button-related-filter-menu
           slot="filter-menu"
           corner="BOTTOM_START"

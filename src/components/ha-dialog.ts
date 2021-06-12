@@ -8,14 +8,13 @@ import "./ha-icon-button";
 
 export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
   <span class="header_title">${title}</span>
-  <mwc-icon-button
-    aria-label=${hass.localize("ui.dialogs.generic.close")}
+  <ha-icon-button
+    .label=${hass.localize("ui.dialogs.generic.close")}
+    .path=${mdiClose}
     dialogAction="close"
     class="header_button"
     dir=${computeRTLDirection(hass)}
-  >
-    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-  </mwc-icon-button>
+  ></ha-icon-button>
 `;
 
 @customElement("ha-dialog")

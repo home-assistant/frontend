@@ -382,9 +382,11 @@ class HaSidebar extends LitElement {
                 : this.hass.localize(`panel.${panel.title}`) ||
                   panel.title}</span
             >
-            <mwc-icon-button class="show-panel">
-              <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              .label=${this.hass.localize("ui.sidebar.show_panel")}
+              .path=${mdiPlus}
+              class="show-panel"
+            ></ha-icon-button>
           </paper-icon-item>`;
         })}
         ${this._renderSpacer()}`
@@ -719,13 +721,13 @@ class HaSidebar extends LitElement {
           <span class="item-text">${title}</span>
         </paper-icon-item>
         ${this.editMode
-          ? html`<mwc-icon-button
+          ? html`<ha-icon-button
+              .label=${this.hass.localize("ui.sidebar.hide_panel")}
+              .path=${mdiClose}
               class="hide-panel"
               .panel=${urlPath}
               @click=${this._hidePanel}
-            >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>`
+            ></ha-icon-button>`
           : ""}
       </a>
     `;

@@ -71,15 +71,14 @@ class HaSceneDashboard extends LitElement {
         type: "icon-button",
         template: (_toggle, scene) =>
           html`
-            <mwc-icon-button
+            <ha-icon-button
               .scene=${scene}
-              title="${this.hass.localize(
+              .label="${this.hass.localize(
                 "ui.panel.config.scene.picker.activate_scene"
               )}"
+              .path=${mdiPlay}
               @click=${(ev: Event) => this._activateScene(ev)}
-            >
-              <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
           `,
       },
       icon: {
@@ -98,15 +97,14 @@ class HaSceneDashboard extends LitElement {
         title: "",
         type: "icon-button",
         template: (_info, scene) => html`
-          <mwc-icon-button
+          <ha-icon-button
             .scene=${scene}
             @click=${this._showInfo}
-            title="${this.hass.localize(
+            .label="${this.hass.localize(
               "ui.panel.config.scene.picker.show_info_scene"
             )}"
-          >
-            <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiInformationOutline}
+          ></ha-icon-button>
         `,
       },
       edit: {
@@ -120,16 +118,13 @@ class HaSceneDashboard extends LitElement {
                 : undefined
             )}
           >
-            <mwc-icon-button
+            <ha-icon-button
               .disabled=${!scene.attributes.id}
-              title="${this.hass.localize(
+              .label="${this.hass.localize(
                 "ui.panel.config.scene.picker.edit_scene"
               )}"
-            >
-              <ha-svg-icon
-                .path=${scene.attributes.id ? mdiPencil : mdiPencilOff}
-              ></ha-svg-icon>
-            </mwc-icon-button>
+              .path=${scene.attributes.id ? mdiPencil : mdiPencilOff}
+            ></ha-icon-button>
           </a>
           ${!scene.attributes.id
             ? html`
@@ -163,9 +158,12 @@ class HaSceneDashboard extends LitElement {
         @clear-filter=${this._clearFilter}
         hasFab
       >
-        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
-          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-        </mwc-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          @click=${this._showHelp}
+          .label=${this.hass.localize("ui.common.help")}
+          .path=${mdiHelpCircle}
+        ></ha-icon-button>
         <ha-button-related-filter-menu
           slot="filter-menu"
           corner="BOTTOM_START"

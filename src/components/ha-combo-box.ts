@@ -1,3 +1,4 @@
+import "./ha-icon-button";
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
@@ -93,26 +94,22 @@ export class HaComboBox extends LitElement {
         >
           ${this.value
             ? html`
-                <mwc-icon-button
+                <ha-icon-button
                   .label=${this.hass.localize("ui.components.combo-box.clear")}
+                  .path=${mdiClose}
                   slot="suffix"
                   class="clear-button"
                   @click=${this._clearValue}
-                >
-                  <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                </mwc-icon-button>
+                ></ha-icon-button>
               `
             : ""}
 
-          <mwc-icon-button
+          <ha-icon-button
             .label=${this.hass.localize("ui.components.combo-box.show")}
+            .path=${this._opened ? mdiMenuUp : mdiMenuDown}
             slot="suffix"
             class="toggle-button"
-          >
-            <ha-svg-icon
-              .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-            ></ha-svg-icon>
-          </mwc-icon-button>
+          ></ha-icon-button>
         </paper-input>
       </vaadin-combo-box-light>
     `;

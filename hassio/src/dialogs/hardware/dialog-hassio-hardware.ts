@@ -70,9 +70,11 @@ class HassioHardwareDialog extends LitElement {
           <h2>
             ${this._dialogParams.supervisor.localize("dialog.hardware.title")}
           </h2>
-          <mwc-icon-button dialogAction="close">
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
+          <ha-icon-button
+            .label=${this.hass.localize("common.close")}
+            .path=${mdiClose}
+            dialogAction="close"
+          ></ha-icon-button>
           <search-input
             autofocus
             no-label-float

@@ -11,6 +11,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
+import "../../components/ha-icon-button";
 import "../../components/ha-svg-icon";
 import { fireEvent } from "../dom/fire_event";
 
@@ -50,13 +51,12 @@ class SearchInput extends LitElement {
         </slot>
         ${this.filter &&
         html`
-          <mwc-icon-button
+          <ha-icon-button
             slot="suffix"
             @click=${this._clearSearch}
-            title="Clear"
-          >
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
+            .label=${"Clear"}
+            .path=${mdiClose}
+          ></ha-icon-button>
         `}
       </paper-input>
     `;

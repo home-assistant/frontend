@@ -194,7 +194,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         <ha-icon-button
           slot="toolbar-icon"
           @click=${this._showHelp}
-          .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+          .label=${this.hass.localize("ui.common.help")}
           .path=${mdiHelpCircle}
         ></ha-icon-button>
         <ha-fab

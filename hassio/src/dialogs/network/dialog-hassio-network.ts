@@ -102,9 +102,12 @@ export class DialogHassioNetwork
             <span slot="title">
               ${this.supervisor.localize("dialog.network.title")}
             </span>
-            <mwc-icon-button slot="actionItems" dialogAction="cancel">
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              .label=${this.hass.localize("common.close")}
+              .path=${mdiClose}
+              slot="actionItems"
+              dialogAction="cancel"
+            ></ha-icon-button>
           </ha-header-bar>
           ${this._interfaces.length > 1
             ? html` <mwc-tab-bar

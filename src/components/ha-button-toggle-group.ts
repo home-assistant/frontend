@@ -1,3 +1,4 @@
+import "./ha-icon-button";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -20,14 +21,13 @@ export class HaButtonToggleGroup extends LitElement {
       <div>
         ${this.buttons.map((button) =>
           button.iconPath
-            ? html`<mwc-icon-button
+            ? html`<ha-icon-button
                 .label=${button.label}
+                .path=${button.iconPath}
                 .value=${button.value}
                 ?active=${this.active === button.value}
                 @click=${this._handleClick}
-              >
-                <ha-svg-icon .path=${button.iconPath}></ha-svg-icon>
-              </mwc-icon-button>`
+              ></ha-icon-button>`
             : html`<mwc-button
                 style=${styleMap({
                   width: this.fullWidth

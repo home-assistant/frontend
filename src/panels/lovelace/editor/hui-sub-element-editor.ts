@@ -37,9 +37,11 @@ export class HuiSubElementEditor extends LitElement {
     return html`
       <div class="header">
         <div class="back-title">
-          <mwc-icon-button @click=${this._goBack}>
-            <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
-          </mwc-icon-button>
+          <ha-icon-button
+            .label=${this.hass!.localize("ui.common.back")}
+            .path=${mdiArrowLeft}
+            @click=${this._goBack}
+          ></ha-icon-button>
           <span slot="title"
             >${this.hass.localize(
               `ui.panel.lovelace.editor.sub-element-editor.types.${this.config?.type}`

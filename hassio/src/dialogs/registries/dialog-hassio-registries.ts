@@ -110,16 +110,15 @@ class HassioRegistriesDialog extends LitElement {
                             )}:
                             ${entry.username}</span
                           >
-                          <mwc-icon-button
+                          <ha-icon-button
                             .entry=${entry}
-                            .title=${this.supervisor.localize(
+                            .label=${this.supervisor.localize(
                               "dialog.registries.remove"
                             )}
+                            .path=${mdiDelete}
                             slot="meta"
                             @click=${this._removeRegistry}
-                          >
-                            <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                          </mwc-icon-button>
+                          ></ha-icon-button>
                         </mwc-list-item>
                       `
                     )

@@ -72,12 +72,11 @@ class HassioIngressView extends LitElement {
 
     return html`${this.narrow || this.hass.dockedSidebar === "always_hidden"
       ? html`<div class="header">
-            <mwc-icon-button
-              aria-label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+            <ha-icon-button
+              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+              .path=${mdiMenu}
               @click=${this._toggleMenu}
-            >
-              <ha-svg-icon .path=${mdiMenu}></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
             <div class="main-title">${this._addon.name}</div>
           </div>
           ${iframe}`

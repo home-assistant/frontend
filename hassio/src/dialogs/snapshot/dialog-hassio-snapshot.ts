@@ -72,9 +72,12 @@ class HassioSnapshotDialog
         <div slot="heading">
           <ha-header-bar>
             <span slot="title">${this._snapshot.name}</span>
-            <mwc-icon-button slot="actionItems" dialogAction="cancel">
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              .label=${this.hass.localize("common.close")}
+              .path=${mdiClose}
+              slot="actionItems"
+              dialogAction="cancel"
+            ></ha-icon-button>
           </ha-header-bar>
         </div>
         ${this._restoringSnapshot
@@ -104,9 +107,11 @@ class HassioSnapshotDialog
               @action=${this._handleMenuAction}
               @closed=${(ev: Event) => ev.stopPropagation()}
             >
-              <mwc-icon-button slot="trigger" alt="menu">
-                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                .label=${this.hass.localize("common.menu")}
+                .path=${mdiDotsVertical}
+                slot="trigger"
+              ></ha-icon-button>
               <mwc-list-item>Download Snapshot</mwc-list-item>
               <mwc-list-item class="error">Delete Snapshot</mwc-list-item>
             </ha-button-menu>`
