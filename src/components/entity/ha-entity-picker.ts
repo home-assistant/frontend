@@ -23,6 +23,7 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-svg-icon";
 import "./state-badge";
+import "../ha-icon-button";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -229,31 +230,27 @@ export class HaEntityPicker extends LitElement {
           <div class="suffix" slot="suffix">
             ${this.value && !this.hideClearIcon
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     .label=${this.hass.localize(
                       "ui.components.entity.entity-picker.clear"
                     )}
+                    .path=${mdiClose}
                     class="clear-button"
                     tabindex="-1"
                     @click=${this._clearValue}
                     no-ripple
-                  >
-                    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
 
-            <mwc-icon-button
+            <ha-icon-button
               .label=${this.hass.localize(
                 "ui.components.entity.entity-picker.show_entities"
               )}
+              .path=${this._opened ? mdiMenuUp : mdiMenuDown}
               class="toggle-button"
               tabindex="-1"
-            >
-              <ha-svg-icon
-                .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-              ></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
           </div>
         </paper-input>
       </vaadin-combo-box-light>

@@ -189,12 +189,10 @@ export class HaServiceControl extends LitElement {
               target="_blank"
               rel="noreferrer"
             >
-              <mwc-icon-button>
-                <ha-svg-icon
-                  path=${mdiHelpCircle}
-                  class="help-icon"
-                ></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                .path=${mdiHelpCircle}
+                class="help-icon"
+              ></ha-icon-button>
             </a>`
           : ""}
       </div>

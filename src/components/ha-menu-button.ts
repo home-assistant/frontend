@@ -1,3 +1,4 @@
+import "./ha-icon-button";
 import "@material/mwc-icon-button";
 import { mdiMenu } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -50,12 +51,11 @@ class HaMenuButton extends LitElement {
           (entityId) => computeDomain(entityId) === "configurator"
         ));
     return html`
-      <mwc-icon-button
-        aria-label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+      <ha-icon-button
+        .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+        .path=${mdiMenu}
         @click=${this._toggleMenu}
-      >
-        <ha-svg-icon .path=${mdiMenu}></ha-svg-icon>
-      </mwc-icon-button>
+      ></ha-icon-button>
       ${hasNotifications ? html` <div class="dot"></div> ` : ""}
     `;
   }

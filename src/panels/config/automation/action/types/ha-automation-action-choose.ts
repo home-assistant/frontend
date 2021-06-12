@@ -28,15 +28,14 @@ export class HaChooseAction extends LitElement implements ActionElement {
     return html`
       ${(action.choose ? ensureArray(action.choose) : []).map(
         (option, idx) => html`<ha-card>
-          <mwc-icon-button
+          <ha-icon-button
             .idx=${idx}
             @click=${this._removeOption}
-            title=${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.config.automation.editor.actions.type.choose.remove_option"
             )}
-          >
-            <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiDelete}
+          ></ha-icon-button>
           <div class="card-content">
             <h2>
               ${this.hass.localize(

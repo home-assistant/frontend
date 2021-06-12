@@ -301,16 +301,13 @@ class HaSidebar extends LitElement {
     >
       ${!this.narrow
         ? html`
-            <mwc-icon-button
+            <ha-icon-button
               .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+              .path=${this.hass.dockedSidebar === "docked"
+                ? mdiMenuOpen
+                : mdiMenu}
               @action=${this._toggleSidebar}
-            >
-              <ha-svg-icon
-                .path=${this.hass.dockedSidebar === "docked"
-                  ? mdiMenuOpen
-                  : mdiMenu}
-              ></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
           `
         : ""}
       ${this.editMode

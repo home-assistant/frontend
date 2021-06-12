@@ -110,42 +110,39 @@ export class MoreInfoDialog extends LitElement {
       >
         <div slot="heading" class="heading">
           <ha-header-bar>
-            <mwc-icon-button
+            <ha-icon-button
               slot="navigationIcon"
               dialogAction="cancel"
               .label=${this.hass.localize(
                 "ui.dialogs.more_info_control.dismiss"
               )}
-            >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+              .path=${mdiClose}
+            ></ha-icon-button>
             <div slot="title" class="main-title" @click=${this._enlarge}>
               ${computeStateName(stateObj)}
             </div>
             ${this.hass.user!.is_admin
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     slot="actionItems"
                     .label=${this.hass.localize(
                       "ui.dialogs.more_info_control.settings"
                     )}
+                    .path=${mdiCog}
                     @click=${this._gotoSettings}
-                  >
-                    <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
             ${this.shouldShowEditIcon(domain, stateObj)
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     slot="actionItems"
                     .label=${this.hass.localize(
                       "ui.dialogs.more_info_control.edit"
                     )}
+                    .path=${mdiPencil}
                     @click=${this._gotoEdit}
-                  >
-                    <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
           </ha-header-bar>

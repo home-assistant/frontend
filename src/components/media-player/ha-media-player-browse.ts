@@ -226,14 +226,13 @@ export class HaMediaPlayerBrowse extends LitElement {
         </div>
         ${this.dialog
           ? html`
-              <mwc-icon-button
-                aria-label=${this.hass.localize("ui.dialogs.generic.close")}
+              <ha-icon-button
+                .label=${this.hass.localize("ui.dialogs.generic.close")}
+                .path=${mdiClose}
                 @click=${this._closeDialogAction}
                 class="header_button"
                 dir=${computeRTLDirection(this.hass)}
-              >
-                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-              </mwc-icon-button>
+              ></ha-icon-button>
             `
           : ""}
       </div>
@@ -282,7 +281,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                           </ha-card>
                           ${child.can_play
                             ? html`
-                                <mwc-icon-button
+                                <ha-icon-button
                                   class="play ${classMap({
                                     can_expand: child.can_expand,
                                   })}"
@@ -290,14 +289,11 @@ export class HaMediaPlayerBrowse extends LitElement {
                                   .label=${this.hass.localize(
                                     `ui.components.media-browser.${this.action}-media`
                                   )}
+                                  .path=${this.action === "play"
+                                    ? mdiPlay
+                                    : mdiPlus}
                                   @click=${this._actionClicked}
-                                >
-                                  <ha-svg-icon
-                                    .path=${this.action === "play"
-                                      ? mdiPlay
-                                      : mdiPlus}
-                                  ></ha-svg-icon>
-                                </mwc-icon-button>
+                                ></ha-icon-button>
                               `
                             : ""}
                         </div>
@@ -340,7 +336,7 @@ export class HaMediaPlayerBrowse extends LitElement {
                           )}
                           slot="graphic"
                         >
-                          <mwc-icon-button
+                          <ha-icon-button
                             class="play ${classMap({
                               show:
                                 !mediaClass.show_list_images ||
@@ -350,14 +346,9 @@ export class HaMediaPlayerBrowse extends LitElement {
                             .label=${this.hass.localize(
                               `ui.components.media-browser.${this.action}-media`
                             )}
+                            .path=${this.action === "play" ? mdiPlay : mdiPlus}
                             @click=${this._actionClicked}
-                          >
-                            <ha-svg-icon
-                              .path=${this.action === "play"
-                                ? mdiPlay
-                                : mdiPlus}
-                            ></ha-svg-icon>
-                          </mwc-icon-button>
+                          ></ha-icon-button>
                         </div>
                         <span class="title">${child.title}</span>
                       </mwc-list-item>

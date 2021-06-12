@@ -1,3 +1,4 @@
+import "./ha-icon-button";
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
 import { html, LitElement, TemplateResult } from "lit";
@@ -29,12 +30,11 @@ export class HaIconButtonPrev extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <mwc-icon-button
+      <ha-icon-button
         .disabled=${this.disabled}
         .label=${this.label || this.hass?.localize("ui.common.back") || "Back"}
-      >
-        <ha-svg-icon .path=${this._icon}></ha-svg-icon>
-      </mwc-icon-button>
+        .path=${this._icon}
+      ></ha-icon-button>
     `;
   }
 }

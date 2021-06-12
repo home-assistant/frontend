@@ -124,32 +124,24 @@ export default class HaAutomationActionRow extends LitElement {
           <div class="card-menu">
             ${this.index !== 0
               ? html`
-                  <mwc-icon-button
-                    .title=${this.hass.localize(
-                      "ui.panel.config.automation.editor.move_up"
-                    )}
+                  <ha-icon-button
                     .label=${this.hass.localize(
                       "ui.panel.config.automation.editor.move_up"
                     )}
+                    .path=${mdiArrowUp}
                     @click=${this._moveUp}
-                  >
-                    <ha-svg-icon .path=${mdiArrowUp}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
             ${this.index !== this.totalActions - 1
               ? html`
-                  <mwc-icon-button
-                    .title=${this.hass.localize(
-                      "ui.panel.config.automation.editor.move_down"
-                    )}
+                  <ha-icon-button
                     .label=${this.hass.localize(
                       "ui.panel.config.automation.editor.move_down"
                     )}
+                    .path=${mdiArrowDown}
                     @click=${this._moveDown}
-                  >
-                    <ha-svg-icon .path=${mdiArrowDown}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
