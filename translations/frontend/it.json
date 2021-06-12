@@ -413,7 +413,7 @@
             "select_type": "Seleziona cosa ripristinare",
             "selected": "{number} selezionato/i",
             "type": "Tipo di istantanea",
-            "upload_snapshot": "Invia istantanea"
+            "upload_snapshot": "Aggiungi istantanea"
         },
         "store": {
             "missing_addons": "Componenti aggiuntivi mancanti? Abilita la modalità avanzata nella pagina del tuo profilo utente",

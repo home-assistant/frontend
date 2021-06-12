@@ -318,6 +318,14 @@
             "no_addons": "Zatím nemáte nainstalované žádné doplňky. Chcete-li začít, přejděte do obchodu s doplňky."
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atributy",
+                "device_path": "Cesta k zařízení",
+                "id": "ID",
+                "search": "Hledat hardware",
+                "subsystem": "Subsystém",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Připojeno k {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "Doplňky",
             "available_snapshots": "Dostupné zálohy",
+            "confirm_password": "Potvrďte heslo zálohy",
             "could_not_create": "Nelze vytvořit zálohu",
             "create": "Vytvořit",
             "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
@@ -409,6 +418,7 @@
             "password": "Heslo zálohy",
             "password_protected": "chráněno heslem",
             "password_protection": "Ochrana heslem",
+            "passwords_not_matching": "Hesla se neshodují",
             "security": "Zabezpečení",
             "select_type": "Vyberte, co chcete obnovit",
             "selected": "{number} vybraných",
@@ -1169,7 +1179,7 @@
                     },
                     "types": {
                         "navigation": "Navigovat",
-                        "reload": "Znovu načíst",
+                        "reload": "Nově načíst",
                         "server_control": "Server"
                     }
                 },
@@ -3101,7 +3111,7 @@
                         "heal_node": "Uzdravit uzel",
                         "node_info": "Informace o uzlu",
                         "print_node": "Otisk uzlu",
-                        "refresh_entity": "Znovu načíst Entitu",
+                        "refresh_entity": "Nově načíst Entitu",
                         "refresh_node": "Obnovit uzel",
                         "remove_failed_node": "Odebrat selhaný uzel",
                         "remove_node": "Odebrat uzel",
@@ -3544,7 +3554,7 @@
                         "options": "Více možností",
                         "pick_card": "Kterou kartu chcete přidat?",
                         "pick_card_view_title": "Kterou kartu byste chtěli přidat do svého {name} pohledu?",
-                        "search_cards": "Vyhledat karty",
+                        "search_cards": "Hledat karty",
                         "show_code_editor": "Zobrazit editor kódu",
                         "show_visual_editor": "Zobrazit vizuální editor",
                         "toggle_editor": "Přepnout Editor",
@@ -3876,10 +3886,19 @@
                 "intro": "Jste připraveni oživit svůj domov, zachovat si své soukromí a připojit se k celosvětové komunitě tvůrců?",
                 "next": "Další",
                 "restore": {
+                    "addons": "Doplňky",
+                    "confirm_password": "Potvrďte heslo zálohy",
                     "description": "Případně můžete Home Assistant obnovit z poslední zálohy.",
+                    "folders": "Složky",
+                    "full_snapshot": "Úplná záloha",
                     "hide_log": "Skrýt celý log",
                     "in_progress": "Probíhá obnovení",
-                    "show_log": "Zobrazit celý log"
+                    "partial_snapshot": "Částečná záloha",
+                    "password": "Heslo zálohy",
+                    "password_protection": "Ochrana heslem",
+                    "select_type": "Vyberte, co chcete obnovit",
+                    "show_log": "Zobrazit celý log",
+                    "type": "Typ zálohy"
                 },
                 "user": {
                     "create_account": "Vytvořit účet",

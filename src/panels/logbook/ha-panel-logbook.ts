@@ -1,22 +1,22 @@
 import { mdiRefresh } from "@mdi/js";
+import "@material/mwc-icon-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
-import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import {
   clearLogbookCache,
   getLogbookData,
   LogbookEntry,
 } from "../../data/logbook";
-import { fetchPersons } from "../../data/person";
 import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
@@ -45,7 +45,7 @@ export class HaPanelLogbook extends LitElement {
 
   @state() private _ranges?: DateRangePickerRanges;
 
-  private _fetchUserDone?: Promise<unknown>;
+  private _fetchUserPromise?: Promise<void>;
 
   @state() private _userIdToName = {};
 
@@ -137,7 +137,7 @@ export class HaPanelLogbook extends LitElement {
     super.firstUpdated(changedProps);
     this.hass.loadBackendTranslation("title");
 
-    this._fetchUserDone = this._fetchUserNames();
+    this._fetchUserPromise = this._fetchUserNames();
 
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -199,23 +199,19 @@ export class HaPanelLogbook extends LitElement {
   private async _fetchUserNames() {
     const userIdToName = {};
 
-    // Start loading all the data
-    const personProm = fetchPersons(this.hass);
-    const userProm = this.hass.user!.is_admin && fetchUsers(this.hass);
+    // Start loading users
+    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
 
     // Process persons
-    const persons = await personProm;
-
-    for (const person of persons.storage) {
-      if (person.user_id) {
-        userIdToName[person.user_id] = person.name;
+    Object.values(this.hass.states).forEach((entity) => {
+      if (
+        entity.attributes.user_id &&
+        computeStateDomain(entity) === "person"
+      ) {
+        this._userIdToName[entity.attributes.user_id] =
+          entity.attributes.friendly_name;
       }
-    }
-    for (const person of persons.config) {
-      if (person.user_id) {
-        userIdToName[person.user_id] = person.name;
-      }
-    }
+    });
 
     // Process users
     if (userProm) {
@@ -266,7 +262,7 @@ export class HaPanelLogbook extends LitElement {
         isComponentLoaded(this.hass, "trace")
           ? loadTraceContexts(this.hass)
           : {},
-        this._fetchUserDone,
+        this._fetchUserPromise,
       ]);
 
       this._entries = entries;
@@ -277,7 +273,6 @@ export class HaPanelLogbook extends LitElement {
         text: err.message,
       });
     }
-
     this._isLoading = false;
   }
 

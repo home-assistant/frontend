@@ -9,11 +9,12 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { throttle } from "../../../common/util/throttle";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
+import { fetchUsers } from "../../../data/user";
 import { getLogbookData, LogbookEntry } from "../../../data/logbook";
 import type { HomeAssistant } from "../../../types";
 import "../../logbook/ha-logbook";
@@ -51,17 +52,19 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     };
   }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: LogbookCardConfig;
 
   @state() private _logbookEntries?: LogbookEntry[];
 
-  @state() private _persons = {};
-
   @state() private _configEntities?: EntityConfig[];
 
+  @state() private _userIdToName = {};
+
   private _lastLogbookDate?: Date;
+
+  private _fetchUserPromise?: Promise<void>;
 
   private _error = false;
 
@@ -116,7 +119,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
   }
 
   protected firstUpdated(): void {
-    this._fetchPersonNames();
+    this._fetchUserPromise = this._fetchUserNames();
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -207,7 +210,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
                   virtualize
                   .hass=${this.hass}
                   .entries=${this._logbookEntries}
-                  .userIdToName=${this._persons}
+                  .userIdToName=${this._userIdToName}
                 ></ha-logbook>
               `
             : html`
@@ -238,42 +241,59 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     const now = new Date();
 
     try {
-      const newEntries = await getLogbookData(
+    const [newEntries] = await Promise.all([
+      getLogbookData(
         this.hass,
         lastDate.toISOString(),
         now.toISOString(),
         this._configEntities!.map((entity) => entity.entity).toString(),
         true
-      );
+      ),
+      this._fetchUserPromise,
+    ]);
 
-      const logbookEntries = this._logbookEntries
-        ? [...newEntries, ...this._logbookEntries]
-        : newEntries;
+    const logbookEntries = this._logbookEntries
+      ? [...newEntries, ...this._logbookEntries]
+      : newEntries;
 
-      this._logbookEntries = logbookEntries.filter(
-        (logEntry) => new Date(logEntry.when) > hoursToShowDate
-      );
+    this._logbookEntries = logbookEntries.filter(
+      (logEntry) => new Date(logEntry.when) > hoursToShowDate
+    );
 
-      this._lastLogbookDate = now;
+    this._lastLogbookDate = now;
     } catch (err) {
       this._error = true;
     }
   }
 
-  private _fetchPersonNames() {
-    if (!this.hass) {
-      return;
-    }
+  private async _fetchUserNames() {
+    const userIdToName = {};
 
+    // Start loading users
+    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
+
+    // Process persons
     Object.values(this.hass!.states).forEach((entity) => {
       if (
         entity.attributes.user_id &&
         computeStateDomain(entity) === "person"
       ) {
-        this._persons[entity.attributes.user_id] =
+        this._userIdToName[entity.attributes.user_id] =
           entity.attributes.friendly_name;
       }
     });
+
+    // Process users
+    if (userProm) {
+      const users = await userProm;
+      for (const user of users) {
+        if (!(user.id in userIdToName)) {
+          userIdToName[user.id] = user.name;
+        }
+      }
+    }
+
+    this._userIdToName = userIdToName;
   }
 
   static get styles(): CSSResultGroup {

@@ -318,6 +318,14 @@
             "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Attributes",
+                "device_path": "Device path",
+                "id": "ID",
+                "search": "Search hardware",
+                "subsystem": "Subsystem",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Connected to {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "Add-ons",
             "available_snapshots": "Available Snapshots",
+            "confirm_password": "Confirm Snapshot password",
             "could_not_create": "Could not create snapshot",
             "create": "Create",
             "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
@@ -409,6 +418,7 @@
             "password": "Snapshot password",
             "password_protected": "password protected",
             "password_protection": "Password protection",
+            "passwords_not_matching": "The passwords does not match",
             "security": "Security",
             "select_type": "Select what to restore",
             "selected": "{number} selected",
@@ -3881,10 +3891,19 @@
                 "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
                 "next": "Next",
                 "restore": {
+                    "addons": "Add-ons",
+                    "confirm_password": "Confirm Snapshot password",
                     "description": "Alternatively you can restore from a previous snapshot.",
+                    "folders": "Folders",
+                    "full_snapshot": "Full snapshot",
                     "hide_log": "Hide full log",
                     "in_progress": "Restore in progress",
-                    "show_log": "Show full log"
+                    "partial_snapshot": "Partial snapshot",
+                    "password": "Snapshot password",
+                    "password_protection": "Password protection",
+                    "select_type": "Select what to restore",
+                    "show_log": "Show full log",
+                    "type": "Snapshot type"
                 },
                 "user": {
                     "create_account": "Create Account",

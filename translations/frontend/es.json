@@ -318,6 +318,14 @@
             "no_addons": "Aún no tienes ningún complemento instalado. ¡Dirígete a la tienda de complementos para comenzar!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atributos",
+                "device_path": "Ruta del dispositivo",
+                "id": "ID",
+                "search": "Buscar hardware",
+                "subsystem": "Subsistema",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Conectado a {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "Complementos",
             "available_snapshots": "Instantáneas disponibles",
+            "confirm_password": "Confirma la contraseña de la instantánea",
             "could_not_create": "No se pudo crear la instantánea",
             "create": "Crear",
             "create_blocked_not_running": "No es posible crear una instantánea en este momento porque el sistema está en el estado {state}.",
@@ -409,6 +418,7 @@
             "password": "Contraseña de la instantánea",
             "password_protected": "protegida por contraseña",
             "password_protection": "Protección con contraseña",
+            "passwords_not_matching": "Las contraseñas no coinciden",
             "security": "Seguridad",
             "select_type": "Selecciona qué restaurar",
             "selected": "{number} {number, plural,\n one {seleccionada}\n other {seleccionadas}\n}",
@@ -3881,10 +3891,19 @@
                 "intro": "¿Estás listo para despertar tu casa, reclamar tu privacidad y unirte a una comunidad mundial de pensadores?",
                 "next": "Siguiente",
                 "restore": {
+                    "addons": "Complementos",
+                    "confirm_password": "Confirma la contraseña de la instantánea",
                     "description": "Alternativamente, puedes restaurar desde una copia de seguridad anterior.",
+                    "folders": "Carpetas",
+                    "full_snapshot": "Instantánea completa",
                     "hide_log": "Ocultar registro completo",
                     "in_progress": "Restauración en curso",
-                    "show_log": "Mostrar registro completo"
+                    "partial_snapshot": "Instantánea parcial",
+                    "password": "Contraseña de la instantánea",
+                    "password_protection": "Protección con contraseña",
+                    "select_type": "Selecciona qué restaurar",
+                    "show_log": "Mostrar registro completo",
+                    "type": "Tipo de instantánea"
                 },
                 "user": {
                     "create_account": "Crear una cuenta",

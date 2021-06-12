@@ -318,6 +318,14 @@
             "no_addons": "Du har ikke installert tilleggsprogrammer ennå. Gå over til tilleggsbutikken for å komme i gang!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Attributter",
+                "device_path": "Bane til enhet",
+                "id": "ID",
+                "search": "Søk i maskinvare",
+                "subsystem": "Delsystem",
+                "title": "Maskinvare"
+            },
             "network": {
                 "connected_to": "Koblet til {ssid}",
                 "dhcp": "",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "Tillegg",
             "available_snapshots": "Tilgjengelige sikkerhetskopier",
+            "confirm_password": "Bekreft passord for øyeblikksbilde",
             "could_not_create": "Kunne ikke opprette sikkerhetskopi",
             "create": "Opprett",
             "create_blocked_not_running": "Å lage en sikkerhetskopi er ikke mulig akkurat nå fordi systemet er i {state} status",
@@ -409,6 +418,7 @@
             "password": "Passord for øyeblikksbilde",
             "password_protected": "Passordbeskyttet",
             "password_protection": "Passordbeskyttelse",
+            "passwords_not_matching": "Passordene samsvarer ikke",
             "security": "Sikkerhet",
             "select_type": "Velg hva du vil gjenopprette",
             "selected": "{number} valgt",
@@ -1130,7 +1140,7 @@
                         "zone": "Soner"
                     },
                     "reload": {
-                        "automation": "Automatisering",
+                        "automation": "Automasjoner",
                         "command_line": "Kommandolinjeenheter",
                         "core": "Plassering og tilpasninger",
                         "filesize": "Enheter for filstørrelse",
@@ -1438,7 +1448,7 @@
                             "delete_confirm": "Er du sikker på at du vil slette dette?",
                             "duplicate": "Dupliser",
                             "header": "Betingelser",
-                            "introduction": "Betingelsene er valgfrie og vil hindre at automatiseringen kjøres med mindre alle betingelsene er oppfylt.",
+                            "introduction": "Betingelsene er valgfrie og vil hindre at automasjonen kjøres med mindre alle betingelsene er oppfylt.",
                             "learn_more": "Lær mer om betingelser",
                             "name": "Betingelse",
                             "type_select": "Betingelse",
@@ -1519,7 +1529,7 @@
                         "edit_ui": "Rediger i visuell editor",
                         "edit_yaml": "Rediger i YAML",
                         "enable_disable": "Aktivere/deaktivere automasjon",
-                        "introduction": "Bruk automatisering for å bringe hjemmet ditt til live.",
+                        "introduction": "Bruk automasjoner for å bringe hjemmet ditt til live.",
                         "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
                         "max": {
@@ -1647,8 +1657,8 @@
                         "add_automation": "Legg til automasjon",
                         "delete_automation": "Slett automasjon",
                         "delete_confirm": "Er du sikker på at du vil slette denne automasjonen?",
-                        "dev_automation": "Feilsøk automatisering",
-                        "dev_only_editable": "Bare automatisering som har en unik ID tildelt, kan feilsøkes.",
+                        "dev_automation": "Feilsøk automasjon",
+                        "dev_only_editable": "Bare automasjoner som har en unik ID tildelt, kan feilsøkes.",
                         "duplicate": "Dupliser",
                         "duplicate_automation": "Dupliser automasjon",
                         "edit_automation": "Rediger automasjon",
@@ -1658,7 +1668,7 @@
                         },
                         "introduction": "Automasjonsredigeringen lar deg lage og redigere automasjoner. Følg lenken under for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om automasjoner",
-                        "no_automations": "Vi fant ingen automatiseringer",
+                        "no_automations": "Vi kunne ikke finne noen automasjoner",
                         "only_editable": "Bare automasjoner definert i automations.yaml kan redigeres.",
                         "pick_automation": "Velg automasjon for å redigere",
                         "show_info_automation": "Vis informasjon om automasjon"
@@ -1789,7 +1799,7 @@
                                 "target_browser": "Nettleser"
                             },
                             "female": "Kvinne",
-                            "info": "Ta med personlighet hjem ved å få den til å snakke med deg ved å bruke våre tekst-til-tale-tjenester. Du kan bruke dette i automatiseringer og skript ved hjelp av tjenesten {service}.",
+                            "info": "Ta med personlighet hjem ved å få den til å snakke med deg ved å bruke våre tekst-til-tale-tjenester. Du kan bruke dette i automasjoner og skript ved hjelp av tjenesten {service}.",
                             "male": "Mann",
                             "title": "Tekst til tale",
                             "try": "Prøve"
@@ -2142,7 +2152,7 @@
                 "header": "Konfigurer Home Assistant",
                 "helpers": {
                     "caption": "Hjelpere",
-                    "description": "Elementer som hjelper med å bygge automatiseringer",
+                    "description": "Elementer som hjelper med å bygge automasjoner",
                     "dialog": {
                         "add_helper": "Legg hjelper",
                         "add_platform": "Legg til {platform}",
@@ -2676,7 +2686,7 @@
                     "description": "Start på nytt og stopp Home Assistant-serveren",
                     "section": {
                         "reloading": {
-                            "automation": "Automatisering",
+                            "automation": "Automasjoner",
                             "command_line": "Kommandolinjeenheter",
                             "core": "Plassering og tilpasninger",
                             "filesize": "Enheter for filstørrelse",
@@ -3881,10 +3891,19 @@
                 "intro": "Er du klar til å ta kontroll over hjemmet ditt, gjenvinne ditt privatliv og bli med i et verdensomspennende samfunn av entusiaster?",
                 "next": "Neste",
                 "restore": {
+                    "addons": "Tillegg",
+                    "confirm_password": "Bekreft passord for øyeblikksbilde",
                     "description": "Alternativt kan du gjenopprette fra et forrige snapshot.",
+                    "folders": "Mapper",
+                    "full_snapshot": "Full sikkerhetskopi",
                     "hide_log": "Skjul full logg",
                     "in_progress": "Gjenoppretting pågår",
-                    "show_log": "Vis full logg"
+                    "partial_snapshot": "Delvis sikkerhetskopi",
+                    "password": "Passord for øyeblikksbilde",
+                    "password_protection": "Passordbeskyttelse",
+                    "select_type": "Velg hva du vil gjenopprette",
+                    "show_log": "Vis full logg",
+                    "type": "Type øyeblikksbilde"
                 },
                 "user": {
                     "create_account": "Opprett konto",

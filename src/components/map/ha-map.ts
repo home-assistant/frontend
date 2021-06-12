@@ -1,13 +1,15 @@
-import { Circle, Layer, Map, Marker, TileLayer } from "leaflet";
 import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
-import { customElement, property } from "lit/decorators";
+  Circle,
+  CircleMarker,
+  LatLngTuple,
+  Layer,
+  Map,
+  Marker,
+  Polyline,
+  TileLayer,
+} from "leaflet";
+import { css, CSSResultGroup, PropertyValues, ReactiveElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   LeafletModuleType,
   replaceTileLayer,
@@ -15,194 +17,324 @@ import {
 } from "../../common/dom/setup-leaflet-map";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { debounce } from "../../common/util/debounce";
-import "../../panels/map/ha-entity-marker";
+import "./ha-entity-marker";
 import { HomeAssistant } from "../../types";
 import "../ha-icon-button";
+import { installResizeObserver } from "../../panels/lovelace/common/install-resize-observer";
+
+const getEntityId = (entity: string | HaMapEntity): string =>
+  typeof entity === "string" ? entity : entity.entity_id;
+
+export interface HaMapPaths {
+  points: LatLngTuple[];
+  color?: string;
+  gradualOpacity?: number;
+}
+
+export interface HaMapEntity {
+  entity_id: string;
+  color: string;
+}
 
 @customElement("ha-map")
-class HaMap extends LitElement {
+export class HaMap extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public entities?: string[];
+  @property({ attribute: false }) public entities?: string[] | HaMapEntity[];
 
-  @property() public darkMode?: boolean;
+  @property({ attribute: false }) public paths?: HaMapPaths[];
 
-  @property() public zoom?: number;
+  @property({ attribute: false }) public layers?: Layer[];
 
-  // eslint-disable-next-line
+  @property({ type: Boolean }) public autoFit = false;
+
+  @property({ type: Boolean }) public fitZones?: boolean;
+
+  @property({ type: Boolean }) public darkMode?: boolean;
+
+  @property({ type: Number }) public zoom = 14;
+
+  @state() private _loaded = false;
+
+  public leafletMap?: Map;
+
   private Leaflet?: LeafletModuleType;
-
-  private _leafletMap?: Map;
 
   private _tileLayer?: TileLayer;
 
-  // @ts-ignore
   private _resizeObserver?: ResizeObserver;
-
-  private _debouncedResizeListener = debounce(
-    () => {
-      if (!this._leafletMap) {
-        return;
-      }
-      this._leafletMap.invalidateSize();
-    },
-    100,
-    false
-  );
 
   private _mapItems: Array<Marker | Circle> = [];
 
   private _mapZones: Array<Marker | Circle> = [];
 
-  private _connected = false;
+  private _mapPaths: Array<Polyline | CircleMarker> = [];
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._connected = true;
-    if (this.hasUpdated) {
-      this.loadMap();
-      this._attachObserver();
-    }
+    this._loadMap();
+    this._attachObserver();
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
-    this._connected = false;
-
-    if (this._leafletMap) {
-      this._leafletMap.remove();
-      this._leafletMap = undefined;
+    if (this.leafletMap) {
+      this.leafletMap.remove();
+      this.leafletMap = undefined;
       this.Leaflet = undefined;
     }
 
+    this._loaded = false;
+
     if (this._resizeObserver) {
-      this._resizeObserver.unobserve(this._mapEl);
-    } else {
-      window.removeEventListener("resize", this._debouncedResizeListener);
+      this._resizeObserver.unobserve(this);
     }
   }
 
-  protected render(): TemplateResult {
-    if (!this.entities) {
-      return html``;
-    }
-    return html` <div id="map"></div> `;
-  }
+  protected update(changedProps: PropertyValues) {
+    super.update(changedProps);
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this.loadMap();
-
-    if (this._connected) {
-      this._attachObserver();
-    }
-  }
-
-  protected shouldUpdate(changedProps) {
-    if (!changedProps.has("hass") || changedProps.size > 1) {
-      return true;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-    if (!oldHass || !this.entities) {
-      return true;
-    }
-
-    // Check if any state has changed
-    for (const entity of this.entities) {
-      if (oldHass.states[entity] !== this.hass!.states[entity]) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("hass")) {
-      this._drawEntities();
-      this._fitMap();
-
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.themes.darkMode === this.hass.themes.darkMode) {
-        return;
-      }
-      if (!this.Leaflet || !this._leafletMap || !this._tileLayer) {
-        return;
-      }
-      this._tileLayer = replaceTileLayer(
-        this.Leaflet,
-        this._leafletMap,
-        this._tileLayer,
-        this.hass.themes.darkMode
-      );
-    }
-  }
-
-  private get _mapEl(): HTMLDivElement {
-    return this.shadowRoot!.getElementById("map") as HTMLDivElement;
-  }
-
-  private async loadMap(): Promise<void> {
-    [this._leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
-      this._mapEl,
-      this.darkMode ?? this.hass.themes.darkMode
-    );
-    this._drawEntities();
-    this._leafletMap.invalidateSize();
-    this._fitMap();
-  }
-
-  private _fitMap(): void {
-    if (!this._leafletMap || !this.Leaflet || !this.hass) {
+    if (!this._loaded) {
       return;
     }
-    if (this._mapItems.length === 0) {
-      this._leafletMap.setView(
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (changedProps.has("_loaded") || changedProps.has("entities")) {
+      this._drawEntities();
+    } else if (this._loaded && oldHass && this.entities) {
+      // Check if any state has changed
+      for (const entity of this.entities) {
+        if (
+          oldHass.states[getEntityId(entity)] !==
+          this.hass!.states[getEntityId(entity)]
+        ) {
+          this._drawEntities();
+          break;
+        }
+      }
+    }
+
+    if (changedProps.has("_loaded") || changedProps.has("paths")) {
+      this._drawPaths();
+    }
+
+    if (changedProps.has("_loaded") || changedProps.has("layers")) {
+      this._drawLayers(changedProps.get("layers") as Layer[] | undefined);
+    }
+
+    if (
+      changedProps.has("_loaded") ||
+      ((changedProps.has("entities") || changedProps.has("layers")) &&
+        this.autoFit)
+    ) {
+      this.fitMap();
+    }
+
+    if (changedProps.has("zoom")) {
+      this.leafletMap!.setZoom(this.zoom);
+    }
+
+    if (
+      !changedProps.has("darkMode") &&
+      (!changedProps.has("hass") ||
+        (oldHass && oldHass.themes.darkMode === this.hass.themes.darkMode))
+    ) {
+      return;
+    }
+    const darkMode = this.darkMode ?? this.hass.themes.darkMode;
+    this._tileLayer = replaceTileLayer(
+      this.Leaflet!,
+      this.leafletMap!,
+      this._tileLayer!,
+      darkMode
+    );
+    this.shadowRoot!.getElementById("map")!.classList.toggle("dark", darkMode);
+  }
+
+  private async _loadMap(): Promise<void> {
+    let map = this.shadowRoot!.getElementById("map");
+    if (!map) {
+      map = document.createElement("div");
+      map.id = "map";
+      this.shadowRoot!.append(map);
+    }
+    const darkMode = this.darkMode ?? this.hass.themes.darkMode;
+    [this.leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
+      map,
+      darkMode
+    );
+    this.shadowRoot!.getElementById("map")!.classList.toggle("dark", darkMode);
+    this._loaded = true;
+  }
+
+  public fitMap(): void {
+    if (!this.leafletMap || !this.Leaflet || !this.hass) {
+      return;
+    }
+
+    if (!this._mapItems.length && !this.layers?.length) {
+      this.leafletMap.setView(
         new this.Leaflet.LatLng(
           this.hass.config.latitude,
           this.hass.config.longitude
         ),
-        this.zoom || 14
+        this.zoom
       );
       return;
     }
 
-    const bounds = this.Leaflet.latLngBounds(
+    let bounds = this.Leaflet.latLngBounds(
       this._mapItems ? this._mapItems.map((item) => item.getLatLng()) : []
     );
-    this._leafletMap.fitBounds(bounds.pad(0.5));
 
-    if (this.zoom && this._leafletMap.getZoom() > this.zoom) {
-      this._leafletMap.setZoom(this.zoom);
+    if (this.fitZones) {
+      this._mapZones?.forEach((zone) => {
+        bounds.extend(
+          "getBounds" in zone ? zone.getBounds() : zone.getLatLng()
+        );
+      });
     }
+
+    this.layers?.forEach((layer: any) => {
+      bounds.extend(
+        "getBounds" in layer ? layer.getBounds() : layer.getLatLng()
+      );
+    });
+
+    if (!this.layers) {
+      bounds = bounds.pad(0.5);
+    }
+
+    this.leafletMap.fitBounds(bounds, { maxZoom: this.zoom });
+  }
+
+  private _drawLayers(prevLayers: Layer[] | undefined): void {
+    if (prevLayers) {
+      prevLayers.forEach((layer) => layer.remove());
+    }
+    if (!this.layers) {
+      return;
+    }
+    const map = this.leafletMap!;
+    this.layers.forEach((layer) => {
+      map.addLayer(layer);
+    });
+  }
+
+  private _drawPaths(): void {
+    const hass = this.hass;
+    const map = this.leafletMap;
+    const Leaflet = this.Leaflet;
+
+    if (!hass || !map || !Leaflet) {
+      return;
+    }
+    if (this._mapPaths.length) {
+      this._mapPaths.forEach((marker) => marker.remove());
+      this._mapPaths = [];
+    }
+    if (!this.paths) {
+      return;
+    }
+
+    const darkPrimaryColor = getComputedStyle(this).getPropertyValue(
+      "--dark-primary-color"
+    );
+
+    this.paths.forEach((path) => {
+      let opacityStep: number;
+      let baseOpacity: number;
+      if (path.gradualOpacity) {
+        opacityStep = path.gradualOpacity / (path.points.length - 2);
+        baseOpacity = 1 - path.gradualOpacity;
+      }
+
+      for (
+        let pointIndex = 0;
+        pointIndex < path.points.length - 1;
+        pointIndex++
+      ) {
+        const opacity = path.gradualOpacity
+          ? baseOpacity! + pointIndex * opacityStep!
+          : undefined;
+
+        // DRAW point
+        this._mapPaths.push(
+          Leaflet!.circleMarker(path.points[pointIndex], {
+            radius: 3,
+            color: path.color || darkPrimaryColor,
+            opacity,
+            fillOpacity: opacity,
+            interactive: false,
+          })
+        );
+
+        // DRAW line between this and next point
+        this._mapPaths.push(
+          Leaflet!.polyline(
+            [path.points[pointIndex], path.points[pointIndex + 1]],
+            {
+              color: path.color || darkPrimaryColor,
+              opacity,
+              interactive: false,
+            }
+          )
+        );
+      }
+      const pointIndex = path.points.length - 1;
+      if (pointIndex >= 0) {
+        const opacity = path.gradualOpacity
+          ? baseOpacity! + pointIndex * opacityStep!
+          : undefined;
+        // DRAW end path point
+        this._mapPaths.push(
+          Leaflet!.circleMarker(path.points[pointIndex], {
+            radius: 3,
+            color: path.color || darkPrimaryColor,
+            opacity,
+            fillOpacity: opacity,
+            interactive: false,
+          })
+        );
+      }
+      this._mapPaths.forEach((marker) => map.addLayer(marker));
+    });
   }
 
   private _drawEntities(): void {
     const hass = this.hass;
-    const map = this._leafletMap;
+    const map = this.leafletMap;
     const Leaflet = this.Leaflet;
+
     if (!hass || !map || !Leaflet) {
       return;
     }
 
-    if (this._mapItems) {
+    if (this._mapItems.length) {
       this._mapItems.forEach((marker) => marker.remove());
+      this._mapItems = [];
     }
-    const mapItems: Layer[] = (this._mapItems = []);
 
-    if (this._mapZones) {
+    if (this._mapZones.length) {
       this._mapZones.forEach((marker) => marker.remove());
+      this._mapZones = [];
     }
-    const mapZones: Layer[] = (this._mapZones = []);
 
-    const allEntities = this.entities!.concat();
+    if (!this.entities) {
+      return;
+    }
 
-    for (const entity of allEntities) {
-      const entityId = entity;
-      const stateObj = hass.states[entityId];
+    const computedStyles = getComputedStyle(this);
+    const zoneColor = computedStyles.getPropertyValue("--accent-color");
+    const darkPrimaryColor = computedStyles.getPropertyValue(
+      "--dark-primary-color"
+    );
+
+    const className =
+      this.darkMode ?? this.hass.themes.darkMode ? "dark" : "light";
+
+    for (const entity of this.entities) {
+      const stateObj = hass.states[getEntityId(entity)];
       if (!stateObj) {
         continue;
       }
@@ -240,13 +372,12 @@ class HaMap extends LitElement {
         }
 
         // create marker with the icon
-        mapZones.push(
+        this._mapZones.push(
           Leaflet.marker([latitude, longitude], {
             icon: Leaflet.divIcon({
               html: iconHTML,
               iconSize: [24, 24],
-              className:
-                this.darkMode ?? this.hass.themes.darkMode ? "dark" : "light",
+              className,
             }),
             interactive: false,
             title,
@@ -254,10 +385,10 @@ class HaMap extends LitElement {
         );
 
         // create circle around it
-        mapZones.push(
+        this._mapZones.push(
           Leaflet.circle([latitude, longitude], {
             interactive: false,
-            color: "#FF9800",
+            color: zoneColor,
             radius,
           })
         );
@@ -273,17 +404,20 @@ class HaMap extends LitElement {
         .join("")
         .substr(0, 3);
 
-      // create market with the icon
-      mapItems.push(
+      // create marker with the icon
+      this._mapItems.push(
         Leaflet.marker([latitude, longitude], {
           icon: Leaflet.divIcon({
-            // Leaflet clones this element before adding it to the map. This messes up
-            // our Polymer object and we can't pass data through. Thus we hack like this.
             html: `
               <ha-entity-marker
-                entity-id="${entityId}"
+                entity-id="${getEntityId(entity)}"
                 entity-name="${entityName}"
                 entity-picture="${entityPicture || ""}"
+                ${
+                  typeof entity !== "string"
+                    ? `entity-color="${entity.color}"`
+                    : ""
+                }
               ></ha-entity-marker>
             `,
             iconSize: [48, 48],
@@ -295,10 +429,10 @@ class HaMap extends LitElement {
 
       // create circle around if entity has accuracy
       if (gpsAccuracy) {
-        mapItems.push(
+        this._mapItems.push(
           Leaflet.circle([latitude, longitude], {
             interactive: false,
-            color: "#0288D1",
+            color: darkPrimaryColor,
             radius: gpsAccuracy,
           })
         );
@@ -309,20 +443,14 @@ class HaMap extends LitElement {
     this._mapZones.forEach((marker) => map.addLayer(marker));
   }
 
-  private _attachObserver(): void {
-    // Observe changes to map size and invalidate to prevent broken rendering
-    // Uses ResizeObserver in Chrome, otherwise window resize event
-
-    // @ts-ignore
-    if (typeof ResizeObserver === "function") {
-      // @ts-ignore
-      this._resizeObserver = new ResizeObserver(() =>
-        this._debouncedResizeListener()
-      );
-      this._resizeObserver.observe(this._mapEl);
-    } else {
-      window.addEventListener("resize", this._debouncedResizeListener);
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(() => {
+        this.leafletMap?.invalidateSize({ debounceMoveend: true });
+      });
     }
+    this._resizeObserver.observe(this);
   }
 
   static get styles(): CSSResultGroup {
@@ -337,13 +465,25 @@ class HaMap extends LitElement {
       #map.dark {
         background: #090909;
       }
-
+      .light {
+        color: #000000;
+      }
       .dark {
         color: #ffffff;
       }
-
-      .light {
-        color: #000000;
+      .leaflet-marker-draggable {
+        cursor: move !important;
+      }
+      .leaflet-edit-resize {
+        border-radius: 50%;
+        cursor: nesw-resize !important;
+      }
+      .named-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
       }
     `;
   }
