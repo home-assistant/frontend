@@ -38,35 +38,32 @@ export class HuiHeaderFooterEditor extends LitElement {
       <div>
         ${!this.config?.type
           ? html`
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
+              <ha-icon-button
+                .label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.common.add"
                 )}
+                .path=${mdiPlus}
                 class="add-icon"
                 @click=${this._add}
-              >
-                <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-              </mwc-icon-button>
+              ></ha-icon-button>
             `
           : html`
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
+              <ha-icon-button
+                .label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.common.clear"
                 )}
+                .path=${mdiClose}
                 class="remove-icon"
                 @click=${this._delete}
-              >
-                <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-              </mwc-icon-button>
-              <mwc-icon-button
-                aria-label=${this.hass!.localize(
+              ></ha-icon-button>
+              <ha-icon-button
+                .label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.common.edit"
                 )}
+                .path=${mdiPencil}
                 class="edit-icon"
                 @click=${this._edit}
-              >
-                <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-              </mwc-icon-button>
+              ></ha-icon-button>
             `}
       </div>
     `;

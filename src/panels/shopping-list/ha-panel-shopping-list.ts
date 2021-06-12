@@ -60,14 +60,13 @@ class PanelShoppingList extends LitElement {
             <div main-title>${this.hass.localize("panel.shopping_list")}</div>
             ${this._conversation(this.hass.config.components)
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     .label=${this.hass!.localize(
                       "ui.panel.shopping_list.start_conversation"
                     )}
+                    .path=${mdiMicrophone}
                     @click=${this._showVoiceCommandDialog}
-                  >
-                    <ha-svg-icon .path=${mdiMicrophone}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
           </app-toolbar>

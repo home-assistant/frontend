@@ -30,9 +30,11 @@ class HaPanelMap extends LitElement {
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.map")}</div>
             ${!__DEMO__ && this.hass.user?.is_admin
-              ? html`<mwc-icon-button @click=${this._openZonesEditor}
-                  ><ha-svg-icon .path=${mdiPencil}></ha-svg-icon
-                ></mwc-icon-button>`
+              ? html` <ha-icon-button
+                  .label=${this.hass!.localize("ui.panel.map.edit_zones")}
+                  .path=${mdiPencil}
+                  @click=${this._openZonesEditor}
+                ></ha-icon-button>`
               : ""}
           </app-toolbar>
         </app-header>

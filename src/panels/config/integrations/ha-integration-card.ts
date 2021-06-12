@@ -296,13 +296,12 @@ export class HaIntegrationCard extends LitElement {
             : ""}
         </div>
         <ha-button-menu corner="BOTTOM_START">
-          <mwc-icon-button
-            .title=${this.hass.localize("ui.common.menu")}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
+          <ha-icon-button
             slot="trigger"
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
           >
-            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
+          </ha-icon-button>
           <mwc-list-item @request-selected="${this._editEntryName}">
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"

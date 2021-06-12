@@ -210,12 +210,11 @@ export class HaSceneEditor extends SubscribeMixin(
           @action=${this._handleMenuAction}
           activatable
         >
-          <mwc-icon-button
+          <ha-icon-button
             slot="trigger"
-            .title=${this.hass.localize("ui.common.menu")}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
-            ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
 
           <mwc-list-item
             .disabled=${!this.sceneId}

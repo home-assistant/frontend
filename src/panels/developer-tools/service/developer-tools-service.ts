@@ -181,12 +181,10 @@ class HaPanelDevService extends LitElement {
                           target="_blank"
                           rel="noreferrer"
                         >
-                          <mwc-icon-button>
-                            <ha-svg-icon
-                              path=${mdiHelpCircle}
-                              class="help-icon"
-                            ></ha-svg-icon>
-                          </mwc-icon-button>
+                          <ha-icon-button
+                            class="help-icon"
+                            .path=${mdiHelpCircle}
+                          ></ha-icon-button>
                         </a>`
                       : ""}
                   </div>`

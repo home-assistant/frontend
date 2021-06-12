@@ -93,14 +93,13 @@ class HaRefreshTokens extends LitElement {
                         )}
                       </paper-tooltip>`
                     : ""}
-                  <mwc-icon-button
+                  <ha-icon-button
                     .token=${token}
                     .disabled=${token.is_current}
-                    .title=${this.hass.localize(`ui.common.delete`)}
+                    .label=${this.hass.localize(`ui.common.delete`)}
+                    .path=${mdiDelete}
                     @click=${this._deleteToken}
-                  >
-                    <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 </div>
               </ha-settings-row>`
             )

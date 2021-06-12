@@ -401,17 +401,13 @@ export class HaConfigDeviceDashboard extends LitElement {
             </a>`
           : html``}
         <ha-button-menu slot="filter-menu" corner="BOTTOM_START" multi>
-          <mwc-icon-button
+          <ha-icon-button
             slot="trigger"
             .label=${this.hass!.localize(
               "ui.panel.config.devices.picker.filter.filter"
             )}
-            .title=${this.hass!.localize(
-              "ui.panel.config.devices.picker.filter.filter"
-            )}
-          >
-            <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiFilterVariant}
+          ></ha-icon-button>
           <mwc-list-item
             @request-selected="${this._showDisabledChanged}"
             graphic="control"

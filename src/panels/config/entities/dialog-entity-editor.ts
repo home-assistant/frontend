@@ -82,27 +82,25 @@ export class DialogEntityEditor extends LitElement {
       >
         <div slot="heading">
           <ha-header-bar>
-            <mwc-icon-button
+            <ha-icon-button
               slot="navigationIcon"
               .label=${this.hass.localize("ui.dialogs.entity_registry.dismiss")}
+              .path=${mdiClose}
               dialogAction="cancel"
-            >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
             <span slot="title">
               ${stateObj ? computeStateName(stateObj) : entry?.name || entityId}
             </span>
             ${stateObj
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     slot="actionItems"
                     .label=${this.hass.localize(
                       "ui.dialogs.entity_registry.control"
                     )}
+                    .path=${mdiTune}
                     @click=${this._openMoreInfo}
-                  >
-                    <ha-svg-icon .path=${mdiTune}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
           </ha-header-bar>

@@ -165,11 +165,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               raised
               >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
             >
-            <mwc-icon-button
+            <ha-icon-button
               on-click="entityIdChanged"
               label="[[localize('ui.common.refresh')]]"
-              ><ha-svg-icon path="[[refreshIcon()]]"></ha-svg-icon
-            ></mwc-icon-button>
+              path="[[refreshIcon()]]"
+            ></ha-icon-button>
           </div>
         </div>
         <div class="info">

@@ -64,13 +64,13 @@ class MoreInfoMediaPlayer extends LitElement {
               </div>
               ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
                 ? html`
-                    <mwc-icon-button
-                      .title=${this.hass.localize(
+                    <ha-icon-button
+                      .label=${this.hass.localize(
                         "ui.card.media_player.browse_media"
                       )}
+                      .path=${mdiPlayBoxMultiple}
                       @click=${this._showBrowseMedia}
-                      ><ha-svg-icon .path=${mdiPlayBoxMultiple}></ha-svg-icon
-                    ></mwc-icon-button>
+                    ></ha-icon-button>
                   `
                 : ""}
             </div>

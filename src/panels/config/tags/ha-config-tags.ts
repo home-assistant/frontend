@@ -105,39 +105,36 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         columns.write = {
           title: "",
           type: "icon-button",
-          template: (_write, tag: any) => html` <mwc-icon-button
+          template: (_write, tag: any) => html` <ha-icon-button
             .tag=${tag}
             @click=${(ev: Event) =>
               this._openWrite((ev.currentTarget as any).tag)}
-            title=${this.hass.localize("ui.panel.config.tag.write")}
-          >
-            <ha-svg-icon .path=${mdiContentDuplicate}></ha-svg-icon>
-          </mwc-icon-button>`,
+            .label=${this.hass.localize("ui.panel.config.tag.write")}
+            .path=${mdiContentDuplicate}
+          ></ha-icon-button>`,
         };
       }
       columns.automation = {
         title: "",
         type: "icon-button",
-        template: (_automation, tag: any) => html` <mwc-icon-button
+        template: (_automation, tag: any) => html` <ha-icon-button
           .tag=${tag}
           @click=${(ev: Event) =>
             this._createAutomation((ev.currentTarget as any).tag)}
-          title=${this.hass.localize("ui.panel.config.tag.create_automation")}
-        >
-          <ha-svg-icon .path=${mdiRobot}></ha-svg-icon>
-        </mwc-icon-button>`,
+          .label=${this.hass.localize("ui.panel.config.tag.create_automation")}
+          .path=${mdiRobot}
+        ></ha-icon-button>`,
       };
       columns.edit = {
         title: "",
         type: "icon-button",
-        template: (_settings, tag: any) => html` <mwc-icon-button
+        template: (_settings, tag: any) => html` <ha-icon-button
           .tag=${tag}
           @click=${(ev: Event) =>
             this._openDialog((ev.currentTarget as any).tag)}
-          title=${this.hass.localize("ui.panel.config.tag.edit")}
-        >
-          <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
-        </mwc-icon-button>`,
+          .label=${this.hass.localize("ui.panel.config.tag.edit")}
+          .path=${mdiCog}
+        ></ha-icon-button>`,
       };
       return columns;
     }
@@ -194,9 +191,12 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .noDataText=${this.hass.localize("ui.panel.config.tag.no_tags")}
         hasFab
       >
-        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
-          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-        </mwc-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          @click=${this._showHelp}
+          .label=${this.hass!.localize("ui.panel.lovelace.menu.help")}
+          .path=${mdiHelpCircle}
+        ></ha-icon-button>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize("ui.panel.config.tag.add_tag")}

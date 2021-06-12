@@ -1,3 +1,4 @@
+import "../../../components/ha-icon-button";
 import "@material/mwc-icon-button";
 import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
 import {
@@ -104,26 +105,24 @@ export class HuiEntitiesCardRowEditor extends LitElement {
                             @value-changed=${this._valueChanged}
                           ></ha-entity-picker>
                         `}
-                    <mwc-icon-button
-                      aria-label=${this.hass!.localize(
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
                         "ui.components.entity.entity-picker.clear"
                       )}
+                      .path=${mdiClose}
                       class="remove-icon"
                       .index=${index}
                       @click=${this._removeRow}
-                    >
-                      <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                    </mwc-icon-button>
-                    <mwc-icon-button
-                      aria-label=${this.hass!.localize(
+                    ></ha-icon-button>
+                    <ha-icon-button
+                      .label=${this.hass!.localize(
                         "ui.components.entity.entity-picker.edit"
                       )}
+                      .path=${mdiPencil}
                       class="edit-icon"
                       .index=${index}
                       @click=${this._editRow}
-                    >
-                      <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                    </mwc-icon-button>
+                    ></ha-icon-button>
                   </div>
                 `
               )

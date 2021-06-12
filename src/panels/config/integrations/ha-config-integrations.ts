@@ -284,13 +284,12 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
       slot=${ifDefined(this.narrow ? "toolbar-icon" : undefined)}
       @action=${this._handleMenuAction}
     >
-      <mwc-icon-button
-        .title=${this.hass.localize("ui.common.menu")}
-        .label=${this.hass.localize("ui.common.overflow_menu")}
+      <ha-icon-button
         slot="trigger"
+        .label=${this.hass.localize("ui.common.menu")}
+        .path=${mdiFilterVariant}
       >
-        <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-      </mwc-icon-button>
+      </ha-icon-button>
       <mwc-list-item graphic="control" .selected=${this._showIgnored}>
         <ha-checkbox slot="graphic" .checked=${this._showIgnored}></ha-checkbox>
         ${this.hass.localize(

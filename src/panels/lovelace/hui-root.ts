@@ -118,32 +118,24 @@ class HUIRoot extends LitElement {
           ${this._editMode
             ? html`
                 <app-toolbar class="edit-mode">
-                  <mwc-icon-button
+                  <ha-icon-button
                     .label="${this.hass!.localize(
                       "ui.panel.lovelace.menu.exit_edit_mode"
                     )}"
-                    title="${this.hass!.localize(
-                      "ui.panel.lovelace.menu.close"
-                    )}"
+                    .path=${mdiClose}
                     @click="${this._editModeDisable}"
-                  >
-                    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                   <div main-title>
                     ${this.config.title ||
                     this.hass!.localize("ui.panel.lovelace.editor.header")}
-                    <mwc-icon-button
-                      aria-label="${this.hass!.localize(
+                    <ha-icon-button
+                      .label="${this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_lovelace.edit_title"
                       )}"
-                      title="${this.hass!.localize(
-                        "ui.panel.lovelace.editor.edit_lovelace.edit_title"
-                      )}"
+                      .path=${mdiPencil}
                       class="edit-icon"
                       @click="${this._editLovelace}"
-                    >
-                      <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                    </mwc-icon-button>
+                    ></ha-icon-button>
                   </div>
                   <a
                     href="${documentationUrl(this.hass, "/lovelace/")}"
@@ -151,26 +143,21 @@ class HUIRoot extends LitElement {
                     class="menu-link"
                     target="_blank"
                   >
-                    <mwc-icon-button
-                      title="${this.hass!.localize(
+                    <ha-icon-button
+                      .label="${this.hass!.localize(
                         "ui.panel.lovelace.menu.help"
                       )}"
-                    >
-                      <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-                    </mwc-icon-button>
+                      .path=${mdiHelpCircle}
+                    ></ha-icon-button>
                   </a>
                   <ha-button-menu corner="BOTTOM_START">
-                    <mwc-icon-button
+                    <ha-icon-button
                       slot="trigger"
-                      .title="${this.hass!.localize(
-                        "ui.panel.lovelace.editor.menu.open"
-                      )}"
                       .label=${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.open"
                       )}
-                    >
-                      <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-                    </mwc-icon-button>
+                      .path=${mdiDotsVertical}
+                    ></ha-icon-button>
                     ${__DEMO__ /* No unused entities available in the demo */
                       ? ""
                       : html`
@@ -497,15 +484,14 @@ class HUIRoot extends LitElement {
                     )}
                     ${this._editMode
                       ? html`
-                          <mwc-icon-button
+                          <ha-icon-button
                             id="add-view"
                             @click="${this._addView}"
-                            title="${this.hass!.localize(
+                            .label="${this.hass!.localize(
                               "ui.panel.lovelace.editor.edit_view.add"
                             )}"
-                          >
-                            <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-                          </mwc-icon-button>
+                            .path=${mdiPlus}
+                          ></ha-icon-button>
                         `
                       : ""}
                   </paper-tabs>

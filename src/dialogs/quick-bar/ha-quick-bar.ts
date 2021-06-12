@@ -160,13 +160,12 @@ export class QuickBar extends LitElement {
               ></ha-svg-icon>`}
           ${this._search &&
           html`
-            <mwc-icon-button
+            <ha-icon-button
               slot="suffix"
               @click=${this._clearSearch}
-              title="Clear"
-            >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+              .label=${this.hass!.localize("ui.common.clear")}
+              .path=${mdiClose}
+            ></ha-icon-button>
           `}
         </paper-input>
         ${!items

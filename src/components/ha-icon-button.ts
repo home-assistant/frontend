@@ -13,15 +13,10 @@ export class HaIconButton extends LitElement {
   // SVG icon path
   @property({ type: String }) path?: string;
 
-  // Label that is used for ARIA support and as default tooltip
-  @property({ type: String }) label?: string;
+  // Label that is used for ARIA support and as tooltip
+  @property({ type: String }) label = "";
 
-  @property({ type: Boolean }) showTooltip = true;
-
-  // Allows setting a dedicated tooltip, otherwise label will be sued
-  @property({ type: String }) tooltip?: string;
-
-  @property() public tooltipPosition = "bottom";
+  @property({ type: Boolean }) hideTooltip = false;
 
   static shadowRootOptions: ShadowRootInit = {
     mode: "open",
@@ -32,7 +27,7 @@ export class HaIconButton extends LitElement {
     return html`
       <mwc-icon-button
         .label=${this.label}
-        .title=${this.showTooltip ? this.tooltip || this.label : ""}
+        .title=${this.hideTooltip ? "" : this.label}
         .disabled=${this.disabled}
       >
         ${this.icon ? html`<ha-icon .icon=${this.icon}></ha-icon>` : ""}

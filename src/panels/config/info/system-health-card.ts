@@ -1,3 +1,4 @@
+import "../../../components/ha-icon-button";
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
@@ -150,9 +151,11 @@ class SystemHealthCard extends LitElement {
             slot="toolbar-icon"
             @action=${this._copyInfo}
           >
-            <mwc-icon-button slot="trigger" alt="menu">
-              <ha-svg-icon .path=${mdiContentCopy}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              slot="trigger"
+              .label=${this.hass.localize("ui.panel.config.info.copy_menu")}
+              .path=${mdiContentCopy}
+            ></ha-icon-button>
             <mwc-list-item>
               ${this.hass.localize("ui.panel.config.info.copy_raw")}
             </mwc-list-item>
