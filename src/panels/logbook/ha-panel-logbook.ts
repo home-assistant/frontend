@@ -251,8 +251,11 @@ export class HaPanelLogbook extends LitElement {
 
   private async _getData() {
     this._isLoading = true;
+    let entries;
+    let traceContexts;
+
     try {
-      const [entries, traceContexts] = await Promise.all([
+      [entries, traceContexts] = await Promise.all([
         getLogbookData(
           this.hass,
           this._startDate.toISOString(),
@@ -264,15 +267,15 @@ export class HaPanelLogbook extends LitElement {
           : {},
         this._fetchUserPromise,
       ]);
-
-      this._entries = entries;
-      this._traceContexts = traceContexts;
     } catch (err) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.components.logbook.retrieval_error"),
         text: err.message,
       });
     }
+
+    this._entries = entries;
+    this._traceContexts = traceContexts;
     this._isLoading = false;
   }
 

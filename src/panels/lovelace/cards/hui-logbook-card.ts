@@ -239,18 +239,22 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     );
     const lastDate = this._lastLogbookDate || hoursToShowDate;
     const now = new Date();
+    let newEntries;
 
     try {
-    const [newEntries] = await Promise.all([
-      getLogbookData(
-        this.hass,
-        lastDate.toISOString(),
-        now.toISOString(),
-        this._configEntities!.map((entity) => entity.entity).toString(),
-        true
-      ),
-      this._fetchUserPromise,
-    ]);
+      newEntries = await Promise.all([
+        getLogbookData(
+          this.hass,
+          lastDate.toISOString(),
+          now.toISOString(),
+          this._configEntities!.map((entity) => entity.entity).toString(),
+          true
+        ),
+        this._fetchUserPromise,
+      ]);
+    } catch (err) {
+      this._error = true;
+    }
 
     const logbookEntries = this._logbookEntries
       ? [...newEntries, ...this._logbookEntries]
@@ -261,9 +265,6 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     );
 
     this._lastLogbookDate = now;
-    } catch (err) {
-      this._error = true;
-    }
   }
 
   private async _fetchUserNames() {

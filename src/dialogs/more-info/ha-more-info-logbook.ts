@@ -125,8 +125,11 @@ export class MoreInfoLogbook extends LitElement {
       this._lastLogbookDate ||
       new Date(new Date().getTime() - 24 * 60 * 60 * 1000);
     const now = new Date();
+    let newEntries;
+    let traceContexts;
+
     try {
-      const [newEntries, traceContexts] = await Promise.all([
+      [newEntries, traceContexts] = await Promise.all([
         getLogbookData(
           this.hass,
           lastDate.toISOString(),
@@ -137,14 +140,15 @@ export class MoreInfoLogbook extends LitElement {
         loadTraceContexts(this.hass),
         this._fetchUserPromise,
       ]);
-      this._logbookEntries = this._logbookEntries
-        ? [...newEntries, ...this._logbookEntries]
-        : newEntries;
-      this._lastLogbookDate = now;
-      this._traceContexts = traceContexts;
     } catch (err) {
       this._error = true;
     }
+
+    this._logbookEntries = this._logbookEntries
+      ? [...newEntries, ...this._logbookEntries]
+      : newEntries;
+    this._lastLogbookDate = now;
+    this._traceContexts = traceContexts;
   }
 
   private async _fetchUserNames() {
