@@ -133,16 +133,12 @@ export const loadTraceContexts = (
   hass: HomeAssistant,
   domain?: string,
   item_id?: string
-): Promise<TraceContexts> | undefined => {
-  if (hass.user?.is_admin) {
-    return hass.callWS({
-      type: "trace/contexts",
-      domain,
-      item_id,
-    });
-  }
-  return undefined;
-};
+): Promise<TraceContexts> =>
+  hass.callWS({
+    type: "trace/contexts",
+    domain,
+    item_id,
+  });
 
 export const getDataFromPath = (
   config: ManualAutomationConfig,
