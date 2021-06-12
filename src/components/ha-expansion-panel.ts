@@ -3,6 +3,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
+import { nextRender } from "../common/util/render-status";
 import "./ha-svg-icon";
 
 @customElement("ha-expansion-panel")
@@ -13,12 +14,17 @@ class HaExpansionPanel extends LitElement {
 
   @property() header?: string;
 
+  @property() secondary?: string;
+
   @query(".container") private _container!: HTMLDivElement;
 
   protected render(): TemplateResult {
     return html`
       <div class="summary" @click=${this._toggleContainer}>
-        <slot name="header">${this.header}</slot>
+        <slot class="header" name="header">
+          ${this.header}
+          <slot class="secondary" name="secondary">${this.secondary}</slot>
+        </slot>
         <ha-svg-icon
           .path=${mdiChevronDown}
           class="summary-icon ${classMap({ expanded: this.expanded })}"
@@ -37,17 +43,25 @@ class HaExpansionPanel extends LitElement {
     this._container.style.removeProperty("height");
   }
 
-  private _toggleContainer(): void {
+  private async _toggleContainer(): Promise<void> {
+    const newExpanded = !this.expanded;
+    fireEvent(this, "expanded-will-change", { expanded: newExpanded });
+
+    if (newExpanded) {
+      // allow for dynamic content to be rendered
+      await nextRender();
+    }
+
     const scrollHeight = this._container.scrollHeight;
     this._container.style.height = `${scrollHeight}px`;
 
-    if (this.expanded) {
+    if (!newExpanded) {
       setTimeout(() => {
         this._container.style.height = "0px";
       }, 0);
     }
 
-    this.expanded = !this.expanded;
+    this.expanded = newExpanded;
     fireEvent(this, "expanded-changed", { expanded: this.expanded });
   }
 
@@ -97,6 +111,16 @@ class HaExpansionPanel extends LitElement {
       .container.expanded {
         height: auto;
       }
+
+      .header {
+        display: block;
+      }
+
+      .secondary {
+        display: block;
+        color: var(--secondary-text-color);
+        font-size: 12px;
+      }
     `;
   }
 }
@@ -109,6 +133,9 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "expanded-changed": {
+      expanded: boolean;
+    };
+    "expanded-will-change": {
       expanded: boolean;
     };
   }

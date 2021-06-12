@@ -318,6 +318,14 @@
             "no_addons": "您尚未安装任何加载项。去加载项商店看看吧！"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "属性",
+                "device_path": "设备路径",
+                "id": "ID",
+                "search": "搜索硬件",
+                "subsystem": "子系统",
+                "title": "硬件"
+            },
             "network": {
                 "connected_to": "已连接到 {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "发生未知错误",
             "error_addon_no_ingress": "请求的加载项不支持 ingress",
             "error_addon_not_found": "未找到加载项",
+            "error_addon_not_installed": "请求的加载项尚未安装，请先安装",
+            "error_addon_not_started": "请求的加载项未运行，请先运行",
             "faq_link": "我的 Home Assistant 常见问题",
             "not_supported": "您的 Home Assistant 不支持此重定向。请查阅{link}以获取受支持的重定向及其引入的版本。"
         },
@@ -380,13 +390,19 @@
         "snapshot": {
             "addons": "加载项",
             "available_snapshots": "可用快照",
+            "confirm_password": "确认快照密码",
             "could_not_create": "未能创建快照",
             "create": "创建",
             "create_blocked_not_running": "现在无法创建快照，因为系统处于{state}状态。",
             "create_snapshot": "创建快照",
             "created": "创建于",
+            "delete_selected": "删除选定的快照",
+            "delete_snapshot_confirm": "删除",
+            "delete_snapshot_text": "是否要删除这 {number} 个快照？",
+            "delete_snapshot_title": "删除快照",
             "description": "“快照”使您可以轻松地备份和还原 Home Assistant 实例的所有数据。",
             "enter_password": "请输入密码。",
+            "failed_to_delete": "删除失败",
             "folder": {
                 "addons/local": "本地加载项",
                 "homeassistant": "Home Assistant 配置",
@@ -402,7 +418,10 @@
             "password": "密码",
             "password_protected": "密码保护",
             "password_protection": "密码保护",
+            "passwords_not_matching": "密码不匹配",
             "security": "安全性",
+            "select_type": "请选择要还原的内容",
+            "selected": "已选择 {number} 项",
             "type": "类型",
             "upload_snapshot": "上传快照"
         },
@@ -720,6 +739,9 @@
                 "no_match": "未找到相关区域",
                 "show_areas": "显示区域"
             },
+            "attributes": {
+                "expansion_header": "属性"
+            },
             "blueprint-picker": {
                 "add_user": "添加用户",
                 "remove_user": "删除用户",
@@ -919,8 +941,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "如果禁用，从 {integration} 新发现的实体将不会自动添加到 Home Assistant。",
+                "enable_new_entities_description": "是否将 {integration} 新发现的实体自动添加到 Home Assistant。",
                 "enable_new_entities_label": "启用新添加的实体。",
+                "enable_polling_description": "是否让 Home Assistant 轮询 {integration} 的实体，以便更新其状态。",
+                "enable_polling_label": "启用轮询刷新。",
+                "restart_home_assistant": "需要重新启动 Home Assistant 才能使更改生效。",
                 "title": "{integration} 系统选项",
                 "update": "更新"
             },
@@ -1119,7 +1144,7 @@
                         "command_line": "命令行实体",
                         "core": "位置和自定义",
                         "filesize": "文件大小实体",
-                        "filter": "filter 实体",
+                        "filter": "Filter 实体",
                         "generic": "通用 IP 摄像机实体",
                         "generic_thermostat": "通用恒温器实体",
                         "group": "分组、分组实体及其通知服务",
@@ -1261,7 +1286,7 @@
         "notification_toast": {
             "connection_lost": "连接中断。正在重新连接...",
             "dismiss": "关闭",
-            "intergration_starting": "正在启动 {integration}。在启动完成前，部分功能暂不可用。",
+            "integration_starting": "正在启动 {integration}。在启动完成前，部分功能暂不可用。",
             "service_call_failed": "调用服务 {service} 失败。",
             "started": "Home Assistant 已启动！",
             "starting": "Home Assistant 正在启动。在启动完成前，部分功能暂不可用。",
@@ -1719,6 +1744,7 @@
                             "title": "Alexa"
                         },
                         "connected": "已连接",
+                        "connecting": "正在连接...",
                         "connection_status": "云连接状态",
                         "fetching_subscription": "正在获取订阅...",
                         "google": {
@@ -1792,7 +1818,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "由于已在configuration.yaml中配置了实体过滤器，因此无法编辑通过此UI公开哪些实体。",
+                        "banner": "无法通过此 UI 修改要开放的实体，因为您在 configuration.yaml 中配置了实体过滤器。",
                         "dont_expose_entity": "使实体不可发现",
                         "expose": "向Alexa发送你的位置",
                         "expose_entity": "使实体可发现",
@@ -2041,7 +2067,7 @@
                         "filter": {
                             "filter": "筛选",
                             "hidden_devices": "{number} 个隐藏设备",
-                            "show_all": "显示全部",
+                            "show_all": "全部显示",
                             "show_disabled": "显示已禁用的设备"
                         },
                         "search": "搜索设备"
@@ -2062,7 +2088,8 @@
                     "scripts": "脚本",
                     "unknown_error": "未知错误",
                     "unnamed_device": "未命名设备",
-                    "update": "更新"
+                    "update": "更新",
+                    "update_device_error": "更新设备失败"
                 },
                 "entities": {
                     "caption": "实体注册表",
@@ -2081,7 +2108,7 @@
                         "filter": {
                             "filter": "筛选",
                             "hidden_entities": "{number} 个隐藏{number, plural,\n  one {实体}\n  other {实体}\n}",
-                            "show_all": "显示全部",
+                            "show_all": "全部显示",
                             "show_disabled": "显示已禁用的实体",
                             "show_readonly": "显示只读实体",
                             "show_unavailable": "显示不可用的实体"
@@ -2104,7 +2131,7 @@
                             "confirm_title": "您要删除这 {number} 个实体吗？"
                         },
                         "search": "搜索实体",
-                        "selected": "选择了 {number} 项",
+                        "selected": "已选择 {number} 项",
                         "status": {
                             "disabled": "已禁用",
                             "ok": "确定",
@@ -2192,9 +2219,10 @@
                         "configure": "选项",
                         "delete": "删除",
                         "delete_confirm": "您确定要删除此集成吗？",
-                        "depends_on_cloud": "取决于云端",
+                        "depends_on_cloud": "依赖云端服务",
                         "device_unavailable": "设备不可用",
                         "devices": "{count} {count, plural,\n  one {个设备}\n  other {个设备}\n}",
+                        "disable_error": "启用/禁用集成失败",
                         "disable_restart_confirm": "重启 Home Assistant 以完成此集成的禁用",
                         "disable": {
                             "disable_confirm": "您确定要禁用此配置条目吗？其设备和实体也将被禁用。",
@@ -2206,6 +2234,7 @@
                             },
                             "disabled_cause": "通过{cause}禁用"
                         },
+                        "disabled_polling": "自动轮询刷新数据已禁用",
                         "documentation": "文档",
                         "enable_restart_confirm": "重启 Home Assistant 以完成此集成的启用",
                         "entities": "{count} {count, plural,\n  one {个实体}\n  other {个实体}\n}",
@@ -2661,7 +2690,7 @@
                             "command_line": "命令行实体",
                             "core": "位置和自定义",
                             "filesize": "文件大小实体",
-                            "filter": "filter 实体",
+                            "filter": "Filter 实体",
                             "generic": "通用 IP 摄像机实体",
                             "generic_thermostat": "通用恒温器实体",
                             "group": "分组、分组实体及其通知服务",
@@ -2702,7 +2731,7 @@
                         "validation": {
                             "check_config": "检查配置",
                             "heading": "配置检查",
-                            "introduction": "此处可以帮助您检验最新修改的配置文件有效性",
+                            "introduction": "此处可以帮助您检验最新修改的配置文件的有效性。",
                             "invalid": "配置无效",
                             "valid": "配置有效！"
                         }
@@ -2959,6 +2988,7 @@
                     },
                     "logs": {
                         "log_level": "日志级别",
+                        "log_level_changed": "日志级别更改为: {level}",
                         "subscribed_to_logs": "已订阅 Z-Wave JS 日志消息...",
                         "title": "Z-Wave JS 日志"
                     },
@@ -3150,8 +3180,8 @@
                         "attributes": "属性",
                         "copy_id": "将 ID 复制到剪贴板",
                         "current_entities": "现有实体",
-                        "description1": "设置设备在 Home Assistant 中的呈现方式。",
-                        "description2": "这将不影响实际设备。",
+                        "description1": "此处可设置实体在 Home Assistant 中的状态。",
+                        "description2": "此操作只会改变实体在系统中显示的状态，而不会改变实际设备的状态。",
                         "entity": "实体",
                         "filter_attributes": "输入筛选属性",
                         "filter_entities": "输入筛选实体",
@@ -3523,7 +3553,7 @@
                         "duplicate": "复制卡片",
                         "edit": "编辑",
                         "header": "卡片配置",
-                        "move": "移动",
+                        "move": "移动到视图",
                         "move_after": "向后移动卡片",
                         "move_before": "向前移动卡片",
                         "options": "更多选项",
@@ -3861,10 +3891,19 @@
                 "intro": "准备好唤醒你的家、找回你的隐私，并加入世界级的极客社区了吗？",
                 "next": "下一步",
                 "restore": {
+                    "addons": "加载项",
+                    "confirm_password": "确认快照密码",
                     "description": "或者，您也可以从以前的快照还原。",
+                    "folders": "文件夹",
+                    "full_snapshot": "完整快照",
                     "hide_log": "隐藏完整日志",
                     "in_progress": "正在还原",
-                    "show_log": "显示完整日志"
+                    "partial_snapshot": "部分快照",
+                    "password": "密码",
+                    "password_protection": "密码保护",
+                    "select_type": "请选择要还原的内容",
+                    "show_log": "显示完整日志",
+                    "type": "类型"
                 },
                 "user": {
                     "create_account": "创建帐户",

@@ -18,6 +18,7 @@ import {
   ConfigEntry,
   deleteConfigEntry,
   disableConfigEntry,
+  DisableConfigEntryResult,
   enableConfigEntry,
   reloadConfigEntry,
   updateConfigEntry,
@@ -110,6 +111,7 @@ export class HaIntegrationCard extends LitElement {
             : undefined}
           .localizedDomainName=${item ? item.localized_domain_name : undefined}
           .manifest=${this.manifest}
+          .configEntry=${item}
         >
           ${this.items.length > 1
             ? html`
@@ -466,6 +468,11 @@ export class HaIntegrationCard extends LitElement {
   private _showSystemOptions(configEntry: ConfigEntry) {
     showConfigEntrySystemOptionsDialog(this, {
       entry: configEntry,
+      manifest: this.manifest,
+      entryUpdated: (entry) =>
+        fireEvent(this, "entry-updated", {
+          entry,
+        }),
     });
   }
 
@@ -481,7 +488,18 @@ export class HaIntegrationCard extends LitElement {
     if (!confirmed) {
       return;
     }
-    const result = await disableConfigEntry(this.hass, entryId);
+    let result: DisableConfigEntryResult;
+    try {
+      result = await disableConfigEntry(this.hass, entryId);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.disable_error"
+        ),
+        text: err.message,
+      });
+      return;
+    }
     if (result.require_restart) {
       showAlertDialog(this, {
         text: this.hass.localize(
@@ -497,7 +515,18 @@ export class HaIntegrationCard extends LitElement {
   private async _enableIntegration(configEntry: ConfigEntry) {
     const entryId = configEntry.entry_id;
 
-    const result = await enableConfigEntry(this.hass, entryId);
+    let result: DisableConfigEntryResult;
+    try {
+      result = await enableConfigEntry(this.hass, entryId);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.config.integrations.config_entry.disable_error"
+        ),
+        text: err.message,
+      });
+      return;
+    }
 
     if (result.require_restart) {
       showAlertDialog(this, {
@@ -561,10 +590,10 @@ export class HaIntegrationCard extends LitElement {
     if (newName === null) {
       return;
     }
-    const newEntry = await updateConfigEntry(this.hass, configEntry.entry_id, {
+    const result = await updateConfigEntry(this.hass, configEntry.entry_id, {
       title: newName,
     });
-    fireEvent(this, "entry-updated", { entry: newEntry });
+    fireEvent(this, "entry-updated", { entry: result.config_entry });
   }
 
   static get styles(): CSSResultGroup {

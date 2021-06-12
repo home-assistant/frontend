@@ -314,10 +314,18 @@
             "addon_new_version": "Nueva versión disponible",
             "addon_running": "El complemento se está ejecutando",
             "addon_stopped": "El complemento está detenido",
-            "addons": "Complementos",
+            "addons": "Complementos instalados",
             "no_addons": "Aún no tienes ningún complemento instalado. ¡Dirígete a la tienda de complementos para comenzar!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atributos",
+                "device_path": "Ruta del dispositivo",
+                "id": "ID",
+                "search": "Buscar hardware",
+                "subsystem": "Subsistema",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Conectado a {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "Se ha producido un error desconocido",
             "error_addon_no_ingress": "El complemento solicitado no admite la entrada",
             "error_addon_not_found": "Complemento no encontrado",
+            "error_addon_not_installed": "El complemento solicitado no está instalado. Por favor instálalo primero",
+            "error_addon_not_started": "El complemento solicitado no se está ejecutando. Por favor, inícialo primero",
             "faq_link": "Preguntas frecuentes sobre mi Home Assistant",
             "not_supported": "Esta redirección no es compatible con tu instancia de Home Assistant. Consulta el {link} para conocer las redirecciones admitidas y la versión en la que se introdujeron."
         },
@@ -380,13 +390,19 @@
         "snapshot": {
             "addons": "Complementos",
             "available_snapshots": "Instantáneas disponibles",
+            "confirm_password": "Confirma la contraseña de la instantánea",
             "could_not_create": "No se pudo crear la instantánea",
             "create": "Crear",
             "create_blocked_not_running": "No es posible crear una instantánea en este momento porque el sistema está en el estado {state}.",
             "create_snapshot": "Crear instantánea",
             "created": "Creada",
+            "delete_selected": "Eliminar instantáneas seleccionadas",
+            "delete_snapshot_confirm": "Eliminar",
+            "delete_snapshot_text": "¿Deseas eliminar {number} {number, plural,\n  one {instantánea}\n  other {instantáneas}\n}?",
+            "delete_snapshot_title": "Eliminar instantánea",
             "description": "Las instantáneas te permiten realizar copias de seguridad y restaurar fácilmente todos los datos de tu instancia de Home Assistant.",
             "enter_password": "Por favor, introduce una contraseña.",
+            "failed_to_delete": "No se pudo eliminar",
             "folder": {
                 "addons/local": "Complementos locales",
                 "homeassistant": "Configuración de Home Assistant",
@@ -396,14 +412,17 @@
             },
             "folders": "Carpetas",
             "full_snapshot": "Instantánea completa",
-            "name": "Nombre",
+            "name": "Nombre de la instantánea",
             "no_snapshots": "Aún no tienes instantáneas.",
             "partial_snapshot": "Instantánea parcial",
-            "password": "Contraseña",
+            "password": "Contraseña de la instantánea",
             "password_protected": "protegida por contraseña",
             "password_protection": "Protección con contraseña",
+            "passwords_not_matching": "Las contraseñas no coinciden",
             "security": "Seguridad",
-            "type": "Tipo",
+            "select_type": "Selecciona qué restaurar",
+            "selected": "{number} {number, plural,\n one {seleccionada}\n other {seleccionadas}\n}",
+            "type": "Tipo de instantánea",
             "upload_snapshot": "Subir instantánea"
         },
         "store": {
@@ -720,6 +739,9 @@
                 "no_match": "No se han encontrado áreas coincidentes",
                 "show_areas": "Mostrar áreas"
             },
+            "attributes": {
+                "expansion_header": "Atributos"
+            },
             "blueprint-picker": {
                 "add_user": "Añadir usuario",
                 "remove_user": "Eliminar usuario",
@@ -919,8 +941,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Si está deshabilitada, las nuevas entidades que se descubran para {integration} no se añadirán automáticamente a Home Assistant.",
+                "enable_new_entities_description": "Si los dispositivos recién descubiertos para {integration} deberían agregarse automáticamente.",
                 "enable_new_entities_label": "Habilitar entidades recién añadidas.",
+                "enable_polling_description": "Si Home Assistant debería sondear automáticamente las entidades de {integration} para obtener actualizaciones.",
+                "enable_polling_label": "Habilitar el sondeo de actualizaciones.",
+                "restart_home_assistant": "Debes reiniciar Home Assistant para que los cambios surtan efecto.",
                 "title": "Opciones del sistema para {integration}",
                 "update": "Actualizar"
             },
@@ -1261,7 +1286,7 @@
         "notification_toast": {
             "connection_lost": "Conexión perdida. Reconectando...",
             "dismiss": "Descartar",
-            "intergration_starting": "Iniciando {integration}, no estará todo disponible hasta que finalice.",
+            "integration_starting": "Iniciando {integration}, no estará todo disponible hasta que finalice.",
             "service_call_failed": "Error al llamar al servicio {service}.",
             "started": "¡Home Assistant se ha iniciado!",
             "starting": "Home Assistant se está iniciando, no estará todo disponible hasta que finalice.",
@@ -1719,6 +1744,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Conectado",
+                        "connecting": "Conectando...",
                         "connection_status": "Estado de conexión a la nube",
                         "fetching_subscription": "Obteniendo suscripción...",
                         "google": {
@@ -2062,7 +2088,8 @@
                     "scripts": "Scripts",
                     "unknown_error": "Error desconocido",
                     "unnamed_device": "Dispositivo sin nombre",
-                    "update": "Actualizar"
+                    "update": "Actualizar",
+                    "update_device_error": "Error al actualizar el dispositivo"
                 },
                 "entities": {
                     "caption": "Entidades",
@@ -2195,6 +2222,7 @@
                         "depends_on_cloud": "Depende de la nube",
                         "device_unavailable": "Dispositivo no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositivo}\n  other {dispositivos}\n}",
+                        "disable_error": "Error al habilitar o deshabilitar la integración",
                         "disable_restart_confirm": "Reinicia Home Assistant para terminar de deshabilitar esta integración",
                         "disable": {
                             "disable_confirm": "¿Estás seguro de que deseas deshabilitar esta entrada de configuración? Sus dispositivos y entidades estarán deshabilitados.",
@@ -2206,6 +2234,7 @@
                             },
                             "disabled_cause": "Deshabilitada por {cause}"
                         },
+                        "disabled_polling": "Sondeo automático para datos actualizados deshabilitado",
                         "documentation": "Documentación",
                         "enable_restart_confirm": "Reinicia Home Assistant para terminar de habilitar esta integración",
                         "entities": "{count} {count, plural,\n  one {entidad}\n  other {entidades}\n}",
@@ -2702,7 +2731,7 @@
                         "validation": {
                             "check_config": "Verificar configuración",
                             "heading": "Validación de la configuración",
-                            "introduction": "Valida tu configuración si has realizado cambios recientemente y quieres asegurarte de que son correctos",
+                            "introduction": "Valida tu configuración si has realizado cambios recientemente en ella y quieres asegurarte de que son correctos",
                             "invalid": "Configuración no válida",
                             "valid": "¡Configuración valida!"
                         }
@@ -2959,6 +2988,7 @@
                     },
                     "logs": {
                         "log_level": "Nivel de registro",
+                        "log_level_changed": "Nivel de registro cambiado a: {level}",
                         "subscribed_to_logs": "Suscrito a los mensajes de registro de Z-Wave JS...",
                         "title": "Registros de Z-Wave JS"
                     },
@@ -3861,10 +3891,19 @@
                 "intro": "¿Estás listo para despertar tu casa, reclamar tu privacidad y unirte a una comunidad mundial de pensadores?",
                 "next": "Siguiente",
                 "restore": {
+                    "addons": "Complementos",
+                    "confirm_password": "Confirma la contraseña de la instantánea",
                     "description": "Alternativamente, puedes restaurar desde una copia de seguridad anterior.",
+                    "folders": "Carpetas",
+                    "full_snapshot": "Instantánea completa",
                     "hide_log": "Ocultar registro completo",
                     "in_progress": "Restauración en curso",
-                    "show_log": "Mostrar registro completo"
+                    "partial_snapshot": "Instantánea parcial",
+                    "password": "Contraseña de la instantánea",
+                    "password_protection": "Protección con contraseña",
+                    "select_type": "Selecciona qué restaurar",
+                    "show_log": "Mostrar registro completo",
+                    "type": "Tipo de instantánea"
                 },
                 "user": {
                     "create_account": "Crear una cuenta",
@@ -4007,6 +4046,17 @@
                     "link_promo": "Aprende sobre los temas",
                     "primary_color": "Color primario",
                     "reset": "Reiniciar"
+                },
+                "time_format": {
+                    "description": "Elije cómo se formatean las horas.",
+                    "dropdown_label": "Formato de hora",
+                    "formats": {
+                        "12": "12 horas (AM/PM)",
+                        "24": "24 horas",
+                        "language": "Automático (utilizar la configuración del idioma)",
+                        "system": "Utilizar la configuración regional del sistema"
+                    },
+                    "header": "Formato de hora"
                 },
                 "vibrate": {
                     "description": "Activar o deshabilitar la vibración en este dispositivo al controlar dispositivos.",

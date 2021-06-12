@@ -143,11 +143,9 @@ class OZWConfigDashboard extends LitElement {
   private async _fetchData() {
     this._instances = await fetchOZWInstances(this.hass!);
     if (this._instances.length === 1) {
-      navigate(
-        this,
-        `/config/ozw/network/${this._instances[0].ozw_instance}`,
-        true
-      );
+      navigate(`/config/ozw/network/${this._instances[0].ozw_instance}`, {
+        replace: true,
+      });
     }
   }
 

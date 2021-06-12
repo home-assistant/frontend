@@ -284,7 +284,7 @@
             "refresh": "Actualitza",
             "release_notes": "Notes de la versió",
             "reload": "Torna a carregar",
-            "reset_defaults": "Restableix als valors per defecte",
+            "reset_defaults": "Restableix els valors per defecte",
             "reset_options": "Opcions de reinici",
             "restart": "Reinicia",
             "restart_name": "Reinicia {name}",
@@ -292,7 +292,7 @@
             "save": "Desa",
             "show_more": "Mostra més informació al respecte",
             "update": "Actualitza",
-            "update_available": "{count, plural,\n  one {Actualització pendent}\n  other {{count} Actualitzacions pendents}\n}",
+            "update_available": "{count, plural,\n  one {Actualització pendent}\n  other {{count} actualitzacions pendents}\n}",
             "version": "Versió",
             "yes": "Sí"
         },
@@ -314,10 +314,18 @@
             "addon_new_version": "Nova versió disponible",
             "addon_running": "El complement s'està executant",
             "addon_stopped": "El complement està aturat",
-            "addons": "Complements",
+            "addons": "Complements instal·lats",
             "no_addons": "Encara no tens cap complement instal·lat. Vés al directori de complements per començar!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atributs",
+                "device_path": "Ruta del dispositiu",
+                "id": "ID",
+                "search": "Cerca maquinari",
+                "subsystem": "Subsistema",
+                "title": "Maquinari"
+            },
             "network": {
                 "connected_to": "Connectat a {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "S'ha produït un error desconegut",
             "error_addon_no_ingress": "El complement sol·licitat no admet ingress",
             "error_addon_not_found": "No s'ha trobat el complement",
+            "error_addon_not_installed": "El complement sol·licitat no està instal·lat. Instal·la'l primer",
+            "error_addon_not_started": "El complement sol·licitat no s'està executant. Inicia'l primer",
             "faq_link": "Preguntes freqüents de My Home Assistant",
             "not_supported": "La instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
         },
@@ -380,13 +390,19 @@
         "snapshot": {
             "addons": "Complements",
             "available_snapshots": "Instantànies disponibles",
+            "confirm_password": "Confirma la contrasenya de la instantània",
             "could_not_create": "No s'ha pogut crear la instantània",
             "create": "Crea",
             "create_blocked_not_running": "Ara mateix no és possible crear una instantània perquè el sistema es troba en estat {state}.",
             "create_snapshot": "Crea instantània",
             "created": "Creada",
+            "delete_selected": "Suprimeix les instantànies seleccionades",
+            "delete_snapshot_confirm": "suprimeix",
+            "delete_snapshot_text": "Vols suprimir {number} {number, plural,\n  one {instantània}\n  other {instantànies}\n}?",
+            "delete_snapshot_title": "Suprimeix instantània",
             "description": "Les instantànies et permeten fer una còpia de seguretat i recuperar les dades de la teva instància de Home Assistant.",
             "enter_password": "Introdueix una contrasenya.",
+            "failed_to_delete": "No s'ha pogut suprimir",
             "folder": {
                 "addons/local": "Complements locals",
                 "homeassistant": "Configuració de Home Assistant",
@@ -396,14 +412,17 @@
             },
             "folders": "Carpetes",
             "full_snapshot": "Instantània completa",
-            "name": "Nom",
+            "name": "Nom de la instantània",
             "no_snapshots": "Encara no tens instantànies.",
             "partial_snapshot": "Instantània parcial",
-            "password": "Contrasenya",
+            "password": "Contrasenya de la instantània",
             "password_protected": "protegit amb contrasenya",
             "password_protection": "Protecció amb contrasenya",
+            "passwords_not_matching": "Les contrasenyes no coincideixen",
             "security": "Seguretat",
-            "type": "Tipus",
+            "select_type": "Selecciona què vols restaurar",
+            "selected": "{number} seleccionada/es",
+            "type": "Tipus d'instantània",
             "upload_snapshot": "Puja instantània"
         },
         "store": {
@@ -720,6 +739,9 @@
                 "no_match": "No s'han trobat àrees coincidents",
                 "show_areas": "Mostra àrees"
             },
+            "attributes": {
+                "expansion_header": "Atributs"
+            },
             "blueprint-picker": {
                 "add_user": "Afegeix usuari",
                 "remove_user": "Elimina usuari",
@@ -919,8 +941,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Si es desactiva, les entitats descobertes recentment per a {integration} no s'afegiran automàticament a Home Assistant.",
+                "enable_new_entities_description": "Si està activat, les noves entitats descobertes per {integration} s'afegiran automàticament a Home Assistant.",
                 "enable_new_entities_label": "Activa entitats afegides recentment.",
+                "enable_polling_description": "Si Home Assistant ha de sondejar automàticament {integration} per obtenir actualitzacions de les entitats.",
+                "enable_polling_label": "Activa el sondeig per obtenir actualitzacions.",
+                "restart_home_assistant": "Has de reiniciar Home Assistant per aplicar els canvis.",
                 "title": "Opcions del sistema per a {integration}",
                 "update": "Actualitza"
             },
@@ -1261,7 +1286,7 @@
         "notification_toast": {
             "connection_lost": "Connexió perduda. Tornant a connectar...",
             "dismiss": "Omet",
-            "intergration_starting": "Iniciant {integration}, no estarà tot disponible fins que acabi.",
+            "integration_starting": "Iniciant {integration}, no estarà tot disponible fins que acabi.",
             "service_call_failed": "Ha fallat la crida al servei {service}.",
             "started": "Home Assistant s'ha iniciat!",
             "starting": "Home Assistant està iniciant-se, no estarà tot disponible fins que acabi",
@@ -1378,7 +1403,7 @@
                                     "type_select": "Tipus de repetició",
                                     "type": {
                                         "count": {
-                                            "label": "Compta"
+                                            "label": "Comptador"
                                         },
                                         "until": {
                                             "conditions": "Condicions de \"Fins que\"",
@@ -1530,7 +1555,7 @@
                             "delete_confirm": "Segur que vols eliminar-ho?",
                             "duplicate": "Duplica",
                             "header": "Disparadors",
-                            "introduction": "Els activadors són les regles que fan que es dispari una automatització. Pots definir més d'un activador per a cada automatització. Una vegada s'iniciï un activador, Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
+                            "introduction": "Els disparadors són les regles que fan que s'executi una automatització. Pots definir més d'un disparador per a cada automatització. Una vegada salti un disparador, Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
                             "learn_more": "Més informació sobre els activadors",
                             "name": "Disparador",
                             "type_select": "Tipus de disparador",
@@ -1719,6 +1744,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Connectat",
+                        "connecting": "Connectant...",
                         "connection_status": "Estat de connexió amb Cloud",
                         "fetching_subscription": "Obtenint subscripció...",
                         "google": {
@@ -2062,7 +2088,8 @@
                     "scripts": "Programes (scripts)",
                     "unknown_error": "Error desconegut",
                     "unnamed_device": "Dispositiu sense nom",
-                    "update": "Actualitza"
+                    "update": "Actualitza",
+                    "update_device_error": "No s'ha pogut actualitzar el dispositiu"
                 },
                 "entities": {
                     "caption": "Entitats",
@@ -2195,6 +2222,7 @@
                         "depends_on_cloud": "Depèn del núvol",
                         "device_unavailable": "Dispositiu no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositiu}\n  other {dispositius}\n}",
+                        "disable_error": "S'ha produït un error en activar o desactivar la integració",
                         "disable_restart_confirm": "Reinicia Home Assistant per acabar de desactivar aquesta integració",
                         "disable": {
                             "disable_confirm": "Estàs segur que vols desactivar aquesta entrada de configuració? Els seus dispositius i entitats es desactivaran.",
@@ -2206,6 +2234,7 @@
                             },
                             "disabled_cause": "Desactivada per {cause}"
                         },
+                        "disabled_polling": "Sondeig automàtic per l'obtenció de dades actualitzades desactivat",
                         "documentation": "Documentació",
                         "enable_restart_confirm": "Reinicia Home Assistant per acabar d'activar aquesta integració",
                         "entities": "{count} {count, plural,\n  one {entitat}\n  other {entitats}\n}",
@@ -2702,7 +2731,7 @@
                         "validation": {
                             "check_config": "Comprova la configuració",
                             "heading": "Validació de la configuració",
-                            "introduction": "Valida la configuració si recentment has fet algun canvi a la configuració i vols assegurar-te de que sigui vàlida.",
+                            "introduction": "Valida la configuració si recentment n'has fet algun canvi i vols assegurar-te de que sigui vàlida.",
                             "invalid": "Configuració invàlida",
                             "valid": "Configuració vàlida!"
                         }
@@ -2959,6 +2988,7 @@
                     },
                     "logs": {
                         "log_level": "Nivell dels registres",
+                        "log_level_changed": "Nivell de registre canviat a: {level}",
                         "subscribed_to_logs": "Subscrit a missatges de registre Z-Wave JS...",
                         "title": "Registres de Z-Wave JS"
                     },
@@ -3696,7 +3726,7 @@
             },
             "page-authorize": {
                 "abort_intro": "S'ha avortat l'inici de sessió",
-                "authorizing_client": "Esteu a punt de permetre l'accés a la vostra instància de Home Assistant al client {clientId}.",
+                "authorizing_client": "Estàs a punt de concedir al client {clientId} l'accés a la teva instància de Home Assistant.",
                 "form": {
                     "error": "Error: {error}",
                     "next": "Següent",
@@ -3790,7 +3820,7 @@
                     "working": "Si us plau, espereu"
                 },
                 "initializing": "S'està inicialitzant",
-                "logging_in_to_with": "S'escriuen els registes amb **{authProviderName}** a **{locationName}**.",
+                "logging_in_to_with": "Iniciant sessió a **{locationName}** amb **{authProviderName}**.",
                 "logging_in_with": "Iniciant sessió amb **{authProviderName}**.",
                 "pick_auth_provider": "O bé inicieu sessió amb"
             },
@@ -3861,10 +3891,19 @@
                 "intro": "Estàs preparat donar vida pròpia a la teva llar, recuperar la teva privacitat i unir-te a una comunitat mundial de \"tinkerers\"?",
                 "next": "Següent",
                 "restore": {
+                    "addons": "Complements",
+                    "confirm_password": "Confirma la contrasenya de la instantània",
                     "description": "També pots restaurar des d'una instantània anterior.",
+                    "folders": "Carpetes",
+                    "full_snapshot": "Instantània completa",
                     "hide_log": "Amaga el registre complet",
                     "in_progress": "Restauració en curs",
-                    "show_log": "Mostra el registre complet"
+                    "partial_snapshot": "Instantània parcial",
+                    "password": "Contrasenya de la instantània",
+                    "password_protection": "Protecció amb contrasenya",
+                    "select_type": "Selecciona què vols restaurar",
+                    "show_log": "Mostra el registre complet",
+                    "type": "Tipus d'instantània"
                 },
                 "user": {
                     "create_account": "Crear compte",
@@ -3955,7 +3994,7 @@
                     "header": "Mòduls d'autenticació amb múltiples passos"
                 },
                 "number_format": {
-                    "description": "Trieu el format dels números.",
+                    "description": "Tria el format dels números.",
                     "dropdown_label": "Format dels números",
                     "formats": {
                         "comma_decimal": "1,234,567.89",
@@ -4007,6 +4046,17 @@
                     "link_promo": "Crea temes personalitzats",
                     "primary_color": "Color primari",
                     "reset": "Restablir"
+                },
+                "time_format": {
+                    "description": "Tria el format de data i hora.",
+                    "dropdown_label": "Format de data i hora",
+                    "formats": {
+                        "12": "12 hores (AM/PM)",
+                        "24": "24 hores",
+                        "language": "Automàtic (utilitza la configuració d'idioma)",
+                        "system": "Utilitza la configuració regional del sistema"
+                    },
+                    "header": "Format de data i hora"
                 },
                 "vibrate": {
                     "description": "Activa o desactiva la vibració en d'aquest dispositiu.",

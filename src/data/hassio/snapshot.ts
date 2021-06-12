@@ -41,12 +41,12 @@ export interface HassioSnapshotDetail extends HassioSnapshot {
 export interface HassioFullSnapshotCreateParams {
   name: string;
   password?: string;
+  confirm_password?: string;
 }
-export interface HassioPartialSnapshotCreateParams {
-  name: string;
+export interface HassioPartialSnapshotCreateParams
+  extends HassioFullSnapshotCreateParams {
   folders?: string[];
   addons?: string[];
-  password?: string;
   homeassistant?: boolean;
 }
 
@@ -128,6 +128,21 @@ export const createHassioFullSnapshot = async (
     "POST",
     `hassio/snapshots/new/full`,
     data
+  );
+};
+
+export const removeSnapshot = async (hass: HomeAssistant, slug: string) => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: `/snapshots/${slug}/remove`,
+      method: "post",
+    });
+    return;
+  }
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/snapshots/${slug}/remove`
   );
 };
 

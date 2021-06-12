@@ -48,9 +48,11 @@ class PanelCalendar extends LitElement {
 
   private _end?: Date;
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._calendars = getCalendars(this.hass);
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
+    if (!this.hasUpdated) {
+      this._calendars = getCalendars(this.hass);
+    }
   }
 
   protected render(): TemplateResult {

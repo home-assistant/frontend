@@ -1261,7 +1261,7 @@
         "notification_toast": {
             "connection_lost": "Connexion perdue. Reconnexion en cours ...",
             "dismiss": "Ignorer",
-            "intergration_starting": "Démarrage de {integration}, tout ne sera pas disponible tant qu'il n'aura pas terminé",
+            "integration_starting": "Démarrage de {integration}, tout ne sera pas disponible tant qu'il n'aura pas terminé",
             "service_call_failed": "Échec d'appel du service \"{service}\".",
             "started": "Home Assistant a démarré !",
             "starting": "Home Assistant est en cours de démarrage, tout ne sera pas disponible tant qu’il n’aura pas terminé.",
@@ -4003,6 +4003,16 @@
                     "link_promo": "En savoir plus sur les thèmes",
                     "primary_color": "Couleur primaire",
                     "reset": "Réinitialiser"
+                },
+                "time_format": {
+                    "description": "Définir le formatage des nombres",
+                    "dropdown_label": "Format de l'heure",
+                    "formats": {
+                        "12": "12 heures (AM / PM)",
+                        "24": "24 heures",
+                        "system": "Utiliser les paramètres régionaux du système"
+                    },
+                    "header": "Format de l'heure"
                 },
                 "vibrate": {
                     "description": "Activer ou désactiver les vibrations sur cet appareil lors du contrôle des périphériques.",

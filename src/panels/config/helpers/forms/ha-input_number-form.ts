@@ -193,9 +193,6 @@ class HaInputNumberForm extends LitElement {
         .form {
           color: var(--primary-text-color);
         }
-        ha-paper-dropdown-menu {
-          display: block;
-        }
       `,
     ];
   }

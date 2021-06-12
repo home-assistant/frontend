@@ -74,7 +74,7 @@ class HaMfaModuleSetupFlow extends LitElement {
       <ha-dialog
         open
         .heading=${this._computeStepTitle()}
-        @closing=${this.closeDialog}
+        @closed=${this.closeDialog}
       >
         <div>
           ${this._errorMessage

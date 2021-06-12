@@ -81,7 +81,7 @@ class SupervisorErrorScreen extends LitElement {
 
   private _applyTheme() {
     let themeName: string;
-    let options: Partial<HomeAssistant["selectedTheme"]> | undefined;
+    let themeSettings: Partial<HomeAssistant["selectedTheme"]> | undefined;
 
     if (atLeastVersion(this.hass.config.version, 0, 114)) {
       themeName =
@@ -90,9 +90,9 @@ class SupervisorErrorScreen extends LitElement {
           ? this.hass.themes.default_dark_theme!
           : this.hass.themes.default_theme);
 
-      options = this.hass.selectedTheme;
-      if (themeName === "default" && options?.dark === undefined) {
-        options = {
+      themeSettings = this.hass.selectedTheme;
+      if (themeName === "default" && themeSettings?.dark === undefined) {
+        themeSettings = {
           ...this.hass.selectedTheme,
           dark: this.hass.themes.darkMode,
         };
@@ -107,7 +107,7 @@ class SupervisorErrorScreen extends LitElement {
       this.parentElement,
       this.hass.themes,
       themeName,
-      options
+      themeSettings
     );
   }
 

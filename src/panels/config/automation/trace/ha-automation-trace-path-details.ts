@@ -1,4 +1,4 @@
-import { safeDump } from "js-yaml";
+import { dump } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -132,13 +132,13 @@ export class HaAutomationTracePathDetails extends LitElement {
             )}<br />
             ${result
               ? html`Result:
-                  <pre>${safeDump(result)}</pre>`
+                  <pre>${dump(result)}</pre>`
               : error
               ? html`<div class="error">Error: ${error}</div>`
               : ""}
             ${Object.keys(rest).length === 0
               ? ""
-              : html`<pre>${safeDump(rest)}</pre>`}
+              : html`<pre>${dump(rest)}</pre>`}
           `;
         })
       );
@@ -154,7 +154,7 @@ export class HaAutomationTracePathDetails extends LitElement {
     const config = getDataFromPath(this.trace!.config, this.selected.path);
     return config
       ? html`<ha-code-editor
-          .value=${safeDump(config).trimRight()}
+          .value=${dump(config).trimRight()}
           readOnly
         ></ha-code-editor>`
       : "Unable to find config";
@@ -171,9 +171,7 @@ export class HaAutomationTracePathDetails extends LitElement {
             ${idx > 0 ? html`<p>Iteration ${idx + 1}</p>` : ""}
             ${Object.keys(trace.changed_variables || {}).length === 0
               ? "No variables changed"
-              : html`<pre>
-${safeDump(trace.changed_variables).trimRight()}</pre
-                >`}
+              : html`<pre>${dump(trace.changed_variables).trimRight()}</pre>`}
           `
         )}
       </div>

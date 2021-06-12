@@ -314,7 +314,7 @@
             "addon_new_version": "Nowa wersja dostępna",
             "addon_running": "Dodatek jest uruchomiony",
             "addon_stopped": "Dodatek jest zatrzymany",
-            "addons": "Dodatki",
+            "addons": "Zainstalowane dodatki",
             "no_addons": "Nie masz jeszcze zainstalowanych żadnych dodatków. Przejdź do sklepu z dodatkami, aby rozpocząć!"
         },
         "dialog": {
@@ -368,6 +368,8 @@
             "error": "Wystąpił nieznany błąd",
             "error_addon_no_ingress": "Żądany dodatek nie obsługuje osadzania",
             "error_addon_not_found": "Nie znaleziono dodatku",
+            "error_addon_not_installed": "Żądany dodatek nie jest zainstalowany. Najpierw go zainstaluj.",
+            "error_addon_not_started": "Żądany dodatek nie jest uruchomiony. Proszę najpierw go uruchomić.",
             "faq_link": "Mój Home Assistant - często zadawane pytania",
             "not_supported": "To przekierowanie nie jest obsługiwane przez Twoją instancję Home Assistanta. Sprawdź {link} aby znaleźć obsługiwane przekierowania i wersję, w której zostały wprowadzone."
         },
@@ -385,8 +387,13 @@
             "create_blocked_not_running": "Tworzenie snapshota nie jest teraz możliwe, ponieważ system jest w {state}.",
             "create_snapshot": "Utwórz snapshot",
             "created": "Utworzony",
+            "delete_selected": "Usuń wybrane snapshoty",
+            "delete_snapshot_confirm": "usuń",
+            "delete_snapshot_text": "Czy chcesz usunąć {number} {number, plural,\n  one {snapshota}\n  few {snapshoty}\n  many {snapshotów}\n  other {snapshoty}\n}?",
+            "delete_snapshot_title": "Usuń snapshota",
             "description": "Snapshoty umożliwiają łatwe tworzenie kopii zapasowych i przywracanie wszystkich danych instancji Home Assistant.",
             "enter_password": "Proszę wprowadzić hasło",
+            "failed_to_delete": "Nie udało się usunąć",
             "folder": {
                 "addons/local": "Folder Local add-ons",
                 "homeassistant": "Folder konfiguracji Home Assistant",
@@ -396,14 +403,16 @@
             },
             "folders": "Foldery",
             "full_snapshot": "Pełny snapshot",
-            "name": "Nazwa",
+            "name": "Nazwa snapshota",
             "no_snapshots": "Nie masz jeszcze żadnych snapshotów.",
             "partial_snapshot": "Częściowy snapshot",
-            "password": "Hasło",
+            "password": "Hasło snapshota",
             "password_protected": "chroniony hasłem",
             "password_protection": "Ochrona hasłem",
             "security": "Bezpieczeństwo",
-            "type": "Typ",
+            "select_type": "Wybierz, co przywrócić",
+            "selected": "wybrano {number}",
+            "type": "Typ snapshota",
             "upload_snapshot": "Prześlij snapshota"
         },
         "store": {
@@ -720,6 +729,9 @@
                 "no_match": "Nie znaleziono pasujących obszarów",
                 "show_areas": "Pokaż obszary"
             },
+            "attributes": {
+                "expansion_header": "Atrybuty"
+            },
             "blueprint-picker": {
                 "add_user": "Dodaj użytkownika",
                 "remove_user": "Usuń użytkownika",
@@ -919,8 +931,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje integracji {integration} nie będą automatycznie dodawane do Home Assistanta.",
+                "enable_new_entities_description": "Jeśli nowo odkryte urządzenia dla integracji {integration} powinny zostać dodane automatycznie.",
                 "enable_new_entities_label": "Włącz dodawanie nowych encji.",
+                "enable_polling_description": "Czy Home Assistant powinien automatycznie odpytywać encje {integration} w poszukiwaniu aktualizacji.",
+                "enable_polling_label": "Włącz odpytywanie o aktualizacje.",
+                "restart_home_assistant": "Aby zmiany zostały wprowadzone, musisz ponownie uruchomić Home Assistanta.",
                 "title": "Opcje systemowe dla {integration}",
                 "update": "Aktualizuj"
             },
@@ -1261,7 +1276,7 @@
         "notification_toast": {
             "connection_lost": "Utracono połączenie. Łączę ponownie...",
             "dismiss": "Ukryj",
-            "intergration_starting": "{integration} uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
+            "integration_starting": "{integration} uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
             "service_call_failed": "Nie udało się wywołać usługi {service}.",
             "started": "Home Assistant uruchomił się!",
             "starting": "Home Assistant uruchamia się, nie wszystko będzie dostępne, dopóki uruchamianie się nie zakończy.",
@@ -1719,6 +1734,7 @@
                             "title": "Alexa"
                         },
                         "connected": "połączono",
+                        "connecting": "Łączenie...",
                         "connection_status": "Status połączenia z chmurą",
                         "fetching_subscription": "Pobieranie subskrypcji…",
                         "google": {
@@ -2062,7 +2078,8 @@
                     "scripts": "Skrypty",
                     "unknown_error": "Nieznany błąd",
                     "unnamed_device": "Nienazwane urządzenie",
-                    "update": "Aktualizuj"
+                    "update": "Aktualizuj",
+                    "update_device_error": "Aktualizacja urządzenia nie powiodła się"
                 },
                 "entities": {
                     "caption": "Rejestr encji",
@@ -2195,6 +2212,7 @@
                         "depends_on_cloud": "Zależny od chmury",
                         "device_unavailable": "Urządzenie niedostępne",
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
+                        "disable_error": "Nie udało się włączyć lub wyłączyć integracji",
                         "disable_restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć wyłączanie tej integracji",
                         "disable": {
                             "disable_confirm": "Czy na pewno chcesz wyłączyć ten wpis w konfiguracji? Jego urządzenia i instancje zostaną wyłączone.",
@@ -2206,6 +2224,7 @@
                             },
                             "disabled_cause": "Wyłączone przez {cause}."
                         },
+                        "disabled_polling": "Automatyczne odpytywanie o zaktualizowane dane jest wyłączone",
                         "documentation": "Dokumentacja",
                         "enable_restart_confirm": "Uruchom ponownie Home Assistanta, aby dokończyć uruchamianie tej integracji",
                         "entities": "{count} {count, plural,\n  one {encja}\n  few {encje}\n  many {encji}\n  other {encji}\n}",
@@ -2588,6 +2607,8 @@
                         "add_scene": "Dodaj scenę",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę scenę?",
                         "delete_scene": "Usuń scenę",
+                        "duplicate": "Duplikuj",
+                        "duplicate_scene": "Duplikuj scenę",
                         "edit_scene": "Edytuj scenę",
                         "header": "Edytor scen",
                         "headers": {
@@ -2915,7 +2936,9 @@
                         "controller_in_inclusion_mode": "Kontroler Z-Wave jest teraz w trybie dodawania węzła.",
                         "follow_device_instructions": "Postępuj zgodnie ze wskazówkami dołączonymi do urządzenia, aby wywołać dodawanie do sieci.",
                         "inclusion_failed": "Nie można dodać węzła. Sprawdź logi, aby uzyskać więcej informacji.",
-                        "inclusion_finished": "Węzeł został dodany. Trwa kończenie konfiguracji węzła w tle, dodawanie encji urządzenia może zająć kilka minut.",
+                        "inclusion_finished": "Węzeł został dodany.",
+                        "interview_failed": "Odpytywanie urządzenia nie powiodło się. Dodatkowe informacje mogą być dostępne w logach.",
+                        "interview_started": "Urządzenie jest odpytywane. To może zająć trochę czasu.",
                         "introduction": "Ten kreator poprowadzi Cię przez proces dodawania węzła do sieci Z-Wave.",
                         "secure_inclusion_warning": "Bezpieczne węzły wymagają dodatkowej przepustowości; zbyt wiele bezpiecznych węzłów może spowolnić twoją sieć Z-Wave. Zalecamy używanie bezpiecznego dodawania tylko w przypadku urządzeń, które tego wymagają, takich jak zamki lub urządzenia sterujące bramami garażowymi.",
                         "start_inclusion": "Rozpocznij dodawanie węzła",
@@ -2955,6 +2978,7 @@
                     },
                     "logs": {
                         "log_level": "Poziom loga",
+                        "log_level_changed": "Poziom dziennika zmieniony na: {level}",
                         "subscribed_to_logs": "Zasubskrybowano komunikaty dziennika Z-Wave JS...",
                         "title": "Logi Z-Wave JS"
                     },
@@ -4003,6 +4027,17 @@
                     "link_promo": "Dowiedz się więcej o motywach",
                     "primary_color": "Kolor podstawowy",
                     "reset": "Zresetuj"
+                },
+                "time_format": {
+                    "description": "Wybierz sposób formatowania czasu.",
+                    "dropdown_label": "Format czasu",
+                    "formats": {
+                        "12": "12-godzinny (AM / PM)",
+                        "24": "24-godzinny",
+                        "language": "Auto (użyj ustawień języka)",
+                        "system": "Użyj ustawień regionalnych systemu"
+                    },
+                    "header": "Format czasu"
                 },
                 "vibrate": {
                     "description": "Włącz lub wyłącz wibracje na tym urządzeniu podczas sterowania urządzeniami.",

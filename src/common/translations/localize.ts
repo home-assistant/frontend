@@ -1,4 +1,4 @@
-import { shouldPolyfill } from "@formatjs/intl-pluralrules/should-polyfill";
+import { shouldPolyfill } from "@formatjs/intl-pluralrules/lib/should-polyfill";
 import IntlMessageFormat from "intl-messageformat";
 import { Resources } from "../../types";
 
@@ -86,11 +86,15 @@ export const computeLocalize = async (
       | undefined;
 
     if (!translatedMessage) {
-      translatedMessage = new IntlMessageFormat(
-        translatedValue,
-        language,
-        formats
-      );
+      try {
+        translatedMessage = new IntlMessageFormat(
+          translatedValue,
+          language,
+          formats
+        );
+      } catch (err) {
+        return "Translation error: " + err.message;
+      }
       cache._localizationCache[messageKey] = translatedMessage;
     }
 

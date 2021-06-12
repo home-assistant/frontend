@@ -138,7 +138,7 @@ class HassioAddonStore extends LitElement {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     const repositoryUrl = extractSearchParam("repository_url");
-    navigate(this, "/hassio/store", true);
+    navigate("/hassio/store", { replace: true });
     if (repositoryUrl) {
       this._manageRepositories(repositoryUrl);
     }

@@ -300,8 +300,24 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
 
     if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
-      this._setTemp = this._getSetTemp(stateObj);
       this._rescale_svg();
+    }
+  }
+
+  public willUpdate(changedProps: PropertyValues) {
+    if (!this.hass || !this._config || !changedProps.has("hass")) {
+      return;
+    }
+
+    const stateObj = this.hass.states[this._config.entity];
+    if (!stateObj) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
+      this._setTemp = this._getSetTemp(stateObj);
     }
   }
 

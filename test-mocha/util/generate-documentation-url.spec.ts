@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import { assert } from "chai";
 import { documentationUrl } from "../../src/util/documentation-url";
 
 describe("Generate documentation URL", function () {

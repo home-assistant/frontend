@@ -28,10 +28,11 @@ const createConfigEntry = (
   title,
   source: "zeroconf",
   state: "loaded",
-  connection_class: "local_push",
   supports_options: false,
   supports_unload: true,
   disabled_by: null,
+  pref_disable_new_entities: false,
+  pref_disable_polling: false,
   reason: null,
   ...override,
 });
@@ -63,6 +64,9 @@ const configPanelEntry = createConfigEntry("Config Panel", {
 });
 const optionsFlowEntry = createConfigEntry("Options Flow", {
   supports_options: true,
+});
+const disabledPollingEntry = createConfigEntry("Disabled Polling", {
+  pref_disable_polling: true,
 });
 const setupErrorEntry = createConfigEntry("Setup Error", {
   state: "setup_error",
@@ -136,6 +140,7 @@ const configEntries: Array<{
   { items: [loadedEntry] },
   { items: [configPanelEntry] },
   { items: [optionsFlowEntry] },
+  { items: [disabledPollingEntry] },
   { items: [nameAsDomainEntry] },
   { items: [longNameEntry] },
   { items: [longNonBreakingNameEntry] },

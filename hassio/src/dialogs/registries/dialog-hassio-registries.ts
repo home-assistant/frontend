@@ -45,7 +45,7 @@ class HassioRegistriesDialog extends LitElement {
     return html`
       <ha-dialog
         .open=${this._opened}
-        @closing=${this.closeDialog}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -243,9 +243,6 @@ class HassioRegistriesDialog extends LitElement {
         }
         mwc-list-item span[slot="secondary"] {
           color: var(--secondary-text-color);
-        }
-        ha-paper-dropdown-menu {
-          display: block;
         }
       `,
     ];

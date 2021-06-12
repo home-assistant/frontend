@@ -292,7 +292,7 @@
             "save": "Save",
             "show_more": "Show more information about this",
             "update": "Update",
-            "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending",
+            "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
             "version": "Version",
             "yes": "Yes"
         },
@@ -314,10 +314,18 @@
             "addon_new_version": "New version available",
             "addon_running": "Add-on is running",
             "addon_stopped": "Add-on is stopped",
-            "addons": "Add-ons",
+            "addons": "Installed add-ons",
             "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Attributes",
+                "device_path": "Device path",
+                "id": "ID",
+                "search": "Search hardware",
+                "subsystem": "Subsystem",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Connected to {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "An unknown error occurred",
             "error_addon_no_ingress": "The requested add-on does not support ingress",
             "error_addon_not_found": "Add-on not found",
+            "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
+            "error_addon_not_started": "The requested add-on are not running. Please start it first",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced."
         },
@@ -380,13 +390,19 @@
         "snapshot": {
             "addons": "Add-ons",
             "available_snapshots": "Available Snapshots",
+            "confirm_password": "Confirm Snapshot password",
             "could_not_create": "Could not create snapshot",
             "create": "Create",
             "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
             "create_snapshot": "Create snapshot",
             "created": "Created",
+            "delete_selected": "Delete selected snapshots",
+            "delete_snapshot_confirm": "delete",
+            "delete_snapshot_text": "Do you want to delete {number} {number, plural,\n  one {snapshot}\n  other {snapshots}\n}?",
+            "delete_snapshot_title": "Delete snapshot",
             "description": "Snapshots allow you to easily backup and restore all data of your Home Assistant instance.",
             "enter_password": "Please enter a password.",
+            "failed_to_delete": "Failed to delete",
             "folder": {
                 "addons/local": "Local add-ons",
                 "homeassistant": "Home Assistant configuration",
@@ -396,14 +412,17 @@
             },
             "folders": "Folders",
             "full_snapshot": "Full snapshot",
-            "name": "Name",
+            "name": "Snapshot name",
             "no_snapshots": "You don't have any snapshots yet.",
             "partial_snapshot": "Partial snapshot",
-            "password": "Password",
+            "password": "Snapshot password",
             "password_protected": "password protected",
             "password_protection": "Password protection",
+            "passwords_not_matching": "The passwords does not match",
             "security": "Security",
-            "type": "Type",
+            "select_type": "Select what to restore",
+            "selected": "{number} selected",
+            "type": "Snapshot type",
             "upload_snapshot": "Upload snapshot"
         },
         "store": {
@@ -720,6 +739,9 @@
                 "no_match": "No matching areas found",
                 "show_areas": "Show areas"
             },
+            "attributes": {
+                "expansion_header": "Attributes"
+            },
             "blueprint-picker": {
                 "add_user": "Add user",
                 "remove_user": "Remove user",
@@ -919,8 +941,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "If disabled, newly discovered entities for {integration} will not be automatically added to Home Assistant.",
+                "enable_new_entities_description": "If newly discovered devices for {integration} should be automatically added.",
                 "enable_new_entities_label": "Enable newly added entities.",
+                "enable_polling_description": "If Home Assistant should automatically poll {integration} entities for updates.",
+                "enable_polling_label": "Enable polling for updates.",
+                "restart_home_assistant": "You need to restart Home Assistant for your changes to take effect.",
                 "title": "System Options for {integration}",
                 "update": "Update"
             },
@@ -1261,7 +1286,7 @@
         "notification_toast": {
             "connection_lost": "Connection lost. Reconnecting...",
             "dismiss": "Dismiss",
-            "intergration_starting": "Starting {integration}, not everything will be available until it is finished.",
+            "integration_starting": "Starting {integration}, not everything will be available until it is finished.",
             "service_call_failed": "Failed to call service {service}.",
             "started": "Home Assistant has started!",
             "starting": "Home Assistant is starting, not everything will be available until it is finished.",
@@ -1719,6 +1744,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Connected",
+                        "connecting": "Connecting...",
                         "connection_status": "Cloud connection status",
                         "fetching_subscription": "Fetching subscription...",
                         "google": {
@@ -2062,7 +2088,8 @@
                     "scripts": "Scripts",
                     "unknown_error": "Unknown error",
                     "unnamed_device": "Unnamed device",
-                    "update": "Update"
+                    "update": "Update",
+                    "update_device_error": "Updating the device failed"
                 },
                 "entities": {
                     "caption": "Entities",
@@ -2195,6 +2222,7 @@
                         "depends_on_cloud": "Depends on the cloud",
                         "device_unavailable": "Device unavailable",
                         "devices": "{count} {count, plural,\n  one {device}\n  other {devices}\n}",
+                        "disable_error": "Enabling or disabling of the integration failed",
                         "disable_restart_confirm": "Restart Home Assistant to finish disabling this integration",
                         "disable": {
                             "disable_confirm": "Are you sure you want to disable this config entry? Its devices and entities will be disabled.",
@@ -2206,6 +2234,7 @@
                             },
                             "disabled_cause": "Disabled by {cause}"
                         },
+                        "disabled_polling": "Automatic polling for updated data disabled",
                         "documentation": "Documentation",
                         "enable_restart_confirm": "Restart Home Assistant to finish enabling this integration",
                         "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
@@ -2702,7 +2731,7 @@
                         "validation": {
                             "check_config": "Check configuration",
                             "heading": "Configuration validation",
-                            "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
+                            "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid.",
                             "invalid": "Configuration invalid",
                             "valid": "Configuration valid!"
                         }
@@ -2959,6 +2988,7 @@
                     },
                     "logs": {
                         "log_level": "Log Level",
+                        "log_level_changed": "Log Level changed to: {level}",
                         "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
                         "title": "Z-Wave JS Logs"
                     },
@@ -3861,10 +3891,19 @@
                 "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
                 "next": "Next",
                 "restore": {
+                    "addons": "Add-ons",
+                    "confirm_password": "Confirm Snapshot password",
                     "description": "Alternatively you can restore from a previous snapshot.",
+                    "folders": "Folders",
+                    "full_snapshot": "Full snapshot",
                     "hide_log": "Hide full log",
                     "in_progress": "Restore in progress",
-                    "show_log": "Show full log"
+                    "partial_snapshot": "Partial snapshot",
+                    "password": "Snapshot password",
+                    "password_protection": "Password protection",
+                    "select_type": "Select what to restore",
+                    "show_log": "Show full log",
+                    "type": "Snapshot type"
                 },
                 "user": {
                     "create_account": "Create Account",

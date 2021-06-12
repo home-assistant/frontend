@@ -15,7 +15,7 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
-import { timerTimeRemaining } from "../../common/entity/timer_time_remaining";
+import { timerTimeRemaining } from "../../data/timer";
 import { formatNumber } from "../../common/string/format_number";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { HomeAssistant } from "../../types";

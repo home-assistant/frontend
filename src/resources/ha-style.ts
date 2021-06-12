@@ -2,6 +2,9 @@ import "@polymer/paper-styles/paper-styles";
 import "@polymer/polymer/lib/elements/custom-style";
 import { derivedStyles } from "./styles";
 
+export const DEFAULT_PRIMARY_COLOR = "#03a9f4";
+export const DEFAULT_ACCENT_COLOR = "#ff9800";
+
 const documentContainer = document.createElement("template");
 documentContainer.setAttribute("style", "display: none;");
 
@@ -26,10 +29,10 @@ documentContainer.innerHTML = `<custom-style>
       --disabled-text-color: #bdbdbd;
 
       /* main interface colors */
-      --primary-color: #03a9f4;
+      --primary-color: ${DEFAULT_PRIMARY_COLOR};
       --dark-primary-color: #0288d1;
       --light-primary-color: #b3e5fC;
-      --accent-color: #ff9800;
+      --accent-color: ${DEFAULT_ACCENT_COLOR};
       --divider-color: rgba(0, 0, 0, .12);
 
       --scrollbar-thumb-color: rgb(194, 194, 194);

@@ -219,7 +219,7 @@
                     },
                     "boot": {
                         "description": "Запускать дополнение во время загрузки системы",
-                        "title": "Запускать при загрузке"
+                        "title": "Автозагрузка"
                     },
                     "ingress_panel": {
                         "description": "Добавить это дополнение на боковую панель",
@@ -314,10 +314,18 @@
             "addon_new_version": "Доступна новая версия",
             "addon_running": "Дополнение работает",
             "addon_stopped": "Дополнение остановлено",
-            "addons": "Дополнения",
+            "addons": "Установленные дополнения",
             "no_addons": "Нет установленных дополнений. Вы можете установить их из магазина дополнений."
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Атрибуты",
+                "device_path": "Путь к устройству",
+                "id": "ID",
+                "search": "Поиск оборудования",
+                "subsystem": "Подсистема",
+                "title": "Оборудование"
+            },
             "network": {
                 "connected_to": "Подключено к {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "Произошла неизвестная ошибка",
             "error_addon_no_ingress": "Дополнение не поддерживает ingress.",
             "error_addon_not_found": "Дополнение не найдено.",
+            "error_addon_not_installed": "Запрошенное дополнение не установлено. Сначала нужно установить его.",
+            "error_addon_not_started": "Запрашиваемое дополнение не запущено. Сначала нужно запустить его.",
             "faq_link": "часто задаваемыми вопросами по My Home Assistant",
             "not_supported": "Это перенаправление не поддерживается Вашим Home Assistant. Ознакомьтесь с {link}, чтобы узнать поддерживаемые перенаправления и версии, в которых они были добавлены."
         },
@@ -380,31 +390,40 @@
         "snapshot": {
             "addons": "Дополнения",
             "available_snapshots": "Доступные снимки",
+            "confirm_password": "Подтверждение пароля",
             "could_not_create": "Не удалось создать снимок",
             "create": "Создать",
             "create_blocked_not_running": "Создание снимка сейчас невозможно, потому что система находится в состоянии {state}.",
-            "create_snapshot": "Снимки файловой системы",
+            "create_snapshot": "Создать снимок",
             "created": "Создан",
+            "delete_selected": "Удалить выбранные снимки",
+            "delete_snapshot_confirm": "удалить",
+            "delete_snapshot_text": "Вы уверены, что хотите удалить {number} {number, plural,\n  one {снимок}\n  few {снимка}\n  many {снимков}\n  other {снимков}\n}?",
+            "delete_snapshot_title": "Удалить снимок",
             "description": "Снимок файловой системы (snapshot) позволяет легко создавать и восстанавливать резервную копию всех данных Вашего Home Assistant.",
             "enter_password": "Пожалуйста, введите пароль.",
+            "failed_to_delete": "Не удалось удалить",
             "folder": {
                 "addons/local": "Локальные дополнения",
-                "homeassistant": "Home Assistant",
+                "homeassistant": "Home Assistant configuration",
                 "media": "Media",
                 "share": "Share",
                 "ssl": "SSL"
             },
             "folders": "Папки",
-            "full_snapshot": "Полный",
+            "full_snapshot": "Все файлы",
             "name": "Название",
             "no_snapshots": "Не найдено ни одного снимка",
-            "partial_snapshot": "Выборочный",
+            "partial_snapshot": "Выбрать из списка",
             "password": "Пароль",
             "password_protected": "защищено паролем",
             "password_protection": "Защита паролем",
+            "passwords_not_matching": "Пароли не совпадают",
             "security": "Безопасность",
-            "type": "Тип",
-            "upload_snapshot": "Загрузить снимок"
+            "select_type": "Выберите что нужно восстановить из этого снимка файловой системы",
+            "selected": "Выбрано: {number}",
+            "type": "Выберите что должен включать в себя снимок файловой системы",
+            "upload_snapshot": "Загрузить снимок на сервер"
         },
         "store": {
             "missing_addons": "Пропали дополнения? Активируйте расширенный режим на странице Вашего профиля пользователя",
@@ -720,6 +739,9 @@
                 "no_match": "Подходящих помещений не найдено",
                 "show_areas": "Показать помещения"
             },
+            "attributes": {
+                "expansion_header": "Атрибуты"
+            },
             "blueprint-picker": {
                 "add_user": "Добавить пользователя",
                 "remove_user": "Удалить пользователя",
@@ -919,8 +941,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "{integration} будет автоматически добавлять в Home Assistant вновь обнаруженные объекты",
+                "enable_new_entities_description": "Home Assistant будет автоматически добавлять новые обнаруженные устройства {integration}",
                 "enable_new_entities_label": "Добавлять новые объекты",
+                "enable_polling_description": "Home Assistant будет автоматически опрашивать объекты {integration} для получения обновлений",
+                "enable_polling_label": "Включить опрос для получения обновлений",
+                "restart_home_assistant": "Чтобы изменения вступили в силу, нужно перезапустить Home Assistant.",
                 "title": "{integration}",
                 "update": "Обновить"
             },
@@ -1261,7 +1286,7 @@
         "notification_toast": {
             "connection_lost": "Соединение потеряно. Повторное подключение...",
             "dismiss": "Закрыть",
-            "intergration_starting": "{integration} запускается, пока что не всё может быть доступно.",
+            "integration_starting": "{integration} запускается, пока что не всё может быть доступно.",
             "service_call_failed": "Не удалось вызвать службу {service}.",
             "started": "Home Assistant работает!",
             "starting": "Home Assistant запускается, пока что не всё может быть доступно.",
@@ -1719,6 +1744,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Подключено",
+                        "connecting": "Подключение...",
                         "connection_status": "Статус подключения к облаку",
                         "fetching_subscription": "Получение информации о подписке…",
                         "google": {
@@ -2062,7 +2088,8 @@
                     "scripts": "Скрипты",
                     "unknown_error": "Неизвестная ошибка.",
                     "unnamed_device": "Устройство без названия",
-                    "update": "Обновить"
+                    "update": "Обновить",
+                    "update_device_error": "Не удалось обновить устройство"
                 },
                 "entities": {
                     "caption": "Объекты",
@@ -2195,6 +2222,7 @@
                         "depends_on_cloud": "Зависит от облачных сервисов",
                         "device_unavailable": "Устройство недоступно",
                         "devices": "{count} {count, plural,\n  one {устройство}\n  few {устройства}\n  many {устройств}\n  other {устройств}\n}",
+                        "disable_error": "Не удалось активировать или деактивировать интеграцию",
                         "disable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить деактивацию этой интеграции.",
                         "disable": {
                             "disable_confirm": "Вы уверены, что хотите деактивировать эту запись конфигурации? Её дочерние устройства и объекты будут также деактивированы.",
@@ -2206,6 +2234,7 @@
                             },
                             "disabled_cause": "Деактивировано {cause}"
                         },
+                        "disabled_polling": "Автоматический опрос для получения обновленных данных отключен",
                         "documentation": "Документация",
                         "enable_restart_confirm": "Перезапустите Home Assistant, чтобы завершить подключение этой интеграции.",
                         "entities": "{count} {count, plural,\n  one {объект}\n  few {объекта}\n  many {объектов}\n  other {объектов}\n}",
@@ -2702,7 +2731,7 @@
                         "validation": {
                             "check_config": "Начать проверку",
                             "heading": "Проверка конфигурации",
-                            "introduction": "Проверьте файлы конфигурации, если Вы внесли в них изменения.",
+                            "introduction": "Выполните проверку конфигурации, если в неё были внесены изменения и Вы хотите убедиться в её работоспособности.",
                             "invalid": "Ошибка в конфигурации",
                             "valid": "Конфигурация выполнена верно"
                         }
@@ -2959,6 +2988,7 @@
                     },
                     "logs": {
                         "log_level": "Уровень",
+                        "log_level_changed": "Уровень журнала изменен на: {level}",
                         "subscribed_to_logs": "Подписано на сообщения журнала Z-Wave JS...",
                         "title": "Журналы Z-Wave JS"
                     },
@@ -3861,10 +3891,19 @@
                 "intro": "Готовы ли Вы разбудить свой дом, вернуть свою конфиденциальность и присоединиться к всемирному сообществу?",
                 "next": "Далее",
                 "restore": {
+                    "addons": "Дополнения",
+                    "confirm_password": "Подтверждение пароля",
                     "description": "Восстановить предыдущее состояние из снимка файловой системы (snapshot)",
+                    "folders": "Папки",
+                    "full_snapshot": "Все файлы",
                     "hide_log": "Скрыть журнал",
                     "in_progress": "Восстановление системы",
-                    "show_log": "Показать журнал"
+                    "partial_snapshot": "Выбрать из списка",
+                    "password": "Пароль",
+                    "password_protection": "Защита паролем",
+                    "select_type": "Выберите что нужно восстановить из этого снимка файловой системы",
+                    "show_log": "Показать журнал",
+                    "type": "Выберите что должен включать в себя снимок файловой системы"
                 },
                 "user": {
                     "create_account": "Создать учётную запись",

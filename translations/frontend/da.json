@@ -385,8 +385,13 @@
             "create_blocked_not_running": "Det er ikke muligt at oprette et snapshot lige nu, fordi systemet er i tilstanden {state}.",
             "create_snapshot": "Opret snapshot",
             "created": "Oprettet",
+            "delete_selected": "Slet valgte snapshots",
+            "delete_snapshot_confirm": "Slet",
+            "delete_snapshot_text": "Vil du slette {number} \n{number, plural,\n  one {snapshot}\n  other {snapshots}\n}?",
+            "delete_snapshot_title": "Slet snapshot",
             "description": "Snapshots giver dig mulighed for nemt at sikkerhedskopiere og gendanne alle data fra dit instans af Home Assistant.",
             "enter_password": "Venligst indtast et kodeord.",
+            "failed_to_delete": "Kunne ikke slette",
             "folder": {
                 "addons/local": "Lokale tilføjelsesprogrammer",
                 "homeassistant": "Home Assistant konfiguration",
@@ -403,6 +408,8 @@
             "password_protected": "beskyttet med kodeord",
             "password_protection": "Kodeordsbeskyttelse",
             "security": "Sikkerhed",
+            "select_type": "Vælg, hvad der skal gendannes",
+            "selected": "{number} valgt",
             "type": "Type",
             "upload_snapshot": "Upload snapshot"
         },
@@ -719,6 +726,9 @@
                 "no_areas": "Du har ikke nogen områder",
                 "no_match": "Ingen matchende områder fundet",
                 "show_areas": "Vis områder"
+            },
+            "attributes": {
+                "expansion_header": "Attributter"
             },
             "blueprint-picker": {
                 "add_user": "Tilføj bruger",
@@ -1261,7 +1271,7 @@
         "notification_toast": {
             "connection_lost": "Forbindelse afbrudt. Opretter forbindelse igen...",
             "dismiss": "Afvis",
-            "intergration_starting": "Starter {integration}, ikke alt vil være tilgængeligt, før det er færdigt.",
+            "integration_starting": "Starter {integration}, ikke alt vil være tilgængeligt, før det er færdigt.",
             "service_call_failed": "Kunne ikke kalde tjenesten {service}.",
             "started": "Home Assistant er startet!",
             "starting": "Home Assistant starter. Nogle funktioner er måske ikke tilgængelige før opstarten er færdig.",
@@ -1719,6 +1729,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Forbundet",
+                        "connecting": "Forbinder...",
                         "connection_status": "Cloud-forbindelsesstatus",
                         "fetching_subscription": "Henter abonnement...",
                         "google": {
@@ -2588,6 +2599,8 @@
                         "add_scene": "Tilføj scene",
                         "delete_confirm": "Er du sikker på, at du vil slette denne scene?",
                         "delete_scene": "Slet scene",
+                        "duplicate": "Kopier",
+                        "duplicate_scene": "Kopier scene",
                         "edit_scene": "Rediger scene",
                         "header": "Sceneredigering",
                         "headers": {
@@ -2916,6 +2929,8 @@
                         "follow_device_instructions": "Følg instruktionerne, der fulgte med din enhed for at starte parring af enheden.",
                         "inclusion_failed": "Noden kunne ikke tilføjes. Se i logfilerne for at få flere oplysninger.",
                         "inclusion_finished": "Noden er blevet tilføjet. Det kan tage et par minutter før alle enheder dukker op, mens konfiguration af noden fuldføres.",
+                        "interview_failed": "Forespørgsel af enheden er mislykkedes. Der kan være yderligere oplysninger i logfilerne.",
+                        "interview_started": "Enheden forespørges. Dette kan tage noget tid.",
                         "introduction": "Denne guide hjælper dig med at føje en node til dit Z-Wave-netværk.",
                         "secure_inclusion_warning": "Sikre enheder kræver ekstra båndbredde. For mange sikre enheder kan gøre dit Z-Wave-netværk langsomt. Det anbefaler kun at bruge sikker inklusion til de enheder, hvor det er nødvendigt. For eksempel til låse eller garageportåbnere.",
                         "start_inclusion": "Start inklusionstilstand",
@@ -2955,6 +2970,7 @@
                     },
                     "logs": {
                         "log_level": "Log niveau",
+                        "log_level_changed": "Logniveauet er ændret til: {level}",
                         "subscribed_to_logs": "Abboner på Z-Wave JS Log beskeder",
                         "title": "Z-Wave JS-logfiler"
                     },
@@ -3786,7 +3802,7 @@
                     "working": "Vent venligst"
                 },
                 "initializing": "Initialiserer",
-                "logging_in_to_with": "Logger ind på ** {locationName} ** med ** {authProviderName} **.",
+                "logging_in_to_with": "Logger ind på **{locationName}** med **{authProviderName}**.",
                 "logging_in_with": "Log ind med **{authProviderName}**.",
                 "pick_auth_provider": "Eller log ind med"
             },
@@ -4003,6 +4019,17 @@
                     "link_promo": "Lær om temaer",
                     "primary_color": "Primær farve",
                     "reset": "Nulstil"
+                },
+                "time_format": {
+                    "description": "Vælg, hvordan klokkeslæt skal formateres.",
+                    "dropdown_label": "Tidsformat",
+                    "formats": {
+                        "12": "12 timer (AM / PM)",
+                        "24": "24 timer",
+                        "language": "Automatisk (brug sprogindstilling)",
+                        "system": "Brug systemets landestandard"
+                    },
+                    "header": "Tidsformat"
                 },
                 "vibrate": {
                     "description": "Aktivér eller deaktiver vibrationer på denne enhed, når du styrer enheder.",

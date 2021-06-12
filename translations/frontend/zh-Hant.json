@@ -292,7 +292,7 @@
             "save": "儲存",
             "show_more": "顯示關於此更詳細資訊",
             "update": "更新",
-            "update_available": "{count, plural,\n  one {個更新}\n  other {{count} 個更新}\n}等候中",
+            "update_available": "{count, plural,\n  one {個更新}\n  other {{count}個更新}\n}等候中",
             "version": "安裝版本",
             "yes": "是"
         },
@@ -314,10 +314,18 @@
             "addon_new_version": "新版本可供下載",
             "addon_running": "附加元件執行中",
             "addon_stopped": "附加元件已停止",
-            "addons": "附加元件",
+            "addons": "安裝附加元件",
             "no_addons": "目前似乎沒有安裝任何附加元件。點選下方附加元件商店以新增！"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "屬性",
+                "device_path": "裝置路徑",
+                "id": "ID",
+                "search": "搜尋硬體",
+                "subsystem": "子系統",
+                "title": "硬體"
+            },
             "network": {
                 "connected_to": "已連線至 {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "發生未知錯誤",
             "error_addon_no_ingress": "所要求的附加元件不支援 ingress",
             "error_addon_not_found": "找不到附加元件",
+            "error_addon_not_installed": "所要求的附加元件未安裝，請先進行安裝。",
+            "error_addon_not_started": "所要求的附加元件未執行，請先進行啟動。",
             "faq_link": "Home Assistant 常見問答集",
             "not_supported": "Home Assistant 不支援此重新導向。點選 {link} 獲取支援之重新導向與版本。"
         },
@@ -380,13 +390,19 @@
         "snapshot": {
             "addons": "附加元件",
             "available_snapshots": "可用系統備份",
+            "confirm_password": "確認系統備份密碼",
             "could_not_create": "無法製作系統備份",
             "create": "新增",
             "create_blocked_not_running": "由於系統為 {state} 狀態，無法製作系統備份。",
             "create_snapshot": "製作系統備份",
             "created": "建立",
+            "delete_selected": "刪除已選擇系統備份",
+            "delete_snapshot_confirm": "刪除",
+            "delete_snapshot_text": "是否要刪除 {number} {number, plural,\n  one {個系統備份}\n  other {個系統備份}\n}？",
+            "delete_snapshot_title": "刪除系統備份",
             "description": "系統備份可供您快速的備份與還原 Home Assistant 所有資料。",
             "enter_password": "請輸入密碼。",
+            "failed_to_delete": "刪除失敗",
             "folder": {
                 "addons/local": "本地附加元件",
                 "homeassistant": "Home Assistant 設定",
@@ -396,14 +412,17 @@
             },
             "folders": "資料夾",
             "full_snapshot": "全系統備份",
-            "name": "名稱",
+            "name": "系統備份名稱",
             "no_snapshots": "目前沒有任何系統備份",
             "partial_snapshot": "部分系統備份",
-            "password": "密碼",
+            "password": "系統備份密碼",
             "password_protected": "密碼保護未顯示",
             "password_protection": "密碼保護",
+            "passwords_not_matching": "密碼不相符",
             "security": "加密",
-            "type": "類型",
+            "select_type": "選擇所要回復內容",
+            "selected": "已選擇 {number} 個",
+            "type": "系統備份類型",
             "upload_snapshot": "上傳系統備份"
         },
         "store": {
@@ -720,6 +739,9 @@
                 "no_match": "找不到相符分區",
                 "show_areas": "顯示分區"
             },
+            "attributes": {
+                "expansion_header": "屬性"
+            },
             "blueprint-picker": {
                 "add_user": "新增使用者",
                 "remove_user": "移除使用者",
@@ -919,8 +941,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "關閉後，{integration} 新發現的實體將不會自動新增至 Home Assistant。",
+                "enable_new_entities_description": "關閉後，{integration} 新發現的實體將不會自動新增。",
                 "enable_new_entities_label": "啟用新增實體",
+                "enable_polling_description": "是否讓 Home Assistant 自動輪詢 {integration} 實體以獲得更新。",
+                "enable_polling_label": "開啟自動輪詢更新。",
+                "restart_home_assistant": "需要重啟 Home Assistant 才能使變更生效。",
                 "title": "{integration} 系統選項",
                 "update": "更新"
             },
@@ -1261,7 +1286,7 @@
         "notification_toast": {
             "connection_lost": "連線中斷。重新連線中...",
             "dismiss": "關閉",
-            "intergration_starting": "{integration} 正在啟動，在完成載入前、可能無法顯示所有功能。",
+            "integration_starting": "{integration} 正在啟動，在完成載入前、可能無法顯示所有功能。",
             "service_call_failed": "服務 {service} 執行失敗。",
             "started": "Home Assistant 已啟動！",
             "starting": "Home Assistant 正在啟動，在完成載入前、可能無法顯示所有功能。",
@@ -1719,6 +1744,7 @@
                             "title": "Alexa"
                         },
                         "connected": "已連接",
+                        "connecting": "連線中...",
                         "connection_status": "雲服務連線狀態",
                         "fetching_subscription": "取得訂閱狀態中...",
                         "google": {
@@ -2062,7 +2088,8 @@
                     "scripts": "腳本",
                     "unknown_error": "未知錯誤",
                     "unnamed_device": "未命名的裝置",
-                    "update": "更新"
+                    "update": "更新",
+                    "update_device_error": "更新裝置失敗"
                 },
                 "entities": {
                     "caption": "實體",
@@ -2195,6 +2222,7 @@
                         "depends_on_cloud": "跟隨雲服務",
                         "device_unavailable": "裝置不可用",
                         "devices": "{count} {count, plural,\n  one {個裝置}\n  other {個裝置}\n}",
+                        "disable_error": "開啟或關閉整合失敗",
                         "disable_restart_confirm": "重啟 Home Assistant 以完成整合關閉",
                         "disable": {
                             "disable_confirm": "確定要關閉此設定實體？其裝置與實體將會關閉。",
@@ -2206,6 +2234,7 @@
                             },
                             "disabled_cause": "由 {cause} 關閉。"
                         },
+                        "disabled_polling": "自動輪詢更新資料已關閉。",
                         "documentation": "相關文件",
                         "enable_restart_confirm": "重啟 Home Assistant 以完成整合開啟",
                         "entities": "{count} {count, plural,\n  one {個實體}\n  other {個實體}\n}",
@@ -2702,7 +2731,7 @@
                         "validation": {
                             "check_config": "檢查設定內容",
                             "heading": "設定驗證",
-                            "introduction": "如果您對設定進行了一些更改、並且想確保設定有無錯誤，可以選擇驗證設定內容。",
+                            "introduction": "如果您對設定進行了部分更改、並且想確保設定有無錯誤，可以選擇驗證設定內容。",
                             "invalid": "設定無效",
                             "valid": "設定檔內容檢查正確"
                         }
@@ -2959,6 +2988,7 @@
                     },
                     "logs": {
                         "log_level": "日誌記錄等級",
+                        "log_level_changed": "日誌等級變更為：{level}",
                         "subscribed_to_logs": "訂閱 Z-Wave JS 日誌訊息...",
                         "title": "Z-Wave JS 日誌"
                     },
@@ -3861,10 +3891,19 @@
                 "intro": "準備喚醒您的智慧型家庭、取得隱私自主權，並加入由全球愛好者共同維護的社群了嗎？",
                 "next": "下一步",
                 "restore": {
+                    "addons": "附加元件",
+                    "confirm_password": "確認系統備份密碼",
                     "description": "或者可以自之前的 Snapshot 進行回復。",
+                    "folders": "資料夾",
+                    "full_snapshot": "全系統備份",
                     "hide_log": "隱藏完整日誌",
                     "in_progress": "回復進行中",
-                    "show_log": "顯示完整日誌"
+                    "partial_snapshot": "部分系統備份",
+                    "password": "系統備份密碼",
+                    "password_protection": "密碼保護",
+                    "select_type": "選擇所要回復內容",
+                    "show_log": "顯示完整日誌",
+                    "type": "系統備份類型"
                 },
                 "user": {
                     "create_account": "創建帳號",
@@ -4007,6 +4046,17 @@
                     "link_promo": "關於此主題",
                     "primary_color": "主色彩",
                     "reset": "重置"
+                },
+                "time_format": {
+                    "description": "選擇時間顯示格式。",
+                    "dropdown_label": "時間格式",
+                    "formats": {
+                        "12": "12 小時制（AM/PM）",
+                        "24": "24 小時制",
+                        "language": "自動（使用語言設定）",
+                        "system": "使用系統位置"
+                    },
+                    "header": "時間格式"
                 },
                 "vibrate": {
                     "description": "當控制裝置時、開啟或關閉此裝置震動。",

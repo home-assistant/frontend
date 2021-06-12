@@ -324,7 +324,7 @@ class HaAutomationPicker extends LitElement {
     ) {
       showNewAutomationDialog(this);
     } else {
-      navigate(this, "/config/automation/edit/new");
+      navigate("/config/automation/edit/new");
     }
   }
 

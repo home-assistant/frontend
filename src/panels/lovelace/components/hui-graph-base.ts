@@ -47,7 +47,7 @@ export class HuiGraphBase extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues) {
     if (!this.coordinates) {
       return;
     }

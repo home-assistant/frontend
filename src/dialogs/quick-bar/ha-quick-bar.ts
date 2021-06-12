@@ -1,4 +1,4 @@
-import { Layout1d, scroll } from "@lit-labs/virtualizer";
+import { Layout1d, scroll } from "../../resources/lit-virtualizer";
 import "@material/mwc-list/mwc-list";
 import type { List } from "@material/mwc-list/mwc-list";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
@@ -188,7 +188,6 @@ export class QuickBar extends LitElement {
               ${scroll({
                 items,
                 layout: Layout1d,
-                // @ts-expect-error
                 renderItem: (item: QuickBarItem, index) =>
                   this._renderItem(item, index),
               })}
@@ -223,6 +222,9 @@ export class QuickBar extends LitElement {
   }
 
   private _renderItem(item: QuickBarItem, index?: number) {
+    if (!item) {
+      return html``;
+    }
     return isCommandItem(item)
       ? this._renderCommandItem(item, index)
       : this._renderEntityItem(item as EntityItem, index);
@@ -557,7 +559,7 @@ export class QuickBar extends LitElement {
         categoryText: this.hass.localize(
           `ui.dialogs.quick-bar.commands.types.${categoryKey}`
         ),
-        action: () => navigate(this, item.path),
+        action: () => navigate(item.path),
       };
 
       return {
@@ -634,18 +636,6 @@ export class QuickBar extends LitElement {
 
         span.command-text {
           margin-left: 8px;
-        }
-
-        .uni-virtualizer-host {
-          display: block;
-          position: relative;
-          contain: strict;
-          overflow: auto;
-          height: 100%;
-        }
-
-        .uni-virtualizer-host > * {
-          box-sizing: border-box;
         }
 
         mwc-list-item {

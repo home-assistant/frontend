@@ -67,7 +67,7 @@ class HassioRepositoriesDialog extends LitElement {
     return html`
       <ha-dialog
         .open=${this._opened}
-        @closing=${this.closeDialog}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -149,9 +149,6 @@ class HassioRepositoriesDialog extends LitElement {
         }
         mwc-button {
           margin-left: 8px;
-        }
-        ha-paper-dropdown-menu {
-          display: block;
         }
         ha-circular-progress {
           display: block;

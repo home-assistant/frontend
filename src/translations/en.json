@@ -522,6 +522,9 @@
       "calendar": {
         "my_calendars": "My Calendars",
         "today": "Today"
+      },
+      "attributes": {
+        "expansion_header": "Attributes"
       }
     },
     "dialogs": {
@@ -756,7 +759,10 @@
       "config_entry_system_options": {
         "title": "System Options for {integration}",
         "enable_new_entities_label": "Enable newly added entities.",
-        "enable_new_entities_description": "If disabled, newly discovered entities for {integration} will not be automatically added to Home Assistant.",
+        "enable_new_entities_description": "If newly discovered devices for {integration} should be automatically added.",
+        "enable_polling_label": "Enable polling for updates.",
+        "enable_polling_description": "If Home Assistant should automatically poll {integration} entities for updates.",
+        "restart_home_assistant": "You need to restart Home Assistant for your changes to take effect.",
         "update": "Update"
       },
       "zha_reconfigure_device": {
@@ -870,7 +876,7 @@
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting, not everything will be available until it is finished.",
       "wrapping_up_startup": "Wrapping up startup, not everything will be available until it is finished.",
-      "intergration_starting": "Starting {integration}, not everything will be available until it is finished.",
+      "integration_starting": "Starting {integration}, not everything will be available until it is finished.",
       "triggered": "Triggered {name}",
       "dismiss": "Dismiss"
     },
@@ -1149,7 +1155,7 @@
           "section": {
             "validation": {
               "heading": "Configuration validation",
-              "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
+              "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid.",
               "check_config": "Check configuration",
               "valid": "Configuration valid!",
               "invalid": "Configuration invalid"
@@ -1777,6 +1783,7 @@
             "integrations_introduction2": "Check the website for ",
             "integrations_link_all_features": " all available features",
             "connected": "Connected",
+            "connecting": "Connecting...",
             "not_connected": "Not Connected",
             "fetching_subscription": "Fetching subscription...",
             "tts": {
@@ -1968,6 +1975,7 @@
           "confirm_rename_entity_ids": "Do you also want to rename the entity IDs of your entities?",
           "confirm_rename_entity_ids_warning": "This will not change any configuration (like automations, scripts, scenes, dashboards) that is currently using these entities! You will have to update them yourself to use the new entity IDs!",
           "confirm_disable_config_entry": "There are no more devices for the config entry {entry_name}, do you want to instead disable the config entry?",
+          "update_device_error": "Updating the device failed",
           "disabled": "Disabled",
           "data_table": {
             "device": "Device",
@@ -2156,6 +2164,7 @@
             "reload_restart_confirm": "Restart Home Assistant to finish reloading this integration",
             "disable_restart_confirm": "Restart Home Assistant to finish disabling this integration",
             "enable_restart_confirm": "Restart Home Assistant to finish enabling this integration",
+            "disable_error": "Enabling or disabling of the integration failed",
             "manuf": "by {manufacturer}",
             "hub": "Connected via",
             "firmware": "Firmware: {version}",
@@ -2178,6 +2187,7 @@
             },
             "provided_by_custom_integration": "Provided by a custom integration",
             "depends_on_cloud": "Depends on the cloud",
+            "disabled_polling": "Automatic polling for updated data disabled",
             "state": {
               "loaded": "Loaded",
               "setup_error": "Failed to set up",
@@ -2661,7 +2671,8 @@
           "logs": {
             "title": "Z-Wave JS Logs",
             "log_level": "Log Level",
-            "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages..."
+            "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
+            "log_level_changed": "Log Level changed to: {level}"
           }
         }
       },
@@ -3558,7 +3569,16 @@
           "description": "Alternatively you can restore from a previous snapshot.",
           "in_progress": "Restore in progress",
           "show_log": "Show full log",
-          "hide_log": "Hide full log"
+          "hide_log": "Hide full log",
+          "full_snapshot": "[%key:supervisor::snapshot::full_snapshot%]",
+          "partial_snapshot": "[%key:supervisor::snapshot::partial_snapshot%]",
+          "type": "[%key:supervisor::snapshot::type%]",
+          "select_type": "[%key:supervisor::snapshot::select_type%]",
+          "folders": "[%key:supervisor::snapshot::folders%]",
+          "addons": "[%key:supervisor::snapshot::addons%]",
+          "password_protection": "[%key:supervisor::snapshot::password_protection%]",
+          "password": "[%key:supervisor::snapshot::password%]",
+          "confirm_password": "[%key:supervisor::snapshot::confirm_password%]"
         }
       },
       "custom": {
@@ -3756,7 +3776,7 @@
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
       "show_more": "Show more information about this",
-      "update_available": "{count, plural,\n  one {Update}\n  other {{count} Updates}\n} pending",
+      "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
       "update": "Update",
       "version": "Version",
       "error": {
@@ -3782,7 +3802,7 @@
       "addon_new_version": "New version available",
       "addon_running": "Add-on is running",
       "addon_stopped": "Add-on is stopped",
-      "addons": "Add-ons",
+      "addons": "Installed add-ons",
       "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
     },
     "store": {
@@ -3802,6 +3822,8 @@
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "error": "[%key:ui::panel::my::error%]",
       "error_addon_not_found": "Add-on not found",
+      "error_addon_not_started": "The requested add-on are not running. Please start it first",
+      "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
       "error_addon_no_ingress": "The requested add-on does not support ingress"
     },
     "system": {
@@ -3891,22 +3913,31 @@
       "available_snapshots": "Available Snapshots",
       "no_snapshots": "You don't have any snapshots yet.",
       "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
+      "delete_selected": "Delete selected snapshots",
+      "delete_snapshot_title": "Delete snapshot",
+      "delete_snapshot_text": "Do you want to delete {number} {number, plural,\n  one {snapshot}\n  other {snapshots}\n}?",
+      "delete_snapshot_confirm": "delete",
+      "selected": "{number} selected",
+      "failed_to_delete": "Failed to delete",
       "could_not_create": "Could not create snapshot",
       "upload_snapshot": "Upload snapshot",
       "create_snapshot": "Create snapshot",
       "create": "Create",
       "created": "Created",
-      "name": "Name",
-      "type": "Type",
+      "name": "Snapshot name",
+      "type": "Snapshot type",
+      "select_type": "Select what to restore",
       "security": "Security",
       "full_snapshot": "Full snapshot",
       "partial_snapshot": "Partial snapshot",
       "addons": "Add-ons",
       "folders": "Folders",
-      "password": "Password",
+      "password": "Snapshot password",
+      "confirm_password": "Confirm Snapshot password",
       "password_protection": "Password protection",
       "password_protected": "password protected",
       "enter_password": "Please enter a password.",
+      "passwords_not_matching": "The passwords does not match",
       "folder": {
         "homeassistant": "Home Assistant configuration",
         "ssl": "SSL",
@@ -3960,6 +3991,14 @@
         "create_snapshot": "Create a snapshot of {name} before updating",
         "updating": "Updating {name} to version {version}",
         "snapshotting": "Creating snapshot of {name}"
+      },
+      "hardware": {
+        "title": "Hardware",
+        "search": "Search hardware",
+        "subsystem": "Subsystem",
+        "id": "ID",
+        "attributes": "Attributes",
+        "device_path": "Device path"
       }
     }
   }

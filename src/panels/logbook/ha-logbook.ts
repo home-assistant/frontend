@@ -1,4 +1,4 @@
-import { Layout1d, scroll } from "@lit-labs/virtualizer";
+import { Layout1d, scroll } from "../../resources/lit-virtualizer";
 import {
   css,
   CSSResultGroup,
@@ -100,7 +100,6 @@ class HaLogbook extends LitElement {
           ? scroll({
               items: this.entries,
               layout: Layout1d,
-              // @ts-expect-error
               renderItem: (item: LogbookEntry, index) =>
                 this._renderLogbookItem(item, index),
             })
@@ -349,16 +348,12 @@ class HaLogbook extends LitElement {
           color: var(--primary-color);
         }
 
-        :host([virtualize]) .container {
-          display: block;
-          position: relative;
-          contain: strict;
-          height: 100%;
-          overflow: auto;
+        .container {
+          max-height: var(--logbook-max-height);
         }
 
-        .container > * {
-          box-sizing: border-box;
+        :host([virtualize]) .container {
+          height: 100%;
         }
 
         .narrow .entry {

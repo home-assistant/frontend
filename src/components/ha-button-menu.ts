@@ -12,6 +12,8 @@ export class HaButtonMenu extends LitElement {
 
   @property({ type: Boolean }) public disabled = false;
 
+  @property({ type: Boolean }) public fixed = false;
+
   @query("mwc-menu", true) private _menu?: Menu;
 
   public get items() {
@@ -29,6 +31,7 @@ export class HaButtonMenu extends LitElement {
       </div>
       <mwc-menu
         .corner=${this.corner}
+        .fixed=${this.fixed}
         .multi=${this.multi}
         .activatable=${this.activatable}
       >

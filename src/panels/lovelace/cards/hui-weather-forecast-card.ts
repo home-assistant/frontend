@@ -106,8 +106,13 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
+  public willUpdate(): void {
+    if (!this.hasUpdated) {
+      this._measureCard();
+    }
+  }
+
   protected firstUpdated(): void {
-    this._measureCard();
     this._attachObserver();
   }
 
@@ -129,7 +134,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       (changedProps.has("_config") && oldConfig!.theme !== this._config.theme)
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
-      this.requestUpdate();
     }
   }
 

@@ -23,15 +23,12 @@ class MoreInfoPerson extends LitElement {
     }
 
     return html`
-      <ha-attributes
-        .stateObj=${this.stateObj}
-        extra-filters="id,user_id,editable"
-      ></ha-attributes>
       ${this.stateObj.attributes.latitude && this.stateObj.attributes.longitude
         ? html`
             <ha-map
               .hass=${this.hass}
               .entities=${this._entityArray(this.stateObj.entity_id)}
+              autoFit
             ></ha-map>
           `
         : ""}
@@ -50,11 +47,16 @@ class MoreInfoPerson extends LitElement {
             </div>
           `
         : ""}
+      <ha-attributes
+        .hass=${this.hass}
+        .stateObj=${this.stateObj}
+        extra-filters="id,user_id,editable"
+      ></ha-attributes>
     `;
   }
 
   private _handleAction() {
-    showZoneEditor(this, {
+    showZoneEditor({
       latitude: this.stateObj!.attributes.latitude,
       longitude: this.stateObj!.attributes.longitude,
     });

@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import { assert } from "chai";
 import { createHassioSession } from "../../src/data/hassio/ingress";
 
 describe("Create hassio session", function () {
@@ -44,7 +44,9 @@ describe("Create hassio session", function () {
   it("Test fail to create", async function () {
     const createSessionPromise = createHassioSession({
       // @ts-ignore
-      callApi: async function () {},
+      callApi: async function () {
+        // noop
+      },
     }).then(
       () => true,
       () => false

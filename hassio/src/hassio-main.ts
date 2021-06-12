@@ -63,7 +63,7 @@ export class HassioMain extends SupervisorBaseElement {
     document.body.addEventListener("click", (ev) => {
       const href = isNavigationClick(ev);
       if (href) {
-        navigate(document.body, href);
+        navigate(href);
       }
     });
 
@@ -103,7 +103,7 @@ export class HassioMain extends SupervisorBaseElement {
 
   private _applyTheme() {
     let themeName: string;
-    let options: Partial<HomeAssistant["selectedTheme"]> | undefined;
+    let themeSettings: Partial<HomeAssistant["selectedTheme"]> | undefined;
 
     if (atLeastVersion(this.hass.config.version, 0, 114)) {
       themeName =
@@ -112,9 +112,9 @@ export class HassioMain extends SupervisorBaseElement {
           ? this.hass.themes.default_dark_theme!
           : this.hass.themes.default_theme);
 
-      options = this.hass.selectedTheme;
-      if (themeName === "default" && options?.dark === undefined) {
-        options = {
+      themeSettings = this.hass.selectedTheme;
+      if (themeSettings?.dark === undefined) {
+        themeSettings = {
           ...this.hass.selectedTheme,
           dark: this.hass.themes.darkMode,
         };
@@ -129,7 +129,7 @@ export class HassioMain extends SupervisorBaseElement {
       this.parentElement,
       this.hass.themes,
       themeName,
-      options
+      themeSettings
     );
   }
 }

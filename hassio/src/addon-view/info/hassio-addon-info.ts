@@ -761,7 +761,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private _openIngress(): void {
-    navigate(this, `/hassio/ingress/${this.addon.slug}`);
+    navigate(`/hassio/ingress/${this.addon.slug}`);
   }
 
   private get _computeShowIngressUI(): boolean {
@@ -1051,7 +1051,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private _openConfiguration(): void {
-    navigate(this, `/hassio/addon/${this.addon.slug}/config`);
+    navigate(`/hassio/addon/${this.addon.slug}/config`);
   }
 
   private async _uninstallClicked(ev: CustomEvent): Promise<void> {

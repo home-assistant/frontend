@@ -1,4 +1,4 @@
-import { safeDump } from "js-yaml";
+import { dump } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -92,7 +92,7 @@ class MQTTMessages extends LitElement {
     return json
       ? html`
           ${this.showAsYaml
-            ? html` <pre>${safeDump(json)}</pre> `
+            ? html` <pre>${dump(json)}</pre> `
             : html` <pre>${JSON.stringify(json, null, 2)}</pre> `}
         `
       : html` <code>${message.payload}</code> `;

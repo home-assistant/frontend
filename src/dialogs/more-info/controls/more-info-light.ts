@@ -226,6 +226,7 @@ class MoreInfoLight extends LitElement {
             `
           : ""}
         <ha-attributes
+          .hass=${this.hass}
           .stateObj=${this.stateObj}
           extra-filters="brightness,color_temp,white_value,effect_list,effect,hs_color,rgb_color,rgbw_color,rgbww_color,xy_color,min_mireds,max_mireds,entity_id,supported_color_modes,color_mode"
         ></ha-attributes>
@@ -552,8 +553,6 @@ class MoreInfoLight extends LitElement {
 
       .content > * {
         width: 100%;
-        max-height: 84px;
-        overflow: hidden;
       }
 
       .color_temp {

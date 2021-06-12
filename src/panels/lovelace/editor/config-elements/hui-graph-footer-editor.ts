@@ -8,10 +8,8 @@ import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
-import {
-  GraphHeaderFooterConfig,
-  graphHeaderFooterConfigStruct,
-} from "../../header-footer/types";
+import { graphHeaderFooterConfigStruct } from "../../header-footer/structs";
+import { GraphHeaderFooterConfig } from "../../header-footer/types";
 import type { LovelaceCardEditor } from "../../types";
 import type { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";

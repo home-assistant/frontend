@@ -285,6 +285,13 @@
             "no_addons": "Zatiaľ nemáte nainštalované žiadne doplnky. Choďte do obchodu s doplnkami, aby ste mohli začať!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atribúty",
+                "id": "ID",
+                "search": "Vyhľadať zariadenia",
+                "subsystem": "Subsystém",
+                "title": "Hardvér"
+            },
             "network": {
                 "connected_to": "Pripojiť na {ssid}",
                 "dhcp": "DHCP",
@@ -346,12 +353,17 @@
         "snapshot": {
             "addons": "Doplnky",
             "available_snapshots": "Dostupné zálohy",
+            "confirm_password": "Potvrdiť heslo zálohy",
             "could_not_create": "Nepodarilo sa vytvoriť zálohu",
             "create": "Vytvoriť",
             "create_blocked_not_running": "Nieje možné vytvoriť zálohu pretože systém je v stave {state}",
             "create_snapshot": "Vytvoriť zálohu",
+            "created": "Vytvorené",
+            "delete_snapshot_confirm": "odstrániť",
+            "delete_snapshot_title": "Vymazať zálohu",
             "description": "Snapshoty ti umožňujú ľahko zálohovať a obnoviť všetky dáta Home Assistant",
             "enter_password": "Prosím napíšte heslo.",
+            "failed_to_delete": "Nepodarilo sa odstrániť",
             "folder": {
                 "addons/local": "Lokálne doplnky",
                 "homeassistant": "konfigurácia Home Asistenta",
@@ -367,6 +379,7 @@
             "password": "Heslo",
             "password_protected": "chránené heslo",
             "password_protection": "Ochrana Heslom",
+            "passwords_not_matching": "Heslá sa nezhodujú",
             "security": "Zabezpečenie",
             "type": "Typ",
             "upload_snapshot": "Nahrať zálohu"
@@ -425,6 +438,7 @@
                 "leave_beta_description": "Získajte aktualizácie stabilnej verzie pre Home Assistant, supervízora a hostiteľa",
                 "ram_usage": "Využitie RAM supervízorom",
                 "reload_supervisor": "Znova načítať supervízora",
+                "search": "Hľadať",
                 "share_diagnostics": "Zdieľajte diagnostiku",
                 "share_diagnostics_description": "Zdieľajte správy o zlyhaní a diagnostické informácie.",
                 "share_diagonstics_description": "Chceli by ste automaticky zdieľať správy o zlyhaní a diagnostické informácie, keď sa Supervízor stretne s neočakávanými chybami? {line_break} Umožní nám to vyriešiť problémy, informácie sú prístupné iba tímu Home Assistant Core a nebudú sa zdieľať s ostatnými. {line_break} Údaje neobsahujú žiadne súkromné ani citlivé informácie, ktoré môžete kedykoľvek deaktivovať v nastaveniach.",
@@ -522,6 +536,7 @@
             },
             "light": {
                 "brightness": "Jas",
+                "color_brightness": "Jas farby",
                 "color_temperature": "Teplota farby",
                 "effect": "Efekt",
                 "white_value": "Hodnota bielej"
@@ -660,6 +675,9 @@
                 "no_match": "Nenašli sa žiadne zodpovedajúce oblasti",
                 "show_areas": "Zobraziť oblasti"
             },
+            "attributes": {
+                "expansion_header": "Atribúty"
+            },
             "blueprint-picker": {
                 "add_user": "Pridať používateľa",
                 "remove_user": "Odstrániť používateľa",
@@ -670,6 +688,9 @@
                 "today": "Dnes"
             },
             "data-table": {
+                "clear": "Vyčistiť",
+                "filtering_by": "Filtrovanie podľa",
+                "hidden": "{number} skryté",
                 "no-data": "Žiadne údaje",
                 "search": "Hľadať"
             },
@@ -725,7 +746,8 @@
                     "was_plugged_in": "bol zapojený",
                     "was_unlocked": "bol odomknutý",
                     "was_unplugged": "bol odpojený"
-                }
+                },
+                "show_trace": "Zobraziť cestu"
             },
             "media-browser": {
                 "audio_not_supported": "Váš prehliadač nepodporuje zvukový prvok.",
@@ -1017,6 +1039,11 @@
                         "smtp": "Znova načítať notifikačné služby SMTP",
                         "telegram": "Znova načítať notifikačné služby telegram",
                         "zone": "Znova načítať zóny"
+                    },
+                    "types": {
+                        "navigation": "Navigovať",
+                        "reload": "Znova načítať",
+                        "server_control": "Server"
                     }
                 },
                 "filter_placeholder": "Filter entít"
@@ -1053,6 +1080,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Zmeniť názov zariadenia"
                 }
+            },
+            "zha_reconfigure_device": {
+                "attribute": "Atribút"
             }
         },
         "duration": {
@@ -1101,7 +1131,8 @@
                     "caption": "Register oblastí",
                     "data_table": {
                         "area": "Oblasť",
-                        "devices": "Zariadenia"
+                        "devices": "Zariadenia",
+                        "entities": "Entity"
                     },
                     "delete": {
                         "confirmation_text": "Všetky zariadenia v tejto oblasti ostanú nepriradené.",
@@ -1113,6 +1144,7 @@
                         "create": "VYTVORIŤ",
                         "default_name": "Nová oblasť",
                         "delete": "VYMAZAŤ",
+                        "linked_entities_caption": "Entity",
                         "name": "Názov",
                         "name_required": "Názov je povinný",
                         "unknown_error": "Neznáma chyba",
@@ -1172,10 +1204,14 @@
                                 "device_id": {
                                     "action": "Akcia",
                                     "extra_fields": {
+                                        "brightness_pct": "Jas",
                                         "code": "Kód",
+                                        "humidity": "Vlhkosť",
                                         "message": "Správa",
+                                        "mode": "Režim",
                                         "position": "pozícia",
-                                        "title": "Názov"
+                                        "title": "Názov",
+                                        "value": "Hodnota"
                                     },
                                     "label": "Zariadenie"
                                 },
@@ -1232,7 +1268,9 @@
                                     "extra_fields": {
                                         "above": "Nad",
                                         "below": "Pod",
-                                        "for": "Trvanie"
+                                        "for": "Trvanie",
+                                        "hvac_mode": "Režim HVAC",
+                                        "preset_mode": "Vyber režim"
                                     },
                                     "label": "Zariadenie"
                                 },
@@ -1309,6 +1347,7 @@
                         "move_down": "Posunúť dole",
                         "move_up": "Posunúť hore",
                         "save": "Uložiť",
+                        "show_trace": "Zobraziť cestu",
                         "triggers": {
                             "add": "Pridať spúšťač",
                             "delete": "Odstrániť",
@@ -1411,6 +1450,8 @@
                         "add_automation": "Pridať automatizáciu",
                         "delete_automation": "Odstrániť automatizáciu",
                         "delete_confirm": "Naozaj chcete odstrániť túto automatizáciu?",
+                        "dev_automation": "Automatizácia ladenia",
+                        "dev_only_editable": "Sledovateľné sú iba automatizácie, ktoré majú priradené jedinečné ID.",
                         "duplicate": "Duplikovať",
                         "duplicate_automation": "Duplikovať automatizáciu",
                         "edit_automation": "Upraviť automatizáciu",
@@ -1476,6 +1517,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Pripojené",
+                        "connecting": "Pripája sa",
                         "connection_status": "Stav cloudového pripojenia",
                         "fetching_subscription": "Načítava sa predplatné...",
                         "google": {
@@ -1497,10 +1539,15 @@
                         "remote": {
                             "access_is_being_prepared": "Pripravuje sa vzdialený prístup. Budeme vás informovať, keď bude pripravený.",
                             "certificate_info": "Informácie o certifikáte",
+                            "connected": "Pripojené",
                             "info": "Home Assistant Cloud poskytuje zabezpečené vzdialené pripojenie k vašej inštancií kým ste mimo domova.",
                             "instance_is_available": "Vaša inštancia je k dispozícii na stránke",
                             "instance_will_be_available": "Vaša inštancia bude k dispozícii na adrese",
                             "link_learn_how_it_works": "Zistite, ako to funguje",
+                            "not_connected": "Nepripojené",
+                            "remote_enabled": {
+                                "caption": "Automaticky pripojiť"
+                            },
                             "title": "Diaľkové ovládanie"
                         },
                         "sign_out": "Odhlásiť sa",
@@ -1637,6 +1684,17 @@
                     "description": "Jednotkový systém, umiestnenie, časové pásmo a ďalšie všeobecné parametre",
                     "section": {
                         "core": {
+                            "analytics": {
+                                "header": "Analízy",
+                                "preference": {
+                                    "base": {
+                                        "title": "Základné analýzy"
+                                    },
+                                    "diagnostics": {
+                                        "title": "Diagnostiky"
+                                    }
+                                }
+                            },
                             "core_config": {
                                 "edit_requires_storage": "Editor je zablokovaný, pretože konfigurácia je uložená v configuration.yaml",
                                 "elevation": "Nadmorská výška",
@@ -1842,6 +1900,7 @@
                     "license": "Publikované pod licenciou Apache 2.0",
                     "path_configuration": "Cesta k configuration.yaml: {path}",
                     "server": "server",
+                    "setup_time": "Nastaviť čas",
                     "source": "Zdroj:",
                     "system_health_error": "Súčasť System Health nie je načítaná. Pridajte 'system_health:' do súboru configuration.yaml",
                     "system_health": {
@@ -1901,6 +1960,7 @@
                         },
                         "finish": "Dokončiť",
                         "loading_first_time": "Počkajte, kým sa nainštaluje integrácia",
+                        "next": "Ďalej",
                         "not_all_required_fields": "Nie sú vyplnené všetky povinné polia.",
                         "pick_flow_step": {
                             "new_flow": "Nie, nastaviť inú inštanciu {integration}",
@@ -1916,6 +1976,7 @@
                     "disable": {
                         "disabled_integrations": "{number} deaktivované",
                         "hide_disabled": "Skryť vypnuté integrácie",
+                        "show": "Ukázať",
                         "show_disabled": "Zobraziť vypnuté integrácie"
                     },
                     "discovered": "Objavené",
@@ -2165,6 +2226,7 @@
                         "add_scene": "Pridať scénu",
                         "delete_confirm": "Naozaj chcete odstrániť túto scénu?",
                         "delete_scene": "Odstrániť scénu",
+                        "duplicate": "Duplikovať",
                         "edit_scene": "Upraviť scénu",
                         "header": "Editor scén",
                         "headers": {
@@ -2658,6 +2720,7 @@
                 "go_back": "Vrátiť sa späť",
                 "supervisor": {
                     "ask": "Požiadať o pomoc",
+                    "observer": "Skontrolujte pozorovateľa",
                     "reboot": "Skúsiť reštartovať hostiteľa",
                     "system_health": "Overiť stav systému",
                     "title": "Nepodarilo sa načítať panel supervízora!",
@@ -3293,10 +3356,19 @@
                 },
                 "intro": "Ste pripravení prebudiť váš domov, získať vaše súkromie  a pripojiť sa k celosvetovej komunite bastličov?",
                 "restore": {
+                    "addons": "Doplnky",
+                    "confirm_password": "Potvrďte heslo zálohy",
                     "description": "Prípadne môžete obnoviť z predchádzajúcej snímky.",
+                    "folders": "Adresáre",
+                    "full_snapshot": "Úplná záloha",
                     "hide_log": "Skryť celý denník",
                     "in_progress": "Prebieha obnovenie",
-                    "show_log": "Zobraziť celý denník"
+                    "partial_snapshot": "Čiastočná záloha",
+                    "password": "Heslo zálohy",
+                    "password_protection": "Ochrana heslom",
+                    "select_type": "Vyberte, čo chcete obnoviť",
+                    "show_log": "Zobraziť celý denník",
+                    "type": "Typ zálohy"
                 },
                 "user": {
                     "create_account": "Vytvoriť účet",
@@ -3382,6 +3454,18 @@
                     "enable": "Povoliť",
                     "header": "Multifaktorové autentifikačné moduly"
                 },
+                "number_format": {
+                    "description": "Vyberte spôsob formátovania čísiel.",
+                    "dropdown_label": "Formát čísla",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Automaticky (použiť nastavenie jazyka)",
+                        "none": "Žiadny",
+                        "space_comma": "1 234 567,89"
+                    },
+                    "header": "Formát čísla"
+                },
                 "push_notifications": {
                     "description": "Posielať upozornenia na toto zariadenie.",
                     "error_load_platform": "Konfigurujte upozornenia notify.html5.",
@@ -3417,6 +3501,14 @@
                     "link_promo": "Získajte viac informácií o témach",
                     "primary_color": "Primárna farba",
                     "reset": "Reset"
+                },
+                "time_format": {
+                    "dropdown_label": "Formát času",
+                    "formats": {
+                        "12": "12 hodín (AM / PM)",
+                        "24": "24 hodín"
+                    },
+                    "header": "Formát času"
                 },
                 "vibrate": {
                     "description": "Pri ovládaní zariadení povoľte alebo zakážte vibrácie tohto zariadenia.",

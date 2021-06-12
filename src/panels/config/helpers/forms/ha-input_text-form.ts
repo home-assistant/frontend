@@ -179,9 +179,6 @@ class HaInputTextForm extends LitElement {
         .row {
           padding: 16px 0;
         }
-        ha-paper-dropdown-menu {
-          display: block;
-        }
       `,
     ];
   }

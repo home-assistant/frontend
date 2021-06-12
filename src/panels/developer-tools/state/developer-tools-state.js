@@ -2,15 +2,17 @@ import "@material/mwc-button";
 import {
   mdiClipboardTextMultipleOutline,
   mdiInformationOutline,
+  mdiRefresh,
 } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import { safeDump, safeLoad } from "js-yaml";
+import { dump, load } from "js-yaml";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { escapeRegExp } from "../../../common/string/escape_regexp";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
@@ -46,8 +48,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           padding: 0 16px;
         }
 
-        mwc-button {
+        .button-row {
+          display: flex;
           margin-top: 8px;
+          align-items: center;
         }
 
         .table-wrapper {
@@ -88,6 +92,12 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           --mdc-icon-size: 20px;
           padding: 4px;
           cursor: pointer;
+          flex-shrink: 0;
+          margin-right: 8px;
+        }
+        .entities td:nth-child(1) {
+          min-width: 300px;
+          width: 30%;
         }
         .entities td:nth-child(3) {
           white-space: pre-wrap;
@@ -96,6 +106,15 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         .entities a {
           color: var(--primary-color);
+        }
+
+        .entities .id-name-container {
+          display: flex;
+          flex-direction: column;
+        }
+        .entities .id-name-row {
+          display: flex;
+          align-items: center;
         }
 
         :host([narrow]) .state-wrapper {
@@ -139,9 +158,19 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             error="[[!validJSON]]"
             on-value-changed="_yamlChanged"
           ></ha-code-editor>
-          <mwc-button on-click="handleSetState" disabled="[[!validJSON]]" raised
-            >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
-          >
+          <div class="button-row">
+            <mwc-button
+              on-click="handleSetState"
+              disabled="[[!validJSON]]"
+              raised
+              >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
+            >
+            <mwc-icon-button
+              on-click="entityIdChanged"
+              label="[[localize('ui.common.refresh')]]"
+              ><ha-svg-icon path="[[refreshIcon()]]"></ha-svg-icon
+            ></mwc-icon-button>
+          </div>
         </div>
         <div class="info">
           <template is="dom-if" if="[[_entity]]">
@@ -206,19 +235,30 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           <template is="dom-repeat" items="[[_entities]]" as="entity">
             <tr>
               <td>
-                <ha-svg-icon
-                  on-click="entityMoreInfo"
-                  alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                  title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                  path="[[informationOutlineIcon()]]"
-                ></ha-svg-icon>
-                <ha-svg-icon
-                  on-click="copyEntity"
-                  alt="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
-                  title="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
-                  path="[[clipboardOutlineIcon()]]"
-                ></ha-svg-icon>
-                <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
+                <div class="id-name-container">
+                  <div class="id-name-row">
+                    <ha-svg-icon
+                      on-click="copyEntity"
+                      alt="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                      title="[[localize('ui.panel.developer-tools.tabs.states.copy_id')]]"
+                      path="[[clipboardOutlineIcon()]]"
+                    ></ha-svg-icon>
+                    <a href="#" on-click="entitySelected"
+                      >[[entity.entity_id]]</a
+                    >
+                  </div>
+                  <div class="id-name-row">
+                    <ha-svg-icon
+                      on-click="entityMoreInfo"
+                      alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                      title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                      path="[[informationOutlineIcon()]]"
+                    ></ha-svg-icon>
+                    <span class="secondary">
+                      [[entity.attributes.friendly_name]]
+                    </span>
+                  </div>
+                </div>
               </td>
               <td>[[entity.state]]</td>
               <template
@@ -319,7 +359,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._entityId = state.entity_id;
     this._entity = state;
     this._state = state.state;
-    this._stateAttributes = safeDump(state.attributes);
+    this._stateAttributes = dump(state.attributes);
     ev.preventDefault();
   }
 
@@ -336,7 +376,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     }
     this._entity = state;
     this._state = state.state;
-    this._stateAttributes = safeDump(state.attributes);
+    this._stateAttributes = dump(state.attributes);
   }
 
   entityMoreInfo(ev) {
@@ -367,51 +407,73 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return mdiClipboardTextMultipleOutline;
   }
 
+  refreshIcon() {
+    return mdiRefresh;
+  }
+
   computeEntities(hass, _entityFilter, _stateFilter, _attributeFilter) {
-    return Object.keys(hass.states)
-      .map(function (key) {
-        return hass.states[key];
-      })
-      .filter(function (value) {
-        if (!value.entity_id.includes(_entityFilter.toLowerCase())) {
+    const entityFilterRegExp =
+      _entityFilter &&
+      RegExp(escapeRegExp(_entityFilter).replace(/\\\*/g, ".*"), "i");
+
+    const stateFilterRegExp =
+      _stateFilter &&
+      RegExp(escapeRegExp(_stateFilter).replace(/\\\*/g, ".*"), "i");
+
+    let keyFilterRegExp;
+    let valueFilterRegExp;
+    let multiMode = false;
+
+    if (_attributeFilter) {
+      const colonIndex = _attributeFilter.indexOf(":");
+      multiMode = colonIndex !== -1;
+
+      const keyFilter = multiMode
+        ? _attributeFilter.substring(0, colonIndex).trim()
+        : _attributeFilter;
+      const valueFilter = multiMode
+        ? _attributeFilter.substring(colonIndex + 1).trim()
+        : _attributeFilter;
+
+      keyFilterRegExp = RegExp(
+        escapeRegExp(keyFilter).replace(/\\\*/g, ".*"),
+        "i"
+      );
+      valueFilterRegExp = multiMode
+        ? RegExp(escapeRegExp(valueFilter).replace(/\\\*/g, ".*"), "i")
+        : keyFilterRegExp;
+    }
+
+    return Object.values(hass.states)
+      .filter((value) => {
+        if (
+          entityFilterRegExp &&
+          !entityFilterRegExp.test(value.entity_id) &&
+          (value.attributes.friendly_name === undefined ||
+            !entityFilterRegExp.test(value.attributes.friendly_name))
+        ) {
           return false;
         }
 
-        if (!value.state.toLowerCase().includes(_stateFilter.toLowerCase())) {
+        if (stateFilterRegExp && !stateFilterRegExp.test(value.state)) {
           return false;
         }
 
-        if (_attributeFilter !== "") {
-          const attributeFilter = _attributeFilter.toLowerCase();
-          const colonIndex = attributeFilter.indexOf(":");
-          const multiMode = colonIndex !== -1;
-
-          let keyFilter = attributeFilter;
-          let valueFilter = attributeFilter;
-
-          if (multiMode) {
-            // we need to filter keys and values separately
-            keyFilter = attributeFilter.substring(0, colonIndex).trim();
-            valueFilter = attributeFilter.substring(colonIndex + 1).trim();
-          }
-
-          const attributeKeys = Object.keys(value.attributes);
-
-          for (let i = 0; i < attributeKeys.length; i++) {
-            const key = attributeKeys[i];
-
-            if (key.includes(keyFilter) && !multiMode) {
+        if (keyFilterRegExp && valueFilterRegExp) {
+          for (const [key, attributeValue] of Object.entries(
+            value.attributes
+          )) {
+            const match = keyFilterRegExp.test(key);
+            if (match && !multiMode) {
               return true; // in single mode we're already satisfied with this match
             }
-            if (!key.includes(keyFilter) && multiMode) {
+            if (!match && multiMode) {
               continue;
             }
 
-            const attributeValue = value.attributes[key];
-
             if (
               attributeValue !== undefined &&
-              JSON.stringify(attributeValue).toLowerCase().includes(valueFilter)
+              valueFilterRegExp.test(JSON.stringify(attributeValue))
             ) {
               return true;
             }
@@ -476,7 +538,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
       (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
       (!Array.isArray(value) && value instanceof Object)
     ) {
-      return `\n${safeDump(value)}`;
+      return `\n${dump(value)}`;
     }
     return Array.isArray(value) ? value.join(", ") : value;
   }
@@ -491,7 +553,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _computeParsedStateAttributes(stateAttributes) {
     try {
-      return stateAttributes.trim() ? safeLoad(stateAttributes) : {};
+      return stateAttributes.trim() ? load(stateAttributes) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }

@@ -292,7 +292,7 @@
             "save": "Uložit",
             "show_more": "Zobrazit o tom více informací",
             "update": "Aktualizovat",
-            "update_available": "{count, plural,\n  one {Aktualizace}\n  few {{count} aktualizace}\n  other {{count} aktualizací}\n}",
+            "update_available": "{count, plural,\n  one {Čekající aktualizace}\n  few {{count} čekající aktualizace}\n  other {{count} čekajících aktualizací}\n}",
             "version": "Verze",
             "yes": "Ano"
         },
@@ -314,10 +314,18 @@
             "addon_new_version": "K dispozici je nová verze",
             "addon_running": "Doplněk je spuštěn",
             "addon_stopped": "Doplněk je zastaven",
-            "addons": "Doplňky",
+            "addons": "Nainstalované doplňky",
             "no_addons": "Zatím nemáte nainstalované žádné doplňky. Chcete-li začít, přejděte do obchodu s doplňky."
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atributy",
+                "device_path": "Cesta k zařízení",
+                "id": "ID",
+                "search": "Hledat hardware",
+                "subsystem": "Subsystém",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Připojeno k {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "Nastala neznámá chyba",
             "error_addon_no_ingress": "Požadovaný doplněk nepodporuje ingress",
             "error_addon_not_found": "Doplněk nebyl nalezen",
+            "error_addon_not_installed": "Požadovaný doplněk není nainstalován. Nejprve jej prosím nainstalujte",
+            "error_addon_not_started": "Požadovaný doplněk není spuštěn. Nejprve jej prosím spusťte",
             "faq_link": "Časté dotazy týkající se My Home Assistant",
             "not_supported": "Toto přesměrování není vaší instancí Home Assistant podporováno. Zkontrolujte {link} pro podporovaná přesměrování a verzi, ve které byla zavedena."
         },
@@ -380,13 +390,19 @@
         "snapshot": {
             "addons": "Doplňky",
             "available_snapshots": "Dostupné zálohy",
+            "confirm_password": "Potvrďte heslo zálohy",
             "could_not_create": "Nelze vytvořit zálohu",
             "create": "Vytvořit",
             "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
             "create_snapshot": "Vytvořit zálohu",
             "created": "Vytvořeno",
+            "delete_selected": "Smazat vybrané zálohy",
+            "delete_snapshot_confirm": "smazat",
+            "delete_snapshot_text": "Chcete smazat {number} {number, plural,\n  one {zálohu}\n  few {zálohy}\n  other {záloh}\n}?",
+            "delete_snapshot_title": "Smazat zálohu",
             "description": "Zálohy umožňují snadno zálohovat a obnovovat všechna data vaší instance Home Assistant.",
             "enter_password": "Prosím zadejte heslo.",
+            "failed_to_delete": "Smazání se nezdařilo",
             "folder": {
                 "addons/local": "Místní doplňky",
                 "homeassistant": "Nastavení Home Asistent",
@@ -396,14 +412,17 @@
             },
             "folders": "Složky",
             "full_snapshot": "Úplná záloha",
-            "name": "Název",
+            "name": "Název zálohy",
             "no_snapshots": "Zatím nemáte žádné zálohy.",
             "partial_snapshot": "Částečná záloha",
-            "password": "Heslo",
+            "password": "Heslo zálohy",
             "password_protected": "chráněno heslem",
             "password_protection": "Ochrana heslem",
+            "passwords_not_matching": "Hesla se neshodují",
             "security": "Zabezpečení",
-            "type": "Typ",
+            "select_type": "Vyberte, co chcete obnovit",
+            "selected": "{number} vybraných",
+            "type": "Typ zálohy",
             "upload_snapshot": "Nahrát zálohu"
         },
         "store": {
@@ -720,6 +739,9 @@
                 "no_match": "Nebyly nalezeny žádné odpovídající oblasti",
                 "show_areas": "Zobrazit oblasti"
             },
+            "attributes": {
+                "expansion_header": "Atributy"
+            },
             "blueprint-picker": {
                 "add_user": "Přidat uživatele",
                 "remove_user": "Odebrat uživatele",
@@ -919,8 +941,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Pokud je zakázáno, nově objevené entity pro {integration} nebudou automaticky přidány do Home Assistant.",
+                "enable_new_entities_description": "Pokud se mají automaticky přidat nově objevená zařízení integrace {integration}.",
                 "enable_new_entities_label": "Povolit nově přidané entity.",
+                "enable_polling_description": "Má-li Home Assistant automaticky zjišťovat aktualizace entit integrace {integration}.",
+                "enable_polling_label": "Povolit dotazování na aktualizace.",
+                "restart_home_assistant": "Aby se změny projevily, je třeba restartovat Home Assistant.",
                 "title": "Upravit nastavení pro {integration}",
                 "update": "Aktualizovat"
             },
@@ -1154,7 +1179,7 @@
                     },
                     "types": {
                         "navigation": "Navigovat",
-                        "reload": "Znovu načíst",
+                        "reload": "Nově načíst",
                         "server_control": "Server"
                     }
                 },
@@ -1261,7 +1286,7 @@
         "notification_toast": {
             "connection_lost": "Připojení bylo ztraceno. Připojuji se znovu...",
             "dismiss": "Zavřít",
-            "intergration_starting": "Integrace {integration} se spouští - dokud nebude spuštění dokončeno, nemusí být vše k dispozici.",
+            "integration_starting": "Integrace {integration} se spouští - dokud nebude spuštění dokončeno, nemusí být vše k dispozici.",
             "service_call_failed": "Službu {service} se nepodařilo zavolat.",
             "started": "Home Assistant je spuštěn!",
             "starting": "Home Assistant se spouští, ne všechno bude k dispozici, dokud nebude spuštění dokončeno.",
@@ -1719,6 +1744,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Připojeno",
+                        "connecting": "Připojování...",
                         "connection_status": "Stav cloudového připojení",
                         "fetching_subscription": "Načítání předplatného ...",
                         "google": {
@@ -2062,7 +2088,8 @@
                     "scripts": "Skripty",
                     "unknown_error": "Neznámá chyba",
                     "unnamed_device": "Nepojmenované zařízení",
-                    "update": "Aktualizovat"
+                    "update": "Aktualizovat",
+                    "update_device_error": "Aktualizace zařízení se nezdařila"
                 },
                 "entities": {
                     "caption": "Entity",
@@ -2195,6 +2222,7 @@
                         "depends_on_cloud": "Závisí na cloudu",
                         "device_unavailable": "Zařízení není dostupné",
                         "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
+                        "disable_error": "Povolení nebo zakázání integrace se nezdařilo",
                         "disable_restart_confirm": "Restartujte Home Assistant pro dokončení odstranění této integrace",
                         "disable": {
                             "disable_confirm": "Opravdu chcete zakázat tuto položku konfigurace? Její zařízení a entity budou zakázány.",
@@ -2206,6 +2234,7 @@
                             },
                             "disabled_cause": "Zakázáno {cause}"
                         },
+                        "disabled_polling": "Automatické dotazování na aktualizovaná data je zakázáno",
                         "documentation": "Dokumentace",
                         "enable_restart_confirm": "Restartujte Home Assistant pro dokončení přidání této integrace",
                         "entities": "{count} {count, plural,\n  one {entita}\n  other {entit}\n}",
@@ -2702,7 +2731,7 @@
                         "validation": {
                             "check_config": "Zkontrolujte konfiguraci",
                             "heading": "Ověření konfigurace",
-                            "introduction": "Pokud jste nedávno provedli změny konfigurace a chcete se ujistit, že je vše v pořádku, můžete zde konfiguraci ověřit",
+                            "introduction": "Pokud jste nedávno provedli nějaké změny v konfiguraci a chcete se ujistit, že jsou všechny platné, proveďte ověření konfigurace.",
                             "invalid": "Konfigurace není v pořádku!",
                             "valid": "Konfigurace je v pořádku!"
                         }
@@ -2916,7 +2945,8 @@
                         "controller_in_inclusion_mode": "Váš ovladač Z-Wave je nyní v režimu začlenění.",
                         "follow_device_instructions": "Podle pokynů dodaných se zařízením aktivujte párování na zařízení.",
                         "inclusion_failed": "Uzel nelze přidat. Další informace najdete v protokolech.",
-                        "inclusion_finished": "Uzel byl přidán. Může trvat několik minut, než se všechny entity zobrazí, když dokončíme nastavení uzlu na pozadí.",
+                        "inclusion_finished": "Uzel byl přidán.",
+                        "interview_failed": "Komunikace se zařízením se nezdařila. V logách mohou být k dispozici další informace.",
                         "introduction": "Tento průvodce vás provede přidáním uzlu do vaší sítě Z-Wave.",
                         "secure_inclusion_warning": "Zabezpečená zařízení vyžadují větší šířku pásma; příliš mnoho zabezpečených zařízení může zpomalit vaši síť Z-Wave. Bezpečné začlenění doporučujeme používat pouze u zařízení, která to vyžadují, jako jsou zámky nebo otvírače garážových vrat.",
                         "start_inclusion": "Zahájit začlenění",
@@ -2956,6 +2986,7 @@
                     },
                     "logs": {
                         "log_level": "Úroveň protokolu",
+                        "log_level_changed": "Úroveň protokolu změněna na: {level}",
                         "title": "Z-Wave JS protokoly"
                     },
                     "navigation": {
@@ -3080,7 +3111,7 @@
                         "heal_node": "Uzdravit uzel",
                         "node_info": "Informace o uzlu",
                         "print_node": "Otisk uzlu",
-                        "refresh_entity": "Znovu načíst Entitu",
+                        "refresh_entity": "Nově načíst Entitu",
                         "refresh_node": "Obnovit uzel",
                         "remove_failed_node": "Odebrat selhaný uzel",
                         "remove_node": "Odebrat uzel",
@@ -3145,6 +3176,7 @@
                         "copy_id": "Zkopírovat ID do schránky",
                         "current_entities": "Současné entity",
                         "description1": "Nastavte stav zařízení v Home Assistant.",
+                        "description2": "Pokud entita patří k zařízení, neprobíhá s tímto zařízením žádná skutečná komunikace.",
                         "entity": "Entita",
                         "filter_attributes": "Filtrovat atributy",
                         "filter_entities": "Filtrovat entity",
@@ -3522,7 +3554,7 @@
                         "options": "Více možností",
                         "pick_card": "Kterou kartu chcete přidat?",
                         "pick_card_view_title": "Kterou kartu byste chtěli přidat do svého {name} pohledu?",
-                        "search_cards": "Vyhledat karty",
+                        "search_cards": "Hledat karty",
                         "show_code_editor": "Zobrazit editor kódu",
                         "show_visual_editor": "Zobrazit vizuální editor",
                         "toggle_editor": "Přepnout Editor",
@@ -3854,10 +3886,19 @@
                 "intro": "Jste připraveni oživit svůj domov, zachovat si své soukromí a připojit se k celosvětové komunitě tvůrců?",
                 "next": "Další",
                 "restore": {
+                    "addons": "Doplňky",
+                    "confirm_password": "Potvrďte heslo zálohy",
                     "description": "Případně můžete Home Assistant obnovit z poslední zálohy.",
+                    "folders": "Složky",
+                    "full_snapshot": "Úplná záloha",
                     "hide_log": "Skrýt celý log",
                     "in_progress": "Probíhá obnovení",
-                    "show_log": "Zobrazit celý log"
+                    "partial_snapshot": "Částečná záloha",
+                    "password": "Heslo zálohy",
+                    "password_protection": "Ochrana heslem",
+                    "select_type": "Vyberte, co chcete obnovit",
+                    "show_log": "Zobrazit celý log",
+                    "type": "Typ zálohy"
                 },
                 "user": {
                     "create_account": "Vytvořit účet",
@@ -4000,6 +4041,17 @@
                     "link_promo": "Další info o motivech",
                     "primary_color": "Základní barva",
                     "reset": "Obnovit"
+                },
+                "time_format": {
+                    "description": "Zvolte způsob formátování času.",
+                    "dropdown_label": "Formát času",
+                    "formats": {
+                        "12": "12hodinový (AM/PM)",
+                        "24": "24hodinový",
+                        "language": "Automaticky (dle nastaveného jazyka)",
+                        "system": "Dle systému"
+                    },
+                    "header": "Formát času"
                 },
                 "vibrate": {
                     "description": "Povolit nebo zakázat vibrace na tomto zařízení při ovládání ostatních zařízení.",

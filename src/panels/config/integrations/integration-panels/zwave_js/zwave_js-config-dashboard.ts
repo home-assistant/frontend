@@ -24,6 +24,7 @@ import {
 import "../../../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../../../types";
+import { fileDownload } from "../../../../../util/file_download";
 import "../../../ha-config-section";
 import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
@@ -312,12 +313,7 @@ class ZWaveJSConfigDashboard extends LitElement {
       return;
     }
 
-    const a = document.createElement("a");
-    a.href = signedPath.path;
-    a.download = `zwave_js_dump.jsonl`;
-    this.shadowRoot!.appendChild(a);
-    a.click();
-    this.shadowRoot!.removeChild(a);
+    fileDownload(this, signedPath.path, `zwave_js_dump.jsonl`);
   }
 
   static get styles(): CSSResultGroup {

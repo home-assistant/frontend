@@ -1256,7 +1256,7 @@
         "notification_toast": {
             "connection_lost": "Koneksi terputus. Menghubungkan kembali…",
             "dismiss": "Tutup",
-            "intergration_starting": "Memulai {integration}, tidak semuanya akan tersedia hingga prosesnya selesai.",
+            "integration_starting": "Memulai {integration}, tidak semuanya akan tersedia hingga prosesnya selesai.",
             "service_call_failed": "Gagal memanggil layanan {service}.",
             "started": "Home Assistant telah dimulai!",
             "starting": "Home Assistant sedang dimulai, belum semuanya akan tersedia hingga selesai.",

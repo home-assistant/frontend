@@ -58,6 +58,17 @@
         },
         "my": {
             "error_addon_not_found": "Add-on net fûn"
+        },
+        "snapshot": {
+            "created": "Makke",
+            "delete_snapshot_confirm": "ferwiderje",
+            "failed_to_delete": "Ferwiderje is mislearre",
+            "selected": "{number} selekteare"
+        },
+        "system": {
+            "supervisor": {
+                "search": "Sykje"
+            }
         }
     },
     "ui": {
@@ -110,6 +121,9 @@
                     "name": "Namme"
                 }
             },
+            "data-table": {
+                "clear": "Opklearje"
+            },
             "device-picker": {
                 "device": "Apparaat",
                 "toggle": "Skeakelje"
@@ -118,6 +132,14 @@
         "dialogs": {
             "generic": {
                 "cancel": "Annulearje"
+            },
+            "quick-bar": {
+                "commands": {
+                    "types": {
+                        "navigation": "Navigearje",
+                        "server_control": "Server"
+                    }
+                }
             },
             "zha_device_info": {
                 "zha_device_card": {
@@ -142,6 +164,12 @@
                             "type": {
                                 "choose": {
                                     "add_option": "Opsje tafoegje"
+                                },
+                                "device_id": {
+                                    "extra_fields": {
+                                        "mode": "Wize",
+                                        "value": "Wearde"
+                                    }
                                 }
                             }
                         },
@@ -199,6 +227,9 @@
                     }
                 },
                 "cloud": {
+                    "account": {
+                        "connecting": "Ferbine ..."
+                    },
                     "alexa": {
                         "title": "Alexa"
                     },
@@ -221,6 +252,21 @@
                 "info": {
                     "description": "Ynformaasje oer dyn Home Assistant ynstallaasje"
                 },
+                "integrations": {
+                    "config_entry": {
+                        "configure": "Ynstelle"
+                    },
+                    "disable": {
+                        "show": "Toan"
+                    }
+                },
+                "logs": {
+                    "level": {
+                        "critical": "KRITYSK",
+                        "info": "YNFO",
+                        "warning": "WARSKÔGING"
+                    }
+                },
                 "lovelace": {
                     "description": "Konfigurearje dyn Lovelace-dashboards",
                     "resources": {
@@ -241,6 +287,8 @@
                         "name": "Namme"
                     },
                     "picker": {
+                        "duplicate": "Duplisearje",
+                        "duplicate_scene": "Duplisearje sêne",
                         "headers": {
                             "name": "Namme"
                         }
@@ -338,6 +386,13 @@
                     }
                 }
             },
+            "page-onboarding": {
+                "analytics": {
+                    "finish": "Folgjende"
+                },
+                "finish": "Ein",
+                "next": "Folgjende"
+            },
             "profile": {
                 "advanced_mode": {
                     "link_promo": "Lear mear"
@@ -348,6 +403,11 @@
                 },
                 "mfa_setup": {
                     "close": "Slute"
+                },
+                "number_format": {
+                    "formats": {
+                        "none": "Gjin"
+                    }
                 },
                 "themes": {
                     "dark_mode": {

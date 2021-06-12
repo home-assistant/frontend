@@ -260,7 +260,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       ),
       trigger: [{ platform: "tag", tag_id: tag.id } as TagTrigger],
     };
-    showAutomationEditor(this, data);
+    showAutomationEditor(data);
   }
 
   private _addTag() {

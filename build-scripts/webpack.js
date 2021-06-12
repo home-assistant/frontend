@@ -47,7 +47,6 @@ const createWebpackConfig = ({
       rules: [
         {
           test: /\.m?js$|\.ts$/,
-          exclude: bundle.babelExclude(),
           use: {
             loader: "babel-loader",
             options: bundle.babelOptions({ latestBuild }),
@@ -116,8 +115,9 @@ const createWebpackConfig = ({
       // We need to change the import of the polyfill for EventTarget, so we replace the polyfill file with our customized one
       new webpack.NormalModuleReplacementPlugin(
         new RegExp(
-          require.resolve(
-            "@lit-labs/virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
+          path.resolve(
+            paths.polymer_dir,
+            "src/resources/lit-virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
           )
         ),
         path.resolve(paths.polymer_dir, "src/resources/EventTarget-ponyfill.js")

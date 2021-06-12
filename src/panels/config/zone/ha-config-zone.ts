@@ -31,11 +31,8 @@ import { saveCoreConfig } from "../../../data/core";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import {
   createZone,
-  defaultRadiusColor,
   deleteZone,
   fetchZones,
-  homeRadiusColor,
-  passiveRadiusColor,
   updateZone,
   Zone,
   ZoneMutableParams,
@@ -73,6 +70,15 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private _getZones = memoizeOne(
     (storageItems: Zone[], stateItems: HassEntity[]): MarkerLocation[] => {
+      const computedStyles = getComputedStyle(this);
+      const zoneRadiusColor = computedStyles.getPropertyValue("--accent-color");
+      const passiveRadiusColor = computedStyles.getPropertyValue(
+        "--secondary-text-color"
+      );
+      const homeRadiusColor = computedStyles.getPropertyValue(
+        "--primary-color"
+      );
+
       const stateLocations: MarkerLocation[] = stateItems.map(
         (entityState) => ({
           id: entityState.entity_id,
@@ -86,7 +92,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               ? homeRadiusColor
               : entityState.attributes.passive
               ? passiveRadiusColor
-              : defaultRadiusColor,
+              : zoneRadiusColor,
           location_editable:
             entityState.entity_id === "zone.home" && this._canEditCore,
           radius_editable: false,
@@ -94,7 +100,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       );
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => ({
         ...zone,
-        radius_color: zone.passive ? passiveRadiusColor : defaultRadiusColor,
+        radius_color: zone.passive ? passiveRadiusColor : zoneRadiusColor,
         location_editable: true,
         radius_editable: true,
       }));
@@ -269,12 +275,12 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       ["storage", "default"].includes(this.hass.config.config_source);
     this._fetchData();
     if (this.route.path === "/new") {
-      navigate(this, "/config/zone", true);
+      navigate("/config/zone", { replace: true });
       this._createZone();
     }
   }
 
-  protected updated(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues) {
     super.updated(changedProps);
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (oldHass && this._stateItems) {
@@ -399,7 +405,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     ) {
       return;
     }
-    navigate(this, "/config/core");
+    navigate("/config/core");
   }
 
   private async _createEntry(values: ZoneMutableParams) {
@@ -410,8 +416,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (this.narrow) {
       return;
     }
-    await this.updateComplete;
     this._activeEntry = created.id;
+    await this.updateComplete;
+    await this._map?.updateComplete;
     this._map?.fitMarker(created.id);
   }
 
@@ -427,8 +434,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     if (this.narrow || !fitMap) {
       return;
     }
-    await this.updateComplete;
     this._activeEntry = entry.id;
+    await this.updateComplete;
+    await this._map?.updateComplete;
     this._map?.fitMarker(entry.id);
   }
 

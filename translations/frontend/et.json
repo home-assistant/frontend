@@ -292,7 +292,7 @@
             "save": "Salvesta",
             "show_more": "Kuva selle kohta rohkem teavet",
             "update": "Uuenda",
-            "update_available": "{count, plural,\n  one {värskendus}\n  other {{count] värskendust}\n} on saadaval",
+            "update_available": "{count, plural,\n  one {uuendus}\n  other {{count} uuendust}\n} on saadaval",
             "version": "Versioon",
             "yes": "Jah"
         },
@@ -314,10 +314,18 @@
             "addon_new_version": "Uus versioon on saadaval",
             "addon_running": "Lisandmoodul töötab",
             "addon_stopped": "Lisandmoodul on peatatud",
-            "addons": "Lisandmoodulid",
+            "addons": "Paigaldatud lisandmoodulid",
             "no_addons": "Ühtegi lisandmoodulit pole veel paigaldatud. Alustamiseks mine lisandmoodulite hoidlasse!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atribuudid",
+                "device_path": "Seadme asukoht",
+                "id": "ID",
+                "search": "Otsi riistvara",
+                "subsystem": "Alamsüsteem",
+                "title": "Riistvara"
+            },
             "network": {
                 "connected_to": "Ühendatud pääsupunktiga {ssid}",
                 "dhcp": "DHCP",
@@ -358,9 +366,9 @@
                 "text": "Kas soovid lisandmooduli taaskäivitada rakendades muudatused?"
             },
             "update": {
-                "create_snapshot": "Enne {name} värskendamist loo hetktõmmis",
-                "snapshot": "Hetktõmmis",
-                "snapshotting": "Üksuse {name} hetktõmmise loomine",
+                "create_snapshot": "Enne {name} värskendamist loo varukoopia",
+                "snapshot": "Varukoopia",
+                "snapshotting": "Üksuse {name} varukoopia loomine",
                 "updating": "Üksuse {name} värskendamine versioonile {version}"
             }
         },
@@ -368,6 +376,8 @@
             "error": "Viga",
             "error_addon_no_ingress": "Valitud lisandmoodul ei toeta ingressi",
             "error_addon_not_found": "Lisandmoodulit ei leitud",
+            "error_addon_not_installed": "Soovitud lisandmoodul pole pigaldatud. Alustamiseks paigalda see",
+            "error_addon_not_started": "Soovitud lisandmoodul ei tööta. Alustamiseks käivita see",
             "faq_link": "KKK viide",
             "not_supported": "pole toetatud"
         },
@@ -379,14 +389,20 @@
         },
         "snapshot": {
             "addons": "Lisandmoodulid",
-            "available_snapshots": "Saadaolevad hetktõmmised",
-            "could_not_create": "Hetktõmmise loomine nurjus",
+            "available_snapshots": "Saadaolevad varukoopiad",
+            "confirm_password": "Varukoopia salasõna kinnitamine",
+            "could_not_create": "Varukoopia loomine nurjus",
             "create": "Loo",
-            "create_blocked_not_running": "Hetktõmmise loomine pole praegu võimalik kuna süsteem on olekus {state}.",
-            "create_snapshot": "Loo hetktõmmis",
+            "create_blocked_not_running": "Varukoopia loomine pole praegu võimalik kuna süsteem on olekus {state}.",
+            "create_snapshot": "Loo varukoopia",
             "created": "Loodud",
-            "description": "Hetktõmmised võimaldavad hõlpsalt varundada ja taastada kõik Home Assistanti andmed.",
+            "delete_selected": "Kustuta valitud varukoopiad",
+            "delete_snapshot_confirm": "kustuta",
+            "delete_snapshot_text": "Kas kustutada {number} {number, plural,\n  one {varukoopia}\n  other {varukoopiat}\n}?",
+            "delete_snapshot_title": "Kustuta varukoopia",
+            "description": "Varukoopiad võimaldavad hõlpsalt varundada ja taastada kõik Home Assistanti andmed.",
             "enter_password": "Sisesta salasõna.",
+            "failed_to_delete": "Kustutamine nurjus",
             "folder": {
                 "addons/local": "Kohalikud lisandmoodulid",
                 "homeassistant": "Home Assistanti sätted",
@@ -395,16 +411,19 @@
                 "ssl": "SSL"
             },
             "folders": "Kaustad",
-            "full_snapshot": "Täielik hetktõmmis",
-            "name": "Nimi",
-            "no_snapshots": "Sul pole veel ühtegi hetktõmmist.",
-            "partial_snapshot": "Osaline hetktõmmis",
-            "password": "Salasõna",
+            "full_snapshot": "Täielik varukoopia",
+            "name": "Varukoopia nimi",
+            "no_snapshots": "Sul pole veel ühtegi varukoopiat.",
+            "partial_snapshot": "Osaline varukoopia",
+            "password": "Varukoopia salasõna",
             "password_protected": "salasõnaha kaitstud",
             "password_protection": "Salasõnaga kaitstud",
+            "passwords_not_matching": "Salasõnad ei ühti",
             "security": "Turvalisus",
-            "type": "Tüüp",
-            "upload_snapshot": "Hetktõmmise üleslaadimine"
+            "select_type": "Vali mida taastada",
+            "selected": "{number} valitud",
+            "type": "Varukoopia tüüp",
+            "upload_snapshot": "Varukoopia üleslaadimine"
         },
         "store": {
             "missing_addons": "Ei näe lisandmooduleid? Luba täpsem režiim oma kasutajaprofiili lehel",
@@ -720,6 +739,9 @@
                 "no_match": "Sobivaid alasid ei leitud",
                 "show_areas": "Näita alasid"
             },
+            "attributes": {
+                "expansion_header": "Atribuudid"
+            },
             "blueprint-picker": {
                 "add_user": "Lisa kasutaja",
                 "remove_user": "Kustuta kasutaja",
@@ -919,8 +941,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Kui see on keelatud ei lisata äsja avastatud sidumise {integration} olemeid automaatselt Home Assistant'i.",
+                "enable_new_entities_description": "Kas lisada äsja avastatud sidumise {integration} olemeid automaatselt Home Assistant'i.",
                 "enable_new_entities_label": "Luba äsja lisatud olemid.",
+                "enable_polling_description": "Kas Home Assistant peaks automaatselt küsitlema {integration} üksusi uuenduste saamiseks.",
+                "enable_polling_label": "Luba värskenduste jaoks küsitlus.",
+                "restart_home_assistant": "Muudatuste jõustumiseks pead Home Assistanti taaskäivitama.",
                 "title": "Süsteemi valikud {integration} jaoks",
                 "update": "Uuenda"
             },
@@ -1261,7 +1286,7 @@
         "notification_toast": {
             "connection_lost": "Ühendus kadunud. Taasühendamine...",
             "dismiss": "Loobu",
-            "intergration_starting": "Sidumine {integration} käivitub, kõik elemendid pole veel saadaval.",
+            "integration_starting": "Sidumine {integration} käivitub, kõik elemendid pole veel saadaval.",
             "service_call_failed": "Teenuse {service} väljakutsumine ebaõnnestus.",
             "started": "Home Assistant on käivitunud!",
             "starting": "Home Assistant  käivitub, kõik elemendid ei pruugi veel saadaval olla",
@@ -1719,6 +1744,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Ühendatud",
+                        "connecting": "Ühendun...",
                         "connection_status": "Pilveühenduse olek",
                         "fetching_subscription": "Tellimuse andmete toomine ...",
                         "google": {
@@ -2062,7 +2088,8 @@
                     "scripts": "Skriptid",
                     "unknown_error": "Tundmatu viga",
                     "unnamed_device": "Nimetu seade",
-                    "update": "Uuenda"
+                    "update": "Uuenda",
+                    "update_device_error": "Seadme värskendamine nurjus"
                 },
                 "entities": {
                     "caption": "Olemite register",
@@ -2195,6 +2222,7 @@
                         "depends_on_cloud": "Sõltub pilveteenusest",
                         "device_unavailable": "Seade pole saadaval",
                         "devices": "{count} {count, plural,\n  one {seade}\n  other {seadet}\n}",
+                        "disable_error": "Sidumise lubamine või keelamine nurjus",
                         "disable_restart_confirm": "Taaskäivita Home Assistant, et lõpetada selle sidumise keelamine",
                         "disable": {
                             "disable_confirm": "Kas soovid selle seadistuskirje kindlasti keelata? Selle seadmed ja üksused keelatakse.",
@@ -2206,6 +2234,7 @@
                             },
                             "disabled_cause": "Keelatud {cause} põhjusel"
                         },
+                        "disabled_polling": "Uuendatud andmete automaatne päring on välja lülitatud",
                         "documentation": "Vaata dokumentatsiooni",
                         "enable_restart_confirm": "Selle sidumise lubamise lõpetamiseks taaskäivita Home Assistant",
                         "entities": "{count} {count, plural,\n  one {olem}\n  other{olemit}\n}",
@@ -2702,7 +2731,7 @@
                         "validation": {
                             "check_config": "Kontrolli seadeid",
                             "heading": "Seadete kontrollimine",
-                            "introduction": "Kontrolli oma seadeid kui oled neis hiljuti muutusi teinud ja tahad veenduda, et kõik on korrektne",
+                            "introduction": "Kontrolli oma seadeid kui oled neis hiljuti muutusi teinud ja tahad veenduda, et kõik on korrektne.",
                             "invalid": "Konfiguratsioon on vigane",
                             "valid": "Konfiguratsioon on korrektne!"
                         }
@@ -2959,6 +2988,7 @@
                     },
                     "logs": {
                         "log_level": "Logimise tase",
+                        "log_level_changed": "Silumisteave on muudetud: {level}",
                         "subscribed_to_logs": "Z-Wave JS Logi sõnumite tellimine...",
                         "title": "Z-Wave JS logid"
                     },
@@ -3861,10 +3891,19 @@
                 "intro": "Kas oled valmis oma kodu ellu äratama, oma privaatsust tagasi võitma ja ühinema ülemaailmse nokitsejate kogukonnaga?",
                 "next": "Järgmine",
                 "restore": {
-                    "description": "Teise võimalusena saad taastada eelmise hetktõmmise.",
+                    "addons": "Lisandmoodulid",
+                    "confirm_password": "Kinnita salasõna",
+                    "description": "Teise võimalusena saad taastada eelmise varukoopia.",
+                    "folders": "Kaustad",
+                    "full_snapshot": "Täielik varukoopia",
                     "hide_log": "Peida täielik logi",
                     "in_progress": "Toimub taastamine",
-                    "show_log": "Kuva täielik logi"
+                    "partial_snapshot": "Osaline varukoopia",
+                    "password": "Salasõna",
+                    "password_protection": "Salasõnaga kaitstud",
+                    "select_type": "Vali andmestiku tüüp",
+                    "show_log": "Kuva täielik logi",
+                    "type": "Andmestiku tüüp"
                 },
                 "user": {
                     "create_account": "Loo konto",

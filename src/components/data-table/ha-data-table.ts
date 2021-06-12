@@ -1,4 +1,4 @@
-import { Layout1d, scroll } from "@lit-labs/virtualizer";
+import { Layout1d, scroll } from "../../resources/lit-virtualizer";
 import deepClone from "deep-clone-simple";
 import {
   css,
@@ -173,8 +173,8 @@ export class HaDataTable extends LitElement {
     this.updateComplete.then(() => this._calcTableHeight());
   }
 
-  protected updated(properties: PropertyValues) {
-    super.updated(properties);
+  public willUpdate(properties: PropertyValues) {
+    super.willUpdate(properties);
 
     if (properties.has("columns")) {
       this._filterable = Object.values(this.columns).some(
@@ -246,7 +246,7 @@ export class HaDataTable extends LitElement {
           aria-rowcount=${this._filteredData.length + 1}
           style=${styleMap({
             height: this.autoHeight
-              ? `${(this._filteredData.length || 1) * 53 + 57}px`
+              ? `${(this._filteredData.length || 1) * 53 + 53}px`
               : `calc(100% - ${this._headerHeight}px)`,
           })}
         >
@@ -340,8 +340,11 @@ export class HaDataTable extends LitElement {
                   ${scroll({
                     items: this._items,
                     layout: Layout1d,
-                    // @ts-expect-error
                     renderItem: (row: DataTableRowData, index) => {
+                      // not sure how this happens...
+                      if (!row) {
+                        return html``;
+                      }
                       if (row.append) {
                         return html`
                           <div class="mdc-data-table__row">${row.content}</div>
@@ -474,15 +477,16 @@ export class HaDataTable extends LitElement {
     }
 
     if (this.appendRow || this.hasFab) {
-      this._items = [...data];
+      const items = [...data];
 
       if (this.appendRow) {
-        this._items.push({ append: true, content: this.appendRow });
+        items.push({ append: true, content: this.appendRow });
       }
 
       if (this.hasFab) {
-        this._items.push({ empty: true });
+        items.push({ empty: true });
       }
+      this._items = items;
     } else {
       this._items = data;
     }
@@ -915,13 +919,11 @@ export class HaDataTable extends LitElement {
           color: var(--secondary-text-color);
         }
         .scroller {
-          display: flex;
-          position: relative;
-          contain: strict;
           height: calc(100% - 57px);
         }
-        .mdc-data-table__table:not(.auto-height) .scroller {
-          overflow: auto;
+
+        .mdc-data-table__table.auto-height .scroller {
+          overflow-y: hidden !important;
         }
         .grows {
           flex-grow: 1;

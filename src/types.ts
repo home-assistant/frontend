@@ -82,8 +82,12 @@ export interface CurrentUser {
   mfa_modules: MFAModule[];
 }
 
+// Currently selected theme and its settings. These are the values stored in local storage.
 export interface ThemeSettings {
   theme: string;
+  // Radio box selection for theme picker. Do not use in cards as
+  // it can be undefined == auto.
+  // Property hass.themes.darkMode carries effective current mode.
   dark?: boolean;
   primaryColor?: string;
   accentColor?: string;
@@ -190,7 +194,7 @@ export interface HomeAssistant {
   services: HassServices;
   config: HassConfig;
   themes: Themes;
-  selectedTheme?: ThemeSettings | null;
+  selectedTheme: ThemeSettings | null;
   panels: Panels;
   panelUrl: string;
   // i18n

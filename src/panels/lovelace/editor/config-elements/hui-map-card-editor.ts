@@ -22,11 +22,8 @@ import "../../components/hui-input-list-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
-import {
-  EditorTarget,
-  entitiesConfigStruct,
-  EntitiesEditorEvent,
-} from "../types";
+import { entitiesConfigStruct } from "../structs/entities-struct";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -37,7 +34,7 @@ const cardConfigStruct = object({
   dark_mode: optional(boolean()),
   entities: array(entitiesConfigStruct),
   hours_to_show: optional(number()),
-  geo_location_sources: optional(array()),
+  geo_location_sources: optional(array(string())),
 });
 
 @customElement("hui-map-card-editor")

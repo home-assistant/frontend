@@ -1,4 +1,4 @@
-import { safeDump } from "js-yaml";
+import { dump } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -31,7 +31,7 @@ class MQTTDiscoveryPayload extends LitElement {
     const payload = this.payload;
     return html`
       ${this.showAsYaml
-        ? html` <pre>${safeDump(payload)}</pre> `
+        ? html` <pre>${dump(payload)}</pre> `
         : html` <pre>${JSON.stringify(payload, null, 2)}</pre> `}
     `;
   }
