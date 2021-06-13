@@ -236,6 +236,98 @@ describe("computeStateDisplay", () => {
     });
   });
 
+  describe("Localizes input_datetime state parameter with full date time", () => {
+    const stateObj: any = {
+      entity_id: "input_datetime.test",
+      state: "123",
+      attributes: {
+        has_date: true,
+        has_time: true,
+        year: 2021,
+        month: 6,
+        day: 13,
+        hour: 15,
+        minute: 26,
+        second: 36,
+      },
+    };
+    it("Uses am/pm time format", () => {
+      assert.strictEqual(
+        computeStateDisplay(
+          localize,
+          stateObj,
+          localeData,
+          "2021-07-04 15:40:03"
+        ),
+        "July 4, 2021, 3:40 PM"
+      );
+    });
+    it("Uses 24h time format", () => {
+      localeData.time_format = TimeFormat.twenty_four;
+      assert.strictEqual(
+        computeStateDisplay(
+          localize,
+          stateObj,
+          localeData,
+          "2021-07-04 15:40:03"
+        ),
+        "July 4, 2021, 15:40"
+      );
+    });
+  });
+
+  it("Localizes input_datetime state parameter with date", () => {
+    const stateObj: any = {
+      entity_id: "input_datetime.test",
+      state: "123",
+      attributes: {
+        has_date: true,
+        has_time: false,
+        year: 2021,
+        month: 6,
+        day: 13,
+        hour: 15,
+        minute: 26,
+        second: 36,
+      },
+    };
+    assert.strictEqual(
+      computeStateDisplay(localize, stateObj, localeData, "2021-07-04"),
+      "July 4, 2021"
+    );
+  });
+
+  describe("Localizes input_datetime state parameter with time", () => {
+    const stateObj: any = {
+      entity_id: "input_datetime.test",
+      state: "123",
+      attributes: {
+        has_date: false,
+        has_time: true,
+        year: 2021,
+        month: 6,
+        day: 13,
+        hour: 15,
+        minute: 26,
+        second: 36,
+      },
+    };
+    it("Uses am/pm time format", () => {
+      localeData.time_format = TimeFormat.am_pm;
+      assert.strictEqual(
+        computeStateDisplay(localize, stateObj, localeData, "17:05:07"),
+        "5:05 PM"
+      );
+    });
+    it("Uses 24h time format", () => {
+      localeData.time_format = TimeFormat.twenty_four;
+      assert.strictEqual(
+        computeStateDisplay(localize, stateObj, localeData, "17:05:07"),
+        "17:05"
+      );
+    });
+  });
+
   it("Localizes unavailable", () => {
     const altLocalize = (message, ...args) => {
       if (message === "state.sensor.unavailable") {
