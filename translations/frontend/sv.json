@@ -131,6 +131,12 @@
                     "uninstall": "Kunde inte avinstallera tillägg"
                 },
                 "capability": {
+                    "auth_api": {
+                        "title": "Home Assistant-autentisering"
+                    },
+                    "label": {
+                        "hardware": "hårdvara"
+                    },
                     "rating": {
                         "title": "Tilläggets säkerhetsrating"
                     },
@@ -142,6 +148,7 @@
                         "manager": "föreståndare"
                     }
                 },
+                "changelog": "Ändringslogg",
                 "cpu_usage": "Tillägg CPU-användning",
                 "hostname": "Värdnamn",
                 "install": "installera",
@@ -174,6 +181,7 @@
                     "title": "Varning: Skyddsläge är inaktiverat!"
                 },
                 "ram_usage": "Tillägg RAM-användning",
+                "rebuild": "Bygg om",
                 "restart": "omstart",
                 "start": "starta",
                 "stop": "stoppa",
@@ -188,6 +196,11 @@
                 "documentation": "Dokumentation",
                 "info": "Info",
                 "log": "Logg"
+            },
+            "state": {
+                "installed": "Add-on är installerad",
+                "not_available": "Add-on är inte tillgänglig på ditt system",
+                "not_installed": "Add-on är inte installerad"
             }
         },
         "common": {
@@ -201,7 +214,7 @@
             "failed_to_update_name": "Kunde inte uppdatera {name}",
             "learn_more": "Läs mer",
             "new_version_available": "Ny version tillgänglig",
-            "newest_version": "Nyaste version",
+            "newest_version": "Senaste version",
             "refresh": "Uppdatera",
             "reload": "Ladda om",
             "reset_defaults": "Nollställ till standard",
@@ -227,6 +240,11 @@
                 "text": "Är du säker på att du vill uppdatera {name} till version {version}?",
                 "title": "Uppdatera {name}"
             }
+        },
+        "dashboard": {
+            "addon_new_version": "Ny version tillgänglig",
+            "addon_running": "Add-on körs",
+            "addons": "Installerade add-ons"
         },
         "dialog": {
             "network": {
@@ -276,8 +294,11 @@
         "my": {
             "error": "Ett okänt fel inträffade",
             "error_addon_not_found": "Tillägget hittades inte",
-            "faq_link": "Min Home Assistant FAQ",
-            "not_supported": "Denna omdirigering stöds inte av din Home Assistant-instans. Kontroller {link} för vilka omdirigeringar som stöds och i vilken version de introducerades."
+            "faq_link": "Mitt Home Assistant FAQ",
+            "not_supported": "Denna omdirigering stöds inte av din Home Assistant-instans. Kontrollera {link} för vilka omdirigeringar som stöds och i vilken version de introducerades."
+        },
+        "panel": {
+            "system": "System"
         },
         "snapshot": {
             "addons": "Tillägg",
@@ -303,6 +324,7 @@
             "password_protected": "lösenordskyddad",
             "password_protection": "Lösenordsskydd",
             "security": "Säkerhet",
+            "select_type": "Välj vad som ska återställas",
             "type": "Typ",
             "upload_snapshot": "Ladda upp avbild"
         },
@@ -351,6 +373,7 @@
                 "leave_beta_description": "Få stabila uppdateringar för Home Assistant, Supervisor och värd",
                 "ram_usage": "Supervisor RAM-användning",
                 "reload_supervisor": "Ladda om Supervisor",
+                "search": "Sök",
                 "share_diagnostics": "Dela diagnostik",
                 "share_diagnostics_description": "Dela kraschrapporter och diagnostisk information.",
                 "share_diagonstics_title": "Hjälp till att förbättra Home Assistant",
@@ -564,6 +587,19 @@
             "yes": "Ja"
         },
         "components": {
+            "addon-picker": {
+                "addon": "Add-on",
+                "error": {
+                    "fetch_addons": {
+                        "description": "Hämtning av Add-ons gav ett fel.",
+                        "title": "Fel vid hämtning av Add-ons"
+                    },
+                    "no_supervisor": {
+                        "description": "Ingen Supervisor hittades, Add-on kunde inte laddas.",
+                        "title": "Ingen Supervisor"
+                    }
+                }
+            },
             "area-picker": {
                 "add_dialog": {
                     "add": "Lägg till",
@@ -737,6 +773,11 @@
                     "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n} sedan",
                     "week": "{count} {count, plural,\n  one {vecka}\n  other {veckor}\n} sedan"
                 }
+            },
+            "service-control": {
+                "required": "Det här fältet krävs",
+                "target": "Mål",
+                "target_description": "Vad ska denna tjänst använda som målområden, enheter eller entiteter?"
             },
             "service-picker": {
                 "service": "Tjänst"
@@ -1872,7 +1913,8 @@
                 },
                 "filtering": {
                     "clear": "Rensa",
-                    "filtering_by": "Filtrera efter"
+                    "filtering_by": "Filtrera efter",
+                    "show": "Visa"
                 },
                 "hassio": {
                     "button": "Konfigurera"
@@ -1977,8 +2019,10 @@
                     "config_flow": {
                         "aborted": "Avbruten",
                         "close": "Stäng",
+                        "could_not_load": "Konfigurationsflödet kunde inte laddas",
                         "created_config": "Skapad konfiguration för {name}.",
                         "dismiss": "Avfärda dialogrutan",
+                        "error": "Fel",
                         "error_saving_area": "Fel vid sparande av område: {error}",
                         "external_step": {
                             "description": "Det här steget kräver att du besöker en extern webbplats för att slutföra.",
@@ -1987,15 +2031,21 @@
                         "finish": "Slutför",
                         "loading_first_time": "Vänligen vänta medan integrationen installeras",
                         "not_all_required_fields": "Alla obligatoriska fält har inte fyllts i.",
+                        "pick_flow_step": {
+                            "new_flow": "Nej, skapa en annan instans av {integration}",
+                            "title": "Vi upptäckte dessa, vill du konfigurera dem?"
+                        },
                         "submit": "Spara"
                     },
                     "configure": "Konfigurera",
                     "configured": "Konfigurerad",
+                    "confirm_new": "Vill du konfigurera {integration}?",
                     "description": "Hantera integrationer med tjänster, enheter, ...",
                     "details": "Integrationsdetaljer",
                     "disable": {
                         "disabled_integrations": "{number} inaktiverad(e)",
-                        "hide_disabled": "Dölj inaktiverade integrationer"
+                        "hide_disabled": "Dölj inaktiverade integrationer",
+                        "show_disabled": "Visa inaktiverade integrationer"
                     },
                     "discovered": "Upptäckt",
                     "home_assistant_website": "Home Assistants hemsida",
@@ -2814,13 +2864,17 @@
                         "type": "Händelsetyp"
                     },
                     "services": {
+                        "all_parameters": "Alla tillgängliga parametrar",
                         "call_service": "Anropa tjänst",
                         "column_description": "Beskrivning",
                         "column_example": "Exempel",
                         "column_parameter": "Parameter",
                         "description": "Utvecklarverktyget för tjänster låter dig anropa alla tillgängliga tjänster i Home Assistant.",
                         "fill_example_data": "Fyll på exempeldata",
-                        "title": "Tjänster"
+                        "title": "Tjänster",
+                        "ui_mode": "Gå till UI-läge",
+                        "yaml_mode": "Gå till YAML-läge",
+                        "yaml_parameters": "Parametrar endast tillgängliga i YAML-läge"
                     },
                     "states": {
                         "alert_entity_field": "Enhet är ett obligatoriskt fält",
@@ -3359,7 +3413,12 @@
                 "playback_title": "Meddelandeuppspelning"
             },
             "my": {
-                "not_supported": "Denna omdirigering stöds inte av din Home Assistant-instans. Kolla {link} för vilka omdirigeringar som stöds och i vilken version de introducerades."
+                "component_not_loaded": "Denna omdirigering stöds inte av din Home Assistant-instans. Du behöver integrationen {integration} att använda denna omdirigering.",
+                "documentation": "dokumentation",
+                "error": "Ett okänt fel inträffade",
+                "faq_link": "Mitt Home Assistant FAQ",
+                "no_supervisor": "Denna omdirigering stöds inte av din Home Assistant-installation. Den behöver antingen operativsystemet Home Assistant operativsystem eller Home Assistant Supervised. Mer information finns i {docs_link} .",
+                "not_supported": "Denna omdirigering stöds inte av din Home Assistant-instans. Kontrollera {link} för vilka omdirigeringar som stöds och i vilken version de introducerades."
             },
             "page-authorize": {
                 "abort_intro": "Inloggning avbruten",
@@ -3457,7 +3516,7 @@
                     "working": "Vänligen vänta"
                 },
                 "initializing": "Initierar",
-                "logging_in_to_with": "Loggar in på ** {locationName} ** med ** {authProviderName} **.",
+                "logging_in_to_with": "Loggar in på **{locationName}** med **{authProviderName}**.",
                 "logging_in_with": "Loggar in med **{authProviderName}**.",
                 "pick_auth_provider": "Eller logga in med"
             },
@@ -3615,6 +3674,15 @@
                     "enable": "Aktivera",
                     "header": "Tvåfaktorsautentiseringsmoduler"
                 },
+                "number_format": {
+                    "description": "Välj hur siffror utformas.",
+                    "dropdown_label": "Sifferformat",
+                    "formats": {
+                        "language": "Auto (använd språkinställning)",
+                        "none": "Inget"
+                    },
+                    "header": "Sifferformat"
+                },
                 "push_notifications": {
                     "add_device_prompt": {
                         "input_label": "Enhetsnamn",
@@ -3655,6 +3723,17 @@
                     "link_promo": "Läs mer om teman",
                     "primary_color": "Primär färg",
                     "reset": "Återställ"
+                },
+                "time_format": {
+                    "description": "Välj hur tid utformas.",
+                    "dropdown_label": "Tidsformat",
+                    "formats": {
+                        "12": "12-timmars (FM / EM)",
+                        "24": "24-timmarsklocka",
+                        "language": "Auto (använd språkinställning)",
+                        "system": "Använd systemets språk"
+                    },
+                    "header": "Tidsformat"
                 },
                 "vibrate": {
                     "description": "Aktivera eller inaktivera vibration på den här enheten när du styr enheter.",
