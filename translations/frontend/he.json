@@ -3607,7 +3607,7 @@
                     "menu": {
                         "manage_dashboards": "נהל לוחות מחוונים",
                         "manage_resources": "נהל משאבים",
-                        "open": "פתיחת את תפריט ממשק המשתמש Lovelace",
+                        "open": "פתיחת תפריט ממשק המשתמש Lovelace",
                         "raw_editor": "עורך תצורה גולמית"
                     },
                     "migrate": {
@@ -3891,10 +3891,19 @@
                 "intro": "האם אתה רוצה לקחת שליטה על הבית שלך ולהצטרף לקהילה הגדולה שלנו?",
                 "next": "הבא",
                 "restore": {
+                    "addons": "תוספים",
+                    "confirm_password": "אישור סיסמת גיבוי",
                     "description": "לחלופין, באפשרותך לשחזר מגיבוי קודם.",
+                    "folders": "תיקיות",
+                    "full_snapshot": "גיבוי מלא",
                     "hide_log": "הסתר יומן מלא",
                     "in_progress": "שחזור מתבצע",
-                    "show_log": "הצג יומן מלא"
+                    "partial_snapshot": "גיבוי חלקי",
+                    "password": "סיסמה",
+                    "password_protection": "הגנה באמצעות סיסמה",
+                    "select_type": "בחר מה לשחזר",
+                    "show_log": "הצג יומן מלא",
+                    "type": "סוג נקודת גיבוי"
                 },
                 "user": {
                     "create_account": "צור חשבון",
