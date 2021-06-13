@@ -28,9 +28,6 @@ export const computeStateDisplay = (
 
   const domain = computeStateDomain(stateObj);
 
-  // Below logic for `input_datetime` works only if the frontend's (browser's) timezone is the same as core's.
-  // If frontend's timezone is different from core's, `input_datetime`s' state display computation will be incorrect.
-  // Needs further fixes for frontend to get core's timezone offset, in order to make computation correct all the time.
   if (domain === "input_datetime") {
     if (state) {
       // If trying to display an explicit state, need to parse the explict state to `Date` then format.
