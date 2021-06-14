@@ -3891,10 +3891,19 @@
                 "intro": "Sind Sie bereit, dein Zuhause zu wecken, Ihre Privatsphäre zurückzugewinnen und einer weltweiten Gemeinschaft von Tüftlern beizutreten?",
                 "next": "Weiter",
                 "restore": {
+                    "addons": "Add-ons",
+                    "confirm_password": "Snapshot-Passwort bestätigen",
                     "description": "Alternativ kannst du von einem vorherigen Snapshot wiederherstellen.",
+                    "folders": "Ordner",
+                    "full_snapshot": "Vollständige Datensicherung",
                     "hide_log": "Vollständiges Protokoll ausblenden",
                     "in_progress": "Wiederherstellung im Gange",
-                    "show_log": "Vollständiges Protokoll anzeigen"
+                    "partial_snapshot": "Selektive Datensicherung",
+                    "password": "Snapshot-Passwort",
+                    "password_protection": "Passwortschutz",
+                    "select_type": "Wähle aus, was wiederhergestellt werden soll",
+                    "show_log": "Vollständiges Protokoll anzeigen",
+                    "type": "Snapshot-Typ"
                 },
                 "user": {
                     "create_account": "Benutzerkonto anlegen",
