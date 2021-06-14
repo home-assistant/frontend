@@ -15,6 +15,7 @@ import {
   fetchHassioHomeAssistantInfo,
   fetchHassioInfo,
   fetchHassioSupervisorInfo,
+  HassioPanelInfo,
 } from "../../src/data/hassio/supervisor";
 import { fetchSupervisorStore } from "../../src/data/supervisor/store";
 import {
@@ -25,7 +26,7 @@ import {
 } from "../../src/data/supervisor/supervisor";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 import { urlSyncMixin } from "../../src/state/url-sync-mixin";
-import { HomeAssistant } from "../../src/types";
+import { HomeAssistant, Route } from "../../src/types";
 import { getTranslation } from "../../src/util/common-translation";
 
 declare global {
@@ -41,6 +42,10 @@ export class SupervisorBaseElement extends urlSyncMixin(
   @property({ attribute: false }) public supervisor: Partial<Supervisor> = {
     localize: () => "",
   };
+
+  @property({ attribute: false }) public panel!: HassioPanelInfo;
+
+  @property({ attribute: false }) public route?: Route;
 
   @state() private _unsubs: Record<string, UnsubscribeFunc> = {};
 
@@ -110,7 +115,12 @@ export class SupervisorBaseElement extends urlSyncMixin(
       this._language = this.hass.language;
     }
     this._initializeLocalize();
-    this._initSupervisor();
+    if (
+      !(this.panel.config && "ingress" in this.panel.config) &&
+      this.route?.path !== "/ingress"
+    ) {
+      this._initSupervisor();
+    }
   }
 
   private async _initializeLocalize() {

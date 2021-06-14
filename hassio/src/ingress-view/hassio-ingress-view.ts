@@ -21,7 +21,6 @@ import {
   createHassioSession,
   validateHassioSession,
 } from "../../../src/data/hassio/ingress";
-import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
@@ -31,11 +30,9 @@ import { HomeAssistant, Route } from "../../../src/types";
 class HassioIngressView extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ attribute: false }) public supervisor!: Supervisor;
+  @property({ attribute: false }) public route!: Route;
 
-  @property() public route!: Route;
-
-  @property() public ingressPanel = false;
+  @property({ type: Boolean }) public ingressPanel = false;
 
   @state() private _addon?: HassioAddonDetails;
 
@@ -102,14 +99,14 @@ class HassioIngressView extends LitElement {
         }
         if (!addonInfo.version) {
           await showAlertDialog(this, {
-            text: this.supervisor.localize("my.error_addon_not_installed"),
+            text: this.hass.localize("supervisor.my.error_addon_not_installed"),
             title: addonInfo.name,
           });
           await nextRender();
           navigate(`/hassio/addon/${addonInfo.slug}/info`, { replace: true });
         } else if (!addonInfo.ingress) {
           await showAlertDialog(this, {
-            text: this.supervisor.localize("my.error_addon_no_ingress"),
+            text: this.hass.localize("supervisor.my.error_addon_no_ingress"),
             title: addonInfo.name,
           });
           await nextRender();
