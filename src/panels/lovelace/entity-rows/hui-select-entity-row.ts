@@ -99,7 +99,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
                   html`
                     <paper-item .option=${option}
                       >${(stateObj.attributes.device_class &&
-                        this.hass.localize(
+                        this.hass!.localize(
                           `component.select.state.${stateObj.attributes.device_class}.${option}`
                         )) ||
                       option}</paper-item
