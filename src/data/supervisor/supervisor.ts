@@ -13,6 +13,12 @@ import {
 } from "../hassio/supervisor";
 import { SupervisorStore } from "./store";
 
+export interface supervisorApplyUpdateDetails {
+  type: "core" | "supervisor" | "os" | "addon";
+  name: string;
+  version: string;
+}
+
 export const supervisorWSbaseCommand = {
   type: "supervisor/api",
   method: "GET",

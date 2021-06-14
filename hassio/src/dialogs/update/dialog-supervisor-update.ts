@@ -1,6 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
+import { LocalStorage } from "../../../../src/common/decorators/local-storage";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
@@ -22,14 +23,17 @@ class DialogSupervisorUpdate extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _createSnapshot = true;
-
   @state() private _action: "snapshot" | "update" | null = null;
 
   @state() private _error?: string;
 
   @state()
   private _dialogParams?: SupervisorDialogSupervisorUpdateParams;
+
+  @LocalStorage("snapshotBeforeUpdate", true, {
+    attribute: false,
+  })
+  private _snapshotBeforeUpdate = true;
 
   public async showDialog(
     params: SupervisorDialogSupervisorUpdateParams
@@ -41,7 +45,6 @@ class DialogSupervisorUpdate extends LitElement {
 
   public closeDialog(): void {
     this._action = null;
-    this._createSnapshot = true;
     this._error = undefined;
     this._dialogParams = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -95,7 +98,7 @@ class DialogSupervisorUpdate extends LitElement {
                   )}
                 </span>
                 <ha-switch
-                  .checked=${this._createSnapshot}
+                  .checked=${this._snapshotBeforeUpdate}
                   haptic
                   @click=${this._toggleSnapshot}
                 >
@@ -134,11 +137,11 @@ class DialogSupervisorUpdate extends LitElement {
   }
 
   private _toggleSnapshot() {
-    this._createSnapshot = !this._createSnapshot;
+    this._snapshotBeforeUpdate = !this._snapshotBeforeUpdate;
   }
 
   private async _update() {
-    if (this._createSnapshot) {
+    if (this._snapshotBeforeUpdate) {
       this._action = "snapshot";
       try {
         await createHassioPartialSnapshot(
@@ -158,11 +161,13 @@ class DialogSupervisorUpdate extends LitElement {
     } catch (err) {
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         this._error = extractApiErrorMessage(err);
+        this._action = null;
+        return;
       }
-      this._action = null;
-      return;
     }
-
+    if (this._dialogParams?.applyingUpdate) {
+      this._dialogParams.applyingUpdate();
+    }
     this.closeDialog();
   }
 

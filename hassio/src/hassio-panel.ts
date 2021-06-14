@@ -1,11 +1,25 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
   Supervisor,
+  supervisorApplyUpdateDetails,
   supervisorCollection,
 } from "../../src/data/supervisor/supervisor";
 import { HomeAssistant, Route } from "../../src/types";
 import "./hassio-panel-router";
+
+declare global {
+  interface HASSDomEvents {
+    "supervisor-applying-update": supervisorApplyUpdateDetails;
+  }
+}
 
 @customElement("hassio-panel")
 class HassioPanel extends LitElement {
@@ -16,6 +30,16 @@ class HassioPanel extends LitElement {
   @property({ type: Boolean }) public narrow!: boolean;
 
   @property({ attribute: false }) public route!: Route;
+
+  @state() private _applyingUpdate?: supervisorApplyUpdateDetails;
+
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+    this._applyingUpdate = undefined;
+    this.addEventListener("supervisor-applying-update", (ev) => {
+      this._applyingUpdate = ev.detail;
+    });
+  }
 
   protected render(): TemplateResult {
     if (!this.hass) {
@@ -29,6 +53,16 @@ class HassioPanel extends LitElement {
     ) {
       return html`<hass-loading-screen></hass-loading-screen>`;
     }
+
+    if (this._applyingUpdate !== undefined) {
+      return html`<hass-loading-screen no-toolbar>
+        ${this.supervisor.localize("common.applying_update", {
+          name: this._applyingUpdate.name,
+          version: this._applyingUpdate.version,
+        })}
+      </hass-loading-screen>`;
+    }
+
     return html`
       <hassio-panel-router
         .hass=${this.hass}

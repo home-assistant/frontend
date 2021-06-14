@@ -7,6 +7,7 @@ export interface SupervisorDialogSupervisorUpdateParams {
   version: string;
   snapshotParams: any;
   updateHandler: () => Promise<void>;
+  applyingUpdate?: () => void;
 }
 
 export const showDialogSupervisorUpdate = (

@@ -39,6 +39,7 @@ class HassLoadingScreen extends LitElement {
           </div>`}
       <div class="content">
         <ha-circular-progress active></ha-circular-progress>
+        <slot></slot>
       </div>
     `;
   }
@@ -76,6 +77,7 @@ class HassLoadingScreen extends LitElement {
         .content {
           height: calc(100% - var(--header-height));
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
         }
