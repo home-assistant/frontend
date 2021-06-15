@@ -192,7 +192,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
           ${this._error
             ? html`
                 <div class="no-entries">
-                  ${this.hass.localize("ui.components.logbook.retrieval_error")}
+                  ${`${this.hass.localize("ui.components.logbook.retrieval_error")} ${this._error}`}
                 </div>
               `
             : !this._logbookEntries
@@ -253,7 +253,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         this._fetchUserPromise,
       ]);
     } catch (err) {
-      this._error = true;
+      this._error = err.message;
     }
 
     const logbookEntries = this._logbookEntries

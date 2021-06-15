@@ -141,7 +141,7 @@ export class MoreInfoLogbook extends LitElement {
         this._fetchUserPromise,
       ]);
     } catch (err) {
-      this._error = true;
+      this._error = err.message;
     }
 
     this._logbookEntries = this._logbookEntries
