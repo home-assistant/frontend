@@ -44,7 +44,7 @@ class HaHLSPlayer extends LitElement {
 
   private _hlsPolyfillInstance?: HlsLite;
 
-  private _useExoPlayer = false;
+  private _exoPlayer = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -55,7 +55,7 @@ class HaHLSPlayer extends LitElement {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._destroyPolyfill();
+    this._cleanUp();
   }
 
   protected render(): TemplateResult {
@@ -79,7 +79,7 @@ class HaHLSPlayer extends LitElement {
       return;
     }
 
-    this._destroyPolyfill();
+    this._cleanUp();
     this._startHls();
   }
 
@@ -112,7 +112,7 @@ class HaHLSPlayer extends LitElement {
       return;
     }
 
-    this._useExoPlayer = await useExoPlayerPromise;
+    const useExoPlayer = await useExoPlayerPromise;
     const masterPlaylist = await (await masterPlaylistPromise).text();
 
     // Parse playlist assuming it is a master playlist. Match group 1 is whether hevc, match group 2 is regular playlist url
@@ -132,7 +132,7 @@ class HaHLSPlayer extends LitElement {
     }
 
     // If codec is HEVC and ExoPlayer is supported, use ExoPlayer.
-    if (this._useExoPlayer && match !== null && match[1] !== undefined) {
+    if (useExoPlayer && match !== null && match[1] !== undefined) {
       this._renderHLSExoPlayer(playlist_url);
     } else if (Hls.isSupported()) {
       this._renderHLSPolyfill(videoEl, Hls, playlist_url);
@@ -142,6 +142,7 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _renderHLSExoPlayer(url: string) {
+    this._exoPlayer = true;
     window.addEventListener("resize", this._resizeExoPlayer);
     this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
@@ -190,25 +191,27 @@ class HaHLSPlayer extends LitElement {
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
     videoEl.src = url;
-    await new Promise((resolve) =>
-      videoEl.addEventListener("loadedmetadata", resolve)
-    );
-    videoEl.play();
+    videoEl.addEventListener("loadedmetadata", () => {
+      videoEl.play();
+    });
   }
 
   private _elementResized() {
     fireEvent(this, "iron-resize");
   }
 
-  private _destroyPolyfill() {
+  private _cleanUp() {
     if (this._hlsPolyfillInstance) {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
     }
-    if (this._useExoPlayer) {
+    if (this._exoPlayer) {
       window.removeEventListener("resize", this._resizeExoPlayer);
       this.hass!.auth.external!.fireMessage({ type: "exoplayer/stop" });
     }
+    const videoEl = this._videoEl;
+    videoEl.removeAttribute("src");
+    videoEl.load();
   }
 
   static get styles(): CSSResultGroup {
