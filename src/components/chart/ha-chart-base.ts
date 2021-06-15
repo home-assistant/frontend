@@ -16,13 +16,11 @@ import {
   TooltipModel,
 } from "chart.js";
 import "./chart-date-adapter";
+import { TextBarElement } from "./timeline-chart/textbar-element";
+import { TimeLineScale } from "./timeline-chart/timeline-scale";
+import { TimelineController } from "./timeline-chart/timeline-controller";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import {
-  TimelineController,
-  TimeLineScale,
-  TextBarElement,
-} from "./chart-type-timeline";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { clamp } from "../../common/number/clamp";
@@ -113,7 +111,7 @@ export default class HaChartBase extends LitElement {
               <div>
                 <ul>
                   ${this._tooltip.body.map(
-                    (item, i) => html` <li>
+                    (item, i) => html`<li>
                       <em
                         style=${styleMap({
                           backgroundColor: this._tooltip!.labelColors[i]
@@ -122,7 +120,7 @@ export default class HaChartBase extends LitElement {
                             .borderColor as string,
                         })}
                       ></em
-                      >${item.lines}
+                      >${item.lines.join("\n")}
                     </li>`
                   )}
                 </ul>

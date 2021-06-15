@@ -8,8 +8,9 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { TimelineEntity } from "../../data/history";
 import { HomeAssistant } from "../../types";
-import { TimelineController, TimeLineData } from "./chart-type-timeline";
 import "./ha-chart-base";
+import { TimeLineData } from "./timeline-chart/const";
+import { TimelineController } from "./timeline-chart/timeline-controller";
 
 /** Binary sensor device classes for which the static colors for on/off need to be inverted.
  *  List the ones were "off" = good or normal state = should be rendered "green".
@@ -100,7 +101,6 @@ export class StateHistoryChartTimeline extends LitElement {
   public willUpdate(changedProps: PropertyValues) {
     if (!this.hasUpdated) {
       this._chartOptions = {
-        ...TimelineController.defaults,
         maintainAspectRatio: false,
         parsing: false,
         animation: false,
@@ -136,8 +136,6 @@ export class StateHistoryChartTimeline extends LitElement {
           y: {
             type: "category",
             barThickness: 20,
-            categoryPercentage: 0.8,
-            barPercentage: 0.9,
             offset: true,
             grid: {
               display: false,
@@ -154,9 +152,6 @@ export class StateHistoryChartTimeline extends LitElement {
           },
         },
         plugins: {
-          legend: {
-            display: false,
-          },
           tooltip: {
             mode: "nearest",
             callbacks: {
@@ -164,6 +159,7 @@ export class StateHistoryChartTimeline extends LitElement {
                 context![0].chart!.data!.labels![
                   context[0].datasetIndex
                 ] as string,
+              beforeBody: (context) => context[0].dataset.label || "",
               label: (item) => {
                 const d = item.dataset.data[item.dataIndex] as TimeLineData;
                 return [
@@ -172,6 +168,13 @@ export class StateHistoryChartTimeline extends LitElement {
                   formatDateTimeWithSeconds(d.end, this.hass.locale),
                 ];
               },
+              labelColor: (item) => ({
+                borderColor: (item.dataset.data[item.dataIndex] as TimeLineData)
+                  .color!,
+                backgroundColor: (item.dataset.data[
+                  item.dataIndex
+                ] as TimeLineData).color!,
+              }),
             },
           },
           filler: {
