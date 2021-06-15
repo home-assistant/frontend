@@ -269,6 +269,9 @@ class HassioAddonConfig extends LitElement {
 
   private async _saveTapped(ev: CustomEvent): Promise<void> {
     const button = ev.currentTarget as any;
+    const options: Record<string, unknown> = this._yamlMode
+      ? this._editor?.value
+      : this._options;
     const eventdata = {
       success: true,
       response: undefined,
@@ -282,13 +285,13 @@ class HassioAddonConfig extends LitElement {
       const validation = await validateHassioAddonOption(
         this.hass,
         this.addon.slug,
-        this._yamlMode ? this._editor?.value : this._options
+        options
       );
       if (!validation.valid) {
         throw Error(validation.message);
       }
       await setHassioAddonOption(this.hass, this.addon.slug, {
-        options: this._yamlMode ? this._editor?.value : this._options,
+        options,
       });
 
       this._configHasChanged = false;
