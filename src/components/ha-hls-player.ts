@@ -208,6 +208,7 @@ class HaHLSPlayer extends LitElement {
     if (this._exoPlayer) {
       window.removeEventListener("resize", this._resizeExoPlayer);
       this.hass!.auth.external!.fireMessage({ type: "exoplayer/stop" });
+      this._exoPlayer = false;
     }
     const videoEl = this._videoEl;
     videoEl.removeAttribute("src");
