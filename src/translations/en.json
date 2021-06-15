@@ -3779,7 +3779,6 @@
       "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
       "update": "Update",
       "version": "Version",
-      "applying_update": "Applying update to {version} for {name}",
       "error": {
         "unknown": "Unknown error",
         "update_failed": "Update failed"

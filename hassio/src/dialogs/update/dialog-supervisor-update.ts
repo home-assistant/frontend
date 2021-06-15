@@ -7,16 +7,11 @@ import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
-import {
-  extractApiErrorMessage,
-  ignoreSupervisorError,
-} from "../../../../src/data/hassio/common";
+import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import { createHassioPartialSnapshot } from "../../../../src/data/hassio/snapshot";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { SupervisorDialogSupervisorUpdateParams } from "./show-dialog-update";
-
-const BLOCKING_UPDATES: string[] = ["Home Assistant Core"];
 
 @customElement("dialog-supervisor-update")
 class DialogSupervisorUpdate extends LitElement {
@@ -38,13 +33,6 @@ class DialogSupervisorUpdate extends LitElement {
   ): Promise<void> {
     this._opened = true;
     this._dialogParams = params;
-    this.addEventListener("supervisor-applying-update", (ev) => {
-      fireEvent(
-        this._dialogParams!.element,
-        "supervisor-applying-update",
-        ev.detail
-      );
-    });
     await this.updateComplete;
   }
 
@@ -162,21 +150,7 @@ class DialogSupervisorUpdate extends LitElement {
     }
 
     this._action = "update";
-    try {
-      await this._dialogParams!.updateHandler!();
-    } catch (err) {
-      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
-        this._error = extractApiErrorMessage(err);
-        this._action = null;
-        return;
-      }
-    }
-    if (BLOCKING_UPDATES.includes(this._dialogParams!.name)) {
-      fireEvent(this, "supervisor-applying-update", {
-        name: this._dialogParams!.name,
-        version: this._dialogParams!.version,
-      });
-    }
+    await this._dialogParams!.updateHandler!();
     this.closeDialog();
   }
 

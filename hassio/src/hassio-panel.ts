@@ -56,7 +56,7 @@ class HassioPanel extends LitElement {
 
     if (this._applyingUpdate !== undefined) {
       return html`<hass-loading-screen no-toolbar>
-        ${this.supervisor.localize("common.applying_update", {
+        ${this.supervisor.localize("dialog.update.updating", {
           name: this._applyingUpdate.name,
           version: this._applyingUpdate.version,
         })}

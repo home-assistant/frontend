@@ -11,6 +11,7 @@ import {
   extractApiErrorMessage,
   fetchHassioStats,
   HassioStats,
+  ignoreSupervisorError,
 } from "../../../src/data/hassio/common";
 import { restartCore, updateCore } from "../../../src/data/supervisor/core";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
@@ -150,7 +151,7 @@ class HassioCoreInfo extends LitElement {
           title: this.supervisor.localize(
             "common.failed_to_restart_name",
             "name",
-            "Home AssistantCore"
+            "Home Assistant Core"
           ),
           text: extractApiErrorMessage(err),
         });
@@ -175,9 +176,28 @@ class HassioCoreInfo extends LitElement {
   }
 
   private async _updateCore(): Promise<void> {
-    await updateCore(this.hass);
+    try {
+      await updateCore(this.hass);
+    } catch (err) {
+      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
+        showAlertDialog(this, {
+          title: this.supervisor.localize(
+            "common.failed_to_update_name",
+            "name",
+            "Home Assistant Core"
+          ),
+          text: extractApiErrorMessage(err),
+        });
+        return;
+      }
+    }
+
     fireEvent(this, "supervisor-collection-refresh", {
       collection: "core",
+    });
+    fireEvent(this, "supervisor-applying-update", {
+      name: "Home Assistant Core",
+      version: this.supervisor.core.version_latest,
     });
   }
 

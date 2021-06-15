@@ -220,9 +220,28 @@ export class HassioUpdate extends LitElement {
   }
 
   private async _updateCore(): Promise<void> {
-    await updateCore(this.hass);
+    try {
+      await updateCore(this.hass);
+    } catch (err) {
+      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
+        showAlertDialog(this, {
+          title: this.supervisor.localize(
+            "common.failed_to_update_name",
+            "name",
+            "Home Assistant Core"
+          ),
+          text: extractApiErrorMessage(err),
+        });
+        return;
+      }
+    }
+
     fireEvent(this, "supervisor-collection-refresh", {
       collection: "core",
+    });
+    fireEvent(this, "supervisor-applying-update", {
+      name: "Home Assistant Core",
+      version: this.supervisor.core.version_latest,
     });
   }
 
