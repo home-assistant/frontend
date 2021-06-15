@@ -2,6 +2,7 @@ import { Connection, getCollection } from "home-assistant-js-websocket";
 import { Store } from "home-assistant-js-websocket/dist/store";
 import { LocalizeFunc } from "../../common/translations/localize";
 import { HomeAssistant } from "../../types";
+import { fetchFrontendUserData, saveFrontendUserData } from "../frontend";
 import { HassioAddonsInfo } from "../hassio/addon";
 import { HassioHassOSInfo, HassioHostInfo } from "../hassio/host";
 import { NetworkInfo } from "../hassio/network";
@@ -12,6 +13,28 @@ import {
   HassioSupervisorInfo,
 } from "../hassio/supervisor";
 import { SupervisorStore } from "./store";
+
+export interface SupervisorFrontendPrefrences {
+  snapshot_before_update: Record<string, boolean>;
+}
+
+declare global {
+  interface FrontendUserData {
+    supervisor: SupervisorFrontendPrefrences;
+  }
+}
+
+export const fetchSupervisorFrontendPreferences = async (
+  hass: HomeAssistant
+): Promise<SupervisorFrontendPrefrences> => {
+  const stored = await fetchFrontendUserData(hass.connection, "supervisor");
+  return stored || { snapshot_before_update: {} };
+};
+
+export const saveSupervisorFrontendPreferences = (
+  hass: HomeAssistant,
+  data: SupervisorFrontendPrefrences
+) => saveFrontendUserData(hass.connection, "supervisor", data);
 
 export const supervisorWSbaseCommand = {
   type: "supervisor/api",

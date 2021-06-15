@@ -2,19 +2,32 @@ import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-checkbox";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
-import "../../../../src/components/ha-switch";
 import {
   extractApiErrorMessage,
   ignoreSupervisorError,
 } from "../../../../src/data/hassio/common";
+import {
+  SupervisorFrontendPrefrences,
+  fetchSupervisorFrontendPreferences,
+  saveSupervisorFrontendPreferences,
+} from "../../../../src/data/supervisor/supervisor";
 import { createHassioPartialSnapshot } from "../../../../src/data/hassio/snapshot";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { SupervisorDialogSupervisorUpdateParams } from "./show-dialog-update";
+import memoizeOne from "memoize-one";
+
+const snapshot_before_update = memoizeOne(
+  (slug: string, frontendPrefrences: SupervisorFrontendPrefrences) =>
+    slug in frontendPrefrences.snapshot_before_update
+      ? frontendPrefrences.snapshot_before_update[slug]
+      : true
+);
 
 @customElement("dialog-supervisor-update")
 class DialogSupervisorUpdate extends LitElement {
@@ -22,11 +35,11 @@ class DialogSupervisorUpdate extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _createSnapshot = true;
-
   @state() private _action: "snapshot" | "update" | null = null;
 
   @state() private _error?: string;
+
+  @state() private _frontendPrefrences?: SupervisorFrontendPrefrences;
 
   @state()
   private _dialogParams?: SupervisorDialogSupervisorUpdateParams;
@@ -36,14 +49,17 @@ class DialogSupervisorUpdate extends LitElement {
   ): Promise<void> {
     this._opened = true;
     this._dialogParams = params;
+    this._frontendPrefrences = await fetchSupervisorFrontendPreferences(
+      this.hass
+    );
     await this.updateComplete;
   }
 
   public closeDialog(): void {
     this._action = null;
-    this._createSnapshot = true;
     this._error = undefined;
     this._dialogParams = undefined;
+    this._frontendPrefrences = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -56,7 +72,7 @@ class DialogSupervisorUpdate extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._dialogParams) {
+    if (!this._dialogParams || !this._frontendPrefrences) {
       return html``;
     }
     return html`
@@ -82,6 +98,16 @@ class DialogSupervisorUpdate extends LitElement {
               </div>
 
               <ha-settings-row>
+                <ha-checkbox
+                  .checked=${snapshot_before_update(
+                    this._dialogParams.slug,
+                    this._frontendPrefrences
+                  )}
+                  haptic
+                  @click=${this._toggleSnapshot}
+                  slot="prefix"
+                >
+                </ha-checkbox>
                 <span slot="heading">
                   ${this._dialogParams.supervisor.localize(
                     "dialog.update.snapshot"
@@ -94,12 +120,6 @@ class DialogSupervisorUpdate extends LitElement {
                     this._dialogParams.name
                   )}
                 </span>
-                <ha-switch
-                  .checked=${this._createSnapshot}
-                  haptic
-                  @click=${this._toggleSnapshot}
-                >
-                </ha-switch>
               </ha-settings-row>
               <mwc-button @click=${this.closeDialog} slot="secondaryAction">
                 ${this._dialogParams.supervisor.localize("common.cancel")}
@@ -133,12 +153,27 @@ class DialogSupervisorUpdate extends LitElement {
     `;
   }
 
-  private _toggleSnapshot() {
-    this._createSnapshot = !this._createSnapshot;
+  private async _toggleSnapshot(): Promise<void> {
+    this._frontendPrefrences!.snapshot_before_update[
+      this._dialogParams!.slug
+    ] = !snapshot_before_update(
+      this._dialogParams!.slug,
+      this._frontendPrefrences!
+    );
+
+    await saveSupervisorFrontendPreferences(
+      this.hass,
+      this._frontendPrefrences!
+    );
   }
 
   private async _update() {
-    if (this._createSnapshot) {
+    if (
+      snapshot_before_update(
+        this._dialogParams!.slug,
+        this._frontendPrefrences!
+      )
+    ) {
       this._action = "snapshot";
       try {
         await createHassioPartialSnapshot(

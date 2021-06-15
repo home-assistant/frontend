@@ -5,6 +5,7 @@ export interface SupervisorDialogSupervisorUpdateParams {
   supervisor: Supervisor;
   name: string;
   version: string;
+  slug: string;
   snapshotParams: any;
   updateHandler: () => Promise<void>;
 }

@@ -164,6 +164,7 @@ class HassioCoreInfo extends LitElement {
     showDialogSupervisorUpdate(this, {
       supervisor: this.supervisor,
       name: "Home Assistant Core",
+      slug: "core",
       version: this.supervisor.core.version_latest,
       snapshotParams: {
         name: `core_${this.supervisor.core.version}`,

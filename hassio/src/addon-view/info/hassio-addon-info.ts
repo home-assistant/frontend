@@ -977,6 +977,7 @@ class HassioAddonInfo extends LitElement {
     showDialogSupervisorUpdate(this, {
       supervisor: this.supervisor,
       name: this.addon.name,
+      slug: this.addon.slug,
       version: this.addon.version_latest,
       snapshotParams: {
         name: `addon_${this.addon.slug}_${this.addon.version}`,
