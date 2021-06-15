@@ -1,6 +1,7 @@
 import { Collection, UnsubscribeFunc } from "home-assistant-js-websocket";
 import { LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../src/common/config/version";
 import { computeLocalize } from "../../src/common/translations/localize";
 import { fetchHassioAddonsInfo } from "../../src/data/hassio/addon";
@@ -36,6 +37,11 @@ declare global {
   }
 }
 
+const isIngress = memoizeOne(
+  (panel?: HassioPanelInfo, route?: Route) =>
+    (panel?.config && "ingress" in panel.config) || route?.path === "/ingress"
+);
+
 export class SupervisorBaseElement extends urlSyncMixin(
   ProvideHassLitMixin(LitElement)
 ) {
@@ -43,7 +49,7 @@ export class SupervisorBaseElement extends urlSyncMixin(
     localize: () => "",
   };
 
-  @property({ attribute: false }) public panel!: HassioPanelInfo;
+  @property({ attribute: false }) public panel?: HassioPanelInfo;
 
   @property({ attribute: false }) public route?: Route;
 
@@ -53,13 +59,13 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   @state() private _language = "en";
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._initializeLocalize();
-  }
+  @state() private _ingress = true;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
+    if (this._ingress) {
+      return;
+    }
     Object.keys(this._unsubs).forEach((unsub) => {
       this._unsubs[unsub]();
     });
@@ -67,6 +73,11 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   protected updated(changedProperties: PropertyValues) {
     super.updated(changedProperties);
+    this._ingress = isIngress(this.panel, this.route);
+    if (this._ingress) {
+      return;
+    }
+
     if (changedProperties.has("hass")) {
       const oldHass = changedProperties.get("hass") as
         | HomeAssistant
@@ -108,22 +119,27 @@ export class SupervisorBaseElement extends urlSyncMixin(
 
   protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
+    this._ingress = isIngress(this.panel, this.route);
+    if (this._ingress) {
+      return;
+    }
+
     if (
       this._language !== this.hass.language &&
       this.hass.language !== undefined
     ) {
       this._language = this.hass.language;
     }
+
     this._initializeLocalize();
-    if (
-      !(this.panel.config && "ingress" in this.panel.config) &&
-      this.route?.path !== "/ingress"
-    ) {
-      this._initSupervisor();
-    }
+    this._initSupervisor();
   }
 
   private async _initializeLocalize() {
+    if (this._ingress) {
+      return;
+    }
+
     const { language, data } = await getTranslation(
       null,
       this._language,
