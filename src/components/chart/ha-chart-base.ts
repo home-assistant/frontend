@@ -1,49 +1,19 @@
-import {
+import type {
   Chart,
+  ChartType,
   ChartData,
   ChartOptions,
-  ChartType,
-  LineController,
-  TimeScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Legend,
-  Title,
-  Tooltip,
-  CategoryScale,
   TooltipModel,
 } from "chart.js";
-import "./chart-date-adapter";
-import { TextBarElement } from "./timeline-chart/textbar-element";
-import { TimeLineScale } from "./timeline-chart/timeline-scale";
-import { TimelineController } from "./timeline-chart/timeline-controller";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { clamp } from "../../common/number/clamp";
 
-Chart.register(
-  Tooltip,
-  Title,
-  Legend,
-  Filler,
-  TimeScale,
-  LinearScale,
-  LineController,
-  PointElement,
-  LineElement,
-  TextBarElement,
-  TimeLineScale,
-  TimelineController,
-  CategoryScale
-);
-
 @customElement("ha-chart-base")
 export default class HaChartBase extends LitElement {
-  public chart!: Chart;
+  public chart?: Chart;
 
   @property()
   public chartType: ChartType = "line";
@@ -57,21 +27,13 @@ export default class HaChartBase extends LitElement {
   @state() private _tooltip?: TooltipModel<any>;
 
   protected firstUpdated() {
-    const ctx: CanvasRenderingContext2D = this.renderRoot
-      .querySelector("canvas")!
-      .getContext("2d")!;
-
-    this.chart = new Chart(ctx, {
-      type: this.chartType,
-      data: this.data,
-      options: this._createOptions(),
-    });
+    this._setupChart();
   }
 
   public willUpdate(changedProps: PropertyValues): void {
     super.willUpdate(changedProps);
 
-    if (!this.hasUpdated) {
+    if (!this.hasUpdated || !this.chart) {
       return;
     }
 
@@ -129,6 +91,18 @@ export default class HaChartBase extends LitElement {
           : ""}
       </div>
     `;
+  }
+
+  private async _setupChart() {
+    const ctx: CanvasRenderingContext2D = this.renderRoot
+      .querySelector("canvas")!
+      .getContext("2d")!;
+
+    this.chart = new (await import("../../resources/chartjs")).Chart(ctx, {
+      type: this.chartType,
+      data: this.data,
+      options: this._createOptions(),
+    });
   }
 
   private _createOptions() {
