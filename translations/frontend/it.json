@@ -318,6 +318,14 @@
             "no_addons": "Non hai ancora installato alcun componente aggiuntivo. Vai al negozio di componenti aggiuntivi per iniziare!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Attributi",
+                "device_path": "Percorso del dispositivo",
+                "id": "ID",
+                "search": "Cerca hardware",
+                "subsystem": "Sottosistema",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Connesso a {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "Componenti aggiuntivi",
             "available_snapshots": "Istantanee disponibili",
+            "confirm_password": "Conferma la password dell'istantanea",
             "could_not_create": "Impossibile creare l'istantanea",
             "create": "Crea",
             "create_blocked_not_running": "La creazione di un'istantanea non è al momento possibile perché il sistema è nello stato {state}.",
@@ -409,6 +418,7 @@
             "password": "Password dell'istantanea",
             "password_protected": "protetto da password",
             "password_protection": "Protezione con password",
+            "passwords_not_matching": "Le password non corrispondono",
             "security": "Sicurezza",
             "select_type": "Seleziona cosa ripristinare",
             "selected": "{number} selezionato/i",
@@ -3881,10 +3891,19 @@
                 "intro": "Sei pronto per risvegliare la tua casa, reclamare la tua privacy e far parte di una comunità mondiale di smanettoni?",
                 "next": "Avanti",
                 "restore": {
+                    "addons": "Componenti aggiuntivi",
+                    "confirm_password": "Conferma la password dell'istantanea",
                     "description": "In alternativa è possibile ripristinare da un'istantanea precedente.",
+                    "folders": "Cartelle",
+                    "full_snapshot": "Istantanea completa",
                     "hide_log": "Nascondi il registro completo",
                     "in_progress": "Ripristino in corso",
-                    "show_log": "Mostra il registro completo"
+                    "partial_snapshot": "Istantanea parziale",
+                    "password": "Password dell'istantanea",
+                    "password_protection": "Protezione con password",
+                    "select_type": "Seleziona cosa ripristinare",
+                    "show_log": "Mostra il registro completo",
+                    "type": "Tipo di istantanea"
                 },
                 "user": {
                     "create_account": "Crea un Account",
