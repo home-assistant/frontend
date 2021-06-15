@@ -3569,7 +3569,16 @@
           "description": "Alternatively you can restore from a previous snapshot.",
           "in_progress": "Restore in progress",
           "show_log": "Show full log",
-          "hide_log": "Hide full log"
+          "hide_log": "Hide full log",
+          "full_snapshot": "[%key:supervisor::snapshot::full_snapshot%]",
+          "partial_snapshot": "[%key:supervisor::snapshot::partial_snapshot%]",
+          "type": "[%key:supervisor::snapshot::type%]",
+          "select_type": "[%key:supervisor::snapshot::select_type%]",
+          "folders": "[%key:supervisor::snapshot::folders%]",
+          "addons": "[%key:supervisor::snapshot::addons%]",
+          "password_protection": "[%key:supervisor::snapshot::password_protection%]",
+          "password": "[%key:supervisor::snapshot::password%]",
+          "confirm_password": "[%key:supervisor::snapshot::confirm_password%]"
         }
       },
       "custom": {
@@ -3813,7 +3822,7 @@
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "error": "[%key:ui::panel::my::error%]",
       "error_addon_not_found": "Add-on not found",
-      "error_addon_not_started": "The requested add-on are not running. Please start it first",
+      "error_addon_not_started": "The requested add-on is not running. Please start it first",
       "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
       "error_addon_no_ingress": "The requested add-on does not support ingress"
     },
@@ -3924,9 +3933,11 @@
       "addons": "Add-ons",
       "folders": "Folders",
       "password": "Snapshot password",
+      "confirm_password": "Confirm Snapshot password",
       "password_protection": "Password protection",
       "password_protected": "password protected",
       "enter_password": "Please enter a password.",
+      "passwords_not_matching": "The passwords does not match",
       "folder": {
         "homeassistant": "Home Assistant configuration",
         "ssl": "SSL",
@@ -3980,6 +3991,14 @@
         "create_snapshot": "Create a snapshot of {name} before updating",
         "updating": "Updating {name} to version {version}",
         "snapshotting": "Creating snapshot of {name}"
+      },
+      "hardware": {
+        "title": "Hardware",
+        "search": "Search hardware",
+        "subsystem": "Subsystem",
+        "id": "ID",
+        "attributes": "Attributes",
+        "device_path": "Device path"
       }
     }
   }

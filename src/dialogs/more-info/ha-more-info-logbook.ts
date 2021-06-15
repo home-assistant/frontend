@@ -5,6 +5,7 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
 import "../../components/state-history-charts";
+import { fetchUsers } from "../../data/user";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
 import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import "../../panels/logbook/ha-logbook";
@@ -22,9 +23,11 @@ export class MoreInfoLogbook extends LitElement {
 
   @state() private _traceContexts?: TraceContexts;
 
-  @state() private _persons = {};
+  @state() private _userIdToName = {};
 
   private _lastLogbookDate?: Date;
+
+  private _fetchUserPromise?: Promise<void>;
 
   private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
@@ -59,7 +62,7 @@ export class MoreInfoLogbook extends LitElement {
                 .hass=${this.hass}
                 .entries=${this._logbookEntries}
                 .traceContexts=${this._traceContexts}
-                .userIdToName=${this._persons}
+                .userIdToName=${this._userIdToName}
               ></ha-logbook>
             `
           : html`<div class="no-entries">
@@ -70,7 +73,7 @@ export class MoreInfoLogbook extends LitElement {
   }
 
   protected firstUpdated(): void {
-    this._fetchPersonNames();
+    this._fetchUserPromise = this._fetchUserNames();
     this.addEventListener("click", (ev) => {
       if ((ev.composedPath()[0] as HTMLElement).tagName === "A") {
         setTimeout(() => closeDialog("ha-more-info-dialog"), 500);
@@ -125,6 +128,7 @@ export class MoreInfoLogbook extends LitElement {
         true
       ),
       this.hass.user?.is_admin ? loadTraceContexts(this.hass) : {},
+      this._fetchUserPromise,
     ]);
     this._logbookEntries = this._logbookEntries
       ? [...newEntries, ...this._logbookEntries]
@@ -133,16 +137,34 @@ export class MoreInfoLogbook extends LitElement {
     this._traceContexts = traceContexts;
   }
 
-  private _fetchPersonNames() {
+  private async _fetchUserNames() {
+    const userIdToName = {};
+
+    // Start loading users
+    const userProm = this.hass.user?.is_admin && fetchUsers(this.hass);
+
+    // Process persons
     Object.values(this.hass.states).forEach((entity) => {
       if (
         entity.attributes.user_id &&
         computeStateDomain(entity) === "person"
       ) {
-        this._persons[entity.attributes.user_id] =
+        this._userIdToName[entity.attributes.user_id] =
           entity.attributes.friendly_name;
       }
     });
+
+    // Process users
+    if (userProm) {
+      const users = await userProm;
+      for (const user of users) {
+        if (!(user.id in userIdToName)) {
+          userIdToName[user.id] = user.name;
+        }
+      }
+    }
+
+    this._userIdToName = userIdToName;
   }
 
   static get styles() {

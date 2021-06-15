@@ -318,6 +318,14 @@
             "no_addons": "Encara no tens cap complement instal·lat. Vés al directori de complements per començar!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atributs",
+                "device_path": "Ruta del dispositiu",
+                "id": "ID",
+                "search": "Cerca maquinari",
+                "subsystem": "Subsistema",
+                "title": "Maquinari"
+            },
             "network": {
                 "connected_to": "Connectat a {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "Complements",
             "available_snapshots": "Instantànies disponibles",
+            "confirm_password": "Confirma la contrasenya de la instantània",
             "could_not_create": "No s'ha pogut crear la instantània",
             "create": "Crea",
             "create_blocked_not_running": "Ara mateix no és possible crear una instantània perquè el sistema es troba en estat {state}.",
@@ -409,6 +418,7 @@
             "password": "Contrasenya de la instantània",
             "password_protected": "protegit amb contrasenya",
             "password_protection": "Protecció amb contrasenya",
+            "passwords_not_matching": "Les contrasenyes no coincideixen",
             "security": "Seguretat",
             "select_type": "Selecciona què vols restaurar",
             "selected": "{number} seleccionada/es",
@@ -3881,10 +3891,19 @@
                 "intro": "Estàs preparat donar vida pròpia a la teva llar, recuperar la teva privacitat i unir-te a una comunitat mundial de \"tinkerers\"?",
                 "next": "Següent",
                 "restore": {
+                    "addons": "Complements",
+                    "confirm_password": "Confirma la contrasenya de la instantània",
                     "description": "També pots restaurar des d'una instantània anterior.",
+                    "folders": "Carpetes",
+                    "full_snapshot": "Instantània completa",
                     "hide_log": "Amaga el registre complet",
                     "in_progress": "Restauració en curs",
-                    "show_log": "Mostra el registre complet"
+                    "partial_snapshot": "Instantània parcial",
+                    "password": "Contrasenya de la instantània",
+                    "password_protection": "Protecció amb contrasenya",
+                    "select_type": "Selecciona què vols restaurar",
+                    "show_log": "Mostra el registre complet",
+                    "type": "Tipus d'instantània"
                 },
                 "user": {
                     "create_account": "Crear compte",
