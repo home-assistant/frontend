@@ -171,7 +171,7 @@ class DialogSupervisorUpdate extends LitElement {
         return;
       }
     }
-    if (BLOCKING_UPDATES.includes(this._dialogParams?.name)) {
+    if (BLOCKING_UPDATES.includes(this._dialogParams!.name)) {
       fireEvent(this, "supervisor-applying-update", {
         name: this._dialogParams!.name,
         version: this._dialogParams!.version,
