@@ -266,7 +266,6 @@ gulp.task(taskName, function () {
         TRANSLATION_FRAGMENTS.forEach((fragment) => {
           delete data.ui.panel[fragment];
         });
-        delete data.supervisor;
         return data;
       })
     )
