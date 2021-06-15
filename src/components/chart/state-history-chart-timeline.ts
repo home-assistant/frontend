@@ -144,6 +144,9 @@ export class StateHistoryChartTimeline extends LitElement {
               drawBorder: false,
               drawTicks: false,
             },
+            ticks: {
+              display: this.data.length !== 1,
+            },
             afterSetDimensions: (y) => {
               y.maxWidth = y.chart.width * 0.18;
             },
