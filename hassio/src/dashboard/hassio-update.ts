@@ -168,13 +168,6 @@ export class HassioUpdate extends LitElement {
           homeassistant: true,
         },
         updateHandler: async () => this._updateCore(),
-        applyingUpdate: () => {
-          fireEvent(this, "supervisor-applying-update", {
-            type: "core",
-            name: "Home Assistant Core",
-            version: this.supervisor.core.version_latest,
-          });
-        },
       });
       return;
     }

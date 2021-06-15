@@ -1,7 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
-import { LocalStorage } from "../../../../src/common/decorators/local-storage";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
@@ -17,11 +16,15 @@ import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { SupervisorDialogSupervisorUpdateParams } from "./show-dialog-update";
 
+const BLOCKING_UPDATES: string[] = ["Home Assistant Core"];
+
 @customElement("dialog-supervisor-update")
 class DialogSupervisorUpdate extends LitElement {
   public hass!: HomeAssistant;
 
   @state() private _opened = false;
+
+  @state() private _createSnapshot = true;
 
   @state() private _action: "snapshot" | "update" | null = null;
 
@@ -30,21 +33,24 @@ class DialogSupervisorUpdate extends LitElement {
   @state()
   private _dialogParams?: SupervisorDialogSupervisorUpdateParams;
 
-  @LocalStorage("snapshotBeforeUpdate", true, {
-    attribute: false,
-  })
-  private _snapshotBeforeUpdate = true;
-
   public async showDialog(
     params: SupervisorDialogSupervisorUpdateParams
   ): Promise<void> {
     this._opened = true;
     this._dialogParams = params;
+    this.addEventListener("supervisor-applying-update", (ev) => {
+      fireEvent(
+        this._dialogParams!.element,
+        "supervisor-applying-update",
+        ev.detail
+      );
+    });
     await this.updateComplete;
   }
 
   public closeDialog(): void {
     this._action = null;
+    this._createSnapshot = true;
     this._error = undefined;
     this._dialogParams = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -98,7 +104,7 @@ class DialogSupervisorUpdate extends LitElement {
                   )}
                 </span>
                 <ha-switch
-                  .checked=${this._snapshotBeforeUpdate}
+                  .checked=${this._createSnapshot}
                   haptic
                   @click=${this._toggleSnapshot}
                 >
@@ -137,11 +143,11 @@ class DialogSupervisorUpdate extends LitElement {
   }
 
   private _toggleSnapshot() {
-    this._snapshotBeforeUpdate = !this._snapshotBeforeUpdate;
+    this._createSnapshot = !this._createSnapshot;
   }
 
   private async _update() {
-    if (this._snapshotBeforeUpdate) {
+    if (this._createSnapshot) {
       this._action = "snapshot";
       try {
         await createHassioPartialSnapshot(
@@ -165,8 +171,11 @@ class DialogSupervisorUpdate extends LitElement {
         return;
       }
     }
-    if (this._dialogParams?.applyingUpdate) {
-      this._dialogParams.applyingUpdate();
+    if (BLOCKING_UPDATES.includes(this._dialogParams?.name)) {
+      fireEvent(this, "supervisor-applying-update", {
+        name: this._dialogParams!.name,
+        version: this._dialogParams!.version,
+      });
     }
     this.closeDialog();
   }

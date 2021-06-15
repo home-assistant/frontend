@@ -6,14 +6,15 @@ export interface SupervisorDialogSupervisorUpdateParams {
   name: string;
   version: string;
   snapshotParams: any;
+  element: HTMLElement;
   updateHandler: () => Promise<void>;
-  applyingUpdate?: () => void;
 }
 
 export const showDialogSupervisorUpdate = (
   element: HTMLElement,
-  dialogParams: SupervisorDialogSupervisorUpdateParams
+  dialogParams: Partial<SupervisorDialogSupervisorUpdateParams>
 ): void => {
+  dialogParams.element = element;
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-supervisor-update",
     dialogImport: () => import("./dialog-supervisor-update"),

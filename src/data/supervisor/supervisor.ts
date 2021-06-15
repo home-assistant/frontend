@@ -14,7 +14,6 @@ import {
 import { SupervisorStore } from "./store";
 
 export interface supervisorApplyUpdateDetails {
-  type: "core" | "supervisor" | "os" | "addon";
   name: string;
   version: string;
 }
