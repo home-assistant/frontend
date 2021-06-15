@@ -2990,7 +2990,8 @@
                         "log_level": "Log Level",
                         "log_level_changed": "Log Level changed to: {level}",
                         "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
-                        "title": "Z-Wave JS Logs"
+                        "title": "Z-Wave JS Logs",
+                        "download_logs": "Download Logs"
                     },
                     "navigation": {
                         "logs": "Logs",
