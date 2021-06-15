@@ -304,7 +304,7 @@
         "by": "by",
         "by_service": "by service",
         "show_trace": "Show trace",
-        "retrieval_error": "Error during logbook entry retrieval.",
+        "retrieval_error": "Error during logbook entry retrieval",
         "messages": {
           "was_away": "was detected away",
           "was_at_state": "was detected at {state}",
