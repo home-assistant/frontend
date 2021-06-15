@@ -1,4 +1,4 @@
-import { ChartData, ChartDataset, ChartOptions } from "chart.js";
+import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,8 +9,7 @@ import { computeRTL } from "../../common/util/compute_rtl";
 import { TimelineEntity } from "../../data/history";
 import { HomeAssistant } from "../../types";
 import "./ha-chart-base";
-import { TimeLineData } from "./timeline-chart/const";
-import { TimelineController } from "./timeline-chart/timeline-controller";
+import type { TimeLineData } from "./timeline-chart/const";
 
 /** Binary sensor device classes for which the static colors for on/off need to be inverted.
  *  List the ones were "off" = good or normal state = should be rendered "green".

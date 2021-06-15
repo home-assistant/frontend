@@ -144,25 +144,6 @@ export default class HaChartBase extends LitElement {
       :host {
         display: block;
       }
-      .chartHeader {
-        padding: 6px 0 0 0;
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-      }
-      .chartHeader > div {
-        vertical-align: top;
-        padding: 0 8px;
-      }
-      .chartHeader > div.chartTitle {
-        padding-top: 8px;
-        flex: 0 0 0;
-        max-width: 30%;
-      }
-      .chartHeader > div.chartLegend {
-        flex: 1 1;
-        min-width: 70%;
-      }
       .chartTooltip {
         padding: 4px;
         font-size: 90%;
@@ -179,7 +160,6 @@ export default class HaChartBase extends LitElement {
       :host([rtl]) .chartTooltip {
         direction: rtl;
       }
-      .chartLegend ul,
       .chartTooltip ul {
         display: inline-block;
         padding: 0 0px;
@@ -205,23 +185,6 @@ export default class HaChartBase extends LitElement {
         font-weight: 300;
         word-break: break-all;
       }
-      .chartLegend li {
-        display: inline-block;
-        padding: 0 6px;
-        max-width: 49%;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        box-sizing: border-box;
-      }
-      .chartLegend li:nth-child(odd):last-of-type {
-        /* Make last item take full width if it is odd-numbered. */
-        max-width: 100%;
-      }
-      .chartLegend li[data-hidden] {
-        text-decoration: line-through;
-      }
-      .chartLegend em,
       .chartTooltip em {
         border-radius: 4px;
         display: inline-block;

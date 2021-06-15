@@ -1,4 +1,4 @@
-import { ChartData, ChartDataset, ChartOptions } from "chart.js";
+import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { getColorByIndex } from "../../common/color/colors";
