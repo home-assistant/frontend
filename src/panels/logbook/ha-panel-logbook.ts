@@ -19,6 +19,7 @@ import {
 } from "../../data/logbook";
 import { loadTraceContexts, TraceContexts } from "../../data/trace";
 import { fetchUsers } from "../../data/user";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -250,18 +251,28 @@ export class HaPanelLogbook extends LitElement {
 
   private async _getData() {
     this._isLoading = true;
-    const [entries, traceContexts] = await Promise.all([
-      getLogbookData(
-        this.hass,
-        this._startDate.toISOString(),
-        this._endDate.toISOString(),
-        this._entityId
-      ),
-      isComponentLoaded(this.hass, "trace") && this.hass.user?.is_admin
-        ? loadTraceContexts(this.hass)
-        : {},
-      this._fetchUserPromise,
-    ]);
+    let entries;
+    let traceContexts;
+
+    try {
+      [entries, traceContexts] = await Promise.all([
+        getLogbookData(
+          this.hass,
+          this._startDate.toISOString(),
+          this._endDate.toISOString(),
+          this._entityId
+        ),
+        isComponentLoaded(this.hass, "trace") && this.hass.user?.is_admin
+          ? loadTraceContexts(this.hass)
+          : {},
+        this._fetchUserPromise,
+      ]);
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this.hass.localize("ui.components.logbook.retrieval_error"),
+        text: err.message,
+      });
+    }
 
     this._entries = entries;
     this._traceContexts = traceContexts;
