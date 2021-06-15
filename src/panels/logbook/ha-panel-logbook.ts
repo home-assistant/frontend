@@ -257,7 +257,9 @@ export class HaPanelLogbook extends LitElement {
         this._endDate.toISOString(),
         this._entityId
       ),
-      isComponentLoaded(this.hass, "trace") ? loadTraceContexts(this.hass) : {},
+      isComponentLoaded(this.hass, "trace") && this.hass.user?.is_admin
+        ? loadTraceContexts(this.hass)
+        : {},
       this._fetchUserPromise,
     ]);
 
