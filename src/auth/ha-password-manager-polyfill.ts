@@ -5,8 +5,11 @@ import { HaFormSchema } from "../components/ha-form/ha-form";
 import { DataEntryFlowStep } from "../data/data_entry_flow";
 
 declare global {
+  interface HTMLElementTagNameMap {
+    "ha-password-manager-polyfill": HaPasswordManagerPolyfill;
+  }
   interface HASSDomEvents {
-    submit: undefined;
+    "form-submitted": undefined;
   }
 }
 
@@ -18,30 +21,39 @@ const ENABLED_HANDLERS = [
 
 @customElement("ha-password-manager-polyfill")
 export class HaPasswordManagerPolyfill extends LitElement {
-  @property() public step?: DataEntryFlowStep;
+  @property({ attribute: false }) public step?: DataEntryFlowStep;
 
-  @property() public stepData: any;
+  @property({ attribute: false }) public stepData: any;
+
+  @property({ attribute: false }) public boundingRect?: DOMRect;
 
   protected createRenderRoot() {
     // Add under document body so the element isn't placed inside any shadow roots
     return document.body;
   }
 
-  // Making this static for Lit doesn't work since Lit places these in the shadow dom
-  styles = `
+  private get styles() {
+    return `
     .password-manager-polyfill {
       position: absolute;
-      top: 170px;
-      left: 50%;
-      width: 0;
-      height: 0;
-      overflow: hidden;
+      top: ${this.boundingRect?.y || 148}px;
+      left: calc(50% - ${(this.boundingRect?.width || 360) / 2}px);
+      width: ${this.boundingRect?.width || 360}px;
+      opacity: 0;
+      z-index: -1;
     }
     .password-manager-polyfill input {
-      width: 210px;
-      height: 60px;
+      width: 100%;
+      height: 62px;
+      padding: 0;
+      border: 0;
+    }
+    .password-manager-polyfill input[type="submit"] {
+      width: 0;
+      height: 0;
     }
   `;
+  }
 
   protected render(): TemplateResult {
     if (
@@ -67,30 +79,31 @@ export class HaPasswordManagerPolyfill extends LitElement {
     return html``;
   }
 
-  private render_input(schema: HaFormSchema): TemplateResult {
+  private render_input(schema: HaFormSchema): TemplateResult | string {
     const inputType = schema.name.includes("password") ? "password" : "text";
-    if (schema.type === "string") {
-      return html`
-        <input
-          tabindex="-1"
-          id=${schema.name}
-          type=${inputType}
-          .value=${this.stepData[schema.name] || ""}
-          @input=${this._valueChanged}
-        />
-      `;
+    if (schema.type !== "string") {
+      return "";
     }
-    return html``;
+    return html`
+      <input
+        tabindex="-1"
+        .id=${schema.name}
+        .type=${inputType}
+        .value=${this.stepData[schema.name] || ""}
+        @input=${this._valueChanged}
+      />
+    `;
   }
 
   private _handleSubmit(ev: Event) {
     ev.preventDefault();
-    fireEvent(this, "submit");
+    fireEvent(this, "form-submitted");
   }
 
   private _valueChanged(ev: Event) {
     const target = ev.target! as HTMLInputElement;
-    this.stepData[target.id] = target.value;
-    fireEvent(this, "value-changed", { value: { ...this.stepData } });
+    fireEvent(this, "value-changed", {
+      value: { ...this.stepData, [target.id]: target.value },
+    });
   }
 }

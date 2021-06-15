@@ -21,7 +21,7 @@ import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 type State = "loading" | "error" | "step";
 
 class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
-  @property() public authProvider?: AuthProvider;
+  @property({ attribute: false }) public authProvider?: AuthProvider;
 
   @property() public clientId?: string;
 
@@ -43,7 +43,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       <ha-password-manager-polyfill
         .step=${this._step}
         .stepData=${this._stepData}
-        @submit=${this._handleSubmit}
+        @form-submitted=${this._handleSubmit}
         @value-changed=${this._stepDataChanged}
       ></ha-password-manager-polyfill>
     `;
@@ -240,11 +240,17 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     await this.updateComplete;
     // 100ms to give all the form elements time to initialize.
     setTimeout(() => {
-      const form = this.shadowRoot!.querySelector("ha-form");
+      const form = this.renderRoot.querySelector("ha-form");
       if (form) {
         (form as any).focus();
       }
     }, 100);
+
+    setTimeout(() => {
+      this.renderRoot.querySelector(
+        "ha-password-manager-polyfill"
+      )!.boundingRect = this.getBoundingClientRect();
+    }, 500);
   }
 
   private _stepDataChanged(ev: CustomEvent) {
@@ -338,3 +344,9 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   }
 }
 customElements.define("ha-auth-flow", HaAuthFlow);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-auth-flow": HaAuthFlow;
+  }
+}
