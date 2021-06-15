@@ -282,7 +282,7 @@ class HassioAddonConfig extends LitElement {
       const validation = await validateHassioAddonOption(
         this.hass,
         this.addon.slug,
-        this._editor?.value
+        this._yamlMode ? this._editor?.value : this._options
       );
       if (!validation.valid) {
         throw Error(validation.message);
