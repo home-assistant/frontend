@@ -1052,6 +1052,7 @@
                         "areas": "Области",
                         "automation": "Автоматизации",
                         "blueprint": "Планове",
+                        "core": "Общи",
                         "customize": "Персонализации",
                         "devices": "Устройства",
                         "entities": "Обекти",
@@ -2945,6 +2946,7 @@
                                 "tilt-position": "Наклон"
                             },
                             "show_header_toggle": "Показване на превключване на заглавка?",
+                            "special_row": "специален ред",
                             "toggle": "Превключване на обекти."
                         },
                         "entity-filter": {

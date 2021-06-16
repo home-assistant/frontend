@@ -377,7 +377,7 @@
             "error_addon_no_ingress": "The requested add-on does not support ingress",
             "error_addon_not_found": "Add-on not found",
             "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
-            "error_addon_not_started": "The requested add-on are not running. Please start it first",
+            "error_addon_not_started": "The requested add-on is not running. Please start it first",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced."
         },
@@ -820,6 +820,7 @@
                     "was_unplugged": "was unplugged",
                     "was_unsafe": "was unsafe"
                 },
+                "retrieval_error": "Error during logbook entry retrieval",
                 "show_trace": "Show trace"
             },
             "media-browser": {
@@ -2990,8 +2991,7 @@
                         "log_level": "Log Level",
                         "log_level_changed": "Log Level changed to: {level}",
                         "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
-                        "title": "Z-Wave JS Logs",
-                        "download_logs": "Download Logs"
+                        "title": "Z-Wave JS Logs"
                     },
                     "navigation": {
                         "logs": "Logs",
