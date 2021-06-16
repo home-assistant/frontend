@@ -33,26 +33,37 @@ export const computeStateDisplay = (
       // If trying to display an explicit state, need to parse the explict state to `Date` then format.
       // Attributes aren't available, we have to use `state`.
       try {
-        if (!stateObj.attributes.has_time) {
-          // Only has date.
-          const dateObj = new Date(state);
-          // When only date is passed to `Date` constructor, it uses UTC regardless of frontend's timezone,
-          // so we need to add the frontend's timezone offset.
-          // Other usages of `Date` constructor have both date and time in the string, frontend's timezone is used w/o problem.
-          const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+        const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+        const components = state.split(" ");
+        if (components.length === 2) {
+          // Date and time.
+          const iso8601String = components.join("T") + "Z";
+          const dateObj = new Date(iso8601String);
           const adjustedDateObj = new Date(dateObj.getTime() + timezoneOffset);
-          return formatDate(adjustedDateObj, locale);
+          return formatDateTime(adjustedDateObj, locale);
         }
-        if (!stateObj.attributes.has_date) {
-          // Only has time.
-          const now = new Date();
-          const dateTiemString = now.toDateString() + " " + state;
-          const dateObj = new Date(dateTiemString);
-          return formatTime(dateObj, locale);
+        if (components.length === 1) {
+          if (state.includes("-")) {
+            // Date only.
+            const dateObj = new Date(state);
+            const adjustedDateObj = new Date(
+              dateObj.getTime() + timezoneOffset
+            );
+            return formatDate(adjustedDateObj, locale);
+          }
+          if (state.includes(":")) {
+            // Time only.
+            const now = new Date();
+            const dateISO8601String =
+              now.toISOString().substring(0, 10) + "T" + state + "Z";
+            const dateObj = new Date(dateISO8601String);
+            const adjustedDateObj = new Date(
+              dateObj.getTime() + timezoneOffset
+            );
+            return formatTime(adjustedDateObj, locale);
+          }
         }
-        // Has both date and time.
-        const dateObj = new Date(state);
-        return formatDateTime(dateObj, locale);
+        return state;
       } catch {
         // If `Date` constructor throws error, meaning the explict state isn't a valid date/time string,
         // just return it.
