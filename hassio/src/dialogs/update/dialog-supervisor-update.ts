@@ -158,8 +158,8 @@ class DialogSupervisorUpdate extends LitElement {
     } catch (err) {
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         this._error = extractApiErrorMessage(err);
+        this._action = null;
       }
-      this._action = null;
       return;
     }
 
