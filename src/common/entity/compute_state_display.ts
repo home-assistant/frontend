@@ -33,6 +33,9 @@ export const computeStateDisplay = (
       // If trying to display an explicit state, need to parse the explict state to `Date` then format.
       // Attributes aren't available, we have to use `state`.
       try {
+        // We are going to convert the state string into a ISO8601 string,
+        // which is always in UTC and causing the tiemzone info to be lost,
+        // therefore we need to compensate the local timezone offset.
         const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
         const components = state.split(" ");
         if (components.length === 2) {
@@ -45,6 +48,7 @@ export const computeStateDisplay = (
         if (components.length === 1) {
           if (state.includes("-")) {
             // Date only.
+            // Date only state is already a valid ISO8601 string.
             const dateObj = new Date(state);
             const adjustedDateObj = new Date(
               dateObj.getTime() + timezoneOffset
@@ -53,6 +57,7 @@ export const computeStateDisplay = (
           }
           if (state.includes(":")) {
             // Time only.
+            // Inserting today's Date string.
             const now = new Date();
             const dateISO8601String =
               now.toISOString().substring(0, 10) + "T" + state + "Z";
@@ -65,8 +70,8 @@ export const computeStateDisplay = (
         }
         return state;
       } catch {
-        // If `Date` constructor throws error, meaning the explict state isn't a valid date/time string,
-        // just return it.
+        // Formatting methods may throw error if date parsing doesn't go well,
+        // just return the state string in that case.
         return state;
       }
     } else {
