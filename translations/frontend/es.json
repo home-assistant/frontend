@@ -820,6 +820,7 @@
                     "was_unplugged": "se desenchufó",
                     "was_unsafe": "era inseguro"
                 },
+                "retrieval_error": "Error durante la recuperación de la entrada del libro de registro",
                 "show_trace": "Mostrar traza"
             },
             "media-browser": {
