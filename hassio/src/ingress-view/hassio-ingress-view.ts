@@ -28,6 +28,7 @@ import "../../../src/layouts/hass-subpage";
 import { HomeAssistant, Route } from "../../../src/types";
 
 const STATUS_BAD_GATEWAY = 502;
+const TIMEOUT = 60000;
 
 @customElement("hassio-ingress-view")
 class HassioIngressView extends LitElement {
@@ -105,7 +106,7 @@ class HassioIngressView extends LitElement {
 
     if (
       this._resolveIngressURL.time &&
-      new Date().getTime() > this._resolveIngressURL.time + 60 * 1000
+      new Date().getTime() > this._resolveIngressURL.time + TIMEOUT
     ) {
       await showAlertDialog(this, {
         text:
