@@ -4004,10 +4004,10 @@
     }
   },
   "ingress": {
-    "not_running": "The add-on is not running, please start it.",
+    "not_running": "[%key:supervisor::my::error_addon_not_started%]",
     "waiting": "Waiting for add-on to start",
     "unable_to_create": "Unable to create an Ingress session",
-    "no_ingress": "Add-on does not support Ingress",
+    "no_ingress": "[%key:supervisor::my::error_addon_no_ingress%]",
     "unable_to_fetch": "Unable to fetch add-on info to start Ingress",
     "timeout": "Timeout while waiting for add-on to start, check the add-on logs",
     "go_to_dashboard": "Go to add-on dashboard",
