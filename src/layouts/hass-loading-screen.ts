@@ -16,6 +16,8 @@ class HassLoadingScreen extends LitElement {
 
   @property({ type: Boolean }) public rootnav = false;
 
+  @property() public header?: string;
+
   @property() public narrow?: boolean;
 
   protected render(): TemplateResult {
@@ -36,9 +38,13 @@ class HassLoadingScreen extends LitElement {
                     @click=${this._handleBack}
                   ></ha-icon-button-arrow-prev>
                 `}
+            ${this.header
+              ? html`<div class="main-title">${this.header}</div>`
+              : ""}
           </div>`}
       <div class="content">
         <ha-circular-progress active></ha-circular-progress>
+        <slot class="description"></slot>
       </div>
     `;
   }
@@ -76,8 +82,13 @@ class HassLoadingScreen extends LitElement {
         .content {
           height: calc(100% - var(--header-height));
           display: flex;
+          flex-direction: column;
           align-items: center;
           justify-content: center;
+        }
+        .description {
+          margin-top: 12px;
+          display: block;
         }
       `,
     ];

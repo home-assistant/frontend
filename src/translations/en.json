@@ -4002,5 +4002,15 @@
         "device_path": "Device path"
       }
     }
+  },
+  "ingress": {
+    "not_running": "The add-on is not running, please start it.",
+    "waiting": "Waiting for add-on to start",
+    "unable_to_create": "Unable to create an Ingress session",
+    "no_ingress": "Add-on does not support Ingress",
+    "unable_to_fetch": "Unable to fetch add-on info to start Ingress",
+    "timeout": "Timeout while waiting for add-on to start, check the add-on logs",
+    "go_to_dashboard": "Go to add-on dashboard",
+    "go_to_logs": "Go to add-on logs"
   }
 }
