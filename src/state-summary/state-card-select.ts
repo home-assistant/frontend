@@ -62,7 +62,7 @@ class StateCardSelect extends LitElement {
     if (option === this.stateObj.state) {
       return;
     }
-    await setSelectOption(this.hass, this.stateObj.entity_id, option);
+    setSelectOption(this.hass, this.stateObj.entity_id, option);
   }
 
   static get styles(): CSSResultGroup {
