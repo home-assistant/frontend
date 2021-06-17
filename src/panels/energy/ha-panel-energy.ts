@@ -15,6 +15,16 @@ import "../lovelace/views/hui-view";
 import { HomeAssistant } from "../../types";
 import { Lovelace } from "../lovelace/types";
 
+const config = {
+  views: [
+    {
+      strategy: {
+        type: "energy",
+      },
+    },
+  ],
+};
+
 @customElement("ha-panel-energy")
 class PanelEnergy extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -45,31 +55,17 @@ class PanelEnergy extends LitElement {
             <div main-title>${this.hass.localize("panel.energy")}</div>
           </app-toolbar>
         </app-header>
-        ${this._lovelace
-          ? html`<hui-view
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-              .lovelace=${this._lovelace}
-              .index=${0}
-            ></hui-view>`
-          : ""}
+        <hui-view
+          .hass=${this.hass}
+          .narrow=${this.narrow}
+          .lovelace=${this._lovelace}
+          .index=${0}
+        ></hui-view>
       </ha-app-layout>
     `;
   }
 
   private _setLovelace() {
-    const config = {
-      views: [
-        {
-          title: this.hass.localize("panel.energy") || "Energy",
-          path: "energy",
-          strategy: {
-            type: "energy",
-          },
-        },
-      ],
-    };
-
     this._lovelace = {
       config,
       rawConfig: config,
