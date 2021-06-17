@@ -26,6 +26,8 @@ export default class HaChartBase extends LitElement {
 
   @state() private _tooltip?: TooltipModel<any>;
 
+  @state() private _height?: string;
+
   protected firstUpdated() {
     this._setupChart();
   }
@@ -52,7 +54,16 @@ export default class HaChartBase extends LitElement {
 
   protected render() {
     return html`
-      <div class="chartContainer">
+      <div
+        class="chartContainer"
+        style=${styleMap({
+          height:
+            this.chartType === "timeline"
+              ? `${this.data.datasets.length * 30 + 30}px`
+              : this._height,
+          overflow: this._height ? "initial" : "hidden",
+        })}
+      >
         <canvas></canvas>
         ${this._tooltip
           ? html`<div
@@ -106,7 +117,7 @@ export default class HaChartBase extends LitElement {
         {
           id: "afterRenderHook",
           afterRender: (chart) => {
-            this.style.height = `${chart.height}px`;
+            this._height = `${chart.height}px`;
           },
         },
       ],
@@ -148,12 +159,12 @@ export default class HaChartBase extends LitElement {
     return css`
       :host {
         display: block;
-        overflow: hidden;
-        height: 0;
-        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
       }
       .chartContainer {
         position: relative;
+        overflow: hidden;
+        height: 0;
+        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
       }
       .chartTooltip {
         padding: 4px;
