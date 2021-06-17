@@ -47,7 +47,7 @@ class HassioIngressView extends LitElement {
 
   private _sessionKeepAlive?: number;
 
-  @state() private _resolveIngressURL: {
+  private _resolveIngressURL: {
     status?: number;
     time?: number;
     interval?: number;
