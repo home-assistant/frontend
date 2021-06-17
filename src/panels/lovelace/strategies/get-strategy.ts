@@ -1,5 +1,6 @@
 import { LovelaceConfig, LovelaceViewConfig } from "../../../data/lovelace";
 import { AsyncReturnType, HomeAssistant } from "../../../types";
+import { EnergyStrategy } from "../../energy/strategies/energy-strategy";
 import { OriginalStatesStrategy } from "./original-states-strategy";
 
 const MAX_WAIT_STRATEGY_LOAD = 5000;
@@ -24,9 +25,10 @@ export interface LovelaceViewStrategy {
 
 const strategies: Record<
   string,
-  LovelaceDashboardStrategy & LovelaceViewStrategy
+  LovelaceDashboardStrategy | LovelaceViewStrategy
 > = {
   "original-states": OriginalStatesStrategy,
+  energy: EnergyStrategy,
 };
 
 const getLovelaceStrategy = async <

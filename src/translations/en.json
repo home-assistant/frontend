@@ -1,5 +1,6 @@
 {
   "panel": {
+    "energy": "Energy",
     "calendar": "Calendar",
     "config": "Configuration",
     "states": "Overview",
@@ -3620,7 +3621,8 @@
           "complete_access": "It will have access to all data in Home Assistant.",
           "hide_message": "Check docs for the panel_custom component to hide this message"
         }
-      }
+      },
+      "energy": {}
     }
   },
   "supervisor": {
