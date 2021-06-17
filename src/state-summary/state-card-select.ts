@@ -39,6 +39,7 @@ class StateCardSelect extends LitElement {
                     this.hass.localize(
                       `component.select.state.${this.stateObj.attributes.device_class}.${option}`
                     )) ||
+                  this.hass.localize(`component.select.state._.${option}`) ||
                   option}</paper-item
                 >
               `
