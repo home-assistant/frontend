@@ -318,6 +318,14 @@
             "no_addons": "Nie masz jeszcze zainstalowanych żadnych dodatków. Przejdź do sklepu z dodatkami, aby rozpocząć!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atrybuty",
+                "device_path": "Ścieżka urządzenia",
+                "id": "Identyfikator",
+                "search": "Wyszukaj sprzęt",
+                "subsystem": "Podsystem",
+                "title": "Sprzęt"
+            },
             "network": {
                 "connected_to": "Połączono z {ssid}",
                 "dhcp": "DHCP",
@@ -382,6 +390,7 @@
         "snapshot": {
             "addons": "Dodatki",
             "available_snapshots": "Dostępne snapshoty",
+            "confirm_password": "Potwierdź hasło snapshota",
             "could_not_create": "Nie udało się utworzyć snapshota",
             "create": "Utwórz",
             "create_blocked_not_running": "Tworzenie snapshota nie jest teraz możliwe, ponieważ system jest w {state}.",
@@ -409,6 +418,7 @@
             "password": "Hasło snapshota",
             "password_protected": "chroniony hasłem",
             "password_protection": "Ochrona hasłem",
+            "passwords_not_matching": "Hasła nie są takie same",
             "security": "Bezpieczeństwo",
             "select_type": "Wybierz, co przywrócić",
             "selected": "wybrano {number}",
@@ -810,6 +820,7 @@
                     "was_unplugged": "nastąpiło odłączenie",
                     "was_unsafe": "wykryto zagrożenie"
                 },
+                "retrieval_error": "Błąd podczas pobierania wpisów z dziennika",
                 "show_trace": "Pokaż ślad"
             },
             "media-browser": {
@@ -3881,10 +3892,19 @@
                 "intro": "Czy jesteś gotowy, aby ożywić swój dom, odzyskać prywatność i dołączyć do światowej społeczności majsterkowiczów?",
                 "next": "Dalej",
                 "restore": {
+                    "addons": "Dodatki",
+                    "confirm_password": "Potwierdź hasło snapshota",
                     "description": "Alternatywnie możesz przywrócić z poprzedniej migawki.",
+                    "folders": "Foldery",
+                    "full_snapshot": "Pełny snapshot",
                     "hide_log": "Ukryj cały log",
                     "in_progress": "Trwa przywracanie",
-                    "show_log": "Pokaż cały log"
+                    "partial_snapshot": "Częściowy snapshot",
+                    "password": "Hasło snapshota",
+                    "password_protection": "Ochrona hasłem",
+                    "select_type": "Wybierz, co przywrócić",
+                    "show_log": "Pokaż cały log",
+                    "type": "Typ snapshota"
                 },
                 "user": {
                     "create_account": "Utwórz konto",

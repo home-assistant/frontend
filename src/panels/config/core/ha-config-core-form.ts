@@ -8,7 +8,8 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { UNIT_C } from "../../../common/const";
 import "../../../components/ha-card";
-import "../../../components/map/ha-location-editor";
+import "../../../components/map/ha-locations-editor";
+import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
 import { createTimezoneListEl } from "../../../components/timezone-datalist";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 import type { PolymerChangedEvent } from "../../../polymer-types";
@@ -20,13 +21,13 @@ class ConfigCoreForm extends LitElement {
 
   @state() private _working = false;
 
-  @state() private _location!: [number, number];
+  @state() private _location?: [number, number];
 
-  @state() private _elevation!: string;
+  @state() private _elevation?: string;
 
-  @state() private _unitSystem!: ConfigUpdateValues["unit_system"];
+  @state() private _unitSystem?: ConfigUpdateValues["unit_system"];
 
-  @state() private _timeZone!: string;
+  @state() private _timeZone?: string;
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
@@ -52,16 +53,16 @@ class ConfigCoreForm extends LitElement {
             : ""}
 
           <div class="row">
-            <ha-location-editor
+            <ha-locations-editor
               class="flex"
               .hass=${this.hass}
-              .location=${this._locationValue(
-                this._location,
+              .locations=${this._markerLocation(
                 this.hass.config.latitude,
-                this.hass.config.longitude
+                this.hass.config.longitude,
+                this._location
               )}
-              @change=${this._locationChanged}
-            ></ha-location-editor>
+              @location-updated=${this._locationChanged}
+            ></ha-locations-editor>
           </div>
 
           <div class="row">
@@ -162,8 +163,19 @@ class ConfigCoreForm extends LitElement {
     input.inputElement.appendChild(createTimezoneListEl());
   }
 
-  private _locationValue = memoizeOne(
-    (location, lat, lng) => location || [Number(lat), Number(lng)]
+  private _markerLocation = memoizeOne(
+    (
+      lat: number,
+      lng: number,
+      location?: [number, number]
+    ): MarkerLocation[] => [
+      {
+        id: "location",
+        latitude: location ? location[0] : lat,
+        longitude: location ? location[1] : lng,
+        location_editable: true,
+      },
+    ]
   );
 
   private get _elevationValue() {
@@ -192,7 +204,7 @@ class ConfigCoreForm extends LitElement {
   }
 
   private _locationChanged(ev) {
-    this._location = ev.currentTarget.location;
+    this._location = ev.detail.location;
   }
 
   private _unitSystemChanged(
@@ -204,11 +216,10 @@ class ConfigCoreForm extends LitElement {
   private async _save() {
     this._working = true;
     try {
-      const location = this._locationValue(
-        this._location,
+      const location = this._location || [
         this.hass.config.latitude,
-        this.hass.config.longitude
-      );
+        this.hass.config.longitude,
+      ];
       await saveCoreConfig(this.hass, {
         latitude: location[0],
         longitude: location[1],

@@ -318,6 +318,14 @@
             "no_addons": "Du har endnu ikke installeret nogen tilføjelsesprogrammer. Gå over til butikken for tilføjelsesprogrammer for at komme i gang!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Attributter",
+                "device_path": "Enhedssti",
+                "id": "Identifikationsnummer",
+                "search": "Søg efter hardware",
+                "subsystem": "Delsystem",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Forbundet til {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "Der opstod en ukendt fejl",
             "error_addon_no_ingress": "Tilføjelsesprogrammet understøtter ikke ingress",
             "error_addon_not_found": "Tilføjelsesprogrammet blev ikke fundet",
+            "error_addon_not_installed": "Tilføjelsesprogrammet er ikke installeret  venligst installer det først",
+            "error_addon_not_started": "Tilføjelsesprogrammet kører ikke  venligst start det først",
             "faq_link": "Ofte stillede spørgsmål om Home Assistant",
             "not_supported": "Denne omdirigering understøttes ikke af din Home Assistant installation. Kontroller {link} for de understøttede omdirigeringer og den version, de blev introduceret i."
         },
@@ -380,6 +390,7 @@
         "snapshot": {
             "addons": "Tilføjelsesprogrammer",
             "available_snapshots": "Tilgængelige snapshots",
+            "confirm_password": "Bekræft snapshot kodeord",
             "could_not_create": "Kunne ikke oprette snapshot",
             "create": "Opret",
             "create_blocked_not_running": "Det er ikke muligt at oprette et snapshot lige nu, fordi systemet er i tilstanden {state}.",
@@ -407,6 +418,7 @@
             "password": "Kodeord",
             "password_protected": "beskyttet med kodeord",
             "password_protection": "Kodeordsbeskyttelse",
+            "passwords_not_matching": "Kodeordene er forskellige",
             "security": "Sikkerhed",
             "select_type": "Vælg, hvad der skal gendannes",
             "selected": "{number} valgt",
@@ -931,6 +943,9 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Hvis deaktiveret, tilføjes nyligt opdagede entiteter fra {integration} ikke automatisk til Home Assistant.",
                 "enable_new_entities_label": "Aktivér nyligt tilføjede entiteter.",
+                "enable_polling_description": "Hvis Home Assistant automatisk skal hente {integration} enheder for opdateringer.",
+                "enable_polling_label": "Aktiver automatisk henting af opdateringer",
+                "restart_home_assistant": "Du skal genstarte Home Assistant før dine ændringer aktiveres",
                 "title": "Systemindstillinger for {integration}",
                 "update": "Opdater"
             },
@@ -2073,7 +2088,8 @@
                     "scripts": "Scripts",
                     "unknown_error": "Ukendt fejl",
                     "unnamed_device": "Enhed uden navn",
-                    "update": "Opdater"
+                    "update": "Opdater",
+                    "update_device_error": "Enhedsopdateringen fejlede"
                 },
                 "entities": {
                     "caption": "Entiteter",
@@ -2206,6 +2222,7 @@
                         "depends_on_cloud": "Afhængig af Cloud tjenester",
                         "device_unavailable": "Enheden er utilgængelig",
                         "devices": "{count} {count, plural,\n  one {enhed}\n  other {enheder}\n}",
+                        "disable_error": "Aktivering eller deaktivering af integrationen fejlede",
                         "disable_restart_confirm": "Genstart Home Assistant for at fuldføre deaktivering af denne integration",
                         "disable": {
                             "disable_confirm": "Er du sikker på, at du vil deaktivere denne integration? Integrationens enheder og entiteter vil blive deaktiveret.",
@@ -2217,6 +2234,7 @@
                             },
                             "disabled_cause": "Deaktiveret af {cause}"
                         },
+                        "disabled_polling": "Den automatiske hentning af opdateret data er frakoblet",
                         "documentation": "Dokumentation",
                         "enable_restart_confirm": "Genstart Home Assistant for at fuldføre aktivering af denne integration",
                         "entities": "{count} {count, plural,\n  one {entitet}\n  other {entiteter}\n}",
@@ -3873,10 +3891,19 @@
                 "intro": "Er du klar til at vække dit hjem til live, genvinde dit privatliv og blive medlem af et verdensomspændende fællesskab af tinkerers?",
                 "next": "Næste",
                 "restore": {
+                    "addons": "Tilføjelse",
+                    "confirm_password": "Bekræft Snapshot kodeord",
                     "description": "Alternativt kan du gendanne fra et tidligere snapshot.",
+                    "folders": "Mappe",
+                    "full_snapshot": "Fuld snapshot",
                     "hide_log": "Skjul fuld log",
                     "in_progress": "Gendannelse er i gang",
-                    "show_log": "Vis den fulde log"
+                    "partial_snapshot": "Delvis snapshot",
+                    "password": "Snapshot kodeord",
+                    "password_protection": "Kodeordsbeskyttelse",
+                    "select_type": "Vælg det der skal genetableres",
+                    "show_log": "Vis den fulde log",
+                    "type": "Snapshot type"
                 },
                 "user": {
                     "create_account": "Opret konto",

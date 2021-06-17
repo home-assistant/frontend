@@ -820,6 +820,7 @@
                     "was_unplugged": "의 플러그가 뽑혔습니다.",
                     "was_unsafe": "이(가) 안전하지 않은 상태가 되었습니다."
                 },
+                "retrieval_error": "로그북 항목 검색 중 오류",
                 "show_trace": "추적 표시하기"
             },
             "media-browser": {
@@ -3891,10 +3892,19 @@
                 "intro": "잠들어 있는 집을 깨우고 개인정보를 보호하며 전세계의 공돌이 커뮤니티에 가입 할 준비가 되셨나요?",
                 "next": "다음",
                 "restore": {
+                    "addons": "애드온",
+                    "confirm_password": "스냅샷 비밀번호 확인",
                     "description": "이전 스냅숏에서 복원할 수 있습니다.",
+                    "folders": "폴더",
+                    "full_snapshot": "전체 스냅샷",
                     "hide_log": "전체 로그 숨기기",
                     "in_progress": "복원 중",
-                    "show_log": "전체 로그 표시하기"
+                    "partial_snapshot": "부분 스냅샷",
+                    "password": "스냅샷 비밀번호",
+                    "password_protection": "비밀번호 보호",
+                    "select_type": "무엇을 복원할지 선택하세요",
+                    "show_log": "전체 로그 표시하기",
+                    "type": "스냅샷 종류"
                 },
                 "user": {
                     "create_account": "계정 만들기",

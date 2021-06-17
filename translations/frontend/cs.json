@@ -820,6 +820,7 @@
                     "was_unplugged": "bylo odpojeno",
                     "was_unsafe": "bylo v nebezpečí"
                 },
+                "retrieval_error": "Chyba při načítání záznamu",
                 "show_trace": "Zobrazit trasu"
             },
             "media-browser": {
@@ -3886,10 +3887,19 @@
                 "intro": "Jste připraveni oživit svůj domov, zachovat si své soukromí a připojit se k celosvětové komunitě tvůrců?",
                 "next": "Další",
                 "restore": {
+                    "addons": "Doplňky",
+                    "confirm_password": "Potvrďte heslo zálohy",
                     "description": "Případně můžete Home Assistant obnovit z poslední zálohy.",
+                    "folders": "Složky",
+                    "full_snapshot": "Úplná záloha",
                     "hide_log": "Skrýt celý log",
                     "in_progress": "Probíhá obnovení",
-                    "show_log": "Zobrazit celý log"
+                    "partial_snapshot": "Částečná záloha",
+                    "password": "Heslo zálohy",
+                    "password_protection": "Ochrana heslem",
+                    "select_type": "Vyberte, co chcete obnovit",
+                    "show_log": "Zobrazit celý log",
+                    "type": "Typ zálohy"
                 },
                 "user": {
                     "create_account": "Vytvořit účet",

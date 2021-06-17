@@ -304,6 +304,7 @@
         "by": "by",
         "by_service": "by service",
         "show_trace": "Show trace",
+        "retrieval_error": "Error during logbook entry retrieval",
         "messages": {
           "was_away": "was detected away",
           "was_at_state": "was detected at {state}",
@@ -3822,7 +3823,7 @@
       "faq_link": "[%key:ui::panel::my::faq_link%]",
       "error": "[%key:ui::panel::my::error%]",
       "error_addon_not_found": "Add-on not found",
-      "error_addon_not_started": "The requested add-on are not running. Please start it first",
+      "error_addon_not_started": "The requested add-on is not running. Please start it first",
       "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
       "error_addon_no_ingress": "The requested add-on does not support ingress"
     },

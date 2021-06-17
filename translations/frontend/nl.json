@@ -941,7 +941,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Indien uitgeschakeld, worden nieuwe entiteiten van {integration} niet automatisch aan Home Assistant toegevoegd.",
+                "enable_new_entities_description": "Of nieuw ontdekte apparaten voor {integratie} automatisch moeten worden toegevoegd.",
                 "enable_new_entities_label": "Voeg nieuwe entiteiten automatisch toe",
                 "enable_polling_description": "Of Home Assistant automatisch moet pollen voor updates voor {integration} entiteiten",
                 "enable_polling_label": "Schakel polling voor updates in.",

@@ -820,6 +820,7 @@
                     "was_unplugged": "s'ha desendollat",
                     "was_unsafe": "és insegur"
                 },
+                "retrieval_error": "Error durant l'obtenció de l'entrada del diari de registre",
                 "show_trace": "Mostra la traça"
             },
             "media-browser": {
