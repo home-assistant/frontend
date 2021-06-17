@@ -68,9 +68,6 @@ class HassioIngressView extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
 
-    if (this._resolveIngressURL.interval) {
-      clearInterval(this._resolveIngressURL.interval);
-    }
     this._resolveURL();
     this._resolveIngressURL.interval = window.setInterval(async () => {
       await this._resolveURL();
