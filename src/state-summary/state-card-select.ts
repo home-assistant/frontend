@@ -51,6 +51,9 @@ class StateCardSelect extends LitElement {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    if (!changedProps.has("stateObj")) {
+      return;
+    }
     // Update selected after rendering the items or else it won't work in Firefox
     this.shadowRoot!.querySelector(
       "paper-listbox"
