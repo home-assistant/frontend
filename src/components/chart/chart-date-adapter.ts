@@ -60,7 +60,6 @@ const FORMATS = {
 };
 
 _adapters._date.override({
-  _id: "date-ha", // DEBUG
   formats: () => FORMATS,
   parse: (value: Date | number) => {
     if (!(value instanceof Date)) {
@@ -69,7 +68,6 @@ _adapters._date.override({
     return value.getTime();
   },
   format: function (time, fmt: keyof typeof FORMATS) {
-    // console.log(time, fmt);
     switch (fmt) {
       case "datetime":
         return formatDateTime(new Date(time), this.options.locale);

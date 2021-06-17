@@ -27,15 +27,15 @@ const BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED = new Set([
   "window",
 ]);
 
-const STATIC_COLORS = {
-  on: "#66a61e",
-  off: "#ff0029",
-  home: "#66a61e",
-  not_home: "#ff0029",
-  unavailable: "#a0a0a0",
-  unknown: "#606060",
-  idle: "#377eb8",
-};
+const STATIC_STATE_COLORS = new Set([
+  "on",
+  "off",
+  "home",
+  "not_home",
+  "unavailable",
+  "unknown",
+  "idle",
+]);
 
 const stateColorMap: Map<string, string> = new Map();
 
@@ -49,15 +49,21 @@ const invertOnOff = (entityState?: HassEntity) =>
     entityState.attributes.device_class!
   );
 
-const getColor = (stateString: string, entityState?: HassEntity) => {
+const getColor = (
+  stateString: string,
+  entityState: HassEntity,
+  computedStyles: CSSStyleDeclaration
+) => {
   if (invertOnOff(entityState)) {
     stateString = stateString === "on" ? "off" : "on";
   }
   if (stateColorMap.has(stateString)) {
     return stateColorMap.get(stateString);
   }
-  if (stateString in STATIC_COLORS) {
-    const color = STATIC_COLORS[stateString];
+  if (STATIC_STATE_COLORS.has(stateString)) {
+    const color = computedStyles.getPropertyValue(
+      `--state-${stateString}-color`
+    );
     stateColorMap.set(stateString, color);
     return color;
   }
@@ -188,6 +194,7 @@ export class StateHistoryChartTimeline extends LitElement {
   }
 
   private _generateData() {
+    const computedStyles = getComputedStyle(this);
     let stateHistory = this.data;
 
     if (!stateHistory) {
@@ -224,8 +231,8 @@ export class StateHistoryChartTimeline extends LitElement {
 
     const labels: string[] = [];
     const datasets: ChartDataset<"timeline">[] = [];
-    // stateHistory is a list of lists of sorted state objects
     const names = this.names || {};
+    // stateHistory is a list of lists of sorted state objects
     stateHistory.forEach((stateInfo) => {
       let newLastChanged: Date;
       let prevState: string | null = null;
@@ -238,7 +245,7 @@ export class StateHistoryChartTimeline extends LitElement {
       stateInfo.data.forEach((entityState) => {
         let newState: string | null = entityState.state;
         const timeStamp = new Date(entityState.last_changed);
-        if (newState === undefined || newState === "") {
+        if (!newState) {
           newState = null;
         }
         if (timeStamp > endTime) {
@@ -257,7 +264,11 @@ export class StateHistoryChartTimeline extends LitElement {
             start: prevLastChanged,
             end: newLastChanged,
             label: locState,
-            color: getColor(prevState, this.hass.states[stateInfo.entity_id]),
+            color: getColor(
+              prevState,
+              this.hass.states[stateInfo.entity_id],
+              computedStyles
+            ),
           });
 
           prevState = newState;
@@ -271,7 +282,11 @@ export class StateHistoryChartTimeline extends LitElement {
           start: prevLastChanged,
           end: endTime,
           label: locState,
-          color: getColor(prevState, this.hass.states[stateInfo.entity_id]),
+          color: getColor(
+            prevState,
+            this.hass.states[stateInfo.entity_id],
+            computedStyles
+          ),
         });
       }
       datasets.push({

@@ -1,7 +1,7 @@
 export interface TimeLineData {
   start: Date;
   end: Date;
-  label: string | null;
+  label?: string | null;
   color?: string;
 }
 

@@ -39,6 +39,7 @@ class StateHistoryChartLine extends LitElement {
     if (!this.hasUpdated) {
       this._chartOptions = {
         parsing: false,
+        animation: false,
         scales: {
           x: {
             type: "time",
@@ -227,7 +228,6 @@ class StateHistoryChartLine extends LitElement {
             entityState.attributes.target_temp_high !==
               entityState.attributes.target_temp_low
         );
-
         addDataSet(
           `${this.hass.localize("ui.card.climate.current_temperature", {
             name: name,
@@ -239,7 +239,7 @@ class StateHistoryChartLine extends LitElement {
             `${this.hass.localize("ui.card.climate.heating", { name: name })}`,
             true,
             true,
-            computedStyles.getPropertyValue("--heat-color")
+            computedStyles.getPropertyValue("--state-climate-heat-color")
           );
           // The "heating" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.
@@ -249,7 +249,7 @@ class StateHistoryChartLine extends LitElement {
             `${this.hass.localize("ui.card.climate.cooling", { name: name })}`,
             true,
             true,
-            computedStyles.getPropertyValue("--cool-color")
+            computedStyles.getPropertyValue("--state-climate-cool-color")
           );
           // The "cooling" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.

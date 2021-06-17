@@ -42,22 +42,6 @@ documentContainer.innerHTML = `<custom-style>
       --success-color: #0f9d58;
       --info-color: #4285f4;
 
-      /* states and badges */
-      --state-icon-color: #44739e;
-      --state-icon-active-color: #FDD835;
-
-      /* climate state colors */
-      --auto-color: green;
-      --eco-color: springgreen;
-      --cool-color: #2b9af9;
-      --heat-color: #ff8100;
-      --manual-color: #44739e;
-      --off-color: #8a8a8a;
-      --fan_only-color: #8a8a8a;
-      --dry-color: #efbd07;
-      --idle-color: #8a8a8a;
-      --unknown-color: #bac;
-
       /* background and sidebar */
       --card-background-color: #ffffff;
       --primary-background-color: #fafafa;
@@ -71,6 +55,32 @@ documentContainer.innerHTML = `<custom-style>
       --label-badge-blue: #039be5;
       --label-badge-green: #0DA035;
       --label-badge-yellow: #f4b400;
+
+      /* states and badges */
+      --state-icon-color: #44739e;
+      /* an active state is anything that would require attention */ 
+      --state-icon-active-color: #FDD835;
+      /* an error state is anything that would be considered an error */
+      /* --state-icon-error-color: #db4437; derived from error-color */
+
+      --state-on-color: #66a61e;
+      --state-off-color: #ff0029;
+      --state-home-color: #66a61e;
+      --state-not_home-color: #ff0029;
+      /* --state-unavailable-color: #a0a0a0; derived from disabled-text-color */
+      --state-unknown-color: #606060;
+      --state-idle-color: #377eb8;
+
+      /* climate state colors */
+      --state-climate-auto-color: #008000;
+      --state-climate-eco-color: #00ff7f;
+      --state-climate-cool-color: #2b9af9;
+      --state-climate-heat-color: #ff8100;
+      --state-climate-manual-color: #44739e;
+      --state-climate-off-color: #8a8a8a;
+      --state-climate-fan_only-color: #8a8a8a;
+      --state-climate-dry-color: #efbd07;
+      --state-climate-idle-color: #8a8a8a;
 
       /*
         Paper-styles color.html dependency is stripped on build.

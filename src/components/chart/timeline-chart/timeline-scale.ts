@@ -16,8 +16,9 @@ export class TimeLineScale extends TimeScale {
 
   constructor(props) {
     super(props);
-    (this.chart.canvas.parentNode as HTMLElement).style.height =
-      this.chart.data.datasets.length * 30 + 30 + "px";
+    (this.chart.canvas.parentNode as HTMLElement).style.height = `${
+      this.chart.data.datasets.length * 30 + 30
+    }px`;
   }
 
   determineDataLimits() {
