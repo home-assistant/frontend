@@ -193,6 +193,18 @@ export const getIdentifiersFromDevice = (
   };
 };
 
+export type ZWaveJSLogUpdate = ZWaveJSLogMessageUpdate | ZWaveJSLogConfigUpdate;
+
+interface ZWaveJSLogMessageUpdate {
+  type: "log_message";
+  log_message: ZWaveJSLogMessage;
+}
+
+interface ZWaveJSLogConfigUpdate {
+  type: "log_config";
+  log_config: ZWaveJSLogConfig;
+}
+
 export interface ZWaveJSLogMessage {
   timestamp: string;
   level: string;
@@ -203,10 +215,10 @@ export interface ZWaveJSLogMessage {
 export const subscribeZWaveJSLogs = (
   hass: HomeAssistant,
   entry_id: string,
-  callback: (message: ZWaveJSLogMessage) => void
+  callback: (update: ZWaveJSLogUpdate) => void
 ) =>
-  hass.connection.subscribeMessage<ZWaveJSLogMessage>(callback, {
-    type: "zwave_js/subscribe_logs",
+  hass.connection.subscribeMessage<ZWaveJSLogUpdate>(callback, {
+    type: "zwave_js/subscribe_log_updates",
     entry_id,
   });
 
