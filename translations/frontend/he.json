@@ -172,8 +172,8 @@
                         "title": "מרחב שמות של תהליכי מארח"
                     },
                     "ingress": {
-                        "description": "תוסף זה משתמש ב-Ingress כדי להטמיע את הממשק שלו בצורה מאובטחת ב-Home Assistant.",
-                        "title": "חדירה"
+                        "description": "תוסף זה משתמש בכניסה כדי להטמיע את הממשק שלו בצורה מאובטחת ב-Home Assistant.",
+                        "title": "כניסה"
                     },
                     "label": {
                         "apparmor": "apparmor",
@@ -377,7 +377,7 @@
             "error_addon_no_ingress": "ההרחבה המבוקשת אינו תומכת בכניסה",
             "error_addon_not_found": "התוסף לא נמצא",
             "error_addon_not_installed": "התוסף המבוקש אינו מותקן. אנא התקן אותו תחילה",
-            "error_addon_not_started": "התוסף המבוקש אינו פועל. אנא הפעל אותו תחילה",
+            "error_addon_not_started": "ההרחבה המבוקשת אינה פועלת. נא הפעל אותו תחילה",
             "faq_link": "שאלות נפוצות על Home Assistant שלי",
             "not_supported": "הפניה זו אינה נתמכת על ידי מופע ה-Home Assistant שלך. בדוק ב-{link} את ההפניות הנתמכות ואת הגרסה שהוצגה."
         },
@@ -820,6 +820,7 @@
                     "was_unplugged": "היה מנותק",
                     "was_unsafe": "היה לא בטוח"
                 },
+                "retrieval_error": "שגיאה במהלך אחזור ערך יומן רישום",
                 "show_trace": "הצג מעקב"
             },
             "media-browser": {
