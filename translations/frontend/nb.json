@@ -820,6 +820,7 @@
                     "was_unplugged": "ble frakoblet",
                     "was_unsafe": "var utrygt"
                 },
+                "retrieval_error": "Feil under henting av loggbokoppføring",
                 "show_trace": "Vis spor"
             },
             "media-browser": {

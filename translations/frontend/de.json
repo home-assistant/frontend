@@ -200,7 +200,7 @@
                         "manager": "Manager"
                     },
                     "stage": {
-                        "description": "Add-ons können sich in einer von drei Phasen befinden:\n\n{icon_stable} **Stable**: Dies sind Add-ons, die bereits vollständig sind und Updates erhalten.\n\n{icon_experimental} **Experimentell**: Diese können Fehler enthalten und unvollendet sein.\n\n{icon_deprecated} **Veraltet**: Diese Add-ons erhalten keine Updates mehr.",
+                        "description": "Add-ons können sich in einer von drei Phasen befinden:\n\n{icon_stable} **Stabil**: Dies sind Add-ons, die bereits vollständig sind und Updates erhalten.\n\n{icon_experimental} **Experimentell**: Diese können Fehler enthalten und unvollendet sein.\n\n{icon_deprecated} **Veraltet**: Diese Add-ons erhalten keine Updates mehr.",
                         "title": "Add-on Phase"
                     }
                 },
@@ -235,7 +235,7 @@
                     }
                 },
                 "protection_mode": {
-                    "content": "Der Schutzmodus für dieses Add-on ist deaktiviert! Dadurch erhält das Add-on vollen Zugriff auf das gesamte System, was Sicherheitsrisiken mit sich bringt und dein System bei unsachgemäßer Verwendung beschädigen kann. Deaktiviere den Schutzmodus nur, wenn du die Quelle dieses Add-ons kennst, dieses benötigst UND vertraust.",
+                    "content": "Der Schutzmodus für dieses Add-on ist deaktiviert! Dadurch erhält das Add-on vollen Zugriff auf das gesamte System, was Sicherheitsrisiken mit sich bringt und dein System bei unsachgemäßer Verwendung beschädigen kann. Deaktiviere den Schutzmodus nur, wenn du dieses Add-on benötigst und die Quelle dieses Add-ons kennst UND ihr vertraust.",
                     "enable": "Gesicherten Modus einschalten",
                     "title": "Warnung: Der gesicherte Modus ist deaktiviert!"
                 },
@@ -477,7 +477,7 @@
                 "join_beta_description": "Erhalte Beta-Updates für Home Assistant (RCs), Supervisor und Host",
                 "leave_beta_action": "Beta-Kanal verlassen",
                 "leave_beta_description": "Erhalte stabile Updates für Home Assistant, Supervisor und Host",
-                "ram_usage": "Arbeitsspeicherbedarf von Supervisor",
+                "ram_usage": "Arbeitsspeicherbedarf des Supervisors",
                 "reload_supervisor": "Supervisor neu laden",
                 "search": "Suche",
                 "share_diagnostics": "Diagnose teilen",
@@ -941,7 +941,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Wenn deaktiviert werden neu erkannte Entitäten für {integration} nicht automatisch zu Home Assistant hinzugefügt.",
+                "enable_new_entities_description": "Wenn aktiviert werden neu erkannte Entitäten für {integration} automatisch zu Home Assistant hinzugefügt.",
                 "enable_new_entities_label": "Neu hinzugefügte Entitäten aktivieren.",
                 "enable_polling_description": "Ob Home Assistant automatisch {integration} Entitäten nach Updates abfragen soll.",
                 "enable_polling_label": "Aktiviere Polling für Updates.",

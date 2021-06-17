@@ -820,6 +820,7 @@
                     "was_unplugged": "의 플러그가 뽑혔습니다.",
                     "was_unsafe": "이(가) 안전하지 않은 상태가 되었습니다."
                 },
+                "retrieval_error": "로그북 항목 검색 중 오류",
                 "show_trace": "추적 표시하기"
             },
             "media-browser": {
