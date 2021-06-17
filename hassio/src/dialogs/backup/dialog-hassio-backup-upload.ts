@@ -6,19 +6,19 @@ import "../../../../src/components/ha-header-bar";
 import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
-import "../../components/hassio-upload-snapshot";
-import { HassioSnapshotUploadDialogParams } from "./show-dialog-snapshot-upload";
+import "../../components/hassio-upload-backup";
+import { HassioBackupUploadDialogParams } from "./show-dialog-backup-upload";
 
-@customElement("dialog-hassio-snapshot-upload")
-export class DialogHassioSnapshotUpload
+@customElement("dialog-hassio-backup-upload")
+export class DialogHassioBackupUpload
   extends LitElement
-  implements HassDialog<HassioSnapshotUploadDialogParams> {
+  implements HassDialog<HassioBackupUploadDialogParams> {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _params?: HassioSnapshotUploadDialogParams;
+  @state() private _params?: HassioBackupUploadDialogParams;
 
   public async showDialog(
-    params: HassioSnapshotUploadDialogParams
+    params: HassioBackupUploadDialogParams
   ): Promise<void> {
     this._params = params;
     await this.updateComplete;
@@ -26,8 +26,8 @@ export class DialogHassioSnapshotUpload
 
   public closeDialog(): void {
     if (this._params && !this._params.onboarding) {
-      if (this._params.reloadSnapshot) {
-        this._params.reloadSnapshot();
+      if (this._params.reloadBackup) {
+        this._params.reloadBackup();
       }
     }
     this._params = undefined;
@@ -50,23 +50,23 @@ export class DialogHassioSnapshotUpload
       >
         <div slot="heading">
           <ha-header-bar>
-            <span slot="title"> Upload snapshot </span>
+            <span slot="title"> Upload backup </span>
             <mwc-icon-button slot="actionItems" dialogAction="cancel">
               <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
             </mwc-icon-button>
           </ha-header-bar>
         </div>
-        <hassio-upload-snapshot
-          @snapshot-uploaded=${this._snapshotUploaded}
+        <hassio-upload-backup
+          @backup-uploaded=${this._backupUploaded}
           .hass=${this.hass}
-        ></hassio-upload-snapshot>
+        ></hassio-upload-backup>
       </ha-dialog>
     `;
   }
 
-  private _snapshotUploaded(ev) {
-    const snapshot = ev.detail.snapshot;
-    this._params?.showSnapshot(snapshot.slug);
+  private _backupUploaded(ev) {
+    const backup = ev.detail.backup;
+    this._params?.showBackup(backup.slug);
     this.closeDialog();
   }
 
@@ -93,6 +93,6 @@ export class DialogHassioSnapshotUpload
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-hassio-snapshot-upload": DialogHassioSnapshotUpload;
+    "dialog-hassio-backup-upload": DialogHassioBackupUpload;
   }
 }

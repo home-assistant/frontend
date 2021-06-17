@@ -1,5 +1,4 @@
 import { customElement, property } from "lit/decorators";
-import { navigate } from "../../src/common/navigate";
 import { HassioPanelInfo } from "../../src/data/hassio/supervisor";
 import { Supervisor } from "../../src/data/supervisor/supervisor";
 import {

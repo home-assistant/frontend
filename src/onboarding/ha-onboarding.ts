@@ -89,13 +89,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
             </onboarding-create-user>`
           : ""}
         ${this._supervisor
-          ? html`<onboarding-restore-snapshot
+          ? html`<onboarding-restore-backup
               .localize=${this.localize}
               .restoring=${this._restoring}
               .discoveryInformation=${this._discoveryInformation}
-              @restoring=${this._restoringSnapshot}
+              @restoring=${this._restoringBackup}
             >
-            </onboarding-restore-snapshot>`
+            </onboarding-restore-backup>`
           : ""}
       `;
     }
@@ -170,7 +170,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     return this._steps ? this._steps.find((stp) => !stp.done) : undefined;
   }
 
-  private _restoringSnapshot() {
+  private _restoringBackup() {
     this._restoring = true;
   }
 
@@ -183,12 +183,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       ].includes(response.installation_type);
       if (this._supervisor) {
         // Only load if we have supervisor
-        import("./onboarding-restore-snapshot");
+        import("./onboarding-restore-backup");
       }
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(
-        "Something went wrong loading onboarding-restore-snapshot",
+        "Something went wrong loading onboarding-restore-backup",
         err
       );
     }

@@ -9,7 +9,7 @@ import "./addon-store/hassio-addon-store";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./dashboard/hassio-dashboard";
 // Don't codesplit the others, because it breaks the UI when pushed to a Pi
-import "./snapshots/hassio-snapshots";
+import "./backups/hassio-backups";
 import "./system/hassio-system";
 
 @customElement("hassio-panel-router")
@@ -33,7 +33,7 @@ class HassioPanelRouter extends HassRouterPage {
         tag: "hassio-addon-store",
       },
       backups: {
-        tag: "hassio-snapshots",
+        tag: "hassio-backups",
       },
       system: {
         tag: "hassio-system",

@@ -6,37 +6,37 @@ import "../../../../src/components/buttons/ha-progress-button";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
-  createHassioFullSnapshot,
-  createHassioPartialSnapshot,
-} from "../../../../src/data/hassio/snapshot";
+  createHassioFullBackup,
+  createHassioPartialBackup,
+} from "../../../../src/data/hassio/backup";
 import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
-import "../../components/supervisor-snapshot-content";
-import type { SupervisorSnapshotContent } from "../../components/supervisor-snapshot-content";
-import { HassioCreateSnapshotDialogParams } from "./show-dialog-hassio-create-snapshot";
+import "../../components/supervisor-backup-content";
+import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
+import { HassioCreateBackupDialogParams } from "./show-dialog-hassio-create-backup";
 
-@customElement("dialog-hassio-create-snapshot")
-class HassioCreateSnapshotDialog extends LitElement {
+@customElement("dialog-hassio-create-backup")
+class HassioCreateBackupDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _dialogParams?: HassioCreateSnapshotDialogParams;
+  @state() private _dialogParams?: HassioCreateBackupDialogParams;
 
   @state() private _error?: string;
 
-  @state() private _creatingSnapshot = false;
+  @state() private _creatingBackup = false;
 
-  @query("supervisor-snapshot-content")
-  private _snapshotContent!: SupervisorSnapshotContent;
+  @query("supervisor-backup-content")
+  private _backupContent!: SupervisorBackupContent;
 
-  public showDialog(params: HassioCreateSnapshotDialogParams) {
+  public showDialog(params: HassioCreateBackupDialogParams) {
     this._dialogParams = params;
-    this._creatingSnapshot = false;
+    this._creatingBackup = false;
   }
 
   public closeDialog() {
     this._dialogParams = undefined;
-    this._creatingSnapshot = false;
+    this._creatingBackup = false;
     this._error = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -55,21 +55,21 @@ class HassioCreateSnapshotDialog extends LitElement {
           this._dialogParams.supervisor.localize("backup.create_backup")
         )}
       >
-        ${this._creatingSnapshot
+        ${this._creatingBackup
           ? html` <ha-circular-progress active></ha-circular-progress>`
-          : html`<supervisor-snapshot-content
+          : html`<supervisor-backup-content
               .hass=${this.hass}
               .supervisor=${this._dialogParams.supervisor}
             >
-            </supervisor-snapshot-content>`}
+            </supervisor-backup-content>`}
         ${this._error ? html`<p class="error">Error: ${this._error}</p>` : ""}
         <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
           ${this._dialogParams.supervisor.localize("common.close")}
         </mwc-button>
         <mwc-button
-          .disabled=${this._creatingSnapshot}
+          .disabled=${this._creatingBackup}
           slot="primaryAction"
-          @click=${this._createSnapshot}
+          @click=${this._createBackup}
         >
           ${this._dialogParams.supervisor.localize("backup.create")}
         </mwc-button>
@@ -77,7 +77,7 @@ class HassioCreateSnapshotDialog extends LitElement {
     `;
   }
 
-  private async _createSnapshot(): Promise<void> {
+  private async _createBackup(): Promise<void> {
     if (this._dialogParams!.supervisor.info.state !== "running") {
       showAlertDialog(this, {
         title: this._dialogParams!.supervisor.localize(
@@ -91,35 +91,35 @@ class HassioCreateSnapshotDialog extends LitElement {
       });
       return;
     }
-    const snapshotDetails = this._snapshotContent.snapshotDetails();
-    this._creatingSnapshot = true;
+    const backupDetails = this._backupContent.backupDetails();
+    this._creatingBackup = true;
 
     this._error = "";
-    if (snapshotDetails.password && !snapshotDetails.password.length) {
+    if (backupDetails.password && !backupDetails.password.length) {
       this._error = this._dialogParams!.supervisor.localize(
         "backup.enter_password"
       );
-      this._creatingSnapshot = false;
+      this._creatingBackup = false;
       return;
     }
     if (
-      snapshotDetails.password &&
-      snapshotDetails.password !== snapshotDetails.confirm_password
+      backupDetails.password &&
+      backupDetails.password !== backupDetails.confirm_password
     ) {
       this._error = this._dialogParams!.supervisor.localize(
         "backup.passwords_not_matching"
       );
-      this._creatingSnapshot = false;
+      this._creatingBackup = false;
       return;
     }
 
-    delete snapshotDetails.confirm_password;
+    delete backupDetails.confirm_password;
 
     try {
-      if (this._snapshotContent.snapshotType === "full") {
-        await createHassioFullSnapshot(this.hass, snapshotDetails);
+      if (this._backupContent.backupType === "full") {
+        await createHassioFullBackup(this.hass, backupDetails);
       } else {
-        await createHassioPartialSnapshot(this.hass, snapshotDetails);
+        await createHassioPartialBackup(this.hass, backupDetails);
       }
 
       this._dialogParams!.onCreate();
@@ -127,7 +127,7 @@ class HassioCreateSnapshotDialog extends LitElement {
     } catch (err) {
       this._error = extractApiErrorMessage(err);
     }
-    this._creatingSnapshot = false;
+    this._creatingBackup = false;
   }
 
   static get styles(): CSSResultGroup {
@@ -146,6 +146,6 @@ class HassioCreateSnapshotDialog extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-hassio-create-snapshot": HassioCreateSnapshotDialog;
+    "dialog-hassio-create-backup": HassioCreateBackupDialog;
   }
 }

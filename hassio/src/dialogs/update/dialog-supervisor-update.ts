@@ -11,7 +11,7 @@ import {
   extractApiErrorMessage,
   ignoreSupervisorError,
 } from "../../../../src/data/hassio/common";
-import { createHassioPartialSnapshot } from "../../../../src/data/hassio/snapshot";
+import { createHassioPartialBackup } from "../../../../src/data/hassio/backup";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { SupervisorDialogSupervisorUpdateParams } from "./show-dialog-update";
@@ -22,9 +22,9 @@ class DialogSupervisorUpdate extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _createSnapshot = true;
+  @state() private _createBackup = true;
 
-  @state() private _action: "snapshot" | "update" | null = null;
+  @state() private _action: "backup" | "update" | null = null;
 
   @state() private _error?: string;
 
@@ -41,7 +41,7 @@ class DialogSupervisorUpdate extends LitElement {
 
   public closeDialog(): void {
     this._action = null;
-    this._createSnapshot = true;
+    this._createBackup = true;
     this._error = undefined;
     this._dialogParams = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -95,9 +95,9 @@ class DialogSupervisorUpdate extends LitElement {
                   )}
                 </span>
                 <ha-switch
-                  .checked=${this._createSnapshot}
+                  .checked=${this._createBackup}
                   haptic
-                  @click=${this._toggleSnapshot}
+                  @click=${this._toggleBackup}
                 >
                 </ha-switch>
               </ha-settings-row>
@@ -133,17 +133,17 @@ class DialogSupervisorUpdate extends LitElement {
     `;
   }
 
-  private _toggleSnapshot() {
-    this._createSnapshot = !this._createSnapshot;
+  private _toggleBackup() {
+    this._createBackup = !this._createBackup;
   }
 
   private async _update() {
-    if (this._createSnapshot) {
-      this._action = "snapshot";
+    if (this._createBackup) {
+      this._action = "backup";
       try {
-        await createHassioPartialSnapshot(
+        await createHassioPartialBackup(
           this.hass,
-          this._dialogParams!.snapshotParams
+          this._dialogParams!.backupParams
         );
       } catch (err) {
         this._error = extractApiErrorMessage(err);
