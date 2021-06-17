@@ -19,10 +19,12 @@ const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: false }),
 ];
 
-const isWsl = fs
-  .readFileSync("/proc/version", "utf-8")
-  .toLocaleLowerCase()
-  .includes("microsoft");
+const isWsl =
+  fs.existsSync("/proc/version") &&
+  fs
+    .readFileSync("/proc/version", "utf-8")
+    .toLocaleLowerCase()
+    .includes("microsoft");
 
 /**
  * @param {{
