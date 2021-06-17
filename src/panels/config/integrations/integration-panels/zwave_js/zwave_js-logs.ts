@@ -33,16 +33,20 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
-      subscribeZWaveJSLogs(this.hass, this.configEntryId, (log) => {
+      subscribeZWaveJSLogs(this.hass, this.configEntryId, (update) => {
         if (!this.hasUpdated) {
           return;
         }
-        if (Array.isArray(log.message)) {
-          for (const line of log.message) {
-            this._textarea!.value += `${line}\n`;
+        if (update.type === "log_message") {
+          if (Array.isArray(update.log_message.message)) {
+            for (const line of update.log_message.message) {
+              this._textarea!.value += `${line}\n`;
+            }
+          } else {
+            this._textarea!.value += `${update.log_message.message}\n`;
           }
         } else {
-          this._textarea!.value += `${log.message}\n`;
+          this._logConfig = update.log_config;
         }
       }).then((unsub) => {
         this._textarea!.value += `${this.hass.localize(
@@ -141,7 +145,6 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
       return;
     }
     setZWaveJSLogLevel(this.hass!, this.configEntryId, selected);
-    this._logConfig.level = selected;
     this._textarea!.value += `${this.hass.localize(
       "ui.panel.config.zwave_js.logs.log_level_changed",
       { level: selected.charAt(0).toUpperCase() + selected.slice(1) }
