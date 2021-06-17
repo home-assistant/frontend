@@ -102,6 +102,14 @@ export default class HaChartBase extends LitElement {
       type: this.chartType,
       data: this.data,
       options: this._createOptions(),
+      plugins: [
+        {
+          id: "afterRenderHook",
+          afterRender: (chart) => {
+            this.style.height = `${chart.height}px`;
+          },
+        },
+      ],
     });
   }
 
@@ -138,11 +146,14 @@ export default class HaChartBase extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      .chartContainer {
-        position: relative;
-      }
       :host {
         display: block;
+        overflow: hidden;
+        height: 0;
+        transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .chartContainer {
+        position: relative;
       }
       .chartTooltip {
         padding: 4px;
