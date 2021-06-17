@@ -137,8 +137,8 @@ class HassioIngressView extends LitElement {
           .header=${this._addon?.name}
         >
           ${this._resolveIngressURL.status === STATUS_BAD_GATEWAY
-            ? this.hass.localize("supervisor_ingress.waiting") ||
-              "Waiting for add-on to start"
+            ? html`<p>${this.hass.localize("supervisor_ingress.waiting") ||
+              "Waiting for add-on to start"}</p>`
             : ""}
         </hass-loading-screen>
       `;
