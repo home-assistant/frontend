@@ -73,7 +73,6 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
     return html`
       <state-badge
         .stateObj=${stateObj}
-        .stateColor=${this._config.state_color}
         .overrideIcon=${this._config.icon}
         .overrideImage=${this._config.image}
         class=${classMap({
