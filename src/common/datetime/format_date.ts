@@ -17,6 +17,19 @@ export const formatDate = toLocaleDateStringSupportsOptions
       formatDateMem(locale).format(dateObj)
   : (dateObj: Date) => format(dateObj, "longDate");
 
+const formatDateShortMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(locale.language, {
+      day: "numeric",
+      month: "short",
+    })
+);
+
+export const formatDateShort = toLocaleDateStringSupportsOptions
+  ? (dateObj: Date, locale: FrontendLocaleData) =>
+      formatDateShortMem(locale).format(dateObj)
+  : (dateObj: Date) => format(dateObj, "shortDate");
+
 const formatDateWeekdayMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {

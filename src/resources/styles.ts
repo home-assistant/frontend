@@ -34,8 +34,9 @@ export const darkStyles = {
 };
 
 export const derivedStyles = {
-  "error-state-color": "var(--error-color)",
-  "state-icon-unavailable-color": "var(--disabled-text-color)",
+  "state-icon-error-color": "var(--error-state-color, var(--error-color))",
+  "state-unavailable-color":
+    "var(--state-icon-unavailable-color, var(--disabled-text-color))",
   "sidebar-text-color": "var(--primary-text-color)",
   "sidebar-background-color": "var(--card-background-color)",
   "sidebar-selected-text-color": "var(--primary-color)",
