@@ -108,7 +108,7 @@ class StatisticsCharts extends LitElement {
         },
         elements: {
           line: {
-            tension: 0.1,
+            tension: 0.4,
             borderWidth: 1.5,
           },
           point: {
@@ -244,7 +244,12 @@ class StatisticsCharts extends LitElement {
       this.statTypes.forEach((type) => {
         if (statsHaveType(stats, type)) {
           statTypes.push(type);
-          addDataSet(`${name} (${type})`, false);
+          addDataSet(
+            `${name} (${this.hass.localize(
+              `ui.components.statistics_charts.statistic_types.${type}`
+            )})`,
+            false
+          );
         }
       });
 
@@ -254,7 +259,9 @@ class StatisticsCharts extends LitElement {
       stats.forEach((stat) => {
         const value: Array<number | null> = [];
         statTypes.forEach((type) => {
-          value.push(stat[type]);
+          value.push(
+            stat[type] ? Math.round(stat[type]! * 100) / 100 : stat[type]
+          );
         });
         const date = new Date(stat.start);
         if (lastDate && date.getTime() === lastDate.getTime()) {

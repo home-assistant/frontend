@@ -450,6 +450,16 @@
         "loading_history": "Loading state history...",
         "no_history_found": "No state history found."
       },
+      "statistics_charts": {
+        "loading_statistics": "Loading statistics...",
+        "no_statistics_found": "No statistics found.",
+        "statistic_types": {
+          "min": "min",
+          "max": "max",
+          "mean": "mean",
+          "sum": "sum"
+        }
+      },
       "service-picker": {
         "service": "Service"
       },

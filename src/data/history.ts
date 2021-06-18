@@ -134,13 +134,13 @@ export const fetchStatistics = (
   hass: HomeAssistant,
   startTime: Date,
   endTime?: Date,
-  statistic_id?: string
+  statistic_ids?: string[]
 ) =>
   hass.callWS<Statistics>({
     type: "history/statistics_during_period",
     start_time: startTime.toISOString(),
     end_time: endTime?.toISOString(),
-    statistic_id,
+    statistic_ids,
   });
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
