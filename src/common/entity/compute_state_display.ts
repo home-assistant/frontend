@@ -43,7 +43,7 @@ export const computeStateDisplay = (
         if (components.length === 1) {
           if (state.includes("-")) {
             // Date only.
-            const iso8601String = `${state}"T00:00"`;
+            const iso8601String = `${state}T00:00`;
             const dateObj = new Date(iso8601String);
             return formatDate(dateObj, locale);
           }
