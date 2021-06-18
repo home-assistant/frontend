@@ -14,7 +14,11 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  private _prefs: Partial<EnergyPreferences> = {};
+  private _prefs: Partial<EnergyPreferences> = {
+    cost_delivery_cost_day: 0,
+    cost_discount_energy_tax_day: 0,
+    cost_grid_management_day: 0,
+  };
 
   public getCardSize() {
     return 10;
@@ -28,15 +32,21 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
 
   protected render(): TemplateResult {
     return html`
+      <h1>Welcome to your energy dashboard!</h1>
+      <p>
+        Here we need some flashy text to tell people about the amazing things
+        this dashboard will do for them and what insight it will give!
+      </p>
+      <p>Plus maybe some cool graphics so it doesn't look so boring...</p>
       <h2>${this.hass.localize("ui.panel.energy.setup.header")}</h2>
       <ha-energy-settings
         .hass=${this.hass}
         .preferences=${this._prefs}
         @value-changed=${this._prefsChanged}
       ></ha-energy-settings>
-      <mwc-button @click=${this._savePrefs}
-        >${this.hass.localize("ui.common.save")}</mwc-button
-      >
+      <mwc-button raised @click=${this._savePrefs}>
+        ${this.hass.localize("ui.panel.energy.setup.save")}
+      </mwc-button>
     `;
   }
 
@@ -61,6 +71,12 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
         :host {
           display: block;
           padding: 16px;
+          max-width: 700px;
+          margin: 0 auto;
+        }
+        mwc-button {
+          width: 100%;
+          margin-top: 8px;
         }
       `,
     ];

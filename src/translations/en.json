@@ -3640,7 +3640,9 @@
           "cost_discount_energy_tax_day": "Energy tax discount per day"
         },
         "setup": {
-          "header": "We need some information to generate an Energy dashboard for you"
+          "header": "We need some information to generate an Energy dashboard for you",
+          "introduction": "TODO",
+          "save": "Show me my energy dashboard!"
         },
         "charts": {
           "stat_house_energy_meter": "Total energy consumption",
