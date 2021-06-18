@@ -102,6 +102,25 @@
             "unknown": "Neznano"
         }
     },
+    "supervisor": {
+        "dialog": {
+            "hardware": {
+                "attributes": "Lastnosti",
+                "id": "ID",
+                "search": "Iskanje naprav",
+                "subsystem": "Podsistem",
+                "title": "Strojna oprema"
+            }
+        },
+        "snapshot": {
+            "created": "Ustvarjeno"
+        },
+        "system": {
+            "supervisor": {
+                "search": "Iskanje"
+            }
+        }
+    },
     "ui": {
         "auth_store": {
             "ask": "Ali želite ostati prijavljeni?",
@@ -308,6 +327,9 @@
                 "no_areas": "Nimate območji",
                 "no_match": "Ni ustreznih območji",
                 "show_areas": "Prikaži območja"
+            },
+            "attributes": {
+                "expansion_header": "Lastnosti"
             },
             "blueprint-picker": {
                 "add_user": "Dodaj uporabnika",
@@ -746,6 +768,10 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Spremenite ime naprave"
                 }
+            },
+            "zha_reconfigure_device": {
+                "attribute": "Atribut",
+                "button_show": "Pokaži podrobnosti"
             }
         },
         "duration": {
@@ -791,7 +817,8 @@
                     "caption": "Območja",
                     "data_table": {
                         "area": "Območje",
-                        "devices": "Naprave"
+                        "devices": "Naprave",
+                        "entities": "Entitete"
                     },
                     "delete": {
                         "confirmation_text": "Vse naprave na tem območju bodo postale nedodeljene.",
@@ -803,6 +830,7 @@
                         "create": "Ustvari",
                         "default_name": "Novo območje",
                         "delete": "Izbriši",
+                        "linked_entities_caption": "Entitete",
                         "name": "Ime",
                         "name_required": "Ime je obvezno",
                         "unknown_error": "Neznana napaka",
@@ -1214,6 +1242,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Povezan",
+                        "connecting": "Povezovanje...",
                         "connection_status": "Stanje povezave v oblaku",
                         "fetching_subscription": "Pridobivam naročnino...",
                         "google": {
@@ -1242,6 +1271,7 @@
                         "remote": {
                             "access_is_being_prepared": "Oddaljeni dostop se pripravlja. Obvestili vas bomo, ko bo pripravljen.",
                             "certificate_info": "Informacije o potrdilu",
+                            "connected": "Povezan",
                             "info": "Home Assistant Cloud zagotavlja varno oddaljeno povezavo do vašega primerka, medtem ko ste zunaj doma.",
                             "instance_is_available": "Vaš primerek je na voljo na",
                             "instance_will_be_available": "Vaš primerek bo na voljo na",
@@ -1512,7 +1542,8 @@
                     "scripts": "Skripte",
                     "unknown_error": "Neznana napaka",
                     "unnamed_device": "Neimenovana naprava",
-                    "update": "Posodobite"
+                    "update": "Posodobite",
+                    "update_device_error": "Posodabljanje naprave ni uspelo"
                 },
                 "entities": {
                     "caption": "Entitete",
@@ -1983,6 +2014,7 @@
                         "add_scene": "Dodajanje scene",
                         "delete_confirm": "Ali ste prepričani, da želite izbrisati to sceno?",
                         "delete_scene": "Brisanje scene",
+                        "duplicate": "Podvoji",
                         "edit_scene": "Urejanje scene",
                         "header": "Urejevalnik scen",
                         "headers": {
@@ -2316,6 +2348,7 @@
                         "zwave_info": "Z-Wave Informacije"
                     },
                     "navigation": {
+                        "logs": "Dnevniki",
                         "network": "Omrežje"
                     },
                     "network_status": {
@@ -3270,6 +3303,12 @@
                     "link_promo": "Preberite več o temah",
                     "primary_color": "Primarna barva",
                     "reset": "Ponastavi"
+                },
+                "time_format": {
+                    "formats": {
+                        "12": "12 ur (AM / PM)",
+                        "24": "24 ur"
+                    }
                 },
                 "vibrate": {
                     "description": "V tej napravi omogočite ali onemogočite vibracije pri krmiljenju naprav.",
