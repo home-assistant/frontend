@@ -3641,6 +3641,11 @@
         },
         "setup": {
           "header": "We need some information to generate an Energy dashboard for you"
+        },
+        "charts": {
+          "stat_house_energy_meter": "Total energy consumption",
+          "solar": "Solar",
+          "by_device": "Consumption by device"
         }
       }
     }

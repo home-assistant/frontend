@@ -31,9 +31,46 @@ export class EnergyStrategy {
       return view;
     }
 
+    if (energyPrefs.stat_house_energy_meter) {
+      view.cards!.push({
+        type: "history-graph",
+        title: hass.localize("ui.panel.energy.charts.stat_house_energy_meter"),
+        entities: [energyPrefs.stat_house_energy_meter],
+      });
+    }
+
+    if (energyPrefs.stat_solar_generatation) {
+      const entities = [energyPrefs.stat_solar_generatation];
+      if (energyPrefs.stat_solar_return_to_grid) {
+        entities.push(energyPrefs.stat_solar_return_to_grid);
+      }
+      view.cards!.push({
+        type: "history-graph",
+        title: hass.localize("ui.panel.energy.charts.solar"),
+        entities,
+      });
+    }
+
+    if (energyPrefs.stat_solar_predicted_generation) {
+      view.cards!.push({
+        type: "history-graph",
+        title: hass.localize("ui.panel.energy.charts.solar"),
+        entities: [energyPrefs.stat_solar_predicted_generation],
+      });
+    }
+
+    if (energyPrefs.stat_device_consumption.length) {
+      view.cards!.push({
+        title: hass.localize("ui.panel.energy.charts.by_device"),
+        type: "history-graph",
+        entities: energyPrefs.stat_device_consumption,
+      });
+    }
+
+    // FOR DEV
     view.cards!.push({
       type: "markdown",
-      content: dump(energyPrefs),
+      content: `\`\`\`${dump(energyPrefs)}\`\`\``,
     });
 
     return view;
