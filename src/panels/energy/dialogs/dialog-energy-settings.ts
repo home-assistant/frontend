@@ -10,7 +10,6 @@ import { createCloseHeading } from "../../../components/ha-dialog";
 import { getEnergyPreferences } from "../../../data/energy";
 import type { EnergySettings } from "../ha-energy-settings";
 
-
 @customElement("dialog-energy-settings")
 export class DialogEnergySettings
   extends LitElement
