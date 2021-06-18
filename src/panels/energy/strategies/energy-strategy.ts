@@ -1,7 +1,19 @@
-import { dump } from "js-yaml";
 import { EnergyPreferences, getEnergyPreferences } from "../../../data/energy";
+import { fetchStatistics } from "../../../data/history";
 import { LovelaceViewConfig } from "../../../data/lovelace";
 import { LovelaceViewStrategy } from "../../lovelace/strategies/get-strategy";
+
+const setupWizard = async (): Promise<LovelaceViewConfig> => {
+  await import("../cards/energy-setup-wizard-card");
+  return {
+    type: "panel",
+    cards: [
+      {
+        type: "custom:energy-setup-wizard-card",
+      },
+    ],
+  };
+};
 
 export class EnergyStrategy {
   static async generateView(
@@ -17,12 +29,7 @@ export class EnergyStrategy {
       energyPrefs = await getEnergyPreferences(hass);
     } catch (e) {
       if (e.code === "not_found") {
-        await import("../cards/energy-setup-wizard-card");
-        view.type = "panel";
-        view.cards!.push({
-          type: "custom:energy-setup-wizard-card",
-        });
-        return view;
+        return setupWizard();
       }
       view.cards!.push({
         type: "markdown",
@@ -33,7 +40,7 @@ export class EnergyStrategy {
 
     if (energyPrefs.stat_house_energy_meter) {
       view.cards!.push({
-        type: "history-graph",
+        type: "statistics-graph",
         title: hass.localize("ui.panel.energy.charts.stat_house_energy_meter"),
         entities: [energyPrefs.stat_house_energy_meter],
       });
@@ -45,7 +52,7 @@ export class EnergyStrategy {
         entities.push(energyPrefs.stat_solar_return_to_grid);
       }
       view.cards!.push({
-        type: "history-graph",
+        type: "statistics-graph",
         title: hass.localize("ui.panel.energy.charts.solar"),
         entities,
       });
@@ -53,7 +60,7 @@ export class EnergyStrategy {
 
     if (energyPrefs.stat_solar_predicted_generation) {
       view.cards!.push({
-        type: "history-graph",
+        type: "statistics-graph",
         title: hass.localize("ui.panel.energy.charts.solar"),
         entities: [energyPrefs.stat_solar_predicted_generation],
       });
@@ -62,16 +69,14 @@ export class EnergyStrategy {
     if (energyPrefs.stat_device_consumption.length) {
       view.cards!.push({
         title: hass.localize("ui.panel.energy.charts.by_device"),
-        type: "history-graph",
+        type: "statistics-graph",
         entities: energyPrefs.stat_device_consumption,
       });
     }
 
-    // FOR DEV
-    view.cards!.push({
-      type: "markdown",
-      content: `\`\`\`${dump(energyPrefs)}\`\`\``,
-    });
+    if (!view.cards?.length) {
+      return setupWizard();
+    }
 
     return view;
   }

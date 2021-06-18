@@ -17,6 +17,21 @@ const LINE_ATTRIBUTES_TO_KEEP = [
   "mode",
 ];
 
+export interface Statistics {
+  [statisticId: string]: StatisticValue[];
+}
+
+export interface StatisticValue {
+  statistic_id: string;
+  start: string;
+  last_reset: string | null;
+  max: number | null;
+  mean: number | null;
+  min: number | null;
+  sum: number | null;
+  state: number | null;
+}
+
 export interface LineChartState {
   state: string;
   last_changed: string;
@@ -112,6 +127,19 @@ export const fetchDate = (
       entityId ? `&filter_entity_id=${entityId}` : ``
     }`
   );
+
+export const fetchStatistics = (
+  hass: HomeAssistant,
+  startTime: Date,
+  endTime?: Date,
+  statistic_id?: string
+) =>
+  hass.callWS<Statistics>({
+    type: "history/statistics_during_period",
+    start_time: startTime.toISOString(),
+    end_time: endTime?.toISOString(),
+    statistic_id,
+  });
 
 const equalState = (obj1: LineChartState, obj2: LineChartState) =>
   obj1.state === obj2.state &&
