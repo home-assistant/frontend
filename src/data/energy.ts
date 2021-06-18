@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../types";
 
-interface EnergyPreferences {
+export interface EnergyPreferences {
   stat_house_energy_meter: string | null;
 
   stat_solar_generatation: string | null;
@@ -30,6 +30,6 @@ export const saveEnergyPreferences = (
   prefs: Partial<EnergyPreferences>
 ) =>
   hass.callWS<EnergyPreferences>({
-    type: "energy/get_prefs",
+    type: "energy/save_prefs",
     ...prefs,
   });

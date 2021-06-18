@@ -14,6 +14,8 @@ import { haStyle } from "../../resources/styles";
 import "../lovelace/views/hui-view";
 import { HomeAssistant } from "../../types";
 import { Lovelace } from "../lovelace/types";
+import { mdiCog } from "@mdi/js";
+import { showEnergySettingsDialog } from "./dialogs/show-dialog-energy-settings";
 
 const config = {
   views: [
@@ -53,6 +55,9 @@ class PanelEnergy extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.energy")}</div>
+            <mwc-icon-button @click=${this._showSettings}
+              ><ha-svg-icon .path=${mdiCog}></ha-svg-icon
+            ></mwc-icon-button>
           </app-toolbar>
         </app-header>
         <hui-view
@@ -60,6 +65,7 @@ class PanelEnergy extends LitElement {
           .narrow=${this.narrow}
           .lovelace=${this._lovelace}
           .index=${0}
+          @reload-energy-panel=${this._reloadView}
         ></hui-view>
       </ha-app-layout>
     `;
@@ -71,13 +77,27 @@ class PanelEnergy extends LitElement {
       rawConfig: config,
       editMode: false,
       urlPath: "energy",
-      enableFullEditMode: () => undefined,
       mode: "generated",
       locale: this.hass.locale,
+      enableFullEditMode: () => undefined,
       saveConfig: async () => undefined,
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
     };
+  }
+
+  private _reloadView() {
+    // Force strategy to be re-run by make a copy of the view
+    this._lovelace = {
+      ...this._lovelace!,
+      config: { ...config, views: [{ ...config.views[0] }] },
+    };
+  }
+
+  private _showSettings() {
+    showEnergySettingsDialog(this, {
+      savedCallback: () => this._reloadView(),
+    });
   }
 
   static get styles(): CSSResultGroup {
@@ -88,5 +108,11 @@ class PanelEnergy extends LitElement {
 declare global {
   interface HTMLElementTagNameMap {
     "ha-panel-energy": PanelEnergy;
+  }
+}
+
+declare global {
+  interface HASSDomEvents {
+    "reload-energy-panel": undefined;
   }
 }

@@ -1,4 +1,6 @@
-import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
+import { dump } from "js-yaml";
+import { EnergyPreferences, getEnergyPreferences } from "../../../data/energy";
+import { LovelaceViewConfig } from "../../../data/lovelace";
 import { LovelaceViewStrategy } from "../../lovelace/strategies/get-strategy";
 
 export class EnergyStrategy {
@@ -7,20 +9,32 @@ export class EnergyStrategy {
   ): ReturnType<LovelaceViewStrategy["generateView"]> {
     const hass = info.hass;
 
-    if (hass.config.state === STATE_NOT_RUNNING) {
-      return {
-        cards: [{ type: "starting" }],
-      };
-    }
+    const view: LovelaceViewConfig = { cards: [] };
 
-    const view = { cards: [] };
+    let energyPrefs: EnergyPreferences;
 
-    // User has no entities
-    if (view.cards!.length === 0) {
+    try {
+      energyPrefs = await getEnergyPreferences(hass);
+    } catch (e) {
+      if (e.code === "not_found") {
+        await import("../cards/energy-setup-wizard-card");
+        view.type = "panel";
+        view.cards!.push({
+          type: "custom:energy-setup-wizard-card",
+        });
+        return view;
+      }
       view.cards!.push({
-        type: "empty-state",
+        type: "markdown",
+        content: `An error occured while fetching your energy preferences: ${e.message}.`,
       });
+      return view;
     }
+
+    view.cards!.push({
+      type: "markdown",
+      content: dump(energyPrefs),
+    });
 
     return view;
   }
