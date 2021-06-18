@@ -17,6 +17,8 @@ const LINE_ATTRIBUTES_TO_KEEP = [
   "mode",
 ];
 
+export type StatisticType = "sum" | "min" | "max" | "mean";
+
 export interface Statistics {
   [statisticId: string]: StatisticValue[];
 }

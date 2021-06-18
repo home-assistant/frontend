@@ -9,17 +9,15 @@ import {
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { Statistics, StatisticValue } from "../../data/history";
+import { Statistics, StatisticType, StatisticValue } from "../../data/history";
 import type { HomeAssistant } from "../../types";
 import "../ha-circular-progress";
 import "./ha-chart-base";
 import { getColorByIndex } from "../../common/color/colors";
 import { computeStateName } from "../../common/entity/compute_state_name";
 
-const statsHaveType = (
-  stats: StatisticValue[],
-  type: "sum" | "min" | "max" | "mean"
-) => stats.some((stat) => stat[type] !== null);
+const statsHaveType = (stats: StatisticValue[], type: StatisticType) =>
+  stats.some((stat) => stat[type] !== null);
 
 @customElement("statistics-charts")
 class StatisticsCharts extends LitElement {
@@ -31,9 +29,12 @@ class StatisticsCharts extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ type: Array }) public statTypes: Array<
-    "sum" | "min" | "max" | "mean"
-  > = ["sum", "min", "max", "mean"];
+  @property({ type: Array }) public statTypes: Array<StatisticType> = [
+    "sum",
+    "min",
+    "max",
+    "mean",
+  ];
 
   @property({ type: Boolean, attribute: "up-to-now" }) public upToNow = false;
 
