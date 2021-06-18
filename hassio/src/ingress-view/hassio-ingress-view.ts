@@ -63,6 +63,7 @@ class HassioIngressView extends LitElement {
     if (this._resolveIngressURL.interval) {
       clearInterval(this._resolveIngressURL.interval);
     }
+    this._resolveIngressURL = {};
   }
 
   public connectedCallback() {
@@ -95,7 +96,10 @@ class HassioIngressView extends LitElement {
       return;
     }
 
-    if (this._resolveIngressURL.status !== STATUS_BAD_GATEWAY) {
+    if (
+      this._resolveIngressURL.status &&
+      this._resolveIngressURL.status !== STATUS_BAD_GATEWAY
+    ) {
       if (this._resolveIngressURL.interval) {
         clearInterval(this._resolveIngressURL.interval);
       }
