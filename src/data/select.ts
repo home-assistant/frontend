@@ -17,7 +17,9 @@ export const setSelectOption = (
   entity: string,
   option: string
 ) =>
-  hass.callService("select", "select_option", {
-    option,
-    entity_id: entity,
-  });
+  hass.callService(
+    "select",
+    "select_option",
+    { option },
+    { entity_id: entity }
+  );
