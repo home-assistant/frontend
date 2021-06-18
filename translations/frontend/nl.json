@@ -820,6 +820,7 @@
                     "was_unplugged": "is niet aangesloten",
                     "was_unsafe": "was onveilig"
                 },
+                "retrieval_error": "Fout tijdens het ophalen van de logboekregel",
                 "show_trace": "Tracering weergeven"
             },
             "media-browser": {
@@ -2089,7 +2090,7 @@
                     "unknown_error": "Onbekende fout",
                     "unnamed_device": "Naamloos apparaat",
                     "update": "Bijwerken",
-                    "update_device_error": "Updaten van het apparaat mislukt"
+                    "update_device_error": "Bijwerken van het apparaat mislukt"
                 },
                 "entities": {
                     "caption": "Entiteiten",
@@ -3147,7 +3148,7 @@
                         "available_events": "Beschikbare gebeurtenissen",
                         "count_listeners": " ({count} luisteraars)",
                         "data": "Gebeurtenis data (YAML, optioneel)",
-                        "description": "Start een evenement op de Home Assistant-gebeurtenisbus",
+                        "description": "Vermeld een gebeurtenis in de gebeurtenisbus.",
                         "documentation": "Gebeurtenissen documentatie",
                         "event_fired": "Gebeurtenis {name} uitgevoerd",
                         "fire_event": "Gebeurtenis uitvoeren",
