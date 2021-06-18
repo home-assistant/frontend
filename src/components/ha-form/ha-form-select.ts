@@ -41,7 +41,10 @@ export class HaFormSelect extends LitElement implements HaFormElement {
             input-aria-haspopup="listbox"
             autocomplete="off"
           >
-            ${this.data && (this.schema.optional || !this.schema.required)
+            ${this.data &&
+            (this.schema.optional !== undefined
+              ? this.schema.optional
+              : !this.schema.required)
               ? html`<mwc-icon-button
                   slot="suffix"
                   class="clear-button"
