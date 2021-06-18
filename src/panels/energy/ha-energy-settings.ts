@@ -6,12 +6,8 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { EnergyPreferences, saveEnergyPreferences } from "../../data/energy";
 import { HomeAssistant } from "../../types";
-import "../../components/entity/ha-entities-picker";
-import "../../components/entity/ha-statistic-picker";
-
-const sensorDomain = ["sensor"];
-const energyUnits = ["kWh"];
-const powerUnits = ["W", "kW"];
+import "../../components/entity/ha-statistics-picker";
+import { getStatisticIds } from "../../data/history";
 
 @customElement("ha-energy-settings")
 export class EnergySettings extends LitElement {
@@ -22,13 +18,24 @@ export class EnergySettings extends LitElement {
 
   @state() private _error?: string;
 
+  @state() private _statisticIds?: string[];
+
+  public willUpdate() {
+    if (!this.hasUpdated) {
+      this._getStatisticIds();
+    }
+  }
+
   protected render(): TemplateResult {
+    if (!this._statisticIds) {
+      return html``;
+    }
     return html`
       ${this._error ? html`<div class="error">${this._error}</div>` : ""}
       <ha-statistic-picker
         id="stat_house_energy_meter"
         .hass=${this.hass}
-        .includeUnitOfMeasurement=${energyUnits}
+        .statisticIds=${this._statisticIds}
         .value=${this.preferences?.stat_house_energy_meter}
         .label=${this.hass.localize(
           "ui.panel.energy.settings.stat_house_energy_meter"
@@ -40,7 +47,7 @@ export class EnergySettings extends LitElement {
       <ha-statistic-picker
         id="stat_solar_generatation"
         .hass=${this.hass}
-        .includeUnitOfMeasurement=${powerUnits}
+        .statisticIds=${this._statisticIds}
         .value=${this.preferences?.stat_solar_generatation}
         .label=${this.hass.localize(
           "ui.panel.energy.settings.stat_solar_generatation"
@@ -50,7 +57,7 @@ export class EnergySettings extends LitElement {
       <ha-statistic-picker
         id="stat_solar_return_to_grid"
         .hass=${this.hass}
-        .includeUnitOfMeasurement=${powerUnits}
+        .statisticIds=${this._statisticIds}
         .value=${this.preferences?.stat_solar_return_to_grid}
         .label=${this.hass.localize(
           "ui.panel.energy.settings.stat_solar_return_to_grid"
@@ -60,7 +67,7 @@ export class EnergySettings extends LitElement {
       <ha-statistic-picker
         id="stat_solar_predicted_generation"
         .hass=${this.hass}
-        .includeUnitOfMeasurement=${powerUnits}
+        .statisticIds=${this._statisticIds}
         .value=${this.preferences?.stat_solar_predicted_generation}
         .label=${this.hass.localize(
           "ui.panel.energy.settings.stat_solar_predicted_generation"
@@ -69,21 +76,20 @@ export class EnergySettings extends LitElement {
       ></ha-statistic-picker>
       <h3>Individual devices</h3>
       ${this.hass.localize("ui.panel.energy.settings.stat_device_consumption")}
-      <ha-entities-picker
+      <ha-statistics-picker
         id="stat_device_consumption"
         .hass=${this.hass}
-        .includeDomains=${sensorDomain}
-        .includeUnitOfMeasurement=${energyUnits}
         .value=${this.preferences?.stat_device_consumption}
-        .pickedEntityLabel=${this.hass.localize(
+        .statisticIds=${this._statisticIds}
+        .pickedStatisticLabel=${this.hass.localize(
           "ui.panel.energy.settings.selected_stat_device_consumption"
         )}
-        .pickEntityLabel=${this.hass.localize(
+        .pickStatisticLabel=${this.hass.localize(
           "ui.panel.energy.settings.add_stat_device_consumption"
         )}
         @value-changed=${this._valueChanged}
       >
-      </ha-entities-picker>
+      </ha-statistics-picker>
       <h3>Costs</h3>
       <paper-input
         id="cost_kwh_low_tariff"
@@ -131,6 +137,10 @@ export class EnergySettings extends LitElement {
         @value-changed=${this._valueChanged}
       ></paper-input>
     `;
+  }
+
+  private async _getStatisticIds() {
+    this._statisticIds = await getStatisticIds(this.hass);
   }
 
   private _valueChanged(ev: CustomEvent): void {

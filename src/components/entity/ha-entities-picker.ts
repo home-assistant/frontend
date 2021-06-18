@@ -118,15 +118,14 @@ class HaEntitiesPickerLight extends LitElement {
     ) {
       return;
     }
-    if (newValue === "") {
-      this._updateEntities(
-        this._currentEntities.filter((ent) => ent !== curValue)
-      );
-    } else {
-      this._updateEntities(
-        this._currentEntities.map((ent) => (ent === curValue ? newValue : ent))
-      );
+    const currentEntities = this._currentEntities;
+    if (!newValue || currentEntities.includes(newValue)) {
+      this._updateEntities(currentEntities.filter((ent) => ent !== curValue));
+      return;
     }
+    this._updateEntities(
+      currentEntities.map((ent) => (ent === curValue ? newValue : ent))
+    );
   }
 
   private async _addEntity(event: PolymerChangedEvent<string>) {

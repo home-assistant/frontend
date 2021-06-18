@@ -55,9 +55,9 @@ export class HaStatisticPicker extends LitElement {
   @property({ attribute: "statistic-types" })
   public statisticTypes?: "mean" | "sum";
 
-  @property({ type: Boolean }) public disabled?: boolean;
+  @property({ type: Array }) public statisticIds?: string[];
 
-  @property() private _statisticIds?: string[];
+  @property({ type: Boolean }) public disabled?: boolean;
 
   @state() private _opened?: boolean;
 
@@ -104,15 +104,26 @@ export class HaStatisticPicker extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues) {
-    if (!this.hasUpdated || changedProps.has("statisticTypes")) {
+    if (
+      (!this.hasUpdated && !this.statisticIds) ||
+      changedProps.has("statisticTypes")
+    ) {
       this._getStatisticIds();
     }
     if (
-      (!this._init && this._statisticIds) ||
+      (!this._init && this.statisticIds) ||
       (changedProps.has("_opened") && this._opened)
     ) {
       this._init = true;
-      (this.comboBox as any).items = this._getStatistics(this._statisticIds!);
+      if (this.hasUpdated) {
+        (this.comboBox as any).items = this._getStatistics(this.statisticIds!);
+      } else {
+        this.updateComplete.then(() => {
+          (this.comboBox as any).items = this._getStatistics(
+            this.statisticIds!
+          );
+        });
+      }
     }
   }
 
@@ -136,7 +147,7 @@ export class HaStatisticPicker extends LitElement {
   }
 
   private async _getStatisticIds() {
-    this._statisticIds = await getStatisticIds(this.hass, this.statisticTypes);
+    this.statisticIds = await getStatisticIds(this.hass, this.statisticTypes);
   }
 
   private get _value() {
