@@ -7,6 +7,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { EnergyPreferences, saveEnergyPreferences } from "../../data/energy";
 import { HomeAssistant } from "../../types";
 import "../../components/entity/ha-entities-picker";
+import "../../components/entity/ha-statistic-picker";
 
 const sensorDomain = ["sensor"];
 const energyUnits = ["kWh"];
@@ -24,52 +25,48 @@ export class EnergySettings extends LitElement {
   protected render(): TemplateResult {
     return html`
       ${this._error ? html`<div class="error">${this._error}</div>` : ""}
-      <ha-entity-picker
+      <ha-statistic-picker
         id="stat_house_energy_meter"
         .hass=${this.hass}
-        .includeDomains=${sensorDomain}
         .includeUnitOfMeasurement=${energyUnits}
         .value=${this.preferences?.stat_house_energy_meter}
         .label=${this.hass.localize(
           "ui.panel.energy.settings.stat_house_energy_meter"
         )}
         @value-changed=${this._valueChanged}
-      ></ha-entity-picker>
+      ></ha-statistic-picker>
       <p>schedule_tariff: schedule_tariff: null; // todo</p>
       <h3>Solar</h3>
-      <ha-entity-picker
+      <ha-statistic-picker
         id="stat_solar_generatation"
         .hass=${this.hass}
-        .includeDomains=${sensorDomain}
         .includeUnitOfMeasurement=${powerUnits}
         .value=${this.preferences?.stat_solar_generatation}
         .label=${this.hass.localize(
           "ui.panel.energy.settings.stat_solar_generatation"
         )}
         @value-changed=${this._valueChanged}
-      ></ha-entity-picker>
-      <ha-entity-picker
+      ></ha-statistic-picker>
+      <ha-statistic-picker
         id="stat_solar_return_to_grid"
         .hass=${this.hass}
-        .includeDomains=${sensorDomain}
         .includeUnitOfMeasurement=${powerUnits}
         .value=${this.preferences?.stat_solar_return_to_grid}
         .label=${this.hass.localize(
           "ui.panel.energy.settings.stat_solar_return_to_grid"
         )}
         @value-changed=${this._valueChanged}
-      ></ha-entity-picker>
-      <ha-entity-picker
+      ></ha-statistic-picker>
+      <ha-statistic-picker
         id="stat_solar_predicted_generation"
         .hass=${this.hass}
-        .includeDomains=${sensorDomain}
         .includeUnitOfMeasurement=${powerUnits}
         .value=${this.preferences?.stat_solar_predicted_generation}
         .label=${this.hass.localize(
           "ui.panel.energy.settings.stat_solar_predicted_generation"
         )}
         @value-changed=${this._valueChanged}
-      ></ha-entity-picker>
+      ></ha-statistic-picker>
       <h3>Individual devices</h3>
       ${this.hass.localize("ui.panel.energy.settings.stat_device_consumption")}
       <ha-entities-picker

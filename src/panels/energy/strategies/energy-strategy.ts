@@ -1,5 +1,5 @@
 import { EnergyPreferences, getEnergyPreferences } from "../../../data/energy";
-import { fetchStatistics } from "../../../data/history";
+import { fetchStatistics, getStatisticIds } from "../../../data/history";
 import { LovelaceViewConfig } from "../../../data/lovelace";
 import { LovelaceViewStrategy } from "../../lovelace/strategies/get-strategy";
 

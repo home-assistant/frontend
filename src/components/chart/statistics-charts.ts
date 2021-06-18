@@ -124,7 +124,7 @@ class StatisticsCharts extends LitElement {
 
   protected render(): TemplateResult {
     if (!isComponentLoaded(this.hass, "history")) {
-      return html` <div class="info">
+      return html`<div class="info">
         ${this.hass.localize("ui.components.history_charts.history_disabled")}
       </div>`;
     }
@@ -267,6 +267,7 @@ class StatisticsCharts extends LitElement {
         if (lastDate && date.getTime() === lastDate.getTime()) {
           return;
         }
+        lastDate = date;
         pushData(date, value);
       });
 

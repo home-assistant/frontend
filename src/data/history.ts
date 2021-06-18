@@ -4,6 +4,7 @@ import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { LocalizeFunc } from "../common/translations/localize";
 import { HomeAssistant } from "../types";
+import hassCallApi from "../util/hass-call-api";
 import { FrontendLocaleData } from "./translation";
 
 const DOMAINS_USE_LAST_UPDATED = ["climate", "humidifier", "water_heater"];
@@ -129,6 +130,15 @@ export const fetchDate = (
       entityId ? `&filter_entity_id=${entityId}` : ``
     }`
   );
+
+export const getStatisticIds = (
+  hass: HomeAssistant,
+  statistic_type?: "mean" | "sum"
+) =>
+  hass.callWS<string[]>({
+    type: "history/list_statistic_ids",
+    statistic_type,
+  });
 
 export const fetchStatistics = (
   hass: HomeAssistant,
