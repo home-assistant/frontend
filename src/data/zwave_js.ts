@@ -21,6 +21,7 @@ export interface ZWaveJSClient {
 export interface ZWaveJSController {
   home_id: string;
   nodes: number[];
+  is_heal_network_active: string;
 }
 
 export interface ZWaveJSNode {
@@ -169,6 +170,37 @@ export const reinterviewNode = (
       type: "zwave_js/refresh_node_info",
       entry_id: entry_id,
       node_id: node_id,
+    }
+  );
+
+export const healNetwork = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<UnsubscribeFunc> =>
+  hass.callWS({
+    type: "zwave_js/begin_healing_network",
+    entry_id: entry_id,
+  });
+
+export const stopHealNetwork = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<UnsubscribeFunc> =>
+  hass.callWS({
+    type: "zwave_js/stop_healing_network",
+    entry_id: entry_id,
+  });
+
+export const subscribeHealNetworkProgress = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (message: ZWaveJSRefreshNodeStatusMessage) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/subscribe_heal_network_progress",
+      entry_id: entry_id,
     }
   );
 

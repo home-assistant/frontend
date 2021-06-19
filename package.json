@@ -51,6 +51,7 @@
     "@material/mwc-fab": "canary",
     "@material/mwc-formfield": "canary",
     "@material/mwc-icon-button": "canary",
+    "@material/mwc-linear-progress": "^0.22.0-canary.cc04657a.0",
     "@material/mwc-list": "canary",
     "@material/mwc-menu": "canary",
     "@material/mwc-radio": "canary",
