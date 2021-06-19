@@ -274,6 +274,7 @@ export default class HaChartBase extends LitElement {
         pointer-events: none;
         z-index: 1000;
         width: 200px;
+        box-sizing: border-box;
       }
       :host([rtl]) .chartTooltip {
         direction: rtl;
