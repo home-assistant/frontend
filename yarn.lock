@@ -5683,6 +5683,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chartjs-plugin-datalabels@npm:^2.0.0-rc.1":
+  version: 2.0.0
+  resolution: "chartjs-plugin-datalabels@npm:2.0.0"
+  peerDependencies:
+    chart.js: ^3.0.0
+  checksum: 9d9b81ba271bbfd6a8e5c647316ac66bd1ca33c867b9472502aa2deb129d1fe1d710b937da31f1e37878a7221060311f095e7659ecd11c375ef48339a28d461f
+  languageName: node
+  linkType: hard
+
 "check-error@npm:^1.0.2":
   version: 1.0.2
   resolution: "check-error@npm:1.0.2"
@@ -8808,12 +8817,14 @@ fsevents@~2.3.1:
     babel-loader: ^8.2.2
     chai: ^4.3.4
     chart.js: ^3.3.2
+    chartjs-plugin-datalabels: ^2.0.0-rc.1
     comlink: ^4.3.1
     core-js: ^3.15.2
     cropperjs: ^1.5.11
     date-fns: ^2.22.1
     deep-clone-simple: ^1.1.1
     deep-freeze: ^0.0.1
+    deepmerge: ^4.2.2
     del: ^4.0.0
     eslint: ^7.30.0
     eslint-config-airbnb-typescript: ^12.3.1
