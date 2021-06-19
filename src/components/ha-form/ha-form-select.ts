@@ -1,7 +1,10 @@
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMenuDown } from "@mdi/js";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-menu-button/paper-menu-button";
+import "@polymer/paper-ripple/paper-ripple";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -41,8 +44,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
             input-aria-haspopup="listbox"
             autocomplete="off"
           >
-            ${this.data &&
-            this.schema.optional
+            ${this.data && this.schema.optional
               ? html`<mwc-icon-button
                   slot="suffix"
                   class="clear-button"
