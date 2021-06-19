@@ -203,10 +203,11 @@ export default class HaChartBase extends LitElement {
     }
     this._tooltip = {
       ...context.tooltip,
-      top: this.chart!.canvas.offsetTop + context.tooltip.caretY + "px",
+      top: this.chart!.canvas.offsetTop + context.tooltip.caretY + 12 + "px",
       left:
         this.chart!.canvas.offsetLeft +
-        clamp(context.tooltip.caretX, 100, this.clientWidth - 100) +
+        clamp(context.tooltip.caretX, 100, this.clientWidth - 100) -
+        100 +
         "px",
     };
   }
@@ -271,10 +272,8 @@ export default class HaChartBase extends LitElement {
         color: white;
         border-radius: 4px;
         pointer-events: none;
-        transform: translate(-50%, 12px);
         z-index: 1000;
         width: 200px;
-        transition: opacity 0.15s ease-in-out;
       }
       :host([rtl]) .chartTooltip {
         direction: rtl;
