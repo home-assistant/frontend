@@ -42,25 +42,8 @@ export class EnergyStrategy {
         type: "statistics-graph",
         title: hass.localize("ui.panel.energy.charts.stat_house_energy_meter"),
         entities: [energyPrefs.stat_house_energy_meter],
-        days_to_show: 1,
+        days_to_show: 20,
         chart_plugins: ["datalabels"],
-        chart_options: {
-          plugins: {
-            tooltip: { enabled: false },
-            datalabels: {
-              align: "end",
-              anchor: "end",
-              display: "auto",
-              formatter: (value) => value.y,
-            },
-          },
-          elements: {
-            line: {
-              tension: 0.6,
-              borderWidth: 3,
-            },
-          },
-        },
       });
     }
 
