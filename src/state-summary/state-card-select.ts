@@ -60,7 +60,7 @@ class StateCardSelect extends LitElement {
     )!.selected = this.stateObj.attributes.options.indexOf(this.stateObj.state);
   }
 
-  private async _selectedOptionChanged(ev) {
+  private _selectedOptionChanged(ev) {
     const option = ev.target.selectedItem.option;
     if (option === this.stateObj.state) {
       return;
