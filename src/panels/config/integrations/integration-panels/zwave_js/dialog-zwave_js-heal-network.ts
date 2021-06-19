@@ -178,7 +178,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
               </mwc-button>
             `
           : ``}
-        ${this._heal_node_status
+        ${this._heal_node_status && this._status !== "finished"
           ? html`
               <mwc-linear-progress
                 determinate
