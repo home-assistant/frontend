@@ -11,6 +11,11 @@ import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { clamp } from "../../common/number/clamp";
 
+interface Tooltip extends TooltipModel<any> {
+  top: string;
+  left: string;
+}
+
 @customElement("ha-chart-base")
 export default class HaChartBase extends LitElement {
   public chart?: Chart;
@@ -24,12 +29,19 @@ export default class HaChartBase extends LitElement {
   @property({ attribute: false })
   public options?: ChartOptions;
 
-  @state() private _tooltip?: TooltipModel<any>;
+  @state() private _tooltip?: Tooltip;
 
   @state() private _height?: string;
 
+  @state() private _hiddenDatasets: Set<number> = new Set();
+
   protected firstUpdated() {
     this._setupChart();
+    this.data.datasets.forEach((dataset, index) => {
+      if (dataset.hidden) {
+        this._hiddenDatasets.add(index);
+      }
+    });
   }
 
   public willUpdate(changedProps: PropertyValues): void {
@@ -54,6 +66,30 @@ export default class HaChartBase extends LitElement {
 
   protected render() {
     return html`
+      ${this.options?.plugins?.legend?.display === true
+        ? html` <div class="chartLegend">
+            <ul>
+              ${this.data.datasets.map(
+                (dataset, index) => html`<li
+                  .datasetIndex=${index}
+                  @click=${this._legendClick}
+                  class=${classMap({
+                    hidden: this._hiddenDatasets.has(index),
+                  })}
+                >
+                  <div
+                    class="bullet"
+                    style=${styleMap({
+                      backgroundColor: dataset.backgroundColor as string,
+                      borderColor: dataset.borderColor as string,
+                    })}
+                  ></div>
+                  ${dataset.label}
+                </li>`
+              )}
+            </ul>
+          </div>`
+        : ""}
       <div
         class="chartContainer"
         style=${styleMap({
@@ -69,10 +105,8 @@ export default class HaChartBase extends LitElement {
           ? html`<div
               class="chartTooltip ${classMap({ [this._tooltip.yAlign]: true })}"
               style=${styleMap({
-                left:
-                  clamp(this._tooltip.caretX, 100, this.clientWidth - 100) +
-                  "px",
-                top: this._tooltip.caretY + "px",
+                top: this._tooltip.top,
+                left: this._tooltip.left,
               })}
             >
               <div class="title">${this._tooltip.title}</div>
@@ -85,15 +119,16 @@ export default class HaChartBase extends LitElement {
                 <ul>
                   ${this._tooltip.body.map(
                     (item, i) => html`<li>
-                      <em
+                      <div
+                        class="bullet"
                         style=${styleMap({
                           backgroundColor: this._tooltip!.labelColors[i]
                             .backgroundColor as string,
                           borderColor: this._tooltip!.labelColors[i]
                             .borderColor as string,
                         })}
-                      ></em
-                      >${item.lines.join("\n")}
+                      ></div>
+                      ${item.lines.join("\n")}
                     </li>`
                   )}
                 </ul>
@@ -134,8 +169,28 @@ export default class HaChartBase extends LitElement {
           enabled: false,
           external: (context) => this._handleTooltip(context),
         },
+        legend: {
+          ...this.options?.plugins?.legend,
+          display: false,
+        },
       },
     };
+  }
+
+  private _legendClick(ev) {
+    if (!this.chart) {
+      return;
+    }
+    const index = ev.currentTarget.datasetIndex;
+    if (this.chart.isDatasetVisible(index)) {
+      this.chart.setDatasetVisibility(index, false);
+      this._hiddenDatasets.add(index);
+    } else {
+      this.chart.setDatasetVisibility(index, true);
+      this._hiddenDatasets.delete(index);
+    }
+    this.chart.update("none");
+    this.requestUpdate("_hiddenDatasets");
   }
 
   private _handleTooltip(context: {
@@ -146,7 +201,14 @@ export default class HaChartBase extends LitElement {
       this._tooltip = undefined;
       return;
     }
-    this._tooltip = { ...context.tooltip };
+    this._tooltip = {
+      ...context.tooltip,
+      top: this.chart!.canvas.offsetTop + context.tooltip.caretY + "px",
+      left:
+        this.chart!.canvas.offsetLeft +
+        clamp(context.tooltip.caretX, 100, this.clientWidth - 100) +
+        "px",
+    };
   }
 
   public updateChart = (): void => {
@@ -161,13 +223,48 @@ export default class HaChartBase extends LitElement {
         display: block;
       }
       .chartContainer {
-        position: relative;
         overflow: hidden;
         height: 0;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
       }
+      .chartLegend {
+        text-align: center;
+      }
+      .chartLegend li {
+        cursor: pointer;
+        display: inline-flex;
+        padding: 0 8px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        box-sizing: border-box;
+        align-items: center;
+        color: var(--secondary-text-color);
+      }
+      .chartLegend .hidden {
+        text-decoration: line-through;
+      }
+      .chartLegend .bullet,
+      .chartTooltip .bullet {
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 50%;
+        display: inline-block;
+        height: 16px;
+        margin-right: 4px;
+        width: 16px;
+        flex-shrink: 0;
+        box-sizing: border-box;
+      }
+      .chartTooltip .bullet {
+        align-self: baseline;
+      }
+      :host([rtl]) .chartTooltip .bullet {
+        margin-right: inherit;
+        margin-left: 4px;
+      }
       .chartTooltip {
-        padding: 4px;
+        padding: 8px;
         font-size: 90%;
         position: absolute;
         background: rgba(80, 80, 80, 0.9);
@@ -182,21 +279,21 @@ export default class HaChartBase extends LitElement {
       :host([rtl]) .chartTooltip {
         direction: rtl;
       }
+      .chartLegend ul,
       .chartTooltip ul {
         display: inline-block;
         padding: 0 0px;
-        margin: 5px 0 0 0;
+        margin: 8px 0 0 0;
         width: 100%;
       }
       .chartTooltip ul {
-        margin: 0 3px;
+        margin: 0 4px;
       }
       .chartTooltip li {
-        display: block;
+        display: flex;
         white-space: pre-line;
-      }
-      .chartTooltip li::first-line {
-        line-height: 0;
+        align-items: center;
+        line-height: 16px;
       }
       .chartTooltip .title {
         text-align: center;
@@ -206,17 +303,6 @@ export default class HaChartBase extends LitElement {
         text-align: center;
         font-weight: 300;
         word-break: break-all;
-      }
-      .chartTooltip em {
-        border-radius: 4px;
-        display: inline-block;
-        height: 10px;
-        margin-right: 4px;
-        width: 10px;
-      }
-      :host([rtl]) .chartTooltip em {
-        margin-right: inherit;
-        margin-left: 4px;
       }
     `;
   }
