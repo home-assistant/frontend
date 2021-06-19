@@ -42,9 +42,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
             autocomplete="off"
           >
             ${this.data &&
-            (this.schema.optional !== undefined
-              ? this.schema.optional
-              : !this.schema.required)
+            this.schema.optional
               ? html`<mwc-icon-button
                   slot="suffix"
                   class="clear-button"
