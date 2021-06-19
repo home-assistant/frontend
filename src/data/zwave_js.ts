@@ -78,6 +78,11 @@ export interface ZWaveJSRefreshNodeStatusMessage {
   stage?: string;
 }
 
+export interface ZWaveJSHealNetworkStatusMessage {
+  event: string;
+  heal_node_status: { [key: number]: string };
+}
+
 export enum NodeStatus {
   Unknown,
   Asleep,
@@ -194,7 +199,7 @@ export const stopHealNetwork = (
 export const subscribeHealNetworkProgress = (
   hass: HomeAssistant,
   entry_id: string,
-  callbackFunction: (message: ZWaveJSRefreshNodeStatusMessage) => void
+  callbackFunction: (message: ZWaveJSHealNetworkStatusMessage) => void
 ): Promise<UnsubscribeFunc> =>
   hass.connection.subscribeMessage(
     (message: any) => callbackFunction(message),
