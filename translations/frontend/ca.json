@@ -558,9 +558,9 @@
             },
             "counter": {
                 "actions": {
-                    "decrement": "decreixement",
-                    "increment": "increment",
-                    "reset": "restablir"
+                    "decrement": "decrementa",
+                    "increment": "incrementa",
+                    "reset": "restableix"
                 }
             },
             "cover": {
