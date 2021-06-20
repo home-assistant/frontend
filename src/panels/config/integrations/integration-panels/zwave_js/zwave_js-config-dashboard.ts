@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiCheckCircle, mdiCircle, mdiRefresh } from "@mdi/js";
+import { mdiAlertCircle, mdiCheckCircle, mdiCircle, mdiRefresh } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
@@ -18,6 +18,10 @@ import {
   ZWaveJSNode,
 } from "../../../../../data/zwave_js";
 import {
+  ConfigEntry,
+  getConfigEntries,
+} from "../../../../../data/config_entries";
+import {
   showAlertDialog,
   showConfirmationDialog,
 } from "../../../../../dialogs/generic/show-dialog-box";
@@ -32,6 +36,7 @@ import { configTabs } from "./zwave_js-config-router";
 import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 
+const ERROR_STATES = ["migration_error", "setup_error", "setup_retry"];
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends LitElement {
   @property({ type: Object }) public hass!: HomeAssistant;
@@ -43,6 +48,8 @@ class ZWaveJSConfigDashboard extends LitElement {
   @property({ type: Boolean }) public isWide!: boolean;
 
   @property() public configEntryId?: string;
+
+  @state() private _configEntry?: ConfigEntry;
 
   @state() private _network?: ZWaveJSNetwork;
 
@@ -61,6 +68,14 @@ class ZWaveJSConfigDashboard extends LitElement {
   }
 
   protected render(): TemplateResult {
+    if (!this._configEntry) {
+      return html``;
+    }
+
+    if (ERROR_STATES.includes(this._configEntry.state)) {
+      return this._renderErrorScreen();
+    }
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -216,10 +231,81 @@ class ZWaveJSConfigDashboard extends LitElement {
     `;
   }
 
+  private _renderErrorScreen() {
+    const item = this._configEntry!;
+    let stateText: [string, ...unknown[]] | undefined;
+    let stateTextExtra: TemplateResult | string | undefined;
+
+    if (item.disabled_by) {
+      stateText = [
+        "ui.panel.config.integrations.config_entry.disable.disabled_cause",
+        "cause",
+        this.hass.localize(
+          `ui.panel.config.integrations.config_entry.disable.disabled_by.${item.disabled_by}`
+        ) || item.disabled_by,
+      ];
+      if (item.state === "failed_unload") {
+        stateTextExtra = html`.
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.disable_restart_confirm"
+        )}.`;
+      }
+    } else if (item.state === "not_loaded") {
+      stateText = ["ui.panel.config.integrations.config_entry.not_loaded"];
+    } else if (ERROR_STATES.includes(item.state)) {
+      stateText = [
+        `ui.panel.config.integrations.config_entry.state.${item.state}`,
+      ];
+      if (item.reason) {
+        this.hass.loadBackendTranslation("config", item.domain);
+        stateTextExtra = html` ${this.hass.localize(
+          `component.${item.domain}.config.error.${item.reason}`
+        ) || item.reason}`;
+      } else {
+        stateTextExtra = html`
+          <br />
+          <a href="/config/logs"
+            >${this.hass.localize(
+              "ui.panel.config.integrations.config_entry.check_the_logs"
+            )}</a
+          >
+        `;
+      }
+    }
+
+    return html` ${stateText
+      ? html`
+          <div class="error-message">
+            <ha-svg-icon .path=${mdiAlertCircle}></ha-svg-icon>
+            <h3>
+              ${this._configEntry!.title}: ${this.hass.localize(...stateText)}
+            </h3>
+            <p>${stateTextExtra}</p>
+            <mwc-button @click=${this._handleBack}>
+              ${this.hass?.localize("ui.panel.error.go_back") || "go back"}
+            </mwc-button>
+          </div>
+        `
+      : ""}`;
+  }
+
+  private _handleBack(): void {
+    history.back();
+  }
+
   private async _fetchData() {
     if (!this.configEntryId) {
       return;
     }
+    const configEntries = await getConfigEntries(this.hass);
+    this._configEntry = configEntries.find(
+      (entry) => entry.entry_id === this.configEntryId!
+    );
+
+    if (ERROR_STATES.includes(this._configEntry!.state)) {
+      return;
+    }
+
     const [network, dataCollectionStatus] = await Promise.all([
       fetchNetworkStatus(this.hass!, this.configEntryId),
       fetchDataCollectionStatus(this.hass!, this.configEntryId),
@@ -349,6 +435,27 @@ class ZWaveJSConfigDashboard extends LitElement {
         }
         .offline {
           color: red;
+        }
+
+        .error-message {
+          display: flex;
+          color: var(--primary-text-color);
+          height: calc(100% - var(--header-height));
+          padding: 16px;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+        }
+
+        .error-message h3 {
+          text-align: center;
+          font-weight: bold;
+        }
+
+        .error-message ha-svg-icon {
+          color: var(--error-color);
+          width: 64px;
+          height: 64px;
         }
 
         .content {
