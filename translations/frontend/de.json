@@ -820,6 +820,7 @@
                     "was_unplugged": "wurde ausgesteckt",
                     "was_unsafe": "war unsicher"
                 },
+                "retrieval_error": "Fehler beim Abrufen von Logbucheinträgen",
                 "show_trace": "Trace anzeigen"
             },
             "media-browser": {
