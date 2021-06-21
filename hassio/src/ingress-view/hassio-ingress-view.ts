@@ -84,11 +84,11 @@ class HassioIngressView extends LitElement {
       clearInterval(this._resolveIngressURL.interval);
       await showAlertDialog(this, {
         text:
-          this.hass.localize("supervisor_ingress.not_running") ||
+          this.hass.localize("ingress.not_running") ||
           "The add-on is not running, please start it.",
         title: this._addon.name,
         confirmText:
-          this.hass.localize("supervisor_ingress.go_to_dashboard") ||
+          this.hass.localize("ingress.go_to_dashboard") ||
           "Go to add-on dashboard",
       });
       await nextRender();
@@ -111,12 +111,11 @@ class HassioIngressView extends LitElement {
     ) {
       await showAlertDialog(this, {
         text:
-          this.hass.localize("supervisor_ingress.timeout") ||
+          this.hass.localize("ingress.timeout") ||
           "Timeout while waiting for add-on to start, check the add-on logs",
         title: this._addon.name,
         confirmText:
-          this.hass.localize("supervisor_ingress.go_to_logs") ||
-          "Go to add-on logs",
+          this.hass.localize("ingress.go_to_logs") || "Go to add-on logs",
       });
       await nextRender();
       navigate(`/hassio/addon/${this._addon.slug}/logs`, { replace: true });
@@ -142,7 +141,7 @@ class HassioIngressView extends LitElement {
         >
           ${this._resolveIngressURL.status === STATUS_BAD_GATEWAY
             ? html`<p>
-                ${this.hass.localize("supervisor_ingress.waiting") ||
+                ${this.hass.localize("ingress.waiting") ||
                 "Waiting for add-on to start"}
               </p>`
             : ""}
@@ -240,7 +239,7 @@ class HassioIngressView extends LitElement {
     } catch (err) {
       await showAlertDialog(this, {
         text:
-          this.hass.localize("supervisor_ingress.unable_to_fetch") ||
+          this.hass.localize("ingress.unable_to_fetch") ||
           "Unable to fetch add-on info to start Ingress",
         title: "Supervisor",
       });
@@ -252,7 +251,7 @@ class HassioIngressView extends LitElement {
     if (!addon.ingress_url) {
       await showAlertDialog(this, {
         text:
-          this.hass.localize("supervisor_ingress.no_ingress") ||
+          this.hass.localize("ingress.no_ingress") ||
           "Add-on does not support Ingress",
         title: addon.name,
       });
@@ -264,7 +263,7 @@ class HassioIngressView extends LitElement {
     if (addon.state !== "started") {
       await showAlertDialog(this, {
         text:
-          this.hass.localize("supervisor_ingress.not_running") ||
+          this.hass.localize("ingress.not_running") ||
           "The add-on is not running, please start it.",
         title: addon.name,
       });
@@ -280,7 +279,7 @@ class HassioIngressView extends LitElement {
     } catch (err) {
       await showAlertDialog(this, {
         text:
-          this.hass.localize("supervisor_ingress.unable_to_create") ||
+          this.hass.localize("ingress.unable_to_create") ||
           "Unable to create an Ingress session",
         title: addon.name,
       });
