@@ -74,6 +74,10 @@ class StepFlowPickHandler extends LitElement {
       this.hass.localize
     );
 
+    const showDocumentationNote = Boolean(
+      this.showAdvanced || !handlers.length
+    );
+
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
       <search-input
@@ -87,7 +91,9 @@ class StepFlowPickHandler extends LitElement {
           width: `${this._width}px`,
           height: `${this._height}px`,
         })}
-        class=${classMap({ advanced: Boolean(this.showAdvanced) })}
+        class=${classMap({
+          documentation: showDocumentationNote,
+        })}
       >
         ${handlers.map(
           (handler: HandlerObj) =>
@@ -109,7 +115,7 @@ class StepFlowPickHandler extends LitElement {
             `
         )}
       </div>
-      ${this.showAdvanced
+      ${showDocumentationNote
         ? html`
             <p>
               ${this.hass.localize(
@@ -118,7 +124,12 @@ class StepFlowPickHandler extends LitElement {
               ${this.hass.localize(
                 "ui.panel.config.integrations.note_about_website_reference"
               )}<a
-                href="${documentationUrl(this.hass, "/integrations/")}"
+                href="${documentationUrl(
+                  this.hass,
+                  `/integrations/${
+                    this._filter ? `#search/${this._filter}` : ""
+                  }`
+                )}"
                 target="_blank"
                 rel="noreferrer"
                 >${this.hass.localize(
@@ -193,7 +204,7 @@ class StepFlowPickHandler extends LitElement {
           div {
             max-height: calc(100vh - 134px);
           }
-          div.advanced {
+          div.documentation {
             max-height: calc(100vh - 250px);
           }
         }
