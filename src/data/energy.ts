@@ -3,9 +3,7 @@ import { HomeAssistant } from "../types";
 export const emptyHomeConsumptionEnergyPreference = (): HomeConsumptionEnergyPreference => ({
   stat_consumption: "",
   stat_tariff: "",
-  cost_management_day: 0,
-  cost_delivery_cost_day: 0,
-  discount_energy_tax_day: 0,
+  cost_adjustment_day: 0,
 });
 
 export const emptyProductionEnergyPreference = (): ProductionEnergyPreference => ({
@@ -23,9 +21,7 @@ export interface HomeConsumptionEnergyPreference {
   // Points at a sensor that contains the cost
   stat_tariff: string | null;
 
-  cost_management_day: number;
-  cost_delivery_cost_day: number;
-  discount_energy_tax_day: number;
+  cost_adjustment_day: number;
 }
 
 export interface DeviceConsumptionEnergyPreference {

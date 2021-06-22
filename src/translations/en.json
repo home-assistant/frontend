@@ -3639,9 +3639,7 @@
           "home_consumption": {
             "stat_consumption": "Total energy consumption",
             "stat_tariff": "The cost of your energy",
-            "cost_grid_management_day": "Cost per day for the management of the grid",
-            "cost_delivery_cost_day": "Cost per day for the delivery",
-            "cost_discount_energy_tax_day": "Energy tax discount per day"
+            "cost_adjustment_day": "Standard daily costs (grid management cost etc)"
           },
           "device_consumption": {
             "description": "If you measure the power consumption of individual devices, you can select the entities with the power consumption below",
