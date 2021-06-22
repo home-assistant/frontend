@@ -4,7 +4,14 @@ import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { EnergyPreferences, saveEnergyPreferences } from "../../data/energy";
+import {
+  emptyHomeConsumptionEnergyPreference,
+  emptyProductionEnergyPreference,
+  EnergyPreferences,
+  HomeConsumptionEnergyPreference,
+  ProductionEnergyPreference,
+  saveEnergyPreferences,
+} from "../../data/energy";
 import { HomeAssistant } from "../../types";
 import "../../components/entity/ha-statistics-picker";
 import { getStatisticIds } from "../../data/history";
@@ -14,7 +21,7 @@ export class EnergySettings extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  public preferences: Partial<EnergyPreferences> = {};
+  public preferences!: EnergyPreferences;
 
   @state() private _error?: string;
 
@@ -30,112 +37,96 @@ export class EnergySettings extends LitElement {
     if (!this._statisticIds) {
       return html``;
     }
+    const homeConsumption: HomeConsumptionEnergyPreference = this.preferences
+      .home_consumption.length
+      ? this.preferences.home_consumption[0]
+      : emptyHomeConsumptionEnergyPreference();
+    const production: ProductionEnergyPreference = this.preferences.production
+      .length
+      ? this.preferences.production[0]
+      : emptyProductionEnergyPreference();
+
     return html`
       ${this._error ? html`<div class="error">${this._error}</div>` : ""}
       <ha-statistic-picker
-        id="stat_house_energy_meter"
+        .key=${"home_consumption"}
+        id="stat_consumption"
         .hass=${this.hass}
         .statisticIds=${this._statisticIds}
-        .value=${this.preferences?.stat_house_energy_meter}
+        .value=${homeConsumption.stat_consumption}
         .label=${this.hass.localize(
-          "ui.panel.energy.settings.stat_house_energy_meter"
+          "ui.panel.energy.settings.home_consumption.stat_consumption"
         )}
         @value-changed=${this._valueChanged}
       ></ha-statistic-picker>
-      <p>schedule_tariff: schedule_tariff: null; // todo</p>
+      <ha-statistic-picker
+        .key=${"home_consumption"}
+        id="stat_tariff"
+        .hass=${this.hass}
+        .statisticIds=${this._statisticIds}
+        .value=${homeConsumption.stat_tariff}
+        .label=${this.hass.localize(
+          "ui.panel.energy.settings.home_consumption.stat_tariff"
+        )}
+        @value-changed=${this._valueChanged}
+      ></ha-statistic-picker>
+
       <h3>Solar</h3>
       <ha-statistic-picker
-        id="stat_solar_generatation"
+        .key=${"production"}
+        id="stat_production"
         .hass=${this.hass}
         .statisticIds=${this._statisticIds}
-        .value=${this.preferences?.stat_solar_generatation}
+        .value=${production.stat_production}
         .label=${this.hass.localize(
-          "ui.panel.energy.settings.stat_solar_generatation"
+          "ui.panel.energy.settings.production.stat_production"
         )}
         @value-changed=${this._valueChanged}
       ></ha-statistic-picker>
       <ha-statistic-picker
-        id="stat_solar_return_to_grid"
+        .key=${"production"}
+        id="stat_return_to_grid"
         .hass=${this.hass}
         .statisticIds=${this._statisticIds}
-        .value=${this.preferences?.stat_solar_return_to_grid}
+        .value=${production.stat_return_to_grid}
         .label=${this.hass.localize(
-          "ui.panel.energy.settings.stat_solar_return_to_grid"
+          "ui.panel.energy.settings.production.stat_return_to_grid"
         )}
         @value-changed=${this._valueChanged}
       ></ha-statistic-picker>
       <ha-statistic-picker
-        id="stat_solar_predicted_generation"
+        .key=${"production"}
+        id="stat_predicted_production"
         .hass=${this.hass}
         .statisticIds=${this._statisticIds}
-        .value=${this.preferences?.stat_solar_predicted_generation}
+        .value=${production.stat_predicted_production}
         .label=${this.hass.localize(
-          "ui.panel.energy.settings.stat_solar_predicted_generation"
+          "ui.panel.energy.settings.production.stat_predicted_production"
         )}
         @value-changed=${this._valueChanged}
       ></ha-statistic-picker>
+
       <h3>Individual devices</h3>
-      ${this.hass.localize("ui.panel.energy.settings.stat_device_consumption")}
+      ${this.hass.localize(
+        "ui.panel.energy.settings.device_consumption.description"
+      )}
       <ha-statistics-picker
+        .key=${"device_consumption"}
         id="stat_device_consumption"
         .hass=${this.hass}
-        .value=${this.preferences?.stat_device_consumption}
+        .value=${this.preferences.device_consumption.map(
+          (pref) => pref.stat_consumption
+        )}
         .statisticIds=${this._statisticIds}
         .pickedStatisticLabel=${this.hass.localize(
-          "ui.panel.energy.settings.selected_stat_device_consumption"
+          "ui.panel.energy.settings.device_consumption.selected_stat"
         )}
         .pickStatisticLabel=${this.hass.localize(
-          "ui.panel.energy.settings.add_stat_device_consumption"
+          "ui.panel.energy.settings.device_consumption.add_stat"
         )}
         @value-changed=${this._valueChanged}
       >
       </ha-statistics-picker>
-      <h3>Costs</h3>
-      <paper-input
-        id="cost_kwh_low_tariff"
-        type="number"
-        .value=${this.preferences?.cost_kwh_low_tariff}
-        .label=${this.hass.localize(
-          "ui.panel.energy.settings.cost_kwh_low_tariff"
-        )}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
-      <paper-input
-        id="cost_kwh_normal_tariff"
-        type="number"
-        .value=${this.preferences?.cost_kwh_normal_tariff}
-        .label=${this.hass.localize(
-          "ui.panel.energy.settings.cost_kwh_normal_tariff"
-        )}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
-      <paper-input
-        id="cost_grid_management_day"
-        type="number"
-        .value=${this.preferences?.cost_grid_management_day}
-        .label=${this.hass.localize(
-          "ui.panel.energy.settings.cost_grid_management_day"
-        )}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
-      <paper-input
-        id="cost_delivery_cost_day"
-        type="number"
-        .value=${this.preferences?.cost_delivery_cost_day}
-        .label=${this.hass.localize(
-          "ui.panel.energy.settings.cost_delivery_cost_day"
-        )}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
-      <paper-input
-        id="cost_discount_energy_tax_day"
-        type="number"
-        .value=${this.preferences?.cost_discount_energy_tax_day}
-        .label=${this.hass.localize(
-          "ui.panel.energy.settings.cost_discount_energy_tax_day"
-        )}
-        @value-changed=${this._valueChanged}
-      ></paper-input>
     `;
   }
 
@@ -147,6 +138,10 @@ export class EnergySettings extends LitElement {
     ev.stopPropagation();
 
     const target = ev.target! as HTMLElement;
+    const key = (target as any).key as
+      | "production"
+      | "home_consumption"
+      | "device_consumption";
     const id = target.id;
 
     let value: string[] | string | number | undefined | null = ev.detail.value;
@@ -159,10 +154,24 @@ export class EnergySettings extends LitElement {
       value = Number(value);
     }
 
-    if (this.preferences[id] === value) {
-      return;
+    const preferences = { ...this.preferences };
+
+    if (key === "home_consumption" || key === "production") {
+      preferences[key][0] = {
+        ...preferences[key][0],
+        [id]: value,
+      };
+      if (id === "stat_tariff") {
+        // TODO can we automatically set the currency based on the unit?
+      }
+    } else if (key === "device_consumption") {
+      preferences[key] = (value as string[]).map((stat) => ({
+        stat_consumption: stat,
+      }));
     }
-    this.preferences = { ...this.preferences, [id]: value };
+
+    this.preferences = preferences;
+
     fireEvent(this, "value-changed", { value: this.preferences });
   }
 

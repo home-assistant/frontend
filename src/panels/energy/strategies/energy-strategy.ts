@@ -37,20 +37,21 @@ export class EnergyStrategy {
       return view;
     }
 
-    if (energyPrefs.stat_house_energy_meter) {
+    if (energyPrefs.home_consumption.length) {
       view.cards!.push({
         type: "statistics-graph",
         title: hass.localize("ui.panel.energy.charts.stat_house_energy_meter"),
-        entities: [energyPrefs.stat_house_energy_meter],
+        entities: [energyPrefs.home_consumption[0].stat_consumption],
         days_to_show: 20,
         chart_plugins: ["datalabels"],
       });
     }
 
-    if (energyPrefs.stat_solar_generatation) {
-      const entities = [energyPrefs.stat_solar_generatation];
-      if (energyPrefs.stat_solar_return_to_grid) {
-        entities.push(energyPrefs.stat_solar_return_to_grid);
+    if (energyPrefs.production.length) {
+      const productionPrefs = energyPrefs.production[0];
+      const entities = [productionPrefs.stat_production];
+      if (productionPrefs.stat_return_to_grid) {
+        entities.push(productionPrefs.stat_return_to_grid);
       }
       view.cards!.push({
         type: "statistics-graph",
@@ -89,21 +90,23 @@ export class EnergyStrategy {
           },
         },
       });
+
+      if (productionPrefs) {
+        view.cards!.push({
+          type: "statistics-graph",
+          title: hass.localize("ui.panel.energy.charts.solar"),
+          entities: [productionPrefs.stat_predicted_production],
+        });
+      }
     }
 
-    if (energyPrefs.stat_solar_predicted_generation) {
-      view.cards!.push({
-        type: "statistics-graph",
-        title: hass.localize("ui.panel.energy.charts.solar"),
-        entities: [energyPrefs.stat_solar_predicted_generation],
-      });
-    }
-
-    if (energyPrefs.stat_device_consumption.length) {
+    if (energyPrefs.device_consumption.length) {
       view.cards!.push({
         title: hass.localize("ui.panel.energy.charts.by_device"),
         type: "statistics-graph",
-        entities: energyPrefs.stat_device_consumption,
+        entities: energyPrefs.device_consumption.map(
+          (dev) => dev.stat_consumption
+        ),
       });
     }
 

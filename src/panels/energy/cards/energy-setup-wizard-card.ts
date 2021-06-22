@@ -14,10 +14,11 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public lovelace?: Lovelace;
 
-  private _prefs: Partial<EnergyPreferences> = {
-    cost_delivery_cost_day: 0,
-    cost_discount_energy_tax_day: 0,
-    cost_grid_management_day: 0,
+  private _prefs: EnergyPreferences = {
+    currency: "€",
+    home_consumption: [],
+    device_consumption: [],
+    production: [],
   };
 
   public getCardSize() {

@@ -1,23 +1,51 @@
 import { HomeAssistant } from "../types";
 
-export interface EnergyPreferences {
-  stat_house_energy_meter: string | null;
+export const emptyHomeConsumptionEnergyPreference = (): HomeConsumptionEnergyPreference => ({
+  stat_consumption: "",
+  stat_tariff: "",
+  cost_management_day: 0,
+  cost_delivery_cost_day: 0,
+  discount_energy_tax_day: 0,
+});
 
-  stat_solar_generatation: string | null;
-  stat_solar_return_to_grid: string | null;
-  stat_solar_predicted_generation: string | null;
+export const emptyProductionEnergyPreference = (): ProductionEnergyPreference => ({
+  type: "solar",
 
-  stat_device_consumption: string[];
+  stat_production: "",
+  stat_return_to_grid: null,
+  stat_predicted_production: null,
+});
 
-  schedule_tariff: null; // todo
+export interface HomeConsumptionEnergyPreference {
+  // This is an ever increasing value
+  stat_consumption: string;
 
-  cost_kwh_low_tariff: number | null;
-  cost_kwh_normal_tariff: number | null;
+  // Points at a sensor that contains the cost
+  stat_tariff: string | null;
 
-  cost_grid_management_day: number;
+  cost_management_day: number;
   cost_delivery_cost_day: number;
+  discount_energy_tax_day: number;
+}
 
-  cost_discount_energy_tax_day: number;
+export interface DeviceConsumptionEnergyPreference {
+  // This is an ever increasing value
+  stat_consumption: string;
+}
+
+export interface ProductionEnergyPreference {
+  type: "solar" | "wind";
+
+  stat_production: string;
+  stat_return_to_grid: string | null;
+  stat_predicted_production: string | null;
+}
+
+export interface EnergyPreferences {
+  currency: string;
+  home_consumption: HomeConsumptionEnergyPreference[];
+  device_consumption: DeviceConsumptionEnergyPreference[];
+  production: ProductionEnergyPreference[];
 }
 
 export const getEnergyPreferences = (hass: HomeAssistant) =>
