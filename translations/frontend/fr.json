@@ -380,6 +380,7 @@
         "snapshot": {
             "addons": "Modules complémentaires",
             "available_snapshots": "Instantanés disponibles",
+            "confirm_password": "Confirmez le mot de passe de l'instantané",
             "could_not_create": "Impossible de créer un instantané",
             "create": "Créer",
             "create_blocked_not_running": "La création d’un instantané n’est pas possible en ce moment car le système est en état {state}.",
@@ -402,6 +403,7 @@
             "password": "Mot de passe",
             "password_protected": "protégé par mot de passe",
             "password_protection": "Protection par mot de passe",
+            "passwords_not_matching": "Les mots de passe ne correspondent pas",
             "security": "Sécurité",
             "type": "Type",
             "upload_snapshot": "Téléverser un instantané"
@@ -798,6 +800,7 @@
                     "was_unplugged": "était débranché",
                     "was_unsafe": "n'était pas sûr"
                 },
+                "retrieval_error": "Erreur lors de la récupération d'une entrée du journal",
                 "show_trace": "Afficher la trace"
             },
             "media-browser": {
@@ -3857,10 +3860,19 @@
                 "intro": "Êtes-vous prêt à réveiller votre maison, à récupérer votre vie privée et à rejoindre une communauté mondiale de bricoleurs?",
                 "next": "Suivant",
                 "restore": {
+                    "addons": "Modules complémentaires",
+                    "confirm_password": "Confirmez le mot de passe de l'instantané",
                     "description": "Vous pouvez également restaurer à partir d'un instantané précédent.",
+                    "folders": "Dossiers",
+                    "full_snapshot": "Instantané complet",
                     "hide_log": "Masquer le journal",
                     "in_progress": "Restauration en cours",
-                    "show_log": "Afficher le journal"
+                    "partial_snapshot": "Instantané partiel",
+                    "password": "Mot de passe de l'instantané",
+                    "password_protection": "Protection par mot de passe",
+                    "select_type": "Sélectionnez les éléments à restaurer",
+                    "show_log": "Afficher le journal",
+                    "type": "Type d'instantané"
                 },
                 "user": {
                     "create_account": "Créer un compte",
