@@ -272,7 +272,7 @@
             "addon_new_version": "Új verzió érhető el",
             "addon_running": "A bővítmény fut",
             "addon_stopped": "A bővítmény leállt",
-            "addons": "Bővítmények",
+            "addons": "Telepített bővítmények",
             "no_addons": "Még nincs telepítve egyetlen bővítmény sem. A kezdéshez menjen át a bővítmény boltba!"
         },
         "dialog": {
@@ -330,6 +330,7 @@
             "create": "Létrehozás",
             "create_blocked_not_running": "Jelenleg nem lehet pillanatképet létrehozni, mivel a rendszer {state} állapotban van.",
             "create_snapshot": "Pillanatkép létrehozása",
+            "delete_snapshot_confirm": "törlés",
             "description": "A pillanatképekkel könnyen hozhatsz létre vagy tölthetsz vissza mentést a teljes Home Assistant példányodról.",
             "enter_password": "Add meg a jelszót",
             "folder": {
@@ -341,14 +342,14 @@
             },
             "folders": "Mappák",
             "full_snapshot": "Teljes pillanatkép",
-            "name": "Név",
+            "name": "Pillanatkép neve",
             "no_snapshots": "Nincs még egyetlen pillanatképed sem létrehozva.",
             "partial_snapshot": "Részleges pillanatkép",
-            "password": "Jelszó",
+            "password": "Pillanatkép jelszava",
             "password_protected": "jelszóval védett",
             "password_protection": "Jelszóvédelem",
             "security": "Biztonság",
-            "type": "Típus",
+            "type": "Pillanatkép típusa",
             "upload_snapshot": "Pillanatkép feltöltése"
         },
         "store": {
@@ -444,7 +445,7 @@
             },
             "automation": {
                 "last_triggered": "Utoljára aktiválva",
-                "trigger": "Végrehajt"
+                "trigger": "Műveletek futtatása"
             },
             "camera": {
                 "not_available": "Kép nem áll rendelkezésre"
@@ -497,7 +498,7 @@
                 "brightness": "Fényerő",
                 "color_temperature": "Színhőmérséklet",
                 "effect": "Hatás",
-                "white_value": "Fehér érték"
+                "white_value": "Fehér fényerő"
             },
             "lock": {
                 "code": "Kód",
@@ -642,6 +643,9 @@
                 "no_areas": "Nincsenek területei.",
                 "no_match": "Nem található egyező terület",
                 "show_areas": "Területek megjelenítése"
+            },
+            "attributes": {
+                "expansion_header": "Attribútumok"
             },
             "blueprint-picker": {
                 "add_user": "Felhasználó hozzáadása",
@@ -951,8 +955,8 @@
                     "remove_intro": "Ha az entitás már nincs használatban, akkor nyugodtan eltávolíthatod."
                 },
                 "script": {
-                    "last_action": "Utolsó Művelet",
-                    "last_triggered": "Utoljára aktivált"
+                    "last_action": "Utolsó művelet",
+                    "last_triggered": "Utolsó aktiválás"
                 },
                 "settings": "Entitás beállítások",
                 "sun": {
@@ -1020,40 +1024,40 @@
                         "zone": "Zónák"
                     },
                     "reload": {
-                        "automation": "Automatizálások újratöltése",
-                        "command_line": "Parancssori entitások újratöltése",
-                        "core": "Lokáció és testreszabások újratöltése",
-                        "filesize": "Fájlméret entitások újratöltése",
-                        "filter": "Szűrőentitások újratöltése",
-                        "generic": "Általános IP kamera entitások újratöltése",
-                        "generic_thermostat": "Általános termosztát entitások újratöltése",
-                        "group": "Csoportok, csoport entitások és értesítési szolgáltatások újratöltése",
-                        "history_stats": "Előzmény statisztika entitások újratöltése",
-                        "homekit": "HomeKit újratöltése",
-                        "input_boolean": "Logikai változó bemenetek újratöltése",
-                        "input_datetime": "Időpont bemenetek újratöltése",
-                        "input_number": "Szám bemenetek újratöltése",
-                        "input_select": "Választási bemenetek újratöltése",
-                        "input_text": "Szöveg bemenetek újratöltése",
-                        "min_max": "Min/max entitások újratöltése",
-                        "mqtt": "Manuálisan konfigurált MQTT entitások újratöltése",
-                        "person": "Személyek újratöltése",
-                        "ping": "Ping bináris érzékelő entitások újratöltése",
-                        "reload": "{domain} újratöltése",
-                        "rest": "Rest entitások és értesítési szolgáltatások újratöltése",
-                        "rpi_gpio": "Raspberry Pi GPIO entitások újratöltése",
-                        "scene": "Jelenetek újratöltése",
-                        "script": "Szkriptek újratöltése",
-                        "smtp": "SMTP értesítési szolgáltatások újratöltése",
-                        "statistics": "Statisztikai entitások újratöltése",
-                        "telegram": "Telegram értesítési szolgáltatások újratöltése",
-                        "template": "Sablon entitások újratöltése",
-                        "trend": "Trend entitások újratöltése",
-                        "universal": "Univerzális médialejátszó entitások újratöltése",
-                        "zone": "Zónák újratöltése"
+                        "automation": "Automatizálások",
+                        "command_line": "Parancssori entitások",
+                        "core": "Lokáció és testreszabások",
+                        "filesize": "Fájlméret entitások",
+                        "filter": "Szűrőentitások",
+                        "generic": "Általános IP kamera entitások",
+                        "generic_thermostat": "Általános termosztát entitások",
+                        "group": "Csoportok, csoport entitások és értesítési szolgáltatások",
+                        "history_stats": "Előzmény statisztika entitások",
+                        "homekit": "HomeKit",
+                        "input_boolean": "Logikai változó bemenetek",
+                        "input_datetime": "Időpont bemenetek",
+                        "input_number": "Szám bemenetek",
+                        "input_select": "Választási bemenetek",
+                        "input_text": "Szöveg bemenetek",
+                        "min_max": "Min/max entitások",
+                        "mqtt": "Manuálisan konfigurált MQTT entitások",
+                        "person": "Személyek",
+                        "ping": "Ping bináris érzékelő entitások",
+                        "reload": "{domain}",
+                        "rest": "Rest entitások és értesítési szolgáltatások",
+                        "rpi_gpio": "Raspberry Pi GPIO entitások",
+                        "scene": "Jelenetek",
+                        "script": "Szkriptek",
+                        "smtp": "SMTP értesítési szolgáltatások",
+                        "statistics": "Statisztikai entitások",
+                        "telegram": "Telegram értesítési szolgáltatások",
+                        "template": "Sablon entitások",
+                        "trend": "Trend entitások",
+                        "universal": "Univerzális médialejátszó entitások",
+                        "zone": "Zónák"
                     },
                     "server_control": {
-                        "perform_action": "{action} Szerver",
+                        "perform_action": "{action} szerver",
                         "restart": "Újraindítás",
                         "stop": "Leállítás"
                     }
@@ -1576,11 +1580,12 @@
                             "info_state_reporting": "Ha engedélyezed az állapotjelentést, akkor a Home Assistant minden állapotváltozást el fog küldeni a feltárt entitásokról az Amazon-nak. Ez lehetővé teszi, hogy mindig láthasd a legfrissebb állapotokat az Alexa alkalmazásban, és az állapotváltozásokkal rutinokat hozhass létre.",
                             "manage_entities": "Entitások kezelése",
                             "state_reporting_error": "Nem lehet {enable_disable} az állapotjelentést.",
-                            "sync_entities": "Entitások szinkronizálása",
+                            "sync_entities": "Entitások szinkronizálása az Amazonnal",
                             "sync_entities_error": "Nem sikerült szinkronizálni az entitásokat:",
                             "title": "Alexa"
                         },
                         "connected": "Csatlakoztatva",
+                        "connecting": "Csatlakozás...",
                         "connection_status": "Felhő kapcsolat állapota",
                         "fetching_subscription": "Előfizetés lekérése...",
                         "google": {
@@ -1658,7 +1663,7 @@
                     "description_login": "Bejelentkezve mint {email}",
                     "description_not_login": "Nincs bejelentkezve",
                     "dialog_certificate": {
-                        "certificate_expiration_date": "Tanúsítvány lejárati dátuma",
+                        "certificate_expiration_date": "Tanúsítvány lejárati dátuma:",
                         "certificate_information": "Tanúsítvány-információ",
                         "close": "Bezárás",
                         "fingerprint": "Tanúsítvány ujjlenyomata:",
@@ -2444,39 +2449,39 @@
                     "description": "A Home Assistant szerver újraindítása és leállítása",
                     "section": {
                         "reloading": {
-                            "automation": "Automatizálások újratöltése",
-                            "command_line": "Parancssori entitások újratöltése",
-                            "core": "Lokáció és testreszabások újratöltése",
-                            "filesize": "Fájlméret entitások újratöltése",
-                            "filter": "Szűrőentitások újratöltése",
-                            "generic": "Általános IP kamera entitások újratöltése",
-                            "generic_thermostat": "Általános termosztát entitások újratöltése",
-                            "group": "Csoportok, csoport entitások és értesítési szolgáltatások újratöltése",
+                            "automation": "Automatizálások",
+                            "command_line": "Parancssori entitások",
+                            "core": "Lokáció és testreszabások",
+                            "filesize": "Fájlméret entitások",
+                            "filter": "Szűrőentitások",
+                            "generic": "Általános IP kamera entitások",
+                            "generic_thermostat": "Általános termosztát entitások",
+                            "group": "Csoportok, csoport entitások és értesítési szolgáltatások",
                             "heading": "YAML konfiguráció újratöltése",
-                            "history_stats": "Előzmény statisztika entitások újratöltése",
-                            "homekit": "HomeKit újratöltése",
-                            "input_boolean": "Logikai változó bemenetek újratöltése",
-                            "input_datetime": "Időpont bemenetek újratöltése",
-                            "input_number": "Szám bemenetek újratöltése",
-                            "input_select": "Választási bemenetek újratöltése",
-                            "input_text": "Szöveg bemenetek újratöltése",
+                            "history_stats": "Előzmény statisztika entitások",
+                            "homekit": "HomeKit",
+                            "input_boolean": "Logikai változó bemenetek",
+                            "input_datetime": "Időpont bemenetek",
+                            "input_number": "Szám bemenetek",
+                            "input_select": "Választási bemenetek",
+                            "input_text": "Szöveg bemenetek",
                             "introduction": "A Home Assistant bizonyos részei újraindítás nélkül újratölthetőek. Újratöltéskor az aktuálisan betöltött YAML konfiguráció helyére betöltődik az új.",
-                            "min_max": "Min/max entitások újratöltése",
-                            "mqtt": "Manuálisan konfigurált MQTT entitások újratöltése",
-                            "person": "Személyek újratöltése",
-                            "ping": "Ping bináris érzékelő entitások újratöltése",
-                            "reload": "{domain} újratöltése",
-                            "rest": "Rest entitások és értesítési szolgáltatások újratöltése",
-                            "rpi_gpio": "Raspberry Pi GPIO entitások újratöltése",
-                            "scene": "Jelenetek újratöltése",
-                            "script": "Szkriptek újratöltése",
-                            "smtp": "SMTP értesítési szolgáltatások újratöltése",
-                            "statistics": "Statisztikai entitások újratöltése",
-                            "telegram": "Telegram értesítési szolgáltatások újratöltése",
-                            "template": "Sablon entitások újratöltése",
-                            "trend": "Trend entitások újratöltése",
-                            "universal": "Univerzális médialejátszó entitások újratöltése",
-                            "zone": "Zónák újratöltése"
+                            "min_max": "Min/max entitások",
+                            "mqtt": "Manuálisan konfigurált MQTT entitások",
+                            "person": "Személyek",
+                            "ping": "Ping bináris érzékelő entitások",
+                            "reload": "{domain}",
+                            "rest": "Rest entitások és értesítési szolgáltatások",
+                            "rpi_gpio": "Raspberry Pi GPIO entitások",
+                            "scene": "Jelenetek",
+                            "script": "Szkriptek",
+                            "smtp": "SMTP értesítési szolgáltatások",
+                            "statistics": "Statisztikai entitások",
+                            "telegram": "Telegram értesítési szolgáltatások",
+                            "template": "Sablon entitások",
+                            "trend": "Trend entitások",
+                            "universal": "Univerzális médialejátszó entitások",
+                            "zone": "Zónák"
                         },
                         "server_management": {
                             "confirm_restart": "Biztosan újra szeretnéd indítani a Home Assistant-ot?",
@@ -3698,6 +3703,17 @@
                     "link_promo": "Tudj meg többet a témákról",
                     "primary_color": "Elsődleges szín",
                     "reset": "Visszaállítás"
+                },
+                "time_format": {
+                    "description": "Válaszd ki az időformátumot.",
+                    "dropdown_label": "Időformátum",
+                    "formats": {
+                        "12": "12 óra (AM/PM)",
+                        "24": "24 óra",
+                        "language": "Automatikus (nyelvi beállítás használata)",
+                        "system": "Rendszer területi beállításainak használata"
+                    },
+                    "header": "Időformátum"
                 },
                 "vibrate": {
                     "description": "Rezgés engedélyezése vagy tiltása ezen az eszközön az eszközök vezérlésekor.",
