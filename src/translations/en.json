@@ -3638,7 +3638,7 @@
           "currency": "",
           "home_consumption": {
             "stat_consumption": "Total energy consumption",
-            "stat_tariff": "The cost of your energy",
+            "stat_cost": "The cost of your energy",
             "cost_adjustment_day": "Standard daily costs (grid management cost etc)"
           },
           "device_consumption": {

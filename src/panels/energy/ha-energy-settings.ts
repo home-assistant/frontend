@@ -61,12 +61,12 @@ export class EnergySettings extends LitElement {
       ></ha-statistic-picker>
       <ha-statistic-picker
         .key=${"home_consumption"}
-        id="stat_tariff"
+        id="stat_cost"
         .hass=${this.hass}
         .statisticIds=${this._statisticIds}
-        .value=${homeConsumption.stat_tariff}
+        .value=${homeConsumption.stat_cost}
         .label=${this.hass.localize(
-          "ui.panel.energy.settings.home_consumption.stat_tariff"
+          "ui.panel.energy.settings.home_consumption.stat_cost"
         )}
         @value-changed=${this._valueChanged}
       ></ha-statistic-picker>
@@ -161,7 +161,7 @@ export class EnergySettings extends LitElement {
         ...preferences[key][0],
         [id]: value,
       };
-      if (id === "stat_tariff") {
+      if (id === "stat_cost") {
         // TODO can we automatically set the currency based on the unit?
       }
     } else if (key === "device_consumption") {
