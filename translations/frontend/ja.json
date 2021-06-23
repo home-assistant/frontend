@@ -312,6 +312,9 @@
             "no_addons": "まだアドオンがインストールされていません。アドオンストアにアクセスして始めましょう!"
         },
         "dialog": {
+            "hardware": {
+                "search": "ハードウェアの検索"
+            },
             "network": {
                 "connected_to": "{ssid}に接続しました",
                 "dhcp": "DHCP",
@@ -360,7 +363,9 @@
         },
         "my": {
             "error": "不明なエラーが発生しました",
+            "error_addon_no_ingress": "要求されたアドオンは入力をサポートしていません",
             "error_addon_not_found": "アドオンが見つかりません",
+            "error_addon_not_started": "要求されたアドオンは実行されていません。最初に起動してください",
             "faq_link": "マイホームアシスタントFAQ",
             "not_supported": "このリダイレクトは、HomeAssistantインスタンスではサポートされていません。 サポートされているリダイレクトとそれらが導入されたバージョンについては、{link}を確認してください。"
         },
@@ -373,13 +378,19 @@
         "snapshot": {
             "addons": "アドオン",
             "available_snapshots": "利用可能なスナップショット",
+            "confirm_password": "スナップショットパスワードの確認",
             "could_not_create": "スナップショットを作成できませんでした。",
             "create": "作成",
             "create_blocked_not_running": "システムが {state} 状態であるため、スナップショットの作成は現在できません。",
             "create_snapshot": "スナップショットの作成",
             "created": "作成",
+            "delete_selected": "選択したスナップショットの削除",
+            "delete_snapshot_confirm": "削除",
+            "delete_snapshot_text": "{number}を削除しますか？{number, plural,\n  one {snapshot}\n  other {snapshots}\n}?",
+            "delete_snapshot_title": "スナップショットの削除",
             "description": "スナップショットでは、Home Assistantインスタンスのすべてのデータを簡単にバックアップして復元することができます。",
             "enter_password": "パスワードを入力してください。",
+            "failed_to_delete": "削除できませんでした",
             "folder": {
                 "addons/local": "ローカルアドオン",
                 "homeassistant": "HomeAssistantの設定",
@@ -395,7 +406,9 @@
             "password": "パスワード",
             "password_protected": "パスワードで保護されています",
             "password_protection": "パスワード保護",
+            "passwords_not_matching": "パスワードが一致しません",
             "security": "セキュリティ",
+            "selected": "{number}が選択されました",
             "type": "タイプ",
             "upload_snapshot": "スナップショットのアップロード"
         },
@@ -555,6 +568,7 @@
             },
             "light": {
                 "brightness": "明るさ",
+                "color_brightness": "色の明るさ",
                 "color_temperature": "色温度",
                 "effect": "効果",
                 "white_value": "白さの値"
@@ -708,6 +722,9 @@
                 "no_match": "一致するエリアが見つかりません",
                 "show_areas": "エリアを表示"
             },
+            "attributes": {
+                "expansion_header": "属性"
+            },
             "blueprint-picker": {
                 "add_user": "ユーザーの追加",
                 "remove_user": "ユーザーの削除",
@@ -786,6 +803,7 @@
                     "was_unplugged": "プラグが抜かれました",
                     "was_unsafe": "安全ではなかった"
                 },
+                "retrieval_error": "ログ ブックエントリの取得中にエラーが発生しました",
                 "show_trace": "トレースの表示"
             },
             "media-browser": {
@@ -1178,7 +1196,15 @@
                 }
             },
             "zha_reconfigure_device": {
-                "heading": "デバイスを再設定"
+                "attribute": "属性",
+                "button_hide": "詳細を非表示",
+                "button_show": "詳細を表示",
+                "configuration_complete": "デバイスの再構成が完了しました。",
+                "configuration_failed": "デバイスの再構成に失敗しました。追加情報はログで入手できる場合があります。",
+                "configuring_alt": "設定",
+                "heading": "デバイスを再設定",
+                "in_progress": "デバイスを再構成中です。これには時間がかかる場合があります。",
+                "start_reconfiguration": "再構成を開始"
             }
         },
         "duration": {
@@ -1241,7 +1267,8 @@
                     "caption": "エリア",
                     "data_table": {
                         "area": "エリア",
-                        "devices": "デバイス"
+                        "devices": "デバイス",
+                        "entities": "エンティティ"
                     },
                     "delete": {
                         "confirmation_text": "このエリアのすべてのデバイスは割り当て解除されます。",
@@ -1253,6 +1280,7 @@
                         "create": "作成",
                         "default_name": "新しいエリア",
                         "delete": "削除",
+                        "linked_entities_caption": "エンティティ",
                         "name": "名前",
                         "name_required": "名前は必須です",
                         "unknown_error": "不明なエラー",
@@ -1679,6 +1707,7 @@
                             "title": "Alexa"
                         },
                         "connected": "接続",
+                        "connecting": "接続しています...",
                         "connection_status": "クラウド接続の状態",
                         "fetching_subscription": "サブスクリプションを取得しています。",
                         "google": {
@@ -1713,6 +1742,11 @@
                             "instance_is_available": "インスタンスは次の場所にあります",
                             "instance_will_be_available": "インスタンスは次の時点で利用可能になります。",
                             "link_learn_how_it_works": "仕組みを学ぶ",
+                            "not_connected": "接続されていません",
+                            "remote_enabled": {
+                                "caption": "自動的に接続",
+                                "description": "このオプションを有効にすると、ホームアシスタントのインスタンスが常にリモートでアクセスできるようになります。"
+                            },
                             "title": "リモートコントロール"
                         },
                         "sign_out": "サインアウト",
@@ -2016,7 +2050,8 @@
                     "scripts": "スクリプト",
                     "unknown_error": "不明なエラー",
                     "unnamed_device": "名前のないデバイス",
-                    "update": "更新"
+                    "update": "更新",
+                    "update_device_error": "デバイスの更新に失敗しました"
                 },
                 "entities": {
                     "caption": "エンティティ",
@@ -2123,6 +2158,7 @@
                     "license": "Apache 2.0ライセンスの下で公開",
                     "path_configuration": "ディスク上に configuration.yaml へのパス: {path}",
                     "server": "サーバー",
+                    "setup_time": "設定時間",
                     "source": "ソース：",
                     "system_health_error": "「システムの正常性」コンポーネントが有効されていません、configuration.yaml に 'system_health:' を追加してください。",
                     "system_health": {
@@ -2173,6 +2209,11 @@
                         "rename": "名前を変更",
                         "restart_confirm": "ホーム アシスタントを再起動して、この統合の削除を完了します。",
                         "services": "{count} {count, plural,\n  one {サービス}\n  other {サービス}\n}",
+                        "state": {
+                            "loaded": "読み込み",
+                            "not_loaded": "読み込まれていません",
+                            "setup_retry": "設定をやり直す"
+                        },
                         "system_options": "システムオプション",
                         "unnamed_entry": "名前のないエントリ"
                     },
@@ -2190,6 +2231,7 @@
                         },
                         "finish": "完了",
                         "loading_first_time": "インテグレーションのインストールを完了するまでお待ちください",
+                        "next": "次",
                         "not_all_required_fields": "必須フィールドの一覧に入力するわけではありません。",
                         "not_loaded": "インテグレーションファイルを読み込めませんでした。ホームアシスタントを再起動してください。",
                         "pick_flow_step": {
@@ -2528,6 +2570,7 @@
                         "add_scene": "シーンを追加",
                         "delete_confirm": "このシーンを削除してもよろしいですか？",
                         "delete_scene": "シーンを削除",
+                        "duplicate_scene": "シーンの複製",
                         "edit_scene": "シーンを編集",
                         "header": "シーンエディター",
                         "headers": {
@@ -2853,6 +2896,8 @@
                         "follow_device_instructions": "デバイスに付属の指示に従って、デバイスでペアリングを開始します。",
                         "inclusion_failed": "ノードを追加できませんでした。詳細については、ログを確認してください。",
                         "inclusion_finished": "ノードが追加されました。ノードのバックグラウンドでの設定が完了すると、すべてのエンティティが表示されるまで数分かかる場合があります。",
+                        "interview_failed": "デバイスのインタビューに失敗しました。追加情報がログに残っている場合があります。",
+                        "interview_started": "デバイスはインタビュー中です。これには時間がかかる場合があります。",
                         "introduction": "このウィザードでは、Z-Wave ネットワークにノードを追加する手順を説明します。",
                         "secure_inclusion_warning": "セキュアなデバイスには、追加の帯域幅が必要です。安全なデバイスが多すぎると、Z-Waveネットワークが遅くなる可能性があります。ロックやガレージドアオープナーなど、必要なデバイスにのみ安全な組み込みを使用することをお勧めします。",
                         "start_inclusion": "インクルージョンを開始",
@@ -2890,7 +2935,11 @@
                         "node_status": "ノードの状態",
                         "zwave_info": "Z-Wave情報"
                     },
+                    "logs": {
+                        "log_level_changed": "ログレベルが変更されました。{level}に変更されました。"
+                    },
                     "navigation": {
+                        "logs": "ログ",
                         "network": "ネットワーク"
                     },
                     "network_status": {
@@ -2915,6 +2964,12 @@
                         "unknown": "不明"
                     },
                     "reinterview_node": {
+                        "battery_device_warning": "再会する前に、バッテリー駆動のデバイスをスリープ解除する必要があります。デバイスをウェイクアップする方法については、デバイスのマニュアルを参照してください。",
+                        "in_progress": "デバイスがインタビュー中です。これには時間がかかる場合があります。",
+                        "interview_complete": "デバイスのインタビューが完了しました。",
+                        "interview_failed": "デバイスのインタビューに失敗しました。追加情報がログに残っている場合があります。",
+                        "run_in_background": "このダイアログを閉じても、インタビューはバックグラウンドで継続されます。",
+                        "start_reinterview": "再インタビューを開始",
                         "title": "Z-Waveデバイスへの再インタビュー"
                     },
                     "remove_node": {
@@ -3777,10 +3832,19 @@
                 "intro": "あなたはあなたの家を目覚めさせ、あなたのプライバシーを取り戻し、ティンカーの世界的なコミュニティに参加する準備ができていますか?",
                 "next": "次",
                 "restore": {
+                    "addons": "アドオン",
+                    "confirm_password": "スナップショットパスワードの確認",
                     "description": "以前のスナップショットから復元することもできます。",
+                    "folders": "フォルダ",
+                    "full_snapshot": "フルスナップショット",
                     "hide_log": "ログ全体を非表示",
                     "in_progress": "復元中",
-                    "show_log": "ログ全体を表示"
+                    "partial_snapshot": "部分的スナップショット",
+                    "password": "スナップショットパスワード",
+                    "password_protection": "パスワード保護",
+                    "select_type": "何を復元するかを選択します",
+                    "show_log": "ログ全体を表示",
+                    "type": "スナップショットタイプ"
                 },
                 "user": {
                     "create_account": "アカウントの作成",
@@ -3923,6 +3987,17 @@
                     "link_promo": "テーマの情報をもっと見る。",
                     "primary_color": "プライマリーの色",
                     "reset": "リセット"
+                },
+                "time_format": {
+                    "description": "時刻のフォーマットを選択します。",
+                    "dropdown_label": "時間形式",
+                    "formats": {
+                        "12": "12時間（AM / PM）",
+                        "24": "24時間",
+                        "language": "自動 (言語設定を使用)",
+                        "system": "システムロケールを使用する"
+                    },
+                    "header": "時間形式"
                 },
                 "vibrate": {
                     "description": "デバイスを制御するときに、このデバイスのバイブレーションを有効または無効にします。",
