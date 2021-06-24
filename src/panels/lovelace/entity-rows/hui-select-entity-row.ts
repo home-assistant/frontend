@@ -17,7 +17,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-paper-dropdown-menu";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity";
 import { forwardHaptic } from "../../../data/haptics";
 import { SelectEntity, setSelectOption } from "../../../data/select";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -87,7 +87,7 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
       ></state-badge>
       <ha-paper-dropdown-menu
         .label=${this._config.name || computeStateName(stateObj)}
-        .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+        .disabled=${stateObj.state === UNAVAILABLE}
         @iron-select=${this._selectedChanged}
         @click=${stopPropagation}
       >
