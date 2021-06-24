@@ -275,7 +275,7 @@ class ZWaveJSConfigDashboard extends LitElement {
     }
     const configEntries = await getConfigEntries(this.hass);
     const configEntry = configEntries.find(
-      (entry) => entry.entry_id === this.configEntryId!
+      (entry) => entry.entry_id === this.configEntryId
     );
     showOptionsFlowDialog(this, configEntry!);
   }
