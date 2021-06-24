@@ -142,7 +142,6 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             )})"
             type="number"
             .value=${this._hours_to_show}
-            min="1"
             .configValue=${"hours_to_show"}
             @value-changed=${this._valueChanged}
           ></paper-input>
