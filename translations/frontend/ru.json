@@ -2965,6 +2965,7 @@
                         "home_id": "ID дома",
                         "network": "Сеть",
                         "node_id": "ID узла",
+                        "reconfigure_server": "Перенастроить сервер",
                         "remove_node": "Удалить узел"
                     },
                     "dashboard": {

@@ -1250,12 +1250,12 @@
         "notification_toast": {
             "connection_lost": "接続が切れました。再接続中...",
             "dismiss": "閉じる",
-            "integration_starting": "{integration}を開始すると、完了するまですべてが利用できるわけではありません。",
+            "integration_starting": "{integration}の開始、完了するまですべてが利用できるわけではありません。",
             "service_call_failed": "サービス{service}の呼び出しに失敗しました。",
             "started": "ホームアシスタントが開始されました！",
             "starting": "Home Assistantが起動中です。全て利用可能なるまでもうしばらくお待ち下さい。",
             "triggered": "トリガーしました {name}",
-            "wrapping_up_startup": "スタートアップの締めくくりとして、終了するまですべてが利用できるわけではありません。"
+            "wrapping_up_startup": "起動開始、起動完了するまですべてが利用できるわけではありません。"
         },
         "panel": {
             "config": {
