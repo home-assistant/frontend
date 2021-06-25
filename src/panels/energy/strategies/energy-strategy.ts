@@ -37,6 +37,10 @@ export class EnergyStrategy {
       return view;
     }
 
+    view.cards!.push({
+      type: "energy-summary",
+    });
+
     if (energyPrefs.home_consumption.length) {
       view.cards!.push({
         type: "statistics-graph",

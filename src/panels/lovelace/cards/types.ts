@@ -89,6 +89,10 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
   show_state?: boolean;
 }
 
+export interface EnergySummaryCardConfig extends LovelaceCardConfig {
+  type: "energy-summary";
+}
+
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;

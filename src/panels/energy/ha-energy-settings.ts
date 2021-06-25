@@ -51,6 +51,8 @@ export class EnergySettings extends LitElement {
       - Change `stat_consumption` from a stat picker to an entity picker
         and store as both entity_consumption and stat_consumption.
       - Allow picking entity energy price
+      - Energy cards could potentially use https://github.com/Christian24/webcomponents-di
+        to access shared energy data/preferences?
     */
 
     return html`
