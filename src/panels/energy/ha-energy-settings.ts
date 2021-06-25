@@ -156,7 +156,10 @@ export class EnergySettings extends LitElement {
 
     const preferences = { ...this.preferences };
 
-    if (key === "home_consumption" || key === "production") {
+    if (key === "home_consumption") {
+      if (preferences[key].length === 0) {
+        preferences[key].push(emptyHomeConsumptionEnergyPreference());
+      }
       preferences[key][0] = {
         ...preferences[key][0],
         [id]: value,
@@ -164,6 +167,14 @@ export class EnergySettings extends LitElement {
       if (id === "stat_cost") {
         // TODO can we automatically set the currency based on the unit?
       }
+    } else if (key === "production") {
+      if (preferences[key].length === 0) {
+        preferences[key].push(emptyProductionEnergyPreference());
+      }
+      preferences[key][0] = {
+        ...preferences[key][0],
+        [id]: value,
+      };
     } else if (key === "device_consumption") {
       preferences[key] = (value as string[]).map((stat) => ({
         stat_consumption: stat,
