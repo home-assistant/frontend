@@ -91,7 +91,7 @@ export class EnergyStrategy {
         },
       });
 
-      if (productionPrefs) {
+      if (productionPrefs.stat_predicted_production) {
         view.cards!.push({
           type: "statistics-graph",
           title: hass.localize("ui.panel.energy.charts.solar"),
