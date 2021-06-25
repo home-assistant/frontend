@@ -2965,6 +2965,7 @@
                         "home_id": "Kodu ID",
                         "network": "Võrk",
                         "node_id": "Sõlme ID",
+                        "reconfigure_server": "Taasseadista server",
                         "remove_node": "Eemalda sõlm"
                     },
                     "dashboard": {

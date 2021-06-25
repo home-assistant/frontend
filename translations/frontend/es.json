@@ -2965,6 +2965,7 @@
                         "home_id": "ID de casa",
                         "network": "Red",
                         "node_id": "ID del Nodo",
+                        "reconfigure_server": "Reconfigurar el servidor",
                         "remove_node": "Eliminar Nodo"
                     },
                     "dashboard": {
