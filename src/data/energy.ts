@@ -2,7 +2,9 @@ import { HomeAssistant } from "../types";
 
 export const emptyHomeConsumptionEnergyPreference = (): HomeConsumptionEnergyPreference => ({
   stat_consumption: "",
+  entity_consumption: null,
   stat_cost: null,
+  entity_energy_price: null,
   cost_adjustment_day: 0,
 });
 
@@ -17,10 +19,12 @@ export const emptyProductionEnergyPreference = (): ProductionEnergyPreference =>
 export interface HomeConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
+  entity_consumption: string | null;
 
   // Points at a sensor that contains the cost
   stat_cost: string | null;
 
+  entity_energy_price: string | null;
   cost_adjustment_day: number;
 }
 

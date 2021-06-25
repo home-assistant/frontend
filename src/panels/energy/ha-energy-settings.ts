@@ -46,6 +46,13 @@ export class EnergySettings extends LitElement {
       ? this.preferences.production[0]
       : emptyProductionEnergyPreference();
 
+    /*
+      TODO
+      - Change `stat_consumption` from a stat picker to an entity picker
+        and store as both entity_consumption and stat_consumption.
+      - Allow picking entity energy price
+    */
+
     return html`
       ${this._error ? html`<div class="error">${this._error}</div>` : ""}
       <ha-statistic-picker
