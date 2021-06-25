@@ -1,3 +1,4 @@
+import { EnergyPreferences } from "../../../data/energy";
 import { StatisticType } from "../../../data/history";
 import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { FullCalendarView } from "../../../types";
@@ -91,6 +92,7 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
 
 export interface EnergySummaryCardConfig extends LovelaceCardConfig {
   type: "energy-summary";
+  prefs: EnergyPreferences;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
