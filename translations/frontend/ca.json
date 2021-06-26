@@ -2965,6 +2965,7 @@
                         "home_id": "ID principal",
                         "network": "Xarxa",
                         "node_id": "ID del node",
+                        "reconfigure_server": "Torna a configurar el servidor",
                         "remove_node": "Elimina node"
                     },
                     "dashboard": {

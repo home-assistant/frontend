@@ -318,6 +318,14 @@
             "no_addons": "Vous n'avez pas encore installé de modules complémentaires. Rendez-vous dans la boutique des modules complémentaires pour commencer!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Attributs",
+                "device_path": "Chemin du dispositif",
+                "id": "Identifiant",
+                "search": "Recherche de matériel",
+                "subsystem": "Sous-système",
+                "title": "Matériel informatique"
+            },
             "network": {
                 "connected_to": "Connecté à {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "Une erreur inconnue s'est produite",
             "error_addon_no_ingress": "L’add-on demandé ne prend pas en charge l’entrée",
             "error_addon_not_found": "Module complémentaire introuvable",
+            "error_addon_not_installed": "Le module complémentaire demandé n'est pas installé. Veuillez l'installer d'abord",
+            "error_addon_not_started": "Le module complémentaire demandé n'est pas en cours d'exécution. Veuillez le lancer d'abord",
             "faq_link": "FAQ de My Home Assistant",
             "not_supported": "Cette redirection n'est pas prise en charge par votre instance Home Assistant. Vérifiez le {link} pour les redirections prises en charge et la version dans laquelle elles ont été introduites."
         },
@@ -386,8 +396,13 @@
             "create_blocked_not_running": "La création d’un instantané n’est pas possible en ce moment car le système est en état {state}.",
             "create_snapshot": "Créer un instantané",
             "created": "créé",
+            "delete_selected": "Supprimer les instantanés sélectionnés",
+            "delete_snapshot_confirm": "Supprimer",
+            "delete_snapshot_text": "Voulez-vous supprimer {number} {number, plural,\n  one {entité}\n  other {entités}\n} ?",
+            "delete_snapshot_title": "Supprimer l'instantané",
             "description": "Les instantanés vous permettent de sauvegarder et de restaurer facilement toutes les données de votre instance Home Assistant.",
             "enter_password": "Veuillez entrer un mot de passe.",
+            "failed_to_delete": "Échec de la suppression du fichier: %@",
             "folder": {
                 "addons/local": "Modules complémentaires locaux",
                 "homeassistant": "Configuration Home Assistant",
@@ -405,6 +420,8 @@
             "password_protection": "Protection par mot de passe",
             "passwords_not_matching": "Les mots de passe ne correspondent pas",
             "security": "Sécurité",
+            "select_type": "Sélectionnez ce qu'il faut restaurer",
+            "selected": "{number} sélectionné",
             "type": "Type",
             "upload_snapshot": "Téléverser un instantané"
         },
@@ -722,6 +739,9 @@
                 "no_match": "Aucune pièce correspondante trouvée",
                 "show_areas": "Afficher les pièces"
             },
+            "attributes": {
+                "expansion_header": "Attributs"
+            },
             "blueprint-picker": {
                 "add_user": "Ajouter un utilisateur",
                 "remove_user": "Supprimer l'utilisateur",
@@ -924,6 +944,9 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Si désactivé, les nouvelles entités découvertes pour {integration} ne seront pas ajoutées automatiquement à Home Assistant.",
                 "enable_new_entities_label": "Activer les entités nouvellement ajoutées.",
+                "enable_polling_description": "Si Home Assistant doit interroger automatiquement les entités {integration} pour les mises à jour.",
+                "enable_polling_label": "Activez l'interrogation pour les mises à jour.",
+                "restart_home_assistant": "Vous devez redémarrer Home Assistant pour que vos modifications soient prises en compte.",
                 "title": "Options système pour {integration}",
                 "update": "Mise à jour"
             },
@@ -1722,6 +1745,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Connecté",
+                        "connecting": "Connexion...",
                         "connection_status": "État de la connexion cloud",
                         "fetching_subscription": "Récupération de l'abonnement...",
                         "google": {
@@ -2065,7 +2089,8 @@
                     "scripts": "Scripts",
                     "unknown_error": "Erreur inconnue",
                     "unnamed_device": "Appareil sans nom",
-                    "update": "Mettre à jour"
+                    "update": "Mettre à jour",
+                    "update_device_error": "Échec de la mise à jour de l’appareil"
                 },
                 "entities": {
                     "caption": "Entités",
@@ -2198,6 +2223,7 @@
                         "depends_on_cloud": "Dépend du cloud",
                         "device_unavailable": "Appareil non disponible",
                         "devices": "{count} {count, plural,\n  one {appareil}\n  other {appareils}\n}",
+                        "disable_error": "Échec de l’activation ou de la désactivation de l’intégration",
                         "disable_restart_confirm": "Redémarrez Home Assistant pour terminer la désactivation de cette intégration",
                         "disable": {
                             "disable_confirm": "Voulez-vous vraiment désactiver cette entrée de configuration? Ses appareils et entités seront désactivés.",
@@ -2209,6 +2235,7 @@
                             },
                             "disabled_cause": "Désactivé par {cause}"
                         },
+                        "disabled_polling": "Francais",
                         "documentation": "Documentation",
                         "enable_restart_confirm": "Redémarrez Home Assistant pour terminer l'activation de cette intégration",
                         "entities": "{count} {count, plural,\n  one {entity}\n  other {entities}\n}",
@@ -2591,6 +2618,8 @@
                         "add_scene": "Ajouter une scène",
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette scène?",
                         "delete_scene": "Supprimer la scène",
+                        "duplicate": "Dupliquer",
+                        "duplicate_scene": "Dupliquée la scène",
                         "edit_scene": "Éditer la scène",
                         "header": "Éditeur de scène",
                         "headers": {
@@ -2919,6 +2948,8 @@
                         "follow_device_instructions": "Suivez les instructions fournies avec votre appareil pour déclencher l'appairage sur l'appareil.",
                         "inclusion_failed": "Le nœud n'a pas pu être ajouté. Veuillez consulter les journaux pour plus d'informations.",
                         "inclusion_finished": "Le nœud a été ajouté. Quelques minutes peuvent s'écouler avant que toutes les entités n'apparaissent, alors que nous terminons la mise en place du nœud en arrière-plan.",
+                        "interview_failed": "L'interrogation de l'appareil a échoué. Des informations additionnelles peuvent être disponibles dans les journaux.",
+                        "interview_started": "L'appareil est en cours d'interrogation. Cela peut prendre du temps.",
                         "introduction": "Cet assistant vous guidera dans l'ajout d'un nœud à votre réseau Z-Wave.",
                         "secure_inclusion_warning": "Les dispositifs sécurisés nécessitent une bande passante supplémentaire ; un trop grand nombre de dispositifs sécurisés peut ralentir votre réseau Z-Wave. Nous recommandons de n'utiliser l'inclusion sécurisée que pour les dispositifs qui en ont besoin, comme les serrures ou les ouvre-portes de garage.",
                         "start_inclusion": "Commencer l'inclusion",
@@ -2934,6 +2965,7 @@
                         "home_id": "ID de la maison",
                         "network": "Réseau",
                         "node_id": "ID du nœud",
+                        "reconfigure_server": "Reconfigurer le serveur",
                         "remove_node": "Supprimer le nœud"
                     },
                     "dashboard": {
@@ -2958,6 +2990,7 @@
                     },
                     "logs": {
                         "log_level": "Niveau du journal",
+                        "log_level_changed": "Niveau de journal modifié en : {level}",
                         "subscribed_to_logs": "S'abonner aux messages du journal Z-Wave JS",
                         "title": "Journaux Z-Wave JS"
                     },
@@ -4022,6 +4055,7 @@
                     "formats": {
                         "12": "12 heures (AM / PM)",
                         "24": "24 heures",
+                        "language": "Auto (utiliser le paramètre de langue)",
                         "system": "Utiliser les paramètres régionaux du système"
                     },
                     "header": "Format de l'heure"

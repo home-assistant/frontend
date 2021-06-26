@@ -2965,6 +2965,7 @@
                         "home_id": "Hjem-ID",
                         "network": "Nettverk",
                         "node_id": "Node-ID",
+                        "reconfigure_server": "Konfigurer server på nytt",
                         "remove_node": "Fjern node"
                     },
                     "dashboard": {
