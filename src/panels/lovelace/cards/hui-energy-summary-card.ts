@@ -1,13 +1,43 @@
-import { mdiCashMultiple } from "@mdi/js";
+import { mdiCashMultiple, mdiSolarPower } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import memoizeOne from "memoize-one";
 import "../../../components/ha-svg-icon";
-import { EnergyPreferences } from "../../../data/energy";
-import { fetchStatistics, Statistics } from "../../../data/history";
+import {
+  energySourcesByType,
+  GridSourceTypeEnergyPreference,
+  SolarSourceTypeEnergyPreference,
+} from "../../../data/energy";
+import {
+  calculateStatisticsSumGrowth,
+  fetchStatistics,
+  Statistics,
+} from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { EnergySummaryCardConfig } from "./types";
+
+const renderSumStatHelper = (
+  data: Statistics,
+  stats: string[],
+  unit: string
+) => {
+  let totalGrowth = 0;
+
+  for (const stat of stats) {
+    if (!(stat in data)) {
+      return "stat missing";
+    }
+    const statGrowth = calculateStatisticsSumGrowth(data[stat]);
+
+    if (statGrowth === null) {
+      return "incomplete data";
+    }
+
+    totalGrowth += statGrowth;
+  }
+
+  return `${totalGrowth.toFixed(2)} ${unit}`;
+};
 
 @customElement("hui-energy-summary-card")
 class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
@@ -40,53 +70,109 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
+    const prefs = this._config!.prefs;
+    const types = energySourcesByType(prefs);
+
+    const hasConsumption = types.grid !== undefined;
+    const hasProduction = types.solar !== undefined;
+    const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
+    const hasCost =
+      hasConsumption &&
+      types.grid![0].flow_from.some((flow) => flow.stat_cost !== null);
+
+    // total consumption = consumption_from_grid + solar_production - return_to_grid
+
     return html`
       <ha-card header="Today">
         <div class="card-content">
-          <div class="row">
-            <ha-svg-icon .path=${mdiCashMultiple}></ha-svg-icon>
-            <div class="label">
-              Ratio own production / consumption from grid
-            </div>
-            <div class="data">${!this._data ? "" : "23%"}</div>
-          </div>
-
-          <div class="row">
-            <ha-svg-icon .path=${mdiCashMultiple}></ha-svg-icon>
-            <div class="label">Total consumption of today</div>
-            <div class="data">
-              ${!this._data
-                ? ""
-                : this._computeTotalConsumption(this._config.prefs, this._data)}
-            </div>
-          </div>
-
-          <div class="row">
-            <ha-svg-icon .path=${mdiCashMultiple}></ha-svg-icon>
-            <div class="label">Total production of today</div>
-            <div class="data">${!this._data ? "" : "23%"}</div>
-          </div>
-
-          <div class="row">
-            <ha-svg-icon .path=${mdiCashMultiple}></ha-svg-icon>
-            <div class="label">Total costs of today</div>
-            <div class="data">${!this._data ? "" : "23%"}</div>
-          </div>
-
-          <div class="row">
-            <ha-svg-icon .path=${mdiCashMultiple}></ha-svg-icon>
-            <div class="label">Total cost saved by solar panels</div>
-            <div class="data">${!this._data ? "" : "23%"}</div>
-          </div>
-
-          <div class="row">
-            <ha-svg-icon .path=${mdiCashMultiple}></ha-svg-icon>
-            <div class="label">
-              If you have tariffs it should show the current tariff and what
-              time will it change
-            </div>
-            <div class="data">${!this._data ? "" : "23%"}</div>
-          </div>
+          ${!hasConsumption
+            ? ""
+            : html`
+                <div class="row">
+                  <ha-svg-icon .path=${mdiCashMultiple}></ha-svg-icon>
+                  <div class="label">Total Consumption</div>
+                  <div class="data">
+                    ${!this._data
+                      ? ""
+                      : renderSumStatHelper(
+                          this._data,
+                          types.grid![0].flow_from.map(
+                            (flow) => flow.stat_from
+                          ),
+                          "kWh"
+                        )}
+                  </div>
+                </div>
+              `}
+          ${!hasProduction
+            ? ""
+            : html`
+                <div class="row">
+                  <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
+                  <div class="label">Total Production</div>
+                  <div class="data">
+                    ${!this._data
+                      ? ""
+                      : renderSumStatHelper(
+                          this._data,
+                          [types.solar![0].stat_from],
+                          "kWh"
+                        )}
+                  </div>
+                </div>
+              `}
+          ${!hasReturnToGrid
+            ? ""
+            : html`
+                <div class="row">
+                  <ha-svg-icon .path=${mdiCashMultiple}></ha-svg-icon>
+                  <div class="label">Production returned to grid</div>
+                  <div class="data">
+                    ${!this._data
+                      ? ""
+                      : renderSumStatHelper(
+                          this._data,
+                          types.grid![0].flow_to.map((flow) => flow.stat_to),
+                          "kWh"
+                        )}
+                  </div>
+                </div>
+              `}
+          ${!hasReturnToGrid || !hasProduction
+            ? ""
+            : html`
+                <div class="row">
+                  <ha-svg-icon .path=${mdiCashMultiple}></ha-svg-icon>
+                  <div class="label">Amount of produced power self used</div>
+                  <div class="data">
+                    ${!this._data
+                      ? ""
+                      : this._renderSolarPowerConsumptionRatio(
+                          types.solar![0],
+                          types.grid![0]
+                        )}
+                  </div>
+                </div>
+              `}
+          ${!hasCost
+            ? ""
+            : html`
+                <div class="row">
+                  <ha-svg-icon .path=${mdiCashMultiple}></ha-svg-icon>
+                  <div class="label">Total costs of today</div>
+                  <div class="data">
+                    ${!this._data
+                      ? ""
+                      : renderSumStatHelper(
+                          this._data,
+                          types
+                            .grid![0].flow_from.map((flow) => flow.stat_cost)
+                            .filter(Boolean) as string[],
+                          prefs.currency
+                        )}
+                  </div>
+                </div>
+              `}
         </div>
       </ha-card>
     `;
@@ -99,35 +185,87 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
     }
     const startDate = new Date();
     // This should be _just_ today (since local midnight)
-    // For now we do a lot because fake data is not current.
+    // For now we do a lot because fake data is not recent.
     startDate.setHours(-24 * 30);
+
     this._fetching = true;
+    const statistics: string[] = [];
+    const prefs = this._config!.prefs;
+    for (const source of prefs.energy_sources) {
+      if (source.type === "solar") {
+        statistics.push(source.stat_from);
+        if (source.stat_predicted_from) {
+          statistics.push(source.stat_predicted_from);
+        }
+        continue;
+      }
+
+      // grid source
+      for (const flowFrom of source.flow_from) {
+        statistics.push(flowFrom.stat_from);
+        if (flowFrom.stat_cost) {
+          statistics.push(flowFrom.stat_cost);
+        }
+      }
+      for (const flowTo of source.flow_to) {
+        statistics.push(flowTo.stat_to);
+      }
+    }
+
     try {
-      this._data = await fetchStatistics(this.hass!, startDate, undefined, [
-        this._config!.prefs.home_consumption[0].stat_consumption,
-      ]);
+      this._data = await fetchStatistics(
+        this.hass!,
+        startDate,
+        undefined,
+        statistics
+      );
     } finally {
       this._fetching = false;
     }
   }
 
-  private _computeTotalConsumption = memoizeOne(
-    (prefs: EnergyPreferences, data: Statistics) => {
-      const stat = prefs.home_consumption[0].stat_consumption;
-      if (!(stat in data)) {
-        return 0;
+  private _renderSolarPowerConsumptionRatio(
+    solarSource: SolarSourceTypeEnergyPreference,
+    gridSource: GridSourceTypeEnergyPreference
+  ) {
+    let returnToGrid = 0;
+
+    for (const flowTo of gridSource.flow_to) {
+      if (!flowTo.stat_to || !(flowTo.stat_to in this._data!)) {
+        continue;
       }
-      const endSum = data[stat][data[stat].length - 1].sum;
-      if (endSum === null) {
-        return 0;
+      const flowReturned = calculateStatisticsSumGrowth(
+        this._data![flowTo.stat_to]
+      );
+      if (flowReturned === null) {
+        return "incomplete return data";
       }
-      const startSum = data[stat][0].sum;
-      if (startSum === null) {
-        return endSum;
-      }
-      return `${(endSum - startSum).toFixed(2)} kWh`;
+      returnToGrid += flowReturned;
     }
-  );
+
+    if (!(solarSource.stat_from in this._data!)) {
+      return "sun stat missing";
+    }
+
+    const production = calculateStatisticsSumGrowth(
+      this._data![solarSource.stat_from]
+    );
+
+    if (production === null) {
+      return "incomplete solar data";
+    }
+
+    if (production === 0) {
+      return "-";
+    }
+
+    const consumed = Math.max(
+      Math.min(((production - returnToGrid) / production) * 100, 100),
+      0
+    );
+
+    return `${consumed.toFixed(1)}%`;
+  }
 
   static styles = css`
     .row {

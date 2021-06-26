@@ -16,9 +16,8 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
 
   private _prefs: EnergyPreferences = {
     currency: "€",
-    home_consumption: [],
+    energy_sources: [],
     device_consumption: [],
-    production: [],
   };
 
   public getCardSize() {

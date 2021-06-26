@@ -1,4 +1,9 @@
-import { EnergyPreferences, getEnergyPreferences } from "../../../data/energy";
+import {
+  EnergyPreferences,
+  energySourcesByType,
+  FlowToGridSourceEnergyPreference,
+  getEnergyPreferences,
+} from "../../../data/energy";
 import { LovelaceViewConfig } from "../../../data/lovelace";
 import { LovelaceViewStrategy } from "../../lovelace/strategies/get-strategy";
 
@@ -42,21 +47,29 @@ export class EnergyStrategy {
       prefs: energyPrefs,
     });
 
-    if (energyPrefs.home_consumption.length) {
+    const prefTypes = energySourcesByType(energyPrefs);
+    let flowToGridSources: FlowToGridSourceEnergyPreference[] | undefined;
+
+    if (prefTypes.grid) {
       view.cards!.push({
         type: "statistics-graph",
         title: hass.localize("ui.panel.energy.charts.stat_house_energy_meter"),
-        entities: [energyPrefs.home_consumption[0].stat_consumption],
+        entities: prefTypes.grid[0].flow_from.map((flow) => flow.stat_from),
         days_to_show: 20,
         chart_plugins: ["datalabels"],
       });
+
+      if (prefTypes.grid[0].flow_to.length) {
+        flowToGridSources = prefTypes.grid[0].flow_to;
+      }
     }
 
-    if (energyPrefs.production.length) {
-      const productionPrefs = energyPrefs.production[0];
-      const entities = [productionPrefs.stat_production];
-      if (productionPrefs.stat_return_to_grid) {
-        entities.push(productionPrefs.stat_return_to_grid);
+    if (prefTypes.solar) {
+      const solarSource = prefTypes.solar[0];
+      const entities = [solarSource.stat_from];
+
+      if (flowToGridSources) {
+        entities.push(...flowToGridSources.map((flow) => flow.stat_to));
       }
       view.cards!.push({
         type: "statistics-graph",
@@ -96,11 +109,11 @@ export class EnergyStrategy {
         },
       });
 
-      if (productionPrefs.stat_predicted_production) {
+      if (prefTypes.solar[0].stat_predicted_from) {
         view.cards!.push({
           type: "statistics-graph",
           title: hass.localize("ui.panel.energy.charts.solar"),
-          entities: [productionPrefs.stat_predicted_production],
+          entities: [prefTypes.solar[0].stat_predicted_from],
         });
       }
     }
@@ -113,10 +126,6 @@ export class EnergyStrategy {
           (dev) => dev.stat_consumption
         ),
       });
-    }
-
-    if (!view.cards?.length) {
-      return setupWizard();
     }
 
     return view;
