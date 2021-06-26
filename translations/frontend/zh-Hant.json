@@ -2965,6 +2965,7 @@
                         "home_id": "家庭 ID",
                         "network": "網路",
                         "node_id": "節點 ID",
+                        "reconfigure_server": "重新設定伺服器",
                         "remove_node": "移除節點"
                     },
                     "dashboard": {

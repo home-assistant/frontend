@@ -2965,6 +2965,7 @@
                         "home_id": "Home ID",
                         "network": "Netwerk",
                         "node_id": "Knooppunt-ID",
+                        "reconfigure_server": "Herconfigureer server",
                         "remove_node": "Knooppunt verwijderen"
                     },
                     "dashboard": {
