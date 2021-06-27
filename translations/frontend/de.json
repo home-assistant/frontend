@@ -2965,6 +2965,7 @@
                         "home_id": "Heim-ID",
                         "network": "Netzwerk",
                         "node_id": "Knoten-ID",
+                        "reconfigure_server": "Server neu konfigurieren",
                         "remove_node": "Knoten entfernen"
                     },
                     "dashboard": {

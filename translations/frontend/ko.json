@@ -2965,6 +2965,7 @@
                         "home_id": "집 ID",
                         "network": "네트워크",
                         "node_id": "노드 ID",
+                        "reconfigure_server": "서버 재구성",
                         "remove_node": "노드 제거하기"
                     },
                     "dashboard": {
