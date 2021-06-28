@@ -224,9 +224,9 @@ export class HuiEnergySummaryGraphCard
     for (const source of prefs.energy_sources) {
       if (source.type === "solar") {
         if (statistics.solar) {
-          statistics.solar.push(source.stat_from);
+          statistics.solar.push(source.stat_energy_from);
         } else {
-          statistics.solar = [source.stat_from];
+          statistics.solar = [source.stat_energy_from];
         }
         continue;
       }
@@ -234,16 +234,16 @@ export class HuiEnergySummaryGraphCard
       // grid source
       for (const flowFrom of source.flow_from) {
         if (statistics.from_grid) {
-          statistics.from_grid.push(flowFrom.stat_from);
+          statistics.from_grid.push(flowFrom.stat_energy_from);
         } else {
-          statistics.from_grid = [flowFrom.stat_from];
+          statistics.from_grid = [flowFrom.stat_energy_from];
         }
       }
       for (const flowTo of source.flow_to) {
         if (statistics.to_grid) {
-          statistics.to_grid.push(flowTo.stat_to);
+          statistics.to_grid.push(flowTo.stat_energy_to);
         } else {
-          statistics.to_grid = [flowTo.stat_to];
+          statistics.to_grid = [flowTo.stat_energy_to];
         }
       }
     }

@@ -1,14 +1,14 @@
 import { HomeAssistant } from "../types";
 
 export const emptyFlowFromGridSourceEnergyPreference = (): FlowFromGridSourceEnergyPreference => ({
-  stat_from: "",
+  stat_energy_from: "",
   stat_cost: null,
-  entity_from: null,
+  entity_energy_from: null,
   entity_energy_price: null,
 });
 
 export const emptyFlowToGridSourceEnergyPreference = (): FlowToGridSourceEnergyPreference => ({
-  stat_to: "",
+  stat_energy_to: "",
 });
 
 export const emptyGridSourceEnergyPreference = (): GridSourceTypeEnergyPreference => ({
@@ -20,8 +20,8 @@ export const emptyGridSourceEnergyPreference = (): GridSourceTypeEnergyPreferenc
 
 export const emptySolarEnergyPreference = (): SolarSourceTypeEnergyPreference => ({
   type: "solar",
-  stat_from: "",
-  stat_predicted_from: null,
+  stat_energy_from: "",
+  stat_predicted_energy_from: null,
 });
 
 export interface DeviceConsumptionEnergyPreference {
@@ -31,19 +31,19 @@ export interface DeviceConsumptionEnergyPreference {
 
 export interface FlowFromGridSourceEnergyPreference {
   // kWh meter
-  stat_from: string;
+  stat_energy_from: string;
 
   // $ meter
   stat_cost: string | null;
 
   // Can be used to generate costs if stat_cost omitted
-  entity_from: string | null;
+  entity_energy_from: string | null;
   entity_energy_price: string | null;
 }
 
 export interface FlowToGridSourceEnergyPreference {
   // kWh meter
-  stat_to: string;
+  stat_energy_to: string;
 }
 
 export interface GridSourceTypeEnergyPreference {
@@ -58,8 +58,8 @@ export interface GridSourceTypeEnergyPreference {
 export interface SolarSourceTypeEnergyPreference {
   type: "solar";
 
-  stat_from: string;
-  stat_predicted_from: string | null;
+  stat_energy_from: string;
+  stat_predicted_energy_from: string | null;
 }
 
 type EnergySource =

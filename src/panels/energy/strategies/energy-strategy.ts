@@ -59,7 +59,9 @@ export class EnergyStrategy {
       view.cards!.push({
         type: "statistics-graph",
         title: hass.localize("ui.panel.energy.charts.stat_house_energy_meter"),
-        entities: prefTypes.grid[0].flow_from.map((flow) => flow.stat_from),
+        entities: prefTypes.grid[0].flow_from.map(
+          (flow) => flow.stat_energy_from
+        ),
         days_to_show: 20,
       });
 
@@ -70,10 +72,10 @@ export class EnergyStrategy {
 
     if (prefTypes.solar) {
       const solarSource = prefTypes.solar[0];
-      const entities = [solarSource.stat_from];
+      const entities = [solarSource.stat_energy_from];
 
       if (flowToGridSources) {
-        entities.push(...flowToGridSources.map((flow) => flow.stat_to));
+        entities.push(...flowToGridSources.map((flow) => flow.stat_energy_to));
       }
       view.cards!.push({
         type: "statistics-graph",
@@ -82,11 +84,11 @@ export class EnergyStrategy {
         days_to_show: 10,
       });
 
-      if (prefTypes.solar[0].stat_predicted_from) {
+      if (prefTypes.solar[0].stat_predicted_energy_from) {
         view.cards!.push({
           type: "statistics-graph",
           title: hass.localize("ui.panel.energy.charts.solar"),
-          entities: [prefTypes.solar[0].stat_predicted_from],
+          entities: [prefTypes.solar[0].stat_predicted_energy_from],
         });
       }
     }

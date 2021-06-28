@@ -19,7 +19,6 @@ import { HomeAssistant } from "../../types";
 import { Lovelace } from "../lovelace/types";
 import { mdiCog, mdiLightningBolt } from "@mdi/js";
 import { showEnergySettingsDialog } from "./dialogs/show-dialog-energy-settings";
-import { config } from "@fullcalendar/common";
 
 const VIEW_CONFIGS = [
   {
@@ -140,6 +139,7 @@ class PanelEnergy extends LitElement {
 
   private _reloadView() {
     // Force strategy to be re-run by make a copy of the view
+    const config = this._lovelace!.config;
     this._lovelace = {
       ...this._lovelace!,
       config: { ...config, views: [{ ...config.views[0] }] },

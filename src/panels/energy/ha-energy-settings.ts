@@ -177,10 +177,10 @@ export class EnergySettings extends LitElement {
               .sourceType=${"grid"}
               .flowType=${"from"}
               .flowIdx=${idx}
-              .flowStat=${"from"}
+              .flowStat=${"energy_from"}
               .hass=${this.hass}
               .statisticIds=${this._statisticIds}
-              .value=${flow.stat_from}
+              .value=${flow.stat_energy_from}
               .label=${`${idx + 1}: Grid Energy Consumption (kWh)`}
               @value-changed=${this._valueChanged}
             ></ha-statistic-picker>
@@ -217,10 +217,10 @@ export class EnergySettings extends LitElement {
               .sourceType=${"grid"}
               .flowType=${"to"}
               .flowIdx=${idx}
-              .flowStat=${"to"}
+              .flowStat=${"energy_to"}
               .hass=${this.hass}
               .statisticIds=${this._statisticIds}
-              .value=${flow.stat_to}
+              .value=${flow.stat_energy_to}
               label="Returned to Grid (kWh)"
               @value-changed=${this._valueChanged}
             ></ha-statistic-picker>
@@ -255,10 +255,10 @@ export class EnergySettings extends LitElement {
         <ha-statistic-picker
           .prefType=${"source"}
           .sourceType=${"solar"}
-          .stat=${"from"}
+          .stat=${"energy_from"}
           .hass=${this.hass}
           .statisticIds=${this._statisticIds}
-          .value=${solarSource?.stat_from}
+          .value=${solarSource?.stat_energy_from}
           .label=${this.hass.localize(
             "ui.panel.energy.settings.production.stat_production"
           )}
@@ -267,10 +267,10 @@ export class EnergySettings extends LitElement {
         <ha-statistic-picker
           .prefType=${"source"}
           .sourceType=${"solar"}
-          .stat=${"predicted_from"}
+          .stat=${"predicted_energy_from"}
           .hass=${this.hass}
           .statisticIds=${this._statisticIds}
-          .value=${solarSource?.stat_predicted_from}
+          .value=${solarSource?.stat_predicted_energy_from}
           .label=${this.hass.localize(
             "ui.panel.energy.settings.production.stat_predicted_production"
           )}

@@ -97,7 +97,7 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
                       : renderSumStatHelper(
                           this._data,
                           types.grid![0].flow_from.map(
-                            (flow) => flow.stat_from
+                            (flow) => flow.stat_energy_from
                           ),
                           "kWh"
                         )}
@@ -115,7 +115,7 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
                       ? ""
                       : renderSumStatHelper(
                           this._data,
-                          [types.solar![0].stat_from],
+                          [types.solar![0].stat_energy_from],
                           "kWh"
                         )}
                   </div>
@@ -132,7 +132,9 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
                       ? ""
                       : renderSumStatHelper(
                           this._data,
-                          types.grid![0].flow_to.map((flow) => flow.stat_to),
+                          types.grid![0].flow_to.map(
+                            (flow) => flow.stat_energy_to
+                          ),
                           "kWh"
                         )}
                   </div>
@@ -193,22 +195,22 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
     const prefs = this._config!.prefs;
     for (const source of prefs.energy_sources) {
       if (source.type === "solar") {
-        statistics.push(source.stat_from);
-        if (source.stat_predicted_from) {
-          statistics.push(source.stat_predicted_from);
+        statistics.push(source.stat_energy_from);
+        if (source.stat_predicted_energy_from) {
+          statistics.push(source.stat_predicted_energy_from);
         }
         continue;
       }
 
       // grid source
       for (const flowFrom of source.flow_from) {
-        statistics.push(flowFrom.stat_from);
+        statistics.push(flowFrom.stat_energy_from);
         if (flowFrom.stat_cost) {
           statistics.push(flowFrom.stat_cost);
         }
       }
       for (const flowTo of source.flow_to) {
-        statistics.push(flowTo.stat_to);
+        statistics.push(flowTo.stat_energy_to);
       }
     }
 
@@ -231,11 +233,11 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
     let returnToGrid = 0;
 
     for (const flowTo of gridSource.flow_to) {
-      if (!flowTo.stat_to || !(flowTo.stat_to in this._data!)) {
+      if (!flowTo.stat_energy_to || !(flowTo.stat_energy_to in this._data!)) {
         continue;
       }
       const flowReturned = calculateStatisticsSumGrowth(
-        this._data![flowTo.stat_to]
+        this._data![flowTo.stat_energy_to]
       );
       if (flowReturned === null) {
         return "incomplete return data";
@@ -243,12 +245,12 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
       returnToGrid += flowReturned;
     }
 
-    if (!(solarSource.stat_from in this._data!)) {
+    if (!(solarSource.stat_energy_from in this._data!)) {
       return "sun stat missing";
     }
 
     const production = calculateStatisticsSumGrowth(
-      this._data![solarSource.stat_from]
+      this._data![solarSource.stat_energy_from]
     );
 
     if (production === null) {
