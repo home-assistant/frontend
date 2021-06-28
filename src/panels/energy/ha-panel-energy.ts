@@ -1,6 +1,9 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
+import "@material/mwc-tab";
+import "@material/mwc-tab-bar";
 import {
+  css,
   CSSResultGroup,
   html,
   LitElement,
@@ -14,24 +17,38 @@ import { haStyle } from "../../resources/styles";
 import "../lovelace/views/hui-view";
 import { HomeAssistant } from "../../types";
 import { Lovelace } from "../lovelace/types";
-import { mdiCog } from "@mdi/js";
+import { mdiCog, mdiLightningBolt } from "@mdi/js";
 import { showEnergySettingsDialog } from "./dialogs/show-dialog-energy-settings";
+import { config } from "@fullcalendar/common";
 
-const config = {
-  views: [
-    {
-      strategy: {
-        type: "energy",
+const VIEW_CONFIGS = [
+  {
+    views: [
+      {
+        strategy: {
+          type: "energy",
+        },
       },
-    },
-  ],
-};
+    ],
+  },
+  {
+    views: [
+      {
+        strategy: {
+          type: "energy-details",
+        },
+      },
+    ],
+  },
+];
 
 @customElement("ha-panel-energy")
 class PanelEnergy extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+
+  @state() private _curTabIndex = 0;
 
   @state() private _lovelace?: Lovelace;
 
@@ -55,6 +72,33 @@ class PanelEnergy extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.energy")}</div>
+            <mwc-tab-bar
+              .activeIndex=${this._curTabIndex}
+              @MDCTabBar:activated=${this._handleTabActivated}
+            >
+              <mwc-tab
+                .hasImageIcon=${this.narrow}
+                .label=${this.narrow ? undefined : "Overview"}
+              >
+                ${this.narrow
+                  ? html`<ha-svg-icon
+                      slot="icon"
+                      .path=${mdiLightningBolt}
+                    ></ha-svg-icon>`
+                  : ""}
+              </mwc-tab>
+              <mwc-tab
+                .hasImageIcon=${this.narrow}
+                .label=${this.narrow ? undefined : "Details"}
+              >
+                ${this.narrow
+                  ? html`<ha-svg-icon
+                      slot="icon"
+                      .path=${mdiLightningBolt}
+                    ></ha-svg-icon>`
+                  : ""}
+              </mwc-tab>
+            </mwc-tab-bar>
             <mwc-icon-button @click=${this._showSettings}
               ><ha-svg-icon .path=${mdiCog}></ha-svg-icon
             ></mwc-icon-button>
@@ -73,8 +117,8 @@ class PanelEnergy extends LitElement {
 
   private _setLovelace() {
     this._lovelace = {
-      config,
-      rawConfig: config,
+      config: VIEW_CONFIGS[this._curTabIndex],
+      rawConfig: VIEW_CONFIGS[this._curTabIndex],
       editMode: false,
       urlPath: "energy",
       mode: "generated",
@@ -84,6 +128,14 @@ class PanelEnergy extends LitElement {
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
     };
+  }
+
+  private async _handleTabActivated(ev: CustomEvent): Promise<void> {
+    if (this._curTabIndex === ev.detail.index) {
+      return;
+    }
+    this._curTabIndex = ev.detail.index;
+    this._setLovelace();
   }
 
   private _reloadView() {
@@ -101,7 +153,21 @@ class PanelEnergy extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return haStyle;
+    return [
+      haStyle,
+      css`
+        :host([narrow]) mwc-tab {
+          width: 48px;
+          overflow: hidden;
+        }
+        mwc-tab {
+          --mdc-theme-primary: var(--text-primary-color);
+          --mdc-tab-text-label-color-default: var(--light-primary-color);
+          --mdc-tab-color-default: var(--light-primary-color);
+          --mdc-tab-height: var(--header-height);
+        }
+      `,
+    ];
   }
 }
 

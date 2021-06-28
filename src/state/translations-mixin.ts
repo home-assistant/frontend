@@ -278,6 +278,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (!panelUrl) {
         return;
       }
+
       const panelComponent = this.hass?.panels?.[panelUrl]?.component_name;
 
       // If it's the first call we don't have panel info yet to check the component.
@@ -289,6 +290,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
 
       if (!fragment) {
         return;
+      }
+
+      if (fragment === "energy") {
+        this._loadFragmentTranslations(language, "lovelace");
       }
 
       if (this.__loadedFragmetTranslations.has(fragment)) {

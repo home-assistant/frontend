@@ -36,6 +36,8 @@ const LAZY_LOAD_TYPES = {
   error: () => import("../cards/hui-error-card"),
   "empty-state": () => import("../cards/hui-empty-state-card"),
   "energy-summary": () => import("../cards/hui-energy-summary-card"),
+  "energy-summary-graph": () =>
+    import("../cards/hui-energy-summary-graph-card"),
   grid: () => import("../cards/hui-grid-card"),
   starting: () => import("../cards/hui-starting-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),

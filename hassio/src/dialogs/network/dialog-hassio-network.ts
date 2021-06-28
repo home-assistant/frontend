@@ -108,7 +108,7 @@ export class DialogHassioNetwork
             </mwc-icon-button>
           </ha-header-bar>
           ${this._interfaces.length > 1
-            ? html` <mwc-tab-bar
+            ? html`<mwc-tab-bar
                 .activeIndex=${this._curTabIndex}
                 @MDCTabBar:activated=${this._handleTabActivated}
                 >${this._interfaces.map(

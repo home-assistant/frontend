@@ -294,11 +294,6 @@ export const fetchStatistics = (
     statistic_ids,
   });
 
-export const statisticsHaveType = (
-  stats: StatisticValue[],
-  type: StatisticType
-) => stats.some((stat) => stat[type] !== null);
-
 export const calculateStatisticsSumGrowth = (
   values: StatisticValue[]
 ): number | null => {
@@ -318,3 +313,8 @@ export const calculateStatisticsSumGrowth = (
   }
   return endSum - startSum;
 };
+
+export const statisticsHaveType = (
+  stats: StatisticValue[],
+  type: StatisticType
+) => stats.some((stat) => stat[type] !== null);

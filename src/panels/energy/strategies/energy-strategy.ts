@@ -47,6 +47,11 @@ export class EnergyStrategy {
       prefs: energyPrefs,
     });
 
+    view.cards!.push({
+      type: "energy-summary-graph",
+      prefs: energyPrefs,
+    });
+
     const prefTypes = energySourcesByType(energyPrefs);
     let flowToGridSources: FlowToGridSourceEnergyPreference[] | undefined;
 
@@ -56,7 +61,6 @@ export class EnergyStrategy {
         title: hass.localize("ui.panel.energy.charts.stat_house_energy_meter"),
         entities: prefTypes.grid[0].flow_from.map((flow) => flow.stat_from),
         days_to_show: 20,
-        chart_plugins: ["datalabels"],
       });
 
       if (prefTypes.grid[0].flow_to.length) {
@@ -76,37 +80,6 @@ export class EnergyStrategy {
         title: hass.localize("ui.panel.energy.charts.solar"),
         entities,
         days_to_show: 10,
-        chart_plugins: ["datalabels"],
-        chart_options: {
-          plugins: {
-            tooltip: { enabled: false },
-            datalabels: {
-              align: "top",
-              anchor: "end",
-              offset: 6,
-              borderRadius: 4,
-              color: "white",
-              font: {
-                weight: "bold",
-              },
-              padding: 6,
-              formatter: (value) => value.y,
-              display: (context) =>
-                context.datasetIndex === 0 && context.dataIndex % 10 === 0
-                  ? "auto"
-                  : false,
-              backgroundColor: function (context) {
-                return context.dataset.backgroundColor;
-              },
-            },
-          },
-          elements: {
-            line: {
-              tension: 0.6,
-              borderWidth: 3,
-            },
-          },
-        },
       });
 
       if (prefTypes.solar[0].stat_predicted_from) {
