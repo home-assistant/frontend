@@ -53,11 +53,28 @@ export interface HistoryResult {
   timeline: TimelineEntity[];
 }
 
+export type StatisticType = "sum" | "min" | "max" | "mean";
+
+export interface Statistics {
+  [statisticId: string]: StatisticValue[];
+}
+
+export interface StatisticValue {
+  statistic_id: string;
+  start: string;
+  last_reset: string | null;
+  max: number | null;
+  mean: number | null;
+  min: number | null;
+  sum: number | null;
+  state: number | null;
+}
+
 export const fetchRecent = (
-  hass,
-  entityId,
-  startTime,
-  endTime,
+  hass: HomeAssistant,
+  entityId: string,
+  startTime: Date,
+  endTime: Date,
   skipInitialState = false,
   significantChangesOnly?: boolean,
   minimalResponse = true
@@ -87,7 +104,7 @@ export const fetchDate = (
   hass: HomeAssistant,
   startTime: Date,
   endTime: Date,
-  entityId
+  entityId?: string
 ): Promise<HassEntity[][]> =>
   hass.callApi(
     "GET",
@@ -252,3 +269,32 @@ export const computeHistory = (
 
   return { line: unitStates, timeline: timelineDevices };
 };
+
+// Statistics
+
+export const getStatisticIds = (
+  hass: HomeAssistant,
+  statistic_type?: "mean" | "sum"
+) =>
+  hass.callWS<string[]>({
+    type: "history/list_statistic_ids",
+    statistic_type,
+  });
+
+export const fetchStatistics = (
+  hass: HomeAssistant,
+  startTime: Date,
+  endTime?: Date,
+  statistic_ids?: string[]
+) =>
+  hass.callWS<Statistics>({
+    type: "history/statistics_during_period",
+    start_time: startTime.toISOString(),
+    end_time: endTime?.toISOString(),
+    statistic_ids,
+  });
+
+export const statisticsHaveType = (
+  stats: StatisticValue[],
+  type: StatisticType
+) => stats.some((stat) => stat[type] !== null);
