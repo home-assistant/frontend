@@ -19,7 +19,12 @@ import ChartDataLabels from "chartjs-plugin-datalabels";
 
 const PLUGINS = [ChartDataLabels];
 const NEGATIVE = ["to_grid", "solar"];
-const COLORS = { from_grid: "#ff5722", to_grid: "#4caf50", solar: "#ffc107" };
+const COLORS = {
+  from_grid: "#ff5722",
+  to_grid: "#4caf50",
+  by_home: "#9c27b0",
+  solar: "#ffc107",
+};
 
 @customElement("hui-energy-summary-graph-card")
 export class HuiEnergySummaryGraphCard
@@ -212,7 +217,7 @@ export class HuiEnergySummaryGraphCard
     const startDate = new Date();
     // This should be _just_ today (since local midnight)
     // For now we do a lot because fake data is not recent.
-    startDate.setHours(-5);
+    startDate.setHours(-35);
 
     this._fetching = true;
     const prefs = this._config!.prefs;
@@ -279,36 +284,51 @@ export class HuiEnergySummaryGraphCard
       endTime = new Date();
     }
 
+    const combinedData: { [key: string]: { [start: string]: number } } = {};
+
     Object.entries(statistics).forEach(([key, statIds]) => {
-      const totalStats: Map<string, number> = new Map();
+      const totalStats: { [start: string]: number } = {};
       statIds!.forEach((id) => {
         const stats = this._data![id];
         if (!stats) {
           return;
         }
-        let zeroValue: number;
+        let prevValue: number;
         stats.forEach((stat) => {
           if (!stat.sum) {
             return;
           }
-          if (!zeroValue) {
-            zeroValue = stat.sum;
+          if (!prevValue) {
+            prevValue = stat.sum;
+            return;
           }
-          if (totalStats.has(stat.start)) {
-            totalStats.set(
-              stat.start,
-              totalStats.get(stat.start)! + (stat.sum - zeroValue)
-            );
+          if (stat.start in totalStats) {
+            totalStats[stat.start] = stat.sum - prevValue;
           } else {
-            totalStats.set(stat.start, stat.sum - zeroValue);
+            totalStats[stat.start] = stat.sum - prevValue;
           }
+          prevValue = stat.sum;
         });
       });
+      combinedData[key] = totalStats;
+    });
 
-      if (!totalStats.size) {
-        return;
+    if (combinedData.from_grid && combinedData.to_grid && combinedData.solar) {
+      const allStarts = new Set([
+        ...Object.keys(combinedData.from_grid),
+        ...Object.keys(combinedData.to_grid),
+        ...Object.keys(combinedData.solar),
+      ]);
+      combinedData.by_home = {};
+      for (const start of allStarts) {
+        combinedData.by_home[start] =
+          (combinedData.solar[start] || 0) -
+          (combinedData.to_grid[start] || 0) +
+          (combinedData.from_grid[start] || 0);
       }
+    }
 
+    Object.entries(combinedData).forEach(([key, totalStats]) => {
       const negative = NEGATIVE.includes(key);
 
       // array containing [value1, value2, etc]
@@ -346,6 +366,8 @@ export class HuiEnergySummaryGraphCard
 
       const color = COLORS[key];
 
+      let lastDate: Date | undefined;
+
       data.push({
         label: this.hass.localize(
           `ui.panel.lovelace.cards.energy-summary-graph-card.lines.${key}`
@@ -357,11 +379,8 @@ export class HuiEnergySummaryGraphCard
         pointRadius: 0,
         data: [],
       });
-
-      let lastDate: Date | undefined;
-
       // Process chart data.
-      for (const [start, value] of totalStats.entries()) {
+      for (const [start, value] of Object.entries(totalStats)) {
         const date = new Date(start);
         if (lastDate && date.getTime() === lastDate.getTime()) {
           return;
@@ -371,7 +390,9 @@ export class HuiEnergySummaryGraphCard
       }
 
       // Add an entry for final values
-      pushData(endTime, prevValues);
+      if (endTime.getTime() !== lastDate?.getTime()) {
+        pushData(endTime, prevValues);
+      }
 
       // Concat two arrays
       Array.prototype.push.apply(datasets, data);
