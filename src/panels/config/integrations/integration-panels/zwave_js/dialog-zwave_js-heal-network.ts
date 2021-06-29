@@ -11,6 +11,7 @@ import {
   healNetwork,
   stopHealNetwork,
   subscribeHealNetworkProgress,
+  ZWaveJSHealNetworkStatusMessage,
   ZWaveJSNetwork,
 } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -38,7 +39,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
   public async showDialog(
     params: ZWaveJSHealNetworkDialogParams
   ): Promise<void> {
-    this._heal_node_status = undefined;
+    this._progress_total = 0;
     this.entry_id = params.entry_id;
     this._fetchData();
   }
@@ -46,7 +47,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
   public closeDialog(): void {
     this.entry_id = undefined;
     this._status = undefined;
-    this._heal_node_status = undefined;
+    this._progress_total = 0;
 
     this._unsubscribe();
 
@@ -112,7 +113,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
                   )}
                 </p>
               </div>
-              ${!this._heal_node_status
+              ${!this._progress_total
                 ? html`
                     <mwc-linear-progress indeterminate> </mwc-linear-progress>
                   `
@@ -187,7 +188,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
               </mwc-button>
             `
           : ``}
-        ${this._heal_node_status && this._status !== "finished"
+        ${this._progress_total && this._status !== "finished"
           ? html`
               <mwc-linear-progress
                 determinate
@@ -236,12 +237,11 @@ class DialogZWaveJSHealNetwork extends LitElement {
     this._status = "cancelled";
   }
 
-  private _handleMessage(message: any): void {
+  private _handleMessage(message: ZWaveJSHealNetworkStatusMessage): void {
     if (message.event === "heal network progress") {
-      this._heal_node_status = message.heal_node_status;
       let finished = 0;
       let in_progress = 0;
-      for (const status of Object.values(this._heal_node_status!)) {
+      for (const status of Object.values(message.heal_node_status)) {
         if (status === "pending") {
           in_progress++;
         }
@@ -249,7 +249,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
           finished++;
         }
       }
-      this._progress_total = Object.keys(this._heal_node_status!).length;
+      this._progress_total = Object.keys(message.heal_node_status).length;
       this._progress_finished = finished / this._progress_total;
       this._progress_in_progress = in_progress / this._progress_total;
     }
