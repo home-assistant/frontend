@@ -22,6 +22,7 @@ import {
   enableConfigEntry,
   reloadConfigEntry,
   updateConfigEntry,
+  ERROR_STATES,
 } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -37,12 +38,6 @@ import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
-
-const ERROR_STATES: ConfigEntry["state"][] = [
-  "migration_error",
-  "setup_error",
-  "setup_retry",
-];
 
 const integrationsWithPanel = {
   hassio: "/hassio/dashboard",
