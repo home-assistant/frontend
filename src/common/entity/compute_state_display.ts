@@ -46,7 +46,10 @@ export const computeStateDisplay = (
           if (state.includes(":")) {
             // Time only.
             const now = new Date();
-            return formatTime(new Date(`${now.toISOString().split("T")[0]}T${state}`), locale);
+            return formatTime(
+              new Date(`${now.toISOString().split("T")[0]}T${state}`),
+              locale
+            );
           }
         }
         return state;
