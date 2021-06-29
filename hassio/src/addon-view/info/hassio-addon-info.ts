@@ -892,10 +892,13 @@ class HassioAddonInfo extends LitElement {
 
   private async _openChangelog(): Promise<void> {
     try {
-      const content = await fetchHassioAddonChangelog(
-        this.hass,
-        this.addon.slug
-      );
+      let content = await fetchHassioAddonChangelog(this.hass, this.addon.slug);
+      if (
+        content.includes(`# ${this.addon.version}`) &&
+        content.includes(`# ${this.addon.version_latest}`)
+      ) {
+        content = content.split(`# ${this.addon.version}`)[0];
+      }
       showHassioMarkdownDialog(this, {
         title: this.supervisor.localize("addon.dashboard.changelog"),
         content,
