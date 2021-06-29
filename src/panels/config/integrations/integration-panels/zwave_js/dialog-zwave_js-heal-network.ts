@@ -212,6 +212,11 @@ class DialogZWaveJSHealNetwork extends LitElement {
     );
     if (network.controller.is_heal_network_active) {
       this._status = "started";
+      this._subscribed = subscribeHealNetworkProgress(
+        this.hass,
+        this.entry_id!,
+        this._handleMessage.bind(this)
+      );
     }
   }
 
