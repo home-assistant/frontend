@@ -14,7 +14,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
-import relativeTime from "../../../src/common/datetime/relative_time";
+import { relativeTime } from "../../../src/common/datetime/relative_time";
 import { HASSDomEvent } from "../../../src/common/dom/fire_event";
 import {
   DataTableColumnContainer,
@@ -133,7 +133,7 @@ export class HassioBackups extends LitElement {
         filterable: true,
         sortable: true,
         template: (entry: string) =>
-          relativeTime(new Date(entry), this.hass.localize),
+          relativeTime(new Date(entry), this.hass.locale),
       },
       secondary: {
         title: "",

@@ -3,7 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../common/datetime/format_date";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { formatTime } from "../../../common/datetime/format_time";
-import relativeTime from "../../../common/datetime/relative_time";
+import { relativeTime } from "../../../common/datetime/relative_time";
 import { FrontendLocaleData } from "../../../data/translation";
 import { HomeAssistant } from "../../../types";
 import { TimestampRenderingFormat } from "./types";
@@ -103,11 +103,13 @@ class HuiTimestampDisplay extends LitElement {
     if (this.ts && this.hass!.localize) {
       this._relative =
         this._format === "relative"
-          ? relativeTime(this.ts, this.hass!.localize)
-          : (this._relative = relativeTime(new Date(), this.hass!.localize, {
-              compareTime: this.ts,
-              includeTense: false,
-            }));
+          ? relativeTime(this.ts, this.hass!.locale)
+          : (this._relative = relativeTime(
+              new Date(),
+              this.hass!.locale,
+              this.ts,
+              false
+            ));
     }
   }
 }

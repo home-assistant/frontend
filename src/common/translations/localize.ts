@@ -1,4 +1,7 @@
-import { shouldPolyfill } from "@formatjs/intl-pluralrules/lib/should-polyfill";
+import { shouldPolyfill as shouldPolyfillLocale } from "@formatjs/intl-locale/lib/should-polyfill";
+import { shouldPolyfill as shouldPolyfillPluralRules } from "@formatjs/intl-pluralrules/lib/should-polyfill";
+import { shouldPolyfill as shouldPolyfillRelativeTime } from "@formatjs/intl-relativetimeformat/lib/should-polyfill";
+import { shouldPolyfill as shouldPolyfillDateTime } from "@formatjs/intl-datetimeformat/lib/should-polyfill";
 import IntlMessageFormat from "intl-messageformat";
 import { Resources } from "../../types";
 
@@ -14,15 +17,31 @@ export interface FormatsType {
 
 let loadedPolyfillLocale: Set<string> | undefined;
 
-let polyfillLoaded = !shouldPolyfill();
+const polyfillPluralRules = shouldPolyfillPluralRules();
+const polyfillRelativeTime = shouldPolyfillRelativeTime();
+const polyfillDateTime = shouldPolyfillDateTime();
+
+const polyfills: Promise<any>[] = [];
+if (shouldPolyfillLocale()) {
+  polyfills.push(import("@formatjs/intl-locale/polyfill"));
+}
+if (polyfillPluralRules) {
+  polyfills.push(import("@formatjs/intl-pluralrules/polyfill"));
+}
+if (polyfillRelativeTime) {
+  polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill"));
+}
+if (polyfillDateTime) {
+  polyfills.push(import("@formatjs/intl-datetimeformat/polyfill"));
+}
+
+let polyfillLoaded = polyfills.length === 0;
 const polyfillProm = polyfillLoaded
   ? undefined
-  : import("@formatjs/intl-locale/polyfill")
-      .then(() => import("@formatjs/intl-pluralrules/polyfill"))
-      .then(() => {
-        loadedPolyfillLocale = new Set();
-        polyfillLoaded = true;
-      });
+  : Promise.all(polyfills).then(() => {
+      loadedPolyfillLocale = new Set();
+      polyfillLoaded = true;
+    });
 
 /**
  * Adapted from Polymer app-localize-behavior.
@@ -58,7 +77,17 @@ export const computeLocalize = async (
   if (loadedPolyfillLocale && !loadedPolyfillLocale.has(language)) {
     try {
       loadedPolyfillLocale.add(language);
-      await import("@formatjs/intl-pluralrules/locale-data/en");
+      if (polyfillPluralRules) {
+        await import(`@formatjs/intl-pluralrules/locale-data/${language}`);
+      }
+      if (polyfillRelativeTime) {
+        await import(
+          `@formatjs/intl-relativetimeformat/locale-data/${language}`
+        );
+      }
+      if (polyfillDateTime) {
+        await import(`@formatjs/intl-datetimeformat/locale-data/${language}`);
+      }
     } catch (_e) {
       // Ignore
     }

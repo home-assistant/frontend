@@ -3,6 +3,8 @@ import "regenerator-runtime/runtime";
 import "lit/polyfill-support";
 // For localize
 import "@formatjs/intl-getcanonicallocales/polyfill";
+import "@formatjs/intl-numberformat/polyfill";
+import "@formatjs/intl-numberformat/locale-data/en";
 // To use comlink under ES5
 import "proxy-polyfill";
 import "unfetch/polyfill";
