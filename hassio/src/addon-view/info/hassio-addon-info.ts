@@ -897,7 +897,13 @@ class HassioAddonInfo extends LitElement {
         content.includes(`# ${this.addon.version}`) &&
         content.includes(`# ${this.addon.version_latest}`)
       ) {
-        content = content.split(`# ${this.addon.version}`)[0];
+        const newcontent = content.split(`# ${this.addon.version}`)[0];
+        if (newcontent.includes(`# ${this.addon.version_latest}`)) {
+          // Only change the content if the new version still exist
+          // if the changelog does not have the newests version on top
+          // this will not be true, and we don't modify the content
+          content = newcontent;
+        }
       }
       showHassioMarkdownDialog(this, {
         title: this.supervisor.localize("addon.dashboard.changelog"),
