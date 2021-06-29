@@ -20,6 +20,7 @@ import {
 import {
   ConfigEntry,
   getConfigEntries,
+  ERROR_STATES,
 } from "../../../../../data/config_entries";
 import {
   showAlertDialog,
@@ -33,10 +34,8 @@ import "../../../ha-config-section";
 import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
-import { getConfigEntries } from "../../../../../data/config_entries";
 import { showOptionsFlowDialog } from "../../../../../dialogs/config-flow/show-dialog-options-flow";
 
-const ERROR_STATES = ["migration_error", "setup_error", "setup_retry"];
 @customElement("zwave_js-config-dashboard")
 class ZWaveJSConfigDashboard extends LitElement {
   @property({ type: Object }) public hass!: HomeAssistant;
@@ -239,10 +238,12 @@ class ZWaveJSConfigDashboard extends LitElement {
     if (item.disabled_by) {
       stateText = [
         "ui.panel.config.integrations.config_entry.disable.disabled_cause",
-        "cause",
-        this.hass.localize(
-          `ui.panel.config.integrations.config_entry.disable.disabled_by.${item.disabled_by}`
-        ) || item.disabled_by,
+        {
+          cause:
+            this.hass.localize(
+              `ui.panel.config.integrations.config_entry.disable.disabled_by.${item.disabled_by}`
+            ) || item.disabled_by,
+        },
       ];
       if (item.state === "failed_unload") {
         stateTextExtra = html`.
