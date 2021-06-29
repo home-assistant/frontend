@@ -892,10 +892,19 @@ class HassioAddonInfo extends LitElement {
 
   private async _openChangelog(): Promise<void> {
     try {
-      const content = await fetchHassioAddonChangelog(
-        this.hass,
-        this.addon.slug
-      );
+      let content = await fetchHassioAddonChangelog(this.hass, this.addon.slug);
+      if (
+        content.includes(`# ${this.addon.version}`) &&
+        content.includes(`# ${this.addon.version_latest}`)
+      ) {
+        const newcontent = content.split(`# ${this.addon.version}`)[0];
+        if (newcontent.includes(`# ${this.addon.version_latest}`)) {
+          // Only change the content if the new version still exist
+          // if the changelog does not have the newests version on top
+          // this will not be true, and we don't modify the content
+          content = newcontent;
+        }
+      }
       showHassioMarkdownDialog(this, {
         title: this.supervisor.localize("addon.dashboard.changelog"),
         content,
