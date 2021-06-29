@@ -5,7 +5,6 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import {
   fetchNetworkStatus,
@@ -293,7 +292,6 @@ class DialogZWaveJSHealNetwork extends LitElement {
           color: var(--primary-color);
         }
 
-        .flex-container ha-circular-progress,
         .flex-container ha-svg-icon {
           margin-right: 20px;
         }
