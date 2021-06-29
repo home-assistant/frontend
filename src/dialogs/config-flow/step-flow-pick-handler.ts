@@ -3,7 +3,6 @@ import "@polymer/paper-item/paper-item-body";
 import Fuse from "fuse.js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -34,9 +33,7 @@ declare global {
 class StepFlowPickHandler extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public handlers!: string[];
-
-  @property() public showAdvanced?: boolean;
+  @property({ attribute: false }) public handlers!: string[];
 
   @state() private _filter?: string;
 
@@ -74,10 +71,6 @@ class StepFlowPickHandler extends LitElement {
       this.hass.localize
     );
 
-    const showDocumentationNote = Boolean(
-      this.showAdvanced || !handlers.length
-    );
-
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
       <search-input
@@ -91,54 +84,50 @@ class StepFlowPickHandler extends LitElement {
           width: `${this._width}px`,
           height: `${this._height}px`,
         })}
-        class=${classMap({
-          documentation: showDocumentationNote,
-        })}
       >
-        ${handlers.map(
-          (handler: HandlerObj) =>
-            html`
-              <paper-icon-item
-                @click=${this._handlerPicked}
-                .handler=${handler}
-              >
-                <img
-                  slot="item-icon"
-                  loading="lazy"
-                  src=${brandsUrl(handler.slug, "icon", true)}
-                  referrerpolicy="no-referrer"
-                />
+        ${handlers.length
+          ? handlers.map(
+              (handler: HandlerObj) =>
+                html`
+                  <paper-icon-item
+                    @click=${this._handlerPicked}
+                    .handler=${handler}
+                  >
+                    <img
+                      slot="item-icon"
+                      loading="lazy"
+                      src=${brandsUrl(handler.slug, "icon", true)}
+                      referrerpolicy="no-referrer"
+                    />
 
-                <paper-item-body> ${handler.name} </paper-item-body>
-                <ha-icon-next></ha-icon-next>
-              </paper-icon-item>
-            `
-        )}
+                    <paper-item-body> ${handler.name} </paper-item-body>
+                    <ha-icon-next></ha-icon-next>
+                  </paper-icon-item>
+                `
+            )
+          : html`
+              <p>
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.note_about_integrations"
+                )}<br />
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.note_about_website_reference"
+                )}<a
+                  href="${documentationUrl(
+                    this.hass,
+                    `/integrations/${
+                      this._filter ? `#search/${this._filter}` : ""
+                    }`
+                  )}"
+                  target="_blank"
+                  rel="noreferrer"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.home_assistant_website"
+                  )}</a
+                >.
+              </p>
+            `}
       </div>
-      ${showDocumentationNote
-        ? html`
-            <p>
-              ${this.hass.localize(
-                "ui.panel.config.integrations.note_about_integrations"
-              )}<br />
-              ${this.hass.localize(
-                "ui.panel.config.integrations.note_about_website_reference"
-              )}<a
-                href="${documentationUrl(
-                  this.hass,
-                  `/integrations/${
-                    this._filter ? `#search/${this._filter}` : ""
-                  }`
-                )}"
-                target="_blank"
-                rel="noreferrer"
-                >${this.hass.localize(
-                  "ui.panel.config.integrations.home_assistant_website"
-                )}</a
-              >.
-            </p>
-          `
-        : ""}
     `;
   }
 
@@ -203,9 +192,6 @@ class StepFlowPickHandler extends LitElement {
         @media all and (max-height: 900px) {
           div {
             max-height: calc(100vh - 134px);
-          }
-          div.documentation {
-            max-height: calc(100vh - 250px);
           }
         }
         paper-icon-item {
