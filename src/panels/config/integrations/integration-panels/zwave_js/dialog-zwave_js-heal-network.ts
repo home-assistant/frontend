@@ -26,8 +26,6 @@ class DialogZWaveJSHealNetwork extends LitElement {
 
   @state() private _status?: string;
 
-  @state() private _heal_node_status?: { [key: number]: string };
-
   @state() private _progress_total = 0;
 
   @state() private _progress_finished = 0;
