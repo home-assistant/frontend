@@ -24,8 +24,6 @@ class DialogZWaveJSHealNetwork extends LitElement {
 
   @state() private entry_id?: string;
 
-  @state() private _network?: ZWaveJSNetwork;
-
   @state() private _status?: string;
 
   @state() private _heal_node_status?: { [key: number]: string };
@@ -44,6 +42,16 @@ class DialogZWaveJSHealNetwork extends LitElement {
     this._heal_node_status = undefined;
     this.entry_id = params.entry_id;
     this._fetchData();
+  }
+
+  public closeDialog(): void {
+    this.entry_id = undefined;
+    this._status = undefined;
+    this._heal_node_status = undefined;
+
+    this._unsubscribe();
+
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   protected render(): TemplateResult {
@@ -196,8 +204,11 @@ class DialogZWaveJSHealNetwork extends LitElement {
     if (!this.hass) {
       return;
     }
-    this._network = await fetchNetworkStatus(this.hass!, this.entry_id!);
-    if (this._network.controller.is_heal_network_active) {
+    const network: ZWaveJSNetwork = await fetchNetworkStatus(
+      this.hass!,
+      this.entry_id!
+    );
+    if (network.controller.is_heal_network_active) {
       this._status = "started";
     }
   }
@@ -220,6 +231,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
       return;
     }
     stopHealNetwork(this.hass, this.entry_id!);
+    this._unsubscribe();
     this._status = "cancelled";
   }
 
@@ -228,8 +240,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
       this._heal_node_status = message.heal_node_status;
       let finished = 0;
       let in_progress = 0;
-      for (const key of Object.keys(message.heal_node_status)) {
-        const status = message.heal_node_status[key];
+      for (const status of Object.values(this._heal_node_status!)) {
         if (status === "pending") {
           in_progress++;
         }
@@ -237,7 +248,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
           finished++;
         }
       }
-      this._progress_total = Object.keys(message.heal_node_status).length;
+      this._progress_total = Object.keys(this._heal_node_status!).length;
       this._progress_finished = finished / this._progress_total;
       this._progress_in_progress = in_progress / this._progress_total;
     }
@@ -252,17 +263,6 @@ class DialogZWaveJSHealNetwork extends LitElement {
       this._subscribed.then((unsub) => unsub());
       this._subscribed = undefined;
     }
-  }
-
-  public closeDialog(): void {
-    this.entry_id = undefined;
-    this._status = undefined;
-    this._network = undefined;
-    this._heal_node_status = undefined;
-
-    this._unsubscribe();
-
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   static get styles(): CSSResultGroup {

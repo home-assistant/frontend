@@ -21,7 +21,7 @@ export interface ZWaveJSClient {
 export interface ZWaveJSController {
   home_id: string;
   nodes: number[];
-  is_heal_network_active: string;
+  is_heal_network_active: boolean;
 }
 
 export interface ZWaveJSNode {
