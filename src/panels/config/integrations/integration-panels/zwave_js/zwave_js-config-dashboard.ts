@@ -172,7 +172,8 @@ class ZWaveJSConfigDashboard extends LitElement {
                     </mwc-button>
                     <mwc-button @click=${this._openOptionFlow}>
                       ${this.hass.localize(
-                        "ui.panel.config.zwave_js.common.reconfigure_server")}
+                        "ui.panel.config.zwave_js.common.reconfigure_server"
+                      )}
                     </mwc-button>
                   </div>
                 </ha-card>
