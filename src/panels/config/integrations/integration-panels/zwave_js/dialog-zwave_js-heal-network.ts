@@ -36,9 +36,7 @@ class DialogZWaveJSHealNetwork extends LitElement {
 
   private _subscribed?: Promise<UnsubscribeFunc>;
 
-  public async showDialog(
-    params: ZWaveJSHealNetworkDialogParams
-  ): Promise<void> {
+  public showDialog(params: ZWaveJSHealNetworkDialogParams): void {
     this._progress_total = 0;
     this.entry_id = params.entry_id;
     this._fetchData();
