@@ -36,23 +36,17 @@ export const computeStateDisplay = (
         const components = state.split(" ");
         if (components.length === 2) {
           // Date and time.
-          const iso8601String = components.join("T");
-          const dateObj = new Date(iso8601String);
-          return formatDateTime(dateObj, locale);
+          return formatDateTime(new Date(components.join("T")), locale);
         }
         if (components.length === 1) {
           if (state.includes("-")) {
             // Date only.
-            const iso8601String = `${state}T00:00`;
-            const dateObj = new Date(iso8601String);
-            return formatDate(dateObj, locale);
+            return formatDate(new Date(`${state}T00:00`), locale);
           }
           if (state.includes(":")) {
             // Time only.
             const now = new Date();
-            const iso8601String = `${now.toISOString().split("T")[0]}T${state}`;
-            const dateObj = new Date(iso8601String);
-            return formatTime(dateObj, locale);
+            return formatTime(new Date(`${now.toISOString().split("T")[0]}T${state}`), locale);
           }
         }
         return state;
