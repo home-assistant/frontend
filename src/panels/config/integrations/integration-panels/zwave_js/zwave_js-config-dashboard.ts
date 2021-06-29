@@ -27,6 +27,7 @@ import type { HomeAssistant, Route } from "../../../../../types";
 import { fileDownload } from "../../../../../util/file_download";
 import "../../../ha-config-section";
 import { showZWaveJSAddNodeDialog } from "./show-dialog-zwave_js-add-node";
+import { showZWaveJSHealNetworkDialog } from "./show-dialog-zwave_js-heal-network";
 import { showZWaveJSRemoveNodeDialog } from "./show-dialog-zwave_js-remove-node";
 import { configTabs } from "./zwave_js-config-router";
 import { getConfigEntries } from "../../../../../data/config_entries";
@@ -164,6 +165,11 @@ class ZWaveJSConfigDashboard extends LitElement {
                         "ui.panel.config.zwave_js.common.remove_node"
                       )}
                     </mwc-button>
+                    <mwc-button @click=${this._healNetworkClicked}>
+                      ${this.hass.localize(
+                        "ui.panel.config.zwave_js.common.heal_network"
+                      )}
+                    </mwc-button>
                     <mwc-button @click=${this._openOptionFlow}>
                       ${this.hass.localize(
                         "ui.panel.config.zwave_js.common.reconfigure_server"
@@ -257,6 +263,12 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   private async _removeNodeClicked() {
     showZWaveJSRemoveNodeDialog(this, {
+      entry_id: this.configEntryId!,
+    });
+  }
+
+  private async _healNetworkClicked() {
+    showZWaveJSHealNetworkDialog(this, {
       entry_id: this.configEntryId!,
     });
   }
