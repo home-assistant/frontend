@@ -99,23 +99,25 @@ class DialogZWaveJSHealNetwork extends LitElement {
           : ``}
         ${this._status === "started"
           ? html`
-              <div class="flex-container">
-                <ha-circular-progress active></ha-circular-progress>
-                <div class="status">
-                  <p>
-                    <b>
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave_js.heal_network.in_progress"
-                      )}
-                    </b>
-                  </p>
-                  <p>
+              <div class="status">
+                <p>
+                  <b>
                     ${this.hass.localize(
-                      "ui.panel.config.zwave_js.heal_network.run_in_background"
+                      "ui.panel.config.zwave_js.heal_network.in_progress"
                     )}
-                  </p>
-                </div>
+                  </b>
+                </p>
+                <p>
+                  ${this.hass.localize(
+                    "ui.panel.config.zwave_js.heal_network.run_in_background"
+                  )}
+                </p>
               </div>
+              ${!this._heal_node_status
+                ? html`
+                    <mwc-linear-progress indeterminate> </mwc-linear-progress>
+                  `
+                : ""}
               <mwc-button slot="secondaryAction" @click=${this._stopHeal}>
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.heal_network.stop_heal"
