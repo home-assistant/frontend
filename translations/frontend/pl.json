@@ -2965,6 +2965,7 @@
                         "home_id": "Identyfikator domu",
                         "network": "Sieć",
                         "node_id": "Identyfikator węzła",
+                        "reconfigure_server": "Ponownie skonfiguruj serwer",
                         "remove_node": "Usuń węzeł"
                     },
                     "dashboard": {

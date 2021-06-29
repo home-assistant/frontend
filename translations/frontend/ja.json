@@ -862,6 +862,12 @@
                 "label": "画像",
                 "unsupported_format": "サポートされていない形式です。JPEG、PNG、またはGIF画像を選択してください。"
             },
+            "related-filter-menu": {
+                "filter_by_area": "エリアで絞り込む",
+                "filter_by_device": "デバイスで絞り込む",
+                "filtered_by_area": "エリア: {area_name}",
+                "filtered_by_device": "デバイス: {device_name}"
+            },
             "related-items": {
                 "area": "エリア",
                 "automation": "次の自動化の一部",
@@ -1164,7 +1170,8 @@
                     },
                     "types": {
                         "navigation": "ナビゲート",
-                        "reload": "リロード"
+                        "reload": "リロード",
+                        "server_control": "サーバー"
                     }
                 },
                 "filter_placeholder": "エンティティフィルター"
@@ -2203,6 +2210,7 @@
                         "configure": "設定",
                         "delete": "削除",
                         "delete_confirm": "この統合を削除しますか?",
+                        "depends_on_cloud": "クラウドに依存",
                         "device_unavailable": "デバイスを利用できません",
                         "devices": "{count} {count, plural,\n  one {デバイス}\n  other {デバイス}\n}",
                         "disable_error": "統合の有効化または無効化に失敗しました",
@@ -2241,6 +2249,7 @@
                             "loaded": "読み込み",
                             "migration_error": "移行エラー",
                             "not_loaded": "読み込まれていません",
+                            "setup_error": "セットアップに失敗しました。",
                             "setup_retry": "設定をやり直す"
                         },
                         "system_options": "システムオプション",
@@ -3152,6 +3161,7 @@
                         "column_parameter": "パラメータ",
                         "description": "サービス開発ツールを使用すると、ホームアシスタントで利用可能なサービスを呼び出すことができます。",
                         "fill_example_data": "データ記入例",
+                        "no_template_ui_support": "UIはテンプレートをサポートしていませんが、YAMLエディタを使用することができます。",
                         "title": "サービス",
                         "ui_mode": "UIモードに移動します",
                         "yaml_mode": "YAMLモードに移動します",
