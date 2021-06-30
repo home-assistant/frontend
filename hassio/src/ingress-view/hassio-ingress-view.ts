@@ -38,20 +38,17 @@ class HassioIngressView extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property({ type: Boolean }) public ingressPanel = false;
 
   @state() private _addon?: HassioAddonDetails;
 
-  @property({ type: Boolean })
-  public narrow = false;
+  @state() private _resolveIngressStatus?: number;
+
+  private _resolveIngressTime?: number;
 
   private _sessionKeepAlive?: number;
-
-  private _resolveIngressURL: {
-    status?: number;
-    time?: number;
-    interval?: number;
-  } = {};
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -60,54 +57,38 @@ class HassioIngressView extends LitElement {
       clearInterval(this._sessionKeepAlive);
       this._sessionKeepAlive = undefined;
     }
-    if (this._resolveIngressURL.interval) {
-      clearInterval(this._resolveIngressURL.interval);
-    }
-    this._resolveIngressURL = {};
+
+    this._resolveIngressStatus = undefined;
+    this._resolveIngressTime = undefined;
   }
 
   public connectedCallback() {
     super.connectedCallback();
-
-    this._resolveURL();
-    this._resolveIngressURL.interval = window.setInterval(async () => {
-      await this._resolveURL();
-    }, 1000);
   }
 
-  private async _resolveURL(): Promise<void> {
+  private async _resolveURL(addonSlug: string): Promise<void> {
+    await this._fetchData(addonSlug);
     if (!this._addon) {
+      window.setTimeout(async () => {
+        this._resolveURL(addonSlug);
+      }, 1000);
       return;
     }
 
-    if (this._addon.state !== "started") {
-      clearInterval(this._resolveIngressURL.interval);
-      await showAlertDialog(this, {
-        text:
-          this.hass.localize("ingress.not_running") ||
-          "The add-on is not running, please start it.",
-        title: this._addon.name,
-        confirmText:
-          this.hass.localize("ingress.go_to_dashboard") ||
-          "Go to add-on dashboard",
-      });
-      await nextRender();
-      navigate(`/hassio/addon/${this._addon.slug}/info`, { replace: true });
-      return;
+    if (!this._resolveIngressTime) {
+      this._resolveIngressTime = new Date().getTime();
     }
 
     if (
-      this._resolveIngressURL.status &&
-      this._resolveIngressURL.status !== STATUS_BAD_GATEWAY
+      this._resolveIngressStatus &&
+      this._resolveIngressStatus !== STATUS_BAD_GATEWAY
     ) {
-      if (this._resolveIngressURL.interval) {
-        clearInterval(this._resolveIngressURL.interval);
-      }
+      return;
     }
 
     if (
-      this._resolveIngressURL.time &&
-      new Date().getTime() > this._resolveIngressURL.time + TIMEOUT
+      this._resolveIngressTime &&
+      new Date().getTime() > this._resolveIngressTime + TIMEOUT
     ) {
       await showAlertDialog(this, {
         text:
@@ -124,22 +105,24 @@ class HassioIngressView extends LitElement {
 
     try {
       const response = await fetch(this._addon.ingress_url!);
-      this._resolveIngressURL.status = response.status;
-      await this._fetchData(this._addon.slug);
+      this._resolveIngressStatus = response.status;
     } catch (err) {
       // eslint-disable-next-line
       console.error(err);
     }
+    window.setTimeout(async () => {
+      await this._resolveURL(this._addon!.slug);
+    }, 1000);
   }
 
   protected render(): TemplateResult {
-    if (!this._addon || this._resolveIngressURL.status === STATUS_BAD_GATEWAY) {
+    if (!this._addon || this._resolveIngressStatus === STATUS_BAD_GATEWAY) {
       return html`
         <hass-loading-screen
           .narrow=${this.narrow}
           .header=${this._addon?.name}
         >
-          ${this._resolveIngressURL.status === STATUS_BAD_GATEWAY
+          ${this._resolveIngressStatus === STATUS_BAD_GATEWAY
             ? html`<p>
                 ${this.hass.localize("ingress.waiting") ||
                 "Waiting for add-on to start"}
@@ -225,7 +208,7 @@ class HassioIngressView extends LitElement {
     const oldAddon = oldRoute ? oldRoute.path.substr(1) : undefined;
 
     if (addon && addon !== oldAddon) {
-      this._fetchData(addon);
+      this._resolveURL(addon);
     }
   }
 
@@ -288,16 +271,15 @@ class HassioIngressView extends LitElement {
       return;
     }
 
-    if (this._sessionKeepAlive) {
-      clearInterval(this._sessionKeepAlive);
+    if (!this._sessionKeepAlive) {
+      this._sessionKeepAlive = window.setInterval(async () => {
+        try {
+          await validateHassioSession(this.hass, session);
+        } catch (err) {
+          session = await createHassioSession(this.hass);
+        }
+      }, 60000);
     }
-    this._sessionKeepAlive = window.setInterval(async () => {
-      try {
-        await validateHassioSession(this.hass, session);
-      } catch (err) {
-        session = await createHassioSession(this.hass);
-      }
-    }, 60000);
 
     this._addon = addon;
   }
