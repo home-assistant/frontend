@@ -1,4 +1,5 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { LocalizeFunc } from "../../../../src/common/translations/localize";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 
 export interface HassioSnapshotDialogParams {
@@ -6,6 +7,7 @@ export interface HassioSnapshotDialogParams {
   onDelete?: () => void;
   onboarding?: boolean;
   supervisor?: Supervisor;
+  localize?: LocalizeFunc;
 }
 
 export const showHassioSnapshotDialog = (

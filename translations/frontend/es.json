@@ -197,7 +197,7 @@
                         "backup": "copia de seguridad",
                         "default": "predeterminado",
                         "homeassistant": "homeassistant",
-                        "manager": "gerente"
+                        "manager": "administrador"
                     },
                     "stage": {
                         "description": "Los complementos pueden tener una de tres etapas: \n\n {icon_stable} ** Estable **: estos son complementos listos para usarse en producción. \n\n {icon_experimental} ** Experimental **: estos pueden contener errores y pueden estar inacabados. \n\n {icon_deprecated} ** Obsoleto **: estos complementos ya no recibirán actualizaciones.",
@@ -318,6 +318,14 @@
             "no_addons": "Aún no tienes ningún complemento instalado. ¡Dirígete a la tienda de complementos para comenzar!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atributos",
+                "device_path": "Ruta del dispositivo",
+                "id": "ID",
+                "search": "Buscar hardware",
+                "subsystem": "Subsistema",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Conectado a {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "Se ha producido un error desconocido",
             "error_addon_no_ingress": "El complemento solicitado no admite la entrada",
             "error_addon_not_found": "Complemento no encontrado",
+            "error_addon_not_installed": "El complemento solicitado no está instalado. Por favor instálalo primero",
+            "error_addon_not_started": "El complemento solicitado no se está ejecutando. Por favor, inícialo primero",
             "faq_link": "Preguntas frecuentes sobre mi Home Assistant",
             "not_supported": "Esta redirección no es compatible con tu instancia de Home Assistant. Consulta el {link} para conocer las redirecciones admitidas y la versión en la que se introdujeron."
         },
@@ -380,6 +390,7 @@
         "snapshot": {
             "addons": "Complementos",
             "available_snapshots": "Instantáneas disponibles",
+            "confirm_password": "Confirma la contraseña de la instantánea",
             "could_not_create": "No se pudo crear la instantánea",
             "create": "Crear",
             "create_blocked_not_running": "No es posible crear una instantánea en este momento porque el sistema está en el estado {state}.",
@@ -407,6 +418,7 @@
             "password": "Contraseña de la instantánea",
             "password_protected": "protegida por contraseña",
             "password_protection": "Protección con contraseña",
+            "passwords_not_matching": "Las contraseñas no coinciden",
             "security": "Seguridad",
             "select_type": "Selecciona qué restaurar",
             "selected": "{number} {number, plural,\n one {seleccionada}\n other {seleccionadas}\n}",
@@ -808,6 +820,7 @@
                     "was_unplugged": "se desenchufó",
                     "was_unsafe": "era inseguro"
                 },
+                "retrieval_error": "Error durante la recuperación de la entrada del libro de registro",
                 "show_trace": "Mostrar traza"
             },
             "media-browser": {
@@ -2719,7 +2732,7 @@
                         "validation": {
                             "check_config": "Verificar configuración",
                             "heading": "Validación de la configuración",
-                            "introduction": "Valida tu configuración si has realizado cambios recientemente y quieres asegurarte de que son correctos",
+                            "introduction": "Valida tu configuración si has realizado cambios recientemente en ella y quieres asegurarte de que son correctos",
                             "invalid": "Configuración no válida",
                             "valid": "¡Configuración valida!"
                         }
@@ -2949,9 +2962,11 @@
                     "common": {
                         "add_node": "Añadir Nodo",
                         "close": "Cerrar",
+                        "heal_network": "Sanar red",
                         "home_id": "ID de casa",
                         "network": "Red",
                         "node_id": "ID del Nodo",
+                        "reconfigure_server": "Reconfigurar el servidor",
                         "remove_node": "Eliminar Nodo"
                     },
                     "dashboard": {
@@ -2973,6 +2988,18 @@
                         "node_ready": "Nodo listo",
                         "node_status": "Estado del Nodo",
                         "zwave_info": "Información de Z-Wave"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Se ha cancelado la curación en red.",
+                        "healing_complete": "La curación de la red se ha completado.",
+                        "healing_failed": "La curación falló. Puede haber información adicional disponible en los registros.",
+                        "in_progress": "La curación de la red está en curso. Esto llevará algún tiempo.",
+                        "introduction": "Inicia una cura de red en tu red Z-Wave. Una curación de la red hará que todos los dispositivos vuelvan a calcular sus rutas de regreso al controlador y se recomienda si has movido dispositivos o tu controlador recientemente.",
+                        "run_in_background": "Puedes cerrar este cuadro de diálogo y la curación de la red continuará en segundo plano.",
+                        "start_heal": "Iniciar la curación",
+                        "stop_heal": "Detener la curación",
+                        "title": "Sana tu red Z-Wave",
+                        "traffic_warning": "El proceso de curación genera una gran cantidad de tráfico en la red Z-Wave. Esto puede hacer que los dispositivos respondan lentamente (o no respondan en absoluto) mientras la curación está en curso."
                     },
                     "logs": {
                         "log_level": "Nivel de registro",
@@ -3879,10 +3906,19 @@
                 "intro": "¿Estás listo para despertar tu casa, reclamar tu privacidad y unirte a una comunidad mundial de pensadores?",
                 "next": "Siguiente",
                 "restore": {
+                    "addons": "Complementos",
+                    "confirm_password": "Confirma la contraseña de la instantánea",
                     "description": "Alternativamente, puedes restaurar desde una copia de seguridad anterior.",
+                    "folders": "Carpetas",
+                    "full_snapshot": "Instantánea completa",
                     "hide_log": "Ocultar registro completo",
                     "in_progress": "Restauración en curso",
-                    "show_log": "Mostrar registro completo"
+                    "partial_snapshot": "Instantánea parcial",
+                    "password": "Contraseña de la instantánea",
+                    "password_protection": "Protección con contraseña",
+                    "select_type": "Selecciona qué restaurar",
+                    "show_log": "Mostrar registro completo",
+                    "type": "Tipo de instantánea"
                 },
                 "user": {
                     "create_account": "Crear una cuenta",

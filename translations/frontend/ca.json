@@ -284,7 +284,7 @@
             "refresh": "Actualitza",
             "release_notes": "Notes de la versió",
             "reload": "Torna a carregar",
-            "reset_defaults": "Restableix als valors per defecte",
+            "reset_defaults": "Restableix els valors per defecte",
             "reset_options": "Opcions de reinici",
             "restart": "Reinicia",
             "restart_name": "Reinicia {name}",
@@ -318,6 +318,14 @@
             "no_addons": "Encara no tens cap complement instal·lat. Vés al directori de complements per començar!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atributs",
+                "device_path": "Ruta del dispositiu",
+                "id": "ID",
+                "search": "Cerca maquinari",
+                "subsystem": "Subsistema",
+                "title": "Maquinari"
+            },
             "network": {
                 "connected_to": "Connectat a {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "S'ha produït un error desconegut",
             "error_addon_no_ingress": "El complement sol·licitat no admet ingress",
             "error_addon_not_found": "No s'ha trobat el complement",
+            "error_addon_not_installed": "El complement sol·licitat no està instal·lat. Instal·la'l primer",
+            "error_addon_not_started": "El complement sol·licitat no s'està executant. Inicia'l primer",
             "faq_link": "Preguntes freqüents de My Home Assistant",
             "not_supported": "La instància de Home Assistant no admet aquesta redirecció. Consulta {link} per veure les redireccions compatibles i en quina versió es van introduir."
         },
@@ -380,6 +390,7 @@
         "snapshot": {
             "addons": "Complements",
             "available_snapshots": "Instantànies disponibles",
+            "confirm_password": "Confirma la contrasenya de la instantània",
             "could_not_create": "No s'ha pogut crear la instantània",
             "create": "Crea",
             "create_blocked_not_running": "Ara mateix no és possible crear una instantània perquè el sistema es troba en estat {state}.",
@@ -407,6 +418,7 @@
             "password": "Contrasenya de la instantània",
             "password_protected": "protegit amb contrasenya",
             "password_protection": "Protecció amb contrasenya",
+            "passwords_not_matching": "Les contrasenyes no coincideixen",
             "security": "Seguretat",
             "select_type": "Selecciona què vols restaurar",
             "selected": "{number} seleccionada/es",
@@ -546,9 +558,9 @@
             },
             "counter": {
                 "actions": {
-                    "decrement": "decreixement",
-                    "increment": "increment",
-                    "reset": "restablir"
+                    "decrement": "decrementa",
+                    "increment": "incrementa",
+                    "reset": "restableix"
                 }
             },
             "cover": {
@@ -808,6 +820,7 @@
                     "was_unplugged": "s'ha desendollat",
                     "was_unsafe": "és insegur"
                 },
+                "retrieval_error": "Error durant l'obtenció de l'entrada del diari de registre",
                 "show_trace": "Mostra la traça"
             },
             "media-browser": {
@@ -2719,7 +2732,7 @@
                         "validation": {
                             "check_config": "Comprova la configuració",
                             "heading": "Validació de la configuració",
-                            "introduction": "Valida la configuració si recentment has fet algun canvi a la configuració i vols assegurar-te de que sigui vàlida.",
+                            "introduction": "Valida la configuració si recentment n'has fet algun canvi i vols assegurar-te de que sigui vàlida.",
                             "invalid": "Configuració invàlida",
                             "valid": "Configuració vàlida!"
                         }
@@ -2952,6 +2965,7 @@
                         "home_id": "ID principal",
                         "network": "Xarxa",
                         "node_id": "ID del node",
+                        "reconfigure_server": "Torna a configurar el servidor",
                         "remove_node": "Elimina node"
                     },
                     "dashboard": {
@@ -3714,7 +3728,7 @@
             },
             "page-authorize": {
                 "abort_intro": "S'ha avortat l'inici de sessió",
-                "authorizing_client": "Esteu a punt de permetre l'accés a la vostra instància de Home Assistant al client {clientId}.",
+                "authorizing_client": "Estàs a punt de concedir al client {clientId} l'accés a la teva instància de Home Assistant.",
                 "form": {
                     "error": "Error: {error}",
                     "next": "Següent",
@@ -3808,7 +3822,7 @@
                     "working": "Si us plau, espereu"
                 },
                 "initializing": "S'està inicialitzant",
-                "logging_in_to_with": "S'escriuen els registes amb **{authProviderName}** a **{locationName}**.",
+                "logging_in_to_with": "Iniciant sessió a **{locationName}** amb **{authProviderName}**.",
                 "logging_in_with": "Iniciant sessió amb **{authProviderName}**.",
                 "pick_auth_provider": "O bé inicieu sessió amb"
             },
@@ -3879,10 +3893,19 @@
                 "intro": "Estàs preparat donar vida pròpia a la teva llar, recuperar la teva privacitat i unir-te a una comunitat mundial de \"tinkerers\"?",
                 "next": "Següent",
                 "restore": {
+                    "addons": "Complements",
+                    "confirm_password": "Confirma la contrasenya de la instantània",
                     "description": "També pots restaurar des d'una instantània anterior.",
+                    "folders": "Carpetes",
+                    "full_snapshot": "Instantània completa",
                     "hide_log": "Amaga el registre complet",
                     "in_progress": "Restauració en curs",
-                    "show_log": "Mostra el registre complet"
+                    "partial_snapshot": "Instantània parcial",
+                    "password": "Contrasenya de la instantània",
+                    "password_protection": "Protecció amb contrasenya",
+                    "select_type": "Selecciona què vols restaurar",
+                    "show_log": "Mostra el registre complet",
+                    "type": "Tipus d'instantània"
                 },
                 "user": {
                     "create_account": "Crear compte",

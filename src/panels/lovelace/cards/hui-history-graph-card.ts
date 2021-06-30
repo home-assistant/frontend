@@ -10,7 +10,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { throttle } from "../../../common/util/throttle";
 import "../../../components/ha-card";
-import "../../../components/state-history-charts";
+import "../../../components/chart/state-history-charts";
 import { CacheConfig, getRecentWithCache } from "../../../data/cached-history";
 import { HistoryResult } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
@@ -139,8 +139,8 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
             .isLoadingData=${!this._stateHistory}
             .historyData=${this._stateHistory}
             .names=${this._names}
-            .upToNow=${true}
-            .noSingle=${true}
+            up-to-now
+            no-single
           ></state-history-charts>
         </div>
       </ha-card>

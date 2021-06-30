@@ -318,6 +318,14 @@
             "no_addons": "아직 설치된 애드온이 없습니다. 시작하려면 애드온 스토어로 이동해보세요!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "속성",
+                "device_path": "장치 경로",
+                "id": "ID",
+                "search": "하드웨어 검색",
+                "subsystem": "서브 시스템",
+                "title": "하드웨어"
+            },
             "network": {
                 "connected_to": "{ssid}에 연결되었습니다",
                 "dhcp": "자동 구성",
@@ -368,6 +376,8 @@
             "error": "알 수 없는 오류가 발생했습니다",
             "error_addon_no_ingress": "해당 애드온은 인그레스를 지원하지 않습니다.",
             "error_addon_not_found": "애드온을 찾을 수 없습니다",
+            "error_addon_not_installed": "해당 애드온은 설치되어있지 않습니다. 애드온을 설치해주세요.",
+            "error_addon_not_started": "해당 애드온은 실행중이지 않습니다. 애드온을 실행해주세요.",
             "faq_link": "내 Home Assistant 자주 묻는 질문",
             "not_supported": "이 리디렉션은 Home Assistant 인스턴스에서 지원되지 않습니다. {link}에서 지원되는 리디렉션과 리디렉션이 도입된 버전을 확인해주세요."
         },
@@ -380,6 +390,7 @@
         "snapshot": {
             "addons": "애드온",
             "available_snapshots": "사용 가능한 스냅숏",
+            "confirm_password": "스냅샷 비밀번호 확인",
             "could_not_create": "스냅숏을 만들 수 없습니다",
             "create": "생성하기",
             "create_blocked_not_running": "시스템이 {state} 상태이기 때문에 지금은 스냅숏을 생성할 수 없습니다.",
@@ -387,7 +398,7 @@
             "created": "생성됨",
             "delete_selected": "선택한 스냅샷 삭제",
             "delete_snapshot_confirm": "삭제",
-            "delete_snapshot_text": "{number} {number, plural,\n  one{개의 스냅샷}\n  other{개의 스냅샷}\n}를 삭제하시겠습니까?",
+            "delete_snapshot_text": "{number} {number, plural,\n  one{개의 스냅샷}\n  other{개의 스냅샷}\n} 삭제하시겠습니까?",
             "delete_snapshot_title": "스냅샷 삭제",
             "description": "스냅숏을 사용하면 Home Assistant 인스턴스의 모든 데이터를 쉽게 백업하고 복원할 수 있습니다.",
             "enter_password": "비밀번호를 입력해주세요.",
@@ -407,6 +418,7 @@
             "password": "비밀번호",
             "password_protected": "비밀번호로 보호됨",
             "password_protection": "비밀번호 보호",
+            "passwords_not_matching": "비밀번호가 일치하지 않습니다",
             "security": "보안",
             "select_type": "복원 할 항목 선택",
             "selected": "{number}개 선택됨",
@@ -808,6 +820,7 @@
                     "was_unplugged": "의 플러그가 뽑혔습니다.",
                     "was_unsafe": "이(가) 안전하지 않은 상태가 되었습니다."
                 },
+                "retrieval_error": "로그북 항목 검색 중 오류",
                 "show_trace": "추적 표시하기"
             },
             "media-browser": {
@@ -2076,7 +2089,8 @@
                     "scripts": "스크립트",
                     "unknown_error": "알 수 없는 오류",
                     "unnamed_device": "이름이 없는 기기",
-                    "update": "업데이트"
+                    "update": "업데이트",
+                    "update_device_error": "장치 업데이트 실패"
                 },
                 "entities": {
                     "caption": "구성요소",
@@ -2209,6 +2223,7 @@
                         "depends_on_cloud": "클라우드 서비스",
                         "device_unavailable": "기기 사용불가",
                         "devices": "{count} {count, plural,\none{개의 기기}\nother{개의 기기}\n}",
+                        "disable_error": "통합구성요소 활성화 혹은 비활성화 실패",
                         "disable_restart_confirm": "이 통합 구성요소를 비활성화하려면 Home Assistant를 다시 시작해주세요",
                         "disable": {
                             "disable_confirm": "이 구성 항목을 비활성화하시겠습니까? 해당 기기 및 구성요소가 비활성화됩니다.",
@@ -2950,6 +2965,7 @@
                         "home_id": "집 ID",
                         "network": "네트워크",
                         "node_id": "노드 ID",
+                        "reconfigure_server": "서버 재구성",
                         "remove_node": "노드 제거하기"
                     },
                     "dashboard": {
@@ -3877,10 +3893,19 @@
                 "intro": "잠들어 있는 집을 깨우고 개인정보를 보호하며 전세계의 공돌이 커뮤니티에 가입 할 준비가 되셨나요?",
                 "next": "다음",
                 "restore": {
+                    "addons": "애드온",
+                    "confirm_password": "스냅샷 비밀번호 확인",
                     "description": "이전 스냅숏에서 복원할 수 있습니다.",
+                    "folders": "폴더",
+                    "full_snapshot": "전체 스냅샷",
                     "hide_log": "전체 로그 숨기기",
                     "in_progress": "복원 중",
-                    "show_log": "전체 로그 표시하기"
+                    "partial_snapshot": "부분 스냅샷",
+                    "password": "스냅샷 비밀번호",
+                    "password_protection": "비밀번호 보호",
+                    "select_type": "무엇을 복원할지 선택하세요",
+                    "show_log": "전체 로그 표시하기",
+                    "type": "스냅샷 종류"
                 },
                 "user": {
                     "create_account": "계정 만들기",

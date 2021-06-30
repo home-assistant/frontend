@@ -27,6 +27,12 @@ export type ConfigEntryMutableParams = Partial<
   >
 >;
 
+export const ERROR_STATES: ConfigEntry["state"][] = [
+  "migration_error",
+  "setup_error",
+  "setup_retry",
+];
+
 export const getConfigEntries = (hass: HomeAssistant) =>
   hass.callApi<ConfigEntry[]>("GET", "config/config_entries/entry");
 

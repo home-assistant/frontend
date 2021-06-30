@@ -41,6 +41,7 @@ export interface HassioSnapshotDetail extends HassioSnapshot {
 export interface HassioFullSnapshotCreateParams {
   name: string;
   password?: string;
+  confirm_password?: string;
 }
 export interface HassioPartialSnapshotCreateParams
   extends HassioFullSnapshotCreateParams {

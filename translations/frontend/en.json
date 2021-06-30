@@ -318,6 +318,14 @@
             "no_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Attributes",
+                "device_path": "Device path",
+                "id": "ID",
+                "search": "Search hardware",
+                "subsystem": "Subsystem",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Connected to {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "An unknown error occurred",
             "error_addon_no_ingress": "The requested add-on does not support ingress",
             "error_addon_not_found": "Add-on not found",
+            "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
+            "error_addon_not_started": "The requested add-on is not running. Please start it first",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced."
         },
@@ -380,6 +390,7 @@
         "snapshot": {
             "addons": "Add-ons",
             "available_snapshots": "Available Snapshots",
+            "confirm_password": "Confirm Snapshot password",
             "could_not_create": "Could not create snapshot",
             "create": "Create",
             "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
@@ -407,6 +418,7 @@
             "password": "Snapshot password",
             "password_protected": "password protected",
             "password_protection": "Password protection",
+            "passwords_not_matching": "The passwords does not match",
             "security": "Security",
             "select_type": "Select what to restore",
             "selected": "{number} selected",
@@ -808,6 +820,7 @@
                     "was_unplugged": "was unplugged",
                     "was_unsafe": "was unsafe"
                 },
+                "retrieval_error": "Error during logbook entry retrieval",
                 "show_trace": "Show trace"
             },
             "media-browser": {
@@ -2306,7 +2319,7 @@
                     "none": "Nothing configured yet",
                     "none_found": "No integrations found",
                     "none_found_detail": "Adjust your search criteria.",
-                    "note_about_integrations": "Not all integrations can be configured via the UI yet.",
+                    "note_about_integrations": "No integrations matched your search, the integration you want to set up might not be available to set up via the UI yet.",
                     "note_about_website_reference": "More are available on the ",
                     "reconfigure": "Reconfigure",
                     "rename_dialog": "Edit the name of this config entry",
@@ -2719,7 +2732,7 @@
                         "validation": {
                             "check_config": "Check configuration",
                             "heading": "Configuration validation",
-                            "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
+                            "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid.",
                             "invalid": "Configuration invalid",
                             "valid": "Configuration valid!"
                         }
@@ -2949,9 +2962,11 @@
                     "common": {
                         "add_node": "Add Node",
                         "close": "Close",
+                        "heal_network": "Heal Network",
                         "home_id": "Home ID",
                         "network": "Network",
                         "node_id": "Node ID",
+                        "reconfigure_server": "Re-configure Server",
                         "remove_node": "Remove Node"
                     },
                     "dashboard": {
@@ -2973,6 +2988,18 @@
                         "node_ready": "Node Ready",
                         "node_status": "Node Status",
                         "zwave_info": "Z-Wave Info"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Network healing has been cancelled.",
+                        "healing_complete": "Network healing is complete.",
+                        "healing_failed": "Healing failed. Additional information may be available in the logs.",
+                        "in_progress": "Network healing is in progress. This will take some time.",
+                        "introduction": "Start a network heal on your Z-Wave network. A network heal will cause all devices to re-calculate their routes back to the controller and is recommended if you have recently moved devices or your controller.",
+                        "run_in_background": "You can close this dialog and the network healing will continue in the background.",
+                        "start_heal": "Start Healing",
+                        "stop_heal": "Stop Healing",
+                        "title": "Heal your Z-Wave Network",
+                        "traffic_warning": "The healing process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the heal is in progress."
                     },
                     "logs": {
                         "log_level": "Log Level",
@@ -3879,10 +3906,19 @@
                 "intro": "Are you ready to awaken your home, reclaim your privacy and join a worldwide community of tinkerers?",
                 "next": "Next",
                 "restore": {
+                    "addons": "Add-ons",
+                    "confirm_password": "Confirm Snapshot password",
                     "description": "Alternatively you can restore from a previous snapshot.",
+                    "folders": "Folders",
+                    "full_snapshot": "Full snapshot",
                     "hide_log": "Hide full log",
                     "in_progress": "Restore in progress",
-                    "show_log": "Show full log"
+                    "partial_snapshot": "Partial snapshot",
+                    "password": "Snapshot password",
+                    "password_protection": "Password protection",
+                    "select_type": "Select what to restore",
+                    "show_log": "Show full log",
+                    "type": "Snapshot type"
                 },
                 "user": {
                     "create_account": "Create Account",

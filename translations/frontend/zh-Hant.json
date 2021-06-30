@@ -318,6 +318,14 @@
             "no_addons": "目前似乎沒有安裝任何附加元件。點選下方附加元件商店以新增！"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "屬性",
+                "device_path": "裝置路徑",
+                "id": "ID",
+                "search": "搜尋硬體",
+                "subsystem": "子系統",
+                "title": "硬體"
+            },
             "network": {
                 "connected_to": "已連線至 {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "發生未知錯誤",
             "error_addon_no_ingress": "所要求的附加元件不支援 ingress",
             "error_addon_not_found": "找不到附加元件",
+            "error_addon_not_installed": "所要求的附加元件未安裝，請先進行安裝。",
+            "error_addon_not_started": "所要求的附加元件未執行，請先進行啟動。",
             "faq_link": "Home Assistant 常見問答集",
             "not_supported": "Home Assistant 不支援此重新導向。點選 {link} 獲取支援之重新導向與版本。"
         },
@@ -380,6 +390,7 @@
         "snapshot": {
             "addons": "附加元件",
             "available_snapshots": "可用系統備份",
+            "confirm_password": "確認系統備份密碼",
             "could_not_create": "無法製作系統備份",
             "create": "新增",
             "create_blocked_not_running": "由於系統為 {state} 狀態，無法製作系統備份。",
@@ -407,6 +418,7 @@
             "password": "系統備份密碼",
             "password_protected": "密碼保護未顯示",
             "password_protection": "密碼保護",
+            "passwords_not_matching": "密碼不相符",
             "security": "加密",
             "select_type": "選擇所要回復內容",
             "selected": "已選擇 {number} 個",
@@ -808,6 +820,7 @@
                     "was_unplugged": "狀態為拔下",
                     "was_unsafe": "狀態為不安全"
                 },
+                "retrieval_error": "日誌登錄檢索出現錯誤",
                 "show_trace": "顯示紀錄"
             },
             "media-browser": {
@@ -2719,7 +2732,7 @@
                         "validation": {
                             "check_config": "檢查設定內容",
                             "heading": "設定驗證",
-                            "introduction": "如果您對設定進行了一些更改、並且想確保設定有無錯誤，可以選擇驗證設定內容。",
+                            "introduction": "如果您對設定進行了部分更改、並且想確保設定有無錯誤，可以選擇驗證設定內容。",
                             "invalid": "設定無效",
                             "valid": "設定檔內容檢查正確"
                         }
@@ -2952,6 +2965,7 @@
                         "home_id": "家庭 ID",
                         "network": "網路",
                         "node_id": "節點 ID",
+                        "reconfigure_server": "重新設定伺服器",
                         "remove_node": "移除節點"
                     },
                     "dashboard": {
@@ -3879,10 +3893,19 @@
                 "intro": "準備喚醒您的智慧型家庭、取得隱私自主權，並加入由全球愛好者共同維護的社群了嗎？",
                 "next": "下一步",
                 "restore": {
+                    "addons": "附加元件",
+                    "confirm_password": "確認系統備份密碼",
                     "description": "或者可以自之前的 Snapshot 進行回復。",
+                    "folders": "資料夾",
+                    "full_snapshot": "全系統備份",
                     "hide_log": "隱藏完整日誌",
                     "in_progress": "回復進行中",
-                    "show_log": "顯示完整日誌"
+                    "partial_snapshot": "部分系統備份",
+                    "password": "系統備份密碼",
+                    "password_protection": "密碼保護",
+                    "select_type": "選擇所要回復內容",
+                    "show_log": "顯示完整日誌",
+                    "type": "系統備份類型"
                 },
                 "user": {
                     "create_account": "創建帳號",

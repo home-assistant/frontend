@@ -5,8 +5,6 @@ const paths = require("./paths.js");
 
 // Files from NPM Packages that should not be imported
 module.exports.ignorePackages = ({ latestBuild }) => [
-  // Bloats bundle and it's not used.
-  path.resolve(require.resolve("moment"), "../locale"),
   // Part of yaml.js and only used for !!js functions that we don't use
   require.resolve("esprima"),
 ];

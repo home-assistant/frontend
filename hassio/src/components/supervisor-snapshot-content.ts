@@ -5,6 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { formatDate } from "../../../src/common/datetime/format_date";
 import { formatDateTime } from "../../../src/common/datetime/format_date_time";
+import { LocalizeFunc } from "../../../src/common/translations/localize";
 import "../../../src/components/ha-checkbox";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-radio";
@@ -67,6 +68,8 @@ const _computeAddons = (addons): AddonCheckboxItem[] =>
 export class SupervisorSnapshotContent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property() public localize?: LocalizeFunc;
+
   @property({ attribute: false }) public supervisor?: Supervisor;
 
   @property({ attribute: false }) public snapshot?: HassioSnapshotDetail;
@@ -81,9 +84,13 @@ export class SupervisorSnapshotContent extends LitElement {
 
   @property({ type: Boolean }) public snapshotHasPassword = false;
 
+  @property({ type: Boolean }) public onboarding = false;
+
   @property() public snapshotName = "";
 
   @property() public snapshotPassword = "";
+
+  @property() public confirmSnapshotPassword = "";
 
   public willUpdate(changedProps) {
     super.willUpdate(changedProps);
@@ -104,8 +111,12 @@ export class SupervisorSnapshotContent extends LitElement {
     }
   }
 
+  private _localize = (string: string) =>
+    this.supervisor?.localize(`snapshot.${string}`) ||
+    this.localize!(`ui.panel.page-onboarding.restore.${string}`);
+
   protected render(): TemplateResult {
-    if (!this.supervisor) {
+    if (!this.onboarding && !this.supervisor) {
       return html``;
     }
     const foldersSection =
@@ -117,14 +128,16 @@ export class SupervisorSnapshotContent extends LitElement {
       ${this.snapshot
         ? html`<div class="details">
             ${this.snapshot.type === "full"
-              ? this.supervisor.localize("snapshot.full_snapshot")
-              : this.supervisor.localize("snapshot.partial_snapshot")}
+              ? this._localize("full_snapshot")
+              : this._localize("partial_snapshot")}
             (${Math.ceil(this.snapshot.size * 10) / 10 + " MB"})<br />
-            ${formatDateTime(new Date(this.snapshot.date), this.hass.locale)}
+            ${this.hass
+              ? formatDateTime(new Date(this.snapshot.date), this.hass.locale)
+              : this.snapshot.date}
           </div>`
         : html`<paper-input
             name="snapshotName"
-            .label=${this.supervisor.localize("snapshot.name")}
+            .label=${this.supervisor?.localize("snapshot.name") || "Name"}
             .value=${this.snapshotName}
             @value-changed=${this._handleTextValueChanged}
           >
@@ -132,13 +145,11 @@ export class SupervisorSnapshotContent extends LitElement {
       ${!this.snapshot || this.snapshot.type === "full"
         ? html`<div class="sub-header">
               ${!this.snapshot
-                ? this.supervisor.localize("snapshot.type")
-                : this.supervisor.localize("snapshot.select_type")}
+                ? this._localize("type")
+                : this._localize("select_type")}
             </div>
             <div class="snapshot-types">
-              <ha-formfield
-                .label=${this.supervisor.localize("snapshot.full_snapshot")}
-              >
+              <ha-formfield .label=${this._localize("full_snapshot")}>
                 <ha-radio
                   @change=${this._handleRadioValueChanged}
                   value="full"
@@ -147,9 +158,7 @@ export class SupervisorSnapshotContent extends LitElement {
                 >
                 </ha-radio>
               </ha-formfield>
-              <ha-formfield
-                .label=${this.supervisor!.localize("snapshot.partial_snapshot")}
-              >
+              <ha-formfield .label=${this._localize("partial_snapshot")}>
                 <ha-radio
                   @change=${this._handleRadioValueChanged}
                   value="partial"
@@ -160,9 +169,9 @@ export class SupervisorSnapshotContent extends LitElement {
               </ha-formfield>
             </div>`
         : ""}
-      ${this.snapshot && this.snapshotType === "partial"
-        ? html`
-            ${this.snapshot.homeassistant
+      ${this.snapshotType === "partial"
+        ? html`<div class="partial-picker">
+            ${this.snapshot && this.snapshot.homeassistant
               ? html`
                   <ha-formfield
                     .label=${html`<supervisor-formfield-label
@@ -182,15 +191,11 @@ export class SupervisorSnapshotContent extends LitElement {
                   </ha-formfield>
                 `
               : ""}
-          `
-        : ""}
-      ${this.snapshotType === "partial"
-        ? html`
             ${foldersSection?.templates.length
               ? html`
                   <ha-formfield
                     .label=${html`<supervisor-formfield-label
-                      .label=${this.supervisor.localize("snapshot.folders")}
+                      .label=${this._localize("folders")}
                       .iconPath=${mdiFolder}
                     >
                     </supervisor-formfield-label>`}
@@ -210,7 +215,7 @@ export class SupervisorSnapshotContent extends LitElement {
               ? html`
                   <ha-formfield
                     .label=${html`<supervisor-formfield-label
-                      .label=${this.supervisor.localize("snapshot.addons")}
+                      .label=${this._localize("addons")}
                       .iconPath=${mdiPuzzle}
                     >
                     </supervisor-formfield-label>`}
@@ -226,29 +231,44 @@ export class SupervisorSnapshotContent extends LitElement {
                   <div class="section-content">${addonsSection.templates}</div>
                 `
               : ""}
-          `
+          </div> `
+        : ""}
+      ${this.snapshotType === "partial" &&
+      (!this.snapshot || this.snapshotHasPassword)
+        ? html`<hr />`
         : ""}
       ${!this.snapshot
         ? html`<ha-formfield
-            .label=${this.supervisor.localize("snapshot.password_protection")}
+            class="password"
+            .label=${this._localize("password_protection")}
           >
             <ha-checkbox
               .checked=${this.snapshotHasPassword}
               @change=${this._toggleHasPassword}
             >
-            </ha-checkbox
-          ></ha-formfield>`
+            </ha-checkbox>
+          </ha-formfield>`
         : ""}
       ${this.snapshotHasPassword
         ? html`
             <paper-input
-              .label=${this.supervisor.localize("snapshot.password")}
+              .label=${this._localize("password")}
               type="password"
               name="snapshotPassword"
               .value=${this.snapshotPassword}
               @value-changed=${this._handleTextValueChanged}
             >
             </paper-input>
+            ${!this.snapshot
+              ? html` <paper-input
+                  .label=${this.supervisor?.localize("confirm_password")}
+                  type="password"
+                  name="confirmSnapshotPassword"
+                  .value=${this.confirmSnapshotPassword}
+                  @value-changed=${this._handleTextValueChanged}
+                >
+                </paper-input>`
+              : ""}
           `
         : ""}
     `;
@@ -256,21 +276,24 @@ export class SupervisorSnapshotContent extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      ha-checkbox {
-        --mdc-checkbox-touch-target-size: 16px;
+      .partial-picker ha-formfield {
         display: block;
-        margin: 4px 12px 8px 0;
       }
-      ha-formfield {
-        display: contents;
+      .partial-picker ha-checkbox {
+        --mdc-checkbox-touch-target-size: 32px;
+      }
+      .partial-picker {
+        display: block;
+        margin: 0px -6px;
       }
       supervisor-formfield-label {
         display: inline-flex;
         align-items: center;
       }
-      paper-input[type="password"] {
-        display: block;
-        margin: 4px 0 4px 16px;
+      hr {
+        border-color: var(--divider-color);
+        border-bottom: none;
+        margin: 16px 0;
       }
       .details {
         color: var(--secondary-text-color);
@@ -278,13 +301,15 @@ export class SupervisorSnapshotContent extends LitElement {
       .section-content {
         display: flex;
         flex-direction: column;
-        margin-left: 16px;
+        margin-left: 30px;
       }
-      .security {
-        margin-top: 16px;
+      ha-formfield.password {
+        display: block;
+        margin: 0 -14px -16px;
       }
       .snapshot-types {
         display: flex;
+        margin-left: -13px;
       }
       .sub-header {
         margin-top: 8px;
@@ -303,6 +328,9 @@ export class SupervisorSnapshotContent extends LitElement {
 
     if (this.snapshotHasPassword) {
       data.password = this.snapshotPassword;
+      if (!this.snapshot) {
+        data.confirm_password = this.confirmSnapshotPassword;
+      }
     }
 
     if (this.snapshotType === "full") {
@@ -334,7 +362,7 @@ export class SupervisorSnapshotContent extends LitElement {
     const addons =
       section === "addons"
         ? new Map(
-            this.supervisor!.addon.addons.map((item) => [item.slug, item])
+            this.supervisor?.addon.addons.map((item) => [item.slug, item])
           )
         : undefined;
     let checkedItems = 0;
@@ -344,6 +372,7 @@ export class SupervisorSnapshotContent extends LitElement {
           .label=${item.name}
           .iconPath=${section === "addons" ? mdiPuzzle : mdiFolder}
           .imageUrl=${section === "addons" &&
+          !this.onboarding &&
           atLeastVersion(this.hass.config.version, 0, 105) &&
           addons?.get(item.slug)?.icon
             ? `/api/hassio/addons/${item.slug}/icon`

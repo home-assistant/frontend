@@ -1,13 +1,13 @@
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
-import { mdiDotsVertical } from "@mdi/js";
+import { mdiClose, mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { slugify } from "../../../../src/common/string/slugify";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-button-menu";
-import { createCloseHeading } from "../../../../src/components/ha-dialog";
+import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-svg-icon";
 import { getSignedPath } from "../../../../src/data/auth";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -22,6 +22,7 @@ import {
 import { HassDialog } from "../../../../src/dialogs/make-dialog-manager";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
+import { fileDownload } from "../../../../src/util/file_download";
 import "../../components/supervisor-snapshot-content";
 import type { SupervisorSnapshotContent } from "../../components/supervisor-snapshot-content";
 import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";
@@ -66,14 +67,24 @@ class HassioSnapshotDialog
         open
         scrimClickAction
         @closed=${this.closeDialog}
-        .heading=${createCloseHeading(this.hass, this._computeName)}
+        .heading=${true}
       >
+        <div slot="heading">
+          <ha-header-bar>
+            <span slot="title">${this._snapshot.name}</span>
+            <mwc-icon-button slot="actionItems" dialogAction="cancel">
+              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
+            </mwc-icon-button>
+          </ha-header-bar>
+        </div>
         ${this._restoringSnapshot
           ? html` <ha-circular-progress active></ha-circular-progress>`
           : html`<supervisor-snapshot-content
               .hass=${this.hass}
               .supervisor=${this._dialogParams.supervisor}
               .snapshot=${this._snapshot}
+              .onboarding=${this._dialogParams.onboarding || false}
+              .localize=${this._dialogParams.localize}
             >
             </supervisor-snapshot-content>`}
         ${this._error ? html`<p class="error">Error: ${this._error}</p>` : ""}
@@ -86,18 +97,20 @@ class HassioSnapshotDialog
           Restore
         </mwc-button>
 
-        <ha-button-menu
-          fixed
-          slot="primaryAction"
-          @action=${this._handleMenuAction}
-          @closed=${(ev: Event) => ev.stopPropagation()}
-        >
-          <mwc-icon-button slot="trigger" alt="menu">
-            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
-          <mwc-list-item>Download Snapshot</mwc-list-item>
-          <mwc-list-item class="error">Delete Snapshot</mwc-list-item>
-        </ha-button-menu>
+        ${!this._dialogParams.onboarding
+          ? html`<ha-button-menu
+              fixed
+              slot="primaryAction"
+              @action=${this._handleMenuAction}
+              @closed=${(ev: Event) => ev.stopPropagation()}
+            >
+              <mwc-icon-button slot="trigger" alt="menu">
+                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+              </mwc-icon-button>
+              <mwc-list-item>Download Snapshot</mwc-list-item>
+              <mwc-list-item class="error">Delete Snapshot</mwc-list-item>
+            </ha-button-menu>`
+          : ""}
       </ha-dialog>
     `;
   }
@@ -113,6 +126,12 @@ class HassioSnapshotDialog
         ha-circular-progress {
           display: block;
           text-align: center;
+        }
+        ha-header-bar {
+          --mdc-theme-on-primary: var(--primary-text-color);
+          --mdc-theme-primary: var(--mdc-theme-surface);
+          flex-shrink: 0;
+          display: block;
         }
       `,
     ];
@@ -288,12 +307,11 @@ class HassioSnapshotDialog
       }
     }
 
-    const a = document.createElement("a");
-    a.href = signedPath.path;
-    a.download = `home_assistant_snapshot_${slugify(this._computeName)}.tar`;
-    this.shadowRoot!.appendChild(a);
-    a.click();
-    this.shadowRoot!.removeChild(a);
+    fileDownload(
+      this,
+      signedPath.path,
+      `home_assistant_snapshot_${slugify(this._computeName)}.tar`
+    );
   }
 
   private get _computeName() {

@@ -1,4 +1,5 @@
 // Tasks to run webpack.
+const fs = require("fs");
 const gulp = require("gulp");
 const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
@@ -17,6 +18,13 @@ const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: true }),
   createConfigFunc({ ...params, latestBuild: false }),
 ];
+
+const isWsl =
+  fs.existsSync("/proc/version") &&
+  fs
+    .readFileSync("/proc/version", "utf-8")
+    .toLocaleLowerCase()
+    .includes("microsoft");
 
 /**
  * @param {{
@@ -78,10 +86,11 @@ const prodBuild = (conf) =>
 
 gulp.task("webpack-watch-app", () => {
   // This command will run forever because we don't close compiler
-  webpack(createAppConfig({ isProdBuild: false, latestBuild: true })).watch(
-    { ignored: /build-translations/ },
-    doneHandler()
-  );
+  webpack(
+    process.env.ES5
+      ? bothBuilds(createAppConfig, { isProdBuild: false })
+      : createAppConfig({ isProdBuild: false, latestBuild: true })
+  ).watch({ ignored: /build-translations/, poll: isWsl }, doneHandler());
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
     gulp.series("build-translations", "copy-translations-app")
@@ -137,7 +146,7 @@ gulp.task("webpack-watch-hassio", () => {
       isProdBuild: false,
       latestBuild: true,
     })
-  ).watch({ ignored: /build-translations/ }, doneHandler());
+  ).watch({ ignored: /build-translations/, poll: isWsl }, doneHandler());
 
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
