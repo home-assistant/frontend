@@ -302,6 +302,7 @@ gulp.task("gen-index-hassio-prod", async () => {
 
 function writeHassioEntrypoint(latestEntrypoint, es5Entrypoint) {
   fs.mkdirSync(paths.hassio_output_root, { recursive: true });
+  // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
   fs.writeFileSync(
     path.resolve(paths.hassio_output_root, "entrypoint.js"),
     `
