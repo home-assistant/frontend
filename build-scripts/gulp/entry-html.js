@@ -305,12 +305,19 @@ function writeHassioEntrypoint(latestEntrypoint, es5Entrypoint) {
   fs.writeFileSync(
     path.resolve(paths.hassio_output_root, "entrypoint.js"),
     `
-try {
-  new Function("import('${latestEntrypoint}')")();
-} catch (err) {
+function loadES5() {
   var el = document.createElement('script');
   el.src = '${es5Entrypoint}';
   document.body.appendChild(el);
+}
+if (/.*Version\/(?:11|12)(?:\.\d+)*.*Safari\//.test(navigator.userAgent)) {
+    loadES5();
+} else {
+  try {
+    new Function("import('${latestEntrypoint}')")();
+  } catch (err) {
+    loadES5();
+  }
 }
   `,
     { encoding: "utf-8" }
