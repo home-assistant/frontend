@@ -29,7 +29,6 @@ class SupervisorFormfieldLabel extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        cursor: pointer;
         display: flex;
         align-items: center;
       }

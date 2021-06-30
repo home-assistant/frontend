@@ -29,6 +29,7 @@ export class HuiInputListEditor extends LitElement {
             .index=${index}
             @value-changed=${this._valueChanged}
             @blur=${this._consolidateEntries}
+            @keydown=${this._handleKeyDown}
             ><ha-icon-button
               slot="suffix"
               class="clear-button"
@@ -68,6 +69,13 @@ export class HuiInputListEditor extends LitElement {
     fireEvent(this, "value-changed", {
       value: newEntries,
     });
+  }
+
+  private _handleKeyDown(ev: KeyboardEvent) {
+    if (ev.key === "Enter") {
+      ev.stopPropagation();
+      this._consolidateEntries(ev);
+    }
   }
 
   private _consolidateEntries(ev: Event): void {

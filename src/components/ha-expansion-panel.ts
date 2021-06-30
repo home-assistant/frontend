@@ -14,12 +14,17 @@ class HaExpansionPanel extends LitElement {
 
   @property() header?: string;
 
+  @property() secondary?: string;
+
   @query(".container") private _container!: HTMLDivElement;
 
   protected render(): TemplateResult {
     return html`
       <div class="summary" @click=${this._toggleContainer}>
-        <slot name="header">${this.header}</slot>
+        <slot class="header" name="header">
+          ${this.header}
+          <slot class="secondary" name="secondary">${this.secondary}</slot>
+        </slot>
         <ha-svg-icon
           .path=${mdiChevronDown}
           class="summary-icon ${classMap({ expanded: this.expanded })}"
@@ -105,6 +110,16 @@ class HaExpansionPanel extends LitElement {
 
       .container.expanded {
         height: auto;
+      }
+
+      .header {
+        display: block;
+      }
+
+      .secondary {
+        display: block;
+        color: var(--secondary-text-color);
+        font-size: 12px;
       }
     `;
   }

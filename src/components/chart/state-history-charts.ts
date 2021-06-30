@@ -7,10 +7,10 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property } from "lit/decorators";
-import { isComponentLoaded } from "../common/config/is_component_loaded";
-import { HistoryResult } from "../data/history";
-import type { HomeAssistant } from "../types";
-import "./ha-circular-progress";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { HistoryResult } from "../../data/history";
+import type { HomeAssistant } from "../../types";
+import "../ha-circular-progress";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 
@@ -24,7 +24,7 @@ class StateHistoryCharts extends LitElement {
 
   @property({ attribute: false }) public endTime?: Date;
 
-  @property({ type: Boolean }) public upToNow = false;
+  @property({ type: Boolean, attribute: "up-to-now" }) public upToNow = false;
 
   @property({ type: Boolean, attribute: "no-single" }) public noSingle = false;
 
@@ -101,12 +101,12 @@ class StateHistoryCharts extends LitElement {
     return css`
       :host {
         display: block;
-        /* height of single timeline chart = 58px */
-        min-height: 58px;
+        /* height of single timeline chart = 60px */
+        min-height: 60px;
       }
       .info {
         text-align: center;
-        line-height: 58px;
+        line-height: 60px;
         color: var(--secondary-text-color);
       }
     `;

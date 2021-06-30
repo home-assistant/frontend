@@ -34,7 +34,7 @@ const cardConfigStruct = object({
   dark_mode: optional(boolean()),
   entities: array(entitiesConfigStruct),
   hours_to_show: optional(number()),
-  geo_location_sources: optional(array()),
+  geo_location_sources: optional(array(string())),
 });
 
 @customElement("hui-map-card-editor")

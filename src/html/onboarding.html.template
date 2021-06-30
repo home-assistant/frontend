@@ -75,13 +75,16 @@
     <%= renderTemplate('_preload_roboto') %>
 
     <script crossorigin="use-credentials">
-      import("<%= latestPageJS %>");
-      window.latestJS = true;
-      window.stepsPromise = fetch("/api/onboarding", {
-        credentials: "same-origin",
-      });
-      if (!window.globalThis) {
-        window.globalThis = window;
+      // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
+      if (!isS11_12) {
+        import("<%= latestPageJS %>");
+        window.latestJS = true;
+        window.stepsPromise = fetch("/api/onboarding", {
+          credentials: "same-origin",
+        });
+        if (!window.globalThis) {
+          window.globalThis = window;
+        }
       }
     </script>
 

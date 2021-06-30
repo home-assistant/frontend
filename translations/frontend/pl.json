@@ -318,6 +318,14 @@
             "no_addons": "Nie masz jeszcze zainstalowanych żadnych dodatków. Przejdź do sklepu z dodatkami, aby rozpocząć!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Atrybuty",
+                "device_path": "Ścieżka urządzenia",
+                "id": "Identyfikator",
+                "search": "Wyszukaj sprzęt",
+                "subsystem": "Podsystem",
+                "title": "Sprzęt"
+            },
             "network": {
                 "connected_to": "Połączono z {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "Wystąpił nieznany błąd",
             "error_addon_no_ingress": "Żądany dodatek nie obsługuje osadzania",
             "error_addon_not_found": "Nie znaleziono dodatku",
+            "error_addon_not_installed": "Żądany dodatek nie jest zainstalowany. Najpierw go zainstaluj.",
+            "error_addon_not_started": "Żądany dodatek nie jest uruchomiony. Proszę najpierw go uruchomić.",
             "faq_link": "Mój Home Assistant - często zadawane pytania",
             "not_supported": "To przekierowanie nie jest obsługiwane przez Twoją instancję Home Assistanta. Sprawdź {link} aby znaleźć obsługiwane przekierowania i wersję, w której zostały wprowadzone."
         },
@@ -380,6 +390,7 @@
         "snapshot": {
             "addons": "Dodatki",
             "available_snapshots": "Dostępne snapshoty",
+            "confirm_password": "Potwierdź hasło snapshota",
             "could_not_create": "Nie udało się utworzyć snapshota",
             "create": "Utwórz",
             "create_blocked_not_running": "Tworzenie snapshota nie jest teraz możliwe, ponieważ system jest w {state}.",
@@ -407,6 +418,7 @@
             "password": "Hasło snapshota",
             "password_protected": "chroniony hasłem",
             "password_protection": "Ochrona hasłem",
+            "passwords_not_matching": "Hasła nie są takie same",
             "security": "Bezpieczeństwo",
             "select_type": "Wybierz, co przywrócić",
             "selected": "wybrano {number}",
@@ -808,6 +820,7 @@
                     "was_unplugged": "nastąpiło odłączenie",
                     "was_unsafe": "wykryto zagrożenie"
                 },
+                "retrieval_error": "Błąd podczas pobierania wpisów z dziennika",
                 "show_trace": "Pokaż ślad"
             },
             "media-browser": {
@@ -929,8 +942,11 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje integracji {integration} nie będą automatycznie dodawane do Home Assistanta.",
+                "enable_new_entities_description": "Jeśli nowo odkryte urządzenia dla integracji {integration} powinny zostać dodane automatycznie.",
                 "enable_new_entities_label": "Włącz dodawanie nowych encji.",
+                "enable_polling_description": "Czy Home Assistant powinien automatycznie odpytywać encje {integration} w poszukiwaniu aktualizacji.",
+                "enable_polling_label": "Włącz odpytywanie o aktualizacje.",
+                "restart_home_assistant": "Aby zmiany zostały wprowadzone, musisz ponownie uruchomić Home Assistanta.",
                 "title": "Opcje systemowe dla {integration}",
                 "update": "Aktualizuj"
             },
@@ -2073,7 +2089,8 @@
                     "scripts": "Skrypty",
                     "unknown_error": "Nieznany błąd",
                     "unnamed_device": "Nienazwane urządzenie",
-                    "update": "Aktualizuj"
+                    "update": "Aktualizuj",
+                    "update_device_error": "Aktualizacja urządzenia nie powiodła się"
                 },
                 "entities": {
                     "caption": "Rejestr encji",
@@ -2206,6 +2223,7 @@
                         "depends_on_cloud": "Zależny od chmury",
                         "device_unavailable": "Urządzenie niedostępne",
                         "devices": "{count} {count, plural,\n  one {urządzenie}\n  few {urządzenia}\n  many {urządzeń}\n  other {urządzeń}\n}",
+                        "disable_error": "Nie udało się włączyć lub wyłączyć integracji",
                         "disable_restart_confirm": "Zrestartuj Home Assistanta, aby zakończyć wyłączanie tej integracji",
                         "disable": {
                             "disable_confirm": "Czy na pewno chcesz wyłączyć ten wpis w konfiguracji? Jego urządzenia i instancje zostaną wyłączone.",
@@ -2217,6 +2235,7 @@
                             },
                             "disabled_cause": "Wyłączone przez {cause}."
                         },
+                        "disabled_polling": "Automatyczne odpytywanie o zaktualizowane dane jest wyłączone",
                         "documentation": "Dokumentacja",
                         "enable_restart_confirm": "Uruchom ponownie Home Assistanta, aby dokończyć uruchamianie tej integracji",
                         "entities": "{count} {count, plural,\n  one {encja}\n  few {encje}\n  many {encji}\n  other {encji}\n}",
@@ -2946,6 +2965,7 @@
                         "home_id": "Identyfikator domu",
                         "network": "Sieć",
                         "node_id": "Identyfikator węzła",
+                        "reconfigure_server": "Ponownie skonfiguruj serwer",
                         "remove_node": "Usuń węzeł"
                     },
                     "dashboard": {
@@ -3873,10 +3893,19 @@
                 "intro": "Czy jesteś gotowy, aby ożywić swój dom, odzyskać prywatność i dołączyć do światowej społeczności majsterkowiczów?",
                 "next": "Dalej",
                 "restore": {
+                    "addons": "Dodatki",
+                    "confirm_password": "Potwierdź hasło snapshota",
                     "description": "Alternatywnie możesz przywrócić z poprzedniej migawki.",
+                    "folders": "Foldery",
+                    "full_snapshot": "Pełny snapshot",
                     "hide_log": "Ukryj cały log",
                     "in_progress": "Trwa przywracanie",
-                    "show_log": "Pokaż cały log"
+                    "partial_snapshot": "Częściowy snapshot",
+                    "password": "Hasło snapshota",
+                    "password_protection": "Ochrona hasłem",
+                    "select_type": "Wybierz, co przywrócić",
+                    "show_log": "Pokaż cały log",
+                    "type": "Typ snapshota"
                 },
                 "user": {
                     "create_account": "Utwórz konto",

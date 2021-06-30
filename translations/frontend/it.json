@@ -318,6 +318,14 @@
             "no_addons": "Non hai ancora installato alcun componente aggiuntivo. Vai al negozio di componenti aggiuntivi per iniziare!"
         },
         "dialog": {
+            "hardware": {
+                "attributes": "Attributi",
+                "device_path": "Percorso del dispositivo",
+                "id": "ID",
+                "search": "Cerca hardware",
+                "subsystem": "Sottosistema",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Connesso a {ssid}",
                 "dhcp": "DHCP",
@@ -368,6 +376,8 @@
             "error": "Si è verificato un errore sconosciuto",
             "error_addon_no_ingress": "Il componente aggiuntivo richiesto non supporta l'ingresso",
             "error_addon_not_found": "Componente aggiuntivo non trovato",
+            "error_addon_not_installed": "Il componente aggiuntivo richiesto non è installato. Si prega di installarlo prima di proseguire",
+            "error_addon_not_started": "Il componente aggiuntivo richiesto non è in esecuzione. Per favore, avvialo prima",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "Questo reindirizzamento non è supportato dall'istanza di Home Assistant. Controlla il {link} per i reindirizzamenti supportati e la versione in cui sono stati introdotti."
         },
@@ -380,6 +390,7 @@
         "snapshot": {
             "addons": "Componenti aggiuntivi",
             "available_snapshots": "Istantanee disponibili",
+            "confirm_password": "Conferma la password dell'istantanea",
             "could_not_create": "Impossibile creare l'istantanea",
             "create": "Crea",
             "create_blocked_not_running": "La creazione di un'istantanea non è al momento possibile perché il sistema è nello stato {state}.",
@@ -407,11 +418,12 @@
             "password": "Password dell'istantanea",
             "password_protected": "protetto da password",
             "password_protection": "Protezione con password",
+            "passwords_not_matching": "Le password non corrispondono",
             "security": "Sicurezza",
             "select_type": "Seleziona cosa ripristinare",
             "selected": "{number} selezionato/i",
             "type": "Tipo di istantanea",
-            "upload_snapshot": "Invia istantanea"
+            "upload_snapshot": "Aggiungi istantanea"
         },
         "store": {
             "missing_addons": "Componenti aggiuntivi mancanti? Abilita la modalità avanzata nella pagina del tuo profilo utente",
@@ -808,6 +820,7 @@
                     "was_unplugged": "è stato scollegato",
                     "was_unsafe": "non era sicuro"
                 },
+                "retrieval_error": "Errore durante il recupero della voce del registro",
                 "show_trace": "Mostra la traccia"
             },
             "media-browser": {
@@ -2076,7 +2089,8 @@
                     "scripts": "Script",
                     "unknown_error": "Errore sconosciuto",
                     "unnamed_device": "Dispositivo senza nome",
-                    "update": "Aggiorna"
+                    "update": "Aggiorna",
+                    "update_device_error": "Aggiornamento del dispositivo non riuscito"
                 },
                 "entities": {
                     "caption": "Entità",
@@ -2209,6 +2223,7 @@
                         "depends_on_cloud": "Dipende dal cloud",
                         "device_unavailable": "Dispositivo non disponibile",
                         "devices": "{count} {count, plural, \none {dispositivo}\nother {dispositivi}\n}",
+                        "disable_error": "Abilitazione o disabilitazione dell'integrazione non riuscita",
                         "disable_restart_confirm": "Riavvia Home Assistant per terminare la disabilitazione di questa integrazione",
                         "disable": {
                             "disable_confirm": "Sei sicuro di voler disabilitare questa voce di configurazione? I suoi dispositivi ed entità saranno disabilitati.",
@@ -2950,6 +2965,7 @@
                         "home_id": "ID Home",
                         "network": "Rete",
                         "node_id": "ID Nodo",
+                        "reconfigure_server": "Riconfigurare il server",
                         "remove_node": "Rimuovi Nodo"
                     },
                     "dashboard": {
@@ -3877,10 +3893,19 @@
                 "intro": "Sei pronto per risvegliare la tua casa, reclamare la tua privacy e far parte di una comunità mondiale di smanettoni?",
                 "next": "Avanti",
                 "restore": {
+                    "addons": "Componenti aggiuntivi",
+                    "confirm_password": "Conferma la password dell'istantanea",
                     "description": "In alternativa è possibile ripristinare da un'istantanea precedente.",
+                    "folders": "Cartelle",
+                    "full_snapshot": "Istantanea completa",
                     "hide_log": "Nascondi il registro completo",
                     "in_progress": "Ripristino in corso",
-                    "show_log": "Mostra il registro completo"
+                    "partial_snapshot": "Istantanea parziale",
+                    "password": "Password dell'istantanea",
+                    "password_protection": "Protezione con password",
+                    "select_type": "Seleziona cosa ripristinare",
+                    "show_log": "Mostra il registro completo",
+                    "type": "Tipo di istantanea"
                 },
                 "user": {
                     "create_account": "Crea un Account",
