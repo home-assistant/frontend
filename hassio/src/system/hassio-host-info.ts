@@ -113,7 +113,7 @@ class HassioHostInfo extends LitElement {
                   `
                 : ""}
             </ha-settings-row>
-            ${!this.supervisor.host.features.includes("hassos")
+            ${!this.supervisor.host.features.includes("haos")
               ? html`<ha-settings-row>
                   <span slot="heading">
                     ${this.supervisor.localize("system.host.docker_version")}
@@ -190,7 +190,7 @@ class HassioHostInfo extends LitElement {
             <mwc-list-item>
               ${this.supervisor.localize("system.host.hardware")}
             </mwc-list-item>
-            ${this.supervisor.host.features.includes("hassos")
+            ${this.supervisor.host.features.includes("haos")
               ? html`<mwc-list-item>
                   ${this.supervisor.localize("system.host.import_from_usb")}
                 </mwc-list-item>`
