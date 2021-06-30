@@ -377,7 +377,7 @@
             "error_addon_no_ingress": "The requested add-on does not support ingress",
             "error_addon_not_found": "Add-on not found",
             "error_addon_not_installed": "The requested add-on is not installed. Please install it first",
-            "error_addon_not_started": "The requested add-on are not running. Please start it first",
+            "error_addon_not_started": "The requested add-on is not running. Please start it first",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "This redirect is not supported by your Home Assistant instance. Check the {link} for the supported redirects and the version they where introduced."
         },
@@ -820,6 +820,7 @@
                     "was_unplugged": "was unplugged",
                     "was_unsafe": "was unsafe"
                 },
+                "retrieval_error": "Error during logbook entry retrieval",
                 "show_trace": "Show trace"
             },
             "media-browser": {
@@ -2318,7 +2319,7 @@
                     "none": "Nothing configured yet",
                     "none_found": "No integrations found",
                     "none_found_detail": "Adjust your search criteria.",
-                    "note_about_integrations": "Not all integrations can be configured via the UI yet.",
+                    "note_about_integrations": "No integrations matched your search, the integration you want to set up might not be available to set up via the UI yet.",
                     "note_about_website_reference": "More are available on the ",
                     "reconfigure": "Reconfigure",
                     "rename_dialog": "Edit the name of this config entry",
@@ -2961,9 +2962,11 @@
                     "common": {
                         "add_node": "Add Node",
                         "close": "Close",
+                        "heal_network": "Heal Network",
                         "home_id": "Home ID",
                         "network": "Network",
                         "node_id": "Node ID",
+                        "reconfigure_server": "Re-configure Server",
                         "remove_node": "Remove Node"
                     },
                     "dashboard": {
@@ -2986,12 +2989,23 @@
                         "node_status": "Node Status",
                         "zwave_info": "Z-Wave Info"
                     },
+                    "heal_network": {
+                        "healing_cancelled": "Network healing has been cancelled.",
+                        "healing_complete": "Network healing is complete.",
+                        "healing_failed": "Healing failed. Additional information may be available in the logs.",
+                        "in_progress": "Network healing is in progress. This will take some time.",
+                        "introduction": "Start a network heal on your Z-Wave network. A network heal will cause all devices to re-calculate their routes back to the controller and is recommended if you have recently moved devices or your controller.",
+                        "run_in_background": "You can close this dialog and the network healing will continue in the background.",
+                        "start_heal": "Start Healing",
+                        "stop_heal": "Stop Healing",
+                        "title": "Heal your Z-Wave Network",
+                        "traffic_warning": "The healing process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the heal is in progress."
+                    },
                     "logs": {
                         "log_level": "Log Level",
                         "log_level_changed": "Log Level changed to: {level}",
                         "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
-                        "title": "Z-Wave JS Logs",
-                        "download_logs": "Download Logs"
+                        "title": "Z-Wave JS Logs"
                     },
                     "navigation": {
                         "logs": "Logs",

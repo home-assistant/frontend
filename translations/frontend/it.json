@@ -377,7 +377,7 @@
             "error_addon_no_ingress": "Il componente aggiuntivo richiesto non supporta l'ingresso",
             "error_addon_not_found": "Componente aggiuntivo non trovato",
             "error_addon_not_installed": "Il componente aggiuntivo richiesto non è installato. Si prega di installarlo prima di proseguire",
-            "error_addon_not_started": "Il componente aggiuntivo non è in esecuzione. Si prega di avviarlo prima di proseguire",
+            "error_addon_not_started": "Il componente aggiuntivo richiesto non è in esecuzione. Per favore, avvialo prima",
             "faq_link": "My Home Assistant FAQ",
             "not_supported": "Questo reindirizzamento non è supportato dall'istanza di Home Assistant. Controlla il {link} per i reindirizzamenti supportati e la versione in cui sono stati introdotti."
         },
@@ -820,6 +820,7 @@
                     "was_unplugged": "è stato scollegato",
                     "was_unsafe": "non era sicuro"
                 },
+                "retrieval_error": "Errore durante il recupero della voce del registro",
                 "show_trace": "Mostra la traccia"
             },
             "media-browser": {
@@ -2964,6 +2965,7 @@
                         "home_id": "ID Home",
                         "network": "Rete",
                         "node_id": "ID Nodo",
+                        "reconfigure_server": "Riconfigurare il server",
                         "remove_node": "Rimuovi Nodo"
                     },
                     "dashboard": {

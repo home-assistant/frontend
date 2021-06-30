@@ -232,7 +232,6 @@ class DataEntryFlowDialog extends LitElement {
                         <step-flow-pick-handler
                           .hass=${this.hass}
                           .handlers=${this._handlers}
-                          .showAdvanced=${this._params.showAdvanced}
                           @handler-picked=${this._handlerPicked}
                         ></step-flow-pick-handler>
                       `

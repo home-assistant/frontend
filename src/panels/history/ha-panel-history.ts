@@ -8,7 +8,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
 import "../../components/ha-menu-button";
-import "../../components/state-history-charts";
+import "../../components/chart/state-history-charts";
 import { computeHistory, fetchDate } from "../../data/history";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";

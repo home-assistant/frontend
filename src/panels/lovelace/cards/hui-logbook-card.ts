@@ -244,7 +244,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     let newEntries;
 
     try {
-      newEntries = await Promise.all([
+      [newEntries] = await Promise.all([
         getLogbookData(
           this.hass,
           lastDate.toISOString(),

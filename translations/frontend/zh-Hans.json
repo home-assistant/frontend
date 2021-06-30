@@ -820,6 +820,7 @@
                     "was_unplugged": "已拔出",
                     "was_unsafe": "[%key_id:6884523%]"
                 },
+                "retrieval_error": "获取日志条目时出错",
                 "show_trace": "显示轨迹"
             },
             "media-browser": {
@@ -2964,6 +2965,7 @@
                         "home_id": "家庭 ID",
                         "network": "网络",
                         "node_id": "节点 ID",
+                        "reconfigure_server": "重新配置服务",
                         "remove_node": "删除节点"
                     },
                     "dashboard": {

@@ -820,6 +820,7 @@
                     "was_unplugged": "狀態為拔下",
                     "was_unsafe": "狀態為不安全"
                 },
+                "retrieval_error": "日誌登錄檢索出現錯誤",
                 "show_trace": "顯示紀錄"
             },
             "media-browser": {
@@ -2964,6 +2965,7 @@
                         "home_id": "家庭 ID",
                         "network": "網路",
                         "node_id": "節點 ID",
+                        "reconfigure_server": "重新設定伺服器",
                         "remove_node": "移除節點"
                     },
                     "dashboard": {
