@@ -215,7 +215,7 @@ class HassioIngressView extends LitElement {
   private async _fetchData(addonSlug: string) {
     const createSessionPromise = createHassioSession(this.hass);
 
-    let addon;
+    let addon: HassioAddonDetails;
 
     try {
       addon = await fetchHassioAddonInfo(this.hass, addonSlug);
