@@ -67,12 +67,15 @@
     <%= renderTemplate('_preload_roboto') %>
 
     <script <% if (!useWDS) { %>crossorigin="use-credentials"<% } %>>
-      import("<%= latestCoreJS %>");
-      import("<%= latestAppJS %>");
-      window.customPanelJS = "<%= latestCustomPanelJS %>";
-      window.latestJS = true;
-      if (!window.globalThis) {
-        window.globalThis = window;
+      // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
+      if (!isS11_12) {
+        import("<%= latestCoreJS %>");
+        import("<%= latestAppJS %>");
+        window.customPanelJS = "<%= latestCustomPanelJS %>";
+        window.latestJS = true;
+        if (!window.globalThis) {
+          window.globalThis = window;
+        }
       }
     </script>
     <script>

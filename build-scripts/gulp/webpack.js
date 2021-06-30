@@ -86,10 +86,11 @@ const prodBuild = (conf) =>
 
 gulp.task("webpack-watch-app", () => {
   // This command will run forever because we don't close compiler
-  webpack(createAppConfig({ isProdBuild: false, latestBuild: true })).watch(
-    { ignored: /build-translations/, poll: isWsl },
-    doneHandler()
-  );
+  webpack(
+    process.env.ES5
+      ? bothBuilds(createAppConfig, { isProdBuild: false })
+      : createAppConfig({ isProdBuild: false, latestBuild: true })
+  ).watch({ ignored: /build-translations/, poll: isWsl }, doneHandler());
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
     gulp.series("build-translations", "copy-translations-app")
