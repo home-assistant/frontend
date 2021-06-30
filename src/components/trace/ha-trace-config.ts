@@ -1,16 +1,16 @@
 import { dump } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../components/ha-code-editor";
-import "../../../../components/ha-icon-button";
-import { AutomationTraceExtended } from "../../../../data/trace";
-import { HomeAssistant } from "../../../../types";
+import "../ha-code-editor";
+import "../ha-icon-button";
+import { TraceExtended } from "../../data/trace";
+import { HomeAssistant } from "../../types";
 
-@customElement("ha-automation-trace-config")
-export class HaAutomationTraceConfig extends LitElement {
+@customElement("ha-trace-config")
+export class HaTraceConfig extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public trace!: AutomationTraceExtended;
+  @property({ attribute: false }) public trace!: TraceExtended;
 
   protected render(): TemplateResult {
     return html`
@@ -28,6 +28,6 @@ export class HaAutomationTraceConfig extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-trace-config": HaAutomationTraceConfig;
+    "ha-trace-config": HaTraceConfig;
   }
 }
