@@ -2962,6 +2962,7 @@
                     "common": {
                         "add_node": "Lisa sõlm",
                         "close": "Sulge",
+                        "heal_network": "Paranda võrgustikku",
                         "home_id": "Kodu ID",
                         "network": "Võrk",
                         "node_id": "Sõlme ID",
@@ -2987,6 +2988,18 @@
                         "node_ready": "Sõlm on aktiivne",
                         "node_status": "Sõlme olek",
                         "zwave_info": "Z-Wave teave"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Võrgu parandamine on tühistatud.",
+                        "healing_complete": "Võrgu parandamine on lõpule viidud.",
+                        "healing_failed": "Parandamine nurjus. Lisateave võib olla saadaval logides.",
+                        "in_progress": "Võrgu parandamine on pooleli. See võtab aega.",
+                        "introduction": "Alusta oma Z-Wave võrgu parandamist. Võrgu parandamine põhjustab kõigi seadmete marsruudi kontrollerisse tagasi arvutamise ja on soovitatav, kui oled hiljuti seadmeid või oma kontrollerit teisaldanud.",
+                        "run_in_background": "Saad selle dialoogi sulgeda ja võrgu parandamine jätkub taustal.",
+                        "start_heal": "Alusta parandamist",
+                        "stop_heal": "Peata parandamine",
+                        "title": "Paranda oma Z-Wave võrku",
+                        "traffic_warning": "Parandamissprotsess tekitab Z-Wave võrgus palju liiklust. See võib põhjustada seadmete aeglast reageerimise (või üldse mitte) kuni parandamine on pooleli."
                     },
                     "logs": {
                         "log_level": "Logimise tase",

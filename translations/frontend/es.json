@@ -2962,6 +2962,7 @@
                     "common": {
                         "add_node": "Añadir Nodo",
                         "close": "Cerrar",
+                        "heal_network": "Sanar red",
                         "home_id": "ID de casa",
                         "network": "Red",
                         "node_id": "ID del Nodo",
@@ -2987,6 +2988,18 @@
                         "node_ready": "Nodo listo",
                         "node_status": "Estado del Nodo",
                         "zwave_info": "Información de Z-Wave"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Se ha cancelado la curación en red.",
+                        "healing_complete": "La curación de la red se ha completado.",
+                        "healing_failed": "La curación falló. Puede haber información adicional disponible en los registros.",
+                        "in_progress": "La curación de la red está en curso. Esto llevará algún tiempo.",
+                        "introduction": "Inicia una cura de red en tu red Z-Wave. Una curación de la red hará que todos los dispositivos vuelvan a calcular sus rutas de regreso al controlador y se recomienda si has movido dispositivos o tu controlador recientemente.",
+                        "run_in_background": "Puedes cerrar este cuadro de diálogo y la curación de la red continuará en segundo plano.",
+                        "start_heal": "Iniciar la curación",
+                        "stop_heal": "Detener la curación",
+                        "title": "Sana tu red Z-Wave",
+                        "traffic_warning": "El proceso de curación genera una gran cantidad de tráfico en la red Z-Wave. Esto puede hacer que los dispositivos respondan lentamente (o no respondan en absoluto) mientras la curación está en curso."
                     },
                     "logs": {
                         "log_level": "Nivel de registro",
