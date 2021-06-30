@@ -127,6 +127,10 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
   public willUpdate(changedProperties: PropertyValues) {
     super.willUpdate(changedProperties);
 
+    if (this.lovelace?.editMode) {
+      import("./default-view-editable");
+    }
+
     if (changedProperties.has("hass")) {
       const oldHass = changedProperties.get("hass") as
         | HomeAssistant
@@ -140,14 +144,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
 
     if (changedProperties.has("narrow")) {
       this._updateColumns();
-    }
-  }
-
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
-
-    if (this.lovelace?.editMode) {
-      import("./default-view-editable");
+      return;
     }
 
     const oldLovelace = changedProperties.get("lovelace") as
@@ -155,10 +152,11 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       | undefined;
 
     if (
-      changedProperties.has("lovelace") &&
-      oldLovelace &&
-      (oldLovelace.config !== this.lovelace?.config ||
-        oldLovelace.editMode !== this.lovelace?.editMode)
+      changedProperties.has("cards") ||
+      (changedProperties.has("lovelace") &&
+        oldLovelace &&
+        (oldLovelace.config !== this.lovelace!.config ||
+          oldLovelace.editMode !== this.lovelace!.editMode))
     ) {
       this._createColumns();
     }
