@@ -1,6 +1,6 @@
 import { assert } from "chai";
 
-import { formatNumber } from "../../../src/common/string/format_number";
+import { formatNumber } from "../../../src/common/number/format_number";
 import {
   FrontendLocaleData,
   NumberFormat,

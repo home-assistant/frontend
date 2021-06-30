@@ -36,11 +36,13 @@ if (polyfillDateTime) {
 }
 
 let polyfillLoaded = polyfills.length === 0;
-const polyfillProm = polyfillLoaded
+export const polyfillsLoaded = polyfillLoaded
   ? undefined
   : Promise.all(polyfills).then(() => {
       loadedPolyfillLocale = new Set();
       polyfillLoaded = true;
+      // Load English so it becomes the default
+      return loadPolyfillLocales("en");
     });
 
 /**
@@ -71,27 +73,10 @@ export const computeLocalize = async (
   formats?: FormatsType
 ): Promise<LocalizeFunc> => {
   if (!polyfillLoaded) {
-    await polyfillProm;
+    await polyfillsLoaded;
   }
 
-  if (loadedPolyfillLocale && !loadedPolyfillLocale.has(language)) {
-    try {
-      loadedPolyfillLocale.add(language);
-      if (polyfillPluralRules) {
-        await import(`@formatjs/intl-pluralrules/locale-data/${language}`);
-      }
-      if (polyfillRelativeTime) {
-        await import(
-          `@formatjs/intl-relativetimeformat/locale-data/${language}`
-        );
-      }
-      if (polyfillDateTime) {
-        await import(`@formatjs/intl-datetimeformat/locale-data/${language}`);
-      }
-    } catch (_e) {
-      // Ignore
-    }
-  }
+  loadPolyfillLocales(language);
 
   // Everytime any of the parameters change, invalidate the strings cache.
   cache._localizationCache = {};
@@ -142,4 +127,24 @@ export const computeLocalize = async (
       return "Translation " + err;
     }
   };
+};
+
+export const loadPolyfillLocales = async (language: string) => {
+  if (!loadedPolyfillLocale || loadedPolyfillLocale.has(language)) {
+    return;
+  }
+  loadedPolyfillLocale.add(language);
+  try {
+    if (polyfillPluralRules) {
+      await import(`@formatjs/intl-pluralrules/locale-data/${language}`);
+    }
+    if (polyfillRelativeTime) {
+      await import(`@formatjs/intl-relativetimeformat/locale-data/${language}`);
+    }
+    if (polyfillDateTime) {
+      await import(`@formatjs/intl-datetimeformat/locale-data/${language}`);
+    }
+  } catch (_e) {
+    // Ignore
+  }
 };

@@ -1,6 +1,9 @@
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
 import { useAmPm } from "./use_am_pm";
+import { polyfillsLoaded } from "../translations/localize";
+
+await polyfillsLoaded;
 
 // 9:15 PM || 21:15
 export const formatTime = (dateObj: Date, locale: FrontendLocaleData) =>

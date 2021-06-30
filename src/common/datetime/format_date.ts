@@ -1,5 +1,8 @@
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
+import { polyfillsLoaded } from "../translations/localize";
+
+await polyfillsLoaded;
 
 // Tuesday, August 10
 export const formatDateWeekday = (dateObj: Date, locale: FrontendLocaleData) =>

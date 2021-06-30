@@ -2,7 +2,7 @@ import { css, LitElement, PropertyValues, svg, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
-import { formatNumber } from "../common/string/format_number";
+import { formatNumber } from "../common/number/format_number";
 import { afterNextRender } from "../common/util/render-status";
 import { FrontendLocaleData } from "../data/translation";
 import { getValueInPercentage, normalize } from "../util/calculate";

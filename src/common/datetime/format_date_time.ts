@@ -1,6 +1,9 @@
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
 import { useAmPm } from "./use_am_pm";
+import { polyfillsLoaded } from "../translations/localize";
+
+await polyfillsLoaded;
 
 // August 9, 2021, 8:23 AM
 export const formatDateTime = (dateObj: Date, locale: FrontendLocaleData) =>

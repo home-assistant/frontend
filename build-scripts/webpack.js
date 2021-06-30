@@ -149,6 +149,9 @@ const createWebpackConfig = ({
       // To silence warning in worker plugin
       globalObject: "self",
     },
+    experiments: {
+      topLevelAwait: true,
+    },
   };
 };
 
