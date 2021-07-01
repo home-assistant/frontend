@@ -34,8 +34,6 @@ export class HaDeviceInfoZWaveJS extends LitElement {
 
   @state() private _nodeId?: number;
 
-  @state() private _homeId?: string;
-
   @state() private _node?: ZWaveJSNode;
 
   protected updated(changedProperties: PropertyValues) {
@@ -46,7 +44,6 @@ export class HaDeviceInfoZWaveJS extends LitElement {
       if (!identifiers) {
         return;
       }
-      this._homeId = identifiers.home_id;
       this._nodeId = identifiers.node_id;
       this._entryId = this.device.config_entries[0];
 
