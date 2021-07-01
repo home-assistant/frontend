@@ -9,6 +9,10 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
+  ConfigEntry,
+  getConfigEntries,
+} from "../../../../../../data/config_entries";
+import {
   fetchNodeStatus,
   getIdentifiersFromDevice,
   nodeStatus,
@@ -25,6 +29,8 @@ export class HaDeviceInfoZWaveJS extends LitElement {
   @property() public device!: DeviceRegistryEntry;
 
   @state() private _entryId?: string;
+
+  @state() private _configEntry?: ConfigEntry;
 
   @state() private _nodeId?: number;
 
@@ -52,11 +58,17 @@ export class HaDeviceInfoZWaveJS extends LitElement {
     if (!this._nodeId || !this._entryId) {
       return;
     }
+
+    const configEntries = await getConfigEntries(this.hass);
+    this._configEntry = configEntries.find(
+      (entry) => entry.entry_id === this._entryId!
+    );
+
     this._node = await fetchNodeStatus(this.hass, this._entryId, this._nodeId);
   }
 
   protected render(): TemplateResult {
-    if (!this._node) {
+    if (!this._node || !this._configEntry) {
       return html``;
     }
     return html`
@@ -64,8 +76,8 @@ export class HaDeviceInfoZWaveJS extends LitElement {
         ${this.hass.localize("ui.panel.config.zwave_js.device_info.zwave_info")}
       </h4>
       <div>
-        ${this.hass.localize("ui.panel.config.zwave_js.common.home_id")}:
-        ${this._homeId}
+        ${this.hass.localize("ui.panel.config.zwave_js.common.source")}:
+        ${this._configEntry.title}
       </div>
       <div>
         ${this.hass.localize("ui.panel.config.zwave_js.common.node_id")}:
