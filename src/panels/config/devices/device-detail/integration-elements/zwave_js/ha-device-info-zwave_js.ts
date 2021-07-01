@@ -59,14 +59,22 @@ export class HaDeviceInfoZWaveJS extends LitElement {
     }
 
     const configEntries = await getConfigEntries(this.hass);
-    this._configEntry = configEntries.find(
-      (entry) => entry.entry_id === this._entryId!
-    );
-
-    const zwaveJSIntegrations = configEntries.filter(
-      (entry) => entry.domain === "zwave_js"
-    );
-    this._multipleConfigEntries = zwaveJSIntegrations.length > 1;
+    let zwaveJsConfEntries = 0;
+    for (const entry of configEntries) {
+      if (entry.domain !== "zwave_js") {
+        continue;
+      }
+      if (zwaveJsConfEntries) {
+        this._multipleConfigEntries = true;
+      }
+      if (entry.entry_id === this._entryId) {
+        this._configEntry = entry;
+      }
+      if (this._configEntry && this._multipleConfigEntries) {
+        break;
+      }
+      zwaveJsConfEntries++;
+    }
 
     this._node = await fetchNodeStatus(this.hass, this._entryId, this._nodeId);
   }
