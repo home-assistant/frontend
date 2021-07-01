@@ -2319,7 +2319,7 @@
                     "none": "Encara no hi ha res configurat",
                     "none_found": "No s'han trobat integracions",
                     "none_found_detail": "Ajusta els paràmetres de cerca.",
-                    "note_about_integrations": "Encara no es poden configurar totes les integracions a través de la IU.",
+                    "note_about_integrations": "No s'ha trobat cap integració que coincident, és possible que la integració encara no estigui disponible per configurar-se a través de la interfície d'usuari.",
                     "note_about_website_reference": "En pots trobar més al ",
                     "reconfigure": "Reconfigura",
                     "rename_dialog": "Edita el nom de l'entrada de configuració",
@@ -2962,6 +2962,7 @@
                     "common": {
                         "add_node": "Afegeix node",
                         "close": "Tanca",
+                        "heal_network": "Guareix la xarxa",
                         "home_id": "ID principal",
                         "network": "Xarxa",
                         "node_id": "ID del node",
@@ -2987,6 +2988,18 @@
                         "node_ready": "Node preparat",
                         "node_status": "Estat del node",
                         "zwave_info": "Informació Z-Wave"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "La guarició de la xarxa s'ha cancel·lat.",
+                        "healing_complete": "La guarició de la xarxa s'ha completat.",
+                        "healing_failed": "La guarició ha fallat. Pots trobar informació addicional als registres.",
+                        "in_progress": "La guarició de la xarxa està en curs. Trigarà una estona.",
+                        "introduction": "Inicia una guarició de la teva xarxa Z-Wave. La guarició de xarxa farà que tots els dispositius tornin a calcular les seves rutes cap al controlador. Es recomana si recentment has canviat o mogut dispositius o el controlador.",
+                        "run_in_background": "Pots tancar aquest diàleg, la guarició de la xarxa continuarà en segon pla.",
+                        "start_heal": "Comença la guarició",
+                        "stop_heal": "Atura la guarició",
+                        "title": "Guareix la xarxa Z-Wave",
+                        "traffic_warning": "El procés de guarició genera una gran quantitat de trànsit a la xarxa Z-Wave. Això pot fer que els dispositius responguin lentament (o gens) mentre la guarició està en procés."
                     },
                     "logs": {
                         "log_level": "Nivell dels registres",

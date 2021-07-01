@@ -2962,6 +2962,7 @@
                     "common": {
                         "add_node": "Dodaj węzeł",
                         "close": "Zamknij",
+                        "heal_network": "Uzdrawiaj sieć",
                         "home_id": "Identyfikator domu",
                         "network": "Sieć",
                         "node_id": "Identyfikator węzła",
@@ -2987,6 +2988,18 @@
                         "node_ready": "gotowy",
                         "node_status": "Stan węzła",
                         "zwave_info": "Informacje Z-Wave"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Uzdrawianie sieci zostało anulowane.",
+                        "healing_complete": "Uzdrawianie sieci zostało zakończone.",
+                        "healing_failed": "Uzdrawianie nie powiodło się. Dodatkowe informacje mogą być dostępne w logach.",
+                        "in_progress": "Trwa uzdrawianie sieci. To zajmie trochę czasu.",
+                        "introduction": "Rozpocznij uzdrawianie sieci Z-Wave. Uzdrawianie sieci spowoduje, że wszystkie urządzenia ponownie obliczą swoje trasy z powrotem do kontrolera i jest zalecane, jeśli niedawno przeniesiono urządzenia lub kontroler.",
+                        "run_in_background": "Możesz zamknąć to okno, a uzdrawianie sieci będzie kontynuowane w tle.",
+                        "start_heal": "Rozpocznij uzdrawianie",
+                        "stop_heal": "Zatrzymaj uzdrawianie",
+                        "title": "Uzdrawianie sieci Z-Wave",
+                        "traffic_warning": "Proces uzdrawiania generuje duży ruch w sieci Z-Wave. Może to spowodować, że urządzenia będą reagować powoli (lub wcale) podczas trwania uzdrawiania."
                     },
                     "logs": {
                         "log_level": "Poziom loga",

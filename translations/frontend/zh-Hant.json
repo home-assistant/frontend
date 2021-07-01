@@ -2319,7 +2319,7 @@
                     "none": "尚未設定",
                     "none_found": "找不到相關整合。",
                     "none_found_detail": "調整搜尋條件。",
-                    "note_about_integrations": "目前並非所有整合皆可以透過 UI 進行設定。",
+                    "note_about_integrations": "沒有找到符合的整合，所要設定的整合可能尚未支援透過 UI 進行設定。",
                     "note_about_website_reference": "更多資訊請參閱",
                     "reconfigure": "重新設定",
                     "rename_dialog": "編輯設定實體名稱",
@@ -2962,6 +2962,7 @@
                     "common": {
                         "add_node": "新增節點",
                         "close": "關閉",
+                        "heal_network": "修復網路",
                         "home_id": "家庭 ID",
                         "network": "網路",
                         "node_id": "節點 ID",
@@ -2987,6 +2988,18 @@
                         "node_ready": "就緒節點",
                         "node_status": "節點狀態",
                         "zwave_info": "Z-Wave 資訊"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "網路修復已取消。",
+                        "healing_complete": "網路修復已完成。",
+                        "healing_failed": "修復失敗。日誌中可能包含其他相關資訊。",
+                        "in_progress": "網路修復進行中，可能需要一點時間。",
+                        "introduction": "於 Z-Wave 網路開始網路修復。網路修復將導致所有裝置重新計算其連回控制器的路徑，檢如近期有移動裝置或控制器的話，建議執行此動作。",
+                        "run_in_background": "可以關閉此對話框、網路修復將於背景繼續執行。",
+                        "start_heal": "開始修復",
+                        "stop_heal": "停止修復",
+                        "title": "修復 Z-Wave 網路",
+                        "traffic_warning": "修復過程將對 Z-Wave 網路產生大量流量，過程中可能會導致裝置回應減緩（或失去回應）。"
                     },
                     "logs": {
                         "log_level": "日誌記錄等級",

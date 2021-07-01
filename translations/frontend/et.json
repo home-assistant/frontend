@@ -2319,7 +2319,7 @@
                     "none": "Midagi pole veel seadistatud",
                     "none_found": "Sidumisi ei leitud",
                     "none_found_detail": "Korrigeerige oma otsingukriteeriume.",
-                    "note_about_integrations": "Kõiki sidumisi ei saa veel kasutajaliidese kaudu seadistada.",
+                    "note_about_integrations": "Otsingule ei vastanud ükski sidumine, soovitud üksus ei pruugi olla veel kasutajaliidese kaudu seadistamiseks saadaval.",
                     "note_about_website_reference": "Rohkem on saadaval ",
                     "reconfigure": "Seadistage uuesti",
                     "rename_dialog": "Muuda selle seadistuskirje nime",
