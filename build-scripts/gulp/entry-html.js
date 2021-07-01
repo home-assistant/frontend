@@ -311,7 +311,7 @@ function loadES5() {
   el.src = '${es5Entrypoint}';
   document.body.appendChild(el);
 }
-if (/.*Version\/(?:11|12)(?:\.\d+)*.*Safari\//.test(navigator.userAgent)) {
+if (/.*Version\\/(?:11|12)(?:\\.\\d+)*.*Safari\\//.test(navigator.userAgent)) {
     loadES5();
 } else {
   try {
