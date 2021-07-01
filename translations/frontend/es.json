@@ -2319,7 +2319,7 @@
                     "none": "Todavía no hay nada configurado",
                     "none_found": "No se han encontrado integraciones",
                     "none_found_detail": "Ajusta tus criterios de búsqueda.",
-                    "note_about_integrations": "Todavía no se pueden configurar todas las integraciones a través de la interfaz de usuario.",
+                    "note_about_integrations": "No hay integraciones que coincidan con tu búsqueda, es posible que la integración que deseas configurar aún no esté disponible para configurar a través de la interfaz de usuario.",
                     "note_about_website_reference": "Hay más disponibles en el ",
                     "reconfigure": "Reconfigurar",
                     "rename_dialog": "Edita el nombre de esta entrada de configuración",
