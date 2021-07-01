@@ -98,7 +98,7 @@ export class StateHistoryChartTimeline extends LitElement {
       <ha-chart-base
         .data=${this._chartData}
         .options=${this._chartOptions}
-        chartType="timeline"
+        chart-type="timeline"
       ></ha-chart-base>
     `;
   }
