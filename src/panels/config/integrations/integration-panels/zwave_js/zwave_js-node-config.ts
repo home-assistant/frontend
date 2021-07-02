@@ -194,6 +194,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   private _generateConfigBox(id, item): TemplateResult {
     const result = this._results[id];
     const labelAndDescription = html`
+      <span slot="prefix" class="prefix">
+        ${this.hass.localize("ui.panel.config.zwave_js.node_config.parameter")}
+        <br />
+        <span>${item.property}</span>
+      </span>
       <span slot="heading">${item.metadata.label}</span>
       <span slot="description">
         ${item.metadata.description}
@@ -469,6 +474,19 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;
           border-top: 1px solid var(--divider-color);
+        }
+
+        .prefix {
+          color: var(--secondary-text-color);
+          text-align: center;
+          text-transform: uppercase;
+          font-size: 0.8em;
+          padding-right: 24px;
+          line-height: 1.3em;
+        }
+
+        .prefix span {
+          font-size: 1.3em;
         }
 
         :host(:not([narrow])) ha-settings-row paper-input {

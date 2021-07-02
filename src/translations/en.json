@@ -2621,7 +2621,8 @@
             "error_device_not_found": "Device not found",
             "set_param_accepted": "The parameter has been updated.",
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
-            "set_param_error": "An error occurred."
+            "set_param_error": "An error occurred.",
+            "parameter": "Parameter"
           },
           "node_status": {
             "unknown": "Unknown",
