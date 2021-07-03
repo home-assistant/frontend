@@ -2990,7 +2990,7 @@
                         "zwave_info": "Información de Z-Wave"
                     },
                     "heal_network": {
-                        "healing_cancelled": "Se ha cancelado la curación en red.",
+                        "healing_cancelled": "Se ha cancelado la curación de la red.",
                         "healing_complete": "La curación de la red se ha completado.",
                         "healing_failed": "La curación falló. Puede haber información adicional disponible en los registros.",
                         "in_progress": "La curación de la red está en curso. Esto llevará algún tiempo.",
