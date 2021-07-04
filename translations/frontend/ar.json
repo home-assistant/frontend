@@ -1,7 +1,10 @@
 {
     "config_entry": {
         "disabled_by": {
-            "integration": "تكامل"
+            "config_entry": "إدخال التكوين",
+            "device": "جهاز",
+            "integration": "تكامل",
+            "user": "مستخدم"
         }
     },
     "groups": {
@@ -36,6 +39,16 @@
                 "heating": "تدفئة",
                 "idle": "خامل",
                 "off": "متوقف"
+            },
+            "preset_mode": {
+                "activity": "الانشطة",
+                "away": "بعيد",
+                "boost": "معزز",
+                "comfort": "مريح",
+                "eco": "اقتصادي",
+                "home": "المنزل",
+                "none": "لاشيء",
+                "sleep": "نوم"
             }
         },
         "humidifier": {
@@ -58,11 +71,13 @@
             "armed_night": "مفعل",
             "arming": "جاري التفعيل",
             "disarmed": "غير مفعّل",
-            "disarming": "إيقاف الإنذار",
-            "pending": "إنتظار",
-            "triggered": "مفعّل"
+            "disarming": "تعطيل",
+            "pending": "معلق",
+            "triggered": "تشغيل"
         },
         "default": {
+            "entity_not_found": "لم يتم العثور على الكيان",
+            "error": "خطأ",
             "unavailable": "غير متوفر",
             "unknown": "غير معروف"
         },
@@ -85,12 +100,18 @@
     },
     "supervisor": {
         "addon": {
+            "configuration": {
+                "network": {
+                    "disabled": "معطل"
+                }
+            },
             "dashboard": {
                 "capability": {
                     "full_access": {
                         "description": "تُمنح هذه الوظيفة الإضافية حق الوصول الكامل إلى أجهزة نظامك ، بناءً على طلب مؤلف الوظيفة الإضافية. الوصول مشابه للوضع المميز في Docker. نظرًا لأن هذا يفتح مخاطر أمنية محتملة ، فإن هذه الميزة تؤثر سلبًا على درجة أمان الوظيفة الإضافية. \n\n لا يتم منح هذا المستوى من الوصول تلقائيًا ويجب تأكيده بواسطتك. للقيام بذلك ، تحتاج إلى تعطيل وضع الحماية على الوظيفة الإضافية يدويًا. قم بتعطيل وضع الحماية فقط إذا كنت تعلم وتحتاج وتثق بمصدر هذه الوظيفة الإضافية."
                     }
                 },
+                "not_available_arch": "هذه الوظيفة الإضافية غير متوافقة مع معالج جهازك أو نظام التشغيل الذي قمت بتثبيته على جهازك.",
                 "open_web_ui": "افتح واجهة مستخدم الويب",
                 "visit_addon_page": "قم بزيارة صفحة {name} لمزيد من التفاصيل"
             }
@@ -99,6 +120,9 @@
             "close": "إغلاق"
         },
         "dialog": {
+            "hardware": {
+                "device_path": "مسار الجهاز"
+            },
             "network": {
                 "dhcp": "DHCP",
                 "disabled": "معطل",
@@ -108,6 +132,7 @@
                 "ip_netmask": "عنوان IP / قناع الشبكة",
                 "open": "فتح",
                 "static": "ثابتة",
+                "title": "إعدادات الشبكة",
                 "unsaved": "لديك تغييرات غير محفوظة ، ستضيع هذه التغييرات إذا قمت بتغيير علامات التبويب ، هل تريد المتابعة؟",
                 "warning": "إذا كنت تقوم بتغيير عناوين Wi-Fi أو IP أو البوابة ، فقد تفقد الاتصال!"
             },
@@ -143,34 +168,60 @@
             "error_addon_not_found": "لم يتم العثور على الإضافة"
         },
         "snapshot": {
-            "created": "خلقت"
+            "confirm_password": "تأكيد كلمة مرور اللقطة",
+            "created": "خلقت",
+            "delete_selected": "حذف اللقطات المحددة",
+            "delete_snapshot_confirm": "حذف",
+            "delete_snapshot_title": "حذف لقطة",
+            "failed_to_delete": "فشل الحذف",
+            "folders": "المجلدات",
+            "password": "كلمة مرور اللقطة",
+            "passwords_not_matching": "كلمات المرور غير متطابقة",
+            "select_type": "تحديد ما يجب استعادته"
+        },
+        "store": {
+            "missing_addons": "الإضافات المفقودة؟ مكن الوضع المتقدم في صفحة ملف تعريف المستخدم"
         },
         "system": {
+            "core": {
+                "cpu_usage": "استخدام وحدة المعالجة المركزية الأساسية",
+                "ram_usage": "استخدام ذاكرة الوصول العشوائي الأساسية"
+            },
             "supervisor": {
+                "beta_join_confirm": "هل تريد الانضمام إلى النسخ التجريبية؟",
+                "failed_to_reload": "فشل في إعادة تحميل supervisor",
+                "failed_to_update": "فشل في تحديث supervisor",
                 "search": "بحث",
                 "share_diagonstics_description": "هل تريد مشاركة تقارير الأعطال والمعلومات التشخيصية تلقائيا عندما يواجه Supervisor أخطاء غير متوقعة؟ {line_break} سيسمح لنا هذا بإصلاح المشاكل ، والمعلومات متاحة فقط لفريق Home Assistant Core ولن يتم مشاركتها مع الآخرين. {line_break} لا تتضمن البيانات أي معلومات خاصة/حساسة ويمكنك تعطيلها في الإعدادات في أي وقت تريده.",
-                "share_diagonstics_title": "ساعد في تحسين Home Assistant"
+                "share_diagonstics_title": "ساعد في تحسين Home Assistant",
+                "unhealthy_title": "التثبيت الخاص بك غير صحي",
+                "unsupported_reason": {
+                    "content-trust": "تم تعطيل التحقق من صحة المحتوى"
+                },
+                "unsupported_title": "أنت تقوم بتشغيل تثبيت غير مدعوم",
+                "update_supervisor": "تحديث supervisor"
             }
         }
     },
     "ui": {
         "auth_store": {
-            "ask": "هل تريد حفظ هذا الدخول؟",
+            "ask": "هل تريد البقاء مسجلا الدخول؟",
             "confirm": "نعم",
-            "decline": "لا شكرا"
+            "decline": "لا"
         },
         "card": {
             "alarm_control_panel": {
                 "arm_away": "تفعيل خارج المنزل",
                 "arm_custom_bypass": "تجاوز مخصص",
                 "arm_home": "تفعيل في المنزل",
+                "arm_night": "تفعيل بالليل",
                 "clear_code": "مسح",
                 "code": "الرمز",
                 "disarm": "تعطيل"
             },
             "automation": {
                 "last_triggered": "آخر تشغيل",
-                "trigger": "تشغيل"
+                "trigger": "تشغيل الإجراءات"
             },
             "camera": {
                 "not_available": "الصورة غير متاحة"
@@ -178,13 +229,28 @@
             "climate": {
                 "aux_heat": "حرارة Aux",
                 "away_mode": "خارج المنزل",
+                "cooling": "تبريد {name}",
+                "current_temperature": "{name} درجة الحرارة الحالية",
                 "currently": "حاليا",
                 "fan_mode": "وضع المروحة",
+                "heating": "{name} تدفئة",
+                "high": "عالي",
+                "low": "منخفض",
                 "on_off": "إيقاف/تشغيل",
                 "operation": "الوضع",
+                "preset_mode": "الضبط المسبق",
                 "swing_mode": "وضع الموجه",
-                "target_humidity": "Doelluchtvochtigheid",
-                "target_temperature": "درجة الحرارة المستهدفة"
+                "target_humidity": "الرطوبة المستهدفة",
+                "target_temperature": "درجة الحرارة المستهدفة",
+                "target_temperature_entity": "{name} درجة الحرارة المستهدفة",
+                "target_temperature_mode": "{name} درجة الحرارة المستهدفة {mode}"
+            },
+            "counter": {
+                "actions": {
+                    "decrement": "انقاص",
+                    "increment": "زياده",
+                    "reset": "اعاده تعيين"
+                }
             },
             "cover": {
                 "position": "موضع",
@@ -192,8 +258,10 @@
             },
             "fan": {
                 "direction": "Richting",
+                "forward": "أمامي",
                 "oscillate": "تذبذب",
                 "preset_mode": "وضع الضبط المسبق",
+                "reverse": "عكس",
                 "speed": "Snelheid"
             },
             "humidifier": {
@@ -230,6 +298,14 @@
             "service": {
                 "run": "تشغيل"
             },
+            "timer": {
+                "actions": {
+                    "cancel": "إلغاء",
+                    "finish": "إنهاء",
+                    "pause": "إيقاف مؤقت",
+                    "start": "بدء"
+                }
+            },
             "vacuum": {
                 "actions": {
                     "resume_cleaning": "استئناف التنظيف",
@@ -255,6 +331,24 @@
                     "visibility": "الرؤية",
                     "wind_speed": "سرعة الرياح"
                 },
+                "cardinal_direction": {
+                    "e": "شرق",
+                    "ene": "شرق شمال شرقي",
+                    "ese": "شرق جنوب شرقي",
+                    "n": "شمال",
+                    "ne": "شمال شرق",
+                    "nne": "شمال شمال شرقي",
+                    "nnw": "شمال شمال غربي",
+                    "nw": "شمال غرب",
+                    "s": "جنوب",
+                    "se": "جنوب غرب",
+                    "sse": "جنوب جنوب شرقي",
+                    "ssw": "جنوب جنوب غربي",
+                    "sw": "جنوب غرب",
+                    "w": "غرب",
+                    "wnw": "غرب شمال غربي",
+                    "wsw": "غرب جنوب غربي"
+                },
                 "day": "يوم",
                 "forecast": "التوقعات",
                 "high": "عالي",
@@ -267,15 +361,26 @@
             "cancel": "إلغاء",
             "close": "إغلاق",
             "delete": "حذف",
+            "disable": "تعطيل",
+            "enable": "تغعيل",
             "error_required": "مطلوب",
+            "leave": "غادر",
             "loading": "جار التحميل",
             "menu": "القائمه",
             "next": "التالى",
+            "no": "لا",
+            "not_now": "ليس الان",
             "overflow_menu": "قائمة تجاوز السعة",
             "previous": "السابق",
             "refresh": "تحديث",
+            "remove": "إزالة",
+            "rename": "إعادة تسمية",
+            "save": "حفظ",
+            "stay": "بقى",
             "successfully_deleted": "تم الحذف بنجاح",
-            "undo": "تراجع"
+            "successfully_saved": "تم الحفظ بنجاح",
+            "undo": "تراجع",
+            "yes": "نعم"
         },
         "components": {
             "area-picker": {
@@ -291,6 +396,9 @@
                 "no_match": "لم يتم العثور على مناطق مطابقة",
                 "show_areas": "إظهار المناطق"
             },
+            "blueprint-picker": {
+                "remove_user": "إزالة مستخدم"
+            },
             "calendar": {
                 "my_calendars": "التقويمات الخاصة بي",
                 "today": "اليوم"
@@ -301,16 +409,23 @@
             },
             "date-range-picker": {
                 "end_date": "تاريخ الإنتهاء",
+                "select": "اختر",
                 "start_date": "تاريخ البدء"
             },
             "device-picker": {
+                "clear": "مسح",
+                "device": "جهاز",
                 "no_area": "لا مجال",
+                "no_devices": "ليس لديك أي أجهزة",
                 "no_match": "لم يتم العثور على أجهزة مطابقة",
+                "show_devices": "عرض الأجهزة",
                 "toggle": "تبديل"
             },
             "entity": {
                 "entity-picker": {
-                    "entity": "كيان"
+                    "clear": "مسح",
+                    "entity": "كيان",
+                    "show_entities": "إظهار الكيانات"
                 }
             },
             "history_charts": {
@@ -320,13 +435,37 @@
             },
             "logbook": {
                 "messages": {
+                    "became_unavailable": "أصبح غير متوفر",
+                    "changed_to_state": "تغير إلى {state}",
+                    "detected_device_class": "تم الكشف عن {device_class}",
                     "is_opening": "يفتح",
+                    "rose": "وردة",
+                    "set": "اضبط",
+                    "turned_off": "أطفئ",
+                    "turned_on": "تم تشغيله",
+                    "was_at_home": "تم اكتشافه في المنزل",
+                    "was_at_state": "تم اكتشافه في {state}",
+                    "was_away": "تم اكتشافه بعيدًا",
                     "was_closed": "كان مغلقاً",
-                    "was_opened": "كان مفتوحاً"
+                    "was_connected": "كان متصلا",
+                    "was_disconnected": "كان مفصولاً",
+                    "was_locked": "كان مؤمناً",
+                    "was_low": "كان منخفضا",
+                    "was_normal": "كان طبيعيا",
+                    "was_opened": "كان مفتوحاً",
+                    "was_plugged_in": "كان موصلاً في",
+                    "was_safe": "كان آمنا",
+                    "was_unlocked": "كان غير مؤمن",
+                    "was_unplugged": "كان غير موصل",
+                    "was_unsafe": "كان غير امن"
                 },
+                "retrieval_error": "خطأ أثناء استرداد إدخال السجل",
                 "show_trace": "عرض التتبع"
             },
             "related-items": {
+                "automation": "جزء من الأتمتة التالية",
+                "device": "جهاز",
+                "entity": "الكيانات ذات الصلة",
                 "integration": "تكامل"
             },
             "relative_time": {
@@ -350,13 +489,22 @@
                     "week": "قبل {count} {count, plural,\n  one {اسبوع}\n  other {اسابيع}\n}"
                 }
             },
+            "service-control": {
+                "target_description": "ما الذي يجب أن تستخدمه هذه الخدمة كمناطق أو أجهزة أو كيانات مستهدفة."
+            },
             "service-picker": {
                 "service": "خدمة"
+            },
+            "target-picker": {
+                "add_area_id": "اختر منطقة",
+                "add_device_id": "اختر جهاز",
+                "remove_entity_id": "إزالة الكيان"
             }
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "إذا تم تعطيله ، فلن تتم إضافة الكيانات المكتشفة حديثًا لـ {integration} تلقائيًا إلى Home Assistant.",
+                "enable_new_entities_description": "إذا كان يجب إضافة الأجهزة المكتشفة حديثًا لـ {integration}",
+                "enable_new_entities_label": "تمكين الكيانات المضافة حديثًا.",
                 "title": "خيارات النظام لـ {integration}",
                 "update": "تحديث"
             },
@@ -365,15 +513,24 @@
                 "editor": {
                     "advanced": "إعدادات متقدمة",
                     "area": "حدد منطقة العنصر فقط",
+                    "area_note": "بشكل افتراضي ، تكون كيانات الجهاز في نفس منطقة الجهاز. إذا قمت بتغيير منطقة هذا الكيان ، فلن يتبع بعد ذلك منطقة الجهاز.",
                     "change_device_area": "تغيير منطقة الجهاز",
                     "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا الإدخال؟",
                     "delete": "حذف",
+                    "device_disabled": "جهاز هذا الكيان معطل.",
+                    "enabled_cause": "معطل بسبب {cause} .",
+                    "enabled_description": "لن تتم إضافة الكيانات المعطلة إلى Home Assistant.",
+                    "enabled_restart_confirm": "أعد تشغيل Home Assistant لإنهاء تمكين الكيانات",
                     "follow_device_area": "اتبع منطقة الجهاز",
                     "note": "ملاحظة: قد لا يعمل مع كافة التكاملات بعد.",
                     "open_device_settings": "فتح إعدادات الجهاز",
+                    "unavailable": "هذا الكيان غير متوفر حاليا.",
                     "update": "تحديث"
                 },
-                "related": "ذات صلة"
+                "info_customize": "يمكنك الكتابة فوق بعض السمات في قسم {customize_link} .",
+                "no_unique_id": "لا يحتوي هذا الكيان (\"{entity_id}\") على معرف فريد، ولذلك لا يمكن إدارة إعداداته من واجهة المستخدم. راجع {faq_link} لمزيد من التفاصيل.",
+                "related": "ذات صلة",
+                "settings": "إعدادات"
             },
             "generic": {
                 "cancel": "إلغاء الأمر",
@@ -382,8 +539,16 @@
                 "ok": "موافق"
             },
             "helper_settings": {
+                "counter": {
+                    "initial": "القيمة الأولية",
+                    "maximum": "القيمة القصوى",
+                    "minimum": "القيمة الدنيا",
+                    "restore": "قم باستعادة آخر قيمة معروفة عند بدء تشغيل Home Assistant",
+                    "step": "حجم الخطوة"
+                },
                 "generic": {
-                    "icon": "أيقونة"
+                    "icon": "أيقونة",
+                    "name": "الاسم"
                 },
                 "input_datetime": {
                     "date": "تاريخ",
@@ -391,27 +556,55 @@
                     "mode": "ما الذي تريد إدخاله",
                     "time": "الوقت"
                 },
+                "input_number": {
+                    "box": "حقل الإدخال",
+                    "max": "القيمة القصوى",
+                    "min": "القيمة الدنيا",
+                    "mode": "وضع العرض",
+                    "slider": "شريط التمرير",
+                    "step": "حجم الخطوة",
+                    "unit_of_measurement": "وحدة القياس"
+                },
                 "input_select": {
-                    "add": "إضافة"
+                    "add": "إضافة",
+                    "add_option": "إضافة خيار",
+                    "no_options": "لا توجد خيارات حتى الآن.",
+                    "options": "الخيارات"
                 },
                 "input_text": {
                     "max": "الحد الأقصى للطول",
                     "min": "الحد الأدنى للطول",
-                    "password": "كلمة المرور"
+                    "mode": "وضع العرض",
+                    "password": "كلمة المرور",
+                    "pattern": "نمط Regex للتحقق من جانب العميل",
+                    "text": "النص"
                 },
-                "platform_not_loaded": "لم يتم تحميل تكامل {platform} . يرجى إضافته إلى التكوين الخاص بك إما عن طريق إضافة ':default_config' أو \"{platform}\"."
+                "platform_not_loaded": "لم يتم تحميل تكامل {platform} . يرجى إضافته إلى التكوين الخاص بك إما عن طريق إضافة ':default_config' أو \"{platform}\".",
+                "required_error_msg": "هذه الخانة مطلوبه",
+                "timer": {
+                    "duration": "المدة"
+                },
+                "yaml_not_editable": "لا يمكن تحرير إعدادات هذا الكيان من واجهة المستخدم. يمكن تكوين الكيانات التي تم إعدادها من واجهة المستخدم فقط من واجهة المستخدم."
             },
             "more_info_control": {
                 "cover": {
                     "close_cover": "إغلاق الغطاء",
                     "close_tile_cover": "إغلاق إمالة الغطاء",
                     "open_cover": "غطاء مفتوح",
-                    "open_tilt_cover": "فتح إمالة الغطاء"
+                    "open_tilt_cover": "فتح إمالة الغطاء",
+                    "stop_cover": "إيقاف الغطاء عن الحركة"
                 },
                 "details": "التفاصيل",
-                "script": {
-                    "last_action": "الإجراء الأخير"
+                "last_changed": "آخر تعديل",
+                "last_updated": "آخر تحديث",
+                "restored": {
+                    "not_provided": "هذا الكيان غير متاح حاليًا وهو معزول عن تكامل أو جهاز تمت إزالته أو تغييره أو اختلال وظيفته."
                 },
+                "script": {
+                    "last_action": "الإجراء الأخير",
+                    "last_triggered": "آخر تشغيل"
+                },
+                "settings": "إعدادات الكيان",
                 "sun": {
                     "elevation": "ارتفاع",
                     "rising": "ارتفاع",
@@ -441,26 +634,53 @@
                 "title": "{device} معلومات تصحيح الأخطاء",
                 "triggers": "محفزات"
             },
+            "options_flow": {
+                "form": {
+                    "header": "الخيارات"
+                },
+                "success": {
+                    "description": "تم حفظ الخيارات بنجاح."
+                }
+            },
             "voice_command": {
-                "did_not_hear": "Home Assistant لم يسمع أي شيء"
+                "did_not_hear": "Home Assistant لم يسمع أي شيء",
+                "label": "اكتب سؤالاً واضغط على \"إدخال\"",
+                "label_voice": "اكتب واضغط على \"إدخال\" أو انقر على الميكروفون للتحدث"
             },
             "zha_device_info": {
                 "buttons": {
                     "add": "أضف أجهزة عبر هذا الجهاز",
                     "clusters": "إدارة العناقيد",
+                    "reconfigure": "إعادة تكوين الجهاز",
+                    "remove": "إزالة الجهاز",
+                    "view_in_visualization": "عرض في التصور",
                     "zigbee_information": "معلومات جهاز Zigbee"
                 },
+                "confirmations": {
+                    "remove": "هل أنت متأكد أنك تريد إزالة الجهاز؟"
+                },
                 "device_signature": "توقيع جهاز Zigbee",
+                "last_seen": "اخر ظهور",
+                "manuf": "بواسطة {manufacturer}",
+                "no_area": "لا توجد منطقة",
+                "power_source": "مصدر الطاقة",
                 "services": {
+                    "reconfigure": "إعادة تكوين جهاز ZHA (معالجة الجهاز). استخدم هذا إذا كنت تواجه مشكلات مع الجهاز. إذا كان الجهاز المعني جهازًا يعمل بالبطارية ، فيرجى التأكد من أنه مستيقظ ويقبل الأوامر عند استخدام هذه الخدمة.",
+                    "remove": "إزالة جهاز من شبكة Zigbee.",
+                    "updateDeviceName": "قم بتعيين اسم مخصص لهذا الجهاز في سجل الجهاز.",
                     "zigbee_information": "عرض معلومات Zigbee للجهاز."
                 },
+                "unknown": "غير معروف ",
                 "zha_device_card": {
                     "device_name_placeholder": "تغيير اسم الجهاز"
                 }
             },
             "zha_reconfigure_device": {
+                "attribute": "السمه",
                 "button_hide": "أخف التفاصيل",
                 "button_show": "إظهار التفاصيل",
+                "configuration_complete": "اكتمال إعادة تكوين الجهاز.",
+                "configuration_failed": "فشلت إعادة تكوين الجهاز. قد تتوفر معلومات إضافية في السجلات.",
                 "run_in_background": "يمكنك إغلاق هذا الحوار وستستمر إعادة التكوين في الخلفية."
             }
         },
@@ -490,17 +710,22 @@
         "notification_drawer": {
             "click_to_configure": "انقر هنا لتعديل {entity}",
             "close": "إغلاق",
-            "empty": "لا إشعارات",
-            "title": "إشعارات"
+            "empty": "لاتوجد إشعارات",
+            "title": "الاشعارات"
         },
         "notification_toast": {
-            "connection_lost": "انقطع الاتصال. جارٍ إعادة الاتصال ...",
+            "connection_lost": "انقطع الاتصال. جاري إعادة الاتصال ...",
             "service_call_failed": "فشل الاتصال بخدمة {service} .",
             "started": "Home Assistant بدأ!",
-            "starting": "يبدأ برنامج Home Assistant حاليا ، ولن يكون كل شيء متاحًا حتى الانتهاء."
+            "starting": "يبدأ برنامج Home Assistant حاليا ، ولن يكون كل شيء متاحًا حتى الانتهاء.",
+            "triggered": "تم تشغيل {name}"
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "خيارات التكوين مفقودة؟ مكن الوضع المتقدم على",
+                    "link_profile_page": "صفحة ملفك الشخصي"
+                },
                 "areas": {
                     "caption": "المناطق",
                     "data_table": {
@@ -526,10 +751,12 @@
                         "update": "تحديث"
                     },
                     "picker": {
+                        "create_area": "إنشاء منطقة",
                         "header": "المناطق",
                         "integrations_page": "صفحة التكاملات",
                         "introduction": "يتم استخدام المناطق لتنظيم أمكنة الأجهزة. سيتم استخدام هذه المعلومات في جميع أنحاء Home Assistant لمساعدتك في تنظيم الواجهة والأذونات و التكاملات مع الأنظمة الأخرى.",
-                        "introduction2": "لوضع الأجهزة في منطقة ما، إستخدم الرابط أدناه للإنتقال إلى صفحة التكاملات ثم انقر فوق تكامل مكوّن للوصول إلى بطاقات الجهاز."
+                        "introduction2": "لوضع الأجهزة في منطقة ما، إستخدم الرابط أدناه للإنتقال إلى صفحة التكاملات ثم انقر فوق تكامل مكوّن للوصول إلى بطاقات الجهاز.",
+                        "no_areas": "يبدو أنه ليس لديك مناطق بعد!"
                     }
                 },
                 "automation": {
@@ -542,7 +769,7 @@
                             "delete_confirm": "هل تريد الحذف فعلا؟",
                             "duplicate": "تكرار",
                             "header": "الإجراءات",
-                            "introduction": "الإجراءات هي ما سيفعله Home Assistant عندما يتفعّل الجهاز المُتحَكم به.\n\n [مزيد من المعلومات حول الإجراءات.] (https://home-assistant.io/docs/automation/action/)",
+                            "introduction": "الإجراءات هي ما سيفعله Home Assistant عند تشغيل الأتمتة.",
                             "learn_more": "معرفة المزيد عن الإجراءات",
                             "type_select": "نوع الإجراء",
                             "type": {
@@ -556,14 +783,23 @@
                                 "device_id": {
                                     "action": "أضف إجراء",
                                     "extra_fields": {
+                                        "code": "الرمز",
+                                        "humidity": "الرطوبة",
+                                        "message": "رسالة",
                                         "mode": "الوضع",
-                                        "position": "مكان"
-                                    }
+                                        "position": "مكان",
+                                        "title": "عنوان",
+                                        "value": "قيمة"
+                                    },
+                                    "label": "جهاز"
                                 },
                                 "event": {
                                     "event": "الحدث",
                                     "label": "إجراء الحريق",
                                     "service_data": "بيانات الخدمة"
+                                },
+                                "scene": {
+                                    "label": "تنشيط مشهد"
                                 },
                                 "service": {
                                     "label": "طلب خدمة"
@@ -574,7 +810,7 @@
                                     "wait_template": "نموذج الانتظار"
                                 }
                             },
-                            "unsupported_action": "إجراء غير مدعوم: {action}"
+                            "unsupported_action": "لا يوجد محرر مرئي يدعم الإجراء: {action}"
                         },
                         "alias": "الاسم",
                         "conditions": {
@@ -587,8 +823,19 @@
                             "learn_more": "معرفة المزيد عن الشروط",
                             "type_select": "نوع الشرط",
                             "type": {
+                                "and": {
+                                    "label": "و"
+                                },
                                 "device": {
-                                    "condition": "الشرط"
+                                    "condition": "الشرط",
+                                    "extra_fields": {
+                                        "above": "فوق",
+                                        "below": "تحت",
+                                        "for": "المدة",
+                                        "hvac_mode": "وضع HVAC",
+                                        "preset_mode": "وضع الضبط المسبق"
+                                    },
+                                    "label": "جهاز"
                                 },
                                 "not": {
                                     "label": "ليس"
@@ -596,8 +843,11 @@
                                 "numeric_state": {
                                     "above": "فوق",
                                     "below": "تحت",
-                                    "label": "حالة القيمة الرقمية",
+                                    "label": "الوضع الرقمي",
                                     "value_template": "نموذج القيمة (إختياري)"
+                                },
+                                "or": {
+                                    "label": "أو"
                                 },
                                 "state": {
                                     "label": "الحالة",
@@ -639,8 +889,14 @@
                             "unsupported_condition": "شرط غير مدعوم: {condition}"
                         },
                         "default_name": "أتمتة جديدة",
+                        "description": {
+                            "label": "الوصف",
+                            "placeholder": "وصف اختياري"
+                        },
                         "enable_disable": "تمكين/تعطيل التنفيذ التلقائي",
                         "introduction": "استخدم الأتمتة لإضفاء الحيوية على منزلك.",
+                        "load_error_not_editable": "الأتمتة فقط في automations.yaml قابلة للتحرير.",
+                        "load_error_unknown": "خطأ في تحميل الأتمتة ({err_no}).",
                         "max": {
                             "queued": "طول قائمة الإنتظار"
                         },
@@ -658,7 +914,7 @@
                         "triggers": {
                             "add": "أضف مشغل",
                             "delete": "حذف",
-                            "delete_confirm": "هل تريد الحذف فعلا؟",
+                            "delete_confirm": "هل أنت متأكد أنك تريد حذف هذا؟",
                             "duplicate": "تكرار",
                             "header": "المشغلات",
                             "introduction": "المشغلات هي التي تبدأ معالجةقاعدة الأتمتة. من الممكن تحديد عدة مشغلات لنفس القاعدة. بمجرد بدء المشغل ، سيقوم Home Assistant بالتحقق من صحة الشروط ، إن وجدت ، واستدعاء الإجراء.",
@@ -667,6 +923,12 @@
                             "type_select": "نوع المشغل",
                             "type": {
                                 "device": {
+                                    "extra_fields": {
+                                        "above": "فوق",
+                                        "below": "تحت",
+                                        "for": "المدة"
+                                    },
+                                    "label": "جهاز",
                                     "trigger": "نوع المشغل"
                                 },
                                 "event": {
@@ -725,7 +987,12 @@
                                 },
                                 "time": {
                                     "at": "عند",
-                                    "label": "الوقت"
+                                    "label": "الوقت",
+                                    "type_input": "قيمة مساعد التاريخ/الوقت"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "معرف Webhook"
                                 },
                                 "zone": {
                                     "enter": "دخول",
@@ -736,12 +1003,15 @@
                                     "zone": "المنطقة"
                                 }
                             },
-                            "unsupported_platform": "منصة غير مدعومة: {platform}"
+                            "unsupported_platform": "لا يوجد محرر مرئي يدعم النظام الأساسي: {platform}"
                         },
                         "unsaved_confirm": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد أن تغادر ؟"
                     },
                     "picker": {
                         "add_automation": "أضف أتمتة",
+                        "delete_automation": "حذف الأتمتة",
+                        "delete_confirm": "هل أنت متأكد أنك تريد حذف هذه الأتمتة؟",
+                        "edit_automation": "تحرير الأتمتة",
                         "header": "محرر الأتمتة",
                         "headers": {
                             "name": "الاسم"
@@ -749,22 +1019,85 @@
                         "introduction": "يسمح لك محرر الأتمتة بإنشاء وتحرير الأتمتة. يرجى اتباع الرابط أدناه لقراءة التعليمات للتأكد من تهيئة Home Assistant بشكل صحيح.",
                         "learn_more": "معرفة المزيد عن التحكم الآلي",
                         "no_automations": "لم نتمكن من العثور على أي أتمتة",
-                        "pick_automation": "اختر الأتمتة لتحريرها"
+                        "pick_automation": "اختر الأتمتة لتحريرها",
+                        "show_info_automation": "عرض معلومات حول الأتمتة"
+                    },
+                    "thingtalk": {
+                        "link_devices": {
+                            "header": "عظيم! الآن نحن بحاجة لربط بعض الأجهزة"
+                        },
+                        "task_selection": {
+                            "error_empty": "أدخل أمرًا أو انقر فوق تخطي.",
+                            "error_unsupported": "لم نتمكن من إنشاء أتمتة لذلك (حتى الآن؟).",
+                            "for_example": "على سبيل المثال:",
+                            "language_note": "ملاحظة: اللغة الإنجليزية فقط مدعومة في الوقت الحالي."
+                        }
+                    }
+                },
+                "blueprint": {
+                    "add": {
+                        "save_btn": "استورد Blueprint ...",
+                        "saving": "جاري استيراد Blueprint ..."
                     }
                 },
                 "cloud": {
                     "account": {
+                        "alexa": {
+                            "config_documentation": "وثائق التكوين",
+                            "disable": "تعطيل",
+                            "enable": "تمكين",
+                            "enable_ha_skill": "تمكين مهارة Home Assistant لـ Alexa",
+                            "enable_state_reporting": "تمكين تقارير الحالة",
+                            "info": "من خلال تكامل Alexa مع Home Assistant Cloud ، ستتمكن من التحكم في جميع أجهزة Home Assistant الخاصة بك عبر أي جهاز يدعم Alexa.",
+                            "info_state_reporting": "إذا قمت بتمكين تقارير الحالة ، فسيرسل Home Assistant جميع تغييرات الحالة للكيانات المكشوفة إلى Amazon. يتيح لك ذلك دائمًا الاطلاع على أحدث الحالات في تطبيق Alexa واستخدام تغييرات الحالة لإنشاء إجراءات روتينية.",
+                            "manage_entities": "إدارة الكيانات",
+                            "state_reporting_error": "تعذر {enable_disable} الابلاغ عن الحالة.",
+                            "sync_entities": "مزامنة الكيانات مع Amazon",
+                            "sync_entities_error": "فشلت مزامنة الكيانات:",
+                            "title": "Alexa"
+                        },
+                        "connected": "متصل",
+                        "connecting": "الاتصال...",
+                        "connection_status": "حالة الاتصال السحابي",
+                        "fetching_subscription": "جاري إحضار الاشتراك...",
+                        "google": {
+                            "config_documentation": "وثائق التكوين",
+                            "devices_pin": "رقم التعريف الشخصي لأجهزة الأمان",
+                            "enable_ha_skill": "قم بتنشيط مهارة Home Assistant Cloud لـ Google Assistant",
+                            "enable_state_reporting": "تمكين تقارير الحالة",
+                            "enter_pin_error": "تعذر تخزين رقم التعريف الشخصي:",
+                            "enter_pin_hint": "إدخال رقم تعريف شخصي لاستخدام أجهزة الأمان",
+                            "enter_pin_info": "الرجاء إدخال رقم التعريف الشخصي للتفاعل مع أجهزة الأمان. أجهزة الأمن هي الأبواب وأبواب المرآب والأقفال. سيطلب منك أن تقول/ تدخل رقم التعريف الشخصي هذا عند التفاعل مع هذه الأجهزة عبر مساعد Google.",
+                            "info": "مع تكامل Google Assistant لـ Home Assistant Cloud ، ستتمكن من التحكم في جميع أجهزة Home Assistant الخاصة بك عبر أي جهاز يدعم Google Assistant.",
+                            "info_state_reporting": "إذا قمت بتمكين الإبلاغ عن الحالة ، فسيرسل Home Assistant جميع تغييرات حالة الكيانات المكشوفة إلى Google. يتيح لك هذا دائمًا الاطلاع على أحدث الحالات في تطبيق Google.",
+                            "manage_entities": "إدارة الكيانات",
+                            "security_devices": "أجهزة الأمان",
+                            "sync_entities": "مزامنة الكيانات مع Google",
+                            "sync_entities_404_message": "فشل مزامنة الكيانات الخاصة بك مع Google ، اطلب من Google \"Hey Google ، مزامنة أجهزتي\" لمزامنة الكيانات الخاصة بك.",
+                            "title": "Google Assistant"
+                        },
                         "integrations": "تكاملات",
-                        "integrations_introduction2": "تحقق من الموقع ل",
+                        "integrations_introduction2": "تحقق من موقع الويب بحثا عن ",
                         "integrations_link_all_features": " جميع الميزات المتوفرة",
+                        "nabu_casa_account": "حساب Nabu Casa",
+                        "not_connected": "غير متصل",
                         "remote": {
+                            "access_is_being_prepared": "يتم تحضير جهاز التحكم عن بعد. سنعلمك عندما يكون جاهزًا.",
+                            "certificate_info": "معلومات الشهادة",
                             "connected": "متصل",
+                            "info": "يوفر Home Assistant Cloud اتصالاً آمنًا عن بُعد بالمثيل الخاص بك أثناء تواجدك بعيدًا عن المنزل.",
+                            "instance_is_available": "المثيل الخاص بك متاح في",
+                            "instance_will_be_available": "سيكون المثيل الخاص بك متاحا على",
+                            "link_learn_how_it_works": "تعرف على كيفية عملها",
                             "not_connected": "غير متصل",
                             "remote_enabled": {
                                 "caption": "الاتصال تلقائيا",
                                 "description": "قم بتفعيل هذا الخيار للتأكد من أن Home Assistant الخاص بك يمكن الوصول إليه دائمًا عن بُعد."
-                            }
+                            },
+                            "title": "التحكم عن بعد"
                         },
+                        "sign_out": "تسجيل الخروج",
+                        "thank_you_note": "شكرًا لك على كونك جزءًا من Home Assistant Cloud. بفضل أشخاص مثلك ، يمكننا تقديم تجربة أتمتة منزلية رائعة للجميع. شكرا لك!",
                         "tts": {
                             "dialog": {
                                 "example_message": "مرحبًا {name} ، يمكنك تشغيل أي نص على أي مشغل وسائط مدعوم!",
@@ -774,20 +1107,108 @@
                                 "target_browser": "تصفح"
                             },
                             "try": "حاول"
+                        },
+                        "webhooks": {
+                            "disable_hook_error_msg": "فشل تعطيل webhook:",
+                            "info": "يمكن إعطاء أي شيء تم تكوينه ليتم تشغيله بواسطة webhook عنوان URL يمكن الوصول إليه بشكل عام للسماح لك بإرسال البيانات مرة أخرى إلى Home Assistant من أي مكان ، دون تعريض المثيل الخاص بك إلى الإنترنت.",
+                            "link_learn_more": "تعرف على المزيد حول إنشاء عمليات اتمتة مدعومة بwebhook.",
+                            "loading": "جار التحميل...",
+                            "manage": "أدر",
+                            "no_hooks_yet": "يبدو أنه ليس لديك webhook حتى الآن. ابدأ بتكوين",
+                            "no_hooks_yet_link_automation": "أتمتة webhook",
+                            "no_hooks_yet_link_integration": "التكامل المستند إلى webhook",
+                            "no_hooks_yet2": "أو عن طريق إنشاء",
+                            "title": "webhook"
                         }
                     },
+                    "alexa": {
+                        "banner": "تم تعطيل تحرير الكيانات التي يتم كشفها عبر واجهة المستخدم هذه لأنك قمت بتكوين عوامل تصفية الكيان في configuration.yaml.",
+                        "exposed_entities": "الكيانات المكشوفة",
+                        "not_exposed_entities": "الكيانات غير المكشوفة",
+                        "title": "Alexa"
+                    },
+                    "description_features": "تحكم في المنزل عندما تكون بعيدًا وتكامل مع Alexa و Google Assistant",
                     "description_login": "تم تسجيل الدخول كـ {email}",
                     "description_not_login": "لم يتم تسجيل الدخول",
                     "dialog_certificate": {
-                        "close": "إغلاق"
+                        "certificate_expiration_date": "تاريخ انتهاء صلاحية الشهادة:",
+                        "close": "إغلاق",
+                        "fingerprint": "بصمة الشهادة:",
+                        "will_be_auto_renewed": "سيتم تجديده تلقائيًا"
                     },
                     "dialog_cloudhook": {
+                        "available_at": "يتوفر webhook في URL التالي:",
                         "close": "إغلاق",
-                        "info_disable_webhook": "إذا كنت لم تعد ترغب في استخدام هذا الwebhook ، يمكنك"
+                        "confirm_disable": "هل تريد بالتأكيد تعطيل webhook هذا؟",
+                        "copied_to_clipboard": "نسخ إلى الحافظة",
+                        "info_disable_webhook": "إذا كنت لم تعد ترغب في استخدام هذا الwebhook ، يمكنك",
+                        "link_disable_webhook": "عطله",
+                        "managed_by_integration": "تتم إدارة webhook هذا بواسطة تكامل ولا يمكن تعطيله.",
+                        "view_documentation": "عرض الوثائق"
+                    },
+                    "forgot_password": {
+                        "check_your_email": "تحقق من بريدك الإلكتروني للحصول على إرشادات حول كيفية إعادة تعيين كلمة المرور الخاصة بك.",
+                        "email": "البريد الإلكتروني",
+                        "email_error_msg": "بريد إلكتروني غير صالح",
+                        "instructions": "أدخل عنوان بريدك الإلكتروني وسنرسل لك رابطا لإعادة تعيين كلمة المرور الخاصة بك.",
+                        "send_reset_email": "إرسال بريد إلكتروني لإعادة التعيين",
+                        "subtitle": "نسيت كلمة مرورك",
+                        "title": "نسيت كلمة المرور"
+                    },
+                    "google": {
+                        "banner": "تم تعطيل تحرير الكيانات التي يتم كشفها عبر واجهة المستخدم هذه لأنك قمت بتكوين عوامل تصفية الكيان في configuration.yaml.",
+                        "disable_2FA": "تعطيل المصادقة الثنائية",
+                        "expose": "كشف لـ Google Assistant",
+                        "exposed_entities": "الكيانات المكشوفة",
+                        "not_exposed_entities": "الكيانات غير المكشوفة",
+                        "title": "Google Assistant"
+                    },
+                    "login": {
+                        "alert_email_confirm_necessary": "تحتاج إلى تأكيد بريدك الإلكتروني قبل تسجيل الدخول.",
+                        "alert_password_change_required": "تحتاج إلى تغيير كلمة المرور الخاصة بك قبل تسجيل الدخول.",
+                        "dismiss": "إخفاء",
+                        "email": "البريد الإلكتروني",
+                        "email_error_msg": "بريد إلكتروني غير صالح",
+                        "forgot_password": "نسيت كلمة المرور؟",
+                        "introduction": "يوفر لك Home Assistant Cloud اتصالاً آمنًا عن بُعد بالمثيل الخاص بك أثناء تواجدك بعيدًا عن المنزل. كما يتيح لك الاتصال بخدمات السحابة فقط: Amazon Alexa و Google Assistant.",
+                        "introduction2": "يتم تشغيل هذه الخدمة من قبل شريكنا",
+                        "introduction2a": "، وهي شركة أسسها مؤسسو Home Assistant و Hass.io.",
+                        "introduction3": "Home Assistant Cloud هي خدمة اشتراك مع إصدار تجريبي مجاني لمدة شهر واحد. لا توجد معلومات دفع ضرورية.",
+                        "learn_more_link": "تعرف على المزيد حول Home Assistant Cloud",
+                        "password": "كلمة المرور",
+                        "password_error_msg": "كلمة مرور لا تقل عن 8 أحرف",
+                        "sign_in": "تسجيل الدخول",
+                        "start_trial": "ابدأ تجربتك المجانية لمدة شهر واحد",
+                        "title": "تسجيل الدخول إلى السحابة",
+                        "trial_info": "لا معلومات دفع ضرورية"
                     },
                     "register": {
+                        "account_created": "تم إنشاء الحساب! تحقق من بريدك الإلكتروني للحصول على إرشادات حول كيفية تنشيط حسابك.",
+                        "create_account": "إنشاء حساب",
+                        "email_address": "عنوان البريد الإلكتروني",
+                        "email_error_msg": "بريد إلكتروني غير صالح",
                         "feature_amazon_alexa": "التكامل مع Amazon Alexa",
-                        "feature_google_home": "التكامل مع Google Assistant"
+                        "feature_google_home": "التكامل مع Google Assistant",
+                        "feature_remote_control": "التحكم في Home Assistant بعيدًا عن المنزل",
+                        "feature_webhook_apps": "سهولة التكامل مع التطبيقات المستندة إلى الويب هوك مثل OwnTracks",
+                        "headline": "ابدأ تجربتك المجانية",
+                        "information": "أنشئ حسابا لبدء الإصدار التجريبي المجاني لمدة شهر واحد باستخدام Home Assistant Cloud. لامعلومات مطلوبة للدفع.",
+                        "information2": "ستمنحك التجربة إمكانية الوصول إلى جميع مزايا Home Assistant Cloud، بما في ذلك:",
+                        "information3": "يتم تشغيل هذه الخدمة من قبل شريكنا",
+                        "information3a": "، وهي شركة أسسها مؤسسو Home Assistant و Hass.io.",
+                        "information4": "بتسجيلك حساب فإنك توافق على الشروط والأحكام التالية.",
+                        "link_privacy_policy": "سياسة الخصوصية",
+                        "link_terms_conditions": "الشروط والأحكام",
+                        "password": "كلمة المرور",
+                        "password_error_msg": "كلمة مرور لا تقل عن 8 أحرف",
+                        "resend_confirm_email": "إعادة إرسال رسالة تأكيد البريد الإلكتروني",
+                        "start_trial": "بدء التجربة",
+                        "title": "تسجيل حساب"
+                    }
+                },
+                "common": {
+                    "editor": {
+                        "confirm_unsaved": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد أن تغادر ؟"
                     }
                 },
                 "core": {
@@ -795,55 +1216,172 @@
                     "description": "نظام الوحدة والموقع والمنطقة الزمنية والمتغيرات العامة الأخرى",
                     "section": {
                         "core": {
-                            "core_config": {
-                                "external_url": "العنوان الخارجي",
-                                "internal_url": "العنوان المحلي"
+                            "analytics": {
+                                "preference": {
+                                    "statistics": {
+                                        "title": "إحصائيات الاستخدام"
+                                    },
+                                    "usage_supervisor": {
+                                        "description": "الأسماء والإصدارات والقدرات.",
+                                        "title": "عمليات التكامل والإضافات المستخدمة"
+                                    },
+                                    "usage": {
+                                        "description": "الأسماء ومعلومات الإصدار.",
+                                        "title": "التكاملات المستخدمة"
+                                    }
+                                }
                             },
-                            "header": "التحكم بالإعدادات و الخادم",
+                            "core_config": {
+                                "edit_requires_storage": "تم تعطيل المحرر بسبب تخزين التكوين في configuration.yaml.",
+                                "elevation": "ارتفاع",
+                                "elevation_meters": "أمتار",
+                                "external_url": "العنوان الخارجي",
+                                "imperial_example": "فهرنهايت، رطل",
+                                "internal_url": "العنوان المحلي",
+                                "latitude": "خط العرض",
+                                "location_name": "اسم تثبيت Home Assistant الخاص بك",
+                                "longitude": "خط الطول",
+                                "metric_example": "مئوية ، كيلوغرامات",
+                                "save_button": "حفظ",
+                                "time_zone": "المنطقة الزمنية",
+                                "unit_system": "نظام الوحدة",
+                                "unit_system_imperial": "ميل",
+                                "unit_system_metric": "متري"
+                            },
+                            "header": "التكوين العام",
                             "introduction": "تغيير الإعدادات تعتبر عملية مرهقة. نحن نعلم ذلك . هذا القسم سيحاول جعلها اسهل قليلاً."
                         }
                     }
                 },
                 "customize": {
+                    "attributes_override": "يمكنك تجاوزها إذا أردت.",
                     "caption": "التخصيصات",
                     "description": "تخصيص الكيانات الخاصة بك",
                     "picker": {
                         "header": "التخصيصات",
                         "introduction": "تعديل السمات لكل كيان. سيتم تفعيل التخصيصات المضافة / المعدلة على الفور. ستسري التخصيصات التي تمت إزالتها عندما يتم تحديث الكيان."
+                    },
+                    "warning": {
+                        "include_link": "تشمل customize.yaml"
                     }
                 },
                 "devices": {
                     "add_prompt": "لم تتم إضافة {name} باستخدام هذا الجهاز حتى الآن. يمكنك إضافة واحدة عن طريق النقر فوق الزر + أعلاه.",
+                    "automation": {
+                        "actions": {
+                            "caption": "عندما يتم تشغيل شيء ما ...",
+                            "no_actions": "لا توجد إجراءات",
+                            "unknown_action": "إجراء غير معروف"
+                        },
+                        "automations": "الأتمتة",
+                        "conditions": {
+                            "caption": "افعل شيئًا فقط إذا ...",
+                            "no_conditions": "لا شروط",
+                            "unknown_condition": "شروط غير معروفة"
+                        },
+                        "create": "إنشاء أتمتة مع جهاز",
+                        "create_disable": "لا يمكن إنشاء أتمتة مع جهاز معطل",
+                        "no_automations": "لا أتمتة",
+                        "no_device_automations": "لا توجد أتمتة متاحة لهذا الجهاز.",
+                        "triggers": {
+                            "caption": "افعل شيئًا عندما ...",
+                            "unknown_trigger": "مشغل غير معروف"
+                        },
+                        "unknown_automation": "أتمتة غير معروفة"
+                    },
                     "cant_edit": "يمكنك فقط تحرير العناصر التي تم إنشاؤها في واجهة المستخدم.",
+                    "caption": "الأجهزة",
                     "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا الجهاز؟",
+                    "confirm_disable_config_entry": "لا توجد أجهزة أخرى لإدخال التكوين {entry_name} ، فهل تريد بدلاً من ذلك تعطيل إدخال التكوين؟",
+                    "confirm_rename_entity_ids_warning": "هذا لن يغير أي تكوين (مثل الأتمتة ، والسكربتات ، والمشاهد ، ولوحات المعلومات) التي تستخدم حاليا هذه الكيانات! سيكون عليك تحديثها بنفسك لاستخدام معرف الكيان الجديد!",
                     "data_table": {
+                        "area": "المنطقة",
+                        "battery": "بطارية",
+                        "device": "جهاز",
                         "integration": "تكامل",
+                        "manufacturer": "الشركه المصنعه",
+                        "model": "الموديل",
                         "no_devices": "لا توجد أجهزة"
                     },
                     "delete": "حذف",
+                    "description": "إدارة الأجهزة المكونة",
                     "device_info": "معلومات الجهاز",
+                    "device_not_found": "لم يتم العثور على الجهاز.",
+                    "disabled": "معطل",
+                    "disabled_by": {
+                        "config_entry": "إدخال التكوين",
+                        "integration": "تكامل",
+                        "user": "مستخدم"
+                    },
+                    "enabled_cause": "تم تعطيل الجهاز بواسطة {cause}.",
+                    "enabled_description": "لن يتم عرض الأجهزة المعطلة وسيتم تعطيل الكيانات التي تنتمي إلى الجهاز ولن تتم إضافتها إلى Home Assistant.",
+                    "enabled_label": "تمكين الجهاز",
                     "entities": {
                         "add_entities_lovelace": "أضف إلى Lovelace",
                         "disabled_entities": "{count} {count, plural,\n  one {كيان}\n  other {كيانات}\n}",
-                        "hide_disabled": "إخفاء معطل"
+                        "entities": "الكيانات",
+                        "hide_disabled": "إخفاء معطل",
+                        "none": "هذا الجهاز ليس له كيانات"
                     },
-                    "no_devices": "لا توجد أجهزة"
+                    "no_devices": "لا توجد أجهزة",
+                    "picker": {
+                        "filter": {
+                            "filter": "فلتر",
+                            "show_all": "إظهار الكل",
+                            "show_disabled": "إظهار الأجهزة المعطلة"
+                        },
+                        "search": "ابحث عن الاجهزة"
+                    },
+                    "scene": {
+                        "create": "إنشاء مشاهد مع جهاز",
+                        "create_disable": "لا يمكن إنشاء مشهد بجهاز معطل",
+                        "no_scenes": "لايوجد مشاهد",
+                        "scenes": "مشاهد"
+                    },
+                    "scenes": "مشاهد",
+                    "script": {
+                        "create": "إنشاء سكريبت مع جهاز",
+                        "create_disable": "لا يمكن إنشاء سكريبت بجهاز معطل",
+                        "no_scripts": "لايوجد سكريبتات",
+                        "scripts": "السكريبتات"
+                    },
+                    "scripts": "السكريبتات",
+                    "unknown_error": "خطأ غير معروف",
+                    "unnamed_device": "جهاز غير مسمى",
+                    "update": "تحديث"
                 },
                 "entities": {
                     "caption": "الكيانات",
                     "description": "إدارة الكيانات المعروفة",
                     "picker": {
+                        "disable_selected": {
+                            "button": "تعطيل المحدد",
+                            "confirm_text": "لن تتم إضافة الكيانات المعطلة إلى Home Assistant."
+                        },
+                        "enable_selected": {
+                            "confirm_text": "سيؤدي ذلك إلى جعلها متاحة في Home Assistant مرة أخرى إذا تم تعطيلها الآن."
+                        },
+                        "filter": {
+                            "show_disabled": "إظهار الكيانات المعطلة",
+                            "show_unavailable": "إظهار الكيانات غير المتوفرة"
+                        },
                         "header": "الكيانات",
                         "headers": {
-                            "integration": "تكامل"
+                            "entity_id": "معرف الكيان",
+                            "integration": "تكامل",
+                            "name": "الاسم"
                         },
+                        "introduction": "يحتفظ Home Assistant بسجل لكل كيان يراه على الإطلاق ويمكن تحديده بشكل فريد. سيكون لكل من هذه الكيانات معرف كيان معين سيتم حجزه لهذا الكيان فقط.",
+                        "introduction2": "استخدم سجل الكيان لتجاوز الاسم أو تغيير معرّف الكيان أو إزالة الإدخال من Home Assistant.",
                         "remove_selected": {
                             "confirm_partly_text": "يمكنك فقط إزالة {removable} من الكيانات {selected} . لا يمكن إزالة الكيانات إلا عندما يتوقف التكامل عن توفير الكيانات. في بعض الأحيان ، يتعين عليك إعادة تشغيل Home Assistant قبل أن تتمكن من إزالة كيانات التكامل الذي تمت إزالته. هل أنت متأكد من أنك تريد إزالة الكيانات القابلة للإزالة؟",
                             "confirm_partly_title": "يمكن فقط إزالة {number} الكيانات المحددة."
                         },
                         "search": "إبحث عن الكيانات",
                         "status": {
-                            "restored": "مستعاد"
+                            "disabled": "معطل",
+                            "restored": "مستعاد",
+                            "unavailable": "غير متوفر"
                         }
                     }
                 },
@@ -866,19 +1404,35 @@
                     },
                     "types": {
                         "input_boolean": "تبديل",
+                        "input_datetime": "التاريخ و / أو الوقت",
                         "input_number": "رقم",
                         "input_select": "القائمه المنسدله",
                         "input_text": "النص"
                     }
                 },
                 "info": {
+                    "built_using": "بنيت باستخدام",
                     "caption": "معلومات",
+                    "custom_uis": "واجهات مستخدم مخصصة:",
                     "description": "معلومات حول تثبيت Home Assistant",
+                    "developed_by": "تم تطويره بواسطة مجموعة من الأشخاص الرائعين.",
                     "documentation": "الوثائق",
+                    "frontend": "واجهة Frontend",
+                    "frontend_version": "إصدار الواجهة الأمامية: {version} - {type}",
                     "home_assistant_logo": "شعار Home Assistant",
+                    "icons_by": "الايقونات بواسطة",
                     "integrations": "تكاملات",
                     "issues": "الاعطال",
-                    "setup_time": "وقت التنصيب"
+                    "license": "نشرت تحت رخصة Apache 2.0",
+                    "path_configuration": "المسار إلى configuration.yaml: {path}",
+                    "server": "الخادم",
+                    "setup_time": "وقت التنصيب",
+                    "source": "مصدر:",
+                    "system_health_error": "لم يتم تحميل مكون \"صحة النظام\". إضافة 'system_health:' إلى configuration.yaml",
+                    "system_health": {
+                        "manage": "أدر",
+                        "more_info": "مزيد من المعلومات"
+                    }
                 },
                 "integration_panel_move": {
                     "link_integration_page": "صفحة التكاملات",
@@ -893,6 +1447,14 @@
                         "delete_confirm": "هل تريد حقا حذف هذا التكامل؟",
                         "device_unavailable": "الجهاز غير متوفر",
                         "devices": "{count} {count, plural,\n  one {جهاز}\n  other {أجهزة}\n}",
+                        "disable_error": "فشل تمكين التكامل أو تعطيله",
+                        "disable": {
+                            "disable_confirm": "هل أنت متأكد أنك تريد تعطيل إدخال التكوين هذا؟ سيتم تعطيل أجهزتها وكياناتها.",
+                            "disabled_by": {
+                                "device": "جهاز"
+                            }
+                        },
+                        "disabled_polling": "تم تعطيل السحب التلقائي للبيانات المحدثة",
                         "documentation": "الوثائق",
                         "entities": "{count} {count, plural,\n  one {كيان}\n  other {كيانات}\n}",
                         "entity_unavailable": "الكيان غير متوفر",
@@ -925,8 +1487,12 @@
                     },
                     "configure": "إعداد",
                     "configured": "تم التكوين",
-                    "description": "إعداد وإدارة التكاملات",
+                    "description": "إدارة التكاملات مع الخدمات أو الأجهزة",
                     "details": "تفاصيل التكامل",
+                    "disable": {
+                        "show": "عرض",
+                        "show_disabled": "إظهار عمليات التكامل المعطلة"
+                    },
                     "discovered": "مكتشف",
                     "home_assistant_website": "موقع Home Assistant",
                     "ignore": {
@@ -956,12 +1522,21 @@
                 "introduction": "يمكنك هنا برمجة المكونات الخاصة بك و إعداد نظام Home Assistant. ليس كل شيء متاح للبرمجة من خلال واجهة المستخدم حتى الآن، ولكننا نعمل على ذلك.",
                 "logs": {
                     "caption": "السجلات",
+                    "clear": "مسح",
                     "description": "عرض سجلات Home Assistant",
-                    "details": "تفاصيل السجل ({level})"
+                    "details": "تفاصيل السجل ({level})",
+                    "load_full_log": "تحميل سجل Home Assistant الكامل",
+                    "loading_log": "جارٍ تحميل سجل الأخطاء ...",
+                    "multiple_messages": "ظهرت الرسالة لأول مرة في {time} وتظهر {counter} مرات",
+                    "no_errors": "لم يتم الإبلاغ عن أي أخطاء",
+                    "no_issues": "لا توجد مشاكل جديدة!",
+                    "refresh": "تحديث"
                 },
                 "lovelace": {
+                    "caption": "لوحات معلومات Lovelace",
                     "dashboards": {
                         "cant_edit_default": "لا يمكن تعديل لوحة تحكم لوفليس القياسية من واجهة المستخدم. يمكنك إخفائه عن طريق تعيين لوحة تحكم أخرى كإعداد افتراضي.",
+                        "cant_edit_yaml": "لا يمكن تحرير لوحات المعلومات المعرفة في YAML من واجهة المستخدم. تغييرها في configuration.yaml.",
                         "caption": "لوحات التحكم",
                         "confirm_delete": "هل أنت متأكد أنك تريد حذف لوحة التحكم ؟",
                         "default_dashboard": "هذه هي لوحة المعلومات الافتراضية",
@@ -984,6 +1559,7 @@
                         "picker": {
                             "add_dashboard": "أضافة لوحة تحكم جديدة",
                             "headers": {
+                                "conf_mode": "أسلوب التكوين",
                                 "default": "الافتراضي",
                                 "filename": "اسم الملف",
                                 "require_admin": "المسؤول فقط",
@@ -1020,9 +1596,20 @@
                 },
                 "mqtt": {
                     "button": "كوِن",
+                    "message_received": "الرسالة {id} التي تم تلقيها على {topic} في {time}:",
                     "title": "MQTT"
                 },
                 "ozw": {
+                    "device_info": {
+                        "node_failed": "العقدة فشلت",
+                        "stage": "مرحلة",
+                        "zwave_info": "معلومات Z-Wave"
+                    },
+                    "navigation": {
+                        "node": {
+                            "dashboard": "لوحة المعلومات"
+                        }
+                    },
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "تم الاستعلام عن جميع العقد",
@@ -1044,42 +1631,76 @@
                         "wakeup_help": "يجب أن تكون العقد التي تعمل بالبطارية مستيقظة لتغيير تكوينها. إذا لم تكن العقدة مستيقظة، سيحاول OpenZWave تحديث تكوين العقدة في المرة التالية التي تستيقظ فيها، والتي قد تكون عدة ساعات (أو أيام) لاحقا. اتبع الخطوات التالية لتنبيه جهازك:"
                     },
                     "node_query_stages": {
-                        "instances": "الحصول على تفاصيل حول المثيلات أو القنوات التي يدعمها الجهاز"
+                        "instances": "الحصول على تفاصيل حول المثيلات أو القنوات التي يدعمها الجهاز",
+                        "static": "الحصول على قيم ثابتة من الجهاز"
                     },
                     "node": {
                         "button": "تفاصيل العقدة"
+                    },
+                    "refresh_node": {
+                        "description": "سيؤدي هذا إلى إخبار OpenZWave بإعادة إجراء مقابلة مع عقدة وتحديث فئات أوامر العقدة وقدراتها وقيمها.",
+                        "wakeup_instructions_source": "يتم الحصول على تعليمات التنبيه من قاعدة بيانات جهاز مجتمع OpenZWave."
                     }
                 },
                 "person": {
+                    "add_person": "إضافة شخص",
                     "caption": "الأشخاص",
+                    "confirm_delete": "هل أنت متأكد أنك تريد حذف هذا الشخص؟",
+                    "confirm_delete2": "ستصبح جميع الأجهزة الخاصة بهذا الشخص غير محددة.",
+                    "create_person": "إنشاء شخص",
                     "description": "إدارة الأشخاص الذين يتتبعهم Home Assistant.",
                     "detail": {
+                        "create": "إنشاء",
+                        "delete": "حذف",
                         "device_tracker_intro": "حدد الأجهزة التي تخص هذا الشخص.",
                         "device_tracker_pick": "اختر جهاز لتتبع",
                         "device_tracker_picked": "جهاز التتبع",
                         "link_integrations_page": "صفحة التكاملات",
                         "link_presence_detection_integrations": "تكاملات الكشف عن التواجد",
+                        "linked_user": "مستخدم مرتبط",
                         "name": "الاسم",
                         "name_error_msg": "الاسم مطلوب",
-                        "no_device_tracker_available_intro": "عندما يكون لديك أجهزة تشير إلى تواجد شخص ، ستتمكن من تعيينها إلى شخص هنا. يمكنك إضافة جهازك الأول عن طريق إضافة تكامل كشف التواجد من صفحة التكاملات."
+                        "new_person": "شخص جديد",
+                        "no_device_tracker_available_intro": "عندما يكون لديك أجهزة تشير إلى تواجد شخص ، ستتمكن من تعيينها إلى شخص هنا. يمكنك إضافة جهازك الأول عن طريق إضافة تكامل كشف التواجد من صفحة التكاملات.",
+                        "update": "تحديث"
                     },
+                    "introduction": "هنا يمكنك تحديد كل شخص مهتم بـ Home Assistant.",
                     "no_persons_created_yet": "يبدو أنك لم تقم بإنشاء أي شخص حتى الآن.",
                     "note_about_persons_configured_in_yaml": "ملاحظة: لا يمكن تعديل الأشخاص الذين تم تكوينهم عبر config.yaml عبر واجهة المستخدم."
                 },
                 "scene": {
+                    "activated": "المشهد المنشط {name}.",
+                    "caption": "مشاهد",
+                    "description": "التقط حالات الجهاز واستدعها بسهولة لاحقًا",
                     "editor": {
-                        "icon": "أيقونة"
+                        "devices": {
+                            "add": "إضافة جهاز",
+                            "delete": "حذف جهاز",
+                            "header": "الأجهزة",
+                            "introduction": "أضف الأجهزة التي تريد تضمينها في المشهد الخاص بك. اضبط جميع الأجهزة على الحالة التي تريدها لهذا المشهد."
+                        },
+                        "entities": {
+                            "device_entities": "إذا قمت بإضافة كيان ينتمي إلى جهاز ، فستتم إضافة الجهاز.",
+                            "introduction": "يمكن هنا تعيين الكيانات التي لا تنتمي إلى جهاز.",
+                            "without_device": "كيانات بدون جهاز"
+                        },
+                        "icon": "أيقونة",
+                        "save": "حفظ",
+                        "unsaved_confirm": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد أن تغادر ؟"
                     },
                     "picker": {
                         "duplicate": "تكرار",
                         "duplicate_scene": "تكرار بطاقة",
+                        "header": "محرر المشهد",
                         "headers": {
                             "name": "الاسم"
-                        }
+                        },
+                        "learn_more": "تعرف على المزيد حول المشاهد",
+                        "pick_scene": "اختر مشهدًا لتحريره"
                     }
                 },
                 "script": {
-                    "caption": "السكريبت",
+                    "caption": "السكريبتات",
                     "description": "تنفيذ سلسلة من الإجراءات.",
                     "editor": {
                         "alias": "الاسم",
@@ -1095,12 +1716,16 @@
                             "queued": "في قائمة الإنتظار",
                             "restart": "إعادة تشغيل",
                             "single": "فردي (إفتراضي)"
-                        }
+                        },
+                        "save_script": "حفظ السكربت",
+                        "sequence": "تسلسل"
                     },
                     "picker": {
+                        "add_script": "اضف سكريبت",
                         "headers": {
                             "name": "الاسم"
                         },
+                        "no_scripts": "لم نتمكن من العثور على أي سكريبت",
                         "show_info": "عرض معلومات حول السكربت"
                     }
                 },
@@ -1109,18 +1734,20 @@
                     "description": "أعد تشغيل خادم Home Assistant وأوقفه",
                     "section": {
                         "reloading": {
-                            "automation": "إعادة تحميل الأتمتة",
-                            "core": "إعادة تحميل الموقع والتخصيصات",
+                            "automation": "الأتمتة",
+                            "core": "الموقع والتخصيصات",
                             "group": "خدمات المجموعات وكيانات المجموعة والاشعارات",
                             "heading": "إعادة تحميل تكوين YAML",
                             "input_boolean": "إعادة تحميل مدخلات منطقية",
-                            "input_datetime": "إعادة تحميل أوقات تاريخ الإدخال",
+                            "input_datetime": "مدخل الوقت والتاريخ",
                             "input_number": "إعادة تحميل أرقام الإدخال",
                             "input_select": "إعادة تحميل تحديدات الإدخال",
                             "input_text": "إعادة تحميل النصوص المدخلة",
                             "introduction": "يمكن إعادة تحميل بعض أجزاء Home Assistant دون الحاجة إلى إعادة التشغيل. سيؤدي الضغط على إعادة التحميل إلى تفريغ تكوين YAML الحالي وتحميل التكوين الجديد.",
                             "person": "إعادة تحميل الأشخاص",
+                            "scene": "مشاهد",
                             "script": "السكريبتات",
+                            "universal": "كيانات مشغل الوسائط العالمي",
                             "zone": "إعادة تحميل المناطق"
                         },
                         "server_management": {
@@ -1134,10 +1761,20 @@
                         "validation": {
                             "check_config": "تحقق من التكوين",
                             "heading": "التحقق من صحة التكوين",
-                            "introduction": "تحقق من صلاحية التكوين الخاص بك إذا قمت مؤخرًا بإجراء بعض التغييرات وتريد التأكد من صلاحية جميعها",
+                            "introduction": "تحقق من صحة التكوين الخاص بك إذا قمت مؤخرًا بإجراء بعض التغييرات على التكوين الخاص بك وتريد التأكد من أنها كلها صالحة.",
                             "invalid": "التكوين غير صالح",
                             "valid": "التكوين صالح!"
                         }
+                    }
+                },
+                "tag": {
+                    "confirm_remove": "هل أنت متأكد أنك تريد إزالة العلامة {tag} ؟",
+                    "confirm_remove_title": "إزالة العلامة؟",
+                    "detail": {
+                        "update": "تحديث"
+                    },
+                    "headers": {
+                        "last_scanned": "آخر فحص"
                     }
                 },
                 "users": {
@@ -1147,16 +1784,24 @@
                         "password": "كلمه السر"
                     },
                     "caption": "المستخدمين",
-                    "description": "ادارة المستخدمين",
+                    "description": "إدارة حسابات مستخدمي Home Assistant",
                     "editor": {
                         "activate_user": "تفعيل المستخدم",
+                        "active": "مفعل",
                         "admin": "مدير",
                         "caption": "عرض المستخدم",
                         "change_password": "تغيير كلمة السر",
+                        "confirm_user_deletion": "هل أنت متأكد أنك تريد حذف {name} ؟",
                         "deactivate_user": "إلغاء تنشيط المستخدم",
                         "delete_user": "حذف المستخدم",
+                        "group": "مجموعة",
+                        "id": "معرف",
                         "name": "الاسم",
+                        "owner": "مالك",
+                        "system_generated": "منشئ من قبل النظام",
                         "system_generated_users_not_editable": "غير قادر على تحديث المستخدمين الذين تم إنشاؤهم بواسطة النظام.",
+                        "system_generated_users_not_removable": "غير قادر على إزالة المستخدمين الذين تم إنشاؤهم من قبل النظام.",
+                        "unnamed_user": "مستخدم غير مسمى",
                         "update_user": "تحديث"
                     },
                     "picker": {
@@ -1169,13 +1814,31 @@
                     "users_privileges_note": "مجموعة المستخدمين هي عمل قيد التقدم. لن يتمكن المستخدم من إدارة المثيل عبر واجهة المستخدم. ما زلنا نقوم بتدقيق جميع نقاط نهاية واجهة برمجة تطبيقات الإدارة للتأكد من أنها تحد من الوصول إلى المسؤولين بشكل صحيح."
                 },
                 "zha": {
+                    "add_device": "إضافة جهاز",
                     "add_device_page": {
                         "discovered_text": "ستظهر الأجهزة هنا عند إكتشافها.",
-                        "no_devices_found": "لم يتم العثور على أجهزة ، تأكد من أنها في وضع الاقتران(pairing) واجعلها مستيقظة أثناء اكتشافها قيد التشغيل."
+                        "no_devices_found": "لم يتم العثور على أجهزة ، تأكد من أنها في وضع الاقتران(pairing) واجعلها مستيقظة أثناء اكتشافها قيد التشغيل.",
+                        "pairing_mode": "تأكد من أن أجهزتك في وضع الاقتران. تحقق من تعليمات جهازك حول كيفية القيام بذلك.",
+                        "search_again": "ابحث مرة أخرى",
+                        "spinner": "البحث عن أجهزة ZHA Zigbee ..."
                     },
                     "button": "كوِن",
                     "clusters": {
                         "header": "عناقيد"
+                    },
+                    "common": {
+                        "value": "قيمة"
+                    },
+                    "configuration_page": {
+                        "zha_options": {
+                            "enable_identify_on_join": "تمكين تأثير التعريف عند انضمام الأجهزة إلى الشبكة"
+                        }
+                    },
+                    "device_pairing_card": {
+                        "INTERVIEW_COMPLETE": "اكتملت المقابلة",
+                        "INTERVIEW_COMPLETE_status_text": "تكوين",
+                        "PAIRED": "تم العثور على الجهاز",
+                        "PAIRED_status_text": "بدء المقابلة"
                     },
                     "groups": {
                         "create_group_details": "أدخل التفاصيل المطلوبة لإنشاء مجموعة zigbee جديدة",
@@ -1183,6 +1846,10 @@
                     },
                     "network": {
                         "caption": "الشبكة"
+                    },
+                    "visualization": {
+                        "highlight_label": "تمييز الأجهزة",
+                        "zoom_label": "تكبير على الجهاز"
                     }
                 },
                 "zone": {
@@ -1210,20 +1877,32 @@
                         "view_device": "عرض الجهاز"
                     },
                     "common": {
-                        "close": "إغلاق"
+                        "close": "إغلاق",
+                        "heal_network": "عالج الشبكة",
+                        "reconfigure_server": "أعد تكوين الخادم"
                     },
                     "dashboard": {
                         "dump_not_ready_confirm": "تحميل"
+                    },
+                    "device_info": {
+                        "device_config": "تكوين جهاز",
+                        "node_ready": "عقدة جاهزة",
+                        "node_status": "حالة العقدة",
+                        "zwave_info": "معلومات Z-Wave"
                     },
                     "heal_network": {
                         "healing_cancelled": "تم إلغاء معالجة الشبكة.",
                         "healing_complete": "اكتملت معالجة الشبكة.",
                         "healing_failed": "المعالجة فشلت. قد تتوفر معلومات إضافية في السجلات.",
+                        "in_progress": "معالجة الشبكة جارية. سيستغرق هذا بعض الوقت.",
+                        "introduction": "ابدأ معالجة الشبكة على شبكة Z-Wave الخاصة بك. سيؤدي علاج الشبكة إلى إعادة حساب جميع الأجهزة لمساراتها مرة أخرى إلى وحدة التحكم ويوصى بذلك إذا قمت مؤخرًا بنقل الأجهزة أو وحدة التحكم الخاصة بك.",
                         "run_in_background": "يمكنك إغلاق مربع الحوار هذا وستستمر عملية معالجة الشبكة في الخلفية.",
+                        "start_heal": "ابدأ المعالجة",
                         "stop_heal": "أوقف المعالجة."
                     },
                     "logs": {
-                        "log_level": "مستوى التسجيل في السجل"
+                        "log_level": "مستوى التسجيل في السجل",
+                        "subscribed_to_logs": "اشترك في Z-Wave JS سجل الرسائل..."
                     },
                     "navigation": {
                         "logs": "السجلات"
@@ -1233,13 +1912,17 @@
                     },
                     "remove_node": {
                         "cancel_exclusion": "إلغاء الاستبعاد",
+                        "follow_device_instructions": "اتبع الإرشادات المرفقة مع جهازك لبدء الاستبعاد على الجهاز.",
+                        "introduction": "قم بإزالة عقدة من شبكة Z-Wave الخاصة بك ، وقم بإزالة الجهاز والكيانات المرتبطة بها من Home Assistant.",
                         "start_exclusion": "بدء الاستبعاد"
                     }
                 },
                 "zwave": {
                     "button": "كوِن",
                     "common": {
+                        "index": "فهرس",
                         "unknown": "غير معروف",
+                        "value": "قيمة",
                         "wakeup_interval": "فترة الاستيقاظ"
                     },
                     "description": "إدارة شبكة Z-Wave",
@@ -1249,12 +1932,25 @@
                             "introduction": "سيساعدك هذا المعالج على الانتقال تكامل Z-Wave القديم إلى تكامل OpenZWave الموجود حاليا في الإصدار التجريبي."
                         }
                     },
+                    "network_management": {
+                        "header": "إدارة شبكة Z-Wave",
+                        "introduction": "قم بتشغيل الأوامر التي تؤثر على شبكة Z-Wave. لن تحصل على تعليقات حول ما إذا كانت معظم الأوامر قد نجحت ، ولكن يمكنك التحقق من سجل OZW لمحاولة اكتشاف ذلك."
+                    },
+                    "network_status": {
+                        "network_started": "بدء تشغيل شبكة Z-Wave",
+                        "network_starting": "جارٍ بدء تشغيل شبكة Z-Wave ...",
+                        "network_starting_note": "قد يستغرق هذا بعض الوقت اعتمادا على حجم الشبكة.",
+                        "network_stopped": "توقفت شبكة Z-Wave"
+                    },
                     "node_config": {
                         "config_parameter": "معلمة التكوين",
+                        "config_value": "قيمة التكوين",
+                        "false": "خطأ",
                         "header": "خيارات تكوين العقدة",
                         "seconds": "ثواني",
                         "set_config_parameter": "تعيين معلمة التكوين",
-                        "set_wakeup": "تعيين فترة الاستيقاظ"
+                        "set_wakeup": "تعيين فترة الاستيقاظ",
+                        "true": "صح"
                     },
                     "node_management": {
                         "add_to_group": "إضافة إلى المجموعة",
@@ -1278,11 +1974,13 @@
                         "set_protection": "تعيين الحماية"
                     },
                     "ozw_log": {
+                        "introduction": "اعرض السجل. 0 هو الحد الأدنى (تحميل السجل بالكامل) و 1000 هو الحد الأقصى. سيعرض التحميل سجلاً ثابتًا وسيتم تحديث الذيل تلقائيًا بآخر عدد محدد من الأسطر من السجل.",
                         "last_log_lines": "عدد أسطر السجل الأخيرة",
                         "load": "حمل",
                         "tail": "الذيل"
                     },
                     "services": {
+                        "heal_network": "عالج الشبكة",
                         "heal_node": "اختبار عقدة",
                         "node_info": "معلومات العقدة",
                         "print_node": "طباعة عقدة",
@@ -1290,6 +1988,8 @@
                         "refresh_node": "تحديث العقدة",
                         "remove_failed_node": "إزالة العقدة الفاشلة",
                         "replace_failed_node": "استبدال العقدة الفاشلة",
+                        "save_config": "حفظ التكوين",
+                        "soft_reset": "إعادة تشغيل بسيطه",
                         "start_network": "بدء تشغيل الشبكة",
                         "stop_network": "إيقاف الشبكة",
                         "test_network": "اختبار الشبكة",
@@ -1298,6 +1998,11 @@
                     "values": {
                         "header": "قيم العقدة"
                     }
+                }
+            },
+            "custom": {
+                "external_panel": {
+                    "hide_message": "تحقق من المستندات لمكون panel_custom لإخفاء هذه الرسالة"
                 }
             },
             "developer-tools": {
@@ -1310,6 +2015,8 @@
                     },
                     "states": {
                         "description2": "لن يتواصل هذا مع الجهاز الفعلي.",
+                        "last_changed": "آخر تعديل",
+                        "last_updated": "آخر تحديث",
                         "title": "الحالات"
                     },
                     "templates": {
@@ -1344,20 +2051,36 @@
                 }
             },
             "lovelace": {
+                "add_entities": {
+                    "saving_failed": "فشل حفظ تكوين واجهة المستخدم Lovelace."
+                },
                 "cards": {
                     "actions": {
                         "no_url": "لم يتم تحديد عنوان URL لفتحه"
                     },
+                    "confirm_delete": "هل أنت متأكد أنك تريد حذف هذه البطاقة؟",
                     "empty_state": {
                         "go_to_integrations_page": "انتقل إلى صفحة التكاملات.",
                         "no_devices": "تسمح لك هذه الصفحة بالتحكم في أجهزتك ، ولكن يبدو أنك لم تعد أي أجهزة حتى الآن. توجه إلى صفحة التكاملات للبدء.",
                         "title": "مرحبًا بك في بيتك"
                     },
                     "picture-elements": {
+                        "call_service": "اتصل بخدمة {name}",
+                        "hold": "تعليق:",
+                        "more_info": "إظهار المزيد من المعلومات: {name}",
+                        "navigate_to": "انتقل إلى {location}",
+                        "tap": "ضغط:",
+                        "toggle": "تبديل {name}",
                         "url": "فتح النافذة لـ {url_path}"
                     },
                     "safe-mode": {
-                        "description": "واجه Home Assistant مشكلة أثناء تحميل التكوينات الخاصة بك ويتم تشغيله الآن في الوضع الآمن. أنظر إلى سجل الأخطاء لمعرفة  الخطأ."
+                        "description": "واجه Home Assistant مشكلة أثناء تحميل التكوينات الخاصة بك ويتم تشغيله الآن في الوضع الآمن. أنظر إلى سجل الأخطاء لمعرفة  الخطأ.",
+                        "header": "الوضع الآمن منشط"
+                    },
+                    "shopping-list": {
+                        "add_item": "إضافة عنصر",
+                        "checked_items": "العناصر المحددة",
+                        "clear_items": "مسح العناصر المحددة"
                     },
                     "starting": {
                         "description": "Home Assistant يبدأ، يرجى الانتظار..."
@@ -1369,7 +2092,9 @@
                 "editor": {
                     "card": {
                         "alarm-panel": {
-                            "description": "تسمح لك بطاقة لوحة الإنذار بتفعيل وتعطيل لوحة التحكم الخاصة بالانذار ."
+                            "available_states": "الحالات المتاحة",
+                            "description": "تسمح لك بطاقة لوحة الإنذار بتفعيل وتعطيل لوحة التحكم الخاصة بالانذار .",
+                            "name": "لوحة الإنذار"
                         },
                         "button": {
                             "description": "تتيح لك بطاقة الأزرار إضافة أزرار لأداء المهام.",
@@ -1392,9 +2117,19 @@
                             "state_equal": "الحالة تساوي",
                             "state_not_equal": "الحالة لا تساوي"
                         },
+                        "config": {
+                            "optional": "اختياري",
+                            "required": "مطلوب"
+                        },
                         "entities": {
                             "description": "بطاقة الكيانات هي أكثر أنواع البطاقات شيوعًا. تقوم بتجميع العناصر معًا في قوائم.",
-                            "edit_special_row": "اعرض تفاصيل هذا الصف بالنقر على زر التعديل"
+                            "edit_special_row": "اعرض تفاصيل هذا الصف بالنقر على زر التعديل",
+                            "secondary_info_values": {
+                                "last-changed": "آخر تعديل",
+                                "last-triggered": "آخر تشغيل",
+                                "last-updated": "آخر تحديث"
+                            },
+                            "show_header_toggle": "إظهار الزر العلوي؟"
                         },
                         "entity-filter": {
                             "description": "تتيح لك بطاقة تصفية الكيانات تحديد قائمة بالكيانات التي تريد تتبعها فقط عندما تكون في حالة معينة."
@@ -1404,21 +2139,48 @@
                             "name": "الكيان"
                         },
                         "gauge": {
-                            "description": "بطاقة القياس هي بطاقة أساسية تسمح برؤية بيانات الاستشعار بصريًا."
+                            "description": "بطاقة القياس هي بطاقة أساسية تسمح برؤية بيانات الاستشعار بصريًا.",
+                            "severity": {
+                                "define": "عرف الخطورة؟",
+                                "green": "أخضر",
+                                "red": "أحمر",
+                                "yellow": "أصفر"
+                            }
                         },
                         "generic": {
+                            "aspect_ratio": "نسبة العرض إلى الارتفاع",
                             "attribute": "السمه",
+                            "camera_image": "كيان الكاميرا",
                             "camera_view": "عرض الكاميرا",
                             "double_tap_action": "تأثير النقر المزدوج",
+                            "entities": "الكيانات",
+                            "entity": "كيان",
+                            "hold_action": "تعليق الإجراء",
+                            "hours_to_show": "ساعات العرض",
+                            "icon": "أيقونة",
+                            "icon_height": "ارتفاع الأيقونة",
+                            "image": "مسار الصورة",
                             "manual": "يدويا",
                             "manual_description": "هل تريد إضافة بطاقة مخصصة أو ترغب فقط في كتابة yaml يدويًا؟",
+                            "maximum": "الحد الاقصي",
+                            "minimum": "الحد الأدنى",
+                            "name": "الاسم",
                             "no_theme": "لا توجد تصاميم متاحة",
+                            "refresh_interval": "مدة التحديث",
                             "search": "بحث",
                             "secondary_info_attribute": "سمة المعلومات الثانوية",
+                            "show_icon": "إظهار الأيقونة؟",
                             "show_name": "أظهر الاسم؟",
-                            "state": "الحالة"
+                            "show_state": "إظهار الحالة؟",
+                            "state": "الحالة",
+                            "tap_action": "إجراء النقر",
+                            "theme": "سمة",
+                            "title": "عنوان",
+                            "unit": "وحدة",
+                            "url": "URL"
                         },
                         "glance": {
+                            "columns": "الأعمدة",
                             "description": "بطاقة اللمحة مفيدة لتجميع أجهزة استشعار متعددة في نظرة عامة مدمجة."
                         },
                         "grid": {
@@ -1428,7 +2190,8 @@
                             "description": "تسمح لك بطاقة الرسم البياني التاريخي بعرض رسم بياني لكل من الكيانات المذكورة."
                         },
                         "horizontal-stack": {
-                            "description": "تتيح لك بطاقة التكديس الأفقي تجميع عدة بطاقات معًا ، بحيث تكون دائمًا بجانب بعضها البعض في مساحة عمود واحد."
+                            "description": "تتيح لك بطاقة التكديس الأفقي تجميع عدة بطاقات معًا ، بحيث تكون دائمًا بجانب بعضها البعض في مساحة عمود واحد.",
+                            "name": "المكدس الأفقي"
                         },
                         "humidifier": {
                             "description": "تتيح بطاقة المرطب التحكم في كيان المرطب. يسمح لك بتغيير الرطوبة ووضع الكيان.",
@@ -1441,11 +2204,17 @@
                             "description": "تسمح لك بطاقة الضوء بتغيير سطوع الضوء."
                         },
                         "map": {
+                            "dark_mode": "الوضع المظلم؟",
+                            "default_zoom": "التكبير الافتراضي",
                             "description": "بطاقة الخريطة التي تتيح لك عرض الكيانات على الخريطة.",
-                            "hours_to_show": "ساعات للعرض"
+                            "geo_location_sources": "مصادر تحديد الموقع الجغرافي",
+                            "hours_to_show": "ساعات للعرض",
+                            "source": "المصدر"
                         },
                         "markdown": {
-                            "description": "يتم استخدام بطاقة Markdown لعرض Markdown."
+                            "content": "محتوى",
+                            "description": "يتم استخدام بطاقة Markdown لعرض Markdown.",
+                            "name": "Markdown"
                         },
                         "media-control": {
                             "description": "يتم استخدام بطاقة التحكم بالوسائط لعرض كيانات مشغل الوسائط على واجهة مع عناصر تحكم سهلة الاستخدام."
@@ -1472,13 +2241,16 @@
                             "description": "تتيح لك بطاقة قائمة التسوق إضافة عناصر وتحريرها وإلغاء تحديدها ومسحها من قائمة التسوق الخاصة بك."
                         },
                         "thermostat": {
-                            "description": "تتيح بطاقة الترموستات التحكم في كيان المناخ لديك. يسمح لك بتغيير درجة حرارة الكيان ووضعه."
+                            "description": "تتيح بطاقة الترموستات التحكم في كيان المناخ لديك. يسمح لك بتغيير درجة حرارة الكيان ووضعه.",
+                            "name": "منظم التكييف"
                         },
                         "vertical-stack": {
-                            "description": "تسمح لك بطاقة التكديس الرأسي بتجميع بطاقات متعددة بحيث تكون دائمًا في نفس العمود."
+                            "description": "تسمح لك بطاقة التكديس الرأسي بتجميع بطاقات متعددة بحيث تكون دائمًا في نفس العمود.",
+                            "name": "المكدس العمودي"
                         },
                         "weather-forecast": {
                             "description": "تعرض بطاقة توقعات الطقس حالة الطقس. من المفيد جدًا تضمينه في الواجهات التي يعرضها الأشخاص على الحائط.",
+                            "name": "النشرة الجوية",
                             "show_forecast": "التوقعات"
                         }
                     },
@@ -1487,23 +2259,46 @@
                         "no_description": "لا يوجد وصف متاح."
                     },
                     "edit_card": {
+                        "add": "إضافة بطاقة",
                         "confirm_cancel": "هل أنت متأكد من الإلغاء؟",
                         "delete": "حذف",
                         "duplicate": "بطاقة مكررة",
                         "edit": "تصحيح",
+                        "header": "تكوين البطاقة",
                         "move": "نقل",
                         "options": "المزيد من الخيارات",
+                        "pick_card": "ما هي البطاقة التي ترغب في إضافتها؟",
+                        "pick_card_view_title": "ما هي البطاقة التي تريد إضافتها إلى طريقة العرض {name} ؟",
+                        "toggle_editor": "تبديل المحرر",
                         "typed_header": "{type} تكوين البطاقة",
                         "unsaved_changes": "لديك تغييرات غير محفوظة"
                     },
                     "edit_lovelace": {
+                        "explanation": "يظهر هذا العنوان فوق كل صفحات واجهة المستخدم Lovelace.",
+                        "header": "عنوان واجهة مستخدم Lovelace الخاصة بك",
                         "title": "عنوان"
                     },
                     "edit_view": {
+                        "add": "إضافة عرض",
+                        "delete": "حذف العرض",
+                        "edit": "تحرير عرض",
+                        "header": "عرض التكوين",
                         "header_name": "{name} عرض التكوين",
+                        "tab_settings": "إعدادات",
                         "tab_visibility": "الرؤية",
                         "visibility": {
                             "select_users": "تحديد المستخدمين الذين يجب أن يروا طريقة العرض هذه في التنقل"
+                        }
+                    },
+                    "header": "تحرير واجهة المستخدم",
+                    "header-footer": {
+                        "types": {
+                            "buttons": {
+                                "name": "أزرار"
+                            },
+                            "picture": {
+                                "name": "صورة"
+                            }
                         }
                     },
                     "menu": {
@@ -1512,7 +2307,17 @@
                         "open": "فتح قائمة واجهة المستخدم Lovelace",
                         "raw_editor": "محرر التكوين الخام"
                     },
+                    "migrate": {
+                        "header": "التكوين غير متوافق",
+                        "migrate": "ترحيل التكوين",
+                        "para_migrate": "يمكن لـ Home Assistant إضافة معرفات إلى جميع بطاقاتك وطرق العرض تلقائيًا لك بالضغط على زر \"ترحيل التكوين\".",
+                        "para_no_id": "هذا العنصر ليس له معرّف ID . الرجاء إضافة معرف ID لهذا العنصر في \"ui-lovelace.yaml\"."
+                    },
                     "raw_editor": {
+                        "confirm_remove_config_text": "سنقوم تلقائيا بإنشاء طرق عرض واجهة مستخدم Lovelace الخاصة بك مع المناطق والأجهزة الخاصة بك إذا قمت بإزالة تكوين واجهة مستخدم Lovelace.",
+                        "confirm_unsaved_changes": "لديك تغييرات غير محفوظة ، هل أنت متأكد أنك تريد الخروج؟",
+                        "confirm_unsaved_comments": "قد يحتوي التكوين الخاص بك على تعليق (تعليقات) ، ولن يتم حفظها. هل تريد الاستمرار؟",
+                        "error_save_yaml": "تعذر حفظ YAML: {error}",
                         "header": "تعديل",
                         "save": "حفظ",
                         "saved": "تم الحفظ",
@@ -1522,19 +2327,29 @@
                         "cancel": "لا يهم",
                         "close": "إغلاق",
                         "empty_config": "ابدأ بلوحة معلومات فارغة",
+                        "header": "تحكم في واجهة مستخدم Lovelace",
+                        "para": "يتم صيانة لوحة المعلومات هذه حاليًا بواسطة Home Assistant. يتم تحديثه تلقائيًا عند توفر كيانات جديدة أو مكونات Lovelace UI. إذا كنت تتحكم ، فلن يتم تحديث لوحة التحكم هذه تلقائيًا بعد الآن. يمكنك دائمًا إنشاء لوحة تحكم جديدة في التكوين للتلاعب بها.",
                         "para_sure": "هل أنت متأكد أنك تريد التحكم في واجهة المستخدم الخاصة بك؟",
+                        "save": "تحكم",
                         "yaml_mode": "أنت تستخدم وضع YAML للوحة البيانات هذه ، مما يعني أنه لا يمكنك تغيير تكوين Lovelace من واجهة المستخدم. إذا كنت تريد إدارة لوحة التحكم هذه من واجهة المستخدم ، فقم بإزالة \"الوضع: yaml\" من تكوين Lovelace في \"config.yaml.\"."
+                    },
+                    "select_view": {
+                        "dashboard_label": "لوحة المعلومات"
                     },
                     "view": {
                         "panel_mode": {
+                            "description": "هذا يجعل البطاقة الأولى بالعرض الكامل. لن يتم عرض البطاقات الأخرى في هذا العرض بالإضافة إلى الشارات.",
+                            "title": "وضع اللوحة؟",
                             "warning_multiple_cards": "تحتوي طريقة العرض هذه على أكثر من بطاقة ، ولكن يمكن أن تعرض طريقة عرض اللوحة بطاقة واحدة فقط."
                         }
                     }
                 },
                 "menu": {
                     "close": "إغلاق",
+                    "configure_ui": "تحرير لوحة المعلومات",
                     "help": "مساعدة",
-                    "reload_resources": "إعادة تحميل الموارد"
+                    "reload_resources": "إعادة تحميل الموارد",
+                    "start_conversation": "ابدأ المحادثة"
                 },
                 "reload_lovelace": "إعادة تحميل واجهة المستخدم",
                 "reload_resources": {
@@ -1542,10 +2357,12 @@
                     "refresh_header": "هل تريد التحديث؟"
                 },
                 "unused_entities": {
+                    "last_changed": "آخر تعديل",
                     "no_data": "لم يعثر على كيانات غير مستخدمة",
                     "search": "إبحث عن الكيانات"
                 },
                 "views": {
+                    "confirm_delete": "حذف العرض؟",
                     "confirm_delete_existing_cards": "سيؤدي حذف هذا العرض إلى إزالة البطاقات أيضًا",
                     "confirm_delete_existing_cards_text": "هل أنت متأكد من أنك تريد حذف طريقة عرض ''{name}''؟ تحتوي طريقة العرض على {number} بطاقات سيتم حذفها. لا يمكن التراجع عن هذا الإجراء.",
                     "confirm_delete_text": "هل أنت متأكد من أنك تريد حذف عرض \"{name}\" ؟"
@@ -1554,7 +2371,7 @@
                     "attribute_not_found": "السمة {attribute} غير متاحة في: {entity}",
                     "entity_non_numeric": "الكيان غير رقمي: {entity}",
                     "entity_not_found": "الجهاز غير متوفر: {entity}",
-                    "entity_unavailable": "العنصر غير متوفر",
+                    "entity_unavailable": "الكيان غير متاح حاليًا: {entity}",
                     "starting": "Home Assistant يبدأ، قد لا يكون كل شيء متاح حتى الآن"
                 }
             },
@@ -1684,6 +2501,7 @@
                             "lights": "أضواء",
                             "morning_commute": "التنقل الصباحي",
                             "total_tv_time": "إجمالي وقت التلفزيون",
+                            "turn_tv_off": "إيقاف تشغيل التلفزيون",
                             "volume": "حجم الصوت"
                         },
                         "names": {
@@ -1695,10 +2513,12 @@
                             "mirror": "مرآة",
                             "patio": "الفناء",
                             "right": "يمين",
+                            "temperature_study": "دراسة درجة الحرارة",
                             "upstairs": "الطابق العلوي"
                         },
                         "unit": {
-                            "minutes_abbr": "د"
+                            "minutes_abbr": "د",
+                            "watching": "يشاهد"
                         }
                     }
                 }
@@ -1736,7 +2556,9 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "link_promo": "معرفة المزيد"
+                    "description": "يفتح الميزات المتقدمة.",
+                    "link_promo": "معرفة المزيد",
+                    "title": "الوضع المتقدم"
                 },
                 "change_password": {
                     "confirm_new_password": "تأكيد كلمة السر الجديدة",
@@ -1752,6 +2574,9 @@
                     "dropdown_label": "لوحة المعلومات",
                     "header": "لوحة المعلومات"
                 },
+                "enable_shortcuts": {
+                    "description": "قم بتمكين أو تعطيل اختصارات لوحة المفاتيح لتنفيذ إجراءات متنوعة في واجهة المستخدم."
+                },
                 "force_narrow": {
                     "description": "سيؤدي ذلك إلى إخفاء الشريط الجانبي افتراضيا، على غرار تجربة الجوال.",
                     "header": "إخفاء الشريط الجانبي دوما"
@@ -1762,11 +2587,19 @@
                     "header": "اللغة",
                     "link_promo": "ساعد في الترجمة"
                 },
+                "logout": "تسجيل الخروج",
                 "long_lived_access_tokens": {
                     "confirm_delete": "هل أنت متأكد أنك تريد حذف رمز الوصول لـ {name} ؟",
+                    "create": "إنشاء رمز مميز",
+                    "create_failed": "فشل إنشاء رمز الوصول المميز.",
+                    "created": "أنشئ في {date}",
+                    "delete_failed": "فشل حذف رمز الوصول المميز.",
                     "description": "قم بإنشاء رموز وصول طويلة الأمد للسماح لنصوصك بالتفاعل مع مثيل Home Assistant الخاص بك. سيكون كل رمز مميزًا صالحًا لمدة 10 سنوات من تاريخ إنشائه. رموز الوصول طويلة العمر التالية نشطة حاليًا.",
+                    "empty_state": "ليس لديك رموز وصول طويلة الأمد حتى الآن.",
                     "header": "رموز الوصول طويلة الأمد",
-                    "learn_auth_requests": "تعرف على كيفية عمل طلبات مصادقة."
+                    "learn_auth_requests": "تعرف على كيفية عمل طلبات مصادقة.",
+                    "prompt_copy_token": "نسخ رمز الوصول الخاص بك. لن يتم عرضه مرة أخرى.",
+                    "prompt_name": "إعط الرمز المميز اسماً"
                 },
                 "mfa_setup": {
                     "close": "إغلاق",
@@ -1781,8 +2614,16 @@
                     "enable": "تفعيل",
                     "header": "وحدات التحقق متعددة العوامل"
                 },
+                "number_format": {
+                    "dropdown_label": "تنسيق الأرقام",
+                    "header": "تنسيق الأرقام"
+                },
                 "push_notifications": {
-                    "description": "إرسال الإشعارات إلى هذا الجهاز",
+                    "add_device_prompt": {
+                        "input_label": "اسم الجهاز",
+                        "title": "ماذا يجب أن يسمى هذا الجهاز؟"
+                    },
+                    "description": "إرسال الإشعارات إلى هذا الجهاز.",
                     "error_load_platform": "كون notify.html5.",
                     "error_use_https": "يتطلب تمكين SSL للواجهة الأمامية.",
                     "header": "التنبيهات",
@@ -1792,6 +2633,7 @@
                 "refresh_tokens": {
                     "confirm_delete": "هل تريد بالتأكيد حذف رمز التحديث المميز لـ {name} ؟",
                     "created_at": "أنشئ في {date}",
+                    "current_token_tooltip": "غير قادر على حذف الرمز المميز للتحديث الحالي",
                     "delete_failed": "فشل حذف الرمز المميز للتحديث.",
                     "description": "يمثل كل رمز تحديث مميز جلسة تسجيل دخول. ستتم إزالة رموز التحديث تلقائيًا عند النقر فوق تسجيل الخروج. رموز التحديث التالية نشطة حاليًا لحسابك.",
                     "header": "تحديث الرموز المميزة",
@@ -1808,8 +2650,22 @@
                     "error_no_theme": "لا توجد تصاميم متاحة.",
                     "header": "التصميم",
                     "link_promo": "تعرف على التصاميم"
+                },
+                "time_format": {
+                    "dropdown_label": "تنسيق الوقت",
+                    "header": "تنسيق الوقت"
+                },
+                "vibrate": {
+                    "description": "تمكين أو تعطيل الاهتزاز على هذا الجهاز عند التحكم في الأجهزة.",
+                    "header": "اهتزاز"
                 }
+            },
+            "shopping_list": {
+                "start_conversation": "ابدأ المحادثة"
             }
+        },
+        "sidebar": {
+            "external_app_configuration": "تكوين التطبيق"
         }
     }
 }
