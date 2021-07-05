@@ -36,7 +36,6 @@ import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
 import {
   Action,
-  BlueprintScriptConfig,
   deleteScript,
   getScriptEditorInitData,
   ManualScriptConfig,
