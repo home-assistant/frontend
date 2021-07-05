@@ -1478,6 +1478,7 @@
                 },
                 "trigger": {
                   "label": "Trigger",
+                  "no_triggers": "No triggers available",
                   "id": "Trigger Id"
                 },
                 "zone": {

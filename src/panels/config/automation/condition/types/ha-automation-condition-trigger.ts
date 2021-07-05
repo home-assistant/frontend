@@ -15,7 +15,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 export class HaTriggerCondition extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public condition!: TriggerCondition;
+  @property({ attribute: false }) public condition!: TriggerCondition;
 
   @state() private _triggers?: Trigger | Trigger[];
 
@@ -44,7 +44,9 @@ export class HaTriggerCondition extends LitElement {
   protected render() {
     const { id } = this.condition;
     if (!this._triggers) {
-      return html`No triggers available`;
+      return this.hass.localize(
+        "ui.panel.config.automation.editor.conditions.type.trigger.no_triggers"
+      );
     }
     return html`<paper-dropdown-menu-light
       .label=${this.hass.localize(
