@@ -1,10 +1,7 @@
-import "@material/mwc-button/mwc-button";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
-import "@polymer/paper-input/paper-textarea";
+import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-blueprint-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
@@ -183,17 +180,8 @@ export class HaBlueprintScriptEditor extends LitElement {
         .blueprint-picker-container {
           padding: 16px;
         }
-        h3 {
-          margin: 16px;
-        }
-        span[slot="introduction"] a {
-          color: var(--primary-color);
-        }
         p {
           margin-bottom: 0;
-        }
-        ha-entity-toggle {
-          margin-right: 8px;
         }
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;
