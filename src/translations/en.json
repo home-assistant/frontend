@@ -1799,13 +1799,18 @@
             "learn_more": "Learn more about using blueprints",
             "headers": {
               "name": "Name",
-              "domain": "Domain",
+              "type": "Type",
               "file_name": "File name"
+            },
+            "types": {
+              "automation": "Automation",
+              "script": "Script"
             },
             "confirm_delete_header": "Delete this blueprint?",
             "confirm_delete_text": "Are you sure you want to delete this blueprint?",
             "add_blueprint": "Import blueprint",
-            "use_blueprint": "Create automation",
+            "create_automation": "Create automation",
+            "create_script": "Create script",
             "delete_blueprint": "Delete blueprint",
             "share_blueprint": "Share blueprint",
             "share_blueprint_no_url": "Unable to share blueprint: no source url",

@@ -21,7 +21,9 @@ export interface ScriptEntity extends HassEntityBase {
   };
 }
 
-export interface ScriptConfig {
+export type ScriptConfig = ManualScriptConfig | BlueprintScriptConfig;
+
+export interface ManualScriptConfig {
   alias: string;
   sequence: Action | Action[];
   icon?: string;
@@ -29,7 +31,7 @@ export interface ScriptConfig {
   max?: number;
 }
 
-export interface BlueprintScriptConfig extends ScriptConfig {
+export interface BlueprintScriptConfig extends ManualScriptConfig {
   use_blueprint: { path: string; input?: BlueprintInput };
 }
 
