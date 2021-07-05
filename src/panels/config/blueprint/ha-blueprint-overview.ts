@@ -132,7 +132,7 @@ class HaBlueprintOverview extends LitElement {
         filterable: true,
         hidden: narrow,
         direction: "asc",
-        width: "25%",
+        width: "10%",
       },
       path: {
         title: this.hass.localize(
