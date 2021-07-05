@@ -1,16 +1,8 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { array, assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
@@ -33,11 +25,12 @@ const cardConfigStruct = object({
 const includeDomains = ["alarm_control_panel"];
 
 @customElement("hui-alarm-panel-card-editor")
-export class HuiAlarmPanelCardEditor extends LitElement
+export class HuiAlarmPanelCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: AlarmPanelCardConfig;
+  @state() private _config?: AlarmPanelCardConfig;
 
   public setConfig(config: AlarmPanelCardConfig): void {
     assert(config, cardConfigStruct);
@@ -65,7 +58,13 @@ export class HuiAlarmPanelCardEditor extends LitElement
       return html``;
     }
 
-    const states = ["arm_home", "arm_away", "arm_night", "arm_vacation", "arm_custom_bypass"];
+    const states = [
+      "arm_home",
+      "arm_away",
+      "arm_night",
+      "arm_vacation",
+      "arm_custom_bypass",
+    ];
 
     return html`
       <div class="card-config">
@@ -92,10 +91,10 @@ export class HuiAlarmPanelCardEditor extends LitElement
           .configValue="${"name"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
-        <span>Used States</span> ${this._states.map((state, index) => {
-          return html`
+        <span>Used States</span> ${this._states.map(
+          (entityState, index) => html`
             <div class="states">
-              <paper-item>${state}</paper-item>
+              <paper-item>${entityState}</paper-item>
               <ha-icon
                 class="deleteState"
                 .value="${index}"
@@ -103,8 +102,8 @@ export class HuiAlarmPanelCardEditor extends LitElement
                 @click=${this._stateRemoved}
               ></ha-icon>
             </div>
-          `;
-        })}
+          `
+        )}
         <paper-dropdown-menu
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.alarm-panel.available_states"
@@ -112,9 +111,9 @@ export class HuiAlarmPanelCardEditor extends LitElement
           @value-changed="${this._stateAdded}"
         >
           <paper-listbox slot="dropdown-content">
-            ${states.map((state) => {
-              return html` <paper-item>${state}</paper-item> `;
-            })}
+            ${states.map(
+              (entityState) => html` <paper-item>${entityState}</paper-item> `
+            )}
           </paper-listbox>
         </paper-dropdown-menu>
         <hui-theme-select-editor
@@ -127,7 +126,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

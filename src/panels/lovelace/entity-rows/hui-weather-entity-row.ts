@@ -1,21 +1,20 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { ifDefined } from "lit-html/directives/if-defined";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
+import { formatNumber } from "../../../common/string/format_number";
 import "../../../components/entity/state-badge";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
@@ -40,7 +39,7 @@ import type { LovelaceRow } from "./types";
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntitiesCardEntityConfig;
+  @state() private _config?: EntitiesCardEntityConfig;
 
   public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config?.entity) {
@@ -111,10 +110,13 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
             ? computeStateDisplay(
                 this.hass.localize,
                 stateObj,
-                this.hass.language
+                this.hass.locale
               )
             : html`
-                ${stateObj.attributes.temperature}
+                ${formatNumber(
+                  stateObj.attributes.temperature,
+                  this.hass.locale
+                )}
                 ${getWeatherUnit(this.hass, "temperature")}
               `}
         </div>
@@ -129,7 +131,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       weatherSVGStyles,
       css`

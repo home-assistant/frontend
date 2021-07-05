@@ -1,13 +1,7 @@
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { property, state } from "lit/decorators";
 import punycode from "punycode";
+import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import {
   AuthProvider,
@@ -31,11 +25,11 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
   @property() public oauth2State?: string;
 
-  @internalProperty() private _authProvider?: AuthProvider;
+  @state() private _authProvider?: AuthProvider;
 
-  @internalProperty() private _authProviders?: AuthProvider[];
+  @state() private _authProviders?: AuthProvider[];
 
-  @internalProperty() private _discovery?: DiscoveryInformation;
+  @state() private _discovery?: DiscoveryInformation;
 
   constructor() {
     super();
@@ -116,6 +110,20 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     this._fetchAuthProviders();
     this._fetchDiscoveryInfo();
 
+    if (matchMedia("(prefers-color-scheme: dark)").matches) {
+      applyThemesOnElement(
+        document.documentElement,
+        {
+          default_theme: "default",
+          default_dark_theme: null,
+          themes: {},
+          darkMode: false,
+        },
+        "default",
+        { dark: true }
+      );
+    }
+
     if (!this.redirectUri) {
       return;
     }
@@ -174,7 +182,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     this._authProvider = ev.detail;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-pick-auth-provider {
         display: block;

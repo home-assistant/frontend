@@ -1,5 +1,6 @@
 import "@material/mwc-button";
-import { css, CSSResult, html, LitElement, property } from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { property } from "lit/decorators";
 import "../components/ha-circular-progress";
 import { removeInitSkeleton } from "../util/init-skeleton";
 
@@ -43,7 +44,7 @@ class HaInitPage extends LitElement {
     location.reload();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         height: 100%;

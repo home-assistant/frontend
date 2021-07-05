@@ -1,12 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../components/ha-card";
 import "../../components/ha-settings-row";
 import "../../components/ha-switch";
@@ -50,11 +43,12 @@ class AdvancedModeRow extends LitElement {
 
   private async _advancedToggled(ev) {
     getOptimisticFrontendUserDataCollection(this.hass.connection, "core").save({
+      ...this.coreUserData,
       showAdvanced: ev.currentTarget.checked,
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         color: var(--primary-color);

@@ -6,8 +6,7 @@ on:
       - published
 
 env:
-  WHEELS_TAG: 3.7-alpine3.11
-  PYTHON_VERSION: 3.7
+  PYTHON_VERSION: 3.8
   NODE_VERSION: 12.1
 
 jobs:
@@ -64,6 +63,9 @@ jobs:
     strategy:
       matrix:
         arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
+        tag:
+          - "3.8-alpine3.12"
+          - "3.9-alpine3.13"
     steps:
       - name: Download requirements.txt
         uses: actions/download-artifact@v2
@@ -73,7 +75,7 @@ jobs:
       - name: Build wheels
         uses: home-assistant/wheels@master
         with:
-          tag: ${{ env.WHEELS_TAG }}
+          tag: ${{ matrix.tag }}
           arch: ${{ matrix.arch }}
           wheels-host: ${{ secrets.WHEELS_HOST }}
           wheels-key: ${{ secrets.WHEELS_KEY }}

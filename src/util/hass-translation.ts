@@ -1,6 +1,10 @@
-import { fetchTranslationPreferences } from "../data/translation";
+import {
+  fetchTranslationPreferences,
+  FrontendLocaleData,
+} from "../data/translation";
 import { translationMetadata } from "../resources/translations-metadata";
 import { HomeAssistant } from "../types";
+import { getTranslation as commonGetTranslation } from "./common-translation";
 
 const STORAGE = window.localStorage || {};
 
@@ -18,7 +22,7 @@ const LOCALE_LOOKUP = {
 /**
  * Search for a matching translation from most specific to general
  */
-function findAvailableLanguage(language: string) {
+export function findAvailableLanguage(language: string) {
   // In most case, the language has the same format with our translation meta data
   if (language in translationMetadata.translations) {
     return language;
@@ -32,24 +36,44 @@ function findAvailableLanguage(language: string) {
     return LOCALE_LOOKUP[langLower];
   }
 
-  return Object.keys(translationMetadata.translations).find(
+  const translation = Object.keys(translationMetadata.translations).find(
     (lang) => lang.toLowerCase() === langLower
   );
+  if (translation) {
+    return translation;
+  }
+
+  if (language.includes("-")) {
+    return findAvailableLanguage(language.split("-")[0]);
+  }
+
+  return undefined;
 }
 
 /**
- * Get user selected language from backend
+ * Get user selected locale data from backend
  */
-export async function getUserLanguage(hass: HomeAssistant) {
+export async function getUserLocale(
+  hass: HomeAssistant
+): Promise<Partial<FrontendLocaleData>> {
   const result = await fetchTranslationPreferences(hass);
-  const language = result ? result.language : null;
+  const language = result?.language;
+  const number_format = result?.number_format;
+  const time_format = result?.time_format;
   if (language) {
     const availableLanguage = findAvailableLanguage(language);
     if (availableLanguage) {
-      return availableLanguage;
+      return {
+        language: availableLanguage,
+        number_format,
+        time_format,
+      };
     }
   }
-  return null;
+  return {
+    number_format,
+    time_format,
+  };
 }
 
 /**
@@ -82,66 +106,17 @@ export function getLocalLanguage() {
   if (language) {
     return language;
   }
-  if (navigator.language && navigator.language.includes("-")) {
-    language = findAvailableLanguage(navigator.language.split("-")[0]);
-    if (language) {
-      return language;
-    }
-  }
-
   // Final fallback
   return "en";
-}
-
-// Store loaded translations in memory so translations are available immediately
-// when DOM is created in Polymer. Even a cache lookup creates noticeable latency.
-const translations = {};
-
-async function fetchTranslation(fingerprint) {
-  const response = await fetch(`/static/translations/${fingerprint}`, {
-    credentials: "same-origin",
-  });
-  if (!response.ok) {
-    throw new Error(
-      `Fail to fetch translation ${fingerprint}: HTTP response status is ${response.status}`
-    );
-  }
-  return response.json();
 }
 
 export async function getTranslation(
   fragment: string | null,
   language: string
 ) {
-  const metadata = translationMetadata.translations[language];
-  if (!metadata) {
-    if (language !== "en") {
-      return getTranslation(fragment, "en");
-    }
-    throw new Error("Language en is not found in metadata");
-  }
-
-  // nl-abcd.jon or logbook/nl-abcd.json
-  const fingerprint = `${fragment ? fragment + "/" : ""}${language}-${
-    metadata.hash
-  }.json`;
-
-  // Fetch translation from the server
-  if (!translations[fingerprint]) {
-    translations[fingerprint] = fetchTranslation(fingerprint)
-      .then((data) => ({ language, data }))
-      .catch((error) => {
-        delete translations[fingerprint];
-        if (language !== "en") {
-          // Couldn't load selected translation. Try a fall back to en before failing.
-          return getTranslation(fragment, "en");
-        }
-        return Promise.reject(error);
-      });
-  }
-  return translations[fingerprint];
+  return commonGetTranslation(fragment, language);
 }
 
 // Load selected translation into memory immediately so it is ready when Polymer
 // initializes.
-getTranslation(null, getLocalLanguage());
+commonGetTranslation(null, getLocalLanguage());

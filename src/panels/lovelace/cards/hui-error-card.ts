@@ -1,13 +1,6 @@
-import { safeDump } from "js-yaml";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { dump } from "js-yaml";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { ErrorCardConfig } from "./types";
@@ -16,7 +9,7 @@ import { ErrorCardConfig } from "./types";
 export class HuiErrorCard extends LitElement implements LovelaceCard {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: ErrorCardConfig;
+  @state() private _config?: ErrorCardConfig;
 
   public getCardSize(): number {
     return 4;
@@ -31,15 +24,22 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
+    let dumped: string | undefined;
+
+    if (this._config.origConfig) {
+      try {
+        dumped = dump(this._config.origConfig);
+      } catch (err) {
+        dumped = `[Error dumping ${this._config.origConfig}]`;
+      }
+    }
+
     return html`
-      ${this._config.error}
-      ${this._config.origConfig
-        ? html`<pre>${safeDump(this._config.origConfig)}</pre>`
-        : ""}
+      ${this._config.error}${dumped ? html`<pre>${dumped}</pre>` : ""}
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

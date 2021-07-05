@@ -1,13 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import "../../../components/ha-date-input";
 import type { HaDateInput } from "../../../components/ha-date-input";
 import "../../../components/paper-time-input";
@@ -24,7 +16,7 @@ import type { EntityConfig, LovelaceRow } from "./types";
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   @query("paper-time-input") private _timeInputEl?: PaperTimeInput;
 
@@ -63,9 +55,9 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
               <ha-date-input
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 .value=${`${stateObj.attributes.year}-${stateObj.attributes.month}-${stateObj.attributes.day}`}
-                @change=${this._selectedValueChanged}
-                @click=${this._stopEventPropagation}
-              ></ha-date-input>
+                @value-changed=${this._selectedValueChanged}
+              >
+              </ha-date-input>
               ${stateObj.attributes.has_time ? "," : ""}
             `
           : ``}
@@ -103,9 +95,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
 
     const date = this._dateInputEl ? this._dateInputEl.value : undefined;
 
-    if (time !== stateObj.state) {
-      setInputDateTimeValue(this.hass!, stateObj.entity_id, time, date);
-    }
+    setInputDateTimeValue(this.hass!, stateObj.entity_id, time, date);
 
     ev.target.blur();
   }

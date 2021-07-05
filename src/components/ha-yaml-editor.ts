@@ -1,24 +1,8 @@
-import { safeDump, safeLoad } from "js-yaml";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { DEFAULT_SCHEMA, dump, load, Schema } from "js-yaml";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { afterNextRender } from "../common/util/render-status";
 import "./ha-code-editor";
-import type { HaCodeEditor } from "./ha-code-editor";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "editor-refreshed": undefined;
-  }
-}
 
 const isEmpty = (obj: Record<string, unknown>): boolean => {
   if (typeof obj !== "object") {
@@ -36,30 +20,27 @@ const isEmpty = (obj: Record<string, unknown>): boolean => {
 export class HaYamlEditor extends LitElement {
   @property() public value?: any;
 
+  @property({ attribute: false }) public yamlSchema: Schema = DEFAULT_SCHEMA;
+
   @property() public defaultValue?: any;
 
   @property() public isValid = true;
 
   @property() public label?: string;
 
-  @internalProperty() private _yaml = "";
-
-  @query("ha-code-editor", true) private _editor?: HaCodeEditor;
+  @state() private _yaml = "";
 
   public setValue(value): void {
     try {
-      this._yaml = value && !isEmpty(value) ? safeDump(value) : "";
+      this._yaml =
+        value && !isEmpty(value)
+          ? dump(value, { schema: this.yamlSchema })
+          : "";
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(err);
+      console.error(err, value);
       alert(`There was an error converting to YAML: ${err}`);
     }
-    afterNextRender(() => {
-      if (this._editor?.codemirror) {
-        this._editor.codemirror.refresh();
-      }
-      afterNextRender(() => fireEvent(this, "editor-refreshed"));
-    });
   }
 
   protected firstUpdated(): void {
@@ -73,7 +54,7 @@ export class HaYamlEditor extends LitElement {
       return html``;
     }
     return html`
-      ${this.label ? html` <p>${this.label}</p> ` : ""}
+      ${this.label ? html`<p>${this.label}</p>` : ""}
       <ha-code-editor
         .value=${this._yaml}
         mode="yaml"
@@ -85,13 +66,13 @@ export class HaYamlEditor extends LitElement {
 
   private _onChange(ev: CustomEvent): void {
     ev.stopPropagation();
-    const value = ev.detail.value;
+    this._yaml = ev.detail.value;
     let parsed;
     let isValid = true;
 
-    if (value) {
+    if (this._yaml) {
       try {
-        parsed = safeLoad(value);
+        parsed = load(this._yaml, { schema: this.yamlSchema });
       } catch (err) {
         // Invalid YAML
         isValid = false;
@@ -107,7 +88,7 @@ export class HaYamlEditor extends LitElement {
   }
 
   get yaml() {
-    return this._editor?.value;
+    return this._yaml;
   }
 }
 

@@ -1,12 +1,6 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import "../../../components/ha-icon";
 import { HomeAssistant } from "../../../types";
 import { LovelaceRow, WeblinkConfig } from "../entity-rows/types";
@@ -15,7 +9,7 @@ import { LovelaceRow, WeblinkConfig } from "../entity-rows/types";
 class HuiWeblinkRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: WeblinkConfig;
+  @state() private _config?: WeblinkConfig;
 
   public setConfig(config: WeblinkConfig): void {
     if (!config || !config.url) {
@@ -37,8 +31,9 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
     return html`
       <a
         href=${this._config.url}
-        target=${this._config.url.indexOf("://") !== -1 ? "_blank" : ""}
+        target=${ifDefined(this._computeTargetValue())}
         rel="noreferrer"
+        ?download=${this._config.download}
       >
         <ha-icon .icon="${this._config.icon}"></ha-icon>
         <div>${this._config.name}</div>
@@ -46,7 +41,7 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       a {
         display: flex;
@@ -65,6 +60,15 @@ class HuiWeblinkRow extends LitElement implements LovelaceRow {
         margin-left: 16px;
       }
     `;
+  }
+
+  protected _computeTargetValue(): string | undefined {
+    return this._config &&
+      (this._config.url.indexOf("://") !== -1 ||
+        this._config.new_tab === true ||
+        this._config.download === true)
+      ? "_blank"
+      : undefined;
   }
 }
 

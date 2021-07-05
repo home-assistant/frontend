@@ -1,14 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  eventOptions,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, eventOptions, property } from "lit/decorators";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
@@ -20,9 +11,11 @@ class HassSubpage extends LitElement {
 
   @property() public header?: string;
 
-  @property({ type: Boolean }) public showBackButton = true;
+  @property({ type: Boolean, attribute: "main-page" }) public mainPage = false;
 
-  @property({ type: Boolean }) public hassio = false;
+  @property({ type: Boolean, reflect: true }) public narrow = false;
+
+  @property({ type: Boolean }) public supervisor = false;
 
   // @ts-ignore
   @restoreScroll(".content") private _savedScrollPos?: number;
@@ -30,11 +23,20 @@ class HassSubpage extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="toolbar">
-        <ha-icon-button-arrow-prev
-          .hass=${this.hass}
-          @click=${this._backTapped}
-          class=${classMap({ hidden: !this.showBackButton })}
-        ></ha-icon-button-arrow-prev>
+        ${this.mainPage || history.state?.root
+          ? html`
+              <ha-menu-button
+                .hassio=${this.supervisor}
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
+            `
+          : html`
+              <ha-icon-button-arrow-prev
+                .hass=${this.hass}
+                @click=${this._backTapped}
+              ></ha-icon-button-arrow-prev>
+            `}
 
         <div class="main-title">${this.header}</div>
         <slot name="toolbar-icon"></slot>
@@ -52,7 +54,7 @@ class HassSubpage extends LitElement {
     history.back();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;
@@ -79,13 +81,10 @@ class HassSubpage extends LitElement {
         box-sizing: border-box;
       }
 
+      ha-menu-button,
       ha-icon-button-arrow-prev,
       ::slotted([slot="toolbar-icon"]) {
         pointer-events: auto;
-      }
-
-      ha-icon-button-arrow-prev.hidden {
-        visibility: hidden;
       }
 
       .main-title {

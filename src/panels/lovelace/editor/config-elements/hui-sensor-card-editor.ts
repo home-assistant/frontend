@@ -2,15 +2,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
@@ -37,14 +30,15 @@ const cardConfigStruct = object({
   hours_to_show: optional(number()),
 });
 
-const includeDomains = ["sensor"];
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-sensor-card-editor")
-export class HuiSensorCardEditor extends LitElement
+export class HuiSensorCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: SensorCardConfig;
+  @state() private _config?: SensorCardConfig;
 
   public setConfig(config: SensorCardConfig): void {
     assert(config, cardConfigStruct);
@@ -141,9 +135,7 @@ export class HuiSensorCardEditor extends LitElement
               slot="dropdown-content"
               .selected=${graphs.indexOf(this._graph)}
             >
-              ${graphs.map((graph) => {
-                return html`<paper-item>${graph}</paper-item>`;
-              })}
+              ${graphs.map((graph) => html`<paper-item>${graph}</paper-item>`)}
             </paper-listbox>
           </paper-dropdown-menu>
         </div>
@@ -185,6 +177,7 @@ export class HuiSensorCardEditor extends LitElement
             )})"
             type="number"
             .value=${this._hours_to_show}
+            min="1"
             .configValue=${"hours_to_show"}
             @value-changed=${this._valueChanged}
           ></paper-input>
@@ -239,7 +232,7 @@ export class HuiSensorCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

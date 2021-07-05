@@ -2,16 +2,14 @@ import "@thomasloven/round-slider";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   svg,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -54,9 +52,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: HumidifierCardConfig;
+  @state() private _config?: HumidifierCardConfig;
 
-  @internalProperty() private _setHum?: number;
+  @state() private _setHum?: number;
 
   public getCardSize(): number {
     return 6;
@@ -171,15 +169,11 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
             <div id="slider">
               ${slider}
               <div id="slider-center">
-                <div id="humidity">
-                  ${setValues}
-                </div>
+                <div id="humidity">${setValues}</div>
               </div>
             </div>
           </div>
-          <div id="info">
-            ${name}
-          </div>
+          <div id="info">${name}</div>
         </div>
       </ha-card>
     `;
@@ -220,8 +214,24 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     }
 
     if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
-      this._setHum = this._getSetHum(stateObj);
       this._rescale_svg();
+    }
+  }
+
+  public willUpdate(changedProps: PropertyValues) {
+    if (!this.hass || !this._config || !changedProps.has("hass")) {
+      return;
+    }
+
+    const stateObj = this.hass.states[this._config.entity];
+    if (!stateObj) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
+      this._setHum = this._getSetHum(stateObj);
     }
   }
 
@@ -272,7 +282,7 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: block;

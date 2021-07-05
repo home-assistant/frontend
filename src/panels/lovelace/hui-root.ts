@@ -24,22 +24,24 @@ import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property, state, query } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { fireEvent } from "../../common/dom/fire_event";
 import scrollToTarget from "../../common/dom/scroll-to-target";
 import { shouldHandleRequestSelectedEvent } from "../../common/mwc/handle-request-selected-event";
 import { navigate } from "../../common/navigate";
+import {
+  addSearchParam,
+  extractSearchParam,
+} from "../../common/url/search-params";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { debounce } from "../../common/util/debounce";
 import { afterNextRender } from "../../common/util/render-status";
@@ -81,7 +83,7 @@ class HUIRoot extends LitElement {
 
   @property() public route?: { path: string; prefix: string };
 
-  @internalProperty() private _curView?: number | "hass-unused-entities";
+  @state() private _curView?: number | "hass-unused-entities";
 
   @query("ha-app-layout", true) private _appLayout!: haAppLayout;
 
@@ -530,6 +532,13 @@ class HUIRoot extends LitElement {
           view.visible.some((show) => show.user === this.hass!.user?.id))
     );
 
+  protected firstUpdated() {
+    // Check for requested edit mode
+    if (extractSearchParam("edit") === "1") {
+      this.lovelace!.setEditMode(true);
+    }
+  }
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
@@ -554,11 +563,7 @@ class HUIRoot extends LitElement {
 
       if (!viewPath && views.length) {
         newSelectView = views.findIndex(this._isVisible);
-        navigate(
-          this,
-          `${this.route!.prefix}/${views[newSelectView].path || newSelectView}`,
-          true
-        );
+        this._navigateToView(views[newSelectView].path || newSelectView, true);
       } else if (viewPath === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
       } else if (viewPath) {
@@ -596,18 +601,15 @@ class HUIRoot extends LitElement {
           viewPath === "hass-unused-entities"
         ) {
           newSelectView = views.findIndex(this._isVisible);
-          navigate(
-            this,
-            `${this.route!.prefix}/${
-              views[newSelectView].path || newSelectView
-            }`,
+          this._navigateToView(
+            views[newSelectView].path || newSelectView,
             true
           );
         }
       }
 
       if (!force && huiView) {
-        huiView.lovelace = this.lovelace;
+        huiView.lovelace = this.lovelace!;
       }
     }
 
@@ -678,21 +680,21 @@ class HUIRoot extends LitElement {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
-    navigate(this, "/config/lovelace/dashboards");
+    navigate("/config/lovelace/dashboards");
   }
 
   private _handleManageResources(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
-    navigate(this, "/config/lovelace/resources");
+    navigate("/config/lovelace/resources");
   }
 
   private _handleUnusedEntities(ev: CustomEvent<RequestSelectedDetail>): void {
     if (!shouldHandleRequestSelectedEvent(ev)) {
       return;
     }
-    navigate(this, `${this.route?.prefix}/hass-unused-entities`);
+    navigate(`${this.route?.prefix}/hass-unused-entities`);
   }
 
   private _showVoiceCommandDialog(): void {
@@ -709,10 +711,6 @@ class HUIRoot extends LitElement {
       });
       return;
     }
-    this._enableEditMode();
-  }
-
-  private _enableEditMode(): void {
     this.lovelace!.setEditMode(true);
   }
 
@@ -722,6 +720,16 @@ class HUIRoot extends LitElement {
 
   private _editLovelace() {
     showEditLovelaceDialog(this, this.lovelace!);
+  }
+
+  private _navigateToView(path: string | number, replace?: boolean) {
+    if (!this.lovelace!.editMode) {
+      navigate(`${this.route!.prefix}/${path}`, { replace });
+      return;
+    }
+    navigate(`${this.route!.prefix}/${path}?${addSearchParam({ edit: "1" })}`, {
+      replace,
+    });
   }
 
   private _editView() {
@@ -758,7 +766,7 @@ class HUIRoot extends LitElement {
       lovelace: this.lovelace!,
       saveCallback: (viewIndex: number, viewConfig: LovelaceViewConfig) => {
         const path = viewConfig.path || viewIndex;
-        navigate(this, `${this.route?.prefix}/${path}`);
+        this._navigateToView(path);
       },
     });
   }
@@ -768,7 +776,7 @@ class HUIRoot extends LitElement {
 
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
-      navigate(this, `${this.route?.prefix}/${path}`);
+      this._navigateToView(path);
     }
     scrollToTarget(this, this._layout.header.scrollTarget);
   }
@@ -809,7 +817,7 @@ class HUIRoot extends LitElement {
     const viewConfig = this.config.views[viewIndex];
 
     if (!viewConfig) {
-      this._enableEditMode();
+      this.lovelace!.setEditMode(true);
       return;
     }
 
@@ -841,7 +849,7 @@ class HUIRoot extends LitElement {
     fireEvent(this, "iron-resize");
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

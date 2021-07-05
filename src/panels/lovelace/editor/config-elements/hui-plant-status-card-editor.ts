@@ -1,13 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
@@ -29,11 +22,12 @@ const cardConfigStruct = object({
 const includeDomains = ["plant"];
 
 @customElement("hui-plant-status-card-editor")
-export class HuiPlantStatusCardEditor extends LitElement
+export class HuiPlantStatusCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PlantStatusCardConfig;
+  @state() private _config?: PlantStatusCardConfig;
 
   public setConfig(config: PlantStatusCardConfig): void {
     assert(config, cardConfigStruct);
@@ -114,7 +108,7 @@ export class HuiPlantStatusCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

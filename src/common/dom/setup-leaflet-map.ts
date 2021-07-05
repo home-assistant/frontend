@@ -6,8 +6,7 @@ export type LeafletDrawModuleType = typeof import("leaflet-draw");
 
 export const setupLeafletMap = async (
   mapElement: HTMLElement,
-  darkMode?: boolean,
-  draw = false
+  darkMode?: boolean
 ): Promise<[Map, LeafletModuleType, TileLayer]> => {
   if (!mapElement.parentNode) {
     throw new Error("Cannot setup Leaflet map on disconnected element");
@@ -16,10 +15,6 @@ export const setupLeafletMap = async (
   const Leaflet = ((await import("leaflet")) as any)
     .default as LeafletModuleType;
   Leaflet.Icon.Default.imagePath = "/static/images/leaflet/images/";
-
-  if (draw) {
-    await import("leaflet-draw");
-  }
 
   const map = Leaflet.map(mapElement);
   const style = document.createElement("link");
@@ -48,8 +43,8 @@ export const replaceTileLayer = (
 const createTileLayer = (
   leaflet: LeafletModuleType,
   darkMode: boolean
-): TileLayer => {
-  return leaflet.tileLayer(
+): TileLayer =>
+  leaflet.tileLayer(
     `https://{s}.basemaps.cartocdn.com/${
       darkMode ? "dark_all" : "light_all"
     }/{z}/{x}/{y}${leaflet.Browser.retina ? "@2x.png" : ".png"}`,
@@ -61,4 +56,3 @@ const createTileLayer = (
       maxZoom: 20,
     }
   );
-};

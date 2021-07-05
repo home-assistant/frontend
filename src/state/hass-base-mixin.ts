@@ -1,5 +1,6 @@
 import { Auth, Connection } from "home-assistant-js-websocket";
-import { LitElement, property } from "lit-element";
+import { LitElement } from "lit";
+import { property } from "lit/decorators";
 import { HomeAssistant } from "../types";
 
 export class HassBaseEl extends LitElement {

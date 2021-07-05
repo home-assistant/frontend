@@ -1,7 +1,6 @@
-import * as assert from "assert";
-
+import { assert } from "chai";
+import { DEFAULT_VIEW_ENTITY_ID } from "../../../src/common/const";
 import { extractViews } from "../../../src/common/entity/extract_views";
-
 import { createEntities, createView } from "./test_util";
 
 describe("extractViews", () => {
@@ -14,7 +13,7 @@ describe("extractViews", () => {
     entities[view2.entity_id] = view2;
 
     const view3 = createView({
-      entity_id: "group.default_view",
+      entity_id: DEFAULT_VIEW_ENTITY_ID,
       attributes: { order: 8 },
     });
     entities[view3.entity_id] = view3;

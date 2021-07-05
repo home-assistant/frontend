@@ -1,16 +1,16 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import checkValidDate from "../../../common/datetime/check_valid_date";
+import { formatNumber } from "../../../common/string/format_number";
 import { HomeAssistant } from "../../../types";
+import { formatAttributeValue } from "../../../util/hass-attributes-util";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
@@ -21,7 +21,7 @@ import { AttributeRowConfig, LovelaceRow } from "../entity-rows/types";
 class HuiAttributeRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: AttributeRowConfig;
+  @state() private _config?: AttributeRowConfig;
 
   public setConfig(config: AttributeRowConfig): void {
     if (!config) {
@@ -71,14 +71,18 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
                 .ts=${date}
                 .format=${this._config.format}
               ></hui-timestamp-display>`
-            : attribute ?? "-"}
+            : typeof attribute === "number"
+            ? formatNumber(attribute, this.hass.locale)
+            : attribute !== undefined
+            ? formatAttributeValue(this.hass, attribute)
+            : "-"}
           ${this._config.suffix}
         </div>
       </hui-generic-entity-row>
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       div {
         text-align: right;

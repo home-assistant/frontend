@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  PropertyValues,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, query } from "lit/decorators";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import "../components/demo-cards";
 import { createPlantEntities } from "../data/plants";
@@ -52,4 +46,8 @@ export class DemoPlantEntity extends LitElement {
   }
 }
 
-customElements.define("demo-hui-plant-card", DemoPlantEntity);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-plant-card": DemoPlantEntity;
+  }
+}

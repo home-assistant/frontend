@@ -62,7 +62,11 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
           color: var(--primary-color);
         }
       </style>
-      <hass-subpage hass="[[hass]]" header="Home Assistant Cloud">
+      <hass-subpage
+        hass="[[hass]]"
+        narrow="[[narrow]]"
+        header="Home Assistant Cloud"
+      >
         <div class="content">
           <ha-config-section is-wide="[[isWide]]">
             <span slot="header">Home Assistant Cloud</span>
@@ -88,7 +92,9 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 <paper-item-body
                   >[[localize('ui.panel.config.cloud.account.connection_status')]]</paper-item-body
                 >
-                <div class="status">[[cloudStatus.cloud]]</div>
+                <div class="status">
+                  [[_computeConnectionStatus(cloudStatus.cloud)]]
+                </div>
               </div>
 
               <div class="card-actions">
@@ -167,6 +173,7 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
     return {
       hass: Object,
       isWide: Boolean,
+      narrow: Boolean,
       cloudStatus: Object,
       _subscription: {
         type: Object,
@@ -184,10 +191,12 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this._fetchSubscriptionInfo();
   }
 
-  _computeRemoteConnected(connected) {
-    return connected
+  _computeConnectionStatus(status) {
+    return status === "connected"
       ? this.hass.localize("ui.panel.config.cloud.account.connected")
-      : this.hass.localize("ui.panel.config.cloud.account.not_connected");
+      : status === "disconnected"
+      ? this.hass.localize("ui.panel.config.cloud.account.not_connected")
+      : this.hass.localize("ui.panel.config.cloud.account.connecting");
   }
 
   async _fetchSubscriptionInfo() {
@@ -221,7 +230,7 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
         "{periodEnd}",
         formatDateTime(
           new Date(subInfo.plan_renewal_date * 1000),
-          this.hass.language
+          this.hass.locale
         )
       );
     }

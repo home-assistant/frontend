@@ -1,12 +1,6 @@
 import { mdiArrowUpBoldCircle, mdiPuzzle } from "@mdi/js";
-import {
-  css,
-  CSSResultArray,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { navigate } from "../../../src/common/navigate";
@@ -15,6 +9,7 @@ import {
   HassioAddonInfo,
   HassioAddonRepository,
 } from "../../../src/data/hassio/addon";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { HomeAssistant } from "../../../src/types";
 import "../components/hassio-card-content";
 import { filterAndSort } from "../components/hassio-filter-addons";
@@ -22,6 +17,8 @@ import { hassioStyle } from "../resources/hassio-style";
 
 class HassioAddonRepositoryEl extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) public repo!: HassioAddonRepository;
 
@@ -44,9 +41,7 @@ class HassioAddonRepositoryEl extends LitElement {
     const repo = this.repo;
     let _addons = this.addons;
     if (!this.hass.userData?.showAdvanced) {
-      _addons = _addons.filter((addon) => {
-        return !addon.advanced;
-      });
+      _addons = _addons.filter((addon) => !addon.advanced);
     }
     const addons = this._getAddons(_addons, this.filter);
 
@@ -54,16 +49,18 @@ class HassioAddonRepositoryEl extends LitElement {
       return html`
         <div class="content">
           <p class="description">
-            No results found in "${repo.name}."
+            ${this.supervisor.localize(
+              "store.no_results_found",
+              "repository",
+              repo.name
+            )}
           </p>
         </div>
       `;
     }
     return html`
       <div class="content">
-        <h1>
-          ${repo.name}
-        </h1>
+        <h1>${repo.name}</h1>
         <div class="card-group">
           ${addons.map(
             (addon) => html`
@@ -83,11 +80,13 @@ class HassioAddonRepositoryEl extends LitElement {
                       : mdiPuzzle}
                     .iconTitle=${addon.installed
                       ? addon.update_available
-                        ? "New version available"
-                        : "Add-on is installed"
+                        ? this.supervisor.localize(
+                            "common.new_version_available"
+                          )
+                        : this.supervisor.localize("addon.installed")
                       : addon.available
-                      ? "Add-on is not installed"
-                      : "Add-on is not available on your system"}
+                      ? this.supervisor.localize("addon.not_installed")
+                      : this.supervisor.localize("addon.not_available")}
                     .iconClass=${addon.installed
                       ? addon.update_available
                         ? "update"
@@ -121,10 +120,10 @@ class HassioAddonRepositoryEl extends LitElement {
   }
 
   private _addonTapped(ev) {
-    navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
+    navigate(`/hassio/addon/${ev.currentTarget.addon.slug}`);
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       hassioStyle,
       css`

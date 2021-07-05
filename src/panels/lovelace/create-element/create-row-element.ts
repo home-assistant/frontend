@@ -37,6 +37,7 @@ const LAZY_LOAD_TYPES = {
   "input-text-entity": () => import("../entity-rows/hui-input-text-entity-row"),
   "lock-entity": () => import("../entity-rows/hui-lock-entity-row"),
   "number-entity": () => import("../entity-rows/hui-number-entity-row"),
+  "select-entity": () => import("../entity-rows/hui-select-entity-row"),
   "timer-entity": () => import("../entity-rows/hui-timer-entity-row"),
   conditional: () => import("../special-rows/hui-conditional-row"),
   "weather-entity": () => import("../entity-rows/hui-weather-entity-row"),
@@ -68,6 +69,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   remote: "toggle",
   scene: "scene",
   script: "script",
+  select: "select",
   sensor: "sensor",
   timer: "timer",
   switch: "toggle",
@@ -89,11 +91,5 @@ export const createRowElement = (config: LovelaceRowConfig) =>
     undefined
   );
 
-export const getRowElementClass = (type: string) => {
-  return getLovelaceElementClass(
-    type,
-    "row",
-    ALWAYS_LOADED_TYPES,
-    LAZY_LOAD_TYPES
-  );
-};
+export const getRowElementClass = (type: string) =>
+  getLovelaceElementClass(type, "row", ALWAYS_LOADED_TYPES, LAZY_LOAD_TYPES);

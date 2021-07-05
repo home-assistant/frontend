@@ -1,16 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-listbox/paper-listbox";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  internalProperty,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import "../../../../../components/buttons/ha-call-service-button";
@@ -34,6 +25,7 @@ import { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page
 import { compare } from "../../../../../common/string/compare";
 import { getIeeeTail } from "./functions";
 import { slugify } from "../../../../../common/string/slugify";
+import { customElement, property, state } from "lit/decorators";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
@@ -43,7 +35,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
 
   @property({ type: Boolean }) public narrow?: boolean;
 
-  @internalProperty() private _entities: EntityRegistryEntry[] = [];
+  @state() private _entities: EntityRegistryEntry[] = [];
 
   private _deviceEntities = memoizeOne(
     (
@@ -52,9 +44,10 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     ): EntityRegistryStateEntry[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
-        .map((entity) => {
-          return { ...entity, stateName: this._computeEntityName(entity) };
-        })
+        .map((entity) => ({
+          ...entity,
+          stateName: this._computeEntityName(entity),
+        }))
         .sort((ent1, ent2) =>
           compare(
             ent1.stateName || `zzz${ent1.entity_id}`,
@@ -159,7 +152,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
       }
 
       if (!newName && !newEntityId) {
-        return new Promise((resolve) => resolve());
+        return undefined;
       }
 
       return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
@@ -177,7 +170,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     });
   }
 
-  private _computeEntityName(entity: EntityRegistryEntry): string {
+  private _computeEntityName(entity: EntityRegistryEntry): string | null {
     if (this.hass.states[entity.entity_id]) {
       return computeStateName(this.hass.states[entity.entity_id]);
     }
@@ -205,7 +198,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

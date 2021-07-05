@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import { assert } from "chai";
 
 import { splitByGroups } from "../../../src/common/entity/split_by_groups";
 

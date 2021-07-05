@@ -1,27 +1,17 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
 import "../../../components/ha-switch";
-import "../../../components/map/ha-location-editor";
-import {
-  defaultRadiusColor,
-  getZoneEditorInitData,
-  passiveRadiusColor,
-  ZoneMutableParams,
-} from "../../../data/zone";
+import "../../../components/map/ha-locations-editor";
+import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
+import { getZoneEditorInitData, ZoneMutableParams } from "../../../data/zone";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
@@ -29,23 +19,23 @@ import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 class DialogZoneDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _icon!: string;
+  @state() private _icon!: string;
 
-  @internalProperty() private _latitude!: number;
+  @state() private _latitude!: number;
 
-  @internalProperty() private _longitude!: number;
+  @state() private _longitude!: number;
 
-  @internalProperty() private _passive!: boolean;
+  @state() private _passive!: boolean;
 
-  @internalProperty() private _radius!: number;
+  @state() private _radius!: number;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: ZoneDetailDialogParams;
+  @state() private _params?: ZoneDetailDialogParams;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
   public showDialog(params: ZoneDetailDialogParams): void {
     this._params = params;
@@ -138,17 +128,19 @@ class DialogZoneDetail extends LitElement {
               )}"
               .invalid=${iconValid}
             ></paper-input>
-            <ha-location-editor
+            <ha-locations-editor
               class="flex"
               .hass=${this.hass}
-              .location=${this._locationValue}
-              .radius=${this._radius}
-              .radiusColor=${this._passive
-                ? passiveRadiusColor
-                : defaultRadiusColor}
-              .icon=${this._icon}
-              @change=${this._locationChanged}
-            ></ha-location-editor>
+              .locations=${this._location(
+                this._latitude,
+                this._longitude,
+                this._radius,
+                this._passive,
+                this._icon
+              )}
+              @location-updated=${this._locationChanged}
+              @radius-updated=${this._radiusChanged}
+            ></ha-locations-editor>
             <div class="location">
               <paper-input
                 .value=${this._latitude}
@@ -228,13 +220,40 @@ class DialogZoneDetail extends LitElement {
     `;
   }
 
-  private get _locationValue() {
-    return [Number(this._latitude), Number(this._longitude)];
+  private _location = memoizeOne(
+    (
+      lat: number,
+      lng: number,
+      radius: number,
+      passive: boolean,
+      icon: string
+    ): MarkerLocation[] => {
+      const computedStyles = getComputedStyle(this);
+      const zoneRadiusColor = computedStyles.getPropertyValue("--accent-color");
+      const passiveRadiusColor = computedStyles.getPropertyValue(
+        "--secondary-text-color"
+      );
+      return [
+        {
+          id: "location",
+          latitude: Number(lat),
+          longitude: Number(lng),
+          radius,
+          radius_color: passive ? passiveRadiusColor : zoneRadiusColor,
+          icon,
+          location_editable: true,
+          radius_editable: true,
+        },
+      ];
+    }
+  );
+
+  private _locationChanged(ev: CustomEvent) {
+    [this._latitude, this._longitude] = ev.detail.location;
   }
 
-  private _locationChanged(ev) {
-    [this._latitude, this._longitude] = ev.currentTarget.location;
-    this._radius = ev.currentTarget.radius;
+  private _radiusChanged(ev: CustomEvent) {
+    this._radius = ev.detail.radius;
   }
 
   private _passiveChanged(ev) {
@@ -283,7 +302,7 @@ class DialogZoneDetail extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
@@ -300,7 +319,7 @@ class DialogZoneDetail extends LitElement {
         .location > *:last-child {
           margin-left: 4px;
         }
-        ha-location-editor {
+        ha-locations-editor {
           margin-top: 16px;
         }
         a {

@@ -18,6 +18,5 @@ export const getValueInPercentage = (
   return (100 * newVal) / newMax;
 };
 
-export const roundWithOneDecimal = (value: number): number => {
-  return Math.round(value * 10) / 10;
-};
+export const roundWithOneDecimal = (value: number): number =>
+  Math.round(value * 10) / 10;

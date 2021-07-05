@@ -1,12 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import { Action } from "../../../../data/script";
@@ -18,6 +12,8 @@ import { HaDeviceAction } from "./types/ha-automation-action-device_id";
 export default class HaAutomationAction extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
+  @property({ type: Boolean }) public narrow = false;
+
   @property() public actions!: Action[];
 
   protected render() {
@@ -28,6 +24,7 @@ export default class HaAutomationAction extends LitElement {
             .index=${idx}
             .totalActions=${this.actions.length}
             .action=${action}
+            .narrow=${this.narrow}
             @duplicate=${this._duplicateAction}
             @move-action=${this._move}
             @value-changed=${this._actionChanged}
@@ -87,7 +84,7 @@ export default class HaAutomationAction extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-automation-action-row,
       ha-card {

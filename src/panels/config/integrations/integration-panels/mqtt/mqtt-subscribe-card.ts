@@ -1,15 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { formatTime } from "../../../../../common/datetime/format_time";
 import "../../../../../components/ha-card";
 import { MQTTMessage, subscribeMQTTTopic } from "../../../../../data/mqtt";
@@ -19,11 +11,11 @@ import { HomeAssistant } from "../../../../../types";
 class MqttSubscribeCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _topic = "";
+  @state() private _topic = "";
 
-  @internalProperty() private _subscribed?: () => void;
+  @state() private _subscribed?: () => void;
 
-  @internalProperty() private _messages: Array<{
+  @state() private _messages: Array<{
     id: number;
     message: MQTTMessage;
     payload: string;
@@ -77,7 +69,7 @@ class MqttSubscribeCard extends LitElement {
                   "topic",
                   msg.message.topic,
                   "time",
-                  formatTime(msg.time, this.hass!.language)
+                  formatTime(msg.time, this.hass!.locale)
                 )}
                 <pre>${msg.payload}</pre>
                 <div class="bottom">
@@ -129,7 +121,7 @@ class MqttSubscribeCard extends LitElement {
     ];
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       form {
         display: block;

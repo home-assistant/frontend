@@ -2,15 +2,8 @@ import "@material/mwc-button";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-area-picker";
 import { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
@@ -43,6 +36,13 @@ class StepFlowCreateEntry extends LitElement {
       <h2>Success!</h2>
       <div class="content">
         ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
+        ${this.step.result?.state === "not_loaded"
+          ? html`<span class="error"
+              >${localize(
+                "ui.panel.config.integrations.config_flow.not_loaded"
+              )}</span
+            >`
+          : ""}
         ${this.devices.length === 0
           ? ""
           : html`
@@ -102,7 +102,7 @@ class StepFlowCreateEntry extends LitElement {
     }
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configFlowContentStyles,
       css`
@@ -135,6 +135,9 @@ class StepFlowCreateEntry extends LitElement {
           .device {
             width: 100%;
           }
+        }
+        .error {
+          color: var(--error-color);
         }
       `,
     ];

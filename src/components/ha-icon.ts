@@ -1,15 +1,13 @@
 import "@polymer/iron-icon/iron-icon";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { debounce } from "../common/util/debounce";
 import { CustomIcon, customIconsets } from "../data/custom_iconsets";
@@ -45,13 +43,14 @@ const cachedIcons: Record<string, string> = {};
 export class HaIcon extends LitElement {
   @property() public icon?: string;
 
-  @internalProperty() private _path?: string;
+  @state() private _path?: string;
 
-  @internalProperty() private _viewBox?;
+  @state() private _viewBox?;
 
-  @internalProperty() private _legacy = false;
+  @state() private _legacy = false;
 
-  protected updated(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues) {
+    super.willUpdate(changedProps);
     if (changedProps.has("icon")) {
       this._path = undefined;
       this._viewBox = undefined;
@@ -126,6 +125,7 @@ export class HaIcon extends LitElement {
       databaseIcon = await getIcon(iconName);
     } catch (_err) {
       // Firefox in private mode doesn't support IDB
+      // iOS Safari sometimes doesn't open the DB
       databaseIcon = undefined;
     }
 
@@ -161,7 +161,7 @@ export class HaIcon extends LitElement {
     cachedIcons[iconName] = iconPack[iconName];
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         fill: currentcolor;

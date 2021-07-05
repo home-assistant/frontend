@@ -1,16 +1,9 @@
 import "@material/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../components/ha-relative-time";
-import { triggerAutomation } from "../../../data/automation";
+import { triggerAutomationActions } from "../../../data/automation";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
 
@@ -26,6 +19,7 @@ class MoreInfoAutomation extends LitElement {
     }
 
     return html`
+      <hr />
       <div class="flex">
         <div>${this.hass.localize("ui.card.automation.last_triggered")}:</div>
         <ha-relative-time
@@ -36,7 +30,7 @@ class MoreInfoAutomation extends LitElement {
 
       <div class="actions">
         <mwc-button
-          @click=${this.handleAction}
+          @click=${this._runActions}
           .disabled=${UNAVAILABLE_STATES.includes(this.stateObj!.state)}
         >
           ${this.hass.localize("ui.card.automation.trigger")}
@@ -45,11 +39,11 @@ class MoreInfoAutomation extends LitElement {
     `;
   }
 
-  private handleAction() {
-    triggerAutomation(this.hass, this.stateObj!.entity_id);
+  private _runActions() {
+    triggerAutomationActions(this.hass, this.stateObj!.entity_id);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .flex {
         display: flex;
@@ -60,6 +54,11 @@ class MoreInfoAutomation extends LitElement {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
+      }
+      hr {
+        border-color: var(--divider-color);
+        border-bottom: none;
+        margin: 16px 0;
       }
     `;
   }

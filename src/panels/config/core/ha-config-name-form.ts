@@ -3,14 +3,8 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-card";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 import type { PolymerChangedEvent } from "../../../polymer-types";
@@ -20,9 +14,9 @@ import type { HomeAssistant } from "../../../types";
 class ConfigNameForm extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _working = false;
+  @state() private _working = false;
 
-  @internalProperty() private _name!: ConfigUpdateValues["location_name"];
+  @state() private _name!: ConfigUpdateValues["location_name"];
 
   protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
@@ -86,6 +80,14 @@ class ConfigNameForm extends LitElement {
     } finally {
       this._working = false;
     }
+  }
+
+  static get styles() {
+    return css`
+      .card-actions {
+        text-align: right;
+      }
+    `;
   }
 }
 

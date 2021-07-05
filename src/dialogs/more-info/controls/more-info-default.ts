@@ -1,11 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../components/ha-attributes";
 import { HomeAssistant } from "../../../types";
 
@@ -20,7 +15,10 @@ class MoreInfoDefault extends LitElement {
       return html``;
     }
 
-    return html` <ha-attributes .stateObj=${this.stateObj}></ha-attributes> `;
+    return html`<ha-attributes
+      .hass=${this.hass}
+      .stateObj=${this.stateObj}
+    ></ha-attributes>`;
   }
 }
 

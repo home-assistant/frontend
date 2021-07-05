@@ -1,16 +1,8 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiHelpCircle } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-circular-progress";
@@ -19,23 +11,25 @@ import "../../../components/ha-formfield";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-switch";
 import "../../../components/ha-yaml-editor";
+import type { LovelaceConfig } from "../../../data/lovelace";
 import type { HassDialog } from "../../../dialogs/make-dialog-manager";
 import { haStyleDialog } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { expandLovelaceConfigStrategies } from "../strategies/get-strategy";
 import type { SaveDialogParams } from "./show-save-config-dialog";
 
-const EMPTY_CONFIG = { views: [] };
+const EMPTY_CONFIG: LovelaceConfig = { views: [{ title: "Home" }] };
 
 @customElement("hui-dialog-save-config")
 export class HuiSaveConfig extends LitElement implements HassDialog {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _params?: SaveDialogParams;
+  @state() private _params?: SaveDialogParams;
 
-  @internalProperty() private _emptyConfig = false;
+  @state() private _emptyConfig = false;
 
-  @internalProperty() private _saving: boolean;
+  @state() private _saving: boolean;
 
   public constructor() {
     super();
@@ -125,14 +119,17 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
         </div>
         ${this._params.mode === "storage"
           ? html`
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}
-                >${this.hass!.localize(
-                  "ui.panel.lovelace.editor.save_config.cancel"
-                )}
-              </mwc-button>
+              <mwc-button
+                slot="primaryAction"
+                .label=${this.hass!.localize("ui.common.cancel")}
+                @click=${this.closeDialog}
+              ></mwc-button>
               <mwc-button
                 slot="primaryAction"
                 ?disabled=${this._saving}
+                aria-label=${this.hass!.localize(
+                  "ui.panel.lovelace.editor.save_config.save"
+                )}
                 @click=${this._saveConfig}
               >
                 ${this._saving
@@ -148,11 +145,13 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
               </mwc-button>
             `
           : html`
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}
-                >${this.hass!.localize(
+              <mwc-button
+                slot="primaryAction"
+                .label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.save_config.close"
                 )}
-              </mwc-button>
+                @click=${this.closeDialog}
+              ></mwc-button>
             `}
       </ha-dialog>
     `;
@@ -177,7 +176,13 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
     try {
       const lovelace = this._params!.lovelace;
       await lovelace.saveConfig(
-        this._emptyConfig ? EMPTY_CONFIG : lovelace.config
+        this._emptyConfig
+          ? EMPTY_CONFIG
+          : await expandLovelaceConfigStrategies({
+              config: lovelace.config,
+              hass: this.hass!,
+              narrow: this._params!.narrow,
+            })
       );
       lovelace.setEditMode(true);
       this._saving = false;
@@ -188,7 +193,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

@@ -1,14 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
@@ -26,11 +19,12 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-markdown-card-editor")
-export class HuiMarkdownCardEditor extends LitElement
+export class HuiMarkdownCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: MarkdownCardConfig;
+  @state() private _config?: MarkdownCardConfig;
 
   public setConfig(config: MarkdownCardConfig): void {
     assert(config, cardConfigStruct);
@@ -118,7 +112,7 @@ export class HuiMarkdownCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

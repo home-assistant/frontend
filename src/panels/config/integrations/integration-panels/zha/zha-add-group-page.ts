@@ -1,17 +1,8 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  query,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
 import type { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
@@ -38,9 +29,9 @@ export class ZHAAddGroupPage extends LitElement {
 
   @property({ type: Array }) public deviceEndpoints: ZHADeviceEndpoint[] = [];
 
-  @internalProperty() private _processingAdd = false;
+  @state() private _processingAdd = false;
 
-  @internalProperty() private _groupName = "";
+  @state() private _groupName = "";
 
   @query("zha-device-endpoint-data-table", true)
   private _zhaDevicesDataTable!: ZHADeviceEndpointDataTable;
@@ -68,6 +59,7 @@ export class ZHAAddGroupPage extends LitElement {
     return html`
       <hass-subpage
         .hass=${this.hass}
+        .narrow=${this.narrow}
         .header=${this.hass.localize("ui.panel.config.zha.groups.create_group")}
       >
         <ha-config-section .isWide=${!this.narrow}>
@@ -146,7 +138,7 @@ export class ZHAAddGroupPage extends LitElement {
     this._processingAdd = false;
     this._groupName = "";
     this._zhaDevicesDataTable.clearSelection();
-    navigate(this, `/config/zha/group/${group.group_id}`, true);
+    navigate(`/config/zha/group/${group.group_id}`, { replace: true });
   }
 
   private _handleNameChange(ev: PolymerChangedEvent<string>) {
@@ -154,7 +146,7 @@ export class ZHAAddGroupPage extends LitElement {
     this._groupName = target.value || "";
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         .header {

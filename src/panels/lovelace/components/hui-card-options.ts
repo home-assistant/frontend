@@ -5,14 +5,13 @@ import "@material/mwc-list/mwc-list-item";
 import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
-  queryAssignedNodes,
+  PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, queryAssignedNodes } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
 import { saveConfig } from "../../../data/lovelace";
@@ -39,9 +38,19 @@ export class HuiCardOptions extends LitElement {
     return this._assignedNodes ? computeCardSize(this._assignedNodes[0]) : 1;
   }
 
+  protected updated(changedProps: PropertyValues) {
+    if (!changedProps.has("path") || !this.path) {
+      return;
+    }
+    this.classList.toggle(
+      "panel",
+      this.lovelace!.config.views[this.path![0]].panel
+    );
+  }
+
   protected render(): TemplateResult {
     return html`
-      <slot></slot>
+      <div class="card"><slot></slot></div>
       <ha-card>
         <div class="card-actions">
           <mwc-button @click=${this._editCard}
@@ -102,14 +111,18 @@ export class HuiCardOptions extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host(:hover) {
         outline: 2px solid var(--primary-color);
       }
 
-      ::slotted(*) {
+      :host:not(.panel) ::slotted(*) {
         display: block;
+      }
+
+      :host(.panel) .card {
+        height: calc(100% - 59px);
       }
 
       ha-card {

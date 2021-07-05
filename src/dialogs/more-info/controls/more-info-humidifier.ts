@@ -3,14 +3,14 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -51,9 +51,7 @@ class MoreInfoHumidifier extends LitElement {
         <div class="container-humidity">
           <div>${hass.localize("ui.card.humidifier.humidity")}</div>
           <div class="single-row">
-            <div class="target-humidity">
-              ${stateObj.attributes.humidity} %
-            </div>
+            <div class="target-humidity">${stateObj.attributes.humidity} %</div>
             <ha-slider
               class="humidity"
               step="1"
@@ -173,7 +171,7 @@ class MoreInfoHumidifier extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         color: var(--primary-text-color);

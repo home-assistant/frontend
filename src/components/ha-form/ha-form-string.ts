@@ -1,16 +1,11 @@
+import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiEye, mdiEyeOff } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-icon-button";
+import "../ha-svg-icon";
 import type {
   HaFormElement,
   HaFormStringData,
@@ -27,7 +22,7 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @internalProperty() private _unmaskedPassword = false;
+  @state() private _unmaskedPassword = false;
 
   @query("paper-input") private _input?: HTMLElement;
 
@@ -48,16 +43,17 @@ export class HaFormString extends LitElement implements HaFormElement {
             .autoValidate=${this.schema.required}
             @value-changed=${this._valueChanged}
           >
-            <ha-icon-button
+            <mwc-icon-button
               toggles
               slot="suffix"
-              .icon=${this._unmaskedPassword ? "hass:eye-off" : "hass:eye"}
               id="iconButton"
               title="Click to toggle between masked and clear password"
               @click=${this._toggleUnmaskedPassword}
               tabindex="-1"
-            >
-            </ha-icon-button>
+              ><ha-svg-icon
+                .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
+              ></ha-svg-icon>
+            </mwc-icon-button>
           </paper-input>
         `
       : html`
@@ -97,6 +93,15 @@ export class HaFormString extends LitElement implements HaFormElement {
       }
     }
     return "text";
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      mwc-icon-button {
+        --mdc-icon-button-size: 24px;
+        color: var(--secondary-text-color);
+      }
+    `;
   }
 }
 

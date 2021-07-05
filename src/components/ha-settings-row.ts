@@ -1,13 +1,6 @@
 import "@polymer/paper-item/paper-item-body";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  SVGTemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 
 @customElement("ha-settings-row")
 export class HaSettingsRow extends LitElement {
@@ -16,20 +9,23 @@ export class HaSettingsRow extends LitElement {
   @property({ type: Boolean, attribute: "three-line" })
   public threeLine = false;
 
-  protected render(): SVGTemplateResult {
+  protected render(): TemplateResult {
     return html`
-      <paper-item-body
-        ?two-line=${!this.threeLine}
-        ?three-line=${this.threeLine}
-      >
-        <slot name="heading"></slot>
-        <div secondary><slot name="description"></slot></div>
-      </paper-item-body>
+      <div class="prefix-wrap">
+        <slot name="prefix"></slot>
+        <paper-item-body
+          ?two-line=${!this.threeLine}
+          ?three-line=${this.threeLine}
+        >
+          <slot name="heading"></slot>
+          <div secondary><slot name="description"></slot></div>
+        </paper-item-body>
+      </div>
       <slot></slot>
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;
@@ -45,6 +41,7 @@ export class HaSettingsRow extends LitElement {
         min-height: calc(
           var(--paper-item-body-two-line-min-height, 72px) - 16px
         );
+        flex: 1;
       }
       :host([narrow]) {
         align-items: normal;
@@ -57,6 +54,13 @@ export class HaSettingsRow extends LitElement {
       }
       div[secondary] {
         white-space: normal;
+      }
+      .prefix-wrap {
+        display: contents;
+      }
+      :host([narrow]) .prefix-wrap {
+        display: flex;
+        align-items: center;
       }
     `;
   }

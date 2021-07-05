@@ -1,14 +1,7 @@
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import "../../../components/ha-icon";
@@ -24,9 +17,9 @@ declare global {
 
 @customElement("hui-views-list")
 class HuiViewsList extends LitElement {
-  @internalProperty() private lovelaceConfig?: LovelaceConfig | undefined;
+  @state() private lovelaceConfig?: LovelaceConfig | undefined;
 
-  @internalProperty() private selected?: number | undefined;
+  @state() private selected?: number | undefined;
 
   protected render(): TemplateResult {
     if (!this.lovelaceConfig) {
@@ -67,7 +60,7 @@ class HuiViewsList extends LitElement {
     fireEvent(this, "view-selected", { view });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       paper-listbox {
         padding-top: 0;

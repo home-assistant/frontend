@@ -1,14 +1,13 @@
 import "@material/mwc-button/mwc-button";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { navigate } from "../../../../../../common/navigate";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import {
@@ -67,12 +66,11 @@ export class HaDeviceActionsOzw extends LitElement {
 
   private async _nodeDetailsClicked() {
     navigate(
-      this,
       `/config/ozw/network/${this.ozw_instance}/node/${this.node_id}/dashboard`
     );
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

@@ -4,8 +4,7 @@
     "plugin:@typescript-eslint/recommended",
     "plugin:wc/recommended",
     "plugin:lit/recommended",
-    "prettier",
-    "prettier/@typescript-eslint"
+    "prettier"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -29,9 +28,7 @@
     "__BUILD__": false,
     "__VERSION__": false,
     "__STATIC_PATH__": false,
-    "Polymer": true,
-    "webkitSpeechRecognition": false,
-    "ResizeObserver": false
+    "Polymer": true
   },
   "env": {
     "browser": true,
@@ -84,8 +81,29 @@
     "@typescript-eslint/no-unused-vars": 0,
     "@typescript-eslint/explicit-function-return-type": 0,
     "@typescript-eslint/explicit-module-boundary-types": 0,
-    "@typescript-eslint/no-shadow": ["error"]
+    "@typescript-eslint/no-shadow": ["error"],
+    "@typescript-eslint/naming-convention": [
+      0,
+      {
+        "selector": "default",
+        "format": ["camelCase", "snake_case"],
+        "leadingUnderscore": "allow",
+        "trailingUnderscore": "allow"
+      },
+      {
+        "selector": ["variable"],
+        "format": ["camelCase", "snake_case", "UPPER_CASE"],
+        "leadingUnderscore": "allow",
+        "trailingUnderscore": "allow"
+      },
+      {
+        "selector": "typeLike",
+        "format": ["PascalCase"]
+      }
+    ],
+    "lit/attribute-value-entities": 0
   },
   "plugins": ["disable", "import", "lit", "prettier", "@typescript-eslint"],
-  "processor": "disable/disable"
+  "processor": "disable/disable",
+  "ignorePatterns": ["src/resources/lit-virtualizer/*"]
 }

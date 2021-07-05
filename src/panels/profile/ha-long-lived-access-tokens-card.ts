@@ -1,15 +1,8 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import relativeTime from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -25,6 +18,7 @@ import {
 import { haStyle } from "../../resources/styles";
 import "../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../types";
+import { showLongLivedAccessTokenDialog } from "./show-long-lived-access-token-dialog";
 
 @customElement("ha-long-lived-access-tokens-card")
 class HaLongLivedTokens extends LitElement {
@@ -125,13 +119,7 @@ class HaLongLivedTokens extends LitElement {
         client_name: name,
       });
 
-      showPromptDialog(this, {
-        title: name,
-        text: this.hass.localize(
-          "ui.panel.profile.long_lived_access_tokens.prompt_copy_token"
-        ),
-        defaultValue: token,
-      });
+      showLongLivedAccessTokenDialog(this, { token, name });
 
       fireEvent(this, "hass-refresh-tokens");
     } catch (err) {
@@ -173,7 +161,7 @@ class HaLongLivedTokens extends LitElement {
     }
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

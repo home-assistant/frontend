@@ -1,14 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -33,14 +25,15 @@ const cardConfigStruct = object({
   theme: optional(string()),
 });
 
-const includeDomains = ["sensor"];
+const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-gauge-card-editor")
-export class HuiGaugeCardEditor extends LitElement
+export class HuiGaugeCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: GaugeCardConfig;
+  @state() private _config?: GaugeCardConfig;
 
   public setConfig(config: GaugeCardConfig): void {
     assert(config, cardConfigStruct);
@@ -112,7 +105,7 @@ export class HuiGaugeCardEditor extends LitElement
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
           .value=${this._unit}
-          configValue="unit"
+          .configValue=${"unit"}
           @value-changed=${this._valueChanged}
         ></paper-input>
         <hui-theme-select-editor
@@ -196,7 +189,7 @@ export class HuiGaugeCardEditor extends LitElement
     `;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

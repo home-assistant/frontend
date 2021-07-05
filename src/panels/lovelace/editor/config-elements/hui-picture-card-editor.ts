@@ -1,13 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { ActionConfig } from "../../../../data/lovelace";
@@ -16,7 +9,8 @@ import { PictureCardConfig } from "../../cards/types";
 import "../../components/hui-action-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import { actionConfigStruct, EditorTarget } from "../types";
+import { actionConfigStruct } from "../structs/action-struct";
+import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -28,11 +22,12 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-picture-card-editor")
-export class HuiPictureCardEditor extends LitElement
+export class HuiPictureCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: PictureCardConfig;
+  @state() private _config?: PictureCardConfig;
 
   public setConfig(config: PictureCardConfig): void {
     assert(config, cardConfigStruct);
@@ -134,7 +129,7 @@ export class HuiPictureCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

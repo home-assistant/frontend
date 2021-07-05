@@ -2,12 +2,12 @@ import type { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-ic
 import type { PaperTabElement } from "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 import type { PaperTabsElement } from "@polymer/paper-tabs/paper-tabs";
-import { customElement } from "lit-element";
+import { customElement } from "lit/decorators";
 import { Constructor } from "../types";
 
-const PaperTabs = customElements.get("paper-tabs") as Constructor<
-  PaperTabsElement
->;
+const PaperTabs = customElements.get(
+  "paper-tabs"
+) as Constructor<PaperTabsElement>;
 
 let subTemplate: HTMLTemplateElement;
 

@@ -1,10 +1,15 @@
-import { css, CSSResult } from "lit-element";
+import { css, CSSResultGroup } from "lit";
 import { computeCardSize } from "../common/compute-card-size";
+import { LovelaceCardEditor } from "../types";
 import { HuiStackCard } from "./hui-stack-card";
 import { GridCardConfig } from "./types";
-import { LovelaceCardEditor } from "../types";
 
 const DEFAULT_COLUMNS = 3;
+const SQUARE_ROW_HEIGHTS_BY_COLUMNS = {
+  1: 5,
+  2: 3,
+  3: 2,
+};
 
 class HuiGridCard extends HuiStackCard<GridCardConfig> {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
@@ -18,8 +23,13 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
     }
 
     if (this.square) {
-      // When we're square, each row is size 2.
-      return (this._cards.length / this.columns) * 2;
+      const rowHeight = SQUARE_ROW_HEIGHTS_BY_COLUMNS[this.columns] || 1;
+      return (
+        (this._cards.length < this.columns
+          ? rowHeight
+          : (this._cards.length / this.columns) * rowHeight) +
+        (this._config.title ? 1 : 0)
+      );
     }
 
     const promises: Array<Promise<number> | number> = [];
@@ -28,11 +38,16 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
       promises.push(computeCardSize(element));
     }
 
-    const results = await Promise.all(promises);
+    const cardSizes = await Promise.all(promises);
 
-    const maxCardSize = Math.max(...results);
+    let totalHeight = this._config.title ? 1 : 0;
 
-    return maxCardSize * (this._cards.length / this.columns);
+    // Each column will adjust to max card size of it's row
+    for (let start = 0; start < cardSizes.length; start += this.columns) {
+      totalHeight += Math.max(...cardSizes.slice(start, start + this.columns));
+    }
+
+    return totalHeight;
   }
 
   get columns() {
@@ -49,7 +64,7 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
     this.toggleAttribute("square", this.square);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       super.sharedStyles,
       css`

@@ -4,24 +4,19 @@ import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-help-tooltip";
-import "../../../components/ha-service-picker";
+import "../../../components/ha-service-control";
 import {
   ActionConfig,
   CallServiceActionConfig,
   NavigateActionConfig,
   UrlActionConfig,
 } from "../../../data/lovelace";
+import { ServiceAction } from "../../../data/script";
 import { HomeAssistant } from "../../../types";
 import { EditorTarget } from "../editor/types";
 
@@ -38,19 +33,27 @@ export class HuiActionEditor extends LitElement {
   @property() protected hass?: HomeAssistant;
 
   get _navigation_path(): string {
-    const config = this.config as NavigateActionConfig;
-    return config.navigation_path || "";
+    const config = this.config as NavigateActionConfig | undefined;
+    return config?.navigation_path || "";
   }
 
   get _url_path(): string {
-    const config = this.config as UrlActionConfig;
-    return config.url_path || "";
+    const config = this.config as UrlActionConfig | undefined;
+    return config?.url_path || "";
   }
 
   get _service(): string {
     const config = this.config as CallServiceActionConfig;
-    return config.service || "";
+    return config?.service || "";
   }
+
+  private _serviceAction = memoizeOne(
+    (config: CallServiceActionConfig): ServiceAction => ({
+      service: this._service,
+      data: config.service_data,
+      target: config.target,
+    })
+  );
 
   protected render(): TemplateResult {
     if (!this.hass || !this.actions) {
@@ -74,15 +77,15 @@ export class HuiActionEditor extends LitElement {
                 "ui.panel.lovelace.editor.action-editor.actions.default_action"
               )}</paper-item
             >
-            ${this.actions.map((action) => {
-              return html`
+            ${this.actions.map(
+              (action) => html`
                 <paper-item .value=${action}
                   >${this.hass!.localize(
                     `ui.panel.lovelace.editor.action-editor.actions.${action}`
                   )}</paper-item
                 >
-              `;
-            })}
+              `
+            )}
           </paper-listbox>
         </paper-dropdown-menu>
         ${this.tooltipText
@@ -117,17 +120,13 @@ export class HuiActionEditor extends LitElement {
         : ""}
       ${this.config?.action === "call-service"
         ? html`
-            <ha-service-picker
+            <ha-service-control
               .hass=${this.hass}
-              .value=${this._service}
-              .configValue=${"service"}
-              @value-changed=${this._valueChanged}
-            ></ha-service-picker>
-            <b>
-              ${this.hass!.localize(
-                "ui.panel.lovelace.editor.action-editor.editor_service_data"
-              )}
-            </b>
+              .value=${this._serviceAction(this.config)}
+              .showAdvanced=${this.hass.userData?.showAdvanced}
+              narrow
+              @value-changed=${this._serviceValueChanged}
+            ></ha-service-control>
           `
         : ""}
     `;
@@ -152,8 +151,25 @@ export class HuiActionEditor extends LitElement {
       }
       return;
     }
+
+    let data;
+    switch (value) {
+      case "url": {
+        data = { url_path: this._url_path };
+        break;
+      }
+      case "call-service": {
+        data = { service: this._service };
+        break;
+      }
+      case "navigate": {
+        data = { navigation_path: this._navigation_path };
+        break;
+      }
+    }
+
     fireEvent(this, "value-changed", {
-      value: { action: value },
+      value: { action: value, ...data },
     });
   }
 
@@ -174,10 +190,25 @@ export class HuiActionEditor extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  private _serviceValueChanged(ev: CustomEvent) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: {
+        ...this.config!,
+        service: ev.detail.value.service || "",
+        service_data: ev.detail.value.data || {},
+        target: ev.detail.value.target || {},
+      },
+    });
+  }
+
+  static get styles(): CSSResultGroup {
     return css`
       .dropdown {
         display: flex;
+      }
+      ha-service-control {
+        --service-control-padding: 0;
       }
     `;
   }

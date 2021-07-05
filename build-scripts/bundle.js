@@ -1,11 +1,10 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require("path");
 const env = require("./env.js");
 const paths = require("./paths.js");
 
 // Files from NPM Packages that should not be imported
 module.exports.ignorePackages = ({ latestBuild }) => [
-  // Bloats bundle and it's not used.
-  path.resolve(require.resolve("moment"), "../locale"),
   // Part of yaml.js and only used for !!js functions that we don't use
   require.resolve("esprima"),
 ];
@@ -51,15 +50,16 @@ module.exports.terserOptions = (latestBuild) => ({
 
 module.exports.babelOptions = ({ latestBuild }) => ({
   babelrc: false,
+  compact: false,
   presets: [
     !latestBuild && [
-      require("@babel/preset-env").default,
+      "@babel/preset-env",
       {
         useBuiltIns: "entry",
         corejs: "3.6",
       },
     ],
-    require("@babel/preset-typescript").default,
+    "@babel/preset-typescript",
   ].filter(Boolean),
   plugins: [
     // Part of ES2018. Converts {...a, b: 2} to Object.assign({}, a, {b: 2})
@@ -72,22 +72,11 @@ module.exports.babelOptions = ({ latestBuild }) => ({
     "@babel/plugin-syntax-dynamic-import",
     "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-proposal-nullish-coalescing-operator",
-    [
-      require("@babel/plugin-proposal-decorators").default,
-      { decoratorsBeforeExport: true },
-    ],
-    [
-      require("@babel/plugin-proposal-class-properties").default,
-      { loose: true },
-    ],
+    ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],
+    ["@babel/plugin-proposal-private-methods", { loose: true }],
+    ["@babel/plugin-proposal-class-properties", { loose: true }],
   ].filter(Boolean),
 });
-
-// Are already ES5, cause warnings when babelified.
-module.exports.babelExclude = () => [
-  require.resolve("@mdi/js/mdi.js"),
-  require.resolve("hls.js"),
-];
 
 const outputPath = (outputRoot, latestBuild) =>
   path.resolve(outputRoot, latestBuild ? "frontend_latest" : "frontend_es5");

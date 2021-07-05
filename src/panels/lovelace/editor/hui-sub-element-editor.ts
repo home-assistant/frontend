@@ -1,17 +1,8 @@
 import "@material/mwc-button";
 import "@material/mwc-icon-button";
 import { mdiArrowLeft } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-svg-icon";
 import type { HomeAssistant } from "../../../types";
@@ -34,9 +25,9 @@ export class HuiSubElementEditor extends LitElement {
 
   @property({ attribute: false }) public config!: SubElementEditorConfig;
 
-  @internalProperty() private _guiModeAvailable = true;
+  @state() private _guiModeAvailable = true;
 
-  @internalProperty() private _guiMode = true;
+  @state() private _guiMode = true;
 
   @query(".editor") private _editorElement?: HuiElementEditor<
     LovelaceRowConfig | LovelaceHeaderFooterConfig
@@ -109,7 +100,7 @@ export class HuiSubElementEditor extends LitElement {
     this._guiModeAvailable = ev.detail.guiModeAvailable;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .header {
         display: flex;

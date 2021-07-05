@@ -1,16 +1,14 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
@@ -39,11 +37,11 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: MarkdownCardConfig;
+  @state() private _config?: MarkdownCardConfig;
 
-  @internalProperty() private _templateResult?: RenderTemplateResult;
+  @state() private _templateResult?: RenderTemplateResult;
 
-  @internalProperty() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+  @state() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
 
   public getCardSize(): number {
     return this._config === undefined
@@ -166,7 +164,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;

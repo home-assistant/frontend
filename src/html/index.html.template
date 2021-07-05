@@ -2,8 +2,8 @@
 <html>
   <head>
     <% if (!useWDS) { %>
-    <link rel="preload" href="<%= latestCoreJS %>" as="script" crossorigin="use-credentials" />
-    <link rel="preload" href="<%= latestAppJS %>" as="script" crossorigin="use-credentials" />
+    <link rel="modulepreload" href="<%= latestCoreJS %>" crossorigin="use-credentials" />
+    <link rel="modulepreload" href="<%= latestAppJS %>" crossorigin="use-credentials" />
     <% } %>
     <%= renderTemplate('_header') %>
     <title>Home Assistant</title>
@@ -51,6 +51,7 @@
       @media (prefers-color-scheme: dark) {
         html {
           background-color: #111111;
+          color: #e1e1e1;
         }
         #ha-init-skeleton::before {
           background-color: #1c1c1c;
@@ -66,10 +67,16 @@
     <%= renderTemplate('_preload_roboto') %>
 
     <script <% if (!useWDS) { %>crossorigin="use-credentials"<% } %>>
-      import("<%= latestCoreJS %>");
-      import("<%= latestAppJS %>");
-      window.customPanelJS = "<%= latestCustomPanelJS %>";
-      window.latestJS = true;
+      // Safari 12 and below does not have a compliant ES2015 implementation of template literals, so we ship ES5
+      if (!isS11_12) {
+        import("<%= latestCoreJS %>");
+        import("<%= latestAppJS %>");
+        window.customPanelJS = "<%= latestCustomPanelJS %>";
+        window.latestJS = true;
+        if (!window.globalThis) {
+          window.globalThis = window;
+        }
+      }
     </script>
     <script>
     {% for extra_module in extra_modules -%}

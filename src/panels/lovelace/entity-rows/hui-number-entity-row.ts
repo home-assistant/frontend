@@ -1,30 +1,29 @@
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
-  internalProperty,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-slider";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
-import { EntityConfig, LovelaceRow } from "./types";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
+import { EntityConfig, LovelaceRow } from "./types";
 
 @customElement("hui-number-entity-row")
 class HuiNumberEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityConfig;
+  @state() private _config?: EntityConfig;
 
   private _loaded?: boolean;
 
@@ -76,7 +75,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
           ? html`
               <div class="flex">
                 <ha-slider
-                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   .dir=${computeRTLDirection(this.hass)}
                   .step="${Number(stateObj.attributes.step)}"
                   .min="${Number(stateObj.attributes.min)}"
@@ -88,8 +87,12 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                   id="input"
                 ></ha-slider>
                 <span class="state">
-                  ${Number(stateObj.state)}
-                  ${stateObj.attributes.unit_of_measurement}
+                  ${computeStateDisplay(
+                    this.hass.localize,
+                    stateObj,
+                    this.hass.locale,
+                    stateObj.state
+                  )}
                 </span>
               </div>
             `
@@ -98,7 +101,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                 <paper-input
                   no-label-float
                   auto-validate
-                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   pattern="[0-9]+([\\.][0-9]+)?"
                   .step="${Number(stateObj.attributes.step)}"
                   .min="${Number(stateObj.attributes.min)}"
@@ -115,7 +118,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .flex {
         display: flex;

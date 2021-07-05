@@ -1,9 +1,8 @@
-import { shouldPolyfill } from "@formatjs/intl-pluralrules/should-polyfill";
+import { shouldPolyfill } from "@formatjs/intl-pluralrules/lib/should-polyfill";
 import IntlMessageFormat from "intl-messageformat";
 import { Resources } from "../../types";
 
 export type LocalizeFunc = (key: string, ...args: any[]) => string;
-
 interface FormatType {
   [format: string]: any;
 }
@@ -13,12 +12,17 @@ export interface FormatsType {
   time: FormatType;
 }
 
+let loadedPolyfillLocale: Set<string> | undefined;
+
 let polyfillLoaded = !shouldPolyfill();
 const polyfillProm = polyfillLoaded
   ? undefined
-  : import("@formatjs/intl-pluralrules/polyfill-locales").then(() => {
-      polyfillLoaded = true;
-    });
+  : import("@formatjs/intl-locale/polyfill")
+      .then(() => import("@formatjs/intl-pluralrules/polyfill"))
+      .then(() => {
+        loadedPolyfillLocale = new Set();
+        polyfillLoaded = true;
+      });
 
 /**
  * Adapted from Polymer app-localize-behavior.
@@ -51,6 +55,15 @@ export const computeLocalize = async (
     await polyfillProm;
   }
 
+  if (loadedPolyfillLocale && !loadedPolyfillLocale.has(language)) {
+    try {
+      loadedPolyfillLocale.add(language);
+      await import("@formatjs/intl-pluralrules/locale-data/en");
+    } catch (_e) {
+      // Ignore
+    }
+  }
+
   // Everytime any of the parameters change, invalidate the strings cache.
   cache._localizationCache = {};
 
@@ -68,48 +81,36 @@ export const computeLocalize = async (
     }
 
     const messageKey = key + translatedValue;
-    let translatedMessage = cache._localizationCache[messageKey];
+    let translatedMessage = cache._localizationCache[messageKey] as
+      | IntlMessageFormat
+      | undefined;
 
     if (!translatedMessage) {
-      translatedMessage = new IntlMessageFormat(
-        translatedValue,
-        language,
-        formats
-      );
+      try {
+        translatedMessage = new IntlMessageFormat(
+          translatedValue,
+          language,
+          formats
+        );
+      } catch (err) {
+        return "Translation error: " + err.message;
+      }
       cache._localizationCache[messageKey] = translatedMessage;
     }
 
-    const argObject = {};
-    for (let i = 0; i < args.length; i += 2) {
-      argObject[args[i]] = args[i + 1];
+    let argObject = {};
+    if (args.length === 1 && typeof args[0] === "object") {
+      argObject = args[0];
+    } else {
+      for (let i = 0; i < args.length; i += 2) {
+        argObject[args[i]] = args[i + 1];
+      }
     }
 
     try {
-      return translatedMessage.format(argObject);
+      return translatedMessage.format<string>(argObject) as string;
     } catch (err) {
       return "Translation " + err;
     }
   };
-};
-
-/**
- * Silly helper function that converts an object of placeholders to array so we
- * can convert it back to an object again inside the localize func.
- * @param localize
- * @param key
- * @param placeholders
- */
-export const localizeKey = (
-  localize: LocalizeFunc,
-  key: string,
-  placeholders?: Record<string, string>
-) => {
-  const args: [string, ...string[]] = [key];
-  if (placeholders) {
-    Object.keys(placeholders).forEach((placeholderKey) => {
-      args.push(placeholderKey);
-      args.push(placeholders[placeholderKey]);
-    });
-  }
-  return localize(...args);
 };

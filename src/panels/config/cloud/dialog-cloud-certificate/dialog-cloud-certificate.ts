@@ -1,12 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import "../../../../components/dialog/ha-paper-dialog";
 import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
@@ -48,7 +42,7 @@ class DialogCloudCertificate extends LitElement {
             )}
             ${formatDateTime(
               new Date(certificateInfo.expire_date),
-              this.hass!.language
+              this.hass!.locale
             )}<br />
             (${this.hass!.localize(
               "ui.panel.config.cloud.dialog_certificate.will_be_auto_renewed"
@@ -81,7 +75,7 @@ class DialogCloudCertificate extends LitElement {
     this._dialog.close();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

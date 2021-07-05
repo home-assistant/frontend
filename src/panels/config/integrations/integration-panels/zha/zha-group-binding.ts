@@ -4,16 +4,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import type { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/buttons/ha-call-service-button";
 import { SelectionChangedEvent } from "../../../../../components/data-table/ha-data-table";
@@ -45,15 +42,15 @@ export class ZHAGroupBindingControl extends LitElement {
 
   @property() public selectedDevice?: ZHADevice;
 
-  @internalProperty() private _showHelp = false;
+  @state() private _showHelp = false;
 
-  @internalProperty() private _bindTargetIndex = -1;
+  @state() private _bindTargetIndex = -1;
 
-  @internalProperty() private groups: ZHAGroup[] = [];
+  @state() private groups: ZHAGroup[] = [];
 
-  @internalProperty() private _selectedClusters: string[] = [];
+  @state() private _selectedClusters: string[] = [];
 
-  @internalProperty() private _clusters: Cluster[] = [];
+  @state() private _clusters: Cluster[] = [];
 
   private _groupToBind?: ZHAGroup;
 
@@ -222,9 +219,9 @@ export class ZHAGroupBindingControl extends LitElement {
 
     this._clustersToBind = [];
     for (const clusterIndex of this._selectedClusters) {
-      const selectedCluster = this._clusters.find((cluster) => {
-        return clusterIndex === cluster.endpoint_id + "-" + cluster.id;
-      });
+      const selectedCluster = this._clusters.find(
+        (cluster) => clusterIndex === cluster.endpoint_id + "-" + cluster.id
+      );
       this._clustersToBind.push(selectedCluster!);
     }
   }
@@ -236,12 +233,8 @@ export class ZHAGroupBindingControl extends LitElement {
         this.selectedDevice!.ieee
       );
       this._clusters = this._clusters
-        .filter((cluster) => {
-          return cluster.type.toLowerCase() === "out";
-        })
-        .sort((a, b) => {
-          return a.name.localeCompare(b.name);
-        });
+        .filter((cluster) => cluster.type.toLowerCase() === "out")
+        .sort((a, b) => a.name.localeCompare(b.name));
     }
   }
 
@@ -254,7 +247,7 @@ export class ZHAGroupBindingControl extends LitElement {
     );
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

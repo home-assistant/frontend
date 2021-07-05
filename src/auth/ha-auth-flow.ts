@@ -1,14 +1,14 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import "./ha-password-manager-polyfill";
+import { property, state } from "lit/decorators";
 import "../components/ha-form/ha-form";
 import "../components/ha-markdown";
 import { AuthProvider } from "../data/auth";
@@ -21,7 +21,7 @@ import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 type State = "loading" | "error" | "step";
 
 class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
-  @property() public authProvider?: AuthProvider;
+  @property({ attribute: false }) public authProvider?: AuthProvider;
 
   @property() public clientId?: string;
 
@@ -29,19 +29,23 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   @property() public oauth2State?: string;
 
-  @internalProperty() private _state: State = "loading";
+  @state() private _state: State = "loading";
 
-  @internalProperty() private _stepData: any = {};
+  @state() private _stepData: any = {};
 
-  @internalProperty() private _step?: DataEntryFlowStep;
+  @state() private _step?: DataEntryFlowStep;
 
-  @internalProperty() private _errorMessage?: string;
+  @state() private _errorMessage?: string;
 
   protected render() {
     return html`
-      <form>
-        ${this._renderForm()}
-      </form>
+      <form>${this._renderForm()}</form>
+      <ha-password-manager-polyfill
+        .step=${this._step}
+        .stepData=${this._stepData}
+        @form-submitted=${this._handleSubmit}
+        @value-changed=${this._stepDataChanged}
+      ></ha-password-manager-polyfill>
     `;
   }
 
@@ -236,11 +240,17 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     await this.updateComplete;
     // 100ms to give all the form elements time to initialize.
     setTimeout(() => {
-      const form = this.shadowRoot!.querySelector("ha-form");
+      const form = this.renderRoot.querySelector("ha-form");
       if (form) {
         (form as any).focus();
       }
     }, 100);
+
+    setTimeout(() => {
+      this.renderRoot.querySelector(
+        "ha-password-manager-polyfill"
+      )!.boundingRect = this.getBoundingClientRect();
+    }, 500);
   }
 
   private _stepDataChanged(ev: CustomEvent) {
@@ -317,7 +327,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         /* So we can set min-height to avoid jumping during loading */
@@ -334,3 +344,9 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   }
 }
 customElements.define("ha-auth-flow", HaAuthFlow);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-auth-flow": HaAuthFlow;
+  }
+}

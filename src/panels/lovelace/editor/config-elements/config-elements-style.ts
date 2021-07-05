@@ -1,4 +1,4 @@
-import { css } from "lit-element";
+import { css } from "lit";
 
 export const configElementStyle = css`
   ha-switch {
@@ -9,7 +9,11 @@ export const configElementStyle = css`
   }
   .side-by-side > * {
     flex: 1;
-    padding-right: 4px;
+    padding-right: 8px;
+  }
+  .side-by-side > *:last-child {
+    flex: 1;
+    padding-right: 0;
   }
   .suffix {
     margin: 0 8px;

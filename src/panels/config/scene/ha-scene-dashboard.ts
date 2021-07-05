@@ -1,24 +1,24 @@
 import "@material/mwc-icon-button";
-import { mdiHelpCircle, mdiPlus } from "@mdi/js";
-import "@polymer/paper-tooltip/paper-tooltip";
 import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { ifDefined } from "lit-html/directives/if-defined";
+  mdiHelpCircle,
+  mdiInformationOutline,
+  mdiPencil,
+  mdiPencilOff,
+  mdiPlay,
+  mdiPlus,
+} from "@mdi/js";
+import "@polymer/paper-tooltip/paper-tooltip";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
-import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { forwardHaptic } from "../../../data/haptics";
 import { activateScene, SceneEntity } from "../../../data/scene";
@@ -42,94 +42,107 @@ class HaSceneDashboard extends LitElement {
 
   @property() public scenes!: SceneEntity[];
 
-  private _scenes = memoizeOne((scenes: SceneEntity[]) => {
-    return scenes.map((scene) => {
-      return {
+  @property() private _activeFilters?: string[];
+
+  @state() private _filteredScenes?: string[] | null;
+
+  @state() private _filterValue?;
+
+  private _scenes = memoizeOne(
+    (scenes: SceneEntity[], filteredScenes?: string[] | null) => {
+      if (filteredScenes === null) {
+        return [];
+      }
+      return (filteredScenes
+        ? scenes.filter((scene) => filteredScenes!.includes(scene.entity_id))
+        : scenes
+      ).map((scene) => ({
         ...scene,
         name: computeStateName(scene),
         icon: stateIcon(scene),
-      };
-    });
-  });
+      }));
+    }
+  );
 
   private _columns = memoizeOne(
-    (_language): DataTableColumnContainer => {
-      return {
-        activate: {
-          title: "",
-          type: "icon-button",
-          template: (_toggle, scene) =>
-            html`
-              <ha-icon-button
-                .scene=${scene}
-                icon="hass:play"
-                title="${this.hass.localize(
-                  "ui.panel.config.scene.picker.activate_scene"
-                )}"
-                @click=${(ev: Event) => this._activateScene(ev)}
-              ></ha-icon-button>
-            `,
-        },
-        icon: {
-          title: "",
-          type: "icon",
-          template: (icon) => html` <ha-icon .icon=${icon}></ha-icon> `,
-        },
-        name: {
-          title: this.hass.localize(
-            "ui.panel.config.scene.picker.headers.name"
-          ),
-          sortable: true,
-          filterable: true,
-          direction: "asc",
-          grows: true,
-        },
-        info: {
-          title: "",
-          type: "icon-button",
-          template: (_info, scene) => html`
-            <ha-icon-button
+    (_language): DataTableColumnContainer => ({
+      activate: {
+        title: "",
+        type: "icon-button",
+        template: (_toggle, scene) =>
+          html`
+            <mwc-icon-button
               .scene=${scene}
-              @click=${this._showInfo}
-              icon="hass:information-outline"
               title="${this.hass.localize(
-                "ui.panel.config.scene.picker.show_info_scene"
+                "ui.panel.config.scene.picker.activate_scene"
               )}"
-            ></ha-icon-button>
-          `,
-        },
-        edit: {
-          title: "",
-          type: "icon-button",
-          template: (_info, scene: any) => html`
-            <a
-              href=${ifDefined(
-                scene.attributes.id
-                  ? `/config/scene/edit/${scene.attributes.id}`
-                  : undefined
-              )}
+              @click=${(ev: Event) => this._activateScene(ev)}
             >
-              <ha-icon-button
-                .icon=${scene.attributes.id ? "hass:pencil" : "hass:pencil-off"}
-                .disabled=${!scene.attributes.id}
-                title="${this.hass.localize(
-                  "ui.panel.config.scene.picker.edit_scene"
-                )}"
-              ></ha-icon-button>
-            </a>
-            ${!scene.attributes.id
-              ? html`
-                  <paper-tooltip animation-delay="0" position="left">
-                    ${this.hass.localize(
-                      "ui.panel.config.scene.picker.only_editable"
-                    )}
-                  </paper-tooltip>
-                `
-              : ""}
+              <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
+            </mwc-icon-button>
           `,
-        },
-      };
-    }
+      },
+      icon: {
+        title: "",
+        type: "icon",
+        template: (icon) => html` <ha-icon .icon=${icon}></ha-icon> `,
+      },
+      name: {
+        title: this.hass.localize("ui.panel.config.scene.picker.headers.name"),
+        sortable: true,
+        filterable: true,
+        direction: "asc",
+        grows: true,
+      },
+      info: {
+        title: "",
+        type: "icon-button",
+        template: (_info, scene) => html`
+          <mwc-icon-button
+            .scene=${scene}
+            @click=${this._showInfo}
+            title="${this.hass.localize(
+              "ui.panel.config.scene.picker.show_info_scene"
+            )}"
+          >
+            <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
+          </mwc-icon-button>
+        `,
+      },
+      edit: {
+        title: "",
+        type: "icon-button",
+        template: (_info, scene: any) => html`
+          <a
+            href=${ifDefined(
+              scene.attributes.id
+                ? `/config/scene/edit/${scene.attributes.id}`
+                : undefined
+            )}
+          >
+            <mwc-icon-button
+              .disabled=${!scene.attributes.id}
+              title="${this.hass.localize(
+                "ui.panel.config.scene.picker.edit_scene"
+              )}"
+            >
+              <ha-svg-icon
+                .path=${scene.attributes.id ? mdiPencil : mdiPencilOff}
+              ></ha-svg-icon>
+            </mwc-icon-button>
+          </a>
+          ${!scene.attributes.id
+            ? html`
+                <paper-tooltip animation-delay="0" position="left">
+                  ${this.hass.localize(
+                    "ui.panel.config.scene.picker.only_editable"
+                  )}
+                </paper-tooltip>
+              `
+            : ""}
+        `,
+      },
+    })
   );
 
   protected render(): TemplateResult {
@@ -141,16 +154,28 @@ class HaSceneDashboard extends LitElement {
         .route=${this.route}
         .tabs=${configSections.automation}
         .columns=${this._columns(this.hass.language)}
-        .data=${this._scenes(this.scenes)}
         id="entity_id"
+        .data=${this._scenes(this.scenes, this._filteredScenes)}
+        .activeFilters=${this._activeFilters}
         .noDataText=${this.hass.localize(
           "ui.panel.config.scene.picker.no_scenes"
         )}
+        @clear-filter=${this._clearFilter}
         hasFab
       >
         <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
           <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
         </mwc-icon-button>
+        <ha-button-related-filter-menu
+          slot="filter-menu"
+          corner="BOTTOM_START"
+          .narrow=${this.narrow}
+          .hass=${this.hass}
+          .value=${this._filterValue}
+          exclude-domains='["scene"]'
+          @related-changed=${this._relatedFilterChanged}
+        >
+        </ha-button-related-filter-menu>
         <a href="/config/scene/edit/new" slot="fab">
           <ha-fab
             .label=${this.hass.localize(
@@ -165,6 +190,22 @@ class HaSceneDashboard extends LitElement {
     `;
   }
 
+  private _relatedFilterChanged(ev: CustomEvent) {
+    this._filterValue = ev.detail.value;
+    if (!this._filterValue) {
+      this._clearFilter();
+      return;
+    }
+    this._activeFilters = [ev.detail.filter];
+    this._filteredScenes = ev.detail.items.scene || null;
+  }
+
+  private _clearFilter() {
+    this._filteredScenes = undefined;
+    this._activeFilters = undefined;
+    this._filterValue = undefined;
+  }
+
   private _showInfo(ev) {
     ev.stopPropagation();
     const entityId = ev.currentTarget.scene.entity_id;
@@ -173,7 +214,7 @@ class HaSceneDashboard extends LitElement {
 
   private async _activateScene(ev) {
     ev.stopPropagation();
-    const scene = ev.target.scene as SceneEntity;
+    const scene = ev.currentTarget.scene as SceneEntity;
     await activateScene(this.hass, scene.entity_id);
     showToast(this, {
       message: this.hass.localize(
@@ -203,7 +244,7 @@ class HaSceneDashboard extends LitElement {
     });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

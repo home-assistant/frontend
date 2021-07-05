@@ -1,4 +1,4 @@
-import { customElement, property } from "lit-element";
+import { customElement, property } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import {
   HassRouterPage,
@@ -59,17 +59,18 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
       el.groupId = this.routeTail.path.substr(1);
     } else if (this._currentPage === "device") {
       el.ieee = this.routeTail.path.substr(1);
+    } else if (this._currentPage === "visualization") {
+      el.zoomedDeviceId = this.routeTail.path.substr(1);
     }
 
     const searchParams = new URLSearchParams(window.location.search);
     if (this._configEntry && !searchParams.has("config_entry")) {
       searchParams.append("config_entry", this._configEntry);
       navigate(
-        this,
         `${this.routeTail.prefix}${
           this.routeTail.path
         }?${searchParams.toString()}`,
-        true
+        { replace: true }
       );
     }
   }

@@ -3,15 +3,8 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { compare } from "../../../../common/string/compare";
 import {
@@ -49,37 +42,35 @@ export class HaConfigLovelaceRescources extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _resources: LovelaceResource[] = [];
+  @state() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
-    (_language): DataTableColumnContainer => {
-      return {
-        url: {
-          title: this.hass.localize(
-            "ui.panel.config.lovelace.resources.picker.headers.url"
-          ),
-          sortable: true,
-          filterable: true,
-          direction: "asc",
-          grows: true,
-          forceLTR: true,
-        },
-        type: {
-          title: this.hass.localize(
-            "ui.panel.config.lovelace.resources.picker.headers.type"
-          ),
-          sortable: true,
-          filterable: true,
-          width: "30%",
-          template: (type) =>
-            html`
-              ${this.hass.localize(
-                `ui.panel.config.lovelace.resources.types.${type}`
-              ) || type}
-            `,
-        },
-      };
-    }
+    (_language): DataTableColumnContainer => ({
+      url: {
+        title: this.hass.localize(
+          "ui.panel.config.lovelace.resources.picker.headers.url"
+        ),
+        sortable: true,
+        filterable: true,
+        direction: "asc",
+        grows: true,
+        forceLTR: true,
+      },
+      type: {
+        title: this.hass.localize(
+          "ui.panel.config.lovelace.resources.picker.headers.type"
+        ),
+        sortable: true,
+        filterable: true,
+        width: "30%",
+        template: (type) =>
+          html`
+            ${this.hass.localize(
+              `ui.panel.config.lovelace.resources.types.${type}`
+            ) || type}
+          `,
+      },
+    })
   );
 
   protected render(): TemplateResult {

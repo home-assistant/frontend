@@ -1,6 +1,7 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
+import { domainToName } from "../../../data/integration";
 import { ActionConfig } from "../../../data/lovelace";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
@@ -50,6 +51,18 @@ export const handleAction = async (
   ) {
     forwardHaptic("warning");
 
+    let serviceName;
+    if (actionConfig.action === "call-service") {
+      const [domain, service] = actionConfig.service.split(".", 2);
+      const serviceDomains = hass.services;
+      if (domain in serviceDomains && service in serviceDomains[domain]) {
+        const localize = await hass.loadBackendTranslation("title");
+        serviceName = `${domainToName(localize, domain)}: ${
+          serviceDomains[domain][service].name || service
+        }`;
+      }
+    }
+
     if (
       !(await showConfirmationDialog(node, {
         text:
@@ -57,10 +70,12 @@ export const handleAction = async (
           hass.localize(
             "ui.panel.lovelace.cards.actions.action_confirmation",
             "action",
-            hass.localize(
-              "ui.panel.lovelace.editor.action-editor.actions." +
-                actionConfig.action
-            ) || actionConfig.action
+            serviceName ||
+              hass.localize(
+                "ui.panel.lovelace.editor.action-editor.actions." +
+                  actionConfig.action
+              ) ||
+              actionConfig.action
           ),
       }))
     ) {
@@ -86,7 +101,7 @@ export const handleAction = async (
     }
     case "navigate":
       if (actionConfig.navigation_path) {
-        navigate(node, actionConfig.navigation_path);
+        navigate(actionConfig.navigation_path);
       } else {
         showToast(node, {
           message: hass.localize(
@@ -130,7 +145,12 @@ export const handleAction = async (
         return;
       }
       const [domain, service] = actionConfig.service.split(".", 2);
-      hass.callService(domain, service, actionConfig.service_data);
+      hass.callService(
+        domain,
+        service,
+        actionConfig.service_data,
+        actionConfig.target
+      );
       forwardHaptic("light");
       break;
     }

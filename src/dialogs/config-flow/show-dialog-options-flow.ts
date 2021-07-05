@@ -1,5 +1,4 @@
-import { html } from "lit-element";
-import { localizeKey } from "../../common/translations/localize";
+import { html } from "lit";
 import { ConfigEntry } from "../../data/config_entries";
 import {
   createOptionsFlow,
@@ -43,8 +42,7 @@ export const showOptionsFlowDialog = (
       deleteFlow: deleteOptionsFlow,
 
       renderAbortDescription(hass, step) {
-        const description = localizeKey(
-          hass.localize,
+        const description = hass.localize(
           `component.${configEntry.domain}.options.abort.${step.reason}`,
           step.description_placeholders
         );
@@ -69,8 +67,7 @@ export const showOptionsFlowDialog = (
       },
 
       renderShowFormStepDescription(hass, step) {
-        const description = localizeKey(
-          hass.localize,
+        const description = hass.localize(
           `component.${configEntry.domain}.options.step.${step.step_id}.description`,
           step.description_placeholders
         );
@@ -91,9 +88,10 @@ export const showOptionsFlowDialog = (
         );
       },
 
-      renderShowFormStepFieldError(hass, _step, error) {
+      renderShowFormStepFieldError(hass, step, error) {
         return hass.localize(
-          `component.${configEntry.domain}.options.error.${error}`
+          `component.${configEntry.domain}.options.error.${error}`,
+          step.description_placeholders
         );
       },
 
@@ -111,12 +109,28 @@ export const showOptionsFlowDialog = (
         `;
       },
 
-      renderShowFormProgressHeader(_hass, _step) {
-        return "";
+      renderShowFormProgressHeader(hass, step) {
+        return (
+          hass.localize(
+            `component.${configEntry.domain}.options.step.${step.step_id}.title`
+          ) || hass.localize(`component.${configEntry.domain}.title`)
+        );
       },
 
-      renderShowFormProgressDescription(_hass, _step) {
-        return "";
+      renderShowFormProgressDescription(hass, step) {
+        const description = hass.localize(
+          `component.${configEntry.domain}.options.progress.${step.progress_action}`,
+          step.description_placeholders
+        );
+        return description
+          ? html`
+              <ha-markdown
+                allowsvg
+                breaks
+                .content=${description}
+              ></ha-markdown>
+            `
+          : "";
       },
     }
   );

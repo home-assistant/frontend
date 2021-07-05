@@ -1,4 +1,5 @@
-import { customElement, html, LitElement, TemplateResult } from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement } from "lit/decorators";
 import "../components/demo-cards";
 
 const CONFIGS = [
@@ -42,4 +43,8 @@ class DemoIframe extends LitElement {
   }
 }
 
-customElements.define("demo-hui-iframe-card", DemoIframe);
+declare global {
+  interface HTMLElementTagNameMap {
+    "demo-hui-iframe-card": DemoIframe;
+  }
+}

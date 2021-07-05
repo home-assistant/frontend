@@ -1,14 +1,12 @@
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -20,6 +18,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
+import { formatAttributeValue } from "../../../util/hass-attributes-util";
 import { computeCardSize } from "../common/compute-card-size";
 import { findEntities } from "../common/find-entities";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -62,7 +61,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntityCardConfig;
+  @state() private _config?: EntityCardConfig;
 
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
 
@@ -126,14 +125,18 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         <div class="info">
           <span class="value"
             >${"attribute" in this._config
-              ? stateObj.attributes[this._config.attribute!] ??
-                this.hass.localize("state.default.unknown")
+              ? stateObj.attributes[this._config.attribute!] !== undefined
+                ? formatAttributeValue(
+                    this.hass,
+                    stateObj.attributes[this._config.attribute!]
+                  )
+                : this.hass.localize("state.default.unknown")
               : stateObj.attributes.unit_of_measurement
-              ? formatNumber(stateObj.state, this.hass!.language)
+              ? formatNumber(stateObj.state, this.hass.locale)
               : computeStateDisplay(
                   this.hass.localize,
                   stateObj,
-                  this.hass.language
+                  this.hass.locale
                 )}</span
           >${showUnit
             ? html`
@@ -185,7 +188,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-card {
         height: 100%;

@@ -1,11 +1,6 @@
 import { mdiPlus } from "@mdi/js";
-import {
-  customElement,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
-import { html } from "lit-html";
+import { html, LitElement, PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import {

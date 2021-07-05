@@ -2,16 +2,15 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { supportsFeature } from "../../../common/entity/supports-feature";
+} from "lit";
+import { property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-camera-stream";
 import {
   CameraEntity,
@@ -27,9 +26,9 @@ class MoreInfoCamera extends LitElement {
 
   @property() public stateObj?: CameraEntity;
 
-  @internalProperty() private _cameraPrefs?: CameraPreferences;
+  @state() private _cameraPrefs?: CameraPreferences;
 
-  @internalProperty() private _attached = false;
+  @state() private _attached = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -113,15 +112,19 @@ class MoreInfoCamera extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
+      :host {
+        display: block;
+        position: relative;
+      }
       paper-checkbox {
         position: absolute;
         top: 0;
         right: 0;
         background-color: var(--secondary-background-color);
         padding: 5px;
-        border-bottom-left-radius: 6px;
+        border-bottom-left-radius: 4px;
       }
     `;
   }

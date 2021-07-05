@@ -1,4 +1,4 @@
-import * as assert from "assert";
+import { assert } from "chai";
 
 import parseAspectRatio from "../../../src/common/util/parse-aspect-ratio";
 

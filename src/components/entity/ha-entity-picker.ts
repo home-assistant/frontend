@@ -7,15 +7,14 @@ import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -27,32 +26,19 @@ import "./state-badge";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
-const rowRenderer = (
-  root: HTMLElement,
-  _owner,
-  model: { item: HassEntity }
-) => {
-  if (!root.firstElementChild) {
-    root.innerHTML = `
-      <style>
-        paper-icon-item {
-          margin: -10px;
-          padding: 0;
-        }
-      </style>
-      <paper-icon-item>
-        <state-badge slot="item-icon"></state-badge>
-        <paper-item-body two-line="">
-          <div class='name'></div>
-          <div secondary></div>
-        </paper-item-body>
-      </paper-icon-item>
-    `;
-  }
-  root.querySelector("state-badge")!.stateObj = model.item;
-  root.querySelector(".name")!.textContent = computeStateName(model.item);
-  root.querySelector("[secondary]")!.textContent = model.item.entity_id;
-};
+const rowRenderer: ComboBoxLitRenderer<HassEntity> = (item) => html`<style>
+    paper-icon-item {
+      margin: -10px;
+      padding: 0;
+    }
+  </style>
+  <paper-icon-item>
+    <state-badge slot="item-icon" .stateObj=${item}></state-badge>
+    <paper-item-body two-line="">
+      ${computeStateName(item)}
+      <span secondary>${item.entity_id}</span>
+    </paper-item-body>
+  </paper-icon-item>`;
 
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
@@ -99,7 +85,7 @@ export class HaEntityPicker extends LitElement {
 
   @property({ type: Boolean }) private _opened = false;
 
-  @query("vaadin-combo-box-light", true) private _comboBox!: HTMLElement;
+  @query("vaadin-combo-box-light", true) private comboBox!: HTMLElement;
 
   public open() {
     this.updateComplete.then(() => {
@@ -208,7 +194,7 @@ export class HaEntityPicker extends LitElement {
         this.entityFilter,
         this.includeDeviceClasses
       );
-      (this._comboBox as any).filteredItems = this._states;
+      (this.comboBox as any).filteredItems = this._states;
       this._initedStates = true;
     }
   }
@@ -223,7 +209,7 @@ export class HaEntityPicker extends LitElement {
         item-label-path="entity_id"
         .value=${this._value}
         .allowCustomValue=${this.allowCustomEntity}
-        .renderer=${rowRenderer}
+        ${comboBoxRenderer(rowRenderer)}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
         @filter-changed=${this._filterChanged}
@@ -296,7 +282,7 @@ export class HaEntityPicker extends LitElement {
 
   private _filterChanged(ev: CustomEvent): void {
     const filterString = ev.detail.value.toLowerCase();
-    (this._comboBox as any).filteredItems = this._states.filter(
+    (this.comboBox as any).filteredItems = this._states.filter(
       (state) =>
         state.entity_id.toLowerCase().includes(filterString) ||
         computeStateName(state).toLowerCase().includes(filterString)
@@ -311,7 +297,7 @@ export class HaEntityPicker extends LitElement {
     }, 0);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .suffix {
         display: flex;

@@ -1,27 +1,40 @@
 import { fireEvent } from "./dom/fire_event";
+import { mainWindow } from "./dom/get_main_window";
 
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "location-changed": {
-      replace: boolean;
-    };
+    "location-changed": NavigateOptions;
   }
 }
 
-export const navigate = (_node: any, path: string, replace = false) => {
+export interface NavigateOptions {
+  replace?: boolean;
+}
+
+export const navigate = (path: string, options?: NavigateOptions) => {
+  const replace = options?.replace || false;
+
   if (__DEMO__) {
     if (replace) {
-      history.replaceState(null, "", `${location.pathname}#${path}`);
+      mainWindow.history.replaceState(
+        mainWindow.history.state?.root ? { root: true } : null,
+        "",
+        `${mainWindow.location.pathname}#${path}`
+      );
     } else {
-      window.location.hash = path;
+      mainWindow.location.hash = path;
     }
   } else if (replace) {
-    history.replaceState(null, "", path);
+    mainWindow.history.replaceState(
+      mainWindow.history.state?.root ? { root: true } : null,
+      "",
+      path
+    );
   } else {
-    history.pushState(null, "", path);
+    mainWindow.history.pushState(null, "", path);
   }
-  fireEvent(window, "location-changed", {
+  fireEvent(mainWindow, "location-changed", {
     replace,
   });
 };

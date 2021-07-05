@@ -1,16 +1,8 @@
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-tooltip/paper-tooltip";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-formfield";
@@ -34,17 +26,17 @@ import { UserDetailDialogParams } from "./show-dialog-user-detail";
 class DialogUserDetail extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _name!: string;
+  @state() private _name!: string;
 
-  @internalProperty() private _isAdmin?: boolean;
+  @state() private _isAdmin?: boolean;
 
-  @internalProperty() private _isActive?: boolean;
+  @state() private _isActive?: boolean;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _params?: UserDetailDialogParams;
+  @state() private _params?: UserDetailDialogParams;
 
-  @internalProperty() private _submitting = false;
+  @state() private _submitting = false;
 
   public async showDialog(params: UserDetailDialogParams): Promise<void> {
     this._params = params;
@@ -63,7 +55,7 @@ class DialogUserDetail extends LitElement {
     return html`
       <ha-dialog
         open
-        @closing=${this._close}
+        @closed=${this._close}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(this.hass, user.name)}
@@ -295,7 +287,7 @@ class DialogUserDetail extends LitElement {
     this._params = undefined;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

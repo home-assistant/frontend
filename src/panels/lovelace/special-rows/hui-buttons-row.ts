@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { HomeAssistant } from "../../../types";
@@ -25,7 +19,7 @@ export class HuiButtonsRow extends LitElement implements LovelaceRow {
 
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _configEntities?: EntityConfig[];
+  @state() private _configEntities?: EntityConfig[];
 
   public setConfig(config: ButtonsRowConfig): void {
     this._configEntities = processConfigEntities(config.entities).map(

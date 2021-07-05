@@ -1,13 +1,7 @@
 import "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { NumberSelector } from "../../data/selector";
 import { HomeAssistant } from "../../types";
@@ -21,16 +15,21 @@ export class HaNumberSelector extends LitElement {
 
   @property() public value?: number;
 
+  @property() public placeholder?: number;
+
   @property() public label?: string;
+
+  @property({ type: Boolean }) public disabled = false;
 
   protected render() {
     return html`${this.label}
-      ${this.selector.number.mode === "slider"
+      ${this.selector.number.mode !== "box"
         ? html`<ha-slider
             .min=${this.selector.number.min}
             .max=${this.selector.number.max}
             .value=${this._value}
-            .step=${this.selector.number.step}
+            .step=${this.selector.number.step ?? 1}
+            .disabled=${this.disabled}
             pin
             ignore-bar-touch
             @change=${this._handleSliderChange}
@@ -39,15 +38,15 @@ export class HaNumberSelector extends LitElement {
         : ""}
       <paper-input
         pattern="[0-9]+([\\.][0-9]+)?"
-        .label=${this.selector.number.mode === "slider"
-          ? undefined
-          : this.label}
-        .noLabelFloat=${this.selector.number.mode === "slider"}
+        .label=${this.selector.number.mode !== "box" ? undefined : this.label}
+        .placeholder=${this.placeholder}
+        .noLabelFloat=${this.selector.number.mode !== "box"}
         class=${classMap({ single: this.selector.number.mode === "box" })}
         .min=${this.selector.number.min}
         .max=${this.selector.number.max}
-        .value=${this._value}
-        .step=${this.selector.number.step}
+        .value=${this.value}
+        .step=${this.selector.number.step ?? 1}
+        .disabled=${this.disabled}
         type="number"
         auto-validate
         @value-changed=${this._handleInputChange}
@@ -65,22 +64,27 @@ export class HaNumberSelector extends LitElement {
   }
 
   private _handleInputChange(ev) {
-    const value = ev.detail.value;
-    if (this._value === value) {
+    ev.stopPropagation();
+    const value =
+      ev.detail.value === "" || isNaN(ev.detail.value)
+        ? undefined
+        : Number(ev.detail.value);
+    if (this.value === value) {
       return;
     }
     fireEvent(this, "value-changed", { value });
   }
 
   private _handleSliderChange(ev) {
-    const value = ev.target.value;
-    if (this._value === value) {
+    ev.stopPropagation();
+    const value = Number(ev.target.value);
+    if (this.value === value) {
       return;
     }
     fireEvent(this, "value-changed", { value });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         display: flex;

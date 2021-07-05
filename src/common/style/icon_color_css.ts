@@ -1,4 +1,4 @@
-import { css } from "lit-element";
+import { css } from "lit";
 
 export const iconColorCSS = css`
   ha-icon[data-domain="alert"][data-state="on"],
@@ -15,7 +15,7 @@ export const iconColorCSS = css`
   ha-icon[data-domain="media_player"][data-state="on"],
   ha-icon[data-domain="media_player"][data-state="paused"],
   ha-icon[data-domain="media_player"][data-state="playing"],
-  ha-icon[data-domain="script"][data-state="running"],
+  ha-icon[data-domain="script"][data-state="on"],
   ha-icon[data-domain="sun"][data-state="above_horizon"],
   ha-icon[data-domain="switch"][data-state="on"],
   ha-icon[data-domain="timer"][data-state="active"],
@@ -29,31 +29,28 @@ export const iconColorCSS = css`
   }
 
   ha-icon[data-domain="climate"][data-state="cooling"] {
-    color: var(--cool-color, #2b9af9);
+    color: var(--cool-color, var(--state-climate-cool-color));
   }
 
   ha-icon[data-domain="climate"][data-state="heating"] {
-    color: var(--heat-color, #ff8100);
+    color: var(--heat-color, var(--state-climate-heat-color));
   }
 
   ha-icon[data-domain="climate"][data-state="drying"] {
-    color: var(--dry-color, #efbd07);
+    color: var(--dry-color, var(--state-climate-dry-color));
   }
 
   ha-icon[data-domain="alarm_control_panel"] {
     color: var(--alarm-color-armed, var(--label-badge-red));
   }
-
   ha-icon[data-domain="alarm_control_panel"][data-state="disarmed"] {
     color: var(--alarm-color-disarmed, var(--label-badge-green));
   }
-
   ha-icon[data-domain="alarm_control_panel"][data-state="pending"],
   ha-icon[data-domain="alarm_control_panel"][data-state="arming"] {
     color: var(--alarm-color-pending, var(--label-badge-yellow));
     animation: pulse 1s infinite;
   }
-
   ha-icon[data-domain="alarm_control_panel"][data-state="triggered"] {
     color: var(--alarm-color-triggered, var(--label-badge-red));
     animation: pulse 1s infinite;
@@ -73,11 +70,11 @@ export const iconColorCSS = css`
 
   ha-icon[data-domain="plant"][data-state="problem"],
   ha-icon[data-domain="zwave"][data-state="dead"] {
-    color: var(--error-state-color, #db4437);
+    color: var(--state-icon-error-color);
   }
 
   /* Color the icon if unavailable */
   ha-icon[data-state="unavailable"] {
-    color: var(--state-icon-unavailable-color);
+    color: var(--state-unavailable-color);
   }
 `;

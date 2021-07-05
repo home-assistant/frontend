@@ -4,11 +4,12 @@ import {
   HassConfig,
   HassEntities,
   HassServices,
+  HassServiceTarget,
   MessageBase,
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
 import { CoreFrontendUserData } from "./data/frontend";
-import { getHassTranslations } from "./data/translation";
+import { FrontendLocaleData, getHassTranslations } from "./data/translation";
 import { Themes } from "./data/ws-themes";
 import { ExternalMessaging } from "./external_app/external_messaging";
 
@@ -81,8 +82,12 @@ export interface CurrentUser {
   mfa_modules: MFAModule[];
 }
 
+// Currently selected theme and its settings. These are the values stored in local storage.
 export interface ThemeSettings {
   theme: string;
+  // Radio box selection for theme picker. Do not use in cards as
+  // it can be undefined == auto.
+  // Property hass.themes.darkMode carries effective current mode.
   dark?: boolean;
   primaryColor?: string;
   accentColor?: string;
@@ -167,7 +172,7 @@ export interface Resources {
 export interface Context {
   id: string;
   parent_id?: string;
-  user_id?: string;
+  user_id?: string | null;
 }
 
 export interface ServiceCallResponse {
@@ -178,6 +183,7 @@ export interface ServiceCallRequest {
   domain: string;
   service: string;
   serviceData?: Record<string, any>;
+  target?: HassServiceTarget;
 }
 
 export interface HomeAssistant {
@@ -188,19 +194,19 @@ export interface HomeAssistant {
   services: HassServices;
   config: HassConfig;
   themes: Themes;
-  selectedTheme?: ThemeSettings | null;
+  selectedTheme: ThemeSettings | null;
   panels: Panels;
   panelUrl: string;
-
   // i18n
-  // current effective language, in that order:
-  //   - backend saved user selected lanugage
-  //   - language in local appstorage
+  // current effective language in that order:
+  //   - backend saved user selected language
+  //   - language in local app storage
   //   - browser language
   //   - english (en)
   language: string;
-  // local stored language, keep that name for backward compability
+  // local stored language, keep that name for backward compatibility
   selectedLanguage: string | null;
+  locale: FrontendLocaleData;
   resources: Resources;
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;
@@ -216,7 +222,8 @@ export interface HomeAssistant {
   callService(
     domain: ServiceCallRequest["domain"],
     service: ServiceCallRequest["service"],
-    serviceData?: ServiceCallRequest["serviceData"]
+    serviceData?: ServiceCallRequest["serviceData"],
+    target?: ServiceCallRequest["target"]
   ): Promise<ServiceCallResponse>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
@@ -250,3 +257,12 @@ export interface LocalizeMixin {
   hass?: HomeAssistant;
   localize: LocalizeFunc;
 }
+
+// https://www.jpwilliams.dev/how-to-unpack-the-return-type-of-a-promise-in-typescript
+export type AsyncReturnType<T extends (...args: any) => any> = T extends (
+  ...args: any
+) => Promise<infer U>
+  ? U
+  : T extends (...args: any) => infer U
+  ? U
+  : never;

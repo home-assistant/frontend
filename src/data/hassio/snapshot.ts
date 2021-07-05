@@ -1,5 +1,20 @@
+import { atLeastVersion } from "../../common/config/version";
 import { HomeAssistant } from "../../types";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
+
+export const friendlyFolderName = {
+  ssl: "SSL",
+  homeassistant: "Configuration",
+  "addons/local": "Local add-ons",
+  media: "Media",
+  share: "Share",
+};
+
+interface SnapshotContent {
+  homeassistant: boolean;
+  folders: string[];
+  addons: string[];
+}
 
 export interface HassioSnapshot {
   slug: string;
@@ -7,6 +22,7 @@ export interface HassioSnapshot {
   name: string;
   type: "full" | "partial";
   protected: boolean;
+  content: SnapshotContent;
 }
 
 export interface HassioSnapshotDetail extends HassioSnapshot {
@@ -25,15 +41,27 @@ export interface HassioSnapshotDetail extends HassioSnapshot {
 export interface HassioFullSnapshotCreateParams {
   name: string;
   password?: string;
+  confirm_password?: string;
 }
-export interface HassioPartialSnapshotCreateParams {
-  name: string;
-  folders: string[];
-  addons: string[];
-  password?: string;
+export interface HassioPartialSnapshotCreateParams
+  extends HassioFullSnapshotCreateParams {
+  folders?: string[];
+  addons?: string[];
+  homeassistant?: boolean;
 }
 
-export const fetchHassioSnapshots = async (hass: HomeAssistant) => {
+export const fetchHassioSnapshots = async (
+  hass: HomeAssistant
+): Promise<HassioSnapshot[]> => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    const data: { snapshots: HassioSnapshot[] } = await hass.callWS({
+      type: "supervisor/api",
+      endpoint: `/snapshots`,
+      method: "get",
+    });
+    return data.snapshots;
+  }
+
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<{ snapshots: HassioSnapshot[] }>>(
       "GET",
@@ -45,8 +73,15 @@ export const fetchHassioSnapshots = async (hass: HomeAssistant) => {
 export const fetchHassioSnapshotInfo = async (
   hass: HomeAssistant,
   snapshot: string
-) => {
+): Promise<HassioSnapshotDetail> => {
   if (hass) {
+    if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+      return hass.callWS({
+        type: "supervisor/api",
+        endpoint: `/snapshots/${snapshot}/info`,
+        method: "get",
+      });
+    }
     return hassioApiResultExtractor(
       await hass.callApi<HassioResponse<HassioSnapshotDetail>>(
         "GET",
@@ -63,6 +98,15 @@ export const fetchHassioSnapshotInfo = async (
 };
 
 export const reloadHassioSnapshots = async (hass: HomeAssistant) => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: "/snapshots/reload",
+      method: "post",
+    });
+    return;
+  }
+
   await hass.callApi<HassioResponse<void>>("POST", `hassio/snapshots/reload`);
 };
 
@@ -70,6 +114,16 @@ export const createHassioFullSnapshot = async (
   hass: HomeAssistant,
   data: HassioFullSnapshotCreateParams
 ) => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: "/snapshots/new/full",
+      method: "post",
+      timeout: null,
+      data,
+    });
+    return;
+  }
   await hass.callApi<HassioResponse<void>>(
     "POST",
     `hassio/snapshots/new/full`,
@@ -77,10 +131,36 @@ export const createHassioFullSnapshot = async (
   );
 };
 
+export const removeSnapshot = async (hass: HomeAssistant, slug: string) => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: `/snapshots/${slug}/remove`,
+      method: "post",
+    });
+    return;
+  }
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/snapshots/${slug}/remove`
+  );
+};
+
 export const createHassioPartialSnapshot = async (
   hass: HomeAssistant,
-  data: HassioFullSnapshotCreateParams
+  data: HassioPartialSnapshotCreateParams
 ) => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    await hass.callWS({
+      type: "supervisor/api",
+      endpoint: "/snapshots/new/partial",
+      method: "post",
+      timeout: null,
+      data,
+    });
+    return;
+  }
+
   await hass.callApi<HassioResponse<void>>(
     "POST",
     `hassio/snapshots/new/partial`,
@@ -113,5 +193,5 @@ export const uploadSnapshot = async (
   } else if (resp.status !== 200) {
     throw new Error(`${resp.status} ${resp.statusText}`);
   }
-  return await resp.json();
+  return resp.json();
 };

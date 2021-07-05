@@ -22,63 +22,88 @@ const mql = matchMedia("(prefers-color-scheme: dark)");
 
 export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
+    private _themeApplied = false;
+
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("settheme", (ev) => {
         this._updateHass({
-          selectedTheme: { ...this.hass!.selectedTheme!, ...ev.detail },
+          selectedTheme: {
+            ...this.hass!.selectedTheme!,
+            ...ev.detail,
+          },
         });
         this._applyTheme(mql.matches);
         storeState(this.hass!);
       });
       mql.addListener((ev) => this._applyTheme(ev.matches));
+      if (!this._themeApplied && mql.matches) {
+        applyThemesOnElement(
+          document.documentElement,
+          {
+            default_theme: "default",
+            default_dark_theme: null,
+            themes: {},
+            darkMode: false,
+          },
+          "default",
+          { dark: true }
+        );
+      }
     }
 
     protected hassConnected() {
       super.hassConnected();
 
       subscribeThemes(this.hass!.connection, (themes) => {
+        this._themeApplied = true;
         this._updateHass({ themes });
         invalidateThemeCache();
         this._applyTheme(mql.matches);
       });
     }
 
-    private _applyTheme(dark: boolean) {
+    private _applyTheme(darkPreferred: boolean) {
       if (!this.hass) {
         return;
       }
-      const themeName =
-        this.hass.selectedTheme?.theme ||
-        (dark && this.hass.themes.default_dark_theme
-          ? this.hass.themes.default_dark_theme!
-          : this.hass.themes.default_theme);
 
-      let options: Partial<HomeAssistant["selectedTheme"]> = this.hass!
+      let themeSettings: Partial<HomeAssistant["selectedTheme"]> = this.hass!
         .selectedTheme;
 
-      if (themeName === "default" && options?.dark === undefined) {
-        options = {
-          ...this.hass.selectedTheme!,
-          dark,
-        };
+      const themeName =
+        themeSettings?.theme ||
+        (darkPreferred && this.hass.themes.default_dark_theme
+          ? this.hass.themes.default_dark_theme
+          : this.hass.themes.default_theme);
+
+      let darkMode =
+        themeSettings?.dark === undefined ? darkPreferred : themeSettings?.dark;
+
+      const selectedTheme = themeName
+        ? this.hass.themes.themes[themeName]
+        : undefined;
+
+      if (selectedTheme && darkMode && !selectedTheme.modes) {
+        darkMode = false;
       }
+
+      themeSettings = { ...this.hass.selectedTheme, dark: darkMode };
 
       applyThemesOnElement(
         document.documentElement,
         this.hass.themes,
         themeName,
-        options
+        themeSettings
       );
 
-      const darkMode =
-        themeName === "default"
-          ? !!options?.dark
-          : !!(dark && this.hass.themes.default_dark_theme);
+      // Now determine value that should be stored in the local storage settings
+      darkMode =
+        darkMode || !!(darkPreferred && this.hass.themes.default_dark_theme);
 
       if (darkMode !== this.hass.themes.darkMode) {
         this._updateHass({
-          themes: { ...this.hass.themes, darkMode },
+          themes: { ...this.hass.themes!, darkMode },
         });
 
         const schemeMeta = document.querySelector("meta[name=color-scheme]");

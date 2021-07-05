@@ -3,19 +3,13 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
-import "../components/map/ha-location-editor";
+import "../components/map/ha-locations-editor";
+import type { MarkerLocation } from "../components/map/ha-locations-editor";
 import { createTimezoneListEl } from "../components/timezone-datalist";
 import {
   ConfigUpdateValues,
@@ -35,17 +29,17 @@ class OnboardingCoreConfig extends LitElement {
 
   @property() public onboardingLocalize!: LocalizeFunc;
 
-  @internalProperty() private _working = false;
+  @state() private _working = false;
 
-  @internalProperty() private _name!: ConfigUpdateValues["location_name"];
+  @state() private _name!: ConfigUpdateValues["location_name"];
 
-  @internalProperty() private _location!: [number, number];
+  @state() private _location!: [number, number];
 
-  @internalProperty() private _elevation!: string;
+  @state() private _elevation!: string;
 
-  @internalProperty() private _unitSystem!: ConfigUpdateValues["unit_system"];
+  @state() private _unitSystem!: ConfigUpdateValues["unit_system"];
 
-  @internalProperty() private _timeZone!: string;
+  @state() private _timeZone!: string;
 
   protected render(): TemplateResult {
     return html`
@@ -89,14 +83,14 @@ class OnboardingCoreConfig extends LitElement {
       </div>
 
       <div class="row">
-        <ha-location-editor
+        <ha-locations-editor
           class="flex"
           .hass=${this.hass}
-          .location=${this._locationValue}
-          .fitZoom=${14}
+          .locations=${this._markerLocation(this._locationValue)}
+          zoom="14"
           .darkMode=${mql.matches}
-          @change=${this._locationChanged}
-        ></ha-location-editor>
+          @location-updated=${this._locationChanged}
+        ></ha-locations-editor>
       </div>
 
       <div class="row">
@@ -216,13 +210,24 @@ class OnboardingCoreConfig extends LitElement {
     return this._unitSystem !== undefined ? this._unitSystem : "metric";
   }
 
+  private _markerLocation = memoizeOne(
+    (location: [number, number]): MarkerLocation[] => [
+      {
+        id: "location",
+        latitude: location[0],
+        longitude: location[1],
+        location_editable: true,
+      },
+    ]
+  );
+
   private _handleChange(ev: PolymerChangedEvent<string>) {
     const target = ev.currentTarget as PaperInputElement;
     this[`_${target.name}`] = target.value;
   }
 
   private _locationChanged(ev) {
-    this._location = ev.currentTarget.location;
+    this._location = ev.detail.location;
   }
 
   private _unitSystemChanged(
@@ -278,7 +283,7 @@ class OnboardingCoreConfig extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .row {
         display: flex;

@@ -3,16 +3,13 @@ import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import "@polymer/paper-input/paper-input";
-import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-} from "lit-element";
+  HassEntity,
+  HassServiceTarget,
+  UnsubscribeFunc,
+} from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { ConfigEntry, getConfigEntries } from "../../data/config_entries";
 import { DeviceRegistryEntry } from "../../data/device_registry";
 import {
@@ -20,7 +17,6 @@ import {
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
 import { TargetSelector } from "../../data/selector";
-import { Target } from "../../data/target";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../types";
 import "../ha-target-picker";
@@ -31,13 +27,15 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
 
   @property() public selector!: TargetSelector;
 
-  @property() public value?: Target;
+  @property() public value?: HassServiceTarget;
 
   @property() public label?: string;
 
-  @internalProperty() private _entityPlaformLookup?: Record<string, string>;
+  @state() private _entityPlaformLookup?: Record<string, string>;
 
-  @internalProperty() private _configEntries?: ConfigEntry[];
+  @state() private _configEntries?: ConfigEntry[];
+
+  @property({ type: Boolean }) public disabled = false;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -59,7 +57,8 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
       const oldSelector = changedProperties.get("selector");
       if (
         oldSelector !== this.selector &&
-        this.selector.target.device?.integration
+        (this.selector.target.device?.integration ||
+          this.selector.target.entity?.integration)
       ) {
         this._loadConfigEntries();
       }
@@ -80,15 +79,20 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
       .includeDomains=${this.selector.target.entity?.domain
         ? [this.selector.target.entity.domain]
         : undefined}
+      .disabled=${this.disabled}
     ></ha-target-picker>`;
   }
 
   private _filterEntities(entity: HassEntity): boolean {
-    if (this.selector.target.entity?.integration) {
+    if (
+      this.selector.target.entity?.integration ||
+      this.selector.target.device?.integration
+    ) {
       if (
         !this._entityPlaformLookup ||
         this._entityPlaformLookup[entity.entity_id] !==
-          this.selector.target.entity.integration
+          (this.selector.target.entity?.integration ||
+            this.selector.target.device?.integration)
       ) {
         return false;
       }
@@ -118,7 +122,10 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
     ) {
       return false;
     }
-    if (this.selector.target.device?.integration) {
+    if (
+      this.selector.target.device?.integration ||
+      this.selector.target.entity?.integration
+    ) {
       if (
         !this._configEntries?.some((entry) =>
           device.config_entries.includes(entry.entry_id)
@@ -132,14 +139,16 @@ export class HaTargetSelector extends SubscribeMixin(LitElement) {
 
   private async _loadConfigEntries() {
     this._configEntries = (await getConfigEntries(this.hass)).filter(
-      (entry) => entry.domain === this.selector.target.device?.integration
+      (entry) =>
+        entry.domain ===
+        (this.selector.target.device?.integration ||
+          this.selector.target.entity?.integration)
     );
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-target-picker {
-        margin: 0 -8px;
         display: block;
       }
     `;

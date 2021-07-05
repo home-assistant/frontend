@@ -1,13 +1,6 @@
 import "@polymer/paper-input/paper-input";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -21,11 +14,8 @@ import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceRowEditor } from "../../types";
-import {
-  EditorTarget,
-  entitiesConfigStruct,
-  EntitiesEditorEvent,
-} from "../types";
+import { entitiesConfigStruct } from "../structs/entities-struct";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const SecondaryInfoValues: { [key: string]: { domains?: string[] } } = {
@@ -39,11 +29,12 @@ const SecondaryInfoValues: { [key: string]: { domains?: string[] } } = {
 };
 
 @customElement("hui-generic-entity-row-editor")
-export class HuiGenericEntityRowEditor extends LitElement
+export class HuiGenericEntityRowEditor
+  extends LitElement
   implements LovelaceRowEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntitiesCardEntityConfig;
+  @state() private _config?: EntitiesCardEntityConfig;
 
   public setConfig(config: EntitiesCardEntityConfig): void {
     assert(config, entitiesConfigStruct);
@@ -162,7 +153,7 @@ export class HuiGenericEntityRowEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

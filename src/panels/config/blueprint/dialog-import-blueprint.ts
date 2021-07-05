@@ -1,22 +1,14 @@
-import "../../../components/ha-markdown";
 import "@material/mwc-button";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-circular-progress";
-import "../../../components/ha-dialog";
+import { createCloseHeading } from "../../../components/ha-dialog";
 import "../../../components/ha-expansion-panel";
+import "../../../components/ha-markdown";
 import {
   BlueprintImportResult,
   importBlueprint,
@@ -29,27 +21,31 @@ import type { HomeAssistant } from "../../../types";
 class DialogImportBlueprint extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _params?;
+  @state() private _params?;
 
-  @internalProperty() private _importing = false;
+  @state() private _importing = false;
 
-  @internalProperty() private _saving = false;
+  @state() private _saving = false;
 
-  @internalProperty() private _error?: string;
+  @state() private _error?: string;
 
-  @internalProperty() private _result?: BlueprintImportResult;
+  @state() private _result?: BlueprintImportResult;
+
+  @state() private _url?: string;
 
   @query("#input") private _input?: PaperInputElement;
 
   public showDialog(params): void {
     this._params = params;
     this._error = undefined;
+    this._url = this._params.url;
   }
 
   public closeDialog(): void {
     this._error = undefined;
     this._result = undefined;
     this._params = undefined;
+    this._url = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
@@ -61,7 +57,10 @@ class DialogImportBlueprint extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        .heading=${this.hass.localize("ui.panel.config.blueprint.add.header")}
+        .heading=${createCloseHeading(
+          this.hass,
+          this.hass.localize("ui.panel.config.blueprint.add.header")
+        )}
       >
         <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
@@ -123,6 +122,7 @@ class DialogImportBlueprint extends LitElement {
                   .label=${this.hass.localize(
                     "ui.panel.config.blueprint.add.url"
                   )}
+                  .value=${this._url}
                   dialogInitialFocus
                 ></paper-input>`}
         </div>
@@ -171,6 +171,7 @@ class DialogImportBlueprint extends LitElement {
   }
 
   private async _import() {
+    this._url = undefined;
     this._importing = true;
     this._error = undefined;
     try {
@@ -212,7 +213,7 @@ class DialogImportBlueprint extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyleDialog;
   }
 }

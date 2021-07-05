@@ -3,16 +3,8 @@ import "@material/mwc-icon-button/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDelete } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-svg-icon";
@@ -22,41 +14,45 @@ import {
   fetchHassioDockerRegistries,
   removeHassioDockerRegistry,
 } from "../../../../src/data/hassio/docker";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import { showAlertDialog } from "../../../../src/dialogs/generic/show-dialog-box";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
+import { RegistriesDialogParams } from "./show-dialog-registries";
 
 @customElement("dialog-hassio-registries")
 class HassioRegistriesDialog extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
 
   @property({ attribute: false }) private _registries?: {
     registry: string;
     username: string;
   }[];
 
-  @internalProperty() private _registry?: string;
+  @state() private _registry?: string;
 
-  @internalProperty() private _username?: string;
+  @state() private _username?: string;
 
-  @internalProperty() private _password?: string;
+  @state() private _password?: string;
 
-  @internalProperty() private _opened = false;
+  @state() private _opened = false;
 
-  @internalProperty() private _addingRegistry = false;
+  @state() private _addingRegistry = false;
 
   protected render(): TemplateResult {
     return html`
       <ha-dialog
         .open=${this._opened}
-        @closing=${this.closeDialog}
+        @closed=${this.closeDialog}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
           this.hass,
           this._addingRegistry
-            ? "Add New Docker Registry"
-            : "Manage Docker Registries"
+            ? this.supervisor.localize("dialog.registries.title_add")
+            : this.supervisor.localize("dialog.registries.title_manage")
         )}
       >
         <div class="form">
@@ -66,7 +62,9 @@ class HassioRegistriesDialog extends LitElement {
                   @value-changed=${this._inputChanged}
                   class="flex-auto"
                   name="registry"
-                  label="Registry"
+                  .label=${this.supervisor.localize(
+                    "dialog.registries.registry"
+                  )}
                   required
                   auto-validate
                 ></paper-input>
@@ -74,7 +72,9 @@ class HassioRegistriesDialog extends LitElement {
                   @value-changed=${this._inputChanged}
                   class="flex-auto"
                   name="username"
-                  label="Username"
+                  .label=${this.supervisor.localize(
+                    "dialog.registries.username"
+                  )}
                   required
                   auto-validate
                 ></paper-input>
@@ -82,7 +82,9 @@ class HassioRegistriesDialog extends LitElement {
                   @value-changed=${this._inputChanged}
                   class="flex-auto"
                   name="password"
-                  label="Password"
+                  .label=${this.supervisor.localize(
+                    "dialog.registries.password"
+                  )}
                   type="password"
                   required
                   auto-validate
@@ -94,35 +96,46 @@ class HassioRegistriesDialog extends LitElement {
                   )}
                   @click=${this._addNewRegistry}
                 >
-                  Add registry
+                  ${this.supervisor.localize("dialog.registries.add_registry")}
                 </mwc-button>
               `
             : html`${this._registries?.length
-                  ? this._registries.map((entry) => {
-                      return html`
+                  ? this._registries.map(
+                      (entry) => html`
                         <mwc-list-item class="option" hasMeta twoline>
                           <span>${entry.registry}</span>
                           <span slot="secondary"
-                            >Username: ${entry.username}</span
+                            >${this.supervisor.localize(
+                              "dialog.registries.username"
+                            )}:
+                            ${entry.username}</span
                           >
                           <mwc-icon-button
                             .entry=${entry}
-                            title="Remove"
+                            .title=${this.supervisor.localize(
+                              "dialog.registries.remove"
+                            )}
                             slot="meta"
                             @click=${this._removeRegistry}
                           >
                             <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
                           </mwc-icon-button>
                         </mwc-list-item>
-                      `;
-                    })
+                      `
+                    )
                   : html`
                       <mwc-list-item>
-                        <span>No registries configured</span>
+                        <span
+                          >${this.supervisor.localize(
+                            "dialog.registries.no_registries"
+                          )}</span
+                        >
                       </mwc-list-item>
                     `}
                 <mwc-button @click=${this._addRegistry}>
-                  Add new registry
+                  ${this.supervisor.localize(
+                    "dialog.registries.add_new_registry"
+                  )}
                 </mwc-button> `}
         </div>
       </ha-dialog>
@@ -134,8 +147,9 @@ class HassioRegistriesDialog extends LitElement {
     this[`_${target.name}`] = target.value;
   }
 
-  public async showDialog(_dialogParams: any): Promise<void> {
+  public async showDialog(dialogParams: RegistriesDialogParams): Promise<void> {
     this._opened = true;
+    this.supervisor = dialogParams.supervisor;
     await this._loadRegistries();
     await this.updateComplete;
   }
@@ -178,7 +192,7 @@ class HassioRegistriesDialog extends LitElement {
       this._addingRegistry = false;
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to add registry",
+        title: this.supervisor.localize("dialog.registries.failed_to_add"),
         text: extractApiErrorMessage(err),
       });
     }
@@ -192,13 +206,13 @@ class HassioRegistriesDialog extends LitElement {
       await this._loadRegistries();
     } catch (err) {
       showAlertDialog(this, {
-        title: "Failed to remove registry",
+        title: this.supervisor.localize("dialog.registries.failed_to_remove"),
         text: extractApiErrorMessage(err),
       });
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       haStyleDialog,
@@ -229,9 +243,6 @@ class HassioRegistriesDialog extends LitElement {
         }
         mwc-list-item span[slot="secondary"] {
           color: var(--secondary-text-color);
-        }
-        ha-paper-dropdown-menu {
-          display: block;
         }
       `,
     ];

@@ -1,25 +1,19 @@
 import "@polymer/paper-input/paper-input";
-import {
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  PropertyValues,
-} from "lit-element";
+import { html, LitElement, PropertyValues } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { TagTrigger } from "../../../../../data/automation";
 import { fetchTags, Tag } from "../../../../../data/tag";
 import { HomeAssistant } from "../../../../../types";
 import { TriggerElement } from "../ha-automation-trigger-row";
-
+import "../../../../../components/ha-paper-dropdown-menu";
 @customElement("ha-automation-trigger-tag")
 export class HaTagTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: TagTrigger;
 
-  @internalProperty() private _tags: Tag[] = [];
+  @state() private _tags: Tag[] = [];
 
   public static get defaultConfig() {
     return { tag_id: "" };

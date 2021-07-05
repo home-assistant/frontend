@@ -1,9 +1,10 @@
 // For localize
-import "@formatjs/intl-getcanonicallocales/polyfill";
 import "core-js";
+import "regenerator-runtime/runtime";
+import "lit/polyfill-support";
+import "@formatjs/intl-getcanonicallocales/polyfill";
 // To use comlink under ES5
 import "proxy-polyfill";
-import "regenerator-runtime/runtime";
 import "unfetch/polyfill";
 
 // Source: https://github.com/jserz/js_piece/blob/master/DOM/ParentNode/append()/append().md
@@ -31,3 +32,16 @@ import "unfetch/polyfill";
     });
   });
 })([Element.prototype, Document.prototype, DocumentFragment.prototype]);
+
+// Source: https://developer.mozilla.org/en-US/docs/Web/API/Element/getAttributeNames
+if (Element.prototype.getAttributeNames === undefined) {
+  Element.prototype.getAttributeNames = function () {
+    const attributes = this.attributes;
+    const length = attributes.length;
+    const result = new Array(length);
+    for (let i = 0; i < length; i++) {
+      result[i] = attributes[i].name;
+    }
+    return result;
+  };
+}

@@ -16,19 +16,18 @@ import "@polymer/paper-listbox/paper-listbox";
 import {
   css,
   CSSResult,
-  customElement,
-  eventOptions,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
-import { guard } from "lit-html/directives/guard";
+} from "lit";
+import { customElement, eventOptions, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { guard } from "lit/directives/guard";
 import memoizeOne from "memoize-one";
 import { LocalStorage } from "../common/decorators/local-storage";
 import { fireEvent } from "../common/dom/fire_event";
+import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { computeDomain } from "../common/entity/compute_domain";
 import { compare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
@@ -167,19 +166,13 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean }) public alwaysExpand = false;
 
-  @property({ type: Boolean, reflect: true }) public expanded = false;
-
   @property({ type: Boolean }) public editMode = false;
 
-  @internalProperty() private _externalConfig?: ExternalConfig;
+  @state() private _externalConfig?: ExternalConfig;
 
-  @internalProperty() private _notifications?: PersistentNotification[];
+  @state() private _notifications?: PersistentNotification[];
 
-  // property used only in css
-  // @ts-ignore
-  @property({ type: Boolean, reflect: true }) public rtl = false;
-
-  @internalProperty() private _renderEmptySortable = false;
+  @state() private _renderEmptySortable = false;
 
   private _mouseLeaveTimeout?: number;
 
@@ -245,7 +238,7 @@ class HaSidebar extends LitElement {
       hass.panelUrl !== oldHass.panelUrl ||
       hass.user !== oldHass.user ||
       hass.localize !== oldHass.localize ||
-      hass.language !== oldHass.language ||
+      hass.locale !== oldHass.locale ||
       hass.states !== oldHass.states ||
       hass.defaultPanel !== oldHass.defaultPanel
     );
@@ -267,7 +260,7 @@ class HaSidebar extends LitElement {
   protected updated(changedProps) {
     super.updated(changedProps);
     if (changedProps.has("alwaysExpand")) {
-      this.expanded = this.alwaysExpand;
+      toggleAttribute(this, "expanded", this.alwaysExpand);
     }
     if (changedProps.has("editMode")) {
       if (this.editMode) {
@@ -281,8 +274,8 @@ class HaSidebar extends LitElement {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.language !== this.hass.language) {
-      this.rtl = computeRTL(this.hass);
+    if (!oldHass || oldHass.locale !== this.hass.locale) {
+      toggleAttribute(this, "rtl", computeRTL(this.hass));
     }
 
     if (!SUPPORT_SCROLL_IF_NEEDED) {
@@ -430,7 +423,7 @@ class HaSidebar extends LitElement {
         @click=${this._handleShowNotificationDrawer}
       >
         <ha-svg-icon slot="item-icon" .path=${mdiBell}></ha-svg-icon>
-        ${!this.expanded && notificationCount > 0
+        ${!this.alwaysExpand && notificationCount > 0
           ? html`
               <span class="notification-badge" slot="item-icon">
                 ${notificationCount}
@@ -440,7 +433,7 @@ class HaSidebar extends LitElement {
         <span class="item-text">
           ${this.hass.localize("ui.notification_drawer.title")}
         </span>
-        ${this.expanded && notificationCount > 0
+        ${this.alwaysExpand && notificationCount > 0
           ? html` <span class="notification-badge">${notificationCount}</span> `
           : ""}
       </paper-icon-item>
@@ -524,7 +517,7 @@ class HaSidebar extends LitElement {
       ]);
 
       const style = document.createElement("style");
-      style.innerHTML = sortStylesImport.sortableStyles.cssText;
+      style.innerHTML = (sortStylesImport.sortableStyles as CSSResult).cssText;
       this.shadowRoot!.appendChild(style);
 
       Sortable = sortableImport.Sortable;
@@ -595,7 +588,7 @@ class HaSidebar extends LitElement {
     // for 100ms so that we ignore it when pressing down arrow scrolls the
     // sidebar causing the mouse to hover a new icon
     if (
-      this.expanded ||
+      this.alwaysExpand ||
       new Date().getTime() < this._recentKeydownActiveUntil
     ) {
       return;
@@ -617,7 +610,7 @@ class HaSidebar extends LitElement {
   }
 
   private _listboxFocusIn(ev) {
-    if (this.expanded || ev.target.nodeName !== "A") {
+    if (this.alwaysExpand || ev.target.nodeName !== "A") {
       return;
     }
     this._showTooltip(ev.target.querySelector("paper-icon-item"));
@@ -741,7 +734,7 @@ class HaSidebar extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyleScrollbar,
       css`

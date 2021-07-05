@@ -6,17 +6,9 @@ import {
   mdiCloseBox,
   mdiCloseBoxMultiple,
 } from "@mdi/js";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -59,7 +51,7 @@ class CloudAlexa extends LitElement {
 
   @property({ type: Boolean }) public narrow!: boolean;
 
-  @internalProperty() private _entities?: AlexaEntity[];
+  @state() private _entities?: AlexaEntity[];
 
   @property()
   private _entityConfigs: CloudPreferences["alexa_entity_configs"] = {};
@@ -214,9 +206,9 @@ class CloudAlexa extends LitElement {
     }
 
     return html`
-      <hass-subpage .hass=${this.hass} header="${this.hass!.localize(
-      "ui.panel.config.cloud.alexa.title"
-    )}">
+      <hass-subpage .hass=${this.hass} .narrow=${
+      this.narrow
+    } .header=${this.hass!.localize("ui.panel.config.cloud.alexa.title")}>
         ${
           emptyFilter
             ? html`
@@ -440,7 +432,7 @@ class CloudAlexa extends LitElement {
     );
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

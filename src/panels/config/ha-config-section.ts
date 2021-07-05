@@ -1,5 +1,6 @@
-import { css, customElement, html, LitElement, property } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+import { css, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 
 @customElement("ha-config-section")
 export class HaConfigSection extends LitElement {
@@ -80,11 +81,14 @@ export class HaConfigSection extends LitElement {
         font-weight: var(--paper-font-subhead_-_font-weight);
         line-height: var(--paper-font-subhead_-_line-height);
         width: 100%;
-        max-width: 400px;
-        margin-right: 40px;
         opacity: var(--dark-primary-opacity);
         font-size: 14px;
         padding-bottom: 20px;
+      }
+
+      .horizontal .intro {
+        max-width: 400px;
+        margin-right: 40px;
       }
 
       .panel {

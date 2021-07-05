@@ -1,10 +1,10 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { HassioAddonRepository } from "../../../../src/data/hassio/addon";
+import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 import "./dialog-hassio-repositories";
 
 export interface HassioRepositoryDialogParams {
-  repos: HassioAddonRepository[];
-  loadData: () => Promise<void>;
+  supervisor: Supervisor;
+  url?: string;
 }
 
 export const showRepositoriesDialog = (

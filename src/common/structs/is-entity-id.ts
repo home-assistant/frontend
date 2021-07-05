@@ -1,30 +1,17 @@
-import { struct, StructContext, StructResult } from "superstruct";
+import { refine, string } from "superstruct";
 
-const isEntityId = (value: unknown, context: StructContext): StructResult => {
-  if (typeof value !== "string") {
-    return [context.fail({ type: "string" })];
-  }
-  if (!value.includes(".")) {
-    return [
-      context.fail({
-        type: "Entity ID should be in the format 'domain.entity'",
-      }),
-    ];
-  }
-  return true;
-};
+const isEntityId = (value: string): boolean => value.includes(".");
 
-export const EntityId = struct("entity-id", isEntityId);
+export const entityId = () =>
+  refine(string(), "entity ID (domain.entity)", isEntityId);
 
-const isEntityIdOrAll = (
-  value: unknown,
-  context: StructContext
-): StructResult => {
-  if (typeof value === "string" && value === "all") {
+const isEntityIdOrAll = (value: string): boolean => {
+  if (value === "all") {
     return true;
   }
 
-  return isEntityId(value, context);
+  return isEntityId(value);
 };
 
-export const EntityIdOrAll = struct("entity-id-all", isEntityIdOrAll);
+export const entityIdOrAll = () =>
+  refine(string(), "entity ID (domain.entity or all)", isEntityIdOrAll);

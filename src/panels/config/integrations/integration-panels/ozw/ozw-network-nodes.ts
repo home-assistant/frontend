@@ -1,14 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import { mdiAlert, mdiCheck } from "@mdi/js";
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
 import { navigate } from "../../../../../common/navigate";
@@ -46,60 +39,56 @@ class OZWNetworkNodes extends LitElement {
 
   @property() public ozwInstance = 0;
 
-  @internalProperty() private _nodes: OZWDevice[] = [];
+  @state() private _nodes: OZWDevice[] = [];
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTableColumnContainer => {
-      return {
-        node_id: {
-          title: this.hass.localize("ui.panel.config.ozw.nodes_table.id"),
-          sortable: true,
-          type: "numeric",
-          width: "72px",
-          filterable: true,
-          direction: "asc",
-        },
-        node_product_name: {
-          title: this.hass.localize("ui.panel.config.ozw.nodes_table.model"),
-          sortable: true,
-          width: narrow ? "75%" : "25%",
-        },
-        node_manufacturer_name: {
-          title: this.hass.localize(
-            "ui.panel.config.ozw.nodes_table.manufacturer"
-          ),
-          sortable: true,
-          hidden: narrow,
-          width: "25%",
-        },
-        node_query_stage: {
-          title: this.hass.localize(
-            "ui.panel.config.ozw.nodes_table.query_stage"
-          ),
-          sortable: true,
-          width: narrow ? "25%" : "15%",
-        },
-        is_zwave_plus: {
-          title: this.hass.localize(
-            "ui.panel.config.ozw.nodes_table.zwave_plus"
-          ),
-          hidden: narrow,
-          template: (value: boolean) =>
-            value ? html` <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
-        },
-        is_failed: {
-          title: this.hass.localize("ui.panel.config.ozw.nodes_table.failed"),
-          hidden: narrow,
-          template: (value: boolean) =>
-            value ? html` <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>` : "",
-        },
-      };
-    }
+    (narrow: boolean): DataTableColumnContainer => ({
+      node_id: {
+        title: this.hass.localize("ui.panel.config.ozw.nodes_table.id"),
+        sortable: true,
+        type: "numeric",
+        width: "72px",
+        filterable: true,
+        direction: "asc",
+      },
+      node_product_name: {
+        title: this.hass.localize("ui.panel.config.ozw.nodes_table.model"),
+        sortable: true,
+        width: narrow ? "75%" : "25%",
+      },
+      node_manufacturer_name: {
+        title: this.hass.localize(
+          "ui.panel.config.ozw.nodes_table.manufacturer"
+        ),
+        sortable: true,
+        hidden: narrow,
+        width: "25%",
+      },
+      node_query_stage: {
+        title: this.hass.localize(
+          "ui.panel.config.ozw.nodes_table.query_stage"
+        ),
+        sortable: true,
+        width: narrow ? "25%" : "15%",
+      },
+      is_zwave_plus: {
+        title: this.hass.localize("ui.panel.config.ozw.nodes_table.zwave_plus"),
+        hidden: narrow,
+        template: (value: boolean) =>
+          value ? html` <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>` : "",
+      },
+      is_failed: {
+        title: this.hass.localize("ui.panel.config.ozw.nodes_table.failed"),
+        hidden: narrow,
+        template: (value: boolean) =>
+          value ? html` <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>` : "",
+      },
+    })
   );
 
   protected firstUpdated() {
     if (!this.ozwInstance) {
-      navigate(this, "/config/ozw/dashboard", true);
+      navigate("/config/ozw/dashboard", { replace: true });
     } else if (this.hass) {
       this._fetchData();
     }
@@ -128,10 +117,10 @@ class OZWNetworkNodes extends LitElement {
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const nodeId = ev.detail.id;
-    navigate(this, `/config/ozw/network/${this.ozwInstance}/node/${nodeId}`);
+    navigate(`/config/ozw/network/${this.ozwInstance}/node/${nodeId}`);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return haStyle;
   }
 }

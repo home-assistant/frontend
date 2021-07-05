@@ -1,5 +1,6 @@
-import { property, PropertyValues, UpdatingElement } from "lit-element";
-import { navigate } from "../../common/navigate";
+import { PropertyValues, ReactiveElement } from "lit";
+import { property } from "lit/decorators";
+import { navigate, NavigateOptions } from "../../common/navigate";
 import { CustomPanelInfo } from "../../data/panel_custom";
 import { HomeAssistant, Route } from "../../types";
 import { createCustomPanelElement } from "../../util/custom-panel/create-custom-panel-element";
@@ -15,7 +16,7 @@ declare global {
   }
 }
 
-export class HaPanelCustom extends UpdatingElement {
+export class HaPanelCustom extends ReactiveElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public narrow!: boolean;
@@ -26,11 +27,15 @@ export class HaPanelCustom extends UpdatingElement {
 
   private _setProperties?: (props: Record<string, unknown>) => void | undefined;
 
+  protected createRenderRoot() {
+    return this;
+  }
+
   // Since navigate fires events on `window`, we need to expose this as a function
   // to allow custom panels to forward their location changes to the main window
   // instead of their iframe window.
-  public navigate = (path: string, replace?: boolean) =>
-    navigate(this, path, replace);
+  public navigate = (path: string, options?: NavigateOptions) =>
+    navigate(path, options);
 
   public registerIframe(initialize, setProperties) {
     initialize(this.panel, {

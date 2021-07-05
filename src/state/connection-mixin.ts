@@ -2,6 +2,7 @@ import {
   Auth,
   callService,
   Connection,
+  ERR_CONNECTION_LOST,
   ERR_INVALID_AUTH,
   HassConfig,
   subscribeConfig,
@@ -13,6 +14,8 @@ import { broadcastConnectionStatus } from "../data/connection-status";
 import { subscribeFrontendUserData } from "../data/frontend";
 import { forwardHaptic } from "../data/haptics";
 import { DEFAULT_PANEL } from "../data/panel";
+import { serviceCallWillDisconnect } from "../data/service";
+import { NumberFormat, TimeFormat } from "../data/translation";
 import { subscribePanels } from "../data/ws-panels";
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, ServiceCallResponse } from "../types";
@@ -27,6 +30,8 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
 ) =>
   class extends superClass {
     protected initializeHass(auth: Auth, conn: Connection) {
+      const language = getLocalLanguage();
+
       this.hass = {
         auth,
         connection: conn,
@@ -34,13 +39,19 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         states: null as any,
         config: null as any,
         themes: null as any,
+        selectedTheme: null,
         panels: null as any,
         services: null as any,
         user: null as any,
         panelUrl: (this as any)._panelUrl,
         defaultPanel: DEFAULT_PANEL,
-        language: getLocalLanguage(),
+        language,
         selectedLanguage: null,
+        locale: {
+          language,
+          number_format: NumberFormat.language,
+          time_format: TimeFormat.language,
+        },
         resources: null as any,
         localize: () => "",
 
@@ -51,19 +62,32 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         enableShortcuts: true,
         moreInfoEntityId: null,
         hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
-        callService: async (domain, service, serviceData = {}) => {
+        callService: async (domain, service, serviceData = {}, target) => {
           if (__DEV__) {
             // eslint-disable-next-line no-console
-            console.log("Calling service", domain, service, serviceData);
+            console.log(
+              "Calling service",
+              domain,
+              service,
+              serviceData,
+              target
+            );
           }
           try {
             return (await callService(
               conn,
               domain,
               service,
-              serviceData
-            )) as Promise<ServiceCallResponse>;
+              serviceData,
+              target
+            )) as ServiceCallResponse;
           } catch (err) {
+            if (
+              err.error?.code === ERR_CONNECTION_LOST &&
+              serviceCallWillDisconnect(domain, service)
+            ) {
+              return { context: { id: "" } };
+            }
             if (__DEV__) {
               // eslint-disable-next-line no-console
               console.error(
@@ -71,6 +95,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
                 domain,
                 service,
                 serviceData,
+                target,
                 err
               );
             }

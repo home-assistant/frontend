@@ -9,15 +9,13 @@ import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
@@ -40,6 +38,7 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-svg-icon";
 import "./ha-devices-picker";
+import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 
 interface DevicesByArea {
   [areaId: string]: AreaDevices;
@@ -51,42 +50,28 @@ interface AreaDevices {
   devices: string[];
 }
 
-const rowRenderer = (
-  root: HTMLElement,
-  _owner,
-  model: { item: AreaDevices }
-) => {
-  if (!root.firstElementChild) {
-    root.innerHTML = `
-    <style>
-      paper-item {
-        width: 100%;
-        margin: -10px 0;
-        padding: 0;
-      }
-      mwc-icon-button {
-        float: right;
-      }
-      .devices {
-        display: none;
-      }
-      .devices.visible {
-        display: block;
-      }
-    </style>
-    <paper-item>
-      <paper-item-body two-line="">
-        <div class='name'>[[item.name]]</div>
-        <div secondary>[[item.devices.length]] devices</div>
-      </paper-item-body>
-    </paper-item>
-    `;
-  }
-  root.querySelector(".name")!.textContent = model.item.name!;
-  root.querySelector(
-    "[secondary]"
-  )!.textContent = `${model.item.devices.length.toString()} devices`;
-};
+const rowRenderer: ComboBoxLitRenderer<AreaDevices> = (item) => html`<style>
+    paper-item {
+      width: 100%;
+      margin: -10px 0;
+      padding: 0;
+    }
+    mwc-icon-button {
+      float: right;
+    }
+    .devices {
+      display: none;
+    }
+    .devices.visible {
+      display: block;
+    }
+  </style>
+  <paper-item>
+    <paper-item-body two-line="">
+      <div class="name">${item.name}</div>
+      <div secondary>${item.devices.length} devices</div>
+    </paper-item-body>
+  </paper-item>`;
 
 @customElement("ha-area-devices-picker")
 export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
@@ -127,13 +112,13 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
   @property({ type: Boolean })
   private _opened?: boolean;
 
-  @internalProperty() private _areaPicker = true;
+  @state() private _areaPicker = true;
 
-  @internalProperty() private _devices?: DeviceRegistryEntry[];
+  @state() private _devices?: DeviceRegistryEntry[];
 
-  @internalProperty() private _areas?: AreaRegistryEntry[];
+  @state() private _areas?: AreaRegistryEntry[];
 
-  @internalProperty() private _entities?: EntityRegistryEntry[];
+  @state() private _entities?: EntityRegistryEntry[];
 
   private _selectedDevices: string[] = [];
 
@@ -312,7 +297,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
         item-label-path="name"
         .items=${areas}
         .value=${this._value}
-        .renderer=${rowRenderer}
+        ${comboBoxRenderer(rowRenderer)}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._areaPicked}
       >
@@ -407,7 +392,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
     }, 0);
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .suffix {
         display: flex;

@@ -1,13 +1,6 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
+import { styleMap } from "lit/directives/style-map";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -30,9 +23,6 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
 
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
-
-  @property({ type: Boolean, reflect: true })
-  public editMode = false;
 
   @property() protected _config?: IframeCardConfig;
 
@@ -87,15 +77,11 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host([ispanel]) ha-card {
         width: 100%;
         height: 100%;
-      }
-
-      :host([ispanel][editMode]) ha-card {
-        height: calc(100% - 51px);
       }
 
       ha-card {

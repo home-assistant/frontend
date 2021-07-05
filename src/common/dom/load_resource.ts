@@ -1,13 +1,9 @@
 // Load a resource and get a promise when loading done.
 // From: https://davidwalsh.name/javascript-loader
 
-const _load = (
-  tag: "link" | "script" | "img",
-  url: string,
-  type?: "module"
-) => {
+const _load = (tag: "link" | "script" | "img", url: string, type?: "module") =>
   // This promise will be used by Promise.all to determine success or failure
-  return new Promise((resolve, reject) => {
+  new Promise((resolve, reject) => {
     const element = document.createElement(tag);
     let attr = "src";
     let parent = "body";
@@ -35,8 +31,6 @@ const _load = (
     element[attr] = url;
     document[parent].appendChild(element);
   });
-};
-
 export const loadCSS = (url: string) => _load("link", url);
 export const loadJS = (url: string) => _load("script", url);
 export const loadImg = (url: string) => _load("img", url);

@@ -1,5 +1,6 @@
 import { HassEntities } from "home-assistant-js-websocket";
-import { customElement, property, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit";
+import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { debounce } from "../../../common/util/debounce";
@@ -48,15 +49,18 @@ class HaConfigAutomation extends HassRouterPage {
       edit: {
         tag: "ha-automation-editor",
       },
+      trace: {
+        tag: "ha-automation-trace",
+        load: () => import("./trace/ha-automation-trace"),
+      },
     },
   };
 
   private _getAutomations = memoizeOne(
-    (states: HassEntities): AutomationEntity[] => {
-      return Object.values(states).filter(
+    (states: HassEntities): AutomationEntity[] =>
+      Object.values(states).filter(
         (entity) => computeStateDomain(entity) === "automation"
-      ) as AutomationEntity[];
-    }
+      ) as AutomationEntity[]
   );
 
   protected firstUpdated(changedProps) {
@@ -81,7 +85,7 @@ class HaConfigAutomation extends HassRouterPage {
 
     if (
       (!changedProps || changedProps.has("route")) &&
-      this._currentPage === "edit"
+      this._currentPage !== "dashboard"
     ) {
       const automationId = this.routeTail.path.substr(1);
       pageEl.automationId = automationId === "new" ? null : automationId;

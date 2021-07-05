@@ -1,4 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import { HaFormSchema } from "../components/ha-form/ha-form";
 import { HomeAssistant } from "../types";
 
 export interface ZHAEntityReference extends HassEntity {
@@ -54,6 +55,52 @@ export interface Cluster {
   type: string;
 }
 
+export interface ClusterConfigurationData {
+  cluster_name: string;
+  cluster_id: number;
+  success: boolean;
+}
+
+export interface ClusterAttributeData {
+  cluster_name: string;
+  cluster_id: number;
+  attributes: AttributeConfigurationStatus[];
+}
+
+export interface AttributeConfigurationStatus {
+  id: number;
+  name: string;
+  success: boolean | undefined;
+  min: number;
+  max: number;
+  change: number;
+}
+
+export interface ClusterConfigurationStatus {
+  cluster: Cluster;
+  bindSuccess: boolean | undefined;
+  attributes: Map<number, AttributeConfigurationStatus>;
+}
+
+interface ClusterConfigurationBindEvent {
+  type: "zha_channel_bind";
+  zha_channel_msg_data: ClusterConfigurationData;
+}
+
+interface ClusterConfigurationReportConfigurationEvent {
+  type: "zha_channel_configure_reporting";
+  zha_channel_msg_data: ClusterAttributeData;
+}
+
+interface ClusterConfigurationEventFinish {
+  type: "zha_channel_cfg_done";
+}
+
+export type ClusterConfigurationEvent =
+  | ClusterConfigurationReportConfigurationEvent
+  | ClusterConfigurationBindEvent
+  | ClusterConfigurationEventFinish;
+
 export interface Command {
   name: string;
   id: number;
@@ -75,6 +122,11 @@ export interface ZHAGroup {
   members: ZHADeviceEndpoint[];
 }
 
+export interface ZHAConfiguration {
+  data: Record<string, Record<string, unknown>>;
+  schemas: Record<string, HaFormSchema[]>;
+}
+
 export interface ZHAGroupMember {
   ieee: string;
   endpoint_id: string;
@@ -82,11 +134,20 @@ export interface ZHAGroupMember {
 
 export const reconfigureNode = (
   hass: HomeAssistant,
-  ieeeAddress: string
-): Promise<void> =>
+  ieeeAddress: string,
+  callbackFunction: (message: ClusterConfigurationEvent) => void
+) =>
+  hass.connection.subscribeMessage(
+    (message: ClusterConfigurationEvent) => callbackFunction(message),
+    {
+      type: "zha/devices/reconfigure",
+      ieee: ieeeAddress,
+    }
+  );
+
+export const refreshTopology = (hass: HomeAssistant): Promise<void> =>
   hass.callWS({
-    type: "zha/devices/reconfigure",
-    ieee: ieeeAddress,
+    type: "zha/topology/update",
   });
 
 export const fetchAttributesForCluster = (
@@ -178,12 +239,11 @@ export const unbindDeviceFromGroup = (
 export const readAttributeValue = (
   hass: HomeAssistant,
   data: ReadAttributeServiceData
-): Promise<string> => {
-  return hass.callWS({
+): Promise<string> =>
+  hass.callWS({
     ...data,
     type: "zha/devices/clusters/attributes/value",
   });
-};
 
 export const fetchCommandsForCluster = (
   hass: HomeAssistant,
@@ -272,6 +332,22 @@ export const addGroup = (
     members: membersToAdd,
   });
 
+export const fetchZHAConfiguration = (
+  hass: HomeAssistant
+): Promise<ZHAConfiguration> =>
+  hass.callWS({
+    type: "zha/configuration",
+  });
+
+export const updateZHAConfiguration = (
+  hass: HomeAssistant,
+  data: any
+): Promise<any> =>
+  hass.callWS({
+    type: "zha/configuration/update",
+    data: data,
+  });
+
 export const INITIALIZED = "INITIALIZED";
 export const INTERVIEW_COMPLETE = "INTERVIEW_COMPLETE";
 export const CONFIGURED = "CONFIGURED";
@@ -291,3 +367,7 @@ export const DEVICE_MESSAGE_TYPES = [
   DEVICE_FULLY_INITIALIZED,
 ];
 export const LOG_OUTPUT = "log_output";
+export const ZHA_CHANNEL_MSG = "zha_channel_message";
+export const ZHA_CHANNEL_MSG_BIND = "zha_channel_bind";
+export const ZHA_CHANNEL_MSG_CFG_RPT = "zha_channel_configure_reporting";
+export const ZHA_CHANNEL_CFG_DONE = "zha_channel_cfg_done";

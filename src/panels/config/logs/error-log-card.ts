@@ -1,13 +1,6 @@
 import "@material/mwc-button";
-import {
-  css,
-  CSSResult,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { property, state } from "lit/decorators";
 import "../../../components/ha-icon-button";
 import { fetchErrorLog } from "../../../data/error_log";
 import { HomeAssistant } from "../../../types";
@@ -15,7 +8,7 @@ import { HomeAssistant } from "../../../types";
 class ErrorLogCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @internalProperty() private _errorHTML!: TemplateResult[] | string;
+  @state() private _errorHTML!: TemplateResult[] | string;
 
   protected render(): TemplateResult {
     return html`
@@ -27,9 +20,7 @@ class ErrorLogCard extends LitElement {
                   icon="hass:refresh"
                   @click=${this._refreshErrorLog}
                 ></ha-icon-button>
-                <div class="card-content error-log">
-                  ${this._errorHTML}
-                </div>
+                <div class="card-content error-log">${this._errorHTML}</div>
               </ha-card>
             `
           : html`
@@ -49,7 +40,7 @@ class ErrorLogCard extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .error-log-intro {
         text-align: center;

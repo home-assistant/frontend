@@ -3,14 +3,13 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResultArray,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/ha-circular-progress";
@@ -22,7 +21,9 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../data/area_registry";
+import { fetchConfigFlowInProgress } from "../../data/config_flow";
 import type {
+  DataEntryFlowProgress,
   DataEntryFlowProgressedEvent,
   DataEntryFlowStep,
 } from "../../data/data_entry_flow";
@@ -32,12 +33,14 @@ import {
 } from "../../data/device_registry";
 import { haStyleDialog } from "../../resources/styles";
 import type { HomeAssistant } from "../../types";
+import { showAlertDialog } from "../generic/show-dialog-box";
 import { DataEntryFlowDialogParams } from "./show-dialog-data-entry-flow";
 import "./step-flow-abort";
 import "./step-flow-create-entry";
 import "./step-flow-external";
 import "./step-flow-form";
 import "./step-flow-loading";
+import "./step-flow-pick-flow";
 import "./step-flow-pick-handler";
 import "./step-flow-progress";
 
@@ -57,23 +60,27 @@ declare global {
 class DataEntryFlowDialog extends LitElement {
   public hass!: HomeAssistant;
 
-  @internalProperty() private _params?: DataEntryFlowDialogParams;
+  @state() private _params?: DataEntryFlowDialogParams;
 
-  @internalProperty() private _loading = true;
+  @state() private _loading = true;
 
   private _instance = instance;
 
-  @internalProperty() private _step:
+  @state() private _step:
     | DataEntryFlowStep
     | undefined
     // Null means we need to pick a config flow
     | null;
 
-  @internalProperty() private _devices?: DeviceRegistryEntry[];
+  @state() private _devices?: DeviceRegistryEntry[];
 
-  @internalProperty() private _areas?: AreaRegistryEntry[];
+  @state() private _areas?: AreaRegistryEntry[];
 
-  @internalProperty() private _handlers?: string[];
+  @state() private _handlers?: string[];
+
+  @state() private _handler?: string;
+
+  @state() private _flowsInProgress?: DataEntryFlowProgress[];
 
   private _unsubAreas?: UnsubscribeFunc;
 
@@ -83,48 +90,93 @@ class DataEntryFlowDialog extends LitElement {
     this._params = params;
     this._instance = instance++;
 
+    if (params.startFlowHandler) {
+      this._checkFlowsInProgress(params.startFlowHandler);
+      return;
+    }
+
+    if (params.continueFlowId) {
+      this._loading = true;
+      const curInstance = this._instance;
+      let step: DataEntryFlowStep;
+      try {
+        step = await params.flowConfig.fetchFlow(
+          this.hass,
+          params.continueFlowId
+        );
+      } catch (err) {
+        this._step = undefined;
+        this._params = undefined;
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.could_not_load"
+          ),
+        });
+        return;
+      }
+
+      // Happens if second showDialog called
+      if (curInstance !== this._instance) {
+        return;
+      }
+
+      this._processStep(step);
+      this._loading = false;
+      return;
+    }
+
     // Create a new config flow. Show picker
-    if (!params.continueFlowId && !params.startFlowHandler) {
-      if (!params.flowConfig.getFlowHandlers) {
-        throw new Error("No getFlowHandlers defined in flow config");
-      }
-      this._step = null;
-
-      // We only load the handlers once
-      if (this._handlers === undefined) {
-        this._loading = true;
-        try {
-          this._handlers = await params.flowConfig.getFlowHandlers(this.hass);
-        } finally {
-          this._loading = false;
-        }
-      }
-      await this.updateComplete;
-      return;
+    if (!params.flowConfig.getFlowHandlers) {
+      throw new Error("No getFlowHandlers defined in flow config");
     }
+    this._step = null;
 
-    this._loading = true;
-    const curInstance = this._instance;
-    const step = await (params.continueFlowId
-      ? params.flowConfig.fetchFlow(this.hass, params.continueFlowId)
-      : params.flowConfig.createFlow(this.hass, params.startFlowHandler!));
-
-    // Happens if second showDialog called
-    if (curInstance !== this._instance) {
-      return;
+    // We only load the handlers once
+    if (this._handlers === undefined) {
+      this._loading = true;
+      try {
+        this._handlers = await params.flowConfig.getFlowHandlers(this.hass);
+      } finally {
+        this._loading = false;
+      }
     }
-
-    this._processStep(step);
-    this._loading = false;
+    await this.updateComplete;
   }
 
   public closeDialog() {
-    if (this._step) {
-      this._flowDone();
-    } else if (this._step === null) {
-      // Flow aborted during picking flow
-      this._step = undefined;
-      this._params = undefined;
+    if (!this._params) {
+      return;
+    }
+    const flowFinished = Boolean(
+      this._step && ["create_entry", "abort"].includes(this._step.type)
+    );
+
+    // If we created this flow, delete it now.
+    if (this._step && !flowFinished && !this._params.continueFlowId) {
+      this._params.flowConfig.deleteFlow(this.hass, this._step.flow_id);
+    }
+
+    if (this._step !== null && this._params.dialogClosedCallback) {
+      this._params.dialogClosedCallback({
+        flowFinished,
+      });
+    }
+
+    this._step = undefined;
+    this._params = undefined;
+    this._devices = undefined;
+    this._flowsInProgress = undefined;
+    this._handler = undefined;
+    if (this._unsubAreas) {
+      this._unsubAreas();
+      this._unsubAreas = undefined;
+    }
+    if (this._unsubDevices) {
+      this._unsubDevices();
+      this._unsubDevices = undefined;
     }
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
@@ -144,7 +196,9 @@ class DataEntryFlowDialog extends LitElement {
       >
         <div>
           ${this._loading ||
-          (this._step === null && this._handlers === undefined)
+          (this._step === null &&
+            this._handlers === undefined &&
+            this._handler === undefined)
             ? html`
                 <step-flow-loading
                   .label=${this.hass.localize(
@@ -166,15 +220,21 @@ class DataEntryFlowDialog extends LitElement {
                   ?rtl=${computeRTL(this.hass)}
                 ></ha-icon-button>
                 ${this._step === null
-                  ? // Show handler picker
-                    html`
-                      <step-flow-pick-handler
+                  ? this._handler
+                    ? html`<step-flow-pick-flow
                         .flowConfig=${this._params.flowConfig}
                         .hass=${this.hass}
-                        .handlers=${this._handlers}
-                        .showAdvanced=${this._params.showAdvanced}
-                      ></step-flow-pick-handler>
-                    `
+                        .handler=${this._handler}
+                        .flowsInProgress=${this._flowsInProgress}
+                      ></step-flow-pick-flow>`
+                    : // Show handler picker
+                      html`
+                        <step-flow-pick-handler
+                          .hass=${this.hass}
+                          .handlers=${this._handlers}
+                          @handler-picked=${this._handlerPicked}
+                        ></step-flow-pick-handler>
+                      `
                   : this._step.type === "form"
                   ? html`
                       <step-flow-form
@@ -252,8 +312,8 @@ class DataEntryFlowDialog extends LitElement {
       this._step &&
       this._step.type === "create_entry"
     ) {
-      if (this._params!.flowConfig.loadDevicesAndAreas) {
-        this._fetchDevices(this._step.result);
+      if (this._step.result && this._params!.flowConfig.loadDevicesAndAreas) {
+        this._fetchDevices(this._step.result.entry_id);
         this._fetchAreas();
       } else {
         this._devices = [];
@@ -279,6 +339,43 @@ class DataEntryFlowDialog extends LitElement {
     });
   }
 
+  private async _checkFlowsInProgress(handler: string) {
+    this._loading = true;
+
+    const flowsInProgress = (
+      await fetchConfigFlowInProgress(this.hass.connection)
+    ).filter((flow) => flow.handler === handler);
+
+    if (!flowsInProgress.length) {
+      let step: DataEntryFlowStep;
+      try {
+        step = await this._params!.flowConfig.createFlow(this.hass, handler);
+      } catch (err) {
+        this._step = undefined;
+        this._params = undefined;
+        showAlertDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.error"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.integrations.config_flow.could_not_load"
+          ),
+        });
+        return;
+      }
+      this._processStep(step);
+    } else {
+      this._step = null;
+      this._handler = handler;
+      this._flowsInProgress = flowsInProgress;
+    }
+    this._loading = false;
+  }
+
+  private _handlerPicked(ev) {
+    this._checkFlowsInProgress(ev.detail.handler);
+  }
+
   private async _processStep(
     step: DataEntryFlowStep | undefined | Promise<DataEntryFlowStep>
   ): Promise<void> {
@@ -293,7 +390,7 @@ class DataEntryFlowDialog extends LitElement {
     }
 
     if (step === undefined) {
-      this._flowDone();
+      this.closeDialog();
       return;
     }
     this._step = undefined;
@@ -301,39 +398,7 @@ class DataEntryFlowDialog extends LitElement {
     this._step = step;
   }
 
-  private _flowDone(): void {
-    if (!this._params) {
-      return;
-    }
-    const flowFinished = Boolean(
-      this._step && ["create_entry", "abort"].includes(this._step.type)
-    );
-
-    // If we created this flow, delete it now.
-    if (this._step && !flowFinished && !this._params.continueFlowId) {
-      this._params.flowConfig.deleteFlow(this.hass, this._step.flow_id);
-    }
-
-    if (this._params.dialogClosedCallback) {
-      this._params.dialogClosedCallback({
-        flowFinished,
-      });
-    }
-
-    this._step = undefined;
-    this._params = undefined;
-    this._devices = undefined;
-    if (this._unsubAreas) {
-      this._unsubAreas();
-      this._unsubAreas = undefined;
-    }
-    if (this._unsubDevices) {
-      this._unsubDevices();
-      this._unsubDevices = undefined;
-    }
-  }
-
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`

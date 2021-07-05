@@ -6,15 +6,15 @@ import { mdiCalendar } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { formatDateTime } from "../common/datetime/format_date_time";
+import { useAmPm } from "../common/datetime/use_am_pm";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import { HomeAssistant } from "../types";
 import "./date-range-picker";
@@ -43,8 +43,8 @@ export class HaDateRangePicker extends LitElement {
   protected updated(changedProps: PropertyValues) {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.language !== this.hass.language) {
-        this._hour24format = this._compute24hourFormat();
+      if (!oldHass || oldHass.locale !== this.hass.locale) {
+        this._hour24format = !useAmPm(this.hass.locale);
         this._rtlDirection = computeRTLDirection(this.hass);
       }
     }
@@ -62,7 +62,7 @@ export class HaDateRangePicker extends LitElement {
         <div slot="input" class="date-range-inputs">
           <ha-svg-icon .path=${mdiCalendar}></ha-svg-icon>
           <paper-input
-            .value=${formatDateTime(this.startDate, this.hass.language)}
+            .value=${formatDateTime(this.startDate, this.hass.locale)}
             .label=${this.hass.localize(
               "ui.components.date-range-picker.start_date"
             )}
@@ -71,7 +71,7 @@ export class HaDateRangePicker extends LitElement {
             readonly
           ></paper-input>
           <paper-input
-            .value=${formatDateTime(this.endDate, this.hass.language)}
+            .value=${formatDateTime(this.endDate, this.hass.locale)}
             label=${this.hass.localize(
               "ui.components.date-range-picker.end_date"
             )}
@@ -88,9 +88,7 @@ export class HaDateRangePicker extends LitElement {
             >
               <mwc-list @action=${this._setDateRange} activatable>
                 ${Object.keys(this.ranges).map(
-                  (name) => html`<mwc-list-item>
-                    ${name}
-                  </mwc-list-item>`
+                  (name) => html`<mwc-list-item> ${name} </mwc-list-item>`
                 )}
               </mwc-list>
             </div>`
@@ -107,16 +105,6 @@ export class HaDateRangePicker extends LitElement {
         </div>
       </date-range-picker>
     `;
-  }
-
-  private _compute24hourFormat() {
-    return (
-      new Intl.DateTimeFormat(this.hass.language, {
-        hour: "numeric",
-      })
-        .formatToParts(new Date(2020, 0, 1, 13))
-        .find((part) => part.type === "hour")!.value.length === 2
-    );
   }
 
   private _setDateRange(ev: CustomEvent<ActionDetail>) {
@@ -148,7 +136,7 @@ export class HaDateRangePicker extends LitElement {
     }
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-svg-icon {
         margin-right: 8px;

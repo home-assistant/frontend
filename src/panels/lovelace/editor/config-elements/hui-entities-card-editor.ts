@@ -2,26 +2,24 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
-import {
+  any,
   array,
   assert,
   boolean,
+  literal,
+  number,
   object,
   optional,
   string,
+  type,
   union,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { customType } from "../../../../common/structs/is-custom-type";
+import { entityId } from "../../../../common/structs/is-entity-id";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
@@ -32,41 +30,151 @@ import type { HomeAssistant } from "../../../../types";
 import type { EntitiesCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
-import { headerFooterConfigStructs } from "../../header-footer/types";
+import { headerFooterConfigStructs } from "../../header-footer/structs";
 import type { LovelaceCardEditor } from "../../types";
 import "../header-footer-editor/hui-header-footer-editor";
 import "../hui-entities-card-row-editor";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
+import { actionConfigStruct } from "../structs/action-struct";
+import { entitiesConfigStruct } from "../structs/entities-struct";
 import {
   EditorTarget,
   EditSubElementEvent,
-  entitiesConfigStruct,
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
+const buttonEntitiesRowConfigStruct = object({
+  type: literal("button"),
+  name: string(),
+  action_name: optional(string()),
+  tap_action: actionConfigStruct,
+  hold_action: optional(actionConfigStruct),
+  double_tap_action: optional(actionConfigStruct),
+});
+
+const castEntitiesRowConfigStruct = object({
+  type: literal("cast"),
+  view: union([string(), number()]),
+  dashboard: optional(string()),
+  name: optional(string()),
+  icon: optional(string()),
+  hide_if_unavailable: optional(boolean()),
+});
+
+const callServiceEntitiesRowConfigStruct = object({
+  type: literal("call-service"),
+  name: string(),
+  service: string(),
+  icon: optional(string()),
+  action_name: optional(string()),
+  service_data: optional(any()),
+});
+
+const conditionalEntitiesRowConfigStruct = object({
+  type: literal("conditional"),
+  row: any(),
+  conditions: array(
+    object({
+      entity: string(),
+      state: optional(string()),
+      state_not: optional(string()),
+    })
+  ),
+});
+
+const dividerEntitiesRowConfigStruct = object({
+  type: literal("divider"),
+  style: optional(any()),
+});
+
+const sectionEntitiesRowConfigStruct = object({
+  type: literal("section"),
+  label: optional(string()),
+});
+
+const webLinkEntitiesRowConfigStruct = object({
+  type: literal("weblink"),
+  url: string(),
+  name: optional(string()),
+  icon: optional(string()),
+});
+
+const buttonsEntitiesRowConfigStruct = object({
+  type: literal("buttons"),
+  entities: array(
+    union([
+      object({
+        entity: string(),
+        icon: optional(string()),
+        image: optional(string()),
+        name: optional(string()),
+      }),
+      string(),
+    ])
+  ),
+});
+
+const attributeEntitiesRowConfigStruct = object({
+  type: literal("attribute"),
+  entity: string(),
+  attribute: string(),
+  prefix: optional(string()),
+  suffix: optional(string()),
+  name: optional(string()),
+});
+
+const textEntitiesRowConfigStruct = object({
+  type: literal("text"),
+  name: string(),
+  text: string(),
+  icon: optional(string()),
+});
+
+const customRowConfigStruct = type({
+  type: customType(),
+});
+
+const entitiesRowConfigStruct = union([
+  entitiesConfigStruct,
+  buttonEntitiesRowConfigStruct,
+  castEntitiesRowConfigStruct,
+  conditionalEntitiesRowConfigStruct,
+  dividerEntitiesRowConfigStruct,
+  sectionEntitiesRowConfigStruct,
+  webLinkEntitiesRowConfigStruct,
+  buttonsEntitiesRowConfigStruct,
+  attributeEntitiesRowConfigStruct,
+  callServiceEntitiesRowConfigStruct,
+  textEntitiesRowConfigStruct,
+  customRowConfigStruct,
+]);
+
 const cardConfigStruct = object({
   type: string(),
   title: optional(union([string(), boolean()])),
+  entity: optional(entityId()),
   theme: optional(string()),
+  icon: optional(string()),
   show_header_toggle: optional(boolean()),
   state_color: optional(boolean()),
-  entities: array(entitiesConfigStruct),
+  entities: array(entitiesRowConfigStruct),
   header: optional(headerFooterConfigStructs),
   footer: optional(headerFooterConfigStructs),
 });
 
 @customElement("hui-entities-card-editor")
-export class HuiEntitiesCardEditor extends LitElement
+export class HuiEntitiesCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: EntitiesCardConfig;
+  @state() private _config?: EntitiesCardConfig;
 
-  @internalProperty() private _configEntities?: LovelaceRowConfig[];
+  @state() private _configEntities?: LovelaceRowConfig[];
 
-  @internalProperty() private _subElementEditorConfig?: SubElementEditorConfig;
+  @state() private _subElementEditorConfig?: SubElementEditorConfig;
 
   public setConfig(config: EntitiesCardConfig): void {
     assert(config, cardConfigStruct);
@@ -267,7 +375,7 @@ export class HuiEntitiesCardEditor extends LitElement
     this._subElementEditorConfig = undefined;
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

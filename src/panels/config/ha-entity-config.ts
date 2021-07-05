@@ -1,15 +1,13 @@
 import "@material/mwc-button";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
   LitElement,
-  property,
   PropertyValues,
-  query,
   TemplateResult,
-} from "lit-element";
+} from "lit";
+import { customElement, property, query } from "lit/decorators";
 import "../../components/buttons/ha-progress-button";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-card";
@@ -103,7 +101,7 @@ export class HaEntityConfig extends LitElement {
     }
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

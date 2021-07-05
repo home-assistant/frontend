@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/data-table/ha-data-table";
@@ -113,14 +105,16 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               template: (entities) => html`
                 ${entities.length
                   ? entities.length > 3
-                    ? html`${entities.slice(0, 2).map(
-                          (entity) =>
-                            html`<div
-                              style="overflow: hidden; text-overflow: ellipsis;"
-                            >
-                              ${entity.name || entity.original_name}
-                            </div>`
-                        )}
+                    ? html`${entities
+                          .slice(0, 2)
+                          .map(
+                            (entity) =>
+                              html`<div
+                                style="overflow: hidden; text-overflow: ellipsis;"
+                              >
+                                ${entity.name || entity.original_name}
+                              </div>`
+                          )}
                         <div>And ${entities.length - 2} more...</div>`
                     : entities.map(
                         (entity) =>
@@ -154,7 +148,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       css`
         .table-cell-text {

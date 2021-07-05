@@ -1,12 +1,5 @@
-import {
-  CSSResult,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
 import { assert, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -18,11 +11,8 @@ import { HomeAssistant } from "../../../../types";
 import { WeatherForecastCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
-import {
-  actionConfigStruct,
-  EditorTarget,
-  EntitiesEditorEvent,
-} from "../types";
+import { actionConfigStruct } from "../structs/action-struct";
+import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
 const cardConfigStruct = object({
@@ -40,11 +30,12 @@ const cardConfigStruct = object({
 const includeDomains = ["weather"];
 
 @customElement("hui-weather-forecast-card-editor")
-export class HuiWeatherForecastCardEditor extends LitElement
+export class HuiWeatherForecastCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @internalProperty() private _config?: WeatherForecastCardConfig;
+  @state() private _config?: WeatherForecastCardConfig;
 
   public setConfig(config: WeatherForecastCardConfig): void {
     assert(config, cardConfigStruct);
@@ -162,7 +153,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return configElementStyle;
   }
 }

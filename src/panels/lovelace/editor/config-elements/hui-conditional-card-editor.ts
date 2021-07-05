@@ -1,17 +1,8 @@
 import "@material/mwc-tab-bar/mwc-tab-bar";
 import "@material/mwc-tab/mwc-tab";
 import type { MDCTabBarActivatedEvent } from "@material/tab-bar";
-import {
-  css,
-  CSSResultArray,
-  customElement,
-  html,
-  internalProperty,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state, query } from "lit/decorators";
 import { any, array, assert, object, optional, string } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
@@ -39,19 +30,20 @@ const cardConfigStruct = object({
 });
 
 @customElement("hui-conditional-card-editor")
-export class HuiConditionalCardEditor extends LitElement
+export class HuiConditionalCardEditor
+  extends LitElement
   implements LovelaceCardEditor {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;
 
-  @internalProperty() private _config?: ConditionalCardConfig;
+  @state() private _config?: ConditionalCardConfig;
 
-  @internalProperty() private _GUImode = true;
+  @state() private _GUImode = true;
 
-  @internalProperty() private _guiModeAvailable? = true;
+  @state() private _guiModeAvailable? = true;
 
-  @internalProperty() private _cardTab = false;
+  @state() private _cardTab = false;
 
   @query("hui-card-element-editor")
   private _cardEditorEl?: HuiCardElementEditor;
@@ -61,8 +53,8 @@ export class HuiConditionalCardEditor extends LitElement
     this._config = config;
   }
 
-  public refreshYamlEditor(focus) {
-    this._cardEditorEl?.refreshYamlEditor(focus);
+  public focusYamlEditor() {
+    this._cardEditorEl?.focusYamlEditor();
   }
 
   protected render(): TemplateResult {
@@ -131,8 +123,8 @@ export class HuiConditionalCardEditor extends LitElement
               ${this.hass!.localize(
                 "ui.panel.lovelace.editor.card.conditional.condition_explanation"
               )}
-              ${this._config.conditions.map((cond, idx) => {
-                return html`
+              ${this._config.conditions.map(
+                (cond, idx) => html`
                   <div class="condition">
                     <div class="entity">
                       <ha-entity-picker
@@ -180,8 +172,8 @@ export class HuiConditionalCardEditor extends LitElement
                       ></paper-input>
                     </div>
                   </div>
-                `;
-              })}
+                `
+              )}
               <div class="condition">
                 <ha-entity-picker
                   .hass=${this.hass}
@@ -298,7 +290,7 @@ export class HuiConditionalCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  static get styles(): CSSResultArray {
+  static get styles(): CSSResultGroup {
     return [
       configElementStyle,
       css`

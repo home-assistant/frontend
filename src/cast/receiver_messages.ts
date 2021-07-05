@@ -62,7 +62,7 @@ export const ensureConnectedCastSession = (cast: CastManager, auth: Auth) => {
     return undefined;
   }
 
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     const unsub = cast.addEventListener("connection-changed", () => {
       if (cast.castConnectedToOurHass) {
         unsub();

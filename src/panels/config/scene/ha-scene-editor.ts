@@ -1,20 +1,25 @@
-import { mdiContentSave } from "@mdi/js";
+import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
+import "@material/mwc-list/mwc-list-item";
+import {
+  mdiContentDuplicate,
+  mdiContentSave,
+  mdiDelete,
+  mdiDotsVertical,
+} from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { HassEvent } from "home-assistant-js-websocket";
 import {
   css,
-  CSSResult,
-  customElement,
+  CSSResultGroup,
   html,
-  internalProperty,
   LitElement,
-  property,
   PropertyValues,
   TemplateResult,
-} from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
+} from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -48,6 +53,7 @@ import {
   SceneEntities,
   SceneEntity,
   SCENE_IGNORED_DOMAINS,
+  showSceneEditor,
 } from "../../../data/scene";
 import {
   showAlertDialog,
@@ -83,35 +89,35 @@ export class HaSceneEditor extends SubscribeMixin(
 
   @property() public route!: Route;
 
-  @property() public sceneId?: string;
+  @property() public sceneId: string | null = null;
 
   @property() public scenes!: SceneEntity[];
 
   @property() public showAdvanced!: boolean;
 
-  @internalProperty() private _dirty = false;
+  @state() private _dirty = false;
 
-  @internalProperty() private _errors?: string;
+  @state() private _errors?: string;
 
-  @internalProperty() private _config?: SceneConfig;
+  @state() private _config?: SceneConfig;
 
-  @internalProperty() private _entities: string[] = [];
+  @state() private _entities: string[] = [];
 
-  @internalProperty() private _devices: string[] = [];
+  @state() private _devices: string[] = [];
 
-  @internalProperty()
+  @state()
   private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
 
-  @internalProperty()
+  @state()
   private _entityRegistryEntries: EntityRegistryEntry[] = [];
 
-  @internalProperty() private _scene?: SceneEntity;
+  @state() private _scene?: SceneEntity;
 
   private _storedStates: SceneEntities = {};
 
   private _unsubscribeEvents?: () => void;
 
-  @internalProperty() private _deviceEntityLookup: DeviceEntitiesLookup = {};
+  @state() private _deviceEntityLookup: DeviceEntitiesLookup = {};
 
   private _activateContextId?: string;
 
@@ -198,19 +204,52 @@ export class HaSceneEditor extends SubscribeMixin(
         .backCallback=${() => this._backTapped()}
         .tabs=${configSections.automation}
       >
-        ${!this.sceneId
-          ? ""
-          : html`
-              <ha-icon-button
-                class="warning"
-                slot="toolbar-icon"
-                title="${this.hass.localize(
-                  "ui.panel.config.scene.picker.delete_scene"
-                )}"
-                icon="hass:delete"
-                @click=${this._deleteTapped}
-              ></ha-icon-button>
-            `}
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._handleMenuAction}
+          activatable
+        >
+          <mwc-icon-button
+            slot="trigger"
+            .title=${this.hass.localize("ui.common.menu")}
+            .label=${this.hass.localize("ui.common.overflow_menu")}
+            ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+
+          <mwc-list-item
+            .disabled=${!this.sceneId}
+            aria-label=${this.hass.localize(
+              "ui.panel.config.scene.picker.duplicate_scene"
+            )}
+            graphic="icon"
+          >
+            ${this.hass.localize(
+              "ui.panel.config.scene.picker.duplicate_scene"
+            )}
+            <ha-svg-icon
+              slot="graphic"
+              .path=${mdiContentDuplicate}
+            ></ha-svg-icon>
+          </mwc-list-item>
+
+          <mwc-list-item
+            .disabled=${!this.sceneId}
+            aria-label=${this.hass.localize(
+              "ui.panel.config.scene.picker.delete_scene"
+            )}
+            class=${classMap({ warning: Boolean(this.sceneId) })}
+            graphic="icon"
+          >
+            ${this.hass.localize("ui.panel.config.scene.picker.delete_scene")}
+            <ha-svg-icon
+              class=${classMap({ warning: Boolean(this.sceneId) })}
+              slot="graphic"
+              .path=${mdiDelete}
+            >
+            </ha-svg-icon>
+          </mwc-list-item>
+        </ha-button-menu>
         ${this._errors ? html` <div class="errors">${this._errors}</div> ` : ""}
         ${this.narrow ? html` <span slot="header">${name}</span> ` : ""}
         <div
@@ -221,7 +260,7 @@ export class HaSceneEditor extends SubscribeMixin(
         >
           ${this._config
             ? html`
-                <ha-config-section .isWide=${this.isWide}>
+                <ha-config-section vertical .isWide=${this.isWide}>
                   ${!this.narrow
                     ? html` <span slot="header">${name}</span> `
                     : ""}
@@ -253,7 +292,7 @@ export class HaSceneEditor extends SubscribeMixin(
                   </ha-card>
                 </ha-config-section>
 
-                <ha-config-section .isWide=${this.isWide}>
+                <ha-config-section vertical .isWide=${this.isWide}>
                   <div slot="header">
                     ${this.hass.localize(
                       "ui.panel.config.scene.editor.devices.header"
@@ -324,7 +363,7 @@ export class HaSceneEditor extends SubscribeMixin(
 
                 ${this.showAdvanced
                   ? html`
-                      <ha-config-section .isWide=${this.isWide}>
+                      <ha-config-section vertical .isWide=${this.isWide}>
                         <div slot="header">
                           ${this.hass.localize(
                             "ui.panel.config.scene.editor.entities.header"
@@ -479,6 +518,17 @@ export class HaSceneEditor extends SubscribeMixin(
     }
   }
 
+  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._duplicate();
+        break;
+      case 1:
+        this._deleteTapped();
+        break;
+    }
+  }
+
   private async _setScene() {
     const scene = this.scenes.find(
       (entity: SceneEntity) => entity.attributes.id === this.sceneId
@@ -489,9 +539,10 @@ export class HaSceneEditor extends SubscribeMixin(
     this._scene = scene;
     const { context } = await activateScene(this.hass, this._scene.entity_id);
     this._activateContextId = context.id;
-    this._unsubscribeEvents = await this.hass!.connection.subscribeEvents<
-      HassEvent
-    >((event) => this._stateChanged(event), "state_changed");
+    this._unsubscribeEvents = await this.hass!.connection.subscribeEvents<HassEvent>(
+      (event) => this._stateChanged(event),
+      "state_changed"
+    );
   }
 
   private _showMoreInfo(ev: Event) {
@@ -556,20 +607,18 @@ export class HaSceneEditor extends SubscribeMixin(
     if (this._entities.includes(entityId)) {
       return;
     }
-    this._entities = [...this._entities, entityId];
-    this._storeState(entityId);
-
     const entityRegistry = this._entityRegistryEntries.find(
       (entityReg) => entityReg.entity_id === entityId
     );
-
     if (
       entityRegistry?.device_id &&
       !this._devices.includes(entityRegistry.device_id)
     ) {
-      this._devices = [...this._devices, entityRegistry.device_id];
+      this._pickDevice(entityRegistry.device_id);
+    } else {
+      this._entities = [...this._entities, entityId];
+      this._storeState(entityId);
     }
-
     this._dirty = true;
   }
 
@@ -582,14 +631,12 @@ export class HaSceneEditor extends SubscribeMixin(
     this._dirty = true;
   }
 
-  private _devicePicked(ev: CustomEvent) {
-    const device = ev.detail.value;
-    (ev.target as any).value = "";
-    if (this._devices.includes(device)) {
+  private _pickDevice(device_id: string) {
+    if (this._devices.includes(device_id)) {
       return;
     }
-    this._devices = [...this._devices, device];
-    const deviceEntities = this._deviceEntityLookup[device];
+    this._devices = [...this._devices, device_id];
+    const deviceEntities = this._deviceEntityLookup[device_id];
     if (!deviceEntities) {
       return;
     }
@@ -598,6 +645,12 @@ export class HaSceneEditor extends SubscribeMixin(
       this._storeState(entityId);
     });
     this._dirty = true;
+  }
+
+  private _devicePicked(ev: CustomEvent) {
+    const device = ev.detail.value;
+    (ev.target as any).value = "";
+    this._pickDevice(device);
   }
 
   private _deleteDevice(ev: Event) {
@@ -627,7 +680,12 @@ export class HaSceneEditor extends SubscribeMixin(
     if ((this._config![name] || "") === newVal) {
       return;
     }
-    this._config = { ...this._config!, [name]: newVal };
+    if (!newVal) {
+      delete this._config![name];
+      this._config = { ...this._config! };
+    } else {
+      this._config = { ...this._config!, [name]: newVal };
+    }
     this._dirty = true;
   }
 
@@ -675,12 +733,37 @@ export class HaSceneEditor extends SubscribeMixin(
     history.back();
   }
 
+  private async _duplicate() {
+    if (this._dirty) {
+      if (
+        !(await showConfirmationDialog(this, {
+          text: this.hass!.localize(
+            "ui.panel.config.scene.editor.unsaved_confirm"
+          ),
+          confirmText: this.hass!.localize("ui.common.leave"),
+          dismissText: this.hass!.localize("ui.common.stay"),
+        }))
+      ) {
+        return;
+      }
+      // Wait for dialog to complete closing
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
+    showSceneEditor({
+      ...this._config,
+      id: undefined,
+      name: `${this._config?.name} (${this.hass.localize(
+        "ui.panel.config.scene.picker.duplicate"
+      )})`,
+    });
+  }
+
   private _calculateStates(): SceneEntities {
     const output: SceneEntities = {};
     this._entities.forEach((entityId) => {
-      const state = this._getCurrentState(entityId);
-      if (state) {
-        output[entityId] = state;
+      const entityState = this._getCurrentState(entityId);
+      if (entityState) {
+        output[entityId] = entityState;
       }
     });
     return output;
@@ -690,11 +773,11 @@ export class HaSceneEditor extends SubscribeMixin(
     if (entityId in this._storedStates) {
       return;
     }
-    const state = this._getCurrentState(entityId);
-    if (!state) {
+    const entityState = this._getCurrentState(entityId);
+    if (!entityState) {
       return;
     }
-    this._storedStates[entityId] = state;
+    this._storedStates[entityId] = entityState;
   }
 
   private _getCurrentState(entityId: string) {
@@ -713,7 +796,7 @@ export class HaSceneEditor extends SubscribeMixin(
       this._dirty = false;
 
       if (!this.sceneId) {
-        navigate(this, `/config/scene/edit/${id}`, true);
+        navigate(`/config/scene/edit/${id}`, { replace: true });
       }
     } catch (err) {
       this._errors = err.body.message || err.message;
@@ -728,7 +811,7 @@ export class HaSceneEditor extends SubscribeMixin(
     this._saveScene();
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup {
     return [
       haStyle,
       css`

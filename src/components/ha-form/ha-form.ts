@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaTimeData } from "../ha-time-input";
@@ -202,13 +196,12 @@ export class HaForm extends LitElement implements HaFormElement {
     ev.stopPropagation();
     const schema = (ev.target as HaFormElement).schema as HaFormSchema;
     const data = this.data as HaFormDataContainer;
-    data[schema.name] = ev.detail.value;
     fireEvent(this, "value-changed", {
-      value: { ...data },
+      value: { ...data, [schema.name]: ev.detail.value },
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       .error {
         color: var(--error-color);

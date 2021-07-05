@@ -1,14 +1,7 @@
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
@@ -123,7 +116,7 @@ class MoreInfoVacuum extends LitElement {
               <div>
                 <span>
                   <ha-icon .icon=${stateObj.attributes.battery_icon}></ha-icon>
-                  ${stateObj.attributes.battery_level}%
+                  ${stateObj.attributes.battery_level} %
                 </span>
               </div>
             `
@@ -177,9 +170,7 @@ class MoreInfoVacuum extends LitElement {
                   >
                     ${stateObj.attributes.fan_speed_list!.map(
                       (mode) => html`
-                        <paper-item .itemName=${mode}>
-                          ${mode}
-                        </paper-item>
+                        <paper-item .itemName=${mode}> ${mode} </paper-item>
                       `
                     )}
                   </paper-listbox>
@@ -199,6 +190,7 @@ class MoreInfoVacuum extends LitElement {
         : ""}
 
       <ha-attributes
+        .hass=${this.hass}
         .stateObj=${this.stateObj}
         .extraFilters=${filterExtraAttributes}
       ></ha-attributes>
@@ -226,7 +218,7 @@ class MoreInfoVacuum extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       :host {
         line-height: 1.5;
