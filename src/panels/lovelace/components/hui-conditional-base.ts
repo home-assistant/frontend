@@ -17,6 +17,8 @@ export class HuiConditionalBase extends ReactiveElement {
 
   @property() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
 
+  @property({ type: Boolean, reflect: true }) public invisible = false;
+
   protected _element?: LovelaceCard | LovelaceRow;
 
   protected createRenderRoot() {
@@ -55,6 +57,7 @@ export class HuiConditionalBase extends ReactiveElement {
 
     const visible =
       this.editMode || checkConditionsMet(this._config.conditions, this.hass);
+    this.invisible = !visible;
 
     this.style.setProperty("display", visible ? "" : "none");
 
