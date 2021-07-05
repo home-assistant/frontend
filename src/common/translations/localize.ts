@@ -24,6 +24,23 @@ const polyfillProm = polyfillLoaded
         polyfillLoaded = true;
       });
 
+type ResourceObject = string | Record<string, string>;
+
+const getResource = (
+  translations: ResourceObject,
+  path: string
+): string | undefined => {
+  const keys = path.split(".");
+  let curValue: ResourceObject = translations;
+  for (const key of keys) {
+    curValue = curValue[key];
+    if (!curValue) {
+      return undefined;
+    }
+  }
+  return curValue as string;
+};
+
 /**
  * Adapted from Polymer app-localize-behavior.
  *
@@ -74,7 +91,7 @@ export const computeLocalize = async (
 
     // Cache the key/value pairs for the same language, so that we don't
     // do extra work if we're just reusing strings across an application.
-    const translatedValue = resources[language][key];
+    const translatedValue = getResource(resources[language], key);
 
     if (!translatedValue) {
       return "";

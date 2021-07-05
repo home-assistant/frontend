@@ -54,6 +54,7 @@ function recursiveFlatten(prefix, data) {
 }
 
 function flatten(data) {
+  return data;
   return recursiveFlatten("", data);
 }
 

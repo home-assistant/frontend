@@ -44,6 +44,22 @@ interface LoadedTranslationCategory {
   configFlow: boolean;
 }
 
+const mergeResources = (
+  target: Record<string, any>,
+  source: Record<string, any>,
+  copy = true
+) => {
+  const destination = copy ? { ...target } : target;
+  Object.keys(source).forEach((key) => {
+    if (key in destination) {
+      destination[key] = mergeResources(target[key], source[key], false);
+    } else {
+      destination[key] = source[key];
+    }
+  });
+  return destination;
+};
+
 /*
  * superClass needs to contain `this.hass` and `this._updateHass`.
  */
@@ -334,10 +350,10 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
 
       const resources = {
-        [language]: {
-          ...(this.hass ?? this._pendingHass)?.resources?.[language],
-          ...data,
-        },
+        [language]: mergeResources(
+          (this.hass ?? this._pendingHass)?.resources?.[language] || {},
+          data
+        ),
       };
       const changes: Partial<HomeAssistant> = {
         resources,
