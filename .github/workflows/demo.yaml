@@ -4,16 +4,20 @@ on:
   push:
     branches:
       - dev
+
+env:
+  NODE_VERSION: 12
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v2
-      - name: Setting up Node.js
+      - name: Set up Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v2
         with:
-          node-version: 12
+          node-version: ${{ env.NODE_VERSION }}
           cache: yarn
       - name: Install dependencies
         run: yarn install
