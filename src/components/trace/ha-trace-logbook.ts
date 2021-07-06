@@ -1,15 +1,18 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../../../../components/trace/hat-logbook-note";
-import type { LogbookEntry } from "../../../../data/logbook";
-import type { HomeAssistant } from "../../../../types";
-import "../../../logbook/ha-logbook";
+import { LogbookEntry } from "../../data/logbook";
+import { HomeAssistant } from "../../types";
+import "./hat-logbook-note";
+import "../../panels/logbook/ha-logbook";
+import { TraceExtended } from "../../data/trace";
 
-@customElement("ha-automation-trace-logbook")
-export class HaAutomationTraceLogbook extends LitElement {
+@customElement("ha-trace-logbook")
+export class HaTraceLogbook extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+
+  @property({ attribute: false }) public trace!: TraceExtended;
 
   @property({ attribute: false }) public logbookEntries!: LogbookEntry[];
 
@@ -22,7 +25,7 @@ export class HaAutomationTraceLogbook extends LitElement {
             .entries=${this.logbookEntries}
             .narrow=${this.narrow}
           ></ha-logbook>
-          <hat-logbook-note></hat-logbook-note>
+          <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `
       : html`<div class="padded-box">
           No Logbook entries found for this step.
@@ -42,6 +45,6 @@ export class HaAutomationTraceLogbook extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-trace-logbook": HaAutomationTraceLogbook;
+    "ha-trace-logbook": HaTraceLogbook;
   }
 }

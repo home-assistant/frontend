@@ -9,39 +9,36 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
-import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
-import type { NodeInfo } from "../../../../components/trace/hat-graph";
-import "../../../../components/trace/hat-script-graph";
-import { AutomationEntity } from "../../../../data/automation";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
+import type { NodeInfo } from "../../../components/trace/hat-graph";
+import "../../../components/trace/hat-script-graph";
+import { getLogbookDataForContext, LogbookEntry } from "../../../data/logbook";
+import { ScriptEntity } from "../../../data/script";
 import {
-  getLogbookDataForContext,
-  LogbookEntry,
-} from "../../../../data/logbook";
-import {
-  AutomationTrace,
-  AutomationTraceExtended,
   loadTrace,
   loadTraces,
-} from "../../../../data/trace";
-import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
-import { haStyle } from "../../../../resources/styles";
-import { HomeAssistant, Route } from "../../../../types";
-import { configSections } from "../../ha-panel-config";
-import "./ha-automation-trace-blueprint-config";
-import "./ha-automation-trace-config";
-import "./ha-automation-trace-logbook";
-import "./ha-automation-trace-path-details";
-import "./ha-automation-trace-timeline";
-import { traceTabStyles } from "./styles";
+  ScriptTrace,
+  ScriptTraceExtended,
+} from "../../../data/trace";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
+import { haStyle } from "../../../resources/styles";
+import { HomeAssistant, Route } from "../../../types";
+import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
+import { configSections } from "../ha-panel-config";
+import "../../../components/trace/ha-trace-blueprint-config";
+import "../../../components/trace/ha-trace-config";
+import "../../../components/trace/ha-trace-logbook";
+import "../../../components/trace/ha-trace-path-details";
+import "../../../components/trace/ha-trace-timeline";
 
-@customElement("ha-automation-trace")
-export class HaAutomationTrace extends LitElement {
+@customElement("ha-script-trace")
+export class HaScriptTrace extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public automationId!: string;
+  @property() public scriptEntityId!: string;
 
-  @property({ attribute: false }) public automations!: AutomationEntity[];
+  @property({ attribute: false }) public scripts!: ScriptEntity[];
 
   @property({ type: Boolean }) public isWide?: boolean;
 
@@ -49,15 +46,13 @@ export class HaAutomationTrace extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
-  @state() private _entityId?: string;
-
-  @state() private _traces?: AutomationTrace[];
+  @state() private _traces?: ScriptTrace[];
 
   @state() private _runId?: string;
 
   @state() private _selected?: NodeInfo;
 
-  @state() private _trace?: AutomationTraceExtended;
+  @state() private _trace?: ScriptTraceExtended;
 
   @state() private _logbookEntries?: LogbookEntry[];
 
@@ -69,15 +64,15 @@ export class HaAutomationTrace extends LitElement {
     | "blueprint" = "details";
 
   protected render(): TemplateResult {
-    const stateObj = this._entityId
-      ? this.hass.states[this._entityId]
+    const stateObj = this.scriptEntityId
+      ? this.hass.states[this.scriptEntityId]
       : undefined;
 
     const graph = this.shadowRoot!.querySelector("hat-script-graph");
     const trackedNodes = graph?.trackedNodes;
     const renderedNodes = graph?.renderedNodes;
 
-    const title = stateObj?.attributes.friendly_name || this._entityId;
+    const title = stateObj?.attributes.friendly_name || this.scriptEntityId;
 
     let devButtons: TemplateResult | string = "";
     if (__DEV__) {
@@ -118,9 +113,9 @@ export class HaAutomationTrace extends LitElement {
                 ${title}
                 <a
                   class="linkButton"
-                  href="/config/automation/edit/${this.automationId}"
+                  href="/config/script/edit/${this.scriptEntityId}"
                 >
-                  <mwc-icon-button label="Edit Automation" tabindex="-1">
+                  <mwc-icon-button label="Edit Script" tabindex="-1">
                     <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
                   </mwc-icon-button>
                 </a>
@@ -185,7 +180,7 @@ export class HaAutomationTrace extends LitElement {
                       ["details", "Step Details"],
                       ["timeline", "Trace Timeline"],
                       ["logbook", "Related logbook entries"],
-                      ["config", "Automation Config"],
+                      ["config", "Script Config"],
                     ].map(
                       ([view, label]) => html`
                         <button
@@ -209,7 +204,7 @@ export class HaAutomationTrace extends LitElement {
                             @click=${this._showTab}
                           >
                             Blueprint Config
-                          </div>
+                          </button>
                         `
                       : ""}
                   </div>
@@ -219,46 +214,47 @@ export class HaAutomationTrace extends LitElement {
                     ? ""
                     : this._view === "details"
                     ? html`
-                        <ha-automation-trace-path-details
+                        <ha-trace-path-details
                           .hass=${this.hass}
                           .narrow=${this.narrow}
                           .trace=${this._trace}
                           .selected=${this._selected}
                           .logbookEntries=${this._logbookEntries}
                           .trackedNodes=${trackedNodes}
-                          .renderedNodes=${renderedNodes}
-                        ></ha-automation-trace-path-details>
+                          .renderedNodes=${renderedNodes!}
+                        ></ha-trace-path-details>
                       `
                     : this._view === "config"
                     ? html`
-                        <ha-automation-trace-config
+                        <ha-trace-config
                           .hass=${this.hass}
                           .trace=${this._trace}
-                        ></ha-automation-trace-config>
+                        ></ha-trace-config>
                       `
                     : this._view === "logbook"
                     ? html`
-                        <ha-automation-trace-logbook
+                        <ha-trace-logbook
                           .hass=${this.hass}
                           .narrow=${this.narrow}
+                          .trace=${this._trace}
                           .logbookEntries=${this._logbookEntries}
-                        ></ha-automation-trace-logbook>
+                        ></ha-trace-logbook>
                       `
                     : this._view === "blueprint"
                     ? html`
-                        <ha-automation-trace-blueprint-config
+                        <ha-trace-blueprint-config
                           .hass=${this.hass}
                           .trace=${this._trace}
-                        ></ha-automation-trace-blueprint-config>
+                        ></ha-trace-blueprint-config>
                       `
                     : html`
-                        <ha-automation-trace-timeline
+                        <ha-trace-timeline
                           .hass=${this.hass}
                           .trace=${this._trace}
                           .logbookEntries=${this._logbookEntries}
                           .selected=${this._selected}
                           @value-changed=${this._timelinePathPicked}
-                        ></ha-automation-trace-timeline>
+                        ></ha-trace-timeline>
                       `}
                 </div>
               </div>
@@ -270,7 +266,7 @@ export class HaAutomationTrace extends LitElement {
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
 
-    if (!this.automationId) {
+    if (!this.scriptEntityId) {
       return;
     }
 
@@ -282,13 +278,12 @@ export class HaAutomationTrace extends LitElement {
     super.updated(changedProps);
 
     // Only reset if automationId has changed and we had one before.
-    if (changedProps.get("automationId")) {
+    if (changedProps.get("scriptEntityId")) {
       this._traces = undefined;
-      this._entityId = undefined;
       this._runId = undefined;
       this._trace = undefined;
       this._logbookEntries = undefined;
-      if (this.automationId) {
+      if (this.scriptEntityId) {
         this._loadTraces();
       }
     }
@@ -298,17 +293,6 @@ export class HaAutomationTrace extends LitElement {
       this._logbookEntries = undefined;
       this.shadowRoot!.querySelector("select")!.value = this._runId;
       this._loadTrace();
-    }
-
-    if (
-      changedProps.has("automations") &&
-      this.automationId &&
-      !this._entityId
-    ) {
-      const automation = this.automations.find(
-        (entity: AutomationEntity) => entity.attributes.id === this.automationId
-      );
-      this._entityId = automation?.entity_id;
     }
   }
 
@@ -334,7 +318,11 @@ export class HaAutomationTrace extends LitElement {
   }
 
   private async _loadTraces(runId?: string) {
-    this._traces = await loadTraces(this.hass, "automation", this.automationId);
+    this._traces = await loadTraces(
+      this.hass,
+      "script",
+      this.scriptEntityId.split(".")[1]
+    );
     // Newest will be on top.
     this._traces.reverse();
 
@@ -375,8 +363,8 @@ export class HaAutomationTrace extends LitElement {
   private async _loadTrace() {
     const trace = await loadTrace(
       this.hass,
-      "automation",
-      this.automationId,
+      "script",
+      this.scriptEntityId.split(".")[1],
       this._runId!
     );
     this._logbookEntries = isComponentLoaded(this.hass, "logbook")
@@ -392,7 +380,7 @@ export class HaAutomationTrace extends LitElement {
 
   private _downloadTrace() {
     const aEl = document.createElement("a");
-    aEl.download = `trace ${this._entityId} ${
+    aEl.download = `trace ${this.scriptEntityId} ${
       this._trace!.timestamp.start
     }.json`;
     aEl.href = `data:application/json;charset=utf-8,${encodeURI(
@@ -509,6 +497,6 @@ export class HaAutomationTrace extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-trace": HaAutomationTrace;
+    "ha-script-trace": HaScriptTrace;
   }
 }

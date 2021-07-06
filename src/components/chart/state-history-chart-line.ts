@@ -30,7 +30,7 @@ class StateHistoryChartLine extends LitElement {
       <ha-chart-base
         .data=${this._chartData}
         .options=${this._chartOptions}
-        chartType="line"
+        chart-type="line"
       ></ha-chart-base>
     `;
   }

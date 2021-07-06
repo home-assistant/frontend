@@ -303,7 +303,7 @@
         "entries_not_found": "No logbook entries found.",
         "by": "by",
         "by_service": "by service",
-        "show_trace": "Show trace",
+        "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
         "retrieval_error": "Error during logbook entry retrieval",
         "messages": {
           "was_away": "was detected away",
@@ -1308,6 +1308,7 @@
               "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
               "learn_more": "Learn more about triggers",
               "add": "Add trigger",
+              "id": "Trigger ID (used by the trigger condition)",
               "duplicate": "Duplicate",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
               "delete_confirm": "Are you sure you want to delete this?",
@@ -1475,6 +1476,11 @@
                     "sun": "Sunday"
                   }
                 },
+                "trigger": {
+                  "label": "Trigger",
+                  "no_triggers": "No triggers available",
+                  "id": "Trigger Id"
+                },
                 "zone": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
                   "entity": "[%key:ui::panel::config::automation::editor::triggers::type::zone::entity%]",
@@ -1634,6 +1640,7 @@
             "show_info": "Show info about script",
             "run_script": "Run script",
             "edit_script": "Edit script",
+            "dev_script": "Debug script",
             "headers": {
               "name": "Name"
             },
@@ -1647,6 +1654,7 @@
             "id_already_exists_save_error": "You can't save this script because the ID is not unique, pick another ID or leave it blank to automatically generate one.",
             "id_already_exists": "This ID already exists",
             "introduction": "Use scripts to run a sequence of actions.",
+            "show_trace": "[%key:ui::panel::config::automation::editor::show_trace%]",
             "header": "Script: {name}",
             "default_name": "New Script",
             "modes": {

@@ -2319,7 +2319,7 @@
                     "none": "Zatím nic nastaveno",
                     "none_found": "Žádné integrace nenalezeny.",
                     "none_found_detail": "Upravte kritéria vyhledávání.",
-                    "note_about_integrations": "Některé integrace zatím nelze nastavit prostřednictvím uživatelského rozhraní.",
+                    "note_about_integrations": "Vašemu vyhledávání neodpovídá žádná integrace, je možné, že integraci, kterou chcete nastavit, ještě nelze nastavit prostřednictvím uživatelského rozhraní.",
                     "note_about_website_reference": "Další jsou k dispozici na ",
                     "reconfigure": "Přenastavit",
                     "rename_dialog": "Upravit název této položky nastavení",

@@ -1,4 +1,3 @@
-import "@polymer/paper-radio-button/paper-radio-button";
 import { html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";

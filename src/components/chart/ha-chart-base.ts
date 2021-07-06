@@ -20,7 +20,7 @@ interface Tooltip extends TooltipModel<any> {
 export default class HaChartBase extends LitElement {
   public chart?: Chart;
 
-  @property()
+  @property({ attribute: "chart-type", reflect: true })
   public chartType: ChartType = "line";
 
   @property({ attribute: false })
@@ -227,6 +227,9 @@ export default class HaChartBase extends LitElement {
         overflow: hidden;
         height: 0;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      :host(:not([chart-type="timeline"])) canvas {
+        max-height: 400px;
       }
       .chartLegend {
         text-align: center;

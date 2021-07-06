@@ -297,7 +297,16 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                   <div
                                     class="card-actions layout horizontal justified center"
                                   >
-                                    <span></span>
+                                    <a
+                                      href="/config/script/trace/${this
+                                        .scriptEntityId}"
+                                    >
+                                      <mwc-button>
+                                        ${this.hass.localize(
+                                          "ui.panel.config.script.editor.show_trace"
+                                        )}
+                                      </mwc-button>
+                                    </a>
                                     <mwc-button
                                       @click=${this._runScript}
                                       title="${this.hass.localize(

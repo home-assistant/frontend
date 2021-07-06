@@ -2319,7 +2319,7 @@
                     "none": "Ingenting er konfigurert enda",
                     "none_found": "Ingen integrasjoner funnet",
                     "none_found_detail": "Juster dine søkekriterier",
-                    "note_about_integrations": "Ikke alle integrasjoner kan konfigureres via brukergrensesnittet ennå.",
+                    "note_about_integrations": "Ingen integrasjoner samsvarte med søket, integreringen du vil konfigurere, er kanskje ikke tilgjengelig for konfigurering via brukergrensesnittet ennå.",
                     "note_about_website_reference": "Flere er tilgjengelige på",
                     "reconfigure": "Konfigurer på nytt",
                     "rename_dialog": "Redigere navnet på denne config-oppføringen",
@@ -2962,6 +2962,7 @@
                     "common": {
                         "add_node": "Legg til node",
                         "close": "Lukk",
+                        "heal_network": "Helbrede nettverk",
                         "home_id": "Hjem-ID",
                         "network": "Nettverk",
                         "node_id": "Node-ID",
@@ -2987,6 +2988,18 @@
                         "node_ready": "Node klar",
                         "node_status": "Node status",
                         "zwave_info": "Z-Wave Informasjon"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Nettverkshelbredelse er avbrutt.",
+                        "healing_complete": "Nettverksheling er fullført.",
+                        "healing_failed": "Helbredelse mislyktes. Ytterligere informasjon kan være tilgjengelig i loggene.",
+                        "in_progress": "Nettverkshelbredelse pågår. Dette vil ta litt tid.",
+                        "introduction": "Start en nettverkshelbredelse på Z-Wave-nettverket. En nettverkshelbredelse vil føre til at alle enheter beregner rutene sine tilbake til kontrolleren, og anbefales hvis du nylig har flyttet enheter eller kontrolleren din.",
+                        "run_in_background": "Du kan lukke denne dialogboksen, og nettverksreparasjonen fortsetter i bakgrunnen.",
+                        "start_heal": "Begynn å helbrede",
+                        "stop_heal": "Stopp helbredelse",
+                        "title": "Helbred ditt Z-Wave-nettverk",
+                        "traffic_warning": "Helbredelsesprosessen genererer stor trafikk på Z-Wave-nettverket. Dette kan føre til at enheter reagerer sakte (eller ikke i det hele tatt) mens legingen pågår."
                     },
                     "logs": {
                         "log_level": "Loggnivå",
