@@ -17,19 +17,10 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v2
       - name: Setting up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
-      - name: Get yarn cache path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Fetching Yarn cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 12
+          cache: yarn
       - name: Install dependencies
         run: yarn install
         env:
@@ -48,19 +39,10 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v2
       - name: Setting up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
-      - name: Get yarn cache path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Fetching Yarn cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 12
+          cache: yarn
       - name: Install dependencies
         run: yarn install
         env:
@@ -74,19 +56,10 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v2
       - name: Setting up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
-      - name: Get yarn cache path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Fetching Yarn cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 12
+          cache: yarn
       - name: Install dependencies
         run: yarn install
         env:
@@ -102,19 +75,10 @@ jobs:
       - name: Check out files from GitHub
         uses: actions/checkout@v2
       - name: Setting up Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
-      - name: Get yarn cache path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Fetching Yarn cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 12
+          cache: yarn
       - name: Install dependencies
         run: yarn install
         env:
