@@ -84,15 +84,15 @@ interface BaseTrace {
     | "cancelled";
 }
 
-export interface AutomationTrace extends BaseTrace {
-  domain: "automation";
-  trigger: string;
-}
-
 interface BaseTraceExtended {
   trace: Record<string, ActionTraceStep[]>;
   context: Context;
   error?: string;
+}
+
+export interface AutomationTrace extends BaseTrace {
+  domain: "automation";
+  trigger: string;
 }
 
 export interface AutomationTraceExtended
