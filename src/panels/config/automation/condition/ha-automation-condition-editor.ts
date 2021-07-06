@@ -20,6 +20,7 @@ import "./types/ha-automation-condition-state";
 import "./types/ha-automation-condition-sun";
 import "./types/ha-automation-condition-template";
 import "./types/ha-automation-condition-time";
+import "./types/ha-automation-condition-trigger";
 import "./types/ha-automation-condition-zone";
 
 const OPTIONS = [
@@ -32,6 +33,7 @@ const OPTIONS = [
   "sun",
   "template",
   "time",
+  "trigger",
   "zone",
 ];
 
