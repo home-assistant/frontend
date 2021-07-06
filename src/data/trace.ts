@@ -89,24 +89,26 @@ export interface AutomationTrace extends BaseTrace {
   trigger: string;
 }
 
-export interface AutomationTraceExtended extends AutomationTrace {
+interface BaseTraceExtended {
   trace: Record<string, ActionTraceStep[]>;
   context: Context;
+  error?: string;
+}
+
+export interface AutomationTraceExtended
+  extends AutomationTrace,
+    BaseTraceExtended {
   config: ManualAutomationConfig;
   blueprint_inputs?: BlueprintAutomationConfig;
-  error?: string;
 }
 
 export interface ScriptTrace extends BaseTrace {
   domain: "script";
 }
 
-export interface ScriptTraceExtended extends ScriptTrace {
-  trace: Record<string, ActionTraceStep[]>;
-  context: Context;
+export interface ScriptTraceExtended extends ScriptTrace, BaseTraceExtended {
   config: ScriptConfig;
   blueprint_inputs?: BlueprintScriptConfig;
-  error?: string;
 }
 
 export type TraceExtended = AutomationTraceExtended | ScriptTraceExtended;

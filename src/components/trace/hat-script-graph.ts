@@ -491,13 +491,6 @@ class HatScriptGraph extends LitElement {
                 )?.map((condition, i) => this.render_condition(condition!, i))}
               </hat-graph>`
             : ""}
-          ${"condition" in this.trace.config
-            ? html`<hat-graph id="condition">
-                ${ensureArray(
-                  this.trace.config.condition
-                )?.map((condition, i) => this.render_condition(condition!, i))}
-              </hat-graph>`
-            : ""}
           ${"action" in this.trace.config
             ? html`${ensureArray(this.trace.config.action).map((action, i) =>
                 this.render_node(action, `action/${i}`)
