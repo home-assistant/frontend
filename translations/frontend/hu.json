@@ -121,7 +121,8 @@
                     "edit_in_ui": "Szerkesztés a felhasználói felületen",
                     "edit_in_yaml": "Szerkesztés YAML-ben",
                     "header": "Lehetőségek",
-                    "invalid_yaml": "Érvénytelen YAML"
+                    "invalid_yaml": "Érvénytelen YAML",
+                    "show_unused_optional": "A nem használt opcionális konfigurációs lehetőségek megjelenítése"
                 }
             },
             "dashboard": {
@@ -194,6 +195,7 @@
                 "hostname": "Gazdagép neve",
                 "install": "telepítés",
                 "new_update_available": "{name} {version} elérhető",
+                "not_available_arch": "Ez a kiegészítő nem kompatibilis a készülék processzorával vagy az eszközre telepített operációs rendszerrel.",
                 "not_available_version": "A(z) {core_version_installed} otthoni segédet futtatja, hogy frissítse az Otthoni segéd legalább {core_version_needed} verzióját.",
                 "open_web_ui": "Webes felhasználói felület megnyitása",
                 "option": {
@@ -328,6 +330,7 @@
                 "add_new_registry": "Hozzáadás új rendszerleíró adatbázishoz",
                 "add_registry": "Hozzáadás a rendszerleíró adatbázishoz",
                 "failed_to_add": "Nem sikerült hozzáadni a rendszerleíró adatbázishoz",
+                "no_registries": "Nincsenek konfigurálva regiszterek",
                 "password": "Jelszó",
                 "registry": "Regisztrálás",
                 "remove": "Eltávolítás",
@@ -678,6 +681,7 @@
                 "addon": "Bővítmény",
                 "error": {
                     "fetch_addons": {
+                        "description": "A kiegészítők lekérése hibát eredményezett.",
                         "title": "Hiba történt a bővítmények beolvasása közben"
                     },
                     "no_supervisor": {
@@ -746,6 +750,7 @@
                 }
             },
             "history_charts": {
+                "history_disabled": "Előzményintegráció letiltva",
                 "loading_history": "Állapot előzmények betöltése...",
                 "no_history_found": "Nem található előzmény."
             },
@@ -929,6 +934,7 @@
                     "enabled_label": "Entitás engedélyezése",
                     "enabled_restart_confirm": "Az entitások engedélyezésének befejezéséhez indítsd újra a Home Assistant-et",
                     "entity_id": "Entitás ID",
+                    "follow_device_area": "Kövesse a készülék területét",
                     "icon": "Ikon",
                     "icon_error": "Az ikonokat a 'prefix:ikonnév' formátumban kell megadni, pl.: 'mdi:home'",
                     "name": "Név",
@@ -1214,6 +1220,8 @@
                 "no_type_provided": "Nincs megadva típus."
             },
             "supervisor": {
+                "ask": "Kérjen segítséget",
+                "observer": "Ellenőrizze a Figyelőt",
                 "reboot": "Próbálja újraindítani a gazdagépet",
                 "system_health": "Rendszerállapot ellenőrzése"
             }
@@ -1742,6 +1750,7 @@
                                 "target_browser": "Böngésző"
                             },
                             "female": "Nő",
+                            "info": "Csinálj az otthonodnak személyiséget azzal, hogy a szövegfelolvasó szolgáltatásaink segítségével beszélhessünk veled. Ez használható az automatizálásokban és a szkriptekben a(z) {service} szolgáltatás használatával.",
                             "male": "Férfi",
                             "title": "Szövegről beszédre",
                             "try": "Próbálja meg"
@@ -1879,6 +1888,7 @@
                                         "title": "Alapvető elemzés"
                                     },
                                     "diagnostics": {
+                                        "description": "Megosztja az összeomlási jelentéseket, ha váratlan hibák lépnek fel.",
                                         "title": "Diagnosztika"
                                     },
                                     "statistics": {
@@ -2188,8 +2198,10 @@
                         "services": "{count} {count, plural,\n  one {szolgáltatás}\n  other {szolgáltatás}\n}",
                         "state": {
                             "loaded": "Betöltve",
+                            "migration_error": "Migrációs hiba",
                             "not_loaded": "Nincs betöltve",
-                            "setup_error": "Nem sikerült beállítani"
+                            "setup_error": "Nem sikerült beállítani",
+                            "setup_retry": "A beállítás újbóli megkísérlése"
                         },
                         "system_options": "Rendszerbeállítások",
                         "unnamed_entry": "Névtelen bejegyzés"
@@ -2212,6 +2224,7 @@
                         "not_all_required_fields": "Nincs kitöltve minden szükséges mező.",
                         "not_loaded": "Az integrációt nem sikerült betölteni. Próbálja meg újraindítani a Home Assistantot.",
                         "pick_flow_step": {
+                            "new_flow": "Nem, állítson be egy másik {integration}",
                             "title": "Felfedeztük ezeket, be akarod állítani őket?"
                         },
                         "submit": "Küldés"
@@ -2869,6 +2882,7 @@
                 "zwave_js": {
                     "add_node": {
                         "inclusion_finished": "A csomópont hozzá lett adva.",
+                        "introduction": "Ez a varázsló végigvezeti Önt egy csomópont hozzáadásán a Z-Wave-hálózathoz.",
                         "title": "Adjon hozzá egy Z-Wave csomópontot",
                         "view_device": "Eszköz megtekintése"
                     },
@@ -2885,8 +2899,10 @@
                     "dashboard": {
                         "driver_version": "Illesztőprogram verzió",
                         "dump_not_ready_confirm": "Letöltés",
+                        "dump_not_ready_title": "Még nem minden csomópont áll készen",
                         "header": "Kezelje Z-Wave hálózatát",
                         "home_id": "Otthon azonosító",
+                        "introduction": "A Z-Wave hálózat és a Z-Wave csomópontok kezelése",
                         "nodes_ready": "Csomópontok készen állnak",
                         "server_version": "Szerver verzió"
                     },
@@ -3703,6 +3719,7 @@
                     "working": "Kérlek várj"
                 },
                 "initializing": "Inicializálás",
+                "logging_in_to_with": "Bejelentkezés a következőhöz: ** {locationName} ** a ** {authProviderName} ** szolgáltatással.",
                 "logging_in_with": "Bejelentkezés **{authProviderName}** használatával.",
                 "pick_auth_provider": "Vagy válassz a következő bejelentkezési módok közül"
             },
@@ -3875,6 +3892,7 @@
                     "header": "Többfaktoros Hitelesítési Modulok"
                 },
                 "number_format": {
+                    "description": "Válassza ki a számok formátumát.",
                     "dropdown_label": "Számformátum",
                     "formats": {
                         "comma_decimal": "1 234 567,89",

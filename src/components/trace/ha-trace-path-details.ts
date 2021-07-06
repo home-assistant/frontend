@@ -2,33 +2,33 @@ import { dump } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { formatDateTimeWithSeconds } from "../../../../common/datetime/format_date_time";
-import "../../../../components/ha-code-editor";
-import "../../../../components/ha-icon-button";
-import type { NodeInfo } from "../../../../components/trace/hat-graph";
-import "../../../../components/trace/hat-logbook-note";
-import { LogbookEntry } from "../../../../data/logbook";
+import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
+import "../ha-code-editor";
+import "../ha-icon-button";
+import type { NodeInfo } from "./hat-graph";
+import "./hat-logbook-note";
+import { LogbookEntry } from "../../data/logbook";
 import {
   ActionTraceStep,
-  AutomationTraceExtended,
   ChooseActionTraceStep,
   getDataFromPath,
-} from "../../../../data/trace";
-import { HomeAssistant } from "../../../../types";
-import "../../../logbook/ha-logbook";
-import { traceTabStyles } from "./styles";
+  TraceExtended,
+} from "../../data/trace";
+import "../../panels/logbook/ha-logbook";
+import { traceTabStyles } from "./trace-tab-styles";
+import { HomeAssistant } from "../../types";
 
-@customElement("ha-automation-trace-path-details")
-export class HaAutomationTracePathDetails extends LitElement {
+@customElement("ha-trace-path-details")
+export class HaTracePathDetails extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
-  @property() private selected!: NodeInfo;
+  @property({ attribute: false }) public trace!: TraceExtended;
 
-  @property() public trace!: AutomationTraceExtended;
+  @property({ attribute: false }) public logbookEntries!: LogbookEntry[];
 
-  @property() public logbookEntries!: LogbookEntry[];
+  @property({ attribute: false }) public selected!: NodeInfo;
 
   @property() renderedNodes: Record<string, any> = {};
 
@@ -230,7 +230,7 @@ export class HaAutomationTracePathDetails extends LitElement {
             .entries=${entries}
             .narrow=${this.narrow}
           ></ha-logbook>
-          <hat-logbook-note></hat-logbook-note>
+          <hat-logbook-note .domain=${this.trace.domain}></hat-logbook-note>
         `
       : html`<div class="padded-box">
           No Logbook entries found for this step.
@@ -267,6 +267,6 @@ export class HaAutomationTracePathDetails extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-trace-path-details": HaAutomationTracePathDetails;
+    "ha-trace-path-details": HaTracePathDetails;
   }
 }

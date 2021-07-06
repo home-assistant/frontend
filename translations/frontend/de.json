@@ -2319,7 +2319,7 @@
                     "none": "Noch nichts konfiguriert",
                     "none_found": "Keine Integrationen gefunden",
                     "none_found_detail": "Passe deine Suchkriterien an.",
-                    "note_about_integrations": "Nicht alle Integrationen können über die Benutzeroberfläche konfiguriert werden.",
+                    "note_about_integrations": "Es wurden keine Integrationen für deine Suche gefunden. Möglicherweise ist die Integration, die du einrichten möchtest, noch nicht zum Einrichten über die Benutzeroberfläche verfügbar.",
                     "note_about_website_reference": "Weitere Informationen findest du auf der ",
                     "reconfigure": "Neu konfigurieren",
                     "rename_dialog": "Bearbeite den Namen dieses Konfigurationseintrags",
@@ -2962,6 +2962,7 @@
                     "common": {
                         "add_node": "Knoten hinzufügen",
                         "close": "Schließen",
+                        "heal_network": "Netzwerk heilen",
                         "home_id": "Heim-ID",
                         "network": "Netzwerk",
                         "node_id": "Knoten-ID",
@@ -2987,6 +2988,18 @@
                         "node_ready": "Node Bereit",
                         "node_status": "Node Status",
                         "zwave_info": "Z-Wave Info"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Die Netzwerkheilung wurde abgebrochen.",
+                        "healing_complete": "Die Netzwerkheilung ist abgeschlossen.",
+                        "healing_failed": "Heilung fehlgeschlagen. Zusätzliche Informationen könnten in den Protokollen verfügbar sein.",
+                        "in_progress": "Die Netzwerkheilung ist im Gange. Dies wird einige Zeit in Anspruch nehmen.",
+                        "introduction": "Startet einen Netzwerk-Heal im Z-Wave-Netzwerk. Ein Netzwerk-Heal veranlasst alle Geräte, ihre Routen zurück zum Controller neu zu berechnen und wird empfohlen, wenn kürzlich Geräte oder Controller verschoben wurden.",
+                        "run_in_background": "Dieser Dialog kann geschlossen werden und die Netzwerkheilung wird im Hintergrund fortgesetzt.",
+                        "start_heal": "Starten der Heilung",
+                        "stop_heal": "Stoppen der Heilung",
+                        "title": "Heile dein Z-Wave-Netzwerk",
+                        "traffic_warning": "Der Heilungsprozess erzeugt eine große Menge an Datenverkehr im Z-Wave-Netzwerk. Dies kann dazu führen, dass Geräte langsam (oder gar nicht) reagieren, während der Heilungsprozess läuft."
                     },
                     "logs": {
                         "log_level": "Protokollstufe",

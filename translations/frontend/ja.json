@@ -865,8 +865,10 @@
             "related-filter-menu": {
                 "filter_by_area": "エリアで絞り込む",
                 "filter_by_device": "デバイスで絞り込む",
+                "filter_by_entity": "エンティティで絞り込む",
                 "filtered_by_area": "エリア: {area_name}",
-                "filtered_by_device": "デバイス: {device_name}"
+                "filtered_by_device": "デバイス: {device_name}",
+                "filtered_by_entity": "エンティティ： {entity_name}"
             },
             "related-items": {
                 "area": "エリア",
@@ -2952,6 +2954,7 @@
                     "common": {
                         "add_node": "ノードの追加",
                         "close": "閉じる",
+                        "heal_network": "ネットワークの修復",
                         "home_id": "ホームID",
                         "network": "ネットワーク",
                         "node_id": "ノードID",
@@ -2977,6 +2980,18 @@
                         "node_ready": "ノードの準備完了",
                         "node_status": "ノードの状態",
                         "zwave_info": "Z-Wave情報"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "ネットワークの修復がキャンセルされました。",
+                        "healing_complete": "ネットワークの修復が完了しました。",
+                        "healing_failed": "修復に失敗しました。追加情報はログで利用できる場合があります。",
+                        "in_progress": "ネットワークの修復が進行中です。これには少し時間がかかります。",
+                        "introduction": "Z-Wave ネットワークでネットワーク修復を開始します。ネットワークの修復は、すべてのデバイスがコントローラに戻ってルートを再計算し、最近デバイスまたはコントローラを移動した場合に推奨されます。",
+                        "run_in_background": "このダイアログを閉じると、ネットワークの修復がバックグラウンドで続行されます。",
+                        "start_heal": "修復を開始する",
+                        "stop_heal": "修復をやめる",
+                        "title": "Z-Waveネットワークの修復",
+                        "traffic_warning": "この修復プロセスでは、Z-Wave ネットワーク上に大量のトラフィックが生成されます。これにより、修復が進行中のデバイスの応答が遅くなる (またはまったく反応しない) ことがあります。"
                     },
                     "logs": {
                         "log_level": "ログレベル",

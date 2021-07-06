@@ -162,6 +162,14 @@ export default class HaAutomationTriggerRow extends LitElement {
                     )}
                   </paper-listbox>
                 </paper-dropdown-menu-light>
+                <paper-input
+                  .label=${this.hass.localize(
+                    "ui.panel.config.automation.editor.triggers.id"
+                  )}
+                  .value=${this.trigger.id}
+                  @value-changed=${this._idChanged}
+                >
+                </paper-input>
                 <div>
                   ${dynamicElement(
                     `ha-automation-trigger-${this.trigger.platform}`,
@@ -212,13 +220,33 @@ export default class HaAutomationTriggerRow extends LitElement {
     const elClass = customElements.get(`ha-automation-trigger-${type}`);
 
     if (type !== this.trigger.platform) {
+      const value = {
+        platform: type,
+        ...elClass.defaultConfig,
+      };
+      if (this.trigger.id) {
+        value.id = this.trigger.id;
+      }
       fireEvent(this, "value-changed", {
-        value: {
-          platform: type,
-          ...elClass.defaultConfig,
-        },
+        value,
       });
     }
+  }
+
+  private _idChanged(ev: CustomEvent) {
+    const newId = ev.detail.value;
+    if (newId === this.trigger.id) {
+      return;
+    }
+    const value = { ...this.trigger };
+    if (!newId) {
+      delete value.id;
+    } else {
+      value.id = newId;
+    }
+    fireEvent(this, "value-changed", {
+      value,
+    });
   }
 
   private _onYamlChange(ev: CustomEvent) {
