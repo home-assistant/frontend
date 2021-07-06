@@ -91,6 +91,9 @@ export class HaDeviceTrigger extends LitElement {
   }
 
   protected updated(changedPros) {
+    if (!changedPros.has("trigger")) {
+      return;
+    }
     const prevTrigger = changedPros.get("trigger");
     if (prevTrigger && !deviceAutomationsEqual(prevTrigger, this.trigger)) {
       this._getCapabilities();
@@ -118,6 +121,9 @@ export class HaDeviceTrigger extends LitElement {
       deviceAutomationsEqual(this._origTrigger, trigger)
     ) {
       trigger = this._origTrigger;
+    }
+    if (this.trigger.id) {
+      trigger.id = this.trigger.id;
     }
     fireEvent(this, "value-changed", { value: trigger });
   }
