@@ -8,7 +8,7 @@ export class HatGraphNode extends LitElement {
 
   @property({ reflect: true, type: Boolean }) disabled?: boolean;
 
-  @property({ reflect: true, type: Boolean }) graphstart?: boolean;
+  @property({ reflect: true, type: Boolean }) graphStart?: boolean;
 
   @property({ reflect: true, type: Boolean }) nofocus?: boolean;
 
@@ -21,20 +21,20 @@ export class HatGraphNode extends LitElement {
   }
 
   render() {
-    const height = NODE_SIZE + (this.graphstart ? 2 : SPACING + 1);
+    const height = NODE_SIZE + (this.graphStart ? 2 : SPACING + 1);
     const width = SPACING + NODE_SIZE;
     return svg`
     <svg
     width="${width}px"
     height="${height}px"
     viewBox="-${Math.ceil(width / 2)} -${
-      this.graphstart
+      this.graphStart
         ? Math.ceil(height / 2)
         : Math.ceil((NODE_SIZE + SPACING * 2) / 2)
     } ${width} ${height}"
     >
       ${
-        this.graphstart
+        this.graphStart
           ? ``
           : svg`
           <path

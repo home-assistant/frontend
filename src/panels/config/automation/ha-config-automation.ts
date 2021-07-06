@@ -51,7 +51,7 @@ class HaConfigAutomation extends HassRouterPage {
       },
       trace: {
         tag: "ha-automation-trace",
-        load: () => import("./trace/ha-automation-trace"),
+        load: () => import("./ha-automation-trace"),
       },
     },
   };
