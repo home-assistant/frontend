@@ -1,6 +1,7 @@
 import "@material/mwc-icon-button";
 import {
   mdiHelpCircle,
+  mdiHistory,
   mdiInformationOutline,
   mdiPencil,
   mdiPlay,
@@ -138,6 +139,21 @@ class HaScriptPicker extends LitElement {
           >
             <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
           </mwc-icon-button>
+        `,
+      };
+      columns.trace = {
+        title: "",
+        type: "icon-button",
+        template: (_info, script: any) => html`
+          <a href="/config/script/trace/${script.entity_id}">
+            <mwc-icon-button
+              .label=${this.hass.localize(
+                "ui.panel.config.script.picker.dev_script"
+              )}
+            >
+              <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
+            </mwc-icon-button>
+          </a>
         `,
       };
       columns.edit = {
