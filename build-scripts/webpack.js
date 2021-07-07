@@ -120,12 +120,7 @@ const createWebpackConfig = ({
       ),
       // We need to change the import of the polyfill for EventTarget, so we replace the polyfill file with our customized one
       new webpack.NormalModuleReplacementPlugin(
-        new RegExp(
-          path.resolve(
-            paths.polymer_dir,
-            "src/resources/lit-virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
-          )
-        ),
+        /@lit-labs\/virtualizer\/lib\/uni-virtualizer\/lib\/polyfillLoaders\/EventTarget.js/,
         path.resolve(paths.polymer_dir, "src/resources/EventTarget-ponyfill.js")
       ),
       !isProdBuild && new LogStartCompilePlugin(),

@@ -1,3 +1,4 @@
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import {
   css,
   CSSResultGroup,
@@ -8,7 +9,6 @@ import {
 } from "lit";
 import { customElement, eventOptions, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { Layout1d, scroll } from "../../resources/lit-virtualizer";
 import { DOMAINS_WITH_DYNAMIC_PICTURE } from "../../common/const";
 import { formatDate } from "../../common/datetime/format_date";
 import { formatTimeWithSeconds } from "../../common/datetime/format_time";
