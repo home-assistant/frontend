@@ -20,11 +20,6 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v2
 
-      - name: Set up Node ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v2
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
       - name: Upload Translations
         run: |
           export LOKALISE_TOKEN="${{ secrets.LOKALISE_TOKEN }}"
@@ -44,12 +39,13 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
 
       - name: Download Translations
         run: |
           export LOKALISE_TOKEN="${{ secrets.LOKALISE_TOKEN }}"
 
-          npm install
+          yarn install
           ./script/translations_download
 
       - name: Initialize git

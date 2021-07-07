@@ -29,6 +29,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
 
       - name: Build and release package
         run: |
