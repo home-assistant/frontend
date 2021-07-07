@@ -3179,10 +3179,10 @@ __metadata:
 
 "@polymer/polymer@patch:@polymer/polymer@3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::locator=home-assistant-frontend%40workspace%3A.":
   version: 3.4.1
-  resolution: "@polymer/polymer@patch:@polymer/polymer@npm%3A3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::version=3.4.1&hash=712889&locator=home-assistant-frontend%40workspace%3A."
+  resolution: "@polymer/polymer@patch:@polymer/polymer@npm%3A3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::version=3.4.1&hash=be9fd8&locator=home-assistant-frontend%40workspace%3A."
   dependencies:
     "@webcomponents/shadycss": ^1.9.1
-  checksum: 797db112b29793611e935fa70bb4b1f5f5e0c4752f8fbf30ac794e19f51b4b2435ba88a626ac21e60b284c011b97c92eaee4c72f4e20d974c00b9a4d3cddc38c
+  checksum: 84417921c758fa220b7b40823ebf0694ea81f751766ddb9bf64ef7f81682e29b5950088af9c57e85ab38082a08bcdcac2214b25affc60dbcbff3f41596d2a91c
   languageName: node
   linkType: hard
 
