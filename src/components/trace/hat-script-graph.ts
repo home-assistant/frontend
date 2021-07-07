@@ -207,7 +207,7 @@ class HatScriptGraph extends LitElement {
               track:
                 trace !== undefined &&
                 (trace[0].result === undefined ||
-                  trace[0].result?.choice === "default"),
+                  trace[0].result.choice === "default"),
             })}
           ></hat-graph-spacer>
           ${ensureArray(config.default)?.map((action, i) =>
