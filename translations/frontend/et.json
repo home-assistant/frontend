@@ -1513,6 +1513,11 @@
                                         "wed": "Kolmapäev"
                                     }
                                 },
+                                "trigger": {
+                                    "id": "Päästiku ID",
+                                    "label": "Päästik",
+                                    "no_triggers": "Päästikuid pole saadaval"
+                                },
                                 "zone": {
                                     "entity": "Asukohaga olem",
                                     "label": "Tsoon",
@@ -1556,6 +1561,7 @@
                             "delete_confirm": "Oled kindel, et soovid kustutada?",
                             "duplicate": "Paljunda",
                             "header": "Päästikud",
+                            "id": "Päästiku ID (kasutab päästiku tingimusi)",
                             "introduction": "Päästikud on need, millest algab automatiseeringu töö. Ühe automatiseeringu jaoks on võimalik määrata mitu päästikut. Kui päästik vallandub, kontrollib Home Assistant võimalike tingimuste täidetust ja käivitab tegevuse.",
                             "learn_more": "Lisateave päästikute kohta",
                             "name": "Päästik",
@@ -2664,10 +2670,12 @@
                         },
                         "save_script": "Salvesta skript",
                         "sequence": "Jada",
-                        "sequence_sentence": "Selle skripti toimingute jada."
+                        "sequence_sentence": "Selle skripti toimingute jada.",
+                        "show_trace": "Kuva täitmise samme"
                     },
                     "picker": {
                         "add_script": "Lisa uus skript",
+                        "dev_script": "Skriptide silumine",
                         "duplicate": "Klooni",
                         "duplicate_script": "Klooni skript",
                         "edit_script": "Muuda skripti",
