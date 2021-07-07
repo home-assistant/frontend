@@ -1513,6 +1513,11 @@
                                         "wed": "Středa"
                                     }
                                 },
+                                "trigger": {
+                                    "id": "ID spouštěče",
+                                    "label": "Spouštěč",
+                                    "no_triggers": "Nejsou k dispozici žádné spouštěče"
+                                },
                                 "zone": {
                                     "entity": "Entita s umístěním",
                                     "label": "Zóna",
@@ -1556,6 +1561,7 @@
                             "delete_confirm": "Opravdu smazat?",
                             "duplicate": "Duplikovat",
                             "header": "Spouštěče",
+                            "id": "ID spouštěče (použitého podmínkou \"spouštěč\")",
                             "introduction": "Spouštěče spouštějí automatizaci. Pro jednu automatizaci je možné zadat více spouštěčů. Po spuštění ověří Home Assistant případné podmínky a zavolá akci.",
                             "learn_more": "Další informace o spouštěčích",
                             "name": "Spouštěč",
@@ -2664,10 +2670,12 @@
                         },
                         "save_script": "Uložit skript",
                         "sequence": "Sekvence",
-                        "sequence_sentence": "Posloupnost akcí tohoto skriptu."
+                        "sequence_sentence": "Posloupnost akcí tohoto skriptu.",
+                        "show_trace": "Zobrazit trasu"
                     },
                     "picker": {
                         "add_script": "Přidat skript",
+                        "dev_script": "Ladit skript",
                         "duplicate": "Duplikát",
                         "duplicate_script": "Duplikovat skript",
                         "edit_script": "Upravit skript",

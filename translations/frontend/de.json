@@ -1513,6 +1513,11 @@
                                         "wed": "Mittwoch"
                                     }
                                 },
+                                "trigger": {
+                                    "id": "Trigger-ID",
+                                    "label": "Trigger",
+                                    "no_triggers": "Keine Trigger verfügbar"
+                                },
                                 "zone": {
                                     "entity": "Entität mit Standort",
                                     "label": "Zone",
@@ -1556,6 +1561,7 @@
                             "delete_confirm": "Möchtest du das wirklich löschen?",
                             "duplicate": "Duplizieren",
                             "header": "Auslöser",
+                            "id": "Trigger-ID (wird von der Triggerbedingung verwendet)",
                             "introduction": "Auslöser starten automatisierte Abläufe. Es ist möglich, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.",
                             "learn_more": "Erfahre mehr über Auslöser",
                             "name": "Auslöser",
@@ -2664,10 +2670,12 @@
                         },
                         "save_script": "Skript speichern",
                         "sequence": "Sequenz",
-                        "sequence_sentence": "Die Abfolge der Aktionen dieses Skripts."
+                        "sequence_sentence": "Die Abfolge der Aktionen dieses Skripts.",
+                        "show_trace": "Trace anzeigen"
                     },
                     "picker": {
                         "add_script": "Neues Skript erstellen",
+                        "dev_script": "Debug-Skript",
                         "duplicate": "Duplizieren",
                         "duplicate_script": "Skript duplizieren",
                         "edit_script": "Skript bearbeiten",
