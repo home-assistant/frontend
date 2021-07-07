@@ -2,6 +2,7 @@ import { clear, get, set, createStore, promisifyRequest } from "idb-keyval";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { iconMetadata } from "../resources/icon-metadata";
 import { IconMeta } from "../types";
+import { isSafari } from "../util/is_safari";
 
 export interface Icons {
   [key: string]: string;
@@ -18,8 +19,6 @@ export const MDI_PREFIXES = ["mdi", "hass", "hassio", "hademo"];
 let toRead: Array<
   [string, (iconPath: string | undefined) => void, (e: any) => void]
 > = [];
-
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 // Queue up as many icon fetches in 1 transaction
 export const getIcon = (iconName: string) =>
