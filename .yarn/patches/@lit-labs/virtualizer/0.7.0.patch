@@ -1404,22 +1404,35 @@ index ff50f3f8186e7b5ffc8ccf6c656dd39a0d56d9f3..7e5f49dc04b97a08ca30dc564ae41bac
 +{"version":3,"file":"EventTarget.d.ts","sourceRoot":"","sources":["../../../../src/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.ts"],"names":[],"mappings":"AAEA,UAAU,sBAAsB;IAC5B,QAAO,WAAW,CAAA;CACrB;AAKD,wBAA8B,WAAW,oCAExC"}
 \ No newline at end of file
 diff --git a/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js b/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js
-index d92179f7fd5315203f870a6963e871dc8ddf6c0c..08e1b3c4ab4efa8b60ed20e48afe356cfcf1d3ef 100644
+index d92179f7fd5315203f870a6963e871dc8ddf6c0c..362e284121b97e0fba0925225777aebc32e26b8d 100644
 --- a/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js
 +++ b/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js
-@@ -1,4 +1,5 @@
+@@ -1,14 +1,15 @@
 -let _ET, ET;
 +let _ET;
 +let ET;
  export default async function EventTarget() {
-     return ET || init();
+-    return ET || init();
++  return ET || init();
  }
-@@ -12,3 +13,4 @@ async function init() {
-     }
-     return (ET = _ET);
+ async function init() {
+-    _ET = window.EventTarget;
+-    try {
+-        new _ET();
+-    }
+-    catch (_a) {
+-        _ET = (await import('event-target-shim')).EventTarget;
+-    }
+-    return (ET = _ET);
++  _ET = window.EventTarget;
++  try {
++    new _ET();
++  } catch (_a) {
++    _ET = (await import("event-target-shim")).default.EventTarget;
++  }
++  return (ET = _ET);
  }
 +//# sourceMappingURL=EventTarget.js.map
-\ No newline at end of file
 diff --git a/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js.map b/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js.map
 new file mode 100644
 index 0000000000000000000000000000000000000000..4ce7a8b18f1f07910bae2b2fd08b8b9cddf2d9ca
