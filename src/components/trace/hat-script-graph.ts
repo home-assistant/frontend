@@ -143,12 +143,11 @@ class HatScriptGraph extends LitElement {
     graphStart = false
   ) {
     const trace = this.trace.trace[path] as ChooseActionTraceStep[] | undefined;
-    const trace_path =
-      trace !== undefined
-        ? trace[0].result?.choice === "default" || trace[0].result === undefined
-          ? [Array.isArray(config.choose) ? config.choose.length : 0]
-          : [trace[0].result.choice]
-        : [];
+    const trace_path = trace?.[0].result
+      ? trace[0].result.choice === "default"
+        ? [Array.isArray(config.choose) ? config.choose.length : 0]
+        : [trace[0].result.choice]
+      : [];
     return html`
       <hat-graph
         tabindex=${trace === undefined ? "-1" : "0"}
@@ -205,9 +204,7 @@ class HatScriptGraph extends LitElement {
           <hat-graph-spacer
             class=${classMap({
               track:
-                trace !== undefined &&
-                (trace[0].result?.choice === "default" ||
-                  trace[0].result === undefined),
+                trace !== undefined && trace[0].result?.choice === "default",
             })}
           ></hat-graph-spacer>
           ${ensureArray(config.default)?.map((action, i) =>
