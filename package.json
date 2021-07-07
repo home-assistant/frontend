@@ -178,7 +178,6 @@
     "@web/dev-server-rollup": "^0.2.11",
     "babel-loader": "^8.2.2",
     "chai": "^4.3.4",
-    "cpx": "^1.5.0",
     "del": "^4.0.0",
     "eslint": "^7.25.0",
     "eslint-config-airbnb-typescript": "^12.3.1",

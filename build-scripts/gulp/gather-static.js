@@ -2,7 +2,6 @@
 
 const gulp = require("gulp");
 const path = require("path");
-const cpx = require("cpx");
 const fs = require("fs-extra");
 const paths = require("../paths");
 
@@ -62,7 +61,7 @@ function copyLoaderJS(staticDir) {
 function copyFonts(staticDir) {
   const staticPath = genStaticPath(staticDir);
   // Local fonts
-  cpx.copySync(
+  fs.copySync(
     npmPath("roboto-fontface/fonts/roboto/*.woff2"),
     staticPath("fonts/roboto")
   );
