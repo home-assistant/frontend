@@ -1860,12 +1860,12 @@ __metadata:
 
 "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@0.6.0#./.yarn/patches/@lit-labs/virtualizer/0.7.0.patch::locator=home-assistant-frontend%40workspace%3A.":
   version: 0.6.0
-  resolution: "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@npm%3A0.6.0#./.yarn/patches/@lit-labs/virtualizer/0.7.0.patch::version=0.6.0&hash=a23696&locator=home-assistant-frontend%40workspace%3A."
+  resolution: "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@npm%3A0.6.0#./.yarn/patches/@lit-labs/virtualizer/0.7.0.patch::version=0.6.0&hash=56dd82&locator=home-assistant-frontend%40workspace%3A."
   dependencies:
     event-target-shim: ^5.0.1
     lit: ^2.0.0-rc.1
     tslib: ^1.10.0
-  checksum: c0fd8d8bdea6e041fae5a4f7d2ae6a614b9e7a6996e5ed19b2336f322dbb5257afe55beb0557a55865c51939381fba8800c39eee658258cd4c735dcf2b5c1991
+  checksum: 8531263ac6d031e4fadcbfe9f8d5fc10aee489ae795a03505f832efffb396a181f9135c2db4ca94f134589c017ef4907778c5241a754c2279bc7a7685f96c169
   languageName: node
   linkType: hard
 
