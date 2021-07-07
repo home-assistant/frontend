@@ -36,6 +36,8 @@ jobs:
         run: yarn run lint:types
       - name: Run prettier
         run: yarn run lint:prettier
+      - name: Check for duplicate dependencies
+        run: yarn dedupe --check
   test:
     runs-on: ubuntu-latest
     steps:
