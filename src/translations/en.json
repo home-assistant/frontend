@@ -1479,7 +1479,7 @@
                 "trigger": {
                   "label": "Trigger",
                   "no_triggers": "No triggers available",
-                  "id": "Trigger Id"
+                  "id": "Trigger ID"
                 },
                 "zone": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
