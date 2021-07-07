@@ -62,8 +62,11 @@ function copyFonts(staticDir) {
   const staticPath = genStaticPath(staticDir);
   // Local fonts
   fs.copySync(
-    npmPath("roboto-fontface/fonts/roboto/*.woff2"),
-    staticPath("fonts/roboto")
+    npmPath("roboto-fontface/fonts/roboto/"),
+    staticPath("fonts/roboto/"),
+    {
+      filter: (src) => !src.includes(".") || src.endsWith(".woff2"),
+    }
   );
 }
 
