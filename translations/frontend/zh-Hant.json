@@ -1513,6 +1513,11 @@
                                         "wed": "星期三"
                                     }
                                 },
+                                "trigger": {
+                                    "id": "觸發器 ID",
+                                    "label": "觸發器",
+                                    "no_triggers": "無觸發器可使用"
+                                },
                                 "zone": {
                                     "entity": "區域實體",
                                     "label": "區域",
@@ -1556,6 +1561,7 @@
                             "delete_confirm": "確定要刪除嗎？",
                             "duplicate": "複製",
                             "header": "觸發",
+                            "id": "觸發器 ID（用於觸發條件）",
                             "introduction": "「觸發條件」為可使設定好的自動化開始運作。可以針對一個自動化設定多個觸發條件。一旦觸發後，Home Assistant 會檢查觸發判斷式，並開始執行動作。",
                             "learn_more": "詳細了解觸發條件",
                             "name": "觸發自動化",
@@ -2664,10 +2670,12 @@
                         },
                         "save_script": "儲存腳本",
                         "sequence": "連續",
-                        "sequence_sentence": "此腳本所含的操作動作。"
+                        "sequence_sentence": "此腳本所含的操作動作。",
+                        "show_trace": "顯示紀錄"
                     },
                     "picker": {
                         "add_script": "新增腳本",
+                        "dev_script": "除錯腳本",
                         "duplicate": "複製",
                         "duplicate_script": "複製腳本",
                         "edit_script": "編輯腳本",

@@ -1513,6 +1513,11 @@
                                         "wed": "Wednesday"
                                     }
                                 },
+                                "trigger": {
+                                    "id": "Trigger Id",
+                                    "label": "Trigger",
+                                    "no_triggers": "No triggers available"
+                                },
                                 "zone": {
                                     "entity": "Entity with location",
                                     "label": "Zone",
@@ -1556,6 +1561,7 @@
                             "delete_confirm": "Are you sure you want to delete this?",
                             "duplicate": "Duplicate",
                             "header": "Triggers",
+                            "id": "Trigger ID (used by the trigger condition)",
                             "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
                             "learn_more": "Learn more about triggers",
                             "name": "Trigger",
@@ -2664,10 +2670,12 @@
                         },
                         "save_script": "Save script",
                         "sequence": "Sequence",
-                        "sequence_sentence": "The sequence of actions of this script."
+                        "sequence_sentence": "The sequence of actions of this script.",
+                        "show_trace": "Show trace"
                     },
                     "picker": {
                         "add_script": "Add script",
+                        "dev_script": "Debug script",
                         "duplicate": "Duplicate",
                         "duplicate_script": "Duplicate script",
                         "edit_script": "Edit script",
