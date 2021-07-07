@@ -2,6 +2,7 @@ import { clear, get, set, createStore, promisifyRequest } from "idb-keyval";
 import { promiseTimeout } from "../common/util/promise-timeout";
 import { iconMetadata } from "../resources/icon-metadata";
 import { IconMeta } from "../types";
+import { isSafari } from "../util/is_safari";
 
 export interface Icons {
   [key: string]: string;
@@ -28,8 +29,7 @@ export const getIcon = (iconName: string) =>
       return;
     }
 
-    promiseTimeout(
-      1000,
+    const readIcons = () =>
       iconStore("readonly", (store) => {
         for (const [iconName_, resolve_, reject_] of toRead) {
           promisifyRequest<string | undefined>(store.get(iconName_))
@@ -37,8 +37,24 @@ export const getIcon = (iconName: string) =>
             .catch((e) => reject_(e));
         }
         toRead = [];
+      });
+
+    let readIconPromise: Promise<void>;
+
+    if (isSafari && (indexedDB as any).databases) {
+      let intervalId: number;
+      readIconPromise = new Promise<void>((resolveTry) => {
+        const tryIdb = () => (indexedDB as any).databases().finally(resolveTry);
+        intervalId = window.setInterval(tryIdb, 100);
+        tryIdb();
       })
-    ).catch((e) => {
+        .then(() => readIcons())
+        .finally(() => clearInterval(intervalId));
+    } else {
+      readIconPromise = readIcons();
+    }
+
+    promiseTimeout(1000, readIconPromise).catch((e) => {
       // Firefox in private mode doesn't support IDB
       // Safari sometime doesn't open the DB so we time out
       for (const [, , reject_] of toRead) {

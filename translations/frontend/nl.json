@@ -1513,6 +1513,11 @@
                                         "wed": "woensdag"
                                     }
                                 },
+                                "trigger": {
+                                    "id": "Trigger Id",
+                                    "label": "Trigger",
+                                    "no_triggers": "Geen triggers beschikbaar"
+                                },
                                 "zone": {
                                     "entity": "Entiteit met locatie",
                                     "label": "Zone",
@@ -1556,6 +1561,7 @@
                             "delete_confirm": "Weet je zeker dat je dit item wilt verwijderen?",
                             "duplicate": "Dupliceren",
                             "header": "",
+                            "id": "Trigger-ID (gebruikt door de triggervoorwaarde)",
                             "introduction": "Triggers starten de verwerking van een automatiseringsregel. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert Home Assistant de eventuele voorwaarden en roept hij de actie aan.",
                             "learn_more": "Meer informatie over triggers",
                             "name": "Trigger",
@@ -2664,10 +2670,12 @@
                         },
                         "save_script": "Script opslaan",
                         "sequence": "Reeks",
-                        "sequence_sentence": "De reeks van acties in dit script."
+                        "sequence_sentence": "De reeks van acties in dit script.",
+                        "show_trace": "Tracering weergeven"
                     },
                     "picker": {
                         "add_script": "Voeg script toe",
+                        "dev_script": "Debug script",
                         "duplicate": "Dupliceer",
                         "duplicate_script": "Script dupliceren",
                         "edit_script": "Bewerk script",
