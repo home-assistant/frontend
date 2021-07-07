@@ -10,7 +10,7 @@ on:
       - src/translations/en.json
 
 env:
-  NODE_VERSION: 12
+  NODE_VERSION: 14
 
 jobs:
   upload:
