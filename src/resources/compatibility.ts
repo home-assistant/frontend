@@ -1,7 +1,7 @@
-// For localize
 import "core-js";
 import "regenerator-runtime/runtime";
 import "lit/polyfill-support";
+// For localize
 import "@formatjs/intl-getcanonicallocales/polyfill";
 // To use comlink under ES5
 import "proxy-polyfill";

@@ -56,12 +56,23 @@ module.exports.babelOptions = ({ latestBuild }) => ({
       "@babel/preset-env",
       {
         useBuiltIns: "entry",
-        corejs: "3.6",
+        corejs: "3.15",
+        bugfixes: true,
       },
     ],
     "@babel/preset-typescript",
   ].filter(Boolean),
   plugins: [
+    [
+      path.resolve(
+        paths.polymer_dir,
+        "build-scripts/babel-plugins/inline-constants-plugin.js"
+      ),
+      {
+        modules: ["@mdi/js"],
+        ignoreModuleNotFound: true,
+      },
+    ],
     // Part of ES2018. Converts {...a, b: 2} to Object.assign({}, a, {b: 2})
     !latestBuild && [
       "@babel/plugin-proposal-object-rest-spread",
@@ -74,8 +85,14 @@ module.exports.babelOptions = ({ latestBuild }) => ({
     "@babel/plugin-proposal-nullish-coalescing-operator",
     ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],
     ["@babel/plugin-proposal-private-methods", { loose: true }],
+    ["@babel/plugin-proposal-private-property-in-object", { loose: true }],
     ["@babel/plugin-proposal-class-properties", { loose: true }],
   ].filter(Boolean),
+  exclude: [
+    // \\ for Windows, \/ for Mac OS and Linux
+    /node_modules[\\/]core-js/,
+    /node_modules[\\/]webpack[\\/]buildin/,
+  ],
 });
 
 const outputPath = (outputRoot, latestBuild) =>
