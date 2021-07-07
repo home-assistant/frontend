@@ -2645,25 +2645,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/app-layout@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@polymer/app-layout@npm:3.0.2"
+"@polymer/app-layout@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@polymer/app-layout@npm:3.1.0"
   dependencies:
     "@polymer/iron-flex-layout": ^3.0.0-pre.26
     "@polymer/iron-media-query": ^3.0.0-pre.26
     "@polymer/iron-resizable-behavior": ^3.0.0-pre.26
     "@polymer/iron-scroll-target-behavior": ^3.0.0-pre.26
     "@polymer/polymer": ^3.0.0
-  checksum: 038e859278501f9ae62b90565efd452a2abea7609872d745ad6f03748f3343601a802f407dbf3b35d54ee7ed136a5d797e65a969dcf2ff096053344c39163101
+  checksum: 0627ae023bd8ac725bee5e5a761735c72573eb487aa235f8144f98d8ed7b3180bda8b08cf708655036e6deb69a3aa51ec51382f376202f418190fbe6b3260f23
   languageName: node
   linkType: hard
 
-"@polymer/app-storage@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@polymer/app-storage@npm:3.0.2"
+"@polymer/app-storage@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@polymer/app-storage@npm:3.0.3"
   dependencies:
     "@polymer/polymer": ^3.0.0
-  checksum: 1dabecd6d6887b27e216318a7ff508d9b54491f34d4e9bf7d6e89e0a9bc41944d9ea416da693e01e8803c0452a93cf5880e40d3e1210fb6c153be9ef966820a7
+  checksum: 46b65b993661a04b5c8b6a2ed31a0897384466161c0c1d983ced072ce35fa607f8d4b48e1bcf7368cb8381d39e0398bd2ab58b3ebcf2a96cff8b577438d1cf1f
   languageName: node
   linkType: hard
 
@@ -2692,15 +2692,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-autogrow-textarea@npm:^3.0.0-pre.26, @polymer/iron-autogrow-textarea@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/iron-autogrow-textarea@npm:3.0.1"
+"@polymer/iron-autogrow-textarea@npm:^3.0.0-pre.26, @polymer/iron-autogrow-textarea@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@polymer/iron-autogrow-textarea@npm:3.0.3"
   dependencies:
     "@polymer/iron-behaviors": ^3.0.0-pre.26
     "@polymer/iron-flex-layout": ^3.0.0-pre.26
     "@polymer/iron-validatable-behavior": ^3.0.0-pre.26
     "@polymer/polymer": ^3.0.0
-  checksum: 95cb520c3a1aabecc20dbf0ddff91e2413fb6f340d2e32e52040918d5e9b8aed30fc2c8f5fd8fbbe45f2880d242bc1c890d1a558d025b3acb5db9e45fbc126d3
+  checksum: 54900a3b740025348493262196ccb323a6c9c938c2cc610c03a0e21ec0fbabb03655ac5f4fe6d1640325c0646006a140d74dc6df4bc1864ecd82c5100478b8ad
   languageName: node
   linkType: hard
 
@@ -2737,12 +2737,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-fit-behavior@npm:^3.0.0-pre.26":
-  version: 3.0.1
-  resolution: "@polymer/iron-fit-behavior@npm:3.0.1"
+"@polymer/iron-fit-behavior@npm:^3.0.0-pre.26, @polymer/iron-fit-behavior@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@polymer/iron-fit-behavior@npm:3.1.0"
   dependencies:
     "@polymer/polymer": ^3.0.0
-  checksum: 4e5fbee31111ecc9d3d0448ccafa6c49b56f4cb8f1ff7010ad66b8df433e974c1f898e29f30d41e4519bcad0905b0c38c2cd3d5d7d82ea49ee6a79151824d61b
+  checksum: c04136d5dafd84dd4724acfd8c000cb46f827c4c934ed758c7bdf524fa9bf32ac04c74def37ea5ce094f55956eb2852a84559166b471056b3d05856cb50417b1
   languageName: node
   linkType: hard
 
@@ -2838,15 +2838,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-overlay-behavior@npm:^3.0.0-pre.27, @polymer/iron-overlay-behavior@npm:^3.0.2":
-  version: 3.0.2
-  resolution: "@polymer/iron-overlay-behavior@npm:3.0.2"
+"@polymer/iron-overlay-behavior@npm:^3.0.0-pre.27, @polymer/iron-overlay-behavior@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@polymer/iron-overlay-behavior@npm:3.0.3"
   dependencies:
     "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
     "@polymer/iron-fit-behavior": ^3.0.0-pre.26
     "@polymer/iron-resizable-behavior": ^3.0.0-pre.26
     "@polymer/polymer": ^3.0.0
-  checksum: 7e26e9cadb3f45b182d97e21c548afee8610bb6b695b79af8df2714aa88e45499e8475940c85c92a1464d05c56d2aa54fe7854e415fdd5469f6154c321ed8d6e
+  checksum: 6adf9cbdfcbbc4d99d0a8c7745b3f3a5cff6a0c6e678ee0bb3b07f1d063a9aa2ec7d043ea1bd65fbe3397eea10586b20132389f0685e56c2000a182d2d098c57
   languageName: node
   linkType: hard
 
@@ -2968,9 +2968,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-dropdown-menu@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-dropdown-menu@npm:3.0.1"
+"@polymer/paper-dropdown-menu@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@polymer/paper-dropdown-menu@npm:3.2.0"
   dependencies:
     "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
     "@polymer/iron-form-element-behavior": ^3.0.0-pre.26
@@ -2978,12 +2978,12 @@ __metadata:
     "@polymer/iron-iconset-svg": ^3.0.0-pre.26
     "@polymer/iron-validatable-behavior": ^3.0.0-pre.26
     "@polymer/paper-behaviors": ^3.0.0-pre.27
-    "@polymer/paper-input": ^3.0.0-pre.26
-    "@polymer/paper-menu-button": ^3.0.0-pre.26
+    "@polymer/paper-input": ^3.1.0
+    "@polymer/paper-menu-button": ^3.1.0
     "@polymer/paper-ripple": ^3.0.0-pre.26
     "@polymer/paper-styles": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: 4884b86e066c2cc41dc163ec6b99502ed5d0b921ca281b107caa8bb0d40b76d6a095afbff860773195d43a99128d7cc90e4a6da88c762e0d00ee5a0c7afe6eb5
+    "@polymer/polymer": ^3.3.1
+  checksum: 425e7b264766f6e78e328c0e8cf5f25c100e6a46e4a400f57ecbab896c442f7d3d1e297f4febc134eaa79ed9c9c0b92ff011ec47ae893550d33814ec81c7c717
   languageName: node
   linkType: hard
 
@@ -2999,9 +2999,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-input@npm:^3.0.0-pre.26, @polymer/paper-input@npm:^3.0.1":
-  version: 3.0.2
-  resolution: "@polymer/paper-input@npm:3.0.2"
+"@polymer/paper-input@npm:^3.0.0-pre.26, @polymer/paper-input@npm:^3.1.0, @polymer/paper-input@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@polymer/paper-input@npm:3.2.1"
   dependencies:
     "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
     "@polymer/iron-autogrow-textarea": ^3.0.0-pre.26
@@ -3010,7 +3010,7 @@ __metadata:
     "@polymer/iron-input": ^3.0.0-pre.26
     "@polymer/paper-styles": ^3.0.0-pre.26
     "@polymer/polymer": ^3.0.0
-  checksum: 8cbecc33d2c6eb68592e50f647f0b27321d856fceaa7c5555bce61b17cd6c300fe96303ddd7fe02d74f869e820adc4bc50813516c1f38f864969554b4575930c
+  checksum: ccce28b046c947c9e3b261db7914fb551787bf2f90cc3f4740c0539bc8def1da4835bbd83b806db4f4dc9502750bc72f858dbc5fa86788a35aa90337276446a5
   languageName: node
   linkType: hard
 
@@ -3038,18 +3038,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-menu-button@npm:^3.0.0-pre.26, @polymer/paper-menu-button@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-menu-button@npm:3.0.1"
+"@polymer/paper-menu-button@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@polymer/paper-menu-button@npm:3.1.0"
   dependencies:
     "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
     "@polymer/iron-behaviors": ^3.0.0-pre.26
     "@polymer/iron-dropdown": ^3.0.0-pre.26
-    "@polymer/iron-fit-behavior": ^3.0.0-pre.26
+    "@polymer/iron-fit-behavior": ^3.1.0
     "@polymer/neon-animation": ^3.0.0-pre.26
     "@polymer/paper-styles": ^3.0.0-pre.26
     "@polymer/polymer": ^3.0.0
-  checksum: 0f8b0a512b16a4038848a7da39fc0f43a994a7f4c02cd65d609b83403594d7958b17abf12c6a4bda48300b04f33b9a5336da4b66d3b59fd51a956fdf79f9e7f3
+  checksum: 7a612e44a5562f116ba8d2f532c6c22822647ed3753cc3d2d841360257d0a932a70a0ddbc4d2b5b401a612c2daaf790d973166b2eaa2afd5c92ab6e46691f73a
   languageName: node
   linkType: hard
 
@@ -3090,13 +3090,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-ripple@npm:^3.0.0-pre.26, @polymer/paper-ripple@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-ripple@npm:3.0.1"
+"@polymer/paper-ripple@npm:^3.0.0-pre.26, @polymer/paper-ripple@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "@polymer/paper-ripple@npm:3.0.2"
   dependencies:
     "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
     "@polymer/polymer": ^3.0.0
-  checksum: 52d23305029c7eb2a7fcf9548f8b986a65d43198bfb141c1eaf06c755f3b415c6c9f7e3c672bd4aa988eed31ecc95121257435ac48016219a672fe503ffe5f04
+  checksum: ae243e204dd333c735e368b185cd98e70ace1332ba4026250707cf704ed36ab3224dd5adce6ad9550c5b296d8d11584071511c4bbd5e673104064eb92ccfdd4d
   languageName: node
   linkType: hard
 
@@ -3128,7 +3128,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-tabs@npm:^3.0.1":
+"@polymer/paper-tabs@npm:^3.1.0":
   version: 3.1.0
   resolution: "@polymer/paper-tabs@npm:3.1.0"
   dependencies:
@@ -3168,12 +3168,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/polymer@npm:3.1.0":
-  version: 3.1.0
-  resolution: "@polymer/polymer@npm:3.1.0"
+"@polymer/polymer@3.4.1":
+  version: 3.4.1
+  resolution: "@polymer/polymer@npm:3.4.1"
   dependencies:
-    "@webcomponents/shadycss": ^1.5.2
-  checksum: c443afb65c0bb04a7da8e649ba9b4d39924bbb391c8a905969aa31d106fdf8890b1ac9e3a2037387fb9784090b11940c24306247acf5f6ac8ba967d46c02983e
+    "@webcomponents/shadycss": ^1.9.1
+  checksum: 140e30be3d5201728a301883a436292ed6a36312f7b206fecbc1a23c6c0a01aadbc7b63cd870c69f0ec1651aeae97239475ac3a891c84ad8e6477f930f4314cd
+  languageName: node
+  linkType: hard
+
+"@polymer/polymer@patch:@polymer/polymer@3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::locator=home-assistant-frontend%40workspace%3A.":
+  version: 3.4.1
+  resolution: "@polymer/polymer@patch:@polymer/polymer@npm%3A3.4.1#./.yarn/patches/@polymer/polymer/pr-5569.patch::version=3.4.1&hash=712889&locator=home-assistant-frontend%40workspace%3A."
+  dependencies:
+    "@webcomponents/shadycss": ^1.9.1
+  checksum: 797db112b29793611e935fa70bb4b1f5f5e0c4752f8fbf30ac794e19f51b4b2435ba88a626ac21e60b284c011b97c92eaee4c72f4e20d974c00b9a4d3cddc38c
   languageName: node
   linkType: hard
 
@@ -4380,10 +4389,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@webcomponents/shadycss@npm:^1.5.2":
-  version: 1.9.1
-  resolution: "@webcomponents/shadycss@npm:1.9.1"
-  checksum: 84ef050561c36b6d90e961cd73eb3536041b8dc8f69873664458faccc4dd1e05ffa8ce47cc9435c347507975184bf4c7390572bbdb9870b9fc1339b367143abd
+"@webcomponents/shadycss@npm:^1.9.1":
+  version: 1.10.2
+  resolution: "@webcomponents/shadycss@npm:1.10.2"
+  checksum: 3e41eda93b1b9b9d919e41e59d0c7dbc103e3fb25c160c61f2f1b046f1668296a3a69afd0fe1fcb86643c9f3e037a90f7ce8bbbb03dc3c8bf4c63844e2f2cd0b
   languageName: node
   linkType: hard
 
@@ -8740,33 +8749,33 @@ fsevents@~2.3.1:
     "@mdi/js": 5.9.55
     "@mdi/svg": 5.9.55
     "@open-wc/dev-server-hmr": ^0.0.2
-    "@polymer/app-layout": ^3.0.2
-    "@polymer/app-storage": ^3.0.2
-    "@polymer/iron-autogrow-textarea": ^3.0.1
+    "@polymer/app-layout": ^3.1.0
+    "@polymer/app-storage": ^3.0.3
+    "@polymer/iron-autogrow-textarea": ^3.0.3
     "@polymer/iron-flex-layout": ^3.0.1
     "@polymer/iron-icon": ^3.0.1
     "@polymer/iron-input": ^3.0.1
-    "@polymer/iron-overlay-behavior": ^3.0.2
+    "@polymer/iron-overlay-behavior": ^3.0.3
     "@polymer/iron-resizable-behavior": ^3.0.1
     "@polymer/paper-checkbox": ^3.1.0
     "@polymer/paper-dialog": ^3.0.1
     "@polymer/paper-dialog-behavior": ^3.0.1
     "@polymer/paper-dialog-scrollable": ^3.0.1
-    "@polymer/paper-dropdown-menu": ^3.0.1
-    "@polymer/paper-input": ^3.0.1
+    "@polymer/paper-dropdown-menu": ^3.2.0
+    "@polymer/paper-input": ^3.2.1
     "@polymer/paper-item": ^3.0.1
     "@polymer/paper-listbox": ^3.0.1
-    "@polymer/paper-menu-button": ^3.0.1
+    "@polymer/paper-menu-button": ^3.1.0
     "@polymer/paper-progress": ^3.0.1
     "@polymer/paper-radio-button": ^3.0.1
     "@polymer/paper-radio-group": ^3.0.1
-    "@polymer/paper-ripple": ^3.0.1
+    "@polymer/paper-ripple": ^3.0.2
     "@polymer/paper-slider": ^3.0.1
     "@polymer/paper-styles": ^3.0.1
-    "@polymer/paper-tabs": ^3.0.1
+    "@polymer/paper-tabs": ^3.1.0
     "@polymer/paper-toast": ^3.0.1
     "@polymer/paper-tooltip": ^3.0.1
-    "@polymer/polymer": 3.1.0
+    "@polymer/polymer": 3.4.1
     "@rollup/plugin-babel": ^5.2.1
     "@rollup/plugin-commonjs": ^11.1.0
     "@rollup/plugin-json": ^4.0.3
@@ -8792,7 +8801,7 @@ fsevents@~2.3.1:
     "@vue/web-component-wrapper": ^1.2.0
     "@web/dev-server": ^0.0.24
     "@web/dev-server-rollup": ^0.2.11
-    "@webcomponents/webcomponentsjs": ^2.2.7
+    "@webcomponents/webcomponentsjs": ^2.2.10
     babel-loader: ^8.2.2
     chai: ^4.3.4
     chart.js: ^3.3.2
