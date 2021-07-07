@@ -1610,6 +1610,9 @@
             "delete_blueprint": "Delete blueprint",
             "share_blueprint": "Share blueprint",
             "share_blueprint_no_url": "Unable to share blueprint: no source url",
+            "updated": "Blueprint '{name}' was updated",
+            "update_blueprint": "Update blueprint",
+            "update_blueprint_no_url": "Unable to update blueprint: no source url",
             "discover_more": "Discover more blueprints"
           },
           "add": {

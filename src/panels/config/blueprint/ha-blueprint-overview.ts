@@ -25,9 +25,12 @@ import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
 import { showAutomationEditor } from "../../../data/automation";
 import {
+  BlueprintImportResult,
   BlueprintMetaData,
   Blueprints,
   deleteBlueprint,
+  importBlueprint,
+  saveBlueprint,
 } from "../../../data/blueprint";
 import {
   showAlertDialog,
@@ -37,6 +40,7 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
+import { showToast } from "../../../util/toast";
 import { configSections } from "../ha-panel-config";
 import { showAddBlueprintDialog } from "./show-dialog-import-blueprint";
 
@@ -157,6 +161,25 @@ class HaBlueprintOverview extends LitElement {
                 @click=${(ev) => this._share(ev)}
                 ><ha-svg-icon .path=${mdiShareVariant}></ha-svg-icon
               ></mwc-icon-button>`,
+      },
+      update: {
+        title: "",
+        type: "icon-button",
+        template: (_, blueprint: any) =>
+          blueprint.error
+            ? ""
+            : html`<mwc-icon-button
+                .blueprint=${blueprint}
+                .disabled=${!blueprint.source_url}
+                .label=${this.hass.localize(
+                  blueprint.source_url
+                    ? "ui.panel.config.blueprint.overview.update_blueprint"
+                    : "ui.panel.config.blueprint.overview.update_blueprint_no_url"
+                )}
+                @click=${(ev) => this._update(ev)}
+              >
+                <ha-svg-icon .path=${mdiDownload}> </ha-svg-icon>
+              </mwc-icon-button>`,
       },
       delete: {
         title: "",
@@ -288,6 +311,44 @@ class HaBlueprintOverview extends LitElement {
     window.open(
       `https://my.home-assistant.io/create-link/?${params.toString()}`
     );
+  }
+
+  private async _update(ev) {
+    const blueprint = ev.currentTarget.blueprint;
+    let result: BlueprintImportResult;
+    try {
+      result = await importBlueprint(this.hass, blueprint.source_url!);
+    } catch (err) {
+      await showAlertDialog(this, { text: err.message });
+      return;
+    }
+    if (result.validation_errors) {
+      await showAlertDialog(this, {
+        text: result.validation_errors.join(", "),
+      });
+      return;
+    }
+
+    try {
+      await deleteBlueprint(this.hass, blueprint.domain, blueprint.path);
+      await saveBlueprint(
+        this.hass,
+        result.blueprint.metadata.domain,
+        blueprint.path,
+        result.raw_data,
+        result.blueprint.metadata.source_url
+      );
+    } catch (err) {
+      await showAlertDialog(this, { text: err.message });
+      return;
+    }
+    fireEvent(this, "reload-blueprints");
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.config.blueprint.overview.updated",
+        { name: blueprint.name }
+      ),
+    });
   }
 
   private async _delete(ev) {
