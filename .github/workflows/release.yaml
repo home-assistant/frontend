@@ -31,6 +31,13 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: yarn
 
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Download Translations
+        run: ./script/translations_download
+        env:
+          LOKALISE_TOKEN: ${{ secrets.LOKALISE_TOKEN }}
       - name: Build and release package
         run: |
           python3 -m pip install twine
