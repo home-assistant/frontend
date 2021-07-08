@@ -62,9 +62,6 @@ class HassioIngressView extends LitElement {
     this._resolveIngressTime = undefined;
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-  }
 
   private async _resolveURL(addonSlug: string): Promise<void> {
     await this._fetchData(addonSlug);
