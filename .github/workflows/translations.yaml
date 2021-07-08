@@ -1,8 +1,6 @@
 name: Translations
 
 on:
-  schedule:
-    - cron: "30 0 * * *"
   push:
     branches:
       - dev
