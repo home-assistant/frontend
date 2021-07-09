@@ -200,7 +200,7 @@
                         "manager": "Manager"
                     },
                     "stage": {
-                        "description": "Tillegg kan ha en av tre trinn: \n\n{icon_stable} ** Stabil **: Disse er tillegg som er klare til å brukes i produksjon.\n\n{icon_experimental} ** Eksperimentell **: Disse kan inneholde feil og kan være uferdige.\n\n{icon_deprecated} ** Utdatert **: Disse tilleggene mottar ikke lenger noen oppdateringer.",
+                        "description": "Tillegg kan ha ett av tre trinn: \n\n{icon_stable} ** Stabil **: Disse er tillegg som er klare til å brukes i produksjon.\n\n{icon_experimental} ** Eksperimentell **: Disse kan inneholde feil og kan være uferdige.\n\n{icon_deprecated} ** Utdatert **: Disse tilleggene mottar ikke lenger noen oppdateringer.",
                         "title": "Tilleggstrinn"
                     }
                 },
@@ -239,7 +239,7 @@
                     "enable": "Aktiver beskyttelsesmodus",
                     "title": "Advarsel: Beskyttelsesmodus er deaktivert!"
                 },
-                "ram_usage": "Tillegg RAM forbruk",
+                "ram_usage": "Tillegg RAM-forbruk",
                 "rebuild": "Gjenoppbygg",
                 "restart": "Omstart",
                 "start": "Start",
@@ -339,7 +339,7 @@
                 "static": "Statisk",
                 "title": "Nettverksinnstillinger",
                 "unsaved": "Du har ikke lagrede endringer, disse vil gå tapt hvis du bytter fane, vil du fortsette?",
-                "warning": "Hvis du endrer Wi-Fi, IP eller gateway-adressene, kan du miste tilkoblingen!",
+                "warning": "Hvis du endrer Wi-Fi, IP- eller gateway-adressene, kan du miste tilkoblingen!",
                 "wep": "WEP",
                 "wpa": "WPA-PSK"
             },
@@ -376,10 +376,10 @@
             "error": "En ukjent feil har oppstått",
             "error_addon_no_ingress": "Det etterspurte tillegget støtter ikke inngang",
             "error_addon_not_found": "Tillegget ble ikke funnet",
-            "error_addon_not_installed": "Det forespurte tillegget er ikke installert. Vennligst installer den først",
-            "error_addon_not_started": "Det valgte tillegget kjører ikke. Vennligst start den først",
+            "error_addon_not_installed": "Det forespurte tillegget er ikke installert. Vennligst installer det først",
+            "error_addon_not_started": "Det valgte tillegget kjører ikke. Vennligst start det først",
             "faq_link": "Vanlige spørsmål om Min Home Assistant",
-            "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og hvilken versjon de ble introdusert."
+            "not_supported": "Denne viderekoblingen støttes ikke av Home Assistant-forekomsten. Se på {link} for viderekoblinger som støttes, og i hvilken versjon de ble introdusert."
         },
         "panel": {
             "dashboard": "Dashboard",
@@ -400,7 +400,7 @@
             "delete_snapshot_confirm": "slett",
             "delete_snapshot_text": "Vl du slette {number} {number, plural,\n  one {sikkerhetskopi}\n  other {sikkerhetskopier}\n}?",
             "delete_snapshot_title": "Slett sikkerhetskopi",
-            "description": "Sikkerhetskopier lar deg enkelt sikkerhetskopiere og gjenopprette alle dataene fra din Home Assistant forekomst",
+            "description": "Sikkerhetskopier lar deg enkelt sikkerhetskopiere og gjenopprette alle dataene fra din Home Assistant-forekomst",
             "enter_password": "Vennligst skriv inn et passord",
             "failed_to_delete": "Kunne ikke slette",
             "folder": {
@@ -442,7 +442,7 @@
                 "confirm_reboot": "Er du sikker på at du vil starte verten på nytt?",
                 "confirm_shutdown": "Er du sikker på at du vil slå av verten?",
                 "deployment": "Distribusjon",
-                "docker_version": "Docker versjon",
+                "docker_version": "Docker-versjon",
                 "emmc_lifetime_used": "eMMC levetid brukt",
                 "failed_to_get_hardware_list": "Kunne ikke hente maskinvarelisten",
                 "failed_to_import_from_usb": "Kunne ikke importere fra USB",
@@ -452,7 +452,7 @@
                 "hardware": "Maskinvare",
                 "hostname": "Vertsnavn",
                 "import_from_usb": "Importer fra USB",
-                "ip_address": "IP adresse",
+                "ip_address": "IP-adresse",
                 "new_hostname": "Vennligst skriv inn et nytt vertsnavn:",
                 "operating_system": "Operativsystem",
                 "reboot_host": "Start verten på nytt",
@@ -471,13 +471,13 @@
                 "channel": "Kanal",
                 "cpu_usage": "Supervisor CPU forbruk",
                 "failed_to_reload": "Kunne ikke laste inn Supervisor på nytt",
-                "failed_to_set_option": "Kan ikke sette Supervisor instilling",
+                "failed_to_set_option": "Kan ikke sette Supervisor-instilling",
                 "failed_to_update": "Kunne ikke oppdatere Supervisor",
                 "join_beta_action": "Bli med i beta-kanalen",
                 "join_beta_description": "Få beta-oppdateringer for Home Assistant (RCs), Supervisor og vert",
                 "leave_beta_action": "Forlat beta-kanalen",
                 "leave_beta_description": "Få stabile oppdateringer for Home Assistant, Supervisor og vert",
-                "ram_usage": "Supervisor RAM forbruk",
+                "ram_usage": "Supervisor RAM-forbruk",
                 "reload_supervisor": "Last inn Supervisor på nytt",
                 "search": "Søk",
                 "share_diagnostics": "Del diagnostikk",
@@ -497,7 +497,7 @@
                 "unsupported_reason": {
                     "apparmor": "AppArmor er ikke aktivert på verten",
                     "container": "Containere som er kjent for å forårsake problemer",
-                    "content-trust": "Validering av innholds klarering er deaktivert",
+                    "content-trust": "Validering av innholdsklarering er deaktivert",
                     "dbus": "",
                     "docker_configuration": "Docker-konfigurasjon",
                     "docker_version": "Docker-versjon",
@@ -818,7 +818,7 @@
                     "was_safe": "var trygg",
                     "was_unlocked": "ble låst opp",
                     "was_unplugged": "ble frakoblet",
-                    "was_unsafe": "var utrygt"
+                    "was_unsafe": "var utrygg"
                 },
                 "retrieval_error": "Feil under henting av loggbokoppføring",
                 "show_trace": "Vis spor"
@@ -844,22 +844,22 @@
                     "podcast": "Podcast",
                     "season": "Sesong",
                     "track": "Spor",
-                    "tv_show": "TV Serie",
+                    "tv_show": "TV-serie",
                     "url": "URL",
                     "video": "Video"
                 },
                 "documentation": "dokumentasjon",
                 "learn_adding_local_media": "Lær mer om å legge til medier i {documentation}.",
-                "local_media_files": "Plasser video-, lyd- og bildefilene dine i mediekatalogen for å kunne bla gjennom og spille dem av i nettleseren eller på støttede mediaspillere.",
+                "local_media_files": "Plasser video-, lyd- og bildefilene dine i mediekatalogen for å kunne bla gjennom og spille dem av i nettleseren eller på støttede mediespillere.",
                 "media_browsing_error": "Feil ved medievisning",
                 "media_not_supported": "Browser Media Player støtter ikke denne typen medier",
-                "media_player": "Mediaspiller",
-                "media-player-browser": "Nettleser for Mediespiller",
+                "media_player": "Mediespiller",
+                "media-player-browser": "Nettleser for mediespiller",
                 "no_items": "Ingen elementer",
                 "no_local_media_found": "Ingen lokale medier funnet",
                 "no_media_folder": "Det ser ut til at du ennå ikke har opprettet en mediekatalog.",
                 "pick": "Velg",
-                "pick-media": "Velg Media",
+                "pick-media": "Velg media",
                 "play": "Spill av",
                 "play-media": "Spill media",
                 "setup_local_help": "Sjekk {documentation} for hvordan du konfigurerer lokale medier.",
@@ -868,7 +868,7 @@
             },
             "picture-upload": {
                 "label": "Bilde",
-                "unsupported_format": "Formatet støttes ikke, vennligst velge et JPEG-, PNG- eller GIF-bilde."
+                "unsupported_format": "Formatet støttes ikke, vennligst velg et JPEG-, PNG- eller GIF-bilde."
             },
             "related-filter-menu": {
                 "filter_by_area": "Filtrer etter område",
@@ -1012,9 +1012,9 @@
                     "time": "Tid"
                 },
                 "input_number": {
-                    "box": "Innputt felt",
-                    "max": "Maksimal verdi",
-                    "min": "Minimum verdi",
+                    "box": "Innputtfelt",
+                    "max": "Maksimumsverdi",
+                    "min": "Minimumsverdi",
                     "mode": "Visningsmodus",
                     "slider": "Glidebryter",
                     "step": "Trinnstørrelse",
@@ -1027,8 +1027,8 @@
                     "options": "Alternativer"
                 },
                 "input_text": {
-                    "max": "Maksimal lengde",
-                    "min": "Minimum lengde",
+                    "max": "Maksimumslengde",
+                    "min": "Minimumslengde",
                     "mode": "Visningsmodus",
                     "password": "Passord",
                     "pattern": "Regex-mønster for validering på klientsiden",
@@ -1067,7 +1067,7 @@
                 "restored": {
                     "confirm_remove_text": "Er du sikker på at du vil fjerne denne entiteten?",
                     "confirm_remove_title": "Vil du fjerne entiteten?",
-                    "not_provided": "Denne entiteten er ikke tilgjengelig for øyeblikket og er foreldreløs til en fjernet, endret eller ikke-fungerende integrasjon eller enhet.",
+                    "not_provided": "Denne entiteten er ikke tilgjengelig for øyeblikket og er foreldreløs etter en fjernet, endret eller ikke-fungerende integrasjon eller enhet.",
                     "remove_action": "Fjern entitet",
                     "remove_intro": "Hvis entiteten ikke lenger er i bruk, kan du rense opp ved å fjerne den."
                 },
@@ -1147,7 +1147,7 @@
                         "filesize": "Enheter for filstørrelse",
                         "filter": "Filtrere entiteter",
                         "generic": "Generiske IP-kameraenheter",
-                        "generic_thermostat": "Generiske termostat enheter",
+                        "generic_thermostat": "Generiske termostat-enheter",
                         "group": "Grupper, gruppeenheter og varsler tjenester",
                         "history_stats": "Historikkstatistiske enheter",
                         "homekit": "HomeKit",
@@ -1170,7 +1170,7 @@
                         "telegram": "Telegram varsler tjenester",
                         "template": "Malenheter",
                         "trend": "Trend enheter",
-                        "universal": "Enheter for universell mediaspiller",
+                        "universal": "Enheter for universell mediespiller",
                         "zone": "Soner"
                     },
                     "server_control": {
@@ -1215,7 +1215,7 @@
                 "power_source": "Strømkilde",
                 "quirk": "",
                 "services": {
-                    "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
+                    "reconfigure": "Rekonfigurer ZHA-enhet (helbred enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
                     "remove": "Fjern en enhet fra ZigBee-nettverket.",
                     "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret.",
                     "zigbee_information": "Vis ZigBee-informasjon for enheten."
@@ -1347,7 +1347,7 @@
                             "create": "Opprett",
                             "header": "Beskriv automasjonen du vil opprette",
                             "input_label": "Hva skal denne automasjonen gjøre?",
-                            "intro": "Og vi vil prøve å skape det for deg. For eksempel: Slå av lysene når jeg drar."
+                            "intro": "Og vi vil prøve å lage den til deg. For eksempel: Slå av lysene når jeg drar."
                         }
                     },
                     "editor": {
@@ -1793,7 +1793,7 @@
                         "tts": {
                             "default_language": "Standardspråk som skal brukes",
                             "dialog": {
-                                "example_message": "Hei {name}, du kan spille hvilken som helst tekst på en hvilken som helst mediaspiller som støttes!",
+                                "example_message": "Hei {name}, du kan spille hvilken som helst tekst på en hvilken som helst mediespiller som støttes!",
                                 "header": "Prøv Tekst-til-tale",
                                 "play": "Spill av",
                                 "target": "Mål",
@@ -2137,7 +2137,7 @@
                             "disabled": "Deaktivert",
                             "ok": "Ok",
                             "readonly": "Skrivebeskyttet",
-                            "restored": "Gjennopprettet",
+                            "restored": "Gjenopprettet",
                             "unavailable": "Utilgjengelig"
                         }
                     }
@@ -2199,7 +2199,7 @@
                     "server": "core",
                     "setup_time": "Oppsettstid",
                     "source": "Kilder:",
-                    "system_health_error": "System tilstand komponenten er ikke lastet inn. Legg til 'system_health:' i configuration.yaml",
+                    "system_health_error": "Systemtilstand-komponenten er ikke lastet inn. Legg til 'system_health:' i configuration.yaml",
                     "system_health": {
                         "manage": "Administrer",
                         "more_info": "mer informasjon"
@@ -2341,7 +2341,7 @@
                         "info": "INFO",
                         "warning": "ADVARSEL"
                     },
-                    "load_full_log": "Last inn fullstendig Home Assistant logg",
+                    "load_full_log": "Last inn fullstendig Home Assistant-logg",
                     "loading_log": "Laster inn feillogg...",
                     "multiple_messages": "meldingen oppstod først ved {time} og vist {counter} ganger",
                     "no_errors": "Ingen feil er rapportert",
@@ -2493,7 +2493,7 @@
                     "node_config": {
                         "header": "Nodekonfigurasjon",
                         "help_source": "Konfigurasjonsparameter beskrivelser og hjelpetekst er gitt av OpenZWave-prosjektet",
-                        "introduction": "Administrer de forskjellige konfigurasjonsparametrene for en Z-Wave-node",
+                        "introduction": "Administrer de forskjellige konfigurasjonsparameterne for en Z-Wave-node",
                         "wakeup_help": "Batteridrevne noder må være våkne for å endre konfigurasjonen. Hvis noden ikke er våken, vil OpenZWave prøve å oppdatere nodenes konfigurasjon neste gang den våkner, noe som kan være flere timer (eller dager) senere. Følg disse trinnene for å vekke enheten:"
                     },
                     "node_metadata": {
@@ -2718,7 +2718,7 @@
                             "telegram": "Telegram varsler tjenester",
                             "template": "Malenheter",
                             "trend": "Trend enheter",
-                            "universal": "Enheter for universell mediaspiller",
+                            "universal": "Enheter for universell mediespiller",
                             "zone": "Soner"
                         },
                         "server_management": {
@@ -3983,11 +3983,11 @@
                 "logout_title": "Logg av?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Er du sikker på at du vil slette tilgangstoken for {name}?",
-                    "create": "Opprett Token",
+                    "create": "Opprett token",
                     "create_failed": "Kunne ikke opprette tilgangstoken.",
                     "created": "Opprettet {date}",
                     "delete_failed": "Kan ikke slette tilgangstokenet.",
-                    "description": "Opprett langvarige tilgangstokener slik at skriptene dine kan samhandle med din Home Assistant instans. Hver token vil være gyldig i 10 år fra opprettelsen. Følgende langvarige tilgangstokener er for tiden aktive.",
+                    "description": "Opprett langvarige tilgangstokener slik at skriptene dine kan samhandle med din Home Assistant-instans. Hvert token vil være gyldig i 10 år fra opprettelsen. Følgende langvarige tilgangstokener er for tiden aktive.",
                     "empty_state": "Du har ingen langvarige tilgangstokener ennå.",
                     "header": "Langvarige tilgangstokener",
                     "learn_auth_requests": "Lær hvordan du lager godkjente forespørsler.",
@@ -4029,17 +4029,17 @@
                     "description": "Send varsler til denne enheten.",
                     "error_load_platform": "Konfigurer notify.html5.",
                     "error_use_https": "Krever SSL aktivert for grensesnitt.",
-                    "header": "Push varslinger",
+                    "header": "Push-varslinger",
                     "link_promo": "Lær mer",
-                    "push_notifications": "Push varslinger"
+                    "push_notifications": "Push-varslinger"
                 },
                 "refresh_tokens": {
                     "confirm_delete": "Er du sikker på at du vil slette oppdateringstoken for {name}?",
                     "created_at": "Opprettet {date}",
                     "current_token_tooltip": "Kan ikke slette gjeldende oppdateringstoken",
                     "delete_failed": "Kunne ikke slette oppdateringstoken.",
-                    "description": "Hver oppdateringstoken representerer en innloggingsøkt. Oppdateringstoken blir automatisk fjernet når du klikker på logg ut. Følgende oppdateringstoken er for tiden aktiv for kontoen din.",
-                    "header": "Oppdater Tokens",
+                    "description": "Hvert oppdateringstoken representerer en innloggingsøkt. Oppdateringstoken blir automatisk fjernet når du klikker på logg ut. Følgende oppdateringstoken er for tiden aktiv for kontoen din.",
+                    "header": "Oppdater token",
                     "last_used": "Sist brukt {date} fra {location}",
                     "not_used": "Har aldri blitt brukt",
                     "token_title": "Oppdateringstoken for {clientId}"
