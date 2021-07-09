@@ -176,7 +176,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               ? html`
                   ${Object.entries(this._config).map(
                     ([id, item]) => html` <ha-settings-row
-                      class="content config-item"
+                      class="config-item"
                       .configId=${id}
                       .narrow=${this.narrow}
                     >
@@ -474,6 +474,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;
           border-top: 1px solid var(--divider-color);
+          padding: 4px 16px;
         }
 
         .prefix {
