@@ -482,7 +482,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
           text-transform: uppercase;
           font-size: 0.8em;
           padding-right: 24px;
-          line-height: 1.3em;
+          line-height: 1.5em;
         }
 
         .prefix span {
