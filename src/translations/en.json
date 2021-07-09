@@ -2742,6 +2742,14 @@
             "exclusion_failed": "The node could not be removed. Please check the logs for more information.",
             "exclusion_finished": "Node {id} has been removed from your Z-Wave network."
           },
+          "remove_failed_node": {
+            "title": "Remove a Failed Z-Wave Device",
+            "introduction": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
+            "remove_device": "Remove Device",
+            "in_progress": "The device removal is in progress.",
+            "removal_finished": "Node {id} has been removed from your Z-Wave network.",
+            "removal_failed": "The device could not be removed from your Z-Wave network."
+          },
           "reinterview_node": {
             "title": "Re-interview a Z-Wave Device",
             "introduction": "Re-interview a device on your Z-Wave network. Use this feature if your device has missing or incorrect functionality.",
