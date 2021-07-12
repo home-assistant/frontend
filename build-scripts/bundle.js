@@ -89,7 +89,7 @@ module.exports.babelOptions = ({ latestBuild }) => ({
     ["@babel/plugin-proposal-class-properties", { loose: true }],
   ].filter(Boolean),
   exclude: [
-    // \\ for Windows, \/ for Mac OS and Linux
+    // \\ for Windows, / for Mac OS and Linux
     /node_modules[\\/]core-js/,
     /node_modules[\\/]webpack[\\/]buildin/,
   ],
