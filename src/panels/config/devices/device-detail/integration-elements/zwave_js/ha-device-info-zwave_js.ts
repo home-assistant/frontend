@@ -80,7 +80,7 @@ export class HaDeviceInfoZWaveJS extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._node || !this._configEntry) {
+    if (!this._node) {
       return html``;
     }
     return html`
@@ -91,7 +91,7 @@ export class HaDeviceInfoZWaveJS extends LitElement {
         ? html`
             <div>
               ${this.hass.localize("ui.panel.config.zwave_js.common.source")}:
-              ${this._configEntry.title}
+              ${this._configEntry!.title}
             </div>
           `
         : ""}
