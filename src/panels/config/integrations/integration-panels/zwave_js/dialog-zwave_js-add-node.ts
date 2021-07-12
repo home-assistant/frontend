@@ -363,6 +363,7 @@ class DialogZWaveJSAddNode extends LitElement {
 
         .stages {
           margin-top: 16px;
+          display: grid;
         }
 
         .flex-container .stage ha-svg-icon {
