@@ -70,6 +70,11 @@ export interface StatisticValue {
   state: number | null;
 }
 
+export interface StatisticsMetaData {
+  unit_of_measurement: string;
+  statistic_id: string;
+}
+
 export const fetchRecent = (
   hass: HomeAssistant,
   entityId: string,
@@ -276,7 +281,7 @@ export const getStatisticIds = (
   hass: HomeAssistant,
   statistic_type?: "mean" | "sum"
 ) =>
-  hass.callWS<string[]>({
+  hass.callWS<StatisticsMetaData[]>({
     type: "history/list_statistic_ids",
     statistic_type,
   });

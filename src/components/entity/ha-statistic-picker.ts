@@ -18,7 +18,7 @@ import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { compare } from "../../common/string/compare";
-import { getStatisticIds } from "../../data/history";
+import { getStatisticIds, StatisticsMetaData } from "../../data/history";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import type { HaComboBox } from "../ha-combo-box";
@@ -55,9 +55,17 @@ export class HaStatisticPicker extends LitElement {
   @property({ attribute: "statistic-types" })
   public statisticTypes?: "mean" | "sum";
 
-  @property({ type: Array }) public statisticIds?: string[];
+  @property({ type: Array }) public statisticIds?: StatisticsMetaData[];
 
   @property({ type: Boolean }) public disabled?: boolean;
+
+  /**
+   * Show only statistics with these unit of measuments.
+   * @type {Array}
+   * @attr include-unit-of-measurement
+   */
+  @property({ type: Array, attribute: "include-unit-of-measurement" })
+  public includeUnitOfMeasurement?: string[];
 
   @state() private _opened?: boolean;
 
@@ -67,7 +75,8 @@ export class HaStatisticPicker extends LitElement {
 
   private _getStatistics = memoizeOne(
     (
-      statisticIds: string[]
+      statisticIds: StatisticsMetaData[],
+      includeUnitOfMeasurement?: string[]
     ): Array<{ id: string; name: string; state?: HassEntity }> => {
       if (!statisticIds.length) {
         return [
@@ -80,12 +89,22 @@ export class HaStatisticPicker extends LitElement {
         ];
       }
 
-      const output = statisticIds.map((id) => {
-        const entityState = this.hass.states[id];
+      if (includeUnitOfMeasurement) {
+        statisticIds = statisticIds.filter((meta) =>
+          includeUnitOfMeasurement.includes(meta.unit_of_measurement)
+        );
+      }
+
+      const output = statisticIds.map((meta) => {
+        const entityState = this.hass.states[meta.statistic_id];
         if (!entityState) {
-          return { id, name: id };
+          return { id: meta.statistic_id, name: meta.statistic_id };
         }
-        return { id, name: computeStateName(entityState), state: entityState };
+        return {
+          id: meta.statistic_id,
+          name: computeStateName(entityState),
+          state: entityState,
+        };
       });
 
       if (output.length === 1) {
@@ -116,11 +135,15 @@ export class HaStatisticPicker extends LitElement {
     ) {
       this._init = true;
       if (this.hasUpdated) {
-        (this.comboBox as any).items = this._getStatistics(this.statisticIds!);
+        (this.comboBox as any).items = this._getStatistics(
+          this.statisticIds!,
+          this.includeUnitOfMeasurement
+        );
       } else {
         this.updateComplete.then(() => {
           (this.comboBox as any).items = this._getStatistics(
-            this.statisticIds!
+            this.statisticIds!,
+            this.includeUnitOfMeasurement
           );
         });
       }

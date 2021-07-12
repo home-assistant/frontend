@@ -214,10 +214,10 @@ export class HuiEnergySummaryGraphCard
     if (this._fetching) {
       return;
     }
-    const startDate = new Date();
+    const startDate = new Date("2021-07-08T00:00:00");
     // This should be _just_ today (since local midnight)
     // For now we do a lot because fake data is not recent.
-    startDate.setHours(-35);
+    // startDate.setHours(-135);
 
     this._fetching = true;
     const prefs = this._config!.prefs;

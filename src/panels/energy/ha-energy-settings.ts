@@ -18,12 +18,14 @@ import { HomeAssistant } from "../../types";
 import "../../components/entity/ha-statistics-picker";
 import "../../components/ha-svg-icon";
 import "../../components/ha-icon-next";
-import { getStatisticIds } from "../../data/history";
+import { getStatisticIds, StatisticsMetaData } from "../../data/history";
 import {
   mdiSolarPower,
   mdiTransmissionTower,
   mdiWashingMachine,
 } from "@mdi/js";
+
+const energyUnits = ["kWh"];
 
 @customElement("ha-energy-settings")
 export class EnergySettings extends LitElement {
@@ -34,7 +36,7 @@ export class EnergySettings extends LitElement {
 
   @state() private _error?: string;
 
-  @state() private _statisticIds?: string[];
+  @state() private _statisticIds?: StatisticsMetaData[];
 
   @state() private _state:
     | "overview"
@@ -180,6 +182,7 @@ export class EnergySettings extends LitElement {
               .flowStat=${"energy_from"}
               .hass=${this.hass}
               .statisticIds=${this._statisticIds}
+              .includeUnitOfMeasurement=${energyUnits}
               .value=${flow.stat_energy_from}
               .label=${`${idx + 1}: Grid Energy Consumption (kWh)`}
               @value-changed=${this._valueChanged}
@@ -220,6 +223,7 @@ export class EnergySettings extends LitElement {
               .flowStat=${"energy_to"}
               .hass=${this.hass}
               .statisticIds=${this._statisticIds}
+              .includeUnitOfMeasurement=${energyUnits}
               .value=${flow.stat_energy_to}
               label="Returned to Grid (kWh)"
               @value-changed=${this._valueChanged}
@@ -258,6 +262,7 @@ export class EnergySettings extends LitElement {
           .stat=${"energy_from"}
           .hass=${this.hass}
           .statisticIds=${this._statisticIds}
+          .includeUnitOfMeasurement=${energyUnits}
           .value=${solarSource?.stat_energy_from}
           .label=${this.hass.localize(
             "ui.panel.energy.settings.production.stat_production"
@@ -270,6 +275,7 @@ export class EnergySettings extends LitElement {
           .stat=${"predicted_energy_from"}
           .hass=${this.hass}
           .statisticIds=${this._statisticIds}
+          .includeUnitOfMeasurement=${energyUnits}
           .value=${solarSource?.stat_predicted_energy_from}
           .label=${this.hass.localize(
             "ui.panel.energy.settings.production.stat_predicted_production"
@@ -303,6 +309,7 @@ export class EnergySettings extends LitElement {
             (pref) => pref.stat_consumption
           )}
           .statisticIds=${this._statisticIds}
+          .includeUnitOfMeasurement=${energyUnits}
           .pickedStatisticLabel=${this.hass.localize(
             "ui.panel.energy.settings.device_consumption.selected_stat"
           )}
