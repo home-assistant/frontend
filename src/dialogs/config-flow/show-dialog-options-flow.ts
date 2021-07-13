@@ -1,5 +1,6 @@
 import { html } from "lit";
 import { ConfigEntry } from "../../data/config_entries";
+import { domainToName } from "../../data/integration";
 import {
   createOptionsFlow,
   deleteOptionsFlow,
@@ -131,6 +132,15 @@ export const showOptionsFlowDialog = (
               ></ha-markdown>
             `
           : "";
+      },
+
+      renderLoadingDescription(hass, reason) {
+        return (
+          hass.localize(`component.${configEntry.domain}.options.loading`) ||
+          hass.localize(`ui.dialogs.options_flow.loading.${reason}`, {
+            integration: domainToName(hass.localize, configEntry.domain),
+          })
+        );
       },
     }
   );

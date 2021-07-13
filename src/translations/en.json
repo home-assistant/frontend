@@ -753,6 +753,10 @@
         "form": {
           "header": "Options"
         },
+        "loading": {
+          "loading_flow": "Please wait while the options for {integration} are being initialized",
+          "loading_step": "Loading next step for {integration}"
+        },
         "success": {
           "description": "Options successfully saved."
         }
@@ -2224,7 +2228,11 @@
               "title": "We discovered these, want to set them up?",
               "new_flow": "No, set up an other instance of {integration}"
             },
-            "loading_first_time": "Please wait while the integration is being installed",
+            "loading": {
+              "loading_flow": "Please wait while {integration} is being setup",
+              "loading_step": "Loading next step for {integration}",
+              "fallback_title": "the integration"
+            },
             "error": "Error",
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant."

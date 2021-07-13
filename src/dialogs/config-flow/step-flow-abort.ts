@@ -9,13 +9,11 @@ import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-abort")
 class StepFlowAbort extends LitElement {
-  public flowConfig!: FlowConfig;
+  @property({ attribute: false }) public flowConfig!: FlowConfig;
 
-  @property()
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property()
-  private step!: DataEntryFlowStepAbort;
+  @property({ attribute: false }) public step!: DataEntryFlowStepAbort;
 
   protected render(): TemplateResult {
     return html`
