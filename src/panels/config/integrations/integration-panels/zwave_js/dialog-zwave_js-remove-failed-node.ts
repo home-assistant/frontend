@@ -136,7 +136,10 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
                   </p>
                 </div>
               </div>
-              <mwc-button slot="primaryAction" @click=${this.closeDialog}>
+              <mwc-button
+                slot="primaryAction"
+                @click=${this.closeDialogFinished}
+              >
                 ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
               </mwc-button>
             `
@@ -149,6 +152,7 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
     if (!this.hass) {
       return;
     }
+    this._status = "started";
     try {
       this._subscribed = await this.hass.connection.subscribeMessage(
         (message) => this._handleMessage(message),
@@ -177,7 +181,7 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
 
   private _unsubscribe(): void {
     if (this._subscribed) {
-      this._subscribed.then((unsub) => unsub());
+      this._subscribed();
       this._subscribed = undefined;
     }
     if (this._status !== "finished") {
@@ -193,29 +197,21 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
+  public closeDialogFinished(): void {
+    history.back();
+    this.closeDialog();
+  }
+
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
         .success {
-          color: green;
+          color: var(--success-color);
         }
 
         .failed {
-          color: red;
-        }
-
-        blockquote {
-          display: block;
-          background-color: #ddd;
-          padding: 8px;
-          margin: 8px 0;
-          font-size: 0.9em;
-        }
-
-        blockquote em {
-          font-size: 0.9em;
-          margin-top: 6px;
+          color: var(--warning-color);
         }
 
         .flex-container {
