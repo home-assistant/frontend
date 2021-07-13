@@ -2593,6 +2593,7 @@
             "network": "Network",
             "node_id": "Node ID",
             "home_id": "Home ID",
+            "source": "Source",
             "close": "Close",
             "add_node": "Add Node",
             "remove_node": "Remove Node",
