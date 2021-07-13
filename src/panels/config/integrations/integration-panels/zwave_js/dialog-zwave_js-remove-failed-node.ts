@@ -44,6 +44,19 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
     this.node_id = params.node_id;
   }
 
+  public closeDialog(): void {
+    this._unsubscribe();
+    this.entry_id = undefined;
+    this._status = "";
+
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  public closeDialogFinished(): void {
+    history.back();
+    this.closeDialog();
+  }
+
   protected render(): TemplateResult {
     if (!this.entry_id || !this.node_id) {
       return html``;
@@ -187,19 +200,6 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
     if (this._status !== "finished") {
       this._status = "";
     }
-  }
-
-  public closeDialog(): void {
-    this._unsubscribe();
-    this.entry_id = undefined;
-    this._status = "";
-
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
-  public closeDialogFinished(): void {
-    history.back();
-    this.closeDialog();
   }
 
   static get styles(): CSSResultGroup {
