@@ -374,19 +374,6 @@ class DialogZWaveJSAddNode extends LitElement {
           padding: 8px;
         }
 
-        blockquote {
-          display: block;
-          background-color: #ddd;
-          padding: 8px;
-          margin: 8px 0;
-          font-size: 0.9em;
-        }
-
-        blockquote em {
-          font-size: 0.9em;
-          margin-top: 6px;
-        }
-
         .flex-container {
           display: flex;
           align-items: center;
