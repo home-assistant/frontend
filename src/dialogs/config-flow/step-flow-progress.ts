@@ -1,6 +1,6 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import "../../components/ha-circular-progress";
 import { DataEntryFlowStepProgress } from "../../data/data_entry_flow";
 import { HomeAssistant } from "../../types";
