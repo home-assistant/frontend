@@ -12,9 +12,8 @@ export const demoConfigs: Array<() => Promise<DemoConfig>> = [
 // eslint-disable-next-line import/no-mutable-exports
 export let selectedDemoConfigIndex = 0;
 // eslint-disable-next-line import/no-mutable-exports
-export let selectedDemoConfig: Promise<DemoConfig> = demoConfigs[
-  selectedDemoConfigIndex
-]();
+export let selectedDemoConfig: Promise<DemoConfig> =
+  demoConfigs[selectedDemoConfigIndex]();
 
 export const setDemoConfig = async (
   hass: MockHomeAssistant,

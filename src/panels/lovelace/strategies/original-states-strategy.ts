@@ -37,17 +37,13 @@ export class OriginalStatesStrategy {
       subscribeEntityRegistry(hass.connection, () => undefined);
     }
 
-    const [
-      areaEntries,
-      deviceEntries,
-      entityEntries,
-      localize,
-    ] = await Promise.all([
-      subscribeOne(hass.connection, subscribeAreaRegistry),
-      subscribeOne(hass.connection, subscribeDeviceRegistry),
-      subscribeOne(hass.connection, subscribeEntityRegistry),
-      hass.loadBackendTranslation("title"),
-    ]);
+    const [areaEntries, deviceEntries, entityEntries, localize] =
+      await Promise.all([
+        subscribeOne(hass.connection, subscribeAreaRegistry),
+        subscribeOne(hass.connection, subscribeDeviceRegistry),
+        subscribeOne(hass.connection, subscribeEntityRegistry),
+        hass.loadBackendTranslation("title"),
+      ]);
 
     // User can override default view. If they didn't, we will add one
     // that contains all entities.

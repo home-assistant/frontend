@@ -7,6 +7,7 @@ import { fetchTags, Tag } from "../../../../../data/tag";
 import { HomeAssistant } from "../../../../../types";
 import { TriggerElement } from "../ha-automation-trigger-row";
 import "../../../../../components/ha-paper-dropdown-menu";
+
 @customElement("ha-automation-trigger-tag")
 export class HaTagTrigger extends LitElement implements TriggerElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

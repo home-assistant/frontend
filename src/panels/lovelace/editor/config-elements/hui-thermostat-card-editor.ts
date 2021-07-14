@@ -23,7 +23,8 @@ const includeDomains = ["climate"];
 @customElement("hui-thermostat-card-editor")
 export class HuiThermostatCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: ThermostatCardConfig;

@@ -14,7 +14,8 @@ import type { CreateHeaderFooterDialogParams } from "./show-create-headerfooter-
 @customElement("hui-dialog-create-headerfooter")
 export class HuiCreateDialogHeaderFooter
   extends LitElement
-  implements HassDialog<CreateHeaderFooterDialogParams> {
+  implements HassDialog<CreateHeaderFooterDialogParams>
+{
   @property({ attribute: false }) protected hass!: HomeAssistant;
 
   @state() private _params?: CreateHeaderFooterDialogParams;

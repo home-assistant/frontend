@@ -7,7 +7,8 @@ import { LovelaceElement, ServiceButtonElementConfig } from "./types";
 @customElement("hui-service-button-element")
 export class HuiServiceButtonElement
   extends LitElement
-  implements LovelaceElement {
+  implements LovelaceElement
+{
   public hass?: HomeAssistant;
 
   @state() private _config?: ServiceButtonElementConfig;

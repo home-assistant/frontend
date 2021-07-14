@@ -197,9 +197,10 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                                     ])
                                   )}`}
                                   .entityFilter=${(entityState: HassEntity) => {
-                                    const devId = this._placeholderValues[type][
-                                      placeholder.index
-                                    ][idx].device_id;
+                                    const devId =
+                                      this._placeholderValues[type][
+                                        placeholder.index
+                                      ][idx].device_id;
                                     return this._deviceEntityLookup[
                                       devId
                                     ].includes(entityState.entity_id);

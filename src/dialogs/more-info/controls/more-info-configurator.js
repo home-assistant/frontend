@@ -136,12 +136,12 @@ class MoreInfoConfigurator extends PolymerElement {
     this.isConfiguring = true;
 
     this.hass.callService("configurator", "configure", data).then(
-      function () {
+      () => {
         this.isConfiguring = false;
-      }.bind(this),
-      function () {
+      },
+      () => {
         this.isConfiguring = false;
-      }.bind(this)
+      }
     );
   }
 }

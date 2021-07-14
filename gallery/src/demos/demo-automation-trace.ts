@@ -2,12 +2,12 @@ import { html, css, LitElement, TemplateResult } from "lit";
 import "../../../src/components/ha-card";
 import "../../../src/components/trace/hat-script-graph";
 import "../../../src/components/trace/hat-trace-timeline";
+import { customElement, property, state } from "lit/decorators";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import { HomeAssistant } from "../../../src/types";
 import { DemoTrace } from "../data/traces/types";
 import { basicTrace } from "../data/traces/basic_trace";
 import { motionLightTrace } from "../data/traces/motion-light-trace";
-import { customElement, property, state } from "lit/decorators";
 
 const traces: DemoTrace[] = [basicTrace, motionLightTrace];
 

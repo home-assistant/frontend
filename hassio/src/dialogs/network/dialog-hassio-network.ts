@@ -41,7 +41,8 @@ const IP_VERSIONS = ["ipv4", "ipv6"];
 @customElement("dialog-hassio-network")
 export class DialogHassioNetwork
   extends LitElement
-  implements HassDialog<HassioNetworkDialogParams> {
+  implements HassDialog<HassioNetworkDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
@@ -492,7 +493,7 @@ export class DialogHassioNetwork
   }
 
   private _handleRadioValueChangedAp(ev: CustomEvent): void {
-    const value = ((ev.target as any).value as string) as
+    const value = (ev.target as any).value as string as
       | "open"
       | "wep"
       | "wpa-psk";

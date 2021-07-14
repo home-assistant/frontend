@@ -485,7 +485,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         return true;
       })
-      .sort(function (entityA, entityB) {
+      .sort((entityA, entityB) => {
         if (entityA.entity_id < entityB.entity_id) {
           return -1;
         }

@@ -68,8 +68,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return;
       }
 
-      let themeSettings: Partial<HomeAssistant["selectedTheme"]> = this.hass!
-        .selectedTheme;
+      let themeSettings: Partial<HomeAssistant["selectedTheme"]> =
+        this.hass!.selectedTheme;
 
       const themeName =
         themeSettings?.theme ||
@@ -121,9 +121,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         "--app-header-background-color"
       );
 
-      document.documentElement.style.backgroundColor = computedStyles.getPropertyValue(
-        "--primary-background-color"
-      );
+      document.documentElement.style.backgroundColor =
+        computedStyles.getPropertyValue("--primary-background-color");
 
       if (themeMeta) {
         if (!themeMeta.hasAttribute("default-content")) {

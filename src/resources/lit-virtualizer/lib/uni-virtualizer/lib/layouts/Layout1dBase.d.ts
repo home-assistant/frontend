@@ -14,7 +14,8 @@ export interface Layout1dBaseConfig {
   totalItems?: number;
 }
 export declare abstract class Layout1dBase<C extends Layout1dBaseConfig>
-  implements Layout {
+  implements Layout
+{
   /**
    * The last set viewport scroll position.
    */
