@@ -112,6 +112,5 @@
     "lit/attribute-value-entities": "off"
   },
   "plugins": ["disable", "unused-imports"],
-  "processor": "disable/disable",
-  "ignorePatterns": ["src/resources/lit-virtualizer/*"]
+  "processor": "disable/disable"
 }

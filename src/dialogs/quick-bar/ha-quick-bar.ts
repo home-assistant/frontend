@@ -1,3 +1,4 @@
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
 import type { List } from "@material/mwc-list/mwc-list";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
@@ -38,7 +39,6 @@ import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 import { configSections } from "../../panels/config/ha-panel-config";
-import { Layout1d, scroll } from "../../resources/lit-virtualizer";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import {
