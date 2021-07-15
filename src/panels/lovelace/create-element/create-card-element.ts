@@ -5,7 +5,6 @@ import "../cards/hui-entities-card";
 import "../cards/hui-entity-button-card";
 import "../cards/hui-entity-card";
 import "../cards/hui-glance-card";
-import "../cards/hui-history-graph-card";
 import "../cards/hui-horizontal-stack-card";
 import "../cards/hui-light-card";
 import "../cards/hui-sensor-card";
@@ -24,7 +23,6 @@ const ALWAYS_LOADED_TYPES = new Set([
   "button",
   "entity-button",
   "glance",
-  "history-graph",
   "horizontal-stack",
   "light",
   "sensor",
@@ -50,6 +48,8 @@ const LAZY_LOAD_TYPES = {
   "shopping-list": () => import("../cards/hui-shopping-list-card"),
   conditional: () => import("../cards/hui-conditional-card"),
   gauge: () => import("../cards/hui-gauge-card"),
+  "history-graph": () => import("../cards/hui-history-graph-card"),
+  "statistics-graph": () => import("../cards/hui-statistics-graph-card"),
   iframe: () => import("../cards/hui-iframe-card"),
   map: () => import("../cards/hui-map-card"),
   markdown: () => import("../cards/hui-markdown-card"),
