@@ -16,6 +16,7 @@
         suppressTemplateNotifications: true,
         suppressBindingNotifications: true,
       };
+      window.polymerSkipLoadingFontRoboto = true;
       if (!("customElements" in window &&
             "content" in document.createElement("template"))) {
         document.write("<script src='/static/polyfills/webcomponents-bundle.js'><"+"/script>");
