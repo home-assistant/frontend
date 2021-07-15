@@ -57,7 +57,9 @@ export class HaDeviceActionsZWaveJS extends LitElement {
           "ui.panel.config.zwave_js.device_info.reinterview_device"
         )}
       </mwc-button>
-      <mwc-button @click=${this._healNodeClicked}>Heal Node</mwc-button>
+      <mwc-button @click=${this._healNodeClicked}>
+        ${this.hass.localize("ui.panel.config.zwave_js.device_info.heal_node")}
+      </mwc-button>
     `;
   }
 
