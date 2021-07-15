@@ -444,7 +444,7 @@ export class HAFullCalendar extends LitElement {
         }
 
         .fc-icon-x:before {
-          font-family: var(--material-font-family);
+          font-family: var(--paper-font-common-base_-_font-family);
           content: "X";
         }
 

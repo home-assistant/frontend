@@ -82,10 +82,6 @@ export const derivedStyles = {
   "mdc-theme-text-icon-on-background": "var(--secondary-text-color)",
   "app-header-text-color": "var(--text-primary-color)",
   "app-header-background-color": "var(--primary-color)",
-  "material-body-text-color": "var(--primary-text-color)",
-  "material-background-color": "var(--card-background-color)",
-  "material-secondary-background-color": "var(--secondary-background-color)",
-  "material-secondary-text-color": "var(--secondary-text-color)",
   "mdc-checkbox-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
   "mdc-checkbox-disabled-color": "var(--disabled-text-color)",
   "mdc-radio-unchecked-color": "rgba(var(--rgb-primary-text-color), 0.54)",
@@ -95,6 +91,11 @@ export const derivedStyles = {
   "mdc-button-outline-color": "var(--divider-color)",
   "mdc-dialog-scroll-divider-color": "var(--divider-color)",
   "chip-background-color": "rgba(var(--rgb-primary-text-color), 0.15)",
+  // Vaadin
+  "material-body-text-color": "var(--primary-text-color)",
+  "material-background-color": "var(--card-background-color)",
+  "material-secondary-background-color": "var(--secondary-background-color)",
+  "material-secondary-text-color": "var(--secondary-text-color)",
 };
 
 export const buttonLinkStyle = css`

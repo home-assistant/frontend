@@ -18,7 +18,8 @@ module.exports.emptyPackages = ({ latestBuild }) =>
     require.resolve("@polymer/paper-styles/default-theme.js"),
     // Loads stuff from a CDN
     require.resolve("@polymer/font-roboto/roboto.js"),
-    require.resolve("@vaadin/vaadin-material-styles/font-roboto.js"),
+    require.resolve("@vaadin/vaadin-material-styles/typography.js"),
+    require.resolve("@vaadin/vaadin-material-styles/font-icons.js"),
     // Compatibility not needed for latest builds
     latestBuild &&
       // wrapped in require.resolve so it blows up if file no longer exists

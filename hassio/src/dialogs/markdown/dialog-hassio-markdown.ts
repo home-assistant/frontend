@@ -61,10 +61,6 @@ class HassioMarkdownDialog extends LitElement {
         app-toolbar [main-title] {
           margin-left: 16px;
         }
-        paper-checkbox {
-          display: block;
-          margin: 4px;
-        }
         @media all and (max-width: 450px), all and (max-height: 500px) {
           ha-paper-dialog {
             max-height: 100%;

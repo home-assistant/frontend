@@ -2,7 +2,6 @@ import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
-import "@polymer/iron-autogrow-textarea/iron-autogrow-textarea";
 import { DEFAULT_SCHEMA, Type } from "js-yaml";
 import {
   css,
@@ -328,10 +327,6 @@ class HassioAddonConfig extends LitElement {
         .errors {
           color: var(--error-color);
           margin-top: 16px;
-        }
-        iron-autogrow-textarea {
-          width: 100%;
-          font-family: var(--code-font-family, monospace);
         }
         .syntaxerror {
           color: var(--error-color);
