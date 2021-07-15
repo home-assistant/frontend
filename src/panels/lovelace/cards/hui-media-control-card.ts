@@ -528,9 +528,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const progressWidth = (this.shadowRoot!.querySelector(
-      "paper-progress"
-    ) as HTMLElement).offsetWidth;
+    const progressWidth = (
+      this.shadowRoot!.querySelector("paper-progress") as HTMLElement
+    ).offsetWidth;
 
     const percent = e.offsetX / progressWidth;
     const position = (e.currentTarget! as any).max * percent;

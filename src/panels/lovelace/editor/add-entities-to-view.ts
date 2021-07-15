@@ -21,8 +21,9 @@ export const addEntitiesToLovelaceView = async (
     (dashboard) => dashboard.mode === "storage"
   );
 
-  const mainLovelaceMode = (hass!.panels.lovelace
-    ?.config as LovelacePanelConfig)?.mode;
+  const mainLovelaceMode = (
+    hass!.panels.lovelace?.config as LovelacePanelConfig
+  )?.mode;
 
   if (mainLovelaceMode !== "storage" && !storageDashs.length) {
     // no storage dashboards, just show the YAML config
@@ -71,8 +72,7 @@ export const addEntitiesToLovelaceView = async (
     } else {
       // all storage dashboards are generated
       showAlertDialog(element, {
-        text:
-          "You don't seem to be in control of any dashboard, please take control first.",
+        text: "You don't seem to be in control of any dashboard, please take control first.",
       });
     }
     return;
@@ -80,8 +80,7 @@ export const addEntitiesToLovelaceView = async (
 
   if (!storageDashs.length && !lovelaceConfig.views?.length) {
     showAlertDialog(element, {
-      text:
-        "You don't have any Lovelace views, first create a view in Lovelace.",
+      text: "You don't have any Lovelace views, first create a view in Lovelace.",
     });
     return;
   }

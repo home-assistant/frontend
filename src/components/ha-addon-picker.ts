@@ -1,5 +1,6 @@
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
+import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
 import { compare } from "../common/string/compare";
@@ -9,7 +10,6 @@ import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import { HaComboBox } from "./ha-combo-box";
-import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 
 const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (item) => html`<style>
     paper-item {

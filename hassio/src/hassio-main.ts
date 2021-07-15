@@ -121,7 +121,7 @@ export class HassioMain extends SupervisorBaseElement {
       }
     } else {
       themeName =
-        ((this.hass.selectedTheme as unknown) as string) ||
+        (this.hass.selectedTheme as unknown as string) ||
         this.hass.themes.default_theme;
     }
 

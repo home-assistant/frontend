@@ -9,9 +9,7 @@ export declare abstract class Layout1dGrid<
   _viewDim2Changed(): void;
   _itemDim2Changed(): void;
   _getActiveItems(): void;
-  _getItemPosition(
-    idx: number
-  ): {
+  _getItemPosition(idx: number): {
     top: number;
     left: number;
   };

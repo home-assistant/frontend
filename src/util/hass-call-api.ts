@@ -45,7 +45,7 @@ export const handleFetchPromise = async <T>(
     };
   }
 
-  return (body as unknown) as T;
+  return body as unknown as T;
 };
 
 export default async function hassCallApi<T>(

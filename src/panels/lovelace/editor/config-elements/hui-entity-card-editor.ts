@@ -30,7 +30,8 @@ const cardConfigStruct = object({
 @customElement("hui-entity-card-editor")
 export class HuiEntityCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EntityCardConfig;

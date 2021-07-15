@@ -31,9 +31,8 @@ export class HaDeviceActionsZWaveJS extends LitElement {
     if (changedProperties.has("device")) {
       this._entryId = this.device.config_entries[0];
 
-      const identifiers:
-        | ZWaveJSNodeIdentifiers
-        | undefined = getIdentifiersFromDevice(this.device);
+      const identifiers: ZWaveJSNodeIdentifiers | undefined =
+        getIdentifiersFromDevice(this.device);
       if (!identifiers) {
         return;
       }

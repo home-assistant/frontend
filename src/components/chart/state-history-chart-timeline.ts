@@ -176,9 +176,9 @@ export class StateHistoryChartTimeline extends LitElement {
               labelColor: (item) => ({
                 borderColor: (item.dataset.data[item.dataIndex] as TimeLineData)
                   .color!,
-                backgroundColor: (item.dataset.data[
-                  item.dataIndex
-                ] as TimeLineData).color!,
+                backgroundColor: (
+                  item.dataset.data[item.dataIndex] as TimeLineData
+                ).color!,
               }),
             },
           },

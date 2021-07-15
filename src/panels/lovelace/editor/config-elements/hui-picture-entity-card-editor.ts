@@ -40,7 +40,8 @@ const includeDomains = ["camera"];
 @customElement("hui-picture-entity-card-editor")
 export class HuiPictureEntityCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: PictureEntityCardConfig;

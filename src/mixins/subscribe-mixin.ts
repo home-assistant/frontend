@@ -51,7 +51,7 @@ export const SubscribeMixin = <T extends Constructor<ReactiveElement>>(
     private __checkSubscribed(): void {
       if (
         this.__unsubs !== undefined ||
-        !((this as unknown) as Element).isConnected ||
+        !(this as unknown as Element).isConnected ||
         this.hass === undefined
       ) {
         return;

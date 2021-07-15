@@ -1,3 +1,5 @@
+import { mdiServerNetwork, mdiMathLog } from "@mdi/js";
+import { customElement, property } from "lit/decorators";
 import {
   HassRouterPage,
   RouterOptions,
@@ -5,9 +7,6 @@ import {
 import { HomeAssistant } from "../../../../../types";
 import { navigate } from "../../../../../common/navigate";
 import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-
-import { mdiServerNetwork, mdiMathLog } from "@mdi/js";
-import { customElement, property } from "lit/decorators";
 
 export const configTabs: PageNavigation[] = [
   {

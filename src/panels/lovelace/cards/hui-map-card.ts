@@ -9,6 +9,8 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { mdiImageFilterCenterFocus } from "@mdi/js";
+import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
@@ -22,9 +24,7 @@ import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { MapCardConfig } from "./types";
 import "../../../components/map/ha-map";
-import { mdiImageFilterCenterFocus } from "@mdi/js";
 import type { HaMap, HaMapPaths } from "../../../components/map/ha-map";
-import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../common/color/colors";
 
 const MINUTE = 60000;
@@ -74,9 +74,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
-    this._configEntities = (config.entities
-      ? processConfigEntities<EntityConfig>(config.entities)
-      : []
+    this._configEntities = (
+      config.entities
+        ? processConfigEntities<EntityConfig>(config.entities)
+        : []
     ).map((entity) => entity.entity);
 
     this._cleanupHistory();
