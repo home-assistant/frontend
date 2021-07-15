@@ -131,9 +131,8 @@ class HuiSelectEntityRow extends LitElement implements LovelaceRow {
 
     // Update selected after rendering the items or else it won't work in Firefox
     if (stateObj.attributes.options) {
-      this.shadowRoot!.querySelector(
-        "paper-listbox"
-      )!.selected = stateObj.attributes.options.indexOf(stateObj.state);
+      this.shadowRoot!.querySelector("paper-listbox")!.selected =
+        stateObj.attributes.options.indexOf(stateObj.state);
     }
   }
 

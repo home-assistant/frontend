@@ -171,8 +171,9 @@ class ZHAAddDevicesPage extends LitElement {
       if (this.shadowRoot) {
         const paperTextArea = this.shadowRoot.querySelector("paper-textarea");
         if (paperTextArea) {
-          const textArea = (paperTextArea.inputElement as IronAutogrowTextareaElement)
-            .textarea;
+          const textArea = (
+            paperTextArea.inputElement as IronAutogrowTextareaElement
+          ).textarea;
           textArea.scrollTop = textArea.scrollHeight;
         }
       }

@@ -22,6 +22,6 @@ export function checkConditionsMet(
 
 export function validateConditionalConfig(conditions: Condition[]): boolean {
   return conditions.every(
-    (c) => ((c.entity && (c.state || c.state_not)) as unknown) as boolean
+    (c) => (c.entity && (c.state || c.state_not)) as unknown as boolean
   );
 }

@@ -59,18 +59,18 @@ const getDevice = memoizeOne(
     entries?.find((device) => device.id === deviceId)
 );
 
-const getNodeId = memoizeOne((device: DeviceRegistryEntry):
-  | number
-  | undefined => {
-  const identifier = device.identifiers.find(
-    (ident) => ident[0] === "zwave_js"
-  );
-  if (!identifier) {
-    return undefined;
-  }
+const getNodeId = memoizeOne(
+  (device: DeviceRegistryEntry): number | undefined => {
+    const identifier = device.identifiers.find(
+      (ident) => ident[0] === "zwave_js"
+    );
+    if (!identifier) {
+      return undefined;
+    }
 
-  return parseInt(identifier[1].split("-")[1]);
-});
+    return parseInt(identifier[1].split("-")[1]);
+  }
+);
 
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {

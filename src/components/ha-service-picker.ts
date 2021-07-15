@@ -1,4 +1,5 @@
 import { html, LitElement } from "lit";
+import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
@@ -6,7 +7,6 @@ import { LocalizeFunc } from "../common/translations/localize";
 import { domainToName } from "../data/integration";
 import { HomeAssistant } from "../types";
 import "./ha-combo-box";
-import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 
 const rowRenderer: ComboBoxLitRenderer<{ service: string; name: string }> = (
   item

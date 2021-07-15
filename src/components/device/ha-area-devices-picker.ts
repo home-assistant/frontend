@@ -15,6 +15,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -38,7 +39,6 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-svg-icon";
 import "./ha-devices-picker";
-import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 
 interface DevicesByArea {
   [areaId: string]: AreaDevices;

@@ -32,7 +32,8 @@ const views = ["dayGridMonth", "dayGridDay", "listWeek"];
 @customElement("hui-calendar-card-editor")
 export class HuiCalendarCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) private _config?: CalendarCardConfig;

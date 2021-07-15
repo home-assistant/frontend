@@ -17,7 +17,8 @@ const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
 @customElement("dialog-tag-detail")
 class DialogTagDetail
   extends LitElement
-  implements HassDialog<TagDetailDialogParams> {
+  implements HassDialog<TagDetailDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _id?: string;

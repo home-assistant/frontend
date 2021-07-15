@@ -344,7 +344,8 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private _scrollMessagesBottom() {
-    this.messages.scrollTarget.scrollTop = this.messages.scrollTarget.scrollHeight;
+    this.messages.scrollTarget.scrollTop =
+      this.messages.scrollTarget.scrollHeight;
     if (this.messages.scrollTarget.scrollTop === 0) {
       fireEvent(this.messages, "iron-resize");
     }

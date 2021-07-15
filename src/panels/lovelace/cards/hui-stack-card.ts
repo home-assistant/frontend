@@ -15,7 +15,8 @@ import { StackCardConfig } from "./types";
 
 export abstract class HuiStackCard<T extends StackCardConfig = StackCardConfig>
   extends LitElement
-  implements LovelaceCard {
+  implements LovelaceCard
+{
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-stack-card-editor");
     return document.createElement("hui-stack-card-editor");

@@ -11,6 +11,7 @@ import {
 } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { compare } from "../../common/string/compare";
@@ -33,7 +34,6 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
-import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 
 interface Device {
   name: string;

@@ -67,14 +67,7 @@ const incrementalUnits = ["clients", "queries", "ads"];
 export const mockHistory = (mockHass: MockHomeAssistant) => {
   mockHass.mockAPI(
     new RegExp("history/period/.+"),
-    (
-      hass,
-      // @ts-ignore
-      method,
-      path,
-      // @ts-ignore
-      parameters
-    ) => {
+    (hass, _method, path, _parameters) => {
       const params = parseQuery<HistoryQueryParams>(path.split("?")[1]);
       const entities = params.filter_entity_id.split(",");
 
@@ -95,7 +88,7 @@ export const mockHistory = (mockHass: MockHomeAssistant) => {
         const numberState = Number(state.state);
 
         if (isNaN(numberState)) {
-          // eslint-disable-next-line
+          // eslint-disable-next-line no-console
           console.log(
             "Ignoring state with unparsable state but with a unit",
             entityId,

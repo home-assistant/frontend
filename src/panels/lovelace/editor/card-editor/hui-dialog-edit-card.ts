@@ -47,7 +47,8 @@ declare global {
 @customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard
   extends LitElement
-  implements HassDialog<EditCardDialogParams> {
+  implements HassDialog<EditCardDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Boolean, reflect: true }) public large = false;

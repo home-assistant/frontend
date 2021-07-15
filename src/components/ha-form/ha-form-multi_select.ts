@@ -94,8 +94,9 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   protected firstUpdated() {
     this.updateComplete.then(() => {
-      const input = (this.shadowRoot?.querySelector("paper-input")
-        ?.inputElement as any)?.inputElement;
+      const input = (
+        this.shadowRoot?.querySelector("paper-input")?.inputElement as any
+      )?.inputElement;
       if (input) {
         input.style.textOverflow = "ellipsis";
       }

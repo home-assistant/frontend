@@ -180,9 +180,8 @@ export class HaLocationsEditor extends LitElement {
     const locationMarkers = {};
     const circles = {};
 
-    const defaultZoneRadiusColor = getComputedStyle(this).getPropertyValue(
-      "--accent-color"
-    );
+    const defaultZoneRadiusColor =
+      getComputedStyle(this).getPropertyValue("--accent-color");
 
     this.locations.forEach((location: MarkerLocation) => {
       let icon: DivIcon | undefined;

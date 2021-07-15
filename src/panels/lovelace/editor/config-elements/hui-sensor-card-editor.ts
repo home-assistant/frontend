@@ -35,7 +35,8 @@ const includeDomains = ["counter", "input_number", "number", "sensor"];
 @customElement("hui-sensor-card-editor")
 export class HuiSensorCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: SensorCardConfig;

@@ -131,7 +131,7 @@ class ZwaveNodeProtection extends LocalizeMixin(PolymerElement) {
       let options = [];
       let value_id = -1;
       let selected = -1;
-      this.protection.forEach(function (item) {
+      this.protection.forEach((item) => {
         if (item.key === "options") options = item.value;
         else if (item.key === "value_id") value_id = item.value;
         else if (item.key === "selected") selected = item.value;

@@ -240,10 +240,9 @@ export const generateViewConfig = (
   splitted.groups.forEach((groupEntity) => {
     cards = cards.concat(
       computeCards(
-        groupEntity.attributes.entity_id.map((entityId): [
-          string,
-          HassEntity
-        ] => [entityId, entities[entityId]]),
+        groupEntity.attributes.entity_id.map(
+          (entityId): [string, HassEntity] => [entityId, entities[entityId]]
+        ),
         {
           title: computeStateName(groupEntity),
           show_header_toggle: groupEntity.attributes.control !== "hidden",

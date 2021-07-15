@@ -242,9 +242,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     // This is not done to the SVG containing the current humidity, because
     // it should not be centered on the text, but only on the value
     if (this.shadowRoot && this.shadowRoot.querySelector("ha-card")) {
-      (this.shadowRoot.querySelector(
-        "ha-card"
-      ) as LitElement).updateComplete.then(() => {
+      (
+        this.shadowRoot.querySelector("ha-card") as LitElement
+      ).updateComplete.then(() => {
         const svgRoot = this.shadowRoot!.querySelector("#set-values");
         const box = svgRoot!.querySelector("g")!.getBBox();
         svgRoot!.setAttribute(

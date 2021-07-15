@@ -40,9 +40,8 @@ export class HaDeviceInfoZWaveJS extends LitElement {
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {
-      const identifiers:
-        | ZWaveJSNodeIdentifiers
-        | undefined = getIdentifiersFromDevice(this.device);
+      const identifiers: ZWaveJSNodeIdentifiers | undefined =
+        getIdentifiersFromDevice(this.device);
       if (!identifiers) {
         return;
       }

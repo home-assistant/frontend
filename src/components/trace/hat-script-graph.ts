@@ -178,9 +178,8 @@ class HatScriptGraph extends LitElement {
                 trace !== undefined && trace[0].result?.choice === i;
               this.renderedNodes[branch_path] = { config, path: branch_path };
               if (track_this) {
-                this.trackedNodes[branch_path] = this.renderedNodes[
-                  branch_path
-                ];
+                this.trackedNodes[branch_path] =
+                  this.renderedNodes[branch_path];
               }
               return html`
                 <hat-graph>
@@ -489,9 +488,9 @@ class HatScriptGraph extends LitElement {
             : ""}
           ${"condition" in this.trace.config
             ? html`<hat-graph id="condition">
-                ${ensureArray(
-                  this.trace.config.condition
-                )?.map((condition, i) => this.render_condition(condition!, i))}
+                ${ensureArray(this.trace.config.condition)?.map(
+                  (condition, i) => this.render_condition(condition!, i)
+                )}
               </hat-graph>`
             : ""}
           ${"action" in this.trace.config
@@ -535,12 +534,12 @@ class HatScriptGraph extends LitElement {
     }
   }
 
-  protected update(changedProps: PropertyValues<this>) {
+  public willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
     if (changedProps.has("trace")) {
       this.renderedNodes = {};
       this.trackedNodes = {};
     }
-    super.update(changedProps);
   }
 
   protected updated(changedProps: PropertyValues<this>) {

@@ -444,9 +444,7 @@ class MoreInfoLight extends LitElement {
     value = (value * 255) / 100;
 
     const rgb = (getLightCurrentModeRgbColor(this.stateObj!)?.slice(0, 3) || [
-      255,
-      255,
-      255,
+      255, 255, 255,
     ]) as [number, number, number];
 
     this._setRgbWColor(

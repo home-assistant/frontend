@@ -2,6 +2,7 @@ import "../../../../src/components/ha-card";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-markdown";
+import { customElement, property, state } from "lit/decorators";
 import {
   fetchHassioAddonDocumentation,
   HassioAddonDetails,
@@ -12,7 +13,6 @@ import { haStyle } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
 import { hassioStyle } from "../../resources/hassio-style";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
-import { customElement, property, state } from "lit/decorators";
 
 @customElement("hassio-addon-documentation-tab")
 class HassioAddonDocumentationDashboard extends LitElement {

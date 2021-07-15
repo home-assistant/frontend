@@ -32,7 +32,8 @@ const cardConfigStruct = object({
 @customElement("hui-conditional-card-editor")
 export class HuiConditionalCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;

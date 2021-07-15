@@ -8,6 +8,7 @@ async function init() {
     // eslint-disable-next-line no-new
     new ET();
   } catch (_a) {
+    // eslint-disable-next-line import/no-extraneous-dependencies
     ET = (await import("event-target-shim")).default.EventTarget;
   }
   return ET;

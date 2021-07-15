@@ -980,8 +980,7 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:account-off",
         custom_ui_state_card: "state-card-custom-ui",
         templates: {
-          icon:
-            "if (state === 'on') return 'mdi:account'; else if (state === 'off') return 'mdi:account-off';\n",
+          icon: "if (state === 'on') return 'mdi:account'; else if (state === 'off') return 'mdi:account-off';\n",
           icon_color:
             "if (state === 'on') return 'rgb(56, 150, 56)'; else if (state === 'off') return 'rgb(249, 251, 255)';\n",
         },
@@ -1005,8 +1004,7 @@ export const demoEntitiesTeachingbirds: DemoConfig["entities"] = () =>
         icon: "mdi:account-multiple-minus",
         custom_ui_state_card: "state-card-custom-ui",
         templates: {
-          icon:
-            "if (state === 'on') return 'mdi:account-group'; else if (state === 'off') return 'mdi:account-multiple-minus';\n",
+          icon: "if (state === 'on') return 'mdi:account-group'; else if (state === 'off') return 'mdi:account-multiple-minus';\n",
           icon_color:
             "if (state === 'on') return 'rgb(56, 150, 56)'; else if (state === 'off') return 'rgb(249, 251, 255)';\n",
         },
