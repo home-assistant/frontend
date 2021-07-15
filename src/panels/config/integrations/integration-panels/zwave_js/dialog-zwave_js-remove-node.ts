@@ -210,24 +210,11 @@ class DialogZWaveJSRemoveNode extends LitElement {
       haStyleDialog,
       css`
         .success {
-          color: green;
+          color: var(--success-color);
         }
 
         .failed {
-          color: red;
-        }
-
-        blockquote {
-          display: block;
-          background-color: #ddd;
-          padding: 8px;
-          margin: 8px 0;
-          font-size: 0.9em;
-        }
-
-        blockquote em {
-          font-size: 0.9em;
-          margin-top: 6px;
+          color: var(--error-color);
         }
 
         .flex-container {
