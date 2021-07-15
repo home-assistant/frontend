@@ -755,7 +755,7 @@
         },
         "loading": {
           "loading_flow": "Please wait while the options for {integration} are being initialized",
-          "loading_step": "Loading next step for {integration}"
+          "loading_step": "[%key:ui::panel::config::integrations::config_flow::loading::loading_step%]"
         },
         "success": {
           "description": "Options successfully saved."
