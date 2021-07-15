@@ -178,4 +178,22 @@ export const showConfigFlowDialog = (
           `
         : "";
     },
+
+    renderLoadingDescription(hass, reason, handler, step) {
+      if (!["loading_flow", "loading_step"].includes(reason)) {
+        return "";
+      }
+      const domain = step?.handler || handler;
+      return hass.localize(
+        `ui.panel.config.integrations.config_flow.loading.${reason}`,
+        {
+          integration: domain
+            ? domainToName(hass.localize, domain)
+            : // when we are continuing a config flow, we only know the ID and not the domain
+              hass.localize(
+                "ui.panel.config.integrations.config_flow.loading.fallback_title"
+              ),
+        }
+      );
+    },
   });
