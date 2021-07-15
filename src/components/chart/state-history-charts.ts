@@ -10,7 +10,6 @@ import { customElement, property } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { HistoryResult } from "../../data/history";
 import type { HomeAssistant } from "../../types";
-import "../ha-circular-progress";
 import "./state-history-chart-line";
 import "./state-history-chart-timeline";
 

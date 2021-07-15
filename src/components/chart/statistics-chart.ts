@@ -22,7 +22,6 @@ import {
   StatisticType,
 } from "../../data/history";
 import type { HomeAssistant } from "../../types";
-import "../ha-circular-progress";
 import "./ha-chart-base";
 
 @customElement("statistics-chart")
@@ -49,8 +48,6 @@ class StatisticsChart extends LitElement {
   @state() private _chartData?: ChartData;
 
   @state() private _chartOptions?: ChartOptions;
-
-  @state() private _chartPlugins?: any[];
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return !(changedProps.size === 1 && changedProps.has("hass"));
@@ -92,7 +89,6 @@ class StatisticsChart extends LitElement {
       <ha-chart-base
         .data=${this._chartData}
         .options=${this._chartOptions}
-        .plugins=${this._chartPlugins}
         .chartType=${this.chartType}
       ></ha-chart-base>
     `;
@@ -167,7 +163,7 @@ class StatisticsChart extends LitElement {
   private _generateData() {
     let colorIndex = 0;
     const statisticsData = Object.values(this.statisticsData);
-    const datasets: ChartDataset<"line">[] = [];
+    const totalDataSets: ChartDataset<"line">[] = [];
     let endTime: Date;
 
     if (statisticsData.length === 0) {
@@ -176,7 +172,7 @@ class StatisticsChart extends LitElement {
 
     endTime =
       this.endTime ||
-      // Get the highest date from the last date of each device
+      // Get the highest date from the last date of each statistic
       new Date(
         Math.max(
           ...statisticsData.map((stats) =>
@@ -202,30 +198,34 @@ class StatisticsChart extends LitElement {
         }
       }
       // array containing [value1, value2, etc]
-      let prevValues: any[] | null = null;
+      let prevValues: Array<number | null> | null = null;
 
-      const data: ChartDataset<"line">[] = [];
+      // The datasets for the current statistic
+      const statDataSets: ChartDataset<"line">[] = [];
 
-      const pushData = (timestamp: Date, datavalues: any[] | null) => {
-        if (!datavalues) return;
+      const pushData = (
+        timestamp: Date,
+        dataValues: Array<number | null> | null
+      ) => {
+        if (!dataValues) return;
         if (timestamp > endTime) {
           // Drop datapoints that are after the requested endTime. This could happen if
           // endTime is "now" and client time is not in sync with server time.
           return;
         }
-        data.forEach((d, i) => {
-          if (datavalues[i] === null && prevValues && prevValues[i] !== null) {
+        statDataSets.forEach((d, i) => {
+          if (dataValues[i] === null && prevValues && prevValues[i] !== null) {
             // null data values show up as gaps in the chart.
             // If the current value for the dataset is null and the previous
             // value of the data set is not null, then add an 'end' point
             // to the chart for the previous value. Otherwise the gap will
             // be too big. It will go from the start of the previous data
             // value until the start of the next data value.
-            d.data.push({ x: timestamp.getTime(), y: prevValues[i] });
+            d.data.push({ x: timestamp.getTime(), y: prevValues[i]! });
           }
-          d.data.push({ x: timestamp.getTime(), y: datavalues[i] });
+          d.data.push({ x: timestamp.getTime(), y: dataValues[i]! });
         });
-        prevValues = datavalues;
+        prevValues = dataValues;
       };
 
       const addDataSet = (
@@ -238,7 +238,7 @@ class StatisticsChart extends LitElement {
           color = getColorByIndex(colorIndex);
           colorIndex++;
         }
-        data.push({
+        statDataSets.push({
           label: nameY,
           fill: fill ? "origin" : false,
           borderColor: color,
@@ -263,33 +263,26 @@ class StatisticsChart extends LitElement {
         }
       });
 
-      let lastDate: Date;
-
       // Process chart data.
       stats.forEach((stat) => {
-        const value: Array<number | null> = [];
+        const dataValues: Array<number | null> = [];
         statTypes.forEach((type) => {
-          value.push(
-            stat[type] ? Math.round(stat[type]! * 100) / 100 : stat[type]
-          );
+          const val = stat[type];
+          dataValues.push(val !== null ? Math.round(val * 100) / 100 : null);
         });
         const date = new Date(stat.start);
-        if (lastDate && date.getTime() === lastDate.getTime()) {
-          return;
-        }
-        lastDate = date;
-        pushData(date, value);
+        pushData(date, dataValues);
       });
 
       // Add an entry for final values
       pushData(endTime, prevValues);
 
       // Concat two arrays
-      Array.prototype.push.apply(datasets, data);
+      Array.prototype.push.apply(totalDataSets, statDataSets);
     });
 
     this._chartData = {
-      datasets,
+      datasets: totalDataSets,
     };
   }
 
