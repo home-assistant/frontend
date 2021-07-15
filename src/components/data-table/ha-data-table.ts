@@ -360,9 +360,8 @@ export class HaDataTable extends LitElement {
                           .rowId=${row[this.id]}
                           @click=${this._handleRowClick}
                           class="mdc-data-table__row ${classMap({
-                            "mdc-data-table__row--selected": this._checkedRows.includes(
-                              String(row[this.id])
-                            ),
+                            "mdc-data-table__row--selected":
+                              this._checkedRows.includes(String(row[this.id])),
                             clickable: this.clickable,
                           })}"
                           aria-selected=${ifDefined(
@@ -406,17 +405,15 @@ export class HaDataTable extends LitElement {
                                     "mdc-data-table__cell--icon": Boolean(
                                       column.type === "icon"
                                     ),
-                                    "mdc-data-table__cell--icon-button": Boolean(
-                                      column.type === "icon-button"
-                                    ),
+                                    "mdc-data-table__cell--icon-button":
+                                      Boolean(column.type === "icon-button"),
                                     grows: Boolean(column.grows),
                                     forceLTR: Boolean(column.forceLTR),
                                   })}"
                                   style=${column.width
                                     ? styleMap({
-                                        [column.grows
-                                          ? "minWidth"
-                                          : "width"]: column.width,
+                                        [column.grows ? "minWidth" : "width"]:
+                                          column.width,
                                         maxWidth: column.maxWidth
                                           ? column.maxWidth
                                           : "",
