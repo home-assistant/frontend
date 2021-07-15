@@ -138,9 +138,8 @@ export class HatScriptGraph extends LitElement {
               const track_this = trace_path.includes(i);
               this.renderedNodes[branch_path] = { config, path: branch_path };
               if (track_this) {
-                this.trackedNodes[branch_path] = this.renderedNodes[
-                  branch_path
-                ];
+                this.trackedNodes[branch_path] =
+                  this.renderedNodes[branch_path];
               }
               return html`
                 <div class="graph-container" ?track=${track_this}>
@@ -412,9 +411,9 @@ export class HatScriptGraph extends LitElement {
               </hat-graph-branch>`
             : ""}
           ${"condition" in this.trace.config
-            ? html`${ensureArray(
-                this.trace.config.condition
-              )?.map((condition, i) => this.render_condition(condition, i))}`
+            ? html`${ensureArray(this.trace.config.condition)?.map(
+                (condition, i) => this.render_condition(condition, i)
+              )}`
             : ""}
           ${"action" in this.trace.config
             ? html`${ensureArray(this.trace.config.action).map((action, i) =>
