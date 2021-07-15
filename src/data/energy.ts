@@ -5,10 +5,15 @@ export const emptyFlowFromGridSourceEnergyPreference = (): FlowFromGridSourceEne
   stat_cost: null,
   entity_energy_from: null,
   entity_energy_price: null,
+  number_energy_price: null,
 });
 
 export const emptyFlowToGridSourceEnergyPreference = (): FlowToGridSourceEnergyPreference => ({
   stat_energy_to: "",
+  stat_compensation: null,
+  entity_energy_to: null,
+  entity_energy_price: null,
+  number_energy_price: null,
 });
 
 export const emptyGridSourceEnergyPreference = (): GridSourceTypeEnergyPreference => ({
@@ -39,11 +44,20 @@ export interface FlowFromGridSourceEnergyPreference {
   // Can be used to generate costs if stat_cost omitted
   entity_energy_from: string | null;
   entity_energy_price: string | null;
+  number_energy_price: number | null;
 }
 
 export interface FlowToGridSourceEnergyPreference {
   // kWh meter
   stat_energy_to: string;
+
+  // $ meter
+  stat_compensation: string | null;
+
+  // Can be used to generate costs if stat_cost omitted
+  entity_energy_to: string | null;
+  entity_energy_price: string | null;
+  number_energy_price: number | null;
 }
 
 export interface GridSourceTypeEnergyPreference {
