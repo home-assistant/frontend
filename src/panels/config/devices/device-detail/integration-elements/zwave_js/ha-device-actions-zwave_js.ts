@@ -52,9 +52,11 @@ export class HaDeviceActionsZWaveJS extends LitElement {
           )}
         </mwc-button>
       </a>
-      <mwc-button @click=${this._reinterviewClicked}
-        >Re-interview Device</mwc-button
-      >
+      <mwc-button @click=${this._reinterviewClicked}>
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.device_info.reinterview_device"
+        )}
+      </mwc-button>
     `;
   }
 
