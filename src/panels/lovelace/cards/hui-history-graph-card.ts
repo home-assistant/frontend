@@ -63,7 +63,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       throw new Error("You must include at least one entity");
     }
 
-    this._config = config;
     this._configEntities = config.entities
       ? processConfigEntities(config.entities)
       : [];
@@ -85,9 +84,14 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       cacheKey: _entities.join(),
       hoursToShow: config.hours_to_show || 24,
     };
+
+    this._config = config;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_stateHistory")) {
+      return true;
+    }
     return hasConfigOrEntitiesChanged(this, changedProps);
   }
 
