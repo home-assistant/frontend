@@ -1847,7 +1847,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lit-labs/virtualizer@npm:^0.6.0":
+"@lit-labs/virtualizer@0.6.0":
   version: 0.6.0
   resolution: "@lit-labs/virtualizer@npm:0.6.0"
   dependencies:
@@ -1855,6 +1855,17 @@ __metadata:
     lit: ^2.0.0-rc.1
     tslib: ^1.10.0
   checksum: 69ca8c051383f88d79c9c9ab70e9f35a0ceff9973c875e93674424af49f61a0bab4947f9e1978e9ab3837875cc1c0573f91ae209573894dbea4cb700f96f64bf
+  languageName: node
+  linkType: hard
+
+"@lit-labs/virtualizer@patch:@lit-labs/virtualizer@0.6.0#./.yarn/patches/@lit-labs/virtualizer/0.7.0.patch::locator=home-assistant-frontend%40workspace%3A.":
+  version: 0.6.0
+  resolution: "@lit-labs/virtualizer@patch:@lit-labs/virtualizer@npm%3A0.6.0#./.yarn/patches/@lit-labs/virtualizer/0.7.0.patch::version=0.6.0&hash=e6ce85&locator=home-assistant-frontend%40workspace%3A."
+  dependencies:
+    event-target-shim: ^5.0.1
+    lit: ^2.0.0-rc.1
+    tslib: ^1.10.0
+  checksum: f55d6916d32e5e87429bba04838aa478527c8ba01538c628f9211bf374ac3e25e12e9e7b65d4bd26a4b231ce3b86b66fb42a1039936d42825557831131e1e08a
   languageName: node
   linkType: hard
 
@@ -8719,7 +8730,7 @@ fsevents@~2.3.1:
     "@fullcalendar/interaction": 5.1.0
     "@fullcalendar/list": 5.1.0
     "@koa/cors": ^3.1.0
-    "@lit-labs/virtualizer": ^0.6.0
+    "@lit-labs/virtualizer": "patch:@lit-labs/virtualizer@0.6.0#./.yarn/patches/@lit-labs/virtualizer/0.7.0.patch"
     "@material/chips": =12.0.0-canary.1a8d06483.0
     "@material/mwc-button": 0.22.0-canary.cc04657a.0
     "@material/mwc-checkbox": 0.22.0-canary.cc04657a.0
