@@ -8,13 +8,11 @@ import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-external")
 class StepFlowExternal extends LitElement {
-  public flowConfig!: FlowConfig;
+  @property({ attribute: false }) public flowConfig!: FlowConfig;
 
-  @property()
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property()
-  private step!: DataEntryFlowStepExternal;
+  @property({ attribute: false }) public step!: DataEntryFlowStepExternal;
 
   protected render(): TemplateResult {
     const localize = this.hass.localize;

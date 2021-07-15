@@ -79,7 +79,20 @@ export interface FlowConfig {
     hass: HomeAssistant,
     step: DataEntryFlowStepProgress
   ): TemplateResult | "";
+
+  renderLoadingDescription(
+    hass: HomeAssistant,
+    loadingReason: LoadingReason,
+    handler?: string,
+    step?: DataEntryFlowStep | null
+  ): string;
 }
+
+export type LoadingReason =
+  | "loading_handlers"
+  | "loading_flow"
+  | "loading_step"
+  | "loading_devices_areas";
 
 export interface DataEntryFlowDialogParams {
   startFlowHandler?: string;

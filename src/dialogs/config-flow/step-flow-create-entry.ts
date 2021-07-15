@@ -18,16 +18,13 @@ import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
-  public flowConfig!: FlowConfig;
+  @property({ attribute: false }) public flowConfig!: FlowConfig;
 
-  @property()
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property()
-  public step!: DataEntryFlowStepCreateEntry;
+  @property({ attribute: false }) public step!: DataEntryFlowStepCreateEntry;
 
-  @property()
-  public devices!: DeviceRegistryEntry[];
+  @property({ attribute: false }) public devices!: DeviceRegistryEntry[];
 
   protected render(): TemplateResult {
     const localize = this.hass.localize;
