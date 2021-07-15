@@ -5,6 +5,7 @@ import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaCheckbox } from "../ha-checkbox";
 import "../ha-slider";
+import type { HaSlider } from "../ha-slider";
 import {
   HaFormElement,
   HaFormIntegerData,
@@ -86,9 +87,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   }
 
   private _valueChanged(ev: Event) {
-    const value = Number(
-      (ev.target as PaperInputElement | PaperSliderElement).value
-    );
+    const value = Number((ev.target as PaperInputElement | HaSlider).value);
     if (this._value === value) {
       return;
     }
