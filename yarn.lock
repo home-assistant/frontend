@@ -8824,7 +8824,6 @@ fsevents@~2.3.1:
     date-fns: ^2.22.1
     deep-clone-simple: ^1.1.1
     deep-freeze: ^0.0.1
-    deepmerge: ^4.2.2
     del: ^4.0.0
     eslint: ^7.30.0
     eslint-config-airbnb-typescript: ^12.3.1
