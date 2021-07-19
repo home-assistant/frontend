@@ -6,15 +6,10 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
+import { ZWaveJSRemovedNode } from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSRemoveFailedNodeDialogParams } from "./show-dialog-zwave_js-remove-failed-node";
-
-export interface ZWaveJSRemovedNode {
-  node_id: number;
-  manufacturer: string;
-  label: string;
-}
 
 @customElement("dialog-zwave_js-remove-failed-node")
 class DialogZWaveJSRemoveFailedNode extends LitElement {

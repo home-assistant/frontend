@@ -2748,7 +2748,7 @@
             "introduction": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
             "remove_device": "Remove Device",
             "in_progress": "The device removal is in progress.",
-            "removal_finished": "Node {id} has been removed from your Z-Wave network. If you still have access to the device, make sure to reset it to factory defaults.",
+            "removal_finished": "Node {id} has been removed from your Z-Wave network.",
             "removal_failed": "The device could not be removed from your Z-Wave network."
           },
           "reinterview_node": {

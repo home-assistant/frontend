@@ -83,6 +83,12 @@ export interface ZWaveJSHealNetworkStatusMessage {
   heal_node_status: { [key: number]: string };
 }
 
+export interface ZWaveJSRemovedNode {
+  node_id: number;
+  manufacturer: string;
+  label: string;
+}
+
 export enum NodeStatus {
   Unknown,
   Asleep,
