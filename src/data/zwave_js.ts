@@ -195,6 +195,21 @@ export const healNode = (
     node_id: node_id,
   });
 
+export const removeFailedNode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number,
+  callbackFunction: (message: any) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/remove_failed_node",
+      entry_id: entry_id,
+      node_id: node_id,
+    }
+  );
+
 export const healNetwork = (
   hass: HomeAssistant,
   entry_id: string

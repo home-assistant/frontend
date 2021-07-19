@@ -6,7 +6,10 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/ha-circular-progress";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
-import { ZWaveJSRemovedNode } from "../../../../../data/zwave_js";
+import {
+  removeFailedNode,
+  ZWaveJSRemovedNode,
+} from "../../../../../data/zwave_js";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSRemoveFailedNodeDialogParams } from "./show-dialog-zwave_js-remove-failed-node";
@@ -162,13 +165,11 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
     }
     this._status = "started";
     try {
-      this._subscribed = await this.hass.connection.subscribeMessage(
-        (message) => this._handleMessage(message),
-        {
-          type: "zwave_js/remove_failed_node",
-          entry_id: this.entry_id,
-          node_id: this.node_id,
-        }
+      this._subscribed = await removeFailedNode(
+        this.hass,
+        this.entry_id!,
+        this.node_id!,
+        (message: any) => this._handleMessage(message)
       );
     } catch (error) {
       this._status = "failed";
