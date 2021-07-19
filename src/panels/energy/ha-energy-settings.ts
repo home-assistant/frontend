@@ -3,6 +3,11 @@ import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  mdiSolarPower,
+  mdiTransmissionTower,
+  mdiWashingMachine,
+} from "@mdi/js";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   emptyFlowFromGridSourceEnergyPreference,
@@ -19,11 +24,6 @@ import "../../components/entity/ha-statistics-picker";
 import "../../components/ha-svg-icon";
 import "../../components/ha-icon-next";
 import { getStatisticIds, StatisticsMetaData } from "../../data/history";
-import {
-  mdiSolarPower,
-  mdiTransmissionTower,
-  mdiWashingMachine,
-} from "@mdi/js";
 
 const energyUnits = ["kWh"];
 
@@ -413,9 +413,8 @@ export class EnergySettings extends LitElement {
     if (flowType === "from") {
       sourceToUpdate.flow_from = [...sourceToUpdate.flow_from];
       if (sourceToUpdate.flow_from[flowIdx] === undefined) {
-        sourceToUpdate.flow_from[
-          flowIdx
-        ] = emptyFlowFromGridSourceEnergyPreference();
+        sourceToUpdate.flow_from[flowIdx] =
+          emptyFlowFromGridSourceEnergyPreference();
       }
       sourceToUpdate.flow_from[flowIdx] = {
         ...sourceToUpdate.flow_from[flowIdx],
@@ -424,9 +423,8 @@ export class EnergySettings extends LitElement {
     } else {
       sourceToUpdate.flow_to = [...sourceToUpdate.flow_to];
       if (sourceToUpdate.flow_to[flowIdx] === undefined) {
-        sourceToUpdate.flow_to[
-          flowIdx
-        ] = emptyFlowToGridSourceEnergyPreference();
+        sourceToUpdate.flow_to[flowIdx] =
+          emptyFlowToGridSourceEnergyPreference();
       }
       sourceToUpdate.flow_to[flowIdx] = {
         ...sourceToUpdate.flow_to[flowIdx],

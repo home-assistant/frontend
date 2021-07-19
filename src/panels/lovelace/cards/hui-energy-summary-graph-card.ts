@@ -10,12 +10,12 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
 import "../../../components/chart/statistics-chart";
+import { ChartData, ChartDataset, ChartOptions } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { EnergySummaryGraphCardConfig } from "./types";
 import { fetchStatistics, Statistics } from "../../../data/history";
-import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels";
 
 const PLUGINS = [ChartDataLabels];
 const NEGATIVE = ["to_grid", "solar"];
@@ -29,7 +29,8 @@ const COLORS = {
 @customElement("hui-energy-summary-graph-card")
 export class HuiEnergySummaryGraphCard
   extends LitElement
-  implements LovelaceCard {
+  implements LovelaceCard
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergySummaryGraphCardConfig;

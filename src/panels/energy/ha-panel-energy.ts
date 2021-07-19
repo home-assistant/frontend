@@ -13,11 +13,11 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
 import "../../layouts/ha-app-layout";
+import { mdiCog, mdiLightningBolt } from "@mdi/js";
 import { haStyle } from "../../resources/styles";
 import "../lovelace/views/hui-view";
 import { HomeAssistant } from "../../types";
 import { Lovelace } from "../lovelace/types";
-import { mdiCog, mdiLightningBolt } from "@mdi/js";
 import { showEnergySettingsDialog } from "./dialogs/show-dialog-energy-settings";
 
 const VIEW_CONFIGS = [
