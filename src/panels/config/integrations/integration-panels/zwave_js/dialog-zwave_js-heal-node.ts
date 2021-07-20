@@ -216,23 +216,19 @@ class DialogZWaveJSHealNode extends LitElement {
     }
   }
 
-  private _startHeal(): void {
+  private async _startHeal(): Promise<void> {
     if (!this.hass) {
       return;
     }
     this._status = "started";
-    healNode(this.hass, this.entry_id!, this.node_id!)
-      .then((result) => {
-        if (result) {
-          this._status = "finished";
-        } else {
-          this._status = "failed";
-        }
-      })
-      .catch((error) => {
-        this._error = error.message;
-        this._status = "failed";
-      });
+    try {
+      this._status = (await healNode(this.hass, this.entry_id!, this.node_id!))
+        ? "finished"
+        : "failed";
+    } catch (error) {
+      this._error = error.message;
+      this._status = "failed";
+    }
   }
 
   static get styles(): CSSResultGroup {
