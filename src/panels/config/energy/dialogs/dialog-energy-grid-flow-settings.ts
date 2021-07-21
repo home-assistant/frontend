@@ -123,10 +123,13 @@ export class DialogEnergyGridFlowSettings
         </ha-formfield>
         ${this._costs === "number"
           ? html`<paper-input
+              no-label-float
+              class="price-options"
+              step=".01"
               type="number"
               .value=${this._source.number_energy_price}
               @value-changed=${this._numberPriceChanged}
-              ><span slot="suffix">$/kWh</span></paper-input
+              ><span slot="suffix">€/kWh</span></paper-input
             >`
           : ""}
         <ha-formfield label="Use entity">
@@ -140,6 +143,7 @@ export class DialogEnergyGridFlowSettings
         </ha-formfield>
         ${this._costs === "entity"
           ? html`<ha-entity-picker
+              class="price-options"
               .hass=${this.hass}
               include-domains='["sensor", "input_number"]'
               .value=${this._source.entity_energy_price}
@@ -203,6 +207,11 @@ export class DialogEnergyGridFlowSettings
       css`
         ha-formfield {
           display: block;
+        }
+        .price-options {
+          display: block;
+          padding-left: 52px;
+          margin-top: -16px;
         }
       `,
     ];
