@@ -171,6 +171,7 @@ export class EnergyGridSettings extends LitElement {
   }
 
   private _addCO2Sensor() {
+    this.hass.loadBackendTranslation("title", "co2signal");
     showConfigFlowDialog(this, {
       startFlowHandler: "co2signal",
       dialogClosedCallback: () => {

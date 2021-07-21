@@ -21,7 +21,6 @@ import type { HaRadio } from "../../../../components/ha-radio";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
 import { ConfigEntry, getConfigEntries } from "../../../../data/config_entries";
 
-
 const energyUnits = ["kWh"];
 
 @customElement("dialog-energy-solar-settings")
@@ -178,6 +177,7 @@ export class DialogEnergySolarSettings
   }
 
   private _addForecast() {
+    this.hass.loadBackendTranslation("title", "forecast_solar");
     showConfigFlowDialog(this, {
       startFlowHandler: "forecast_solar",
       dialogClosedCallback: () => {
