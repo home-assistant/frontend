@@ -77,7 +77,7 @@ export interface SolarSourceTypeEnergyPreference {
   type: "solar";
 
   stat_energy_from: string;
-  config_entry_solar_forecast: string | null;
+  config_entry_solar_forecast: string[] | null;
 }
 
 type EnergySource =

@@ -1,4 +1,4 @@
-import { mdiDelete, mdiPencil, mdiSolarPower } from "@mdi/js";
+import { mdiSolarPower } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -14,8 +14,13 @@ import { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
 import "@material/mwc-button/mwc-button";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-radio";
+import { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/entity/ha-entity-picker";
+import type { HaRadio } from "../../../../components/ha-radio";
+import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
+import { ConfigEntry, getConfigEntries } from "../../../../data/config_entries";
+
 
 const energyUnits = ["kWh"];
 
@@ -30,15 +35,21 @@ export class DialogEnergySolarSettings
 
   @state() private _source?: SolarSourceTypeEnergyPreference;
 
+  @state() private _configEntries?: ConfigEntry[];
+
+  @state() private _forecast?: boolean;
+
   @state() private _error?: string;
 
   public async showDialog(
     params: EnergySettingsSolarDialogParams
   ): Promise<void> {
+    this._fetchForecastSolarConfigEntries();
     this._params = params;
     this._source = params.source
       ? { ...params.source }
       : (this._source = emptySolarEnergyPreference());
+    this._forecast = this._source.config_entry_solar_forecast !== null;
   }
 
   public closeDialog(): void {
@@ -82,21 +93,51 @@ export class DialogEnergySolarSettings
           link or setup an integration that will provide this data.
         </p>
 
-        source.config_entry_solar_forecast
-
-        <div class="row">
-          <img
-            referrerpolicy="no-referrer"
-            src="https://brands.home-assistant.io/forecast_solar/icon.png"
-          />
-          <span class="content">Forecast.Solar</span>
-          <mwc-icon-button
-            ><ha-svg-icon .path=${mdiPencil}></ha-svg-icon
-          ></mwc-icon-button>
-          <mwc-icon-button
-            ><ha-svg-icon .path=${mdiDelete}></ha-svg-icon
-          ></mwc-icon-button>
-        </div>
+        <ha-formfield label="Don't forecast production">
+          <ha-radio
+            value="false"
+            name="forecast"
+            .checked=${!this._forecast}
+            @change=${this._handleForecastChanged}
+          ></ha-radio>
+        </ha-formfield>
+        <ha-formfield label="Forecast Production">
+          <ha-radio
+            value="true"
+            name="forecast"
+            .checked=${this._forecast}
+            @change=${this._handleForecastChanged}
+          ></ha-radio>
+        </ha-formfield>
+        ${this._forecast
+          ? html`<div class="forecast-options">
+              ${this._configEntries?.map(
+                (entry) => html`<ha-formfield
+                  .label=${html`<div
+                    style="display: flex; align-items: center;"
+                  >
+                    <img
+                      referrerpolicy="no-referrer"
+                      style="height: 24px; margin-right: 16px;"
+                      src="https://brands.home-assistant.io/forecast_solar/icon.png"
+                    />${entry.title}
+                  </div>`}
+                >
+                  <ha-checkbox
+                    .entry=${entry}
+                    @change=${this._forecastCheckChanged}
+                    .checked=${this._source?.config_entry_solar_forecast?.includes(
+                      entry.entry_id
+                    )}
+                  >
+                  </ha-checkbox>
+                </ha-formfield>`
+              )}
+              <mwc-button @click=${this._addForecast}>
+                Add forecast
+              </mwc-button>
+            </div>`
+          : ""}
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
           ${this.hass.localize("ui.common.cancel")}
@@ -108,12 +149,52 @@ export class DialogEnergySolarSettings
     `;
   }
 
+  private async _fetchForecastSolarConfigEntries() {
+    this._configEntries = (await getConfigEntries(this.hass)).filter(
+      (entry) => entry.domain === "forecast_solar"
+    );
+  }
+
+  private _handleForecastChanged(ev: CustomEvent) {
+    const input = ev.currentTarget as HaRadio;
+    this._forecast = input.value === "true";
+  }
+
+  private _forecastCheckChanged(ev) {
+    const input = ev.currentTarget as HaCheckbox;
+    const entry = (input as any).entry as ConfigEntry;
+    const checked = input.checked;
+    if (checked) {
+      if (this._source!.config_entry_solar_forecast === null) {
+        this._source!.config_entry_solar_forecast = [];
+      }
+      this._source!.config_entry_solar_forecast.push(entry.entry_id);
+    } else {
+      this._source!.config_entry_solar_forecast!.splice(
+        this._source!.config_entry_solar_forecast!.indexOf(entry.entry_id),
+        1
+      );
+    }
+  }
+
+  private _addForecast() {
+    showConfigFlowDialog(this, {
+      startFlowHandler: "forecast_solar",
+      dialogClosedCallback: () => {
+        this._fetchForecastSolarConfigEntries();
+      },
+    });
+  }
+
   private _statisticChanged(ev: CustomEvent<{ value: string }>) {
     this._source!.stat_energy_from = ev.detail.value;
   }
 
   private async _save() {
     try {
+      if (!this._forecast) {
+        this._source!.config_entry_solar_forecast = null;
+      }
       await this._params!.saveCallback(this._source!);
       this.closeDialog();
     } catch (e) {
@@ -126,21 +207,18 @@ export class DialogEnergySolarSettings
       haStyle,
       haStyleDialog,
       css`
-        .row {
-          display: flex;
-          align-items: center;
-          border-top: 1px solid var(--divider-color);
-          height: 48px;
-          box-sizing: border-box;
-        }
-        .row img {
+        img {
+          height: 24px;
           margin-right: 16px;
         }
-        .row img {
-          height: 24px;
+        ha-formfield {
+          display: block;
         }
-        .row .content {
-          flex-grow: 1;
+        .forecast-options {
+          padding-left: 32px;
+        }
+        .forecast-options mwc-button {
+          padding-left: 8px;
         }
       `,
     ];
