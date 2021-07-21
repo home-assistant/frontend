@@ -18,7 +18,7 @@ import { haStyle } from "../../resources/styles";
 import "../lovelace/views/hui-view";
 import { HomeAssistant } from "../../types";
 import { Lovelace } from "../lovelace/types";
-import { showEnergySettingsDialog } from "./dialogs/show-dialog-energy-settings";
+import { navigate } from "../../common/navigate";
 
 const VIEW_CONFIGS = [
   {
@@ -98,7 +98,7 @@ class PanelEnergy extends LitElement {
                   : ""}
               </mwc-tab>
             </mwc-tab-bar>
-            <mwc-icon-button @click=${this._showSettings}
+            <mwc-icon-button @click=${this._navigateSettings}
               ><ha-svg-icon .path=${mdiCog}></ha-svg-icon
             ></mwc-icon-button>
           </app-toolbar>
@@ -146,10 +146,8 @@ class PanelEnergy extends LitElement {
     };
   }
 
-  private _showSettings() {
-    showEnergySettingsDialog(this, {
-      savedCallback: () => this._reloadView(),
-    });
+  private _navigateSettings() {
+    navigate("/config/energy");
   }
 
   static get styles(): CSSResultGroup {

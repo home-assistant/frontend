@@ -84,13 +84,15 @@ export class EnergyStrategy {
         days_to_show: 10,
       });
 
-      if (prefTypes.solar[0].stat_predicted_energy_from) {
-        view.cards!.push({
-          type: "statistics-graph",
-          title: hass.localize("ui.panel.energy.charts.solar"),
-          entities: [prefTypes.solar[0].stat_predicted_energy_from],
-        });
-      }
+      // Use WS command to get predicted solar production
+
+      // if (prefTypes.solar[0].stat_predicted_energy_from) {
+      //   view.cards!.push({
+      //     type: "statistics-graph",
+      //     title: hass.localize("ui.panel.energy.charts.solar"),
+      //     entities: [prefTypes.solar[0].stat_predicted_energy_from],
+      //   });
+      // }
     }
 
     if (energyPrefs.device_consumption.length) {

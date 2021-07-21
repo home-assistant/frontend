@@ -1,33 +1,37 @@
 import { HomeAssistant } from "../types";
 
-export const emptyFlowFromGridSourceEnergyPreference = (): FlowFromGridSourceEnergyPreference => ({
-  stat_energy_from: "",
-  stat_cost: null,
-  entity_energy_from: null,
-  entity_energy_price: null,
-  number_energy_price: null,
-});
+export const emptyFlowFromGridSourceEnergyPreference =
+  (): FlowFromGridSourceEnergyPreference => ({
+    stat_energy_from: "",
+    stat_cost: null,
+    entity_energy_from: null,
+    entity_energy_price: null,
+    number_energy_price: null,
+  });
 
-export const emptyFlowToGridSourceEnergyPreference = (): FlowToGridSourceEnergyPreference => ({
-  stat_energy_to: "",
-  stat_compensation: null,
-  entity_energy_to: null,
-  entity_energy_price: null,
-  number_energy_price: null,
-});
+export const emptyFlowToGridSourceEnergyPreference =
+  (): FlowToGridSourceEnergyPreference => ({
+    stat_energy_to: "",
+    stat_compensation: null,
+    entity_energy_to: null,
+    entity_energy_price: null,
+    number_energy_price: null,
+  });
 
-export const emptyGridSourceEnergyPreference = (): GridSourceTypeEnergyPreference => ({
-  type: "grid",
-  flow_from: [],
-  flow_to: [],
-  cost_adjustment_day: 0,
-});
+export const emptyGridSourceEnergyPreference =
+  (): GridSourceTypeEnergyPreference => ({
+    type: "grid",
+    flow_from: [],
+    flow_to: [],
+    cost_adjustment_day: 0,
+  });
 
-export const emptySolarEnergyPreference = (): SolarSourceTypeEnergyPreference => ({
-  type: "solar",
-  stat_energy_from: "",
-  stat_predicted_energy_from: null,
-});
+export const emptySolarEnergyPreference =
+  (): SolarSourceTypeEnergyPreference => ({
+    type: "solar",
+    stat_energy_from: "",
+    config_entry_solar_forecast: null,
+  });
 
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
@@ -73,7 +77,7 @@ export interface SolarSourceTypeEnergyPreference {
   type: "solar";
 
   stat_energy_from: string;
-  stat_predicted_energy_from: string | null;
+  config_entry_solar_forecast: string | null;
 }
 
 type EnergySource =

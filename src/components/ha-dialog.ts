@@ -1,12 +1,15 @@
 import { Dialog } from "@material/mwc-dialog";
 import { mdiClose } from "@mdi/js";
-import { css, CSSResultGroup, html } from "lit";
+import { css, CSSResultGroup, html, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import type { HomeAssistant } from "../types";
 import "./ha-icon-button";
 
-export const createCloseHeading = (hass: HomeAssistant, title: string) => html`
+export const createCloseHeading = (
+  hass: HomeAssistant,
+  title: string | TemplateResult
+) => html`
   <span class="header_title">${title}</span>
   <mwc-icon-button
     aria-label=${hass.localize("ui.dialogs.generic.close")}

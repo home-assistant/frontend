@@ -1,4 +1,5 @@
 import "@material/mwc-icon-button/mwc-icon-button";
+import { mdiCheck } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -21,8 +22,8 @@ import { compare } from "../../common/string/compare";
 import { getStatisticIds, StatisticsMetaData } from "../../data/history";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
-import type { HaComboBox } from "../ha-combo-box";
 import "../ha-combo-box";
+import type { HaComboBox } from "../ha-combo-box";
 import "../ha-svg-icon";
 import "./state-badge";
 
@@ -32,10 +33,26 @@ const rowRenderer: ComboBoxLitRenderer<{
   state?: HassEntity;
 }> = (item) => html`<style>
     paper-icon-item {
-      margin: -10px;
       padding: 0;
+      margin: -10px;
+    }
+    #content {
+      display: flex;
+      align-items: center;
+    }
+    :host([selected]) paper-icon-item {
+      margin-left: 0;
+    }
+    ha-svg-icon {
+      padding-left: 2px;
+      margin-right: -2px;
+      color: var(--secondary-text-color);
+    }
+    :host(:not([selected])) ha-svg-icon {
+      display: none;
     }
   </style>
+  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
   <paper-icon-item>
     <state-badge slot="item-icon" .stateObj=${item.state}></state-badge>
     <paper-item-body two-line="">
@@ -67,6 +84,14 @@ export class HaStatisticPicker extends LitElement {
   @property({ type: Array, attribute: "include-unit-of-measurement" })
   public includeUnitOfMeasurement?: string[];
 
+  /**
+   * Show only statistics on entities.
+   * @type {Boolean}
+   * @attr entities-only
+   */
+  @property({ type: Boolean, attribute: "entities-only" })
+  public entitiesOnly = false;
+
   @state() private _opened?: boolean;
 
   @query("ha-combo-box", true) public comboBox!: HaComboBox;
@@ -76,7 +101,8 @@ export class HaStatisticPicker extends LitElement {
   private _getStatistics = memoizeOne(
     (
       statisticIds: StatisticsMetaData[],
-      includeUnitOfMeasurement?: string[]
+      includeUnitOfMeasurement?: string[],
+      entitiesOnly?: boolean
     ): Array<{ id: string; name: string; state?: HassEntity }> => {
       if (!statisticIds.length) {
         return [
@@ -95,16 +121,24 @@ export class HaStatisticPicker extends LitElement {
         );
       }
 
-      const output = statisticIds.map((meta) => {
+      const output: Array<{
+        id: string;
+        name: string;
+        state?: HassEntity;
+      }> = [];
+      statisticIds.forEach((meta) => {
         const entityState = this.hass.states[meta.statistic_id];
         if (!entityState) {
-          return { id: meta.statistic_id, name: meta.statistic_id };
+          if (!entitiesOnly) {
+            output.push({ id: meta.statistic_id, name: meta.statistic_id });
+          }
+          return;
         }
-        return {
+        output.push({
           id: meta.statistic_id,
           name: computeStateName(entityState),
           state: entityState,
-        };
+        });
       });
 
       if (output.length === 1) {
@@ -137,13 +171,15 @@ export class HaStatisticPicker extends LitElement {
       if (this.hasUpdated) {
         (this.comboBox as any).items = this._getStatistics(
           this.statisticIds!,
-          this.includeUnitOfMeasurement
+          this.includeUnitOfMeasurement,
+          this.entitiesOnly
         );
       } else {
         this.updateComplete.then(() => {
           (this.comboBox as any).items = this._getStatistics(
             this.statisticIds!,
-            this.includeUnitOfMeasurement
+            this.includeUnitOfMeasurement,
+            this.entitiesOnly
           );
         });
       }

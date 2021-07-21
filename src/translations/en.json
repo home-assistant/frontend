@@ -597,6 +597,7 @@
             "person": "[%key:ui::panel::config::person::caption%]",
             "devices": "[%key:ui::panel::config::devices::caption%]",
             "entities": "[%key:ui::panel::config::entities::caption%]",
+            "energy": "[%key:ui::panel::config::energy::caption%]",
             "lovelace": "[%key:ui::panel::config::lovelace::caption%]",
             "core": "[%key:ui::panel::config::core::caption%]",
             "zone": "[%key:ui::panel::config::zone::caption%]",
@@ -985,6 +986,10 @@
             "usage": "A tag can trigger an automation when scanned, you can use NFC tags, QR codes or any other kind of tag. Use our {companion_link} to write this tag to a programmable NFC tag or create a QR code below.",
             "companion_apps": "companion apps"
           }
+        },
+        "energy": {
+          "caption": "Energy",
+          "description": "Monitor your energy production and consumption"
         },
         "helpers": {
           "caption": "Helpers",
@@ -3667,7 +3672,7 @@
         "setup": {
           "header": "We need some information to generate an Energy dashboard for you",
           "introduction": "TODO",
-          "save": "Show me my energy dashboard!"
+          "done": "Show me my energy dashboard!"
         },
         "charts": {
           "stat_house_energy_meter": "Total energy consumption",

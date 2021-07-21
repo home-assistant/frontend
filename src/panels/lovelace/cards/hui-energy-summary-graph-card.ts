@@ -259,7 +259,8 @@ export class HuiEnergySummaryGraphCard
         this.hass!,
         startDate,
         undefined,
-        Object.values(statistics).flat() as string[]
+        // Array.flat()
+        ([] as string[]).concat(...Object.values(statistics))
       );
     } finally {
       this._fetching = false;

@@ -196,9 +196,11 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
     for (const source of prefs.energy_sources) {
       if (source.type === "solar") {
         statistics.push(source.stat_energy_from);
-        if (source.stat_predicted_energy_from) {
-          statistics.push(source.stat_predicted_energy_from);
-        }
+        // Use ws command to get solar forecast
+
+        // if (source.stat_predicted_energy_from) {
+        //   statistics.push(source.stat_predicted_energy_from);
+        // }
         continue;
       }
 
