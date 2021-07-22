@@ -177,7 +177,6 @@ export class DialogEnergySolarSettings
   }
 
   private _addForecast() {
-    this.hass.loadBackendTranslation("title", "forecast_solar");
     showConfigFlowDialog(this, {
       startFlowHandler: "forecast_solar",
       dialogClosedCallback: () => {
