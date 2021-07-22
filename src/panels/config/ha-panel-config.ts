@@ -309,6 +309,13 @@ class HaPanelConfig extends HassRouterPage {
             "./integrations/integration-panels/zwave_js/zwave_js-config-router"
           ),
       },
+      insteon: {
+        tag: "insteon-config-router",
+        load: () =>
+          import(
+            "./integrations/integration-panels/insteon/insteon-config-router"
+          ),
+      },
     },
   };
 

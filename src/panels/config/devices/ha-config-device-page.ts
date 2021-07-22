@@ -110,19 +110,18 @@ export class HaConfigDevicePage extends LitElement {
         )
   );
 
-  private _computeArea = memoizeOne(
-    (areas, device): AreaRegistryEntry | undefined => {
-      if (!areas || !device || !device.area_id) {
-        return undefined;
-      }
-      return areas.find((area) => area.area_id === device.area_id);
+  private _computeArea = memoizeOne((areas, device):
+    | AreaRegistryEntry
+    | undefined => {
+    if (!areas || !device || !device.area_id) {
+      return undefined;
     }
-  );
+    return areas.find((area) => area.area_id === device.area_id);
+  });
 
-  private _batteryEntity = memoizeOne(
-    (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
-      findBatteryEntity(this.hass, entities)
-  );
+  private _batteryEntity = memoizeOne((entities: EntityRegistryEntry[]):
+    | EntityRegistryEntry
+    | undefined => findBatteryEntity(this.hass, entities));
 
   private _batteryChargingEntity = memoizeOne(
     (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
@@ -637,6 +636,26 @@ export class HaConfigDevicePage extends LitElement {
             .hass=${this.hass}
             .device=${device}
           ></ha-device-actions-zwave_js>
+        </div>
+      `);
+    }
+    if (integrations.includes("insteon")) {
+      import(
+        "./device-detail/integration-elements/insteon/ha-device-actions-insteon"
+      );
+      import(
+        "./device-detail/integration-elements/insteon/ha-device-info-insteon"
+      );
+      templates.push(html`
+        <ha-device-info-insteon
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-insteon>
+        <div class="card-actions" slot="actions">
+          <ha-device-actions-insteon
+            .hass=${this.hass}
+            .device=${device}
+          ></ha-device-actions-insteon>
         </div>
       `);
     }
