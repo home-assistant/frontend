@@ -52,6 +52,14 @@ export class EnergyStrategy {
       prefs: energyPrefs,
     });
 
+    // Only include if we have a grid.
+    if (energyPrefs.energy_sources.some((source) => source.type === "grid")) {
+      view.cards!.push({
+        type: "energy-usage",
+        prefs: energyPrefs,
+      });
+    }
+
     const prefTypes = energySourcesByType(energyPrefs);
     let flowToGridSources: FlowToGridSourceEnergyPreference[] | undefined;
 
