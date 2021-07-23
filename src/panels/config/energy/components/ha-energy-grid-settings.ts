@@ -150,15 +150,19 @@ export class EnergyGridSettings extends LitElement {
               </mwc-icon-button>
             </div>`
           )}
-          <div class="row border-bottom">
-            <img
-              referrerpolicy="no-referrer"
-              src="https://brands.home-assistant.io/co2signal/icon.png"
-            />
-            <mwc-button @click=${this._addCO2Sensor}
-              >Add CO2 signal integration</mwc-button
-            >
-          </div>
+          ${this._configEntries?.length === 0
+            ? html`
+                <div class="row border-bottom">
+                  <img
+                    referrerpolicy="no-referrer"
+                    src="https://brands.home-assistant.io/co2signal/icon.png"
+                  />
+                  <mwc-button @click=${this._addCO2Sensor}>
+                    Add CO2 signal integration
+                  </mwc-button>
+                </div>
+              `
+            : ""}
         </div>
       </ha-card>
     `;
