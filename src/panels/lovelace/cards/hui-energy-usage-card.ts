@@ -258,29 +258,22 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
   // This is superduper temp.
   private async _getStatistics(): Promise<void> {
     const startDate = new Date();
-    // This should be _just_ today (since local midnight)
-    // For now we do a lot because fake data is not recent.
-    startDate.setHours(-24 * 30);
+    startDate.setHours(0);
+    startDate.setMinutes(0);
+    startDate.setSeconds(0);
+    startDate.setMilliseconds(0);
 
     const statistics: string[] = [];
     const prefs = this._config!.prefs;
     for (const source of prefs.energy_sources) {
       if (source.type === "solar") {
         statistics.push(source.stat_energy_from);
-        // Use ws command to get solar forecast
-
-        // if (source.stat_predicted_energy_from) {
-        //   statistics.push(source.stat_predicted_energy_from);
-        // }
         continue;
       }
 
       // grid source
       for (const flowFrom of source.flow_from) {
         statistics.push(flowFrom.stat_energy_from);
-        if (flowFrom.stat_cost) {
-          statistics.push(flowFrom.stat_cost);
-        }
       }
       for (const flowTo of source.flow_to) {
         statistics.push(flowTo.stat_energy_to);
