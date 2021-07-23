@@ -92,6 +92,15 @@ export interface EnergyPreferences {
   // production: ProductionEnergyPreference[];
 }
 
+export interface EnergyInfo {
+  cost_sensors: Record<string, string>;
+}
+
+export const getEnergyInfo = (hass: HomeAssistant) =>
+  hass.callWS<EnergyInfo>({
+    type: "energy/info",
+  });
+
 export const getEnergyPreferences = (hass: HomeAssistant) =>
   hass.callWS<EnergyPreferences>({
     type: "energy/get_prefs",
