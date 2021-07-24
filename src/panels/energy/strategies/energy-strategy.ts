@@ -59,12 +59,14 @@ export class EnergyStrategy {
     }
 
     wideCards.push({
+      title: "Costs",
       type: "energy-costs-table",
       prefs: energyPrefs,
     });
 
     if (energyPrefs.device_consumption.length) {
       wideCards.push({
+        title: "Monitor individual devices",
         type: "energy-devices-graph",
         prefs: energyPrefs,
       });

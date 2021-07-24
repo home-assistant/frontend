@@ -35,7 +35,7 @@ const renderSumStatHelper = (
     totalGrowth += statGrowth;
   }
 
-  return totalGrowth;
+  return Math.round(totalGrowth * 100) / 100;
 };
 
 @customElement("hui-energy-usage-card")
@@ -89,13 +89,10 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
     const hasSolarProduction = types.solar !== undefined;
     const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
 
-    let totalGridConsumption = renderSumStatHelper(
+    const totalGridConsumption = renderSumStatHelper(
       this._stats,
       types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
     );
-
-    // Temp for dev
-    totalGridConsumption = 23;
 
     if (totalGridConsumption === undefined) {
       return html`Total consumption couldn't be calculated`;
@@ -104,12 +101,10 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
     let totalSolarProduction: number | undefined;
 
     if (hasSolarProduction) {
-      totalSolarProduction = renderSumStatHelper(this._stats, [
-        types.solar![0].stat_energy_from,
-      ]);
-
-      // Temp for dev
-      totalSolarProduction = 8;
+      totalSolarProduction = renderSumStatHelper(
+        this._stats,
+        types.solar!.map((source) => source.stat_energy_from)
+      );
 
       if (totalSolarProduction === undefined) {
         return html`Total production couldn't be calculated`;
@@ -123,9 +118,6 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
         this._stats,
         types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
       );
-
-      // Temp for dev
-      productionReturnedToGrid = 2;
 
       if (productionReturnedToGrid === undefined) {
         return html`Production returned to grid couldn't be calculated`;
@@ -144,9 +136,6 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
           co2percentage = undefined;
         }
       }
-
-      // Temp for dev
-      co2percentage = 23;
     }
 
     // We are calculating low carbon consumption based on what we got from the grid
@@ -158,7 +147,8 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
 
     if (co2percentage !== undefined) {
       if (relativeGridFlow > 0) {
-        lowCarbonConsumption = relativeGridFlow * (co2percentage / 100);
+        lowCarbonConsumption =
+          Math.round(relativeGridFlow * (co2percentage / 100) * 100) / 100;
       } else {
         lowCarbonConsumption = 0;
       }
@@ -223,7 +213,7 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
             <div class="circle-container home">
               <div class="circle home">
                 <ha-svg-icon .path="${mdiHome}"></ha-svg-icon>
-                ${totalConsumption} kWh
+                ${Math.round(totalConsumption * 100) / 100} kWh
                 <ul>
                   <li>
                     Grid high carbon:

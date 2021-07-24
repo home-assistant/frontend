@@ -15,6 +15,7 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { EnergySummaryCardConfig } from "./types";
+import "../../../components/ha-card";
 
 const renderSumStatHelper = (
   data: Statistics,
@@ -115,7 +116,7 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
                       ? ""
                       : renderSumStatHelper(
                           this._data,
-                          [types.solar![0].stat_energy_from],
+                          types.solar!.map((source) => source.stat_energy_from),
                           "kWh"
                         )}
                   </div>
@@ -186,9 +187,7 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
       return;
     }
     const startDate = new Date();
-    // This should be _just_ today (since local midnight)
-    // For now we do a lot because fake data is not recent.
-    startDate.setHours(-24 * 30);
+    startDate.setHours(0, 0, 0, 0);
 
     this._fetching = true;
     const statistics: string[] = [];
