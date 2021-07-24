@@ -39,6 +39,9 @@ const LAZY_LOAD_TYPES = {
   "energy-summary-graph": () =>
     import("../cards/hui-energy-summary-graph-card"),
   "energy-solar-graph": () => import("../cards/hui-energy-solar-graph-card"),
+  "energy-devices-graph": () =>
+    import("../cards/hui-energy-devices-graph-card"),
+  "energy-costs-table": () => import("../cards/hui-energy-costs-table-card"),
   "energy-usage": () => import("../cards/hui-energy-usage-card"),
   grid: () => import("../cards/hui-grid-card"),
   starting: () => import("../cards/hui-starting-card"),

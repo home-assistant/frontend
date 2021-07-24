@@ -9,7 +9,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
-import "../../../components/chart/statistics-chart";
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
@@ -23,6 +22,7 @@ import {
 } from "../../../common/color/convert-color";
 import { labDarken } from "../../../common/color/lab";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/chart/ha-chart-base";
 
 const NEGATIVE = ["to_grid"];
 const ORDER = {

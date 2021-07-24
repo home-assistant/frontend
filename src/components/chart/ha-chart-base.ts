@@ -69,7 +69,7 @@ export default class HaChartBase extends LitElement {
   protected render() {
     return html`
       ${this.options?.plugins?.legend?.display === true
-        ? html` <div class="chartLegend">
+        ? html`<div class="chartLegend">
             <ul>
               ${this.data.datasets.map(
                 (dataset, index) => html`<li

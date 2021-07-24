@@ -63,10 +63,12 @@ export class EnergyStrategy {
       prefs: energyPrefs,
     });
 
-    wideCards.push({
-      type: "energy-devices-table",
-      prefs: energyPrefs,
-    });
+    if (energyPrefs.device_consumption.length) {
+      wideCards.push({
+        type: "energy-devices-graph",
+        prefs: energyPrefs,
+      });
+    }
 
     // Only include if we have a grid.
     if (energyPrefs.energy_sources.some((source) => source.type === "grid")) {

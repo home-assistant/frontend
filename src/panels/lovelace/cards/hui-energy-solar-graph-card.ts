@@ -9,7 +9,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
-import "../../../components/chart/statistics-chart";
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
@@ -29,6 +28,7 @@ import {
   getForecastSolarForecasts,
 } from "../../../data/forecast_solar";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/chart/ha-chart-base";
 
 const SOLAR_COLOR = { border: "#FF9800", background: "#ffcb80" };
 
