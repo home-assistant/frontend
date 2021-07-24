@@ -14,6 +14,7 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { EnergySummaryCardConfig } from "./types";
+import "../../../components/ha-card";
 
 const renderSumStatHelper = (
   data: Statistics,
@@ -183,42 +184,59 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card header="Usage">
         <div class="card-content">
-          ${co2percentage === undefined
-            ? ""
-            : html`
-                <div>
-                  <ha-svg-icon .path="${mdiLeaf}"></ha-svg-icon>
-                  Low-carbon energy circle: ${co2percentage}% /
-                  ${lowCarbonConsumption} kWh
-                </div>
-              `}
-          <div>
-            <ha-svg-icon .path="${mdiTransmissionTower}"></ha-svg-icon>
-            Grid circle:
-            ${totalGridConsumption - (productionReturnedToGrid || 0)} kWh
-            <ul>
-              <li>
-                Grid high carbon: ${(gridPctHighCarbon * 100).toFixed(1)}%
-              </li>
-              <li>Grid low carbon: ${(gridPctLowCarbon * 100).toFixed(1)}%</li>
-            </ul>
+          <div class="row">
+            ${co2percentage === undefined
+              ? ""
+              : html`
+                  <div class="circle-container">
+                    <span class="label">Low-carbon</span>
+                    <div class="circle low-carbon">
+                      <ha-svg-icon .path="${mdiLeaf}"></ha-svg-icon>
+                      ${co2percentage}% / ${lowCarbonConsumption} kWh
+                    </div>
+                  </div>
+                `}
+            <div class="circle-container">
+              <span class="label">Solar</span>
+              <div class="circle solar">
+                <ha-svg-icon .path="${mdiSolarPower}"></ha-svg-icon>
+                ${totalSolarProduction} kWh
+              </div>
+            </div>
           </div>
-          <div>
-            <ha-svg-icon .path="${mdiSolarPower}"></ha-svg-icon>
-            Solar power circle: ${totalSolarProduction} kWh
-          </div>
-          <div>
-            <ha-svg-icon .path="${mdiHome}"></ha-svg-icon>
-            Home circle: ${totalConsumption} kWh
-            <ul>
-              <li>
-                Grid high carbon: ${(homePctGridHighCarbon * 100).toFixed(1)}%
-              </li>
-              <li>
-                Grid low carbon: ${(homePctGridLowCarbon * 100).toFixed(1)}%
-              </li>
-              <li>Solar: ${(homePctSolar * 100).toFixed(1)}%</li>
-            </ul>
+          <div class="row">
+            <div class="circle-container">
+              <div class="circle grid">
+                <ha-svg-icon .path="${mdiTransmissionTower}"></ha-svg-icon>
+                ${totalGridConsumption - (productionReturnedToGrid || 0)} kWh
+                <ul>
+                  <li>
+                    Grid high carbon: ${(gridPctHighCarbon * 100).toFixed(1)}%
+                  </li>
+                  <li>
+                    Grid low carbon: ${(gridPctLowCarbon * 100).toFixed(1)}%
+                  </li>
+                </ul>
+              </div>
+              <span class="label">Grid</span>
+            </div>
+            <div class="circle-container home">
+              <div class="circle home">
+                <ha-svg-icon .path="${mdiHome}"></ha-svg-icon>
+                ${totalConsumption} kWh
+                <ul>
+                  <li>
+                    Grid high carbon:
+                    ${(homePctGridHighCarbon * 100).toFixed(1)}%
+                  </li>
+                  <li>
+                    Grid low carbon: ${(homePctGridLowCarbon * 100).toFixed(1)}%
+                  </li>
+                  <li>Solar: ${(homePctSolar * 100).toFixed(1)}%</li>
+                </ul>
+              </div>
+              <span class="label">Home</span>
+            </div>
           </div>
         </div>
       </ha-card>
@@ -255,13 +273,9 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
     }
   }
 
-  // This is superduper temp.
   private async _getStatistics(): Promise<void> {
     const startDate = new Date();
-    startDate.setHours(0);
-    startDate.setMinutes(0);
-    startDate.setSeconds(0);
-    startDate.setMilliseconds(0);
+    startDate.setHours(0, 0, 0, 0);
 
     const statistics: string[] = [];
     const prefs = this._config!.prefs;
@@ -288,7 +302,61 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
     );
   }
 
-  static styles = css``;
+  static styles = css`
+    :host {
+      --mdc-icon-size: 26px;
+    }
+    .row {
+      display: flex;
+      margin-bottom: 30px;
+    }
+    .row:last-child {
+      margin-bottom: 0;
+    }
+    .circle-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-right: 40px;
+    }
+    .circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 12px;
+    }
+    .label {
+      color: var(--secondary-text-color);
+      font-size: 12px;
+    }
+    .circle-container:last-child {
+      margin-right: 0;
+    }
+    .circle ul {
+      display: none;
+    }
+    .low-carbon {
+      border-color: #0da035;
+    }
+    .low-carbon ha-svg-icon {
+      color: #0da035;
+    }
+    .solar {
+      border-color: #ff9800;
+    }
+    .grid {
+      border-color: #134763;
+    }
+    .circle-container.home {
+      margin-left: 120px;
+    }
+  `;
 }
 
 declare global {

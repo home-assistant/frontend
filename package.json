@@ -96,7 +96,6 @@
     "@vue/web-component-wrapper": "^1.2.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "chart.js": "^3.3.2",
-    "chartjs-plugin-datalabels": "^2.0.0-rc.1",
     "comlink": "^4.3.1",
     "core-js": "^3.15.2",
     "cropperjs": "^1.5.11",

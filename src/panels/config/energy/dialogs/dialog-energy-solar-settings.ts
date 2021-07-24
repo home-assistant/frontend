@@ -14,7 +14,8 @@ import { EnergySettingsSolarDialogParams } from "./show-dialogs-energy";
 import "@material/mwc-button/mwc-button";
 import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-radio";
-import { HaCheckbox } from "../../../../components/ha-checkbox";
+import "../../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
 import "../../../../components/entity/ha-entity-picker";
 import type { HaRadio } from "../../../../components/ha-radio";
@@ -179,8 +180,14 @@ export class DialogEnergySolarSettings
   private _addForecast() {
     showConfigFlowDialog(this, {
       startFlowHandler: "forecast_solar",
-      dialogClosedCallback: () => {
-        this._fetchForecastSolarConfigEntries();
+      dialogClosedCallback: (params) => {
+        if (params.entryId) {
+          if (this._source!.config_entry_solar_forecast === null) {
+            this._source!.config_entry_solar_forecast = [];
+          }
+          this._source!.config_entry_solar_forecast.push(params.entryId);
+          this._fetchForecastSolarConfigEntries();
+        }
       },
     });
   }

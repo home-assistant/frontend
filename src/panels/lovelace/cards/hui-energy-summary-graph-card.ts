@@ -11,19 +11,29 @@ import { classMap } from "lit/directives/class-map";
 import "../../../components/ha-card";
 import "../../../components/chart/statistics-chart";
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import ChartDataLabels from "chartjs-plugin-datalabels";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { EnergySummaryGraphCardConfig } from "./types";
 import { fetchStatistics, Statistics } from "../../../data/history";
+import {
+  hex2rgb,
+  lab2rgb,
+  rgb2hex,
+  rgb2lab,
+} from "../../../common/color/convert-color";
+import { labDarken } from "../../../common/color/lab";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
-const PLUGINS = [ChartDataLabels];
-const NEGATIVE = ["to_grid", "solar"];
+const NEGATIVE = ["to_grid"];
+const ORDER = {
+  used_solar: 0,
+  from_grid: 100,
+  to_grid: 200,
+};
 const COLORS = {
-  from_grid: "#ff5722",
-  to_grid: "#4caf50",
-  by_home: "#9c27b0",
-  solar: "#ffc107",
+  to_grid: { border: "#56d256", background: "#87ceab" },
+  from_grid: { border: "#126A9A", background: "#88b5cd" },
+  used_solar: { border: "#FF9800", background: "#ffcb80" },
 };
 
 @customElement("hui-energy-summary-graph-card")
@@ -115,7 +125,6 @@ export class HuiEnergySummaryGraphCard
             ? html`<ha-chart-base
                 .data=${this._chartData}
                 .options=${this._chartOptions}
-                .plugins=${PLUGINS}
                 chartType="line"
               ></ha-chart-base>`
             : ""}
@@ -153,8 +162,11 @@ export class HuiEnergySummaryGraphCard
           },
         },
         y: {
+          stacked: true,
+          type: "linear",
           ticks: {
-            maxTicksLimit: 7,
+            beginAtZero: true,
+            callback: (value) => Math.abs(value),
           },
         },
       },
@@ -163,12 +175,31 @@ export class HuiEnergySummaryGraphCard
           mode: "x",
           intersect: true,
           position: "nearest",
+          filter: (val) => val.formattedValue !== "0",
           callbacks: {
-            label: (context) => `${context.dataset.label}: ${context.parsed.y}`,
+            label: (context) =>
+              `${context.dataset.label}: ${Math.abs(context.parsed.y)} kWh`,
+            footer: (contexts) => {
+              let totalConsumed = 0;
+              let totalReturned = 0;
+              for (const context of contexts) {
+                const value = (context.dataset.data[context.dataIndex] as any)
+                  .y;
+                if (value > 0) {
+                  totalConsumed += value;
+                } else {
+                  totalReturned += Math.abs(value);
+                }
+              }
+              return [
+                `Total consumed: ${totalConsumed.toFixed(2)} kWh`,
+                `Total returned: ${totalReturned.toFixed(2)} kWh`,
+              ];
+            },
           },
         },
         filler: {
-          propagate: true,
+          propagate: false,
         },
         legend: {
           display: false,
@@ -176,31 +207,13 @@ export class HuiEnergySummaryGraphCard
             usePointStyle: true,
           },
         },
-        datalabels: {
-          align: (context) =>
-            // @ts-ignore
-            context.dataset.data[1].y >= 0 ? "top" : "bottom",
-          anchor: (context) =>
-            // @ts-ignore
-            context.dataset.data[1].y >= 0 ? "end" : "start",
-          offset: 6,
-          borderRadius: 4,
-          color: "white",
-          font: {
-            weight: "bold",
-          },
-          padding: 6,
-          formatter: (value) => value.y,
-          backgroundColor: (context) =>
-            context.dataset.backgroundColor as string,
-        },
       },
       hover: {
         mode: "nearest",
       },
       elements: {
         line: {
-          tension: 0.2,
+          tension: 0.4,
           borderWidth: 1.5,
         },
         point: {
@@ -210,23 +223,21 @@ export class HuiEnergySummaryGraphCard
     };
   }
 
-  // This is superduper temp.
   private async _getStatistics(): Promise<void> {
     if (this._fetching) {
       return;
     }
-    const startDate = new Date("2021-07-08T00:00:00");
-    // This should be _just_ today (since local midnight)
-    // For now we do a lot because fake data is not recent.
-    // startDate.setHours(-135);
+    const startDate = new Date();
+    startDate.setHours(0, 0, 0, 0);
 
     this._fetching = true;
     const prefs = this._config!.prefs;
     const statistics: {
-      solar?: string[];
-      from_grid?: string[];
       to_grid?: string[];
+      from_grid?: string[];
+      solar?: string[];
     } = {};
+
     for (const source of prefs.energy_sources) {
       if (source.type === "solar") {
         if (statistics.solar) {
@@ -286,15 +297,22 @@ export class HuiEnergySummaryGraphCard
       endTime = new Date();
     }
 
-    const combinedData: { [key: string]: { [start: string]: number } } = {};
+    const combinedData: {
+      [key: string]: { [statId: string]: { [start: string]: number } };
+    } = {};
+    const summedData: { [key: string]: { [start: string]: number } } = {};
 
     Object.entries(statistics).forEach(([key, statIds]) => {
+      const sum = ["solar", "to_grid"].includes(key);
+      const add = key !== "solar";
       const totalStats: { [start: string]: number } = {};
+      const sets: { [statId: string]: { [start: string]: number } } = {};
       statIds!.forEach((id) => {
         const stats = this._data![id];
         if (!stats) {
           return;
         }
+        const set = {};
         let prevValue: number;
         stats.forEach((stat) => {
           if (!stat.sum) {
@@ -304,100 +322,93 @@ export class HuiEnergySummaryGraphCard
             prevValue = stat.sum;
             return;
           }
-          if (stat.start in totalStats) {
-            totalStats[stat.start] = stat.sum - prevValue;
-          } else {
-            totalStats[stat.start] = stat.sum - prevValue;
+          const val = stat.sum - prevValue;
+          // Get total of solar and to grid to calculate the solar energy used
+          if (sum) {
+            totalStats[stat.start] =
+              stat.start in totalStats ? totalStats[stat.start] + val : val;
+          }
+          if (add) {
+            set[stat.start] = val;
           }
           prevValue = stat.sum;
         });
+        sets[id] = set;
       });
-      combinedData[key] = totalStats;
+      if (sum) {
+        summedData[key] = totalStats;
+      }
+      if (add) {
+        combinedData[key] = sets;
+      }
     });
 
-    if (combinedData.from_grid && combinedData.to_grid && combinedData.solar) {
-      const allStarts = new Set([
-        ...Object.keys(combinedData.from_grid),
-        ...Object.keys(combinedData.to_grid),
-        ...Object.keys(combinedData.solar),
-      ]);
-      combinedData.by_home = {};
-      for (const start of allStarts) {
-        combinedData.by_home[start] =
-          (combinedData.solar[start] || 0) -
-          (combinedData.to_grid[start] || 0) +
-          (combinedData.from_grid[start] || 0);
+    if (summedData.to_grid && summedData.solar) {
+      const used_solar = {};
+      for (const start of Object.keys(summedData.solar)) {
+        used_solar[start] = Math.max(
+          (summedData.solar[start] || 0) - (summedData.to_grid[start] || 0),
+          0
+        );
       }
+      combinedData.used_solar = { used_solar: used_solar };
     }
 
-    Object.entries(combinedData).forEach(([key, totalStats]) => {
-      const negative = NEGATIVE.includes(key);
+    let allKeys: string[] = [];
 
-      // array containing [value1, value2, etc]
-      let prevValues: any[] | null = null;
-
-      const data: ChartDataset<"line">[] = [];
-
-      const pushData = (timestamp: Date, datavalues: any[] | null) => {
-        if (!datavalues) return;
-        if (timestamp > endTime) {
-          // Drop datapoints that are after the requested endTime. This could happen if
-          // endTime is "now" and client time is not in sync with server time.
-          return;
-        }
-        data.forEach((d, i) => {
-          if (datavalues[i] === null && prevValues && prevValues[i] !== null) {
-            // null data values show up as gaps in the chart.
-            // If the current value for the dataset is null and the previous
-            // value of the data set is not null, then add an 'end' point
-            // to the chart for the previous value. Otherwise the gap will
-            // be too big. It will go from the start of the previous data
-            // value until the start of the next data value.
-            d.data.push({
-              x: timestamp.getTime(),
-              y: Math.round(prevValues[i] * 100) / 100,
-            });
-          }
-          d.data.push({
-            x: timestamp.getTime(),
-            y: Math.round(datavalues[i] * 100) / 100,
-          });
-        });
-        prevValues = datavalues;
-      };
-
-      const color = COLORS[key];
-
-      let lastDate: Date | undefined;
-
-      data.push({
-        label: this.hass.localize(
-          `ui.panel.lovelace.cards.energy-summary-graph-card.lines.${key}`
-        ),
-        fill: false,
-        borderColor: color,
-        backgroundColor: color + "7F",
-        stepped: false,
-        pointRadius: 0,
-        data: [],
+    Object.values(combinedData).forEach((sources) => {
+      Object.values(sources).forEach((source) => {
+        allKeys = allKeys.concat(Object.keys(source));
       });
-      // Process chart data.
-      for (const [start, value] of Object.entries(totalStats)) {
-        const date = new Date(start);
-        if (lastDate && date.getTime() === lastDate.getTime()) {
-          return;
+    });
+
+    const uniqueKeys = Array.from(new Set(allKeys));
+
+    Object.entries(combinedData).forEach(([type, sources]) => {
+      const negative = NEGATIVE.includes(type);
+
+      Object.entries(sources).forEach(([statId, source], idx) => {
+        const data: ChartDataset<"line">[] = [];
+        const entity = this.hass.states[statId];
+        const color = COLORS[type];
+
+        data.push({
+          label:
+            type === "used_solar"
+              ? "Solar"
+              : entity
+              ? computeStateName(entity)
+              : statId,
+          fill: true,
+          stepped: false,
+          order: ORDER[type] + idx,
+          borderColor:
+            idx > 0
+              ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(color.border)), idx)))
+              : color.border,
+          backgroundColor:
+            idx > 0
+              ? rgb2hex(
+                  lab2rgb(labDarken(rgb2lab(hex2rgb(color.background)), idx))
+                )
+              : color.background,
+          stack: negative ? "negative" : "positive",
+          data: [],
+        });
+
+        // Process chart data.
+        for (const key of uniqueKeys) {
+          const value = key in source ? Math.round(source[key] * 100) / 100 : 0;
+          const date = new Date(key);
+          data[0].data.push({
+            x: date.getTime(),
+            y: value && negative ? -1 * value : value,
+          });
         }
-        lastDate = date;
-        pushData(date, [negative ? -1 * value : value]);
-      }
 
-      // Add an entry for final values
-      if (endTime.getTime() !== lastDate?.getTime()) {
-        pushData(endTime, prevValues);
-      }
-
-      // Concat two arrays
-      Array.prototype.push.apply(datasets, data);
+        // Concat two arrays
+        Array.prototype.push.apply(datasets, data);
+      });
     });
 
     this._chartData = {

@@ -18,7 +18,6 @@ import { haStyle } from "../../resources/styles";
 import "../lovelace/views/hui-view";
 import { HomeAssistant } from "../../types";
 import { Lovelace } from "../lovelace/types";
-import { navigate } from "../../common/navigate";
 
 const VIEW_CONFIGS = [
   {
@@ -77,7 +76,7 @@ class PanelEnergy extends LitElement {
             >
               <mwc-tab
                 .hasImageIcon=${this.narrow}
-                .label=${this.narrow ? undefined : "Overview"}
+                .label=${this.narrow ? undefined : "Day"}
               >
                 ${this.narrow
                   ? html`<ha-svg-icon
@@ -88,7 +87,18 @@ class PanelEnergy extends LitElement {
               </mwc-tab>
               <mwc-tab
                 .hasImageIcon=${this.narrow}
-                .label=${this.narrow ? undefined : "Details"}
+                .label=${this.narrow ? undefined : "Week"}
+              >
+                ${this.narrow
+                  ? html`<ha-svg-icon
+                      slot="icon"
+                      .path=${mdiLightningBolt}
+                    ></ha-svg-icon>`
+                  : ""}
+              </mwc-tab>
+              <mwc-tab
+                .hasImageIcon=${this.narrow}
+                .label=${this.narrow ? undefined : "Month"}
               >
                 ${this.narrow
                   ? html`<ha-svg-icon
@@ -98,9 +108,10 @@ class PanelEnergy extends LitElement {
                   : ""}
               </mwc-tab>
             </mwc-tab-bar>
-            <mwc-icon-button @click=${this._navigateSettings}
-              ><ha-svg-icon .path=${mdiCog}></ha-svg-icon
-            ></mwc-icon-button>
+            <a href="/config/energy?historyBack=1">
+              <mwc-icon-button>
+                <ha-svg-icon .path=${mdiCog}></ha-svg-icon> </mwc-icon-button
+            ></a>
           </app-toolbar>
         </app-header>
         <hui-view
@@ -146,10 +157,6 @@ class PanelEnergy extends LitElement {
     };
   }
 
-  private _navigateSettings() {
-    navigate("/config/energy");
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyle,
@@ -163,6 +170,9 @@ class PanelEnergy extends LitElement {
           --mdc-tab-text-label-color-default: var(--light-primary-color);
           --mdc-tab-color-default: var(--light-primary-color);
           --mdc-tab-height: var(--header-height);
+        }
+        mwc-icon-button {
+          color: var(--text-primary-color);
         }
       `,
     ];

@@ -31,6 +31,8 @@ class HaConfigEnergy extends LitElement {
 
   @property({ attribute: false }) public route!: Route;
 
+  @state() private _searchParms = new URLSearchParams(window.location.search);
+
   @state() private _preferences?: EnergyPreferences;
 
   @state() private _error?: string;
@@ -59,7 +61,9 @@ class HaConfigEnergy extends LitElement {
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        back-path="/config"
+        .backPath=${this._searchParms.has("historyBack")
+          ? undefined
+          : "/config"}
         .route=${this.route}
         .tabs=${configSections.experiences}
       >
@@ -106,7 +110,7 @@ class HaConfigEnergy extends LitElement {
       css`
         .container {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
           grid-gap: 8px 8px;
           padding: 8px;
         }

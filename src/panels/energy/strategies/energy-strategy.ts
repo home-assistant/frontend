@@ -1,10 +1,5 @@
-import {
-  EnergyPreferences,
-  energySourcesByType,
-  FlowToGridSourceEnergyPreference,
-  getEnergyPreferences,
-} from "../../../data/energy";
-import { LovelaceViewConfig } from "../../../data/lovelace";
+import { EnergyPreferences, getEnergyPreferences } from "../../../data/energy";
+import { LovelaceCardConfig, LovelaceViewConfig } from "../../../data/lovelace";
 import { LovelaceViewStrategy } from "../../lovelace/strategies/get-strategy";
 
 const setupWizard = async (): Promise<LovelaceViewConfig> => {
@@ -42,77 +37,127 @@ export class EnergyStrategy {
       return view;
     }
 
-    view.cards!.push({
-      type: "energy-summary",
+    const wideCards: LovelaceCardConfig[] = [];
+    const smallCards: LovelaceCardConfig[] = [];
+
+    // Only include if we have a grid source.
+    if (energyPrefs.energy_sources.some((source) => source.type === "grid")) {
+      wideCards.push({
+        title: "Electricity",
+        type: "energy-summary-graph",
+        prefs: energyPrefs,
+      });
+    }
+
+    // Only include if we have a solar source.
+    if (energyPrefs.energy_sources.some((source) => source.type === "solar")) {
+      wideCards.push({
+        title: "Solar production",
+        type: "energy-solar-graph",
+        prefs: energyPrefs,
+      });
+    }
+
+    wideCards.push({
+      type: "energy-costs-table",
       prefs: energyPrefs,
     });
 
-    view.cards!.push({
-      type: "energy-summary-graph",
+    wideCards.push({
+      type: "energy-devices-table",
       prefs: energyPrefs,
     });
 
     // Only include if we have a grid.
     if (energyPrefs.energy_sources.some((source) => source.type === "grid")) {
-      view.cards!.push({
+      smallCards.push({
         type: "energy-usage",
         prefs: energyPrefs,
       });
     }
 
-    const prefTypes = energySourcesByType(energyPrefs);
-    let flowToGridSources: FlowToGridSourceEnergyPreference[] | undefined;
+    smallCards.push({
+      type: "energy-summary",
+      prefs: energyPrefs,
+    });
 
-    if (prefTypes.grid) {
-      view.cards!.push({
-        type: "statistics-graph",
-        title: hass.localize("ui.panel.energy.charts.stat_house_energy_meter"),
-        entities: prefTypes.grid[0].flow_from.map(
-          (flow) => flow.stat_energy_from
-        ),
-        days_to_show: 20,
-      });
+    smallCards.push({
+      type: "energy-solar-consumed-gauge",
+      prefs: energyPrefs,
+    });
 
-      if (prefTypes.grid[0].flow_to.length) {
-        flowToGridSources = prefTypes.grid[0].flow_to;
-      }
-    }
+    smallCards.push({
+      type: "energy-carbon-consumed-gauge",
+      prefs: energyPrefs,
+    });
 
-    if (prefTypes.solar) {
-      const solarSource = prefTypes.solar[0];
-      const entities = [solarSource.stat_energy_from];
+    // const prefTypes = energySourcesByType(energyPrefs);
+    // let flowToGridSources: FlowToGridSourceEnergyPreference[] | undefined;
 
-      if (flowToGridSources) {
-        entities.push(...flowToGridSources.map((flow) => flow.stat_energy_to));
-      }
-      view.cards!.push({
-        type: "statistics-graph",
-        title: hass.localize("ui.panel.energy.charts.solar"),
-        entities,
-        days_to_show: 10,
-      });
+    // if (prefTypes.grid) {
+    //   wideCards.push({
+    //     type: "statistics-graph",
+    //     title: hass.localize("ui.panel.energy.charts.stat_house_energy_meter"),
+    //     entities: prefTypes.grid[0].flow_from.map(
+    //       (flow) => flow.stat_energy_from
+    //     ),
+    //     days_to_show: 20,
+    //   });
 
-      // Use WS command to get predicted solar production
+    //   if (prefTypes.grid[0].flow_to.length) {
+    //     flowToGridSources = prefTypes.grid[0].flow_to;
+    //   }
+    // }
 
-      // if (prefTypes.solar[0].stat_predicted_energy_from) {
-      //   view.cards!.push({
-      //     type: "statistics-graph",
-      //     title: hass.localize("ui.panel.energy.charts.solar"),
-      //     entities: [prefTypes.solar[0].stat_predicted_energy_from],
-      //   });
-      // }
-    }
+    // if (prefTypes.solar) {
+    //   const solarSource = prefTypes.solar[0];
+    //   const entities = [solarSource.stat_energy_from];
 
-    if (energyPrefs.device_consumption.length) {
-      view.cards!.push({
-        title: hass.localize("ui.panel.energy.charts.by_device"),
-        type: "statistics-graph",
-        entities: energyPrefs.device_consumption.map(
-          (dev) => dev.stat_consumption
-        ),
-      });
-    }
+    //   if (flowToGridSources) {
+    //     entities.push(...flowToGridSources.map((flow) => flow.stat_energy_to));
+    //   }
+    //   wideCards.push({
+    //     type: "statistics-graph",
+    //     title: hass.localize("ui.panel.energy.charts.solar"),
+    //     entities,
+    //     days_to_show: 10,
+    //   });
 
+    // Use WS command to get predicted solar production
+
+    // if (prefTypes.solar[0].stat_predicted_energy_from) {
+    //   view.cards!.push({
+    //     type: "statistics-graph",
+    //     title: hass.localize("ui.panel.energy.charts.solar"),
+    //     entities: [prefTypes.solar[0].stat_predicted_energy_from],
+    //   });
+    // }
+    // }
+
+    // if (energyPrefs.device_consumption.length) {
+    //   wideCards.push({
+    //     title: hass.localize("ui.panel.energy.charts.by_device"),
+    //     type: "statistics-graph",
+    //     entities: energyPrefs.device_consumption.map(
+    //       (dev) => dev.stat_consumption
+    //     ),
+    //   });
+    // }
+
+    view.type = "panel";
+    view.cards!.push({
+      type: "horizontal-stack",
+      cards: [
+        {
+          type: "vertical-stack",
+          cards: wideCards,
+        },
+        {
+          type: "vertical-stack",
+          cards: smallCards,
+        },
+      ],
+    });
     return view;
   }
 }

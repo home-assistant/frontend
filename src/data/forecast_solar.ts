@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../types";
 
-interface ForecastSolarForecast {
+export interface ForecastSolarForecast {
   wh_hours: Record<string, number>;
 }
 
