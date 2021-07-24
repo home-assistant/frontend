@@ -135,11 +135,15 @@ class HaPanelDevService extends LitElement {
                 >`
               : ""}
           </div>
-          <mwc-button .disabled=${!isValid} raised @click=${this._callService}>
+          <ha-progress-button
+            .disabled=${!isValid}
+            raised
+            @click=${this._callService}
+          >
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.services.call_service"
             )}
-          </mwc-button>
+          </ha-progress-button>
         </div>
       </div>
 
@@ -295,12 +299,14 @@ class HaPanelDevService extends LitElement {
     }
   );
 
-  private async _callService() {
+  private async _callService(ev) {
+    const button = ev.currentTarget;
     if (!this._serviceData?.service) {
       return;
     }
     try {
       await callExecuteScript(this.hass, [this._serviceData]);
+      button.actionSuccess();
     } catch (err) {
       const [domain, service] = this._serviceData.service.split(".", 2);
       if (
@@ -310,6 +316,7 @@ class HaPanelDevService extends LitElement {
         return;
       }
       forwardHaptic("failure");
+      button.actionError();
       showToast(this, {
         message:
           this.hass.localize(
