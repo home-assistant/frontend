@@ -79,7 +79,7 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
         :host([square]) #root {
           grid-auto-rows: 1fr;
         }
-        :host([square]) #root::after {
+        :host([square]) #root::before {
           content: "";
           width: 0;
           padding-bottom: 100%;
