@@ -136,12 +136,9 @@ export default class HaChartBase extends LitElement {
                   )}
                 </ul>
               </div>
-              ${this._tooltip.footer
-                ? // footer has white-space: pre;
-                  // prettier-ignore
-                  html`<div class="footer">${Array.isArray(this._tooltip.footer)
-                      ? this._tooltip.footer.join("\n")
-                      : this._tooltip.footer}
+              ${this._tooltip.footer.length
+                ? html`<div class="footer">
+                    ${this._tooltip.footer.map((item) => html`${item}<br />`)}
                   </div>`
                 : ""}
             </div>`
@@ -324,7 +321,6 @@ export default class HaChartBase extends LitElement {
       }
       .chartTooltip .footer {
         font-weight: 500;
-        white-space: pre;
       }
       .chartTooltip .beforeBody {
         text-align: center;
