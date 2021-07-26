@@ -180,7 +180,8 @@ export class HuiEnergySolarGraphCard
         tooltip: {
           mode: "nearest",
           callbacks: {
-            label: (context) => `${context.dataset.label}: ${context.parsed.y}`,
+            label: (context) =>
+              `${context.dataset.label}: ${context.parsed.y} kWh`,
           },
         },
         filler: {
