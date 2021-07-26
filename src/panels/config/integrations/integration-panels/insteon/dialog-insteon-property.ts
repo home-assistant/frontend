@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResult, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -20,15 +20,15 @@ class DialogInsteonProperty extends LitElement {
 
   @property() public narrow?: boolean;
 
-  private _record?: Property;
+  @state() private _record?: Property;
 
-  private _schema?: HaFormSchema;
+  @state() private _schema?: HaFormSchema;
 
-  private _title?: string;
+  @state() private _title?: string;
 
-  private _callback?: (name: string, value: any) => Promise<void>;
+  @state() private _callback?: (name: string, value: any) => Promise<void>;
 
-  private _formData = {};
+  @state() private _formData = {};
 
   public async showDialog(params: InsteonPropertyDialogParams): Promise<void> {
     this._record = params.record;

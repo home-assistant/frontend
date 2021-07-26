@@ -6,7 +6,7 @@ import {
   TemplateResult,
   PropertyValues,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
@@ -23,7 +23,7 @@ export class HaDeviceActionsInsteon extends LitElement {
 
   @property({ attribute: false }) public device!: DeviceRegistryEntry;
 
-  private _insteonDevice?: InsteonDevice;
+  @state() private _insteonDevice?: InsteonDevice;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {

@@ -11,7 +11,7 @@ import {
   TemplateResult,
   PropertyValues,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-service-description";
 import "@polymer/paper-input/paper-textarea";
 import {
@@ -52,17 +52,17 @@ class InsteonConfigDeviceALDBPage extends LitElement {
 
   @property() private deviceId?: string;
 
-  private _device?: InsteonDevice;
+  @state() private _device?: InsteonDevice;
 
-  private _records?: ALDBRecord[];
+  @state() private _records?: ALDBRecord[];
 
-  private _allRecords?: ALDBRecord[];
+  @state() private _allRecords?: ALDBRecord[];
 
-  private _showHideUnused = "show";
+  @state() private _showHideUnused = "show";
 
-  private _showUnused = false;
+  @state() private _showUnused = false;
 
-  private _isLoading = false;
+  @state() private _isLoading = false;
 
   private _subscribed?: Promise<() => Promise<void>>;
 

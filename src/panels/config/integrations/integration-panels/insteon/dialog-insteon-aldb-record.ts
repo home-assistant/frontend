@@ -1,7 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -20,17 +20,17 @@ class DialogInsteonALDBRecord extends LitElement {
 
   @property() public narrow?: boolean;
 
-  private _record?: ALDBRecord;
+  @state() private _record?: ALDBRecord;
 
-  private _schema?: HaFormSchema[];
+  @state() private _schema?: HaFormSchema[];
 
-  private _title?: string;
+  @state() private _title?: string;
 
-  private _callback?: (record: ALDBRecord) => Promise<void>;
+  @state() private _callback?: (record: ALDBRecord) => Promise<void>;
 
-  private _errors?: { [key: string]: string };
+  @state() private _errors?: { [key: string]: string };
 
-  private _formData?: { [key: string]: any };
+  @state() private _formData?: { [key: string]: any };
 
   public async showDialog(
     params: InsteonALDBRecordDialogParams

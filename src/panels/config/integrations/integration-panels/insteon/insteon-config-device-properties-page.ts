@@ -8,7 +8,7 @@ import {
   TemplateResult,
   PropertyValues,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-service-description";
 import "@polymer/paper-input/paper-textarea";
 import {
@@ -46,13 +46,13 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
 
   @property() private deviceId?: string;
 
-  private _device?: InsteonDevice;
+  @state() private _device?: InsteonDevice;
 
-  private _properties: Property[] = [];
+  @state() private _properties: Property[] = [];
 
-  private _schema?: { [key: string]: HaFormSchema };
+  @state() private _schema?: { [key: string]: HaFormSchema };
 
-  private _showWait = false;
+  @state() private _showWait = false;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);

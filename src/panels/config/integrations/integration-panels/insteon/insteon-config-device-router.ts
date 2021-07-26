@@ -1,4 +1,4 @@
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { mdiNetwork, mdiFolderMultipleOutline } from "@mdi/js";
 import {
   HassRouterPage,
@@ -28,7 +28,7 @@ class InsteonConfigDeviceRouter extends HassRouterPage {
 
   @property() public narrow!: boolean;
 
-  private deviceId?: string | undefined = undefined;
+  @state() private deviceId?: string | undefined = undefined;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "aldb",
