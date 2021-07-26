@@ -322,17 +322,17 @@ export const calculateStatisticSumGrowth = (
 export const calculateStatisticsSumGrowth = (
   data: Statistics,
   stats: string[]
-): number | undefined => {
+): number | null => {
   let totalGrowth = 0;
 
   for (const stat of stats) {
     if (!(stat in data)) {
-      return undefined;
+      return null;
     }
     const statGrowth = calculateStatisticSumGrowth(data[stat]);
 
     if (statGrowth === null) {
-      return undefined;
+      return null;
     }
 
     totalGrowth += statGrowth;

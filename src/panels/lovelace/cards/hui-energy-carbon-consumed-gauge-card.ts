@@ -90,7 +90,7 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
       types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
     );
 
-    if (totalGridConsumption === undefined) {
+    if (totalGridConsumption === null) {
       return html`Couldn't calculate the total grid consumption.`;
     }
 

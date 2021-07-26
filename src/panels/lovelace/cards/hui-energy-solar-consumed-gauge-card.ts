@@ -63,10 +63,7 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
 
     let value: number | undefined;
 
-    if (
-      productionReturnedToGrid !== undefined &&
-      totalSolarProduction !== undefined
-    ) {
+    if (productionReturnedToGrid !== null && totalSolarProduction !== null) {
       const cosumedSolar = totalSolarProduction - productionReturnedToGrid;
       value = round((cosumedSolar / totalSolarProduction) * 100);
     }

@@ -73,11 +73,11 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
       types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
     );
 
-    if (totalGridConsumption === undefined) {
+    if (totalGridConsumption === null) {
       return html`Total consumption couldn't be calculated`;
     }
 
-    let totalSolarProduction: number | undefined;
+    let totalSolarProduction: number | null = null;
 
     if (hasSolarProduction) {
       totalSolarProduction = calculateStatisticsSumGrowth(
@@ -85,12 +85,12 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
         types.solar!.map((source) => source.stat_energy_from)
       );
 
-      if (totalSolarProduction === undefined) {
+      if (totalSolarProduction === null) {
         return html`Total production couldn't be calculated`;
       }
     }
 
-    let productionReturnedToGrid: number | undefined;
+    let productionReturnedToGrid: number | null = null;
 
     if (hasReturnToGrid) {
       productionReturnedToGrid = calculateStatisticsSumGrowth(
