@@ -99,6 +99,7 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
   private async _getStatistics(): Promise<void> {
     const startDate = new Date();
     startDate.setHours(0, 0, 0, 0);
+    startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
 
     const statistics: string[] = [];
     const prefs = this._config!.prefs;

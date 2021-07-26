@@ -214,6 +214,7 @@ export class HuiEnergySolarGraphCard
     }
     const startDate = new Date();
     startDate.setHours(0, 0, 0, 0);
+    startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
 
     this._fetching = true;
 
