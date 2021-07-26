@@ -16,9 +16,9 @@ import { InsteonALDBRecordDialogParams } from "./show-dialog-insteon-aldb-record
 class DialogInsteonALDBRecord extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide?: boolean;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow?: boolean;
 
   @state() private _record?: ALDBRecord;
 

@@ -44,9 +44,9 @@ import { showInsteonALDBRecordDialog } from "./show-dialog-insteon-aldb-record";
 class InsteonConfigDeviceALDBPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow?: boolean;
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide?: boolean;
 
   @property() public route?: Route;
 

@@ -19,13 +19,13 @@ export interface RecordRowData extends ALDBRecord {
 export class InsteonALDBDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public records: ALDBRecord[] = [];
 
-  @property() public isLoading = false;
+  @property({ type: Boolean }) public isLoading = false;
 
-  @property() public showWait = false;
+  @property({ type: Boolean }) public showWait = false;
 
   @query("ha-data-table") private _dataTable!: HaDataTable;
 

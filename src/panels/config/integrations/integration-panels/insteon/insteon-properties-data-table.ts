@@ -20,7 +20,7 @@ export interface RecordRowData extends Property {
 export class InsteonPropertiesDataTable extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow = false;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public records: Property[] = [];
 
@@ -28,7 +28,7 @@ export class InsteonPropertiesDataTable extends LitElement {
 
   @property() public noDataText?: string;
 
-  @property() public showWait = false;
+  @property({ type: Boolean }) public showWait = false;
 
   @query("ha-data-table") private _dataTable!: HaDataTable;
 

@@ -9,9 +9,9 @@ import { HomeAssistant } from "../../../../../types";
 class InsteonConfigRouter extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public isWide!: boolean;
+  @property({ type: Boolean }) public isWide!: boolean;
 
-  @property() public narrow!: boolean;
+  @property({ type: Boolean }) public narrow!: boolean;
 
   @property() private deviceId?: string;
 
