@@ -1,6 +1,6 @@
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
   TemplateResult,
@@ -50,14 +50,14 @@ export class HaDeviceActionsInsteon extends LitElement {
   }
 
   private async _onManageALDBClick(): Promise<void> {
-    navigate(this, "/config/insteon/device/aldb/" + this.device.id);
+    navigate("/config/insteon/device/aldb/" + this.device.id);
   }
 
   private async _onManagePropertiesClick(): Promise<void> {
-    navigate(this, "/config/insteon/device/properties/" + this.device.id);
+    navigate("/config/insteon/device/properties/" + this.device.id);
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup[] {
     return [
       haStyle,
       css`
