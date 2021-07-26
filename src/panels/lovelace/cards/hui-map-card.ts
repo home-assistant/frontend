@@ -133,6 +133,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._config,
               this._configEntities
             )}
+            .zoom=${this._config.default_zoom ?? 14}
             .paths=${this._getHistoryPaths(this._config, this._history)}
             .darkMode=${this._config.dark_mode}
           ></ha-map>
