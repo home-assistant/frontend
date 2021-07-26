@@ -302,11 +302,8 @@ export const fetchStatistics = (
 export const calculateStatisticSumGrowth = (
   values: StatisticValue[]
 ): number | null => {
-  if (values.length === 0) {
+  if (values.length < 2) {
     return null;
-  }
-  if (values.length === 1) {
-    return values[0].sum;
   }
   const endSum = values[values.length - 1].sum;
   if (endSum === null) {
