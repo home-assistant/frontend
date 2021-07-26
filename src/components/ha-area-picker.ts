@@ -1,5 +1,5 @@
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -48,13 +48,27 @@ const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (
   item
 ) => html`<style>
     paper-item {
-      margin: -10px 0;
       padding: 0;
+      margin: -10px;
+      margin-left: 0;
     }
-    paper-item.add-new {
-      font-weight: 500;
+    #content {
+      display: flex;
+      align-items: center;
+    }
+    ha-svg-icon {
+      padding-left: 2px;
+      margin-right: -2px;
+      color: var(--secondary-text-color);
+    }
+    :host(:not([selected])) ha-svg-icon {
+      display: none;
+    }
+    :host([selected]) paper-item {
+      margin-left: 10px;
     }
   </style>
+  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
   <paper-item class=${classMap({ "add-new": item.area_id === "add_new" })}>
     <paper-item-body two-line>${item.name}</paper-item-body>
   </paper-item>`;

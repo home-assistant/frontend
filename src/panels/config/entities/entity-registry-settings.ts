@@ -100,9 +100,8 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
     if (this.entry.entity_id !== this._origEntityId) {
       return html``;
     }
-    const stateObj: HassEntity | undefined = this.hass.states[
-      this.entry.entity_id
-    ];
+    const stateObj: HassEntity | undefined =
+      this.hass.states[this.entry.entity_id];
     const invalidDomainUpdate =
       computeDomain(this._entityId.trim()) !==
       computeDomain(this.entry.entity_id);

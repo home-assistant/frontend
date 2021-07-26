@@ -168,17 +168,13 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this.hassChanged = this.hassChanged.bind(this);
     this.hass.connection
       .subscribeEvents(this.hassChanged, "mailbox_updated")
-      .then(
-        function (unsub) {
-          this._unsubEvents = unsub;
-        }.bind(this)
-      );
-    this.computePlatforms().then(
-      function (platforms) {
-        this.platforms = platforms;
-        this.hassChanged();
-      }.bind(this)
-    );
+      .then((unsub) => {
+        this._unsubEvents = unsub;
+      });
+    this.computePlatforms().then((platforms) => {
+      this.platforms = platforms;
+      this.hassChanged();
+    });
   }
 
   disconnectedCallback() {
@@ -190,11 +186,9 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
     if (!this._messages) {
       this._messages = [];
     }
-    this.getMessages().then(
-      function (items) {
-        this._messages = items;
-      }.bind(this)
-    );
+    this.getMessages().then((items) => {
+      this._messages = items;
+    });
   }
 
   openMP3Dialog(event) {
@@ -225,9 +219,9 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
             platform: platform,
           });
         }
-        return platformItems.sort(function (a, b) {
-          return new Date(b.timestamp) - new Date(a.timestamp);
-        });
+        return platformItems.sort(
+          (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+        );
       });
   }
 

@@ -11,6 +11,8 @@ import {
 } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
+import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
+import { mdiCheck } from "@mdi/js";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
 import { compare } from "../../common/string/compare";
@@ -33,7 +35,6 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
-import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 
 interface Device {
   name: string;
@@ -47,10 +48,27 @@ export type HaDevicePickerDeviceFilterFunc = (
 
 const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`<style>
     paper-item {
-      margin: -10px 0;
       padding: 0;
+      margin: -10px;
+      margin-left: 0;
+    }
+    #content {
+      display: flex;
+      align-items: center;
+    }
+    ha-svg-icon {
+      padding-left: 2px;
+      margin-right: -2px;
+      color: var(--secondary-text-color);
+    }
+    :host(:not([selected])) ha-svg-icon {
+      display: none;
+    }
+    :host([selected]) paper-item {
+      margin-left: 10px;
     }
   </style>
+  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
   <paper-item>
     <paper-item-body two-line>
       ${item.name}

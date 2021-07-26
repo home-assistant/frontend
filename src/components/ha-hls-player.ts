@@ -96,7 +96,7 @@ class HaHLSPlayer extends LitElement {
     const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
-    const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.min.js"))
+    const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.min"))
       .default;
     let hlsSupported = Hls.isSupported();
 
@@ -117,7 +117,8 @@ class HaHLSPlayer extends LitElement {
 
     // Parse playlist assuming it is a master playlist. Match group 1 is whether hevc, match group 2 is regular playlist url
     // See https://tools.ietf.org/html/rfc8216 for HLS spec details
-    const playlistRegexp = /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
+    const playlistRegexp =
+      /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
     const match = playlistRegexp.exec(masterPlaylist);
     const matchTwice = playlistRegexp.exec(masterPlaylist);
 

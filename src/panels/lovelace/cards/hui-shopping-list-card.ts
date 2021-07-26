@@ -35,7 +35,8 @@ let Sortable;
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard
   extends SubscribeMixin(LitElement)
-  implements LovelaceCard {
+  implements LovelaceCard
+{
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-shopping-list-editor");
     return document.createElement("hui-shopping-list-card-editor");

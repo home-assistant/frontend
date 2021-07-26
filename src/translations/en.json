@@ -1,5 +1,6 @@
 {
   "panel": {
+    "energy": "Energy",
     "calendar": "Calendar",
     "config": "Configuration",
     "states": "Overview",
@@ -449,6 +450,16 @@
         "loading_history": "Loading state history...",
         "no_history_found": "No state history found."
       },
+      "statistics_charts": {
+        "loading_statistics": "Loading statistics...",
+        "no_statistics_found": "No statistics found.",
+        "statistic_types": {
+          "min": "min",
+          "max": "max",
+          "mean": "mean",
+          "sum": "sum"
+        }
+      },
       "service-picker": {
         "service": "Service"
       },
@@ -586,6 +597,7 @@
             "person": "[%key:ui::panel::config::person::caption%]",
             "devices": "[%key:ui::panel::config::devices::caption%]",
             "entities": "[%key:ui::panel::config::entities::caption%]",
+            "energy": "[%key:ui::panel::config::energy::caption%]",
             "lovelace": "[%key:ui::panel::config::lovelace::caption%]",
             "core": "[%key:ui::panel::config::core::caption%]",
             "zone": "[%key:ui::panel::config::zone::caption%]",
@@ -752,6 +764,10 @@
       "options_flow": {
         "form": {
           "header": "Options"
+        },
+        "loading": {
+          "loading_flow": "Please wait while the options for {integration} are being initialized",
+          "loading_step": "[%key:ui::panel::config::integrations::config_flow::loading::loading_step%]"
         },
         "success": {
           "description": "Options successfully saved."
@@ -971,6 +987,55 @@
             "companion_apps": "companion apps"
           }
         },
+        "energy": {
+          "caption": "Energy",
+          "description": "Monitor your energy production and consumption",
+          "currency": "",
+          "grid": {
+            "title": "Configure grid",
+            "sub": "Configure the different tarrifs for the energy you consume from the grid, and, if you return energy to the grid, the energy you return to the grid.",
+            "flow_dialog": {
+              "from": {
+                "header": "Configure grid consumption",
+                "paragraph": "Grid consumption is the energy that flows from the energy grid to your home.",
+                "energy_stat": "Consumed Energy (kWh)",
+                "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
+                "no_cost": "Do not track costs",
+                "cost_stat": "Use an entity tracking the total costs",
+                "cost_stat_input": "Entity keeping track of the total costs",
+                "cost_entity": "Use an entity with current price",
+                "cost_entity_input": "Entity with the current price",
+                "cost_number": "Use a static price",
+                "cost_number_input": "Price per kWh",
+                "cost_number_suffix": "{currency}/kWh"
+              },
+              "to": {
+                "header": "Configure grid production",
+                "paragraph": "Grid production is the energy that flows from your solar panels to the grid.",
+                "energy_stat": "Energy returned to the grid (kWh)",
+                "cost_para": "Do you get money back when you return energy to the grid?",
+                "no_cost": "I do not get money back",
+                "cost_stat": "Use an entity tracking the total recieved money",
+                "cost_stat_input": "Entity keeping track of the total of received money",
+                "cost_entity": "Use an entity with current rate",
+                "cost_entity_input": "Entity with the current rate",
+                "cost_number": "Use a static rate",
+                "cost_number_input": "Rate per kWh",
+                "cost_number_suffix": "{currency}/kWh"
+              }
+            }
+          },
+          "solar": {
+            "stat_production": "Your solar energy production",
+            "stat_return_to_grid": "Solar energy returned to the grid",
+            "stat_predicted_production": "Prediction of your solar energy production"
+          },
+          "device_consumption": {
+            "description": "If you measure the power consumption of individual devices, you can select the entities with the power consumption below",
+            "add_stat": "Pick entity to track energy of",
+            "selected_stat": "Tracking energy for"
+          }
+        },
         "helpers": {
           "caption": "Helpers",
           "description": "Elements that help build automations",
@@ -1163,7 +1228,7 @@
             },
             "reloading": {
               "heading": "YAML configuration reloading",
-              "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
+              "introduction": "Some parts of Home Assistant can reload without requiring a restart. Clicking one of the options below will unload their current YAML configuration and load the new one.",
               "reload": "{domain}",
               "core": "Location & customizations",
               "group": "Groups, group entities, and notify services",
@@ -1479,7 +1544,7 @@
                 "trigger": {
                   "label": "Trigger",
                   "no_triggers": "No triggers available",
-                  "id": "Trigger Id"
+                  "id": "Trigger ID"
                 },
                 "zone": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::zone::label%]",
@@ -2224,7 +2289,11 @@
               "title": "We discovered these, want to set them up?",
               "new_flow": "No, set up an other instance of {integration}"
             },
-            "loading_first_time": "Please wait while the integration is being installed",
+            "loading": {
+              "loading_flow": "Please wait while {integration} is being setup",
+              "loading_step": "Loading next step for {integration}",
+              "fallback_title": "the integration"
+            },
             "error": "Error",
             "could_not_load": "Config flow could not be loaded",
             "not_loaded": "The integration could not be loaded, try to restart Home Assistant."
@@ -2593,6 +2662,7 @@
             "network": "Network",
             "node_id": "Node ID",
             "home_id": "Home ID",
+            "source": "Source",
             "close": "Close",
             "add_node": "Add Node",
             "remove_node": "Remove Node",
@@ -2617,7 +2687,8 @@
             "zwave_info": "Z-Wave Info",
             "node_status": "Node Status",
             "node_ready": "Node Ready",
-            "device_config": "Configure Device"
+            "device_config": "Configure Device",
+            "reinterview_device": "Re-interview Device"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
@@ -2629,7 +2700,8 @@
             "error_device_not_found": "Device not found",
             "set_param_accepted": "The parameter has been updated.",
             "set_param_queued": "The parameter change has been queued, and will be updated when the device wakes up.",
-            "set_param_error": "An error occurred."
+            "set_param_error": "An error occurred.",
+            "parameter": "Parameter"
           },
           "node_status": {
             "unknown": "Unknown",
@@ -3609,6 +3681,20 @@
           "question_trust": "Do you trust the external panel {name} at {link}?",
           "complete_access": "It will have access to all data in Home Assistant.",
           "hide_message": "Check docs for the panel_custom component to hide this message"
+        }
+      },
+      "energy": {
+        "setup": {
+          "header": "Setup your energy dashboard",
+          "slogan": "The world is heating up. Together we can fix that.",
+          "next": "Next",
+          "back": "Back",
+          "done": "Show me my energy dashboard!"
+        },
+        "charts": {
+          "stat_house_energy_meter": "Total energy consumption",
+          "solar": "Solar",
+          "by_device": "Consumption by device"
         }
       }
     }

@@ -7,6 +7,7 @@ import {
   array,
   literal,
   enums,
+  type,
 } from "superstruct";
 
 const actionConfigStructUser = object({
@@ -47,6 +48,10 @@ const actionConfigStructNavigate = object({
   confirmation: optional(actionConfigStructConfirmation),
 });
 
+const actionConfigStructCustom = type({
+  action: literal("fire-dom-event"),
+});
+
 export const actionConfigStructType = object({
   action: enums([
     "none",
@@ -64,4 +69,5 @@ export const actionConfigStruct = union([
   actionConfigStructUrl,
   actionConfigStructNavigate,
   actionConfigStructService,
+  actionConfigStructCustom,
 ]);

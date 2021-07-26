@@ -30,7 +30,8 @@ const includeDomains = ["counter", "input_number", "number", "sensor"];
 @customElement("hui-gauge-card-editor")
 export class HuiGaugeCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: GaugeCardConfig;

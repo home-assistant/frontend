@@ -111,14 +111,8 @@ export class HaTracePathDetails extends LitElement {
 
       parts.push(
         data.map((trace, idx) => {
-          const {
-            path,
-            timestamp,
-            result,
-            error,
-            changed_variables,
-            ...rest
-          } = trace as any;
+          const { path, timestamp, result, error, changed_variables, ...rest } =
+            trace as any;
 
           return html`
             ${curPath === this.selected.path

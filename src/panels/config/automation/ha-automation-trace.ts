@@ -433,8 +433,8 @@ export class HaAutomationTrace extends LitElement {
 
   private _timelinePathPicked(ev) {
     const path = ev.detail.value;
-    const nodes = this.shadowRoot!.querySelector("hat-script-graph")!
-      .trackedNodes;
+    const nodes =
+      this.shadowRoot!.querySelector("hat-script-graph")!.trackedNodes;
     if (nodes[path]) {
       this._selected = nodes[path];
     }

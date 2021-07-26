@@ -145,9 +145,9 @@ export class HuiActionEditor extends LitElement {
     if (value === "default") {
       fireEvent(this, "value-changed", { value: undefined });
       if (this.config?.action) {
-        (this.shadowRoot!.querySelector(
-          "paper-listbox"
-        ) as PaperListboxElement).select(this.config.action);
+        (
+          this.shadowRoot!.querySelector("paper-listbox") as PaperListboxElement
+        ).select(this.config.action);
       }
       return;
     }

@@ -45,7 +45,8 @@ const cardConfigStruct = object({
 @customElement("hui-glance-card-editor")
 export class HuiGlanceCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: GlanceCardConfig;

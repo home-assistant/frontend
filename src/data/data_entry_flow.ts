@@ -1,3 +1,4 @@
+import { Connection } from "home-assistant-js-websocket";
 import { HaFormSchema } from "../components/ha-form/ha-form";
 import { ConfigEntry } from "./config_entries";
 
@@ -74,3 +75,12 @@ export type DataEntryFlowStep =
   | DataEntryFlowStepCreateEntry
   | DataEntryFlowStepAbort
   | DataEntryFlowStepProgress;
+
+export const subscribeDataEntryFlowProgressed = (
+  conn: Connection,
+  callback: (ev: DataEntryFlowProgressedEvent) => void
+) =>
+  conn.subscribeEvents<DataEntryFlowProgressedEvent>(
+    callback,
+    "data_entry_flow_progressed"
+  );

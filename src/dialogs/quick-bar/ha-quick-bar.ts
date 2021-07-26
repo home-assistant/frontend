@@ -1,4 +1,4 @@
-import { Layout1d, scroll } from "../../resources/lit-virtualizer";
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
 import type { List } from "@material/mwc-list/mwc-list";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";

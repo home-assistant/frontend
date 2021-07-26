@@ -45,7 +45,8 @@ const actions = [
 @customElement("hui-button-card-editor")
 export class HuiButtonCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: ButtonCardConfig;

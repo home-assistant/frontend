@@ -1,7 +1,7 @@
-// For localize
 import "core-js";
 import "regenerator-runtime/runtime";
 import "lit/polyfill-support";
+// For localize
 import "@formatjs/intl-getcanonicallocales/polyfill";
 // To use comlink under ES5
 import "proxy-polyfill";
@@ -9,7 +9,7 @@ import "unfetch/polyfill";
 
 // Source: https://github.com/jserz/js_piece/blob/master/DOM/ParentNode/append()/append().md
 (function (arr) {
-  arr.forEach(function (item) {
+  arr.forEach((item) => {
     if (Object.prototype.hasOwnProperty.call(item, "append")) {
       return;
     }
@@ -20,7 +20,7 @@ import "unfetch/polyfill";
       value: function append(...argArr) {
         const docFrag = document.createDocumentFragment();
 
-        argArr.forEach(function (argItem) {
+        argArr.forEach((argItem) => {
           const isNode = argItem instanceof Node;
           docFrag.appendChild(
             isNode ? argItem : document.createTextNode(String(argItem))

@@ -90,7 +90,13 @@ gulp.task("webpack-watch-app", () => {
     process.env.ES5
       ? bothBuilds(createAppConfig, { isProdBuild: false })
       : createAppConfig({ isProdBuild: false, latestBuild: true })
-  ).watch({ ignored: /build-translations/, poll: isWsl }, doneHandler());
+  ).watch(
+    {
+      ignored: /build-translations/,
+      poll: isWsl,
+    },
+    doneHandler()
+  );
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
     gulp.series("build-translations", "copy-translations-app")

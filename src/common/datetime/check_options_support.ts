@@ -26,6 +26,9 @@ function checkToLocaleStringSupportsOptions() {
   return false;
 }
 
-export const toLocaleDateStringSupportsOptions = checkToLocaleDateStringSupportsOptions();
-export const toLocaleTimeStringSupportsOptions = checkToLocaleTimeStringSupportsOptions();
-export const toLocaleStringSupportsOptions = checkToLocaleStringSupportsOptions();
+export const toLocaleDateStringSupportsOptions =
+  checkToLocaleDateStringSupportsOptions();
+export const toLocaleTimeStringSupportsOptions =
+  checkToLocaleTimeStringSupportsOptions();
+export const toLocaleStringSupportsOptions =
+  checkToLocaleStringSupportsOptions();

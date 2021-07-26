@@ -8,9 +8,15 @@ hass_frontend/*
 dist
 
 # yarn
-.yarn
-yarn-error.log
+.yarn/*
+!.yarn/patches
+!.yarn/releases
+!.yarn/plugins
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
 node_modules/*
+yarn-error.log
 npm-debug.log
 
 # Python stuff

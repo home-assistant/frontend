@@ -229,10 +229,9 @@ class LovelacePanel extends LitElement {
     }
     if (!resourcesLoaded) {
       resourcesLoaded = true;
-      (
-        llWindow.llConfProm || fetchResources(this.hass!.connection)
-      ).then((resources) =>
-        loadLovelaceResources(resources, this.hass!.auth.data.hassUrl)
+      (llWindow.llConfProm || fetchResources(this.hass!.connection)).then(
+        (resources) =>
+          loadLovelaceResources(resources, this.hass!.auth.data.hassUrl)
       );
     }
 

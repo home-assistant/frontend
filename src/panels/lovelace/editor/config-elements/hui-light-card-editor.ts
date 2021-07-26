@@ -31,7 +31,8 @@ const includeDomains = ["light"];
 @customElement("hui-light-card-editor")
 export class HuiLightCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: LightCardConfig;

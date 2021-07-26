@@ -120,6 +120,12 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-text-primary-color: 255, 255, 255;
       --rgb-card-background-color: 255, 255, 255;
 
+      /* Vaadin typography */
+      --material-h6-font-size: 1.25rem;
+      --material-small-font-size: 0.875rem;
+      --material-caption-font-size: 0.75rem;
+      --material-button-font-size: 0.875rem;
+
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)
         .join("")}

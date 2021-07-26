@@ -24,7 +24,8 @@ const cardConfigStruct = object({
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: HistoryGraphCardConfig;

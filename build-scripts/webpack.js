@@ -49,12 +49,16 @@ const createWebpackConfig = ({
           test: /\.m?js$|\.ts$/,
           use: {
             loader: "babel-loader",
-            options: bundle.babelOptions({ latestBuild }),
+            options: {
+              ...bundle.babelOptions({ latestBuild }),
+              cacheDirectory: !isProdBuild,
+              cacheCompression: false,
+            },
           },
         },
         {
           test: /\.css$/,
-          use: "raw-loader",
+          type: "asset/source",
         },
       ],
     },
@@ -66,6 +70,8 @@ const createWebpackConfig = ({
           terserOptions: bundle.terserOptions(latestBuild),
         }),
       ],
+      moduleIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
+      chunkIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
     },
     plugins: [
       new WebpackManifestPlugin({
@@ -112,16 +118,6 @@ const createWebpackConfig = ({
         new RegExp(bundle.emptyPackages({ latestBuild }).join("|")),
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
-      // We need to change the import of the polyfill for EventTarget, so we replace the polyfill file with our customized one
-      new webpack.NormalModuleReplacementPlugin(
-        new RegExp(
-          path.resolve(
-            paths.polymer_dir,
-            "src/resources/lit-virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
-          )
-        ),
-        path.resolve(paths.polymer_dir, "src/resources/EventTarget-ponyfill.js")
-      ),
       !isProdBuild && new LogStartCompilePlugin(),
     ].filter(Boolean),
     resolve: {
@@ -134,15 +130,13 @@ const createWebpackConfig = ({
     },
     output: {
       filename: ({ chunk }) => {
-        if (!isProdBuild || dontHash.has(chunk.name)) {
+        if (!isProdBuild || isStatsBuild || dontHash.has(chunk.name)) {
           return `${chunk.name}.js`;
         }
         return `${chunk.name}.${chunk.hash.substr(0, 8)}.js`;
       },
       chunkFilename:
-        isProdBuild && !isStatsBuild
-          ? "chunk.[chunkhash].js"
-          : "[name].chunk.js",
+        isProdBuild && !isStatsBuild ? "[chunkhash:8].js" : "[id].chunk.js",
       path: outputPath,
       publicPath,
       // To silence warning in worker plugin
