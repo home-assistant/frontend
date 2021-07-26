@@ -205,7 +205,7 @@ class InsteonConfigDeviceALDBPage extends LitElement {
     const record: ALDBRecord = {
       mem_addr: 0,
       in_use: true,
-      mode: "C",
+      is_controller: true,
       highwater: false,
       group: 0,
       target: "",
