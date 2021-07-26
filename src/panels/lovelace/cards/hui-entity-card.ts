@@ -7,13 +7,17 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeActiveState } from "../../../common/entity/compute_active_state";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/string/format_number";
+import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -106,6 +110,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const domain = computeStateDomain(stateObj);
     const showUnit = this._config.attribute
       ? this._config.attribute in stateObj.attributes
       : !UNAVAILABLE_STATES.includes(stateObj.state);
@@ -119,6 +124,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           <div class="icon">
             <ha-icon
               .icon=${this._config.icon || stateIcon(stateObj)}
+              data-domain=${ifDefined(
+                this._config.state_color ||
+                  (domain === "light" && this._config.state_color !== false)
+                  ? domain
+                  : undefined
+              )}
+              data-state=${stateObj ? computeActiveState(stateObj) : ""}
             ></ha-icon>
           </div>
         </div>
@@ -238,6 +250,8 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         font-size: 18px;
         color: var(--secondary-text-color);
       }
+
+      ${iconColorCSS}
     `;
   }
 }
