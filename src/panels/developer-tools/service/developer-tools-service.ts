@@ -306,7 +306,6 @@ class HaPanelDevService extends LitElement {
     }
     try {
       await callExecuteScript(this.hass, [this._serviceData]);
-      button.actionSuccess();
     } catch (err) {
       const [domain, service] = this._serviceData.service.split(".", 2);
       if (
@@ -325,7 +324,9 @@ class HaPanelDevService extends LitElement {
             this._serviceData.service
           ) + ` ${err.message}`,
       });
+      return;
     }
+    button.actionSuccess();
   }
 
   private _toggleYaml() {
