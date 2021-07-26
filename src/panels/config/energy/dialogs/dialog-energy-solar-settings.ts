@@ -63,7 +63,6 @@ export class DialogEnergySolarSettings
     if (!this._params || !this._source) {
       return html``;
     }
-    // .statisticIds=${this._statisticIds}
 
     return html`
       <ha-dialog

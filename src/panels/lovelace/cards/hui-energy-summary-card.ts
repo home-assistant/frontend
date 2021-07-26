@@ -8,7 +8,7 @@ import {
   SolarSourceTypeEnergyPreference,
 } from "../../../data/energy";
 import {
-  calculateStatisticsSumGrowth,
+  calculateStatisticSumGrowth,
   fetchStatistics,
   Statistics,
 } from "../../../data/history";
@@ -28,7 +28,7 @@ const renderSumStatHelper = (
     if (!(stat in data)) {
       return "stat missing";
     }
-    const statGrowth = calculateStatisticsSumGrowth(data[stat]);
+    const statGrowth = calculateStatisticSumGrowth(data[stat]);
 
     if (statGrowth === null) {
       return "incomplete data";
@@ -237,7 +237,7 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
       if (!flowTo.stat_energy_to || !(flowTo.stat_energy_to in this._data!)) {
         continue;
       }
-      const flowReturned = calculateStatisticsSumGrowth(
+      const flowReturned = calculateStatisticSumGrowth(
         this._data![flowTo.stat_energy_to]
       );
       if (flowReturned === null) {
@@ -250,7 +250,7 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
       return "sun stat missing";
     }
 
-    const production = calculateStatisticsSumGrowth(
+    const production = calculateStatisticSumGrowth(
       this._data![solarSource.stat_energy_from]
     );
 

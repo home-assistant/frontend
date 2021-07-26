@@ -1,7 +1,7 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { EnergyPreferences } from "../../../data/energy";
+import { EnergyPreferences, saveEnergyPreferences } from "../../../data/energy";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, Lovelace } from "../../lovelace/types";
@@ -9,6 +9,8 @@ import "@material/mwc-button/mwc-button";
 import "../../config/energy/components/ha-energy-grid-settings";
 import "../../config/energy/components/ha-energy-solar-settings";
 import "../../config/energy/components/ha-energy-device-settings";
+import { haStyle } from "../../../resources/styles";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("energy-setup-wizard-card")
 export class EnergySetupWizard extends LitElement implements LovelaceCard {
@@ -34,16 +36,16 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
     }
   }
 
+  protected firstUpdated() {
+    this.hass.loadFragmentTranslation("config");
+  }
+
   protected render(): TemplateResult {
     return html`
-      <h1>Welcome to your energy dashboard!</h1>
-      <p>
-        Here we need some flashy text to tell people about the amazing things
-        this dashboard will do for them and what insight it will give!
-      </p>
-      <p>Plus maybe some cool graphics so it doesn't look so boring...</p>
       <h2>${this.hass.localize("ui.panel.energy.setup.header")}</h2>
+      <h3>${this.hass.localize("ui.panel.energy.setup.slogan")}</h3>
 
+      <p>Step ${this._step + 1} of 3</p>
       ${this._step === 0
         ? html` <ha-energy-grid-settings
             .hass=${this.hass}
@@ -61,18 +63,20 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
             .preferences=${this._preferences}
             @value-changed=${this._prefsChanged}
           ></ha-energy-device-settings>`}
-      ${this._step > 0
-        ? html`<mwc-button @click=${this._back}
-            >${this.hass.localize("ui.panel.energy.setup.back")}</mwc-button
-          >`
-        : ""}
-      ${this._step < 2
-        ? html`<mwc-button outlined @click=${this._next}
-            >${this.hass.localize("ui.panel.energy.setup.next")}</mwc-button
-          >`
-        : html`<mwc-button raised @click=${this._setupDone}>
-            ${this.hass.localize("ui.panel.energy.setup.done")}
-          </mwc-button>`}
+      <div class="buttons">
+        ${this._step > 0
+          ? html`<mwc-button @click=${this._back}
+              >${this.hass.localize("ui.panel.energy.setup.back")}</mwc-button
+            >`
+          : html`<div></div>`}
+        ${this._step < 2
+          ? html`<mwc-button outlined @click=${this._next}
+              >${this.hass.localize("ui.panel.energy.setup.next")}</mwc-button
+            >`
+          : html`<mwc-button raised @click=${this._setupDone}>
+              ${this.hass.localize("ui.panel.energy.setup.done")}
+            </mwc-button>`}
+      </div>
     `;
   }
 
@@ -94,12 +98,24 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
     this._step++;
   }
 
-  private _setupDone() {
+  private async _setupDone() {
+    if (!this._preferences) {
+      return;
+    }
+    try {
+      this._preferences = await saveEnergyPreferences(
+        this.hass,
+        this._preferences
+      );
+    } catch (err) {
+      showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
+    }
     fireEvent(this, "reload-energy-panel");
   }
 
   static get styles(): CSSResultGroup {
     return [
+      haStyle,
       css`
         :host {
           display: block;
@@ -109,6 +125,10 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
         }
         mwc-button {
           margin-top: 8px;
+        }
+        .buttons {
+          display: flex;
+          justify-content: space-between;
         }
       `,
     ];

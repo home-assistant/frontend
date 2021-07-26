@@ -299,7 +299,7 @@ export const fetchStatistics = (
     statistic_ids,
   });
 
-export const calculateStatisticsSumGrowth = (
+export const calculateStatisticSumGrowth = (
   values: StatisticValue[]
 ): number | null => {
   if (values.length === 0) {
@@ -317,6 +317,28 @@ export const calculateStatisticsSumGrowth = (
     return endSum;
   }
   return endSum - startSum;
+};
+
+export const calculateStatisticsSumGrowth = (
+  data: Statistics,
+  stats: string[]
+): number | undefined => {
+  let totalGrowth = 0;
+
+  for (const stat of stats) {
+    if (!(stat in data)) {
+      return undefined;
+    }
+    const statGrowth = calculateStatisticSumGrowth(data[stat]);
+
+    if (statGrowth === null) {
+      return undefined;
+    }
+
+    totalGrowth += statGrowth;
+  }
+
+  return totalGrowth;
 };
 
 export const statisticsHaveType = (

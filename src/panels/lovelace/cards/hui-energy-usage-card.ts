@@ -15,28 +15,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { EnergySummaryCardConfig } from "./types";
 import "../../../components/ha-card";
-
-const renderSumStatHelper = (
-  data: Statistics,
-  stats: string[]
-): number | undefined => {
-  let totalGrowth = 0;
-
-  for (const stat of stats) {
-    if (!(stat in data)) {
-      return undefined;
-    }
-    const statGrowth = calculateStatisticsSumGrowth(data[stat]);
-
-    if (statGrowth === null) {
-      return undefined;
-    }
-
-    totalGrowth += statGrowth;
-  }
-
-  return Math.round(totalGrowth * 100) / 100;
-};
+import { round } from "../../../common/number/round";
 
 @customElement("hui-energy-usage-card")
 class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
@@ -77,7 +56,7 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
     }
 
     if (!this._stats) {
-      return html` Loading… `;
+      return html`Loading…`;
     }
 
     const prefs = this._config!.prefs;
@@ -89,7 +68,7 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
     const hasSolarProduction = types.solar !== undefined;
     const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
 
-    const totalGridConsumption = renderSumStatHelper(
+    const totalGridConsumption = calculateStatisticsSumGrowth(
       this._stats,
       types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
     );
@@ -101,7 +80,7 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
     let totalSolarProduction: number | undefined;
 
     if (hasSolarProduction) {
-      totalSolarProduction = renderSumStatHelper(
+      totalSolarProduction = calculateStatisticsSumGrowth(
         this._stats,
         types.solar!.map((source) => source.stat_energy_from)
       );
@@ -114,7 +93,7 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
     let productionReturnedToGrid: number | undefined;
 
     if (hasReturnToGrid) {
-      productionReturnedToGrid = renderSumStatHelper(
+      productionReturnedToGrid = calculateStatisticsSumGrowth(
         this._stats,
         types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
       );
@@ -147,8 +126,7 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
 
     if (co2percentage !== undefined) {
       if (relativeGridFlow > 0) {
-        lowCarbonConsumption =
-          Math.round(relativeGridFlow * (co2percentage / 100) * 100) / 100;
+        lowCarbonConsumption = round(relativeGridFlow * (co2percentage / 100));
       } else {
         lowCarbonConsumption = 0;
       }
@@ -182,7 +160,7 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
                     <span class="label">Low-carbon</span>
                     <div class="circle low-carbon">
                       <ha-svg-icon .path="${mdiLeaf}"></ha-svg-icon>
-                      ${co2percentage}% / ${lowCarbonConsumption} kWh
+                      ${co2percentage}% / ${round(lowCarbonConsumption!)} kWh
                     </div>
                   </div>
                 `}
@@ -190,7 +168,7 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
               <span class="label">Solar</span>
               <div class="circle solar">
                 <ha-svg-icon .path="${mdiSolarPower}"></ha-svg-icon>
-                ${totalSolarProduction} kWh
+                ${round(totalSolarProduction || 0)} kWh
               </div>
             </div>
           </div>
@@ -198,14 +176,13 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
             <div class="circle-container">
               <div class="circle grid">
                 <ha-svg-icon .path="${mdiTransmissionTower}"></ha-svg-icon>
-                ${totalGridConsumption - (productionReturnedToGrid || 0)} kWh
+                ${round(totalGridConsumption - (productionReturnedToGrid || 0))}
+                kWh
                 <ul>
                   <li>
-                    Grid high carbon: ${(gridPctHighCarbon * 100).toFixed(1)}%
+                    Grid high carbon: ${round(gridPctHighCarbon * 100, 1)}%
                   </li>
-                  <li>
-                    Grid low carbon: ${(gridPctLowCarbon * 100).toFixed(1)}%
-                  </li>
+                  <li>Grid low carbon: ${round(gridPctLowCarbon * 100, 1)}%</li>
                 </ul>
               </div>
               <span class="label">Grid</span>
@@ -213,16 +190,15 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
             <div class="circle-container home">
               <div class="circle home">
                 <ha-svg-icon .path="${mdiHome}"></ha-svg-icon>
-                ${Math.round(totalConsumption * 100) / 100} kWh
+                ${round(totalConsumption)} kWh
                 <ul>
                   <li>
-                    Grid high carbon:
-                    ${(homePctGridHighCarbon * 100).toFixed(1)}%
+                    Grid high carbon: ${round(homePctGridHighCarbon * 100)}%
                   </li>
                   <li>
-                    Grid low carbon: ${(homePctGridLowCarbon * 100).toFixed(1)}%
+                    Grid low carbon: ${round(homePctGridLowCarbon * 100)}%
                   </li>
-                  <li>Solar: ${(homePctSolar * 100).toFixed(1)}%</li>
+                  <li>Solar: ${round(homePctSolar * 100)}%</li>
                 </ul>
               </div>
               <span class="label">Home</span>

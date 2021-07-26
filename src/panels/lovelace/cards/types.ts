@@ -110,6 +110,16 @@ export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
   prefs: EnergyPreferences;
 }
 
+export interface EnergySolarGaugeCardConfig extends LovelaceCardConfig {
+  type: "energy-solar-consumed-gauge";
+  prefs: EnergyPreferences;
+}
+
+export interface EnergyCarbonGaugeCardConfig extends LovelaceCardConfig {
+  type: "energy-carbon-consumed-gauge";
+  prefs: EnergyPreferences;
+}
+
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;

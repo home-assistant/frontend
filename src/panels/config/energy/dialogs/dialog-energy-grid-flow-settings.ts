@@ -35,7 +35,7 @@ export class DialogEnergyGridFlowSettings
     | FlowFromGridSourceEnergyPreference
     | FlowToGridSourceEnergyPreference;
 
-  @state() private _costs?: "no-costs" | "number" | "entity";
+  @state() private _costs?: "no-costs" | "number" | "entity" | "statistic";
 
   @state() private _error?: string;
 
@@ -53,6 +53,10 @@ export class DialogEnergyGridFlowSettings
       ? "entity"
       : this._source.number_energy_price
       ? "number"
+      : this._source[
+          params.direction === "from" ? "stat_cost" : "stat_compensation"
+        ]
+      ? "statistic"
       : "no-costs";
   }
 
@@ -67,7 +71,6 @@ export class DialogEnergyGridFlowSettings
     if (!this._params || !this._source) {
       return html``;
     }
-    // .statisticIds=${this._statisticIds}
 
     return html`
       <ha-dialog
@@ -77,14 +80,15 @@ export class DialogEnergyGridFlowSettings
             style="--mdc-icon-size: 32px;"
           ></ha-svg-icon
           >${this.hass.localize(
-            "ui.panel.config.energy.dialogs.grid.from.header"
+            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.header`
           )}`}
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
         <p>
-          Grid consumption is the energy that flows from the energy grid to your
-          home. <a href="#">Learn more</a>
+          ${this.hass.localize(
+            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.paragraph`
+          )}
         </p>
 
         <ha-statistic-picker
@@ -95,17 +99,24 @@ export class DialogEnergyGridFlowSettings
               ? "stat_energy_from"
               : "stat_energy_to"
           ]}
-          .label=${`Consumed Energy (kWh)`}
+          .label=${this.hass.localize(
+            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.energy_stat`
+          )}
           entities-only
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
 
         <p>
-          Select how Home Assistant should keep track of the costs of the
-          consumed energy.
+          ${this.hass.localize(
+            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_para`
+          )}
         </p>
 
-        <ha-formfield label="Do not track costs">
+        <ha-formfield
+          .label=${this.hass.localize(
+            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.no_cost`
+          )}
+        >
           <ha-radio
             value="no-costs"
             name="costs"
@@ -113,30 +124,42 @@ export class DialogEnergyGridFlowSettings
             @change=${this._handleCostChanged}
           ></ha-radio>
         </ha-formfield>
-        <ha-formfield label="Calculate costs">
+        <ha-formfield
+          .label=${this.hass.localize(
+            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_stat`
+          )}
+        >
           <ha-radio
-            value="number"
+            value="statistic"
             name="costs"
-            .checked=${this._costs === "number"}
+            .checked=${this._costs === "statistic"}
             @change=${this._handleCostChanged}
           ></ha-radio>
         </ha-formfield>
-        ${this._costs === "number"
-          ? html`<paper-input
-              no-label-float
+        ${this._costs === "statistic"
+          ? html`<ha-statistic-picker
               class="price-options"
-              step=".01"
-              type="number"
-              .value=${this._source.number_energy_price}
-              @value-changed=${this._numberPriceChanged}
-              ><span slot="suffix">€/kWh</span></paper-input
-            >`
+              .hass=${this.hass}
+              statistic-types="sum"
+              .value=${this._source[
+                this._params!.direction === "from"
+                  ? "stat_cost"
+                  : "stat_compensation"
+              ]}
+              .label=${this.hass.localize(
+                `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_stat_input`
+              )}
+              @value-changed=${this._priceStatChanged}
+            ></ha-statistic-picker>`
           : ""}
-        <ha-formfield label="Use entity">
+        <ha-formfield
+          .label=${this.hass.localize(
+            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_entity`
+          )}
+        >
           <ha-radio
             value="entity"
             name="costs"
-            label="Energy tariff"
             .checked=${this._costs === "entity"}
             @change=${this._handleCostChanged}
           ></ha-radio>
@@ -147,9 +170,43 @@ export class DialogEnergyGridFlowSettings
               .hass=${this.hass}
               include-domains='["sensor", "input_number"]'
               .value=${this._source.entity_energy_price}
-              .label=${`Total cost or current price entity`}
+              .label=${this.hass.localize(
+                `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_entity_input`
+              )}
               @value-changed=${this._priceEntityChanged}
             ></ha-entity-picker>`
+          : ""}
+        <ha-formfield
+          .label=${this.hass.localize(
+            `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_number`
+          )}
+        >
+          <ha-radio
+            value="number"
+            name="costs"
+            .checked=${this._costs === "number"}
+            @change=${this._handleCostChanged}
+          ></ha-radio>
+        </ha-formfield>
+        ${this._costs === "number"
+          ? html`<paper-input
+              .label=${this.hass.localize(
+                `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_number_input`
+              )}
+              no-label-float
+              class="price-options"
+              step=".01"
+              type="number"
+              .value=${this._source.number_energy_price}
+              @value-changed=${this._numberPriceChanged}
+            >
+              <span slot="suffix"
+                >${this.hass.localize(
+                  `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_number_suffix`,
+                  { currency: this._params.currency }
+                )}</span
+              >
+            </paper-input>`
           : ""}
 
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
@@ -167,14 +224,28 @@ export class DialogEnergyGridFlowSettings
     this._costs = input.value as any;
   }
 
+  private set _costStat(value: null | string) {
+    this._source![
+      this._params!.direction === "from" ? "stat_cost" : "stat_compensation"
+    ] = value;
+  }
+
   private _numberPriceChanged(ev: CustomEvent) {
-    this._source!.entity_energy_price = null;
     this._source!.number_energy_price = Number(ev.detail.value);
+    this._source!.entity_energy_price = null;
+    this._costStat = null;
+  }
+
+  private _priceStatChanged(ev: CustomEvent) {
+    this._costStat = ev.detail.value;
+    this._source!.entity_energy_price = null;
+    this._source!.number_energy_price = null;
   }
 
   private _priceEntityChanged(ev: CustomEvent) {
     this._source!.entity_energy_price = ev.detail.value;
     this._source!.number_energy_price = null;
+    this._costStat = null;
   }
 
   private _statisticChanged(ev: CustomEvent<{ value: string }>) {
@@ -193,6 +264,7 @@ export class DialogEnergyGridFlowSettings
       if (this._costs === "no-costs") {
         this._source!.entity_energy_price = null;
         this._source!.number_energy_price = null;
+        this._costStat = null;
       }
       await this._params!.saveCallback(this._source!);
       this.closeDialog();

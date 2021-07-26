@@ -10,6 +10,7 @@ export interface EnergySettingsGridFlowDialogParams {
   source?:
     | FlowFromGridSourceEnergyPreference
     | FlowToGridSourceEnergyPreference;
+  currency: string;
   direction: "from" | "to";
   saveCallback: (
     source:
@@ -20,11 +21,13 @@ export interface EnergySettingsGridFlowDialogParams {
 
 export interface EnergySettingsGridFlowFromDialogParams {
   source?: FlowFromGridSourceEnergyPreference;
+  currency: string;
   saveCallback: (source: FlowFromGridSourceEnergyPreference) => Promise<void>;
 }
 
 export interface EnergySettingsGridFlowToDialogParams {
   source?: FlowToGridSourceEnergyPreference;
+  currency: string;
   saveCallback: (source: FlowToGridSourceEnergyPreference) => Promise<void>;
 }
 

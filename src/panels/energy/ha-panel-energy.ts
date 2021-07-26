@@ -13,32 +13,22 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
 import "../../layouts/ha-app-layout";
-import { mdiCog, mdiLightningBolt } from "@mdi/js";
+import { mdiCog } from "@mdi/js";
 import { haStyle } from "../../resources/styles";
 import "../lovelace/views/hui-view";
 import { HomeAssistant } from "../../types";
 import { Lovelace } from "../lovelace/types";
+import { LovelaceConfig } from "../../data/lovelace";
 
-const VIEW_CONFIGS = [
-  {
-    views: [
-      {
-        strategy: {
-          type: "energy",
-        },
+const LOVELACE_CONFIG: LovelaceConfig = {
+  views: [
+    {
+      strategy: {
+        type: "energy",
       },
-    ],
-  },
-  {
-    views: [
-      {
-        strategy: {
-          type: "energy-details",
-        },
-      },
-    ],
-  },
-];
+    },
+  ],
+};
 
 @customElement("ha-panel-energy")
 class PanelEnergy extends LitElement {
@@ -46,11 +36,14 @@ class PanelEnergy extends LitElement {
 
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
 
-  @state() private _curTabIndex = 0;
+  @state() private _viewIndex = 0;
 
   @state() private _lovelace?: Lovelace;
 
   public willUpdate(changedProps: PropertyValues) {
+    if (!this.hasUpdated) {
+      this.hass.loadFragmentTranslation("lovelace");
+    }
     if (!changedProps.has("hass")) {
       return;
     }
@@ -70,55 +63,18 @@ class PanelEnergy extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.energy")}</div>
-            <mwc-tab-bar
-              .activeIndex=${this._curTabIndex}
-              @MDCTabBar:activated=${this._handleTabActivated}
-            >
-              <mwc-tab
-                .hasImageIcon=${this.narrow}
-                .label=${this.narrow ? undefined : "Day"}
-              >
-                ${this.narrow
-                  ? html`<ha-svg-icon
-                      slot="icon"
-                      .path=${mdiLightningBolt}
-                    ></ha-svg-icon>`
-                  : ""}
-              </mwc-tab>
-              <mwc-tab
-                .hasImageIcon=${this.narrow}
-                .label=${this.narrow ? undefined : "Week"}
-              >
-                ${this.narrow
-                  ? html`<ha-svg-icon
-                      slot="icon"
-                      .path=${mdiLightningBolt}
-                    ></ha-svg-icon>`
-                  : ""}
-              </mwc-tab>
-              <mwc-tab
-                .hasImageIcon=${this.narrow}
-                .label=${this.narrow ? undefined : "Month"}
-              >
-                ${this.narrow
-                  ? html`<ha-svg-icon
-                      slot="icon"
-                      .path=${mdiLightningBolt}
-                    ></ha-svg-icon>`
-                  : ""}
-              </mwc-tab>
-            </mwc-tab-bar>
             <a href="/config/energy?historyBack=1">
               <mwc-icon-button>
-                <ha-svg-icon .path=${mdiCog}></ha-svg-icon> </mwc-icon-button
-            ></a>
+                <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
+              </mwc-icon-button>
+            </a>
           </app-toolbar>
         </app-header>
         <hui-view
           .hass=${this.hass}
           .narrow=${this.narrow}
           .lovelace=${this._lovelace}
-          .index=${0}
+          .index=${this._viewIndex}
           @reload-energy-panel=${this._reloadView}
         ></hui-view>
       </ha-app-layout>
@@ -127,8 +83,8 @@ class PanelEnergy extends LitElement {
 
   private _setLovelace() {
     this._lovelace = {
-      config: VIEW_CONFIGS[this._curTabIndex],
-      rawConfig: VIEW_CONFIGS[this._curTabIndex],
+      config: LOVELACE_CONFIG,
+      rawConfig: LOVELACE_CONFIG,
       editMode: false,
       urlPath: "energy",
       mode: "generated",
@@ -138,14 +94,6 @@ class PanelEnergy extends LitElement {
       deleteConfig: async () => undefined,
       setEditMode: () => undefined,
     };
-  }
-
-  private async _handleTabActivated(ev: CustomEvent): Promise<void> {
-    if (this._curTabIndex === ev.detail.index) {
-      return;
-    }
-    this._curTabIndex = ev.detail.index;
-    this._setLovelace();
   }
 
   private _reloadView() {
@@ -161,16 +109,6 @@ class PanelEnergy extends LitElement {
     return [
       haStyle,
       css`
-        :host([narrow]) mwc-tab {
-          width: 48px;
-          overflow: hidden;
-        }
-        mwc-tab {
-          --mdc-theme-primary: var(--text-primary-color);
-          --mdc-tab-text-label-color-default: var(--light-primary-color);
-          --mdc-tab-color-default: var(--light-primary-color);
-          --mdc-tab-height: var(--header-height);
-        }
         mwc-icon-button {
           color: var(--text-primary-color);
         }

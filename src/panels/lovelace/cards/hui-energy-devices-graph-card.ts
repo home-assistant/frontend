@@ -19,7 +19,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/chart/ha-chart-base";
 import "../../../components/ha-card";
 import {
-  calculateStatisticsSumGrowth,
+  calculateStatisticSumGrowth,
   fetchStatistics,
   Statistics,
 } from "../../../data/history";
@@ -215,7 +215,7 @@ export class HuiEnergyDevicesGraphCard
       borderColor.push(color);
       backgroundColor.push(color + "7F");
 
-      const value = calculateStatisticsSumGrowth(statistics);
+      const value = calculateStatisticSumGrowth(statistics);
       data.push({
         // @ts-expect-error
         y: label,

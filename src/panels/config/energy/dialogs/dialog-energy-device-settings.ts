@@ -46,7 +46,6 @@ export class DialogEnergyDeviceSettings
     if (!this._params) {
       return html``;
     }
-    // .statisticIds=${this._statisticIds}
 
     return html`
       <ha-dialog

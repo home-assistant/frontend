@@ -88,8 +88,6 @@ export interface EnergyPreferences {
   currency: string;
   energy_sources: EnergySource[];
   device_consumption: DeviceConsumptionEnergyPreference[];
-  // home_consumption: HomeConsumptionEnergyPreference[];
-  // production: ProductionEnergyPreference[];
 }
 
 export interface EnergyInfo {

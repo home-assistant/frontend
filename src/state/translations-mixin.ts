@@ -276,7 +276,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       panelUrl: string
     ) {
       if (!panelUrl) {
-        return;
+        return undefined;
       }
 
       const panelComponent = this.hass?.panels?.[panelUrl]?.component_name;
@@ -289,19 +289,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         : undefined;
 
       if (!fragment) {
-        return;
-      }
-
-      if (fragment === "energy") {
-        this._loadFragmentTranslations(language, "lovelace");
+        return undefined;
       }
 
       if (this.__loadedFragmetTranslations.has(fragment)) {
-        return;
+        return this.hass!.localize;
       }
       this.__loadedFragmetTranslations.add(fragment);
       const result = await getTranslation(fragment, language);
       await this._updateResources(result.language, result.data);
+      return this.hass!.localize;
     }
 
     private async _loadCoreTranslations(language: string) {
