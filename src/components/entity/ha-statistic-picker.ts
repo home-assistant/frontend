@@ -27,6 +27,8 @@ import type { HaComboBox } from "../ha-combo-box";
 import "../ha-svg-icon";
 import "./state-badge";
 
+// vaadin-combo-box-item
+
 const rowRenderer: ComboBoxLitRenderer<{
   id: string;
   name: string;
@@ -34,22 +36,21 @@ const rowRenderer: ComboBoxLitRenderer<{
 }> = (item) => html`<style>
     paper-icon-item {
       padding: 0;
-      margin: -10px;
+      margin: -8px;
     }
     #content {
       display: flex;
       align-items: center;
     }
-    :host([selected]) paper-icon-item {
-      margin-left: 0;
-    }
     ha-svg-icon {
       padding-left: 2px;
-      margin-right: -2px;
       color: var(--secondary-text-color);
     }
     :host(:not([selected])) ha-svg-icon {
       display: none;
+    }
+    :host([selected]) paper-icon-item {
+      margin-left: 0;
     }
   </style>
   <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>

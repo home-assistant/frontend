@@ -1,3 +1,4 @@
+import { mdiCheck } from "@mdi/js";
 import { html, LitElement } from "lit";
 import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { property, state } from "lit/decorators";
@@ -12,10 +13,30 @@ const rowRenderer: ComboBoxLitRenderer<{ service: string; name: string }> = (
   item
 ) => html`<style>
     paper-item {
-      margin: -10px 0;
       padding: 0;
+      margin: -10px;
+      margin-left: 0px;
+    }
+    #content {
+      display: flex;
+      align-items: center;
+    }
+    :host([selected]) paper-item {
+      margin-left: 10px;
+    }
+    ha-svg-icon {
+      padding-left: 2px;
+      margin-right: -2px;
+      color: var(--secondary-text-color);
+    }
+    :host(:not([selected])) ha-svg-icon {
+      display: none;
+    }
+    :host([selected]) paper-icon-item {
+      margin-left: 0;
     }
   </style>
+  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
   <paper-item>
     <paper-item-body two-line>
       ${item.name}
