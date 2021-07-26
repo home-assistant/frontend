@@ -320,7 +320,7 @@ export const calculateStatisticsSumGrowth = (
   data: Statistics,
   stats: string[]
 ): number | null => {
-  let totalGrowth = 0;
+  let totalGrowth: number | null = null;
 
   for (const stat of stats) {
     if (!(stat in data)) {
@@ -331,8 +331,11 @@ export const calculateStatisticsSumGrowth = (
     if (statGrowth === null) {
       continue;
     }
-
-    totalGrowth += statGrowth;
+    if (totalGrowth === null) {
+      totalGrowth = statGrowth;
+    } else {
+      totalGrowth += statGrowth;
+    }
   }
 
   return totalGrowth;

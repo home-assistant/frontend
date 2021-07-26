@@ -68,14 +68,11 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
     const hasSolarProduction = types.solar !== undefined;
     const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
 
-    const totalGridConsumption = calculateStatisticsSumGrowth(
-      this._stats,
-      types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
-    );
-
-    if (totalGridConsumption === null) {
-      return html`Total consumption couldn't be calculated`;
-    }
+    const totalGridConsumption =
+      calculateStatisticsSumGrowth(
+        this._stats,
+        types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
+      ) ?? 0;
 
     let totalSolarProduction: number | null = null;
 
@@ -84,10 +81,6 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
         this._stats,
         types.solar!.map((source) => source.stat_energy_from)
       );
-
-      if (totalSolarProduction === null) {
-        return html`Total production couldn't be calculated`;
-      }
     }
 
     let productionReturnedToGrid: number | null = null;
@@ -97,10 +90,6 @@ class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
         this._stats,
         types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
       );
-
-      if (productionReturnedToGrid === undefined) {
-        return html`Production returned to grid couldn't be calculated`;
-      }
     }
 
     // total consumption = consumption_from_grid + solar_production - return_to_grid

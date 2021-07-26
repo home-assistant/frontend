@@ -69,8 +69,8 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
     }
     return html`
       <ha-card>
-        ${value
-          ? html` <ha-gauge
+        ${value !== undefined
+          ? html`<ha-gauge
                 min="0"
                 max="100"
                 .value=${value}
