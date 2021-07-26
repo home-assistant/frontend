@@ -329,7 +329,7 @@ export const calculateStatisticsSumGrowth = (
     const statGrowth = calculateStatisticSumGrowth(data[stat]);
 
     if (statGrowth === null) {
-      return null;
+      continue;
     }
 
     totalGrowth += statGrowth;
