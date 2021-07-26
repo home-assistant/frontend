@@ -1,4 +1,4 @@
-import { css, CSSResult, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../../../components/ha-circular-progress";
@@ -204,7 +204,7 @@ export class InsteonPropertiesDataTable extends LitElement {
     return value;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       ha-circular-progress {
         align-items: center;

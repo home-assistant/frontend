@@ -5,7 +5,7 @@ import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-circular-progress";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
   TemplateResult,
@@ -390,7 +390,7 @@ class InsteonConfigDeviceALDBPage extends LitElement {
     this._goBack();
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       insteon-aldb-data-table {
         width: 100%;

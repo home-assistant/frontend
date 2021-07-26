@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import "../../../../../components/ha-icon-button";
 import {
   css,
-  CSSResult,
+  CSSResultGroup,
   html,
   LitElement,
   TemplateResult,
@@ -280,7 +280,7 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
     return schema;
   }
 
-  static get styles(): CSSResult {
+  static get styles(): CSSResultGroup {
     return css`
       insteon-properties-data-table {
         width: 100%;

@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
-import { css, CSSResult, html, LitElement, TemplateResult } from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
@@ -96,7 +96,7 @@ class DialogInsteonProperty extends LitElement {
     this._formData = ev.detail.value;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup[] {
     return [
       haStyleDialog,
       css`
