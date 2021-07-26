@@ -6,14 +6,12 @@ import "../../../../../components/ha-circular-progress";
 import {
   css,
   CSSResult,
-  customElement,
   html,
   LitElement,
-  property,
-  internalProperty,
   TemplateResult,
   PropertyValues,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-service-description";
 import "@polymer/paper-input/paper-textarea";
 import {
@@ -54,17 +52,17 @@ class InsteonConfigDeviceALDBPage extends LitElement {
 
   @property() private deviceId?: string;
 
-  @internalProperty() private _device?: InsteonDevice;
+  private _device?: InsteonDevice;
 
-  @internalProperty() private _records?: ALDBRecord[];
+  private _records?: ALDBRecord[];
 
-  @internalProperty() private _allRecords?: ALDBRecord[];
+  private _allRecords?: ALDBRecord[];
 
-  @internalProperty() private _showHideUnused = "show";
+  private _showHideUnused = "show";
 
-  @internalProperty() private _showUnused = false;
+  private _showUnused = false;
 
-  @internalProperty() private _isLoading = false;
+  private _isLoading = false;
 
   private _subscribed?: Promise<() => Promise<void>>;
 
@@ -91,18 +89,14 @@ class InsteonConfigDeviceALDBPage extends LitElement {
   }
 
   protected _dirty() {
-    return this._records?.reduce((dirty, rec) => {
-      return dirty || rec.dirty;
-    }, false);
+    return this._records?.reduce((dirty, rec) => dirty || rec.dirty, false);
   }
 
   private _filterRecords(
     records: ALDBRecord[],
     showUnused: boolean
   ): ALDBRecord[] {
-    return records.filter((record) => {
-      return record.in_use || showUnused;
-    });
+    return records.filter((record) => record.in_use || showUnused);
   }
 
   protected render(): TemplateResult {
@@ -115,11 +109,7 @@ class InsteonConfigDeviceALDBPage extends LitElement {
         .backCallback=${() => this._handleBackTapped()}
       >
         ${this.narrow
-          ? html`
-              <span slot="header">
-                ${this._device?.name}
-              </span>
-            `
+          ? html` <span slot="header"> ${this._device?.name} </span> `
           : ""}
         <div class="container">
           <div slot="header" class="header fullwidth">
@@ -229,7 +219,7 @@ class InsteonConfigDeviceALDBPage extends LitElement {
       schema: aldbNewRecordSchema(this.hass),
       record: record,
       title: this.hass.localize("ui.panel.config.insteon.aldb.actions.new"),
-      callback: async (rec) => await this._handleRecordCreate(rec),
+      callback: async (rec) => this._handleRecordCreate(rec),
     });
   }
 
@@ -323,7 +313,7 @@ class InsteonConfigDeviceALDBPage extends LitElement {
       schema: aldbChangeRecordSchema(this.hass),
       record: record!,
       title: this.hass.localize("ui.panel.config.insteon.aldb.actions.change"),
-      callback: async (rec) => await this._handleRecordChange(rec),
+      callback: async (rec) => this._handleRecordChange(rec),
     });
     history.back();
   }

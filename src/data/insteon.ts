@@ -162,60 +162,56 @@ export const aldbRecordLoaded = (
     device_address: id,
   });
 
-export const aldbNewRecordSchema = (hass: HomeAssistant): HaFormSchema[] => {
-  return [
-    {
-      name: "mode",
-      options: [
-        hass.localize("ui.panel.config.insteon.aldb.mode.controller"),
-        hass.localize("ui.panel.config.insteon.aldb.mode.responder"),
-      ],
-      required: true,
-      type: "select",
-    },
-    {
-      name: "group",
-      required: true,
-      type: "integer",
-      valueMin: 0,
-      valueMax: 255,
-    },
-    {
-      name: "target",
-      required: true,
-      type: "string",
-    },
-    {
-      name: "data1",
-      required: true,
-      type: "integer",
-      valueMin: 0,
-      valueMax: 255,
-    },
-    {
-      name: "data2",
-      required: true,
-      type: "integer",
-      valueMin: 0,
-      valueMax: 255,
-    },
-    {
-      name: "data3",
-      required: true,
-      type: "integer",
-      valueMin: 0,
-      valueMax: 255,
-    },
-  ];
-};
+export const aldbNewRecordSchema = (hass: HomeAssistant): HaFormSchema[] => [
+  {
+    name: "mode",
+    options: [
+      hass.localize("ui.panel.config.insteon.aldb.mode.controller"),
+      hass.localize("ui.panel.config.insteon.aldb.mode.responder"),
+    ],
+    required: true,
+    type: "select",
+  },
+  {
+    name: "group",
+    required: true,
+    type: "integer",
+    valueMin: 0,
+    valueMax: 255,
+  },
+  {
+    name: "target",
+    required: true,
+    type: "string",
+  },
+  {
+    name: "data1",
+    required: true,
+    type: "integer",
+    valueMin: 0,
+    valueMax: 255,
+  },
+  {
+    name: "data2",
+    required: true,
+    type: "integer",
+    valueMin: 0,
+    valueMax: 255,
+  },
+  {
+    name: "data3",
+    required: true,
+    type: "integer",
+    valueMin: 0,
+    valueMax: 255,
+  },
+];
 
-export const aldbChangeRecordSchema = (hass: HomeAssistant): HaFormSchema[] => {
-  return [
-    {
-      name: "in_use",
-      required: true,
-      type: "boolean",
-    },
-    ...aldbNewRecordSchema(hass),
-  ];
-};
+export const aldbChangeRecordSchema = (hass: HomeAssistant): HaFormSchema[] => [
+  {
+    name: "in_use",
+    required: true,
+    type: "boolean",
+  },
+  ...aldbNewRecordSchema(hass),
+];

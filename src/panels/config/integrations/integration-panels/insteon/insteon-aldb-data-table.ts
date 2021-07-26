@@ -1,11 +1,5 @@
-import {
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../../../components/ha-circular-progress";
 import "../../../../../components/data-table/ha-data-table";
@@ -38,11 +32,9 @@ export class InsteonALDBDataTable extends LitElement {
   private _records = memoizeOne((records: ALDBRecord[]) => {
     const outputRecords: RecordRowData[] = records;
 
-    return outputRecords.map((record) => {
-      return {
-        ...record,
-      };
-    });
+    return outputRecords.map((record) => ({
+      ...record,
+    }));
   });
 
   private _columns = memoizeOne(

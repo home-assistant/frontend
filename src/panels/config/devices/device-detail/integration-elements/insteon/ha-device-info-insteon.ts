@@ -1,14 +1,12 @@
 import {
+  css,
   CSSResult,
-  customElement,
   html,
   LitElement,
-  property,
-  internalProperty,
   TemplateResult,
-  css,
   PropertyValues,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import { DeviceRegistryEntry } from "../../../../../../data/device_registry";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../../types";
@@ -25,7 +23,7 @@ export class HaDeviceActionsInsteon extends LitElement {
 
   @property() public route!: Route;
 
-  @internalProperty() private _insteonDevice?: InsteonDevice;
+  private _insteonDevice?: InsteonDevice;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {

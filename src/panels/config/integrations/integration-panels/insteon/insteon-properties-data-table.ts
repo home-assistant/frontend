@@ -1,13 +1,5 @@
-import {
-  css,
-  CSSResult,
-  customElement,
-  html,
-  LitElement,
-  property,
-  query,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResult, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import "../../../../../components/ha-circular-progress";
 import "../../../../../components/data-table/ha-data-table";
@@ -43,13 +35,11 @@ export class InsteonPropertiesDataTable extends LitElement {
   private _records = memoizeOne((records: Property[]) => {
     const outputRecords: RecordRowData[] = records;
 
-    return outputRecords.map((record) => {
-      return {
-        description: this._calcDescription(record.name),
-        display_value: this._translateValue(record.name, record.value),
-        ...record,
-      };
-    });
+    return outputRecords.map((record) => ({
+      description: this._calcDescription(record.name),
+      display_value: this._translateValue(record.name, record.value),
+      ...record,
+    }));
   });
 
   private _calcDescription(prop_name: string) {

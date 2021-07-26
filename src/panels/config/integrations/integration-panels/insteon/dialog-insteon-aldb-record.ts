@@ -1,15 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
-import {
-  CSSResult,
-  css,
-  customElement,
-  html,
-  LitElement,
-  property,
-  internalProperty,
-  TemplateResult,
-} from "lit-element";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
@@ -28,17 +20,17 @@ class DialogInsteonALDBRecord extends LitElement {
 
   @property() public narrow?: boolean;
 
-  @internalProperty() private _record?: ALDBRecord;
+  private _record?: ALDBRecord;
 
-  @internalProperty() private _schema?: HaFormSchema[];
+  private _schema?: HaFormSchema[];
 
-  @internalProperty() private _title?: string;
+  private _title?: string;
 
-  @internalProperty() private _callback?: (record: ALDBRecord) => Promise<void>;
+  private _callback?: (record: ALDBRecord) => Promise<void>;
 
-  @internalProperty() private _errors?: { [key: string]: string };
+  private _errors?: { [key: string]: string };
 
-  @internalProperty() private _formData?: { [key: string]: any };
+  private _formData?: { [key: string]: any };
 
   public async showDialog(
     params: InsteonALDBRecordDialogParams
@@ -159,7 +151,7 @@ class DialogInsteonALDBRecord extends LitElement {
     return success;
   }
 
-  static get styles(): CSSResult[] {
+  static get styles(): CSSResultGroup[] {
     return [
       haStyleDialog,
       css`

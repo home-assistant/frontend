@@ -1,11 +1,11 @@
-import { customElement, internalProperty, property } from "lit-element";
+import { customElement, property } from "lit/decorators";
+import { mdiNetwork, mdiFolderMultipleOutline } from "@mdi/js";
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../../../layouts/hass-router-page";
 import { HomeAssistant } from "../../../../../types";
 import { PageNavigation } from "../../../../../layouts/hass-tabs-subpage";
-import { mdiNetwork, mdiFolderMultipleOutline } from "@mdi/js";
 
 export const insteonDeviceTabs: PageNavigation[] = [
   {
@@ -28,7 +28,7 @@ class InsteonConfigDeviceRouter extends HassRouterPage {
 
   @property() public narrow!: boolean;
 
-  @internalProperty() private deviceId?: string | undefined = undefined;
+  private deviceId?: string | undefined = undefined;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "aldb",

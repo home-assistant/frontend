@@ -3,14 +3,12 @@ import "../../../../../components/ha-icon-button";
 import {
   css,
   CSSResult,
-  customElement,
   html,
   LitElement,
-  property,
-  internalProperty,
   TemplateResult,
   PropertyValues,
-} from "lit-element";
+} from "lit";
+import { customElement, property } from "lit/decorators";
 import "../../../../../components/ha-service-description";
 import "@polymer/paper-input/paper-textarea";
 import {
@@ -48,13 +46,13 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
 
   @property() private deviceId?: string;
 
-  @internalProperty() private _device?: InsteonDevice;
+  private _device?: InsteonDevice;
 
-  @internalProperty() private _properties: Property[] = [];
+  private _properties: Property[] = [];
 
-  @internalProperty() private _schema?: { [key: string]: HaFormSchema };
+  private _schema?: { [key: string]: HaFormSchema };
 
-  @internalProperty() private _showWait = false;
+  private _showWait = false;
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
@@ -72,9 +70,10 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
   }
 
   protected _dirty() {
-    return this._properties?.reduce((modified, prop) => {
-      return modified || prop.modified;
-    }, false);
+    return this._properties?.reduce(
+      (modified, prop) => modified || prop.modified,
+      false
+    );
   }
 
   protected render(): TemplateResult {
@@ -84,14 +83,10 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
         .narrow=${this.narrow!}
         .route=${this.route!}
         .tabs=${insteonDeviceTabs}
-        .backCallback=${async () => await this._handleBackTapped()}
+        .backCallback=${async () => this._handleBackTapped()}
       >
         ${this.narrow
-          ? html`
-              <span slot="header">
-                ${this._device?.name}
-              </span>
-            `
+          ? html` <span slot="header"> ${this._device?.name} </span> `
           : ""}
         <div class="container">
           <div slot="header" class="header fullwidth">
@@ -165,7 +160,7 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
       text: this.hass.localize("ui.panel.config.insteon.common.warn.load"),
       confirmText: this.hass!.localize("ui.common.yes"),
       dismissText: this.hass!.localize("ui.common.no"),
-      confirm: async () => await this._load(),
+      confirm: async () => this._load(),
     });
   }
 
@@ -187,7 +182,7 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
       text: this.hass.localize("ui.panel.config.insteon.common.warn.write"),
       confirmText: this.hass!.localize("ui.common.yes"),
       dismissText: this.hass!.localize("ui.common.no"),
-      confirm: async () => await this._write(),
+      confirm: async () => this._write(),
     });
   }
 
@@ -221,8 +216,7 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
       title: this.hass.localize(
         "ui.panel.config.insteon.properties.actions.change"
       ),
-      callback: async (name, value) =>
-        await this._handlePropertyChange(name, value),
+      callback: async (name, value) => this._handlePropertyChange(name, value),
     });
     history.back();
   }
@@ -262,7 +256,7 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
   }
 
   private _translateSchema(schema: { [key: string]: HaFormSchema }) {
-    Object.entries(schema).forEach(([prop, prop_schema]) => {
+    Object.entries(schema).forEach(([_prop, prop_schema]) => {
       prop_schema.description = this.hass.localize(
         "ui.panel.config.insteon.properties.descriptions." + prop_schema.name
       );
@@ -275,7 +269,7 @@ class InsteonConfigDevicePropertiesPage extends LitElement {
         });
       }
       if (prop_schema.type === "select") {
-        Object.entries(prop_schema.options).forEach(([item, [key, value]]) => {
+        Object.entries(prop_schema.options).forEach(([item, [_key, value]]) => {
           prop_schema.options[item][1] =
             this.hass.localize(
               "ui.panel.config.insteon.properties.form_options." + value
