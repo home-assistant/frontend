@@ -267,7 +267,12 @@ class StatisticsChart extends LitElement {
       stats.forEach((stat) => {
         const dataValues: Array<number | null> = [];
         statTypes.forEach((type) => {
-          const val = stat[type];
+          let val: number | null;
+          if (type === "sum") {
+            val = stat.state;
+          } else {
+            val = stat[type];
+          }
           dataValues.push(val !== null ? Math.round(val * 100) / 100 : null);
         });
         const date = new Date(stat.start);
