@@ -131,7 +131,9 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
   private _downloadLogs() {
     fileDownload(
       this,
-      `data:text/plain;charset=utf-8,${encodeURI(this._textarea!.value)}`,
+      `data:text/plain;charset=utf-8,${encodeURIComponent(
+        this._textarea!.value
+      )}`,
       `zwave_js.log`
     );
   }
