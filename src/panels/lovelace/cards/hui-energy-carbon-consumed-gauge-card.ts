@@ -14,6 +14,7 @@ import {
   Statistics,
 } from "../../../data/history";
 import type { HomeAssistant } from "../../../types";
+import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
 import { severityMap } from "./hui-gauge-card";
 import type { EnergyCarbonGaugeCardConfig } from "./types";
@@ -61,7 +62,9 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
     const co2State = this.hass.states[this._co2SignalEntity];
 
     if (!co2State) {
-      return html`No CO2 Signal entity found.`;
+      return html`<hui-warning>
+        ${createEntityNotFoundWarning(this.hass, this._co2SignalEntity)}
+      </hui-warning>`;
     }
 
     const co2percentage = Number(co2State.state);
@@ -78,44 +81,46 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
       types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
     );
 
-    const totalSolarProduction = types.solar
-      ? calculateStatisticsSumGrowth(
-          this._stats,
-          types.solar.map((source) => source.stat_energy_from)
-        )
-      : undefined;
+    let value: number | undefined;
 
-    const totalGridReturned = calculateStatisticsSumGrowth(
-      this._stats,
-      types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
-    );
+    if (totalGridConsumption) {
+      const totalSolarProduction = types.solar
+        ? calculateStatisticsSumGrowth(
+            this._stats,
+            types.solar.map((source) => source.stat_energy_from)
+          )
+        : undefined;
 
-    if (totalGridConsumption === null) {
-      return html`Couldn't calculate the total grid consumption.`;
+      const totalGridReturned = calculateStatisticsSumGrowth(
+        this._stats,
+        types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
+      );
+
+      const highCarbonEnergy = (totalGridConsumption * co2percentage) / 100;
+
+      const totalEnergyConsumed =
+        totalGridConsumption +
+        (totalSolarProduction || 0) -
+        (totalGridReturned || 0);
+
+      value = round((highCarbonEnergy / totalEnergyConsumed) * 100);
     }
 
-    const highCarbonEnergy = (totalGridConsumption * co2percentage) / 100;
-
-    const totalEnergyConsumed =
-      totalGridConsumption +
-      (totalSolarProduction || 0) -
-      (totalGridReturned || 0);
-
-    const value = round((highCarbonEnergy / totalEnergyConsumed) * 100);
-
     return html`
-      <ha-card>
-        <ha-gauge
-          min="0"
-          max="100"
-          .value=${value}
-          .locale=${this.hass!.locale}
-          label="%"
-          style=${styleMap({
-            "--gauge-color": this._computeSeverity(64),
-          })}
-        ></ha-gauge>
-        <div class="name">High-carbon energy consumed</div>
+      <ha-card
+        >${value !== undefined
+          ? html` <ha-gauge
+                min="0"
+                max="100"
+                .value=${value}
+                .locale=${this.hass!.locale}
+                label="%"
+                style=${styleMap({
+                  "--gauge-color": this._computeSeverity(64),
+                })}
+              ></ha-gauge>
+              <div class="name">High-carbon energy consumed</div>`
+          : html`Consumed high-carbon energy couldn't be calculated`}
       </ha-card>
     `;
   }
