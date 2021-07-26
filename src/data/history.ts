@@ -70,6 +70,11 @@ export interface StatisticValue {
   state: number | null;
 }
 
+export interface StatisticsMetaData {
+  unit_of_measurement: string;
+  statistic_id: string;
+}
+
 export const fetchRecent = (
   hass: HomeAssistant,
   entityId: string,
@@ -276,7 +281,7 @@ export const getStatisticIds = (
   hass: HomeAssistant,
   statistic_type?: "mean" | "sum"
 ) =>
-  hass.callWS<string[]>({
+  hass.callWS<StatisticsMetaData[]>({
     type: "history/list_statistic_ids",
     statistic_type,
   });
@@ -293,6 +298,48 @@ export const fetchStatistics = (
     end_time: endTime?.toISOString(),
     statistic_ids,
   });
+
+export const calculateStatisticSumGrowth = (
+  values: StatisticValue[]
+): number | null => {
+  if (values.length === 0) {
+    return null;
+  }
+  if (values.length === 1) {
+    return values[0].sum;
+  }
+  const endSum = values[values.length - 1].sum;
+  if (endSum === null) {
+    return null;
+  }
+  const startSum = values[0].sum;
+  if (startSum === null) {
+    return endSum;
+  }
+  return endSum - startSum;
+};
+
+export const calculateStatisticsSumGrowth = (
+  data: Statistics,
+  stats: string[]
+): number | null => {
+  let totalGrowth = 0;
+
+  for (const stat of stats) {
+    if (!(stat in data)) {
+      return null;
+    }
+    const statGrowth = calculateStatisticSumGrowth(data[stat]);
+
+    if (statGrowth === null) {
+      return null;
+    }
+
+    totalGrowth += statGrowth;
+  }
+
+  return totalGrowth;
+};
 
 export const statisticsHaveType = (
   stats: StatisticValue[],

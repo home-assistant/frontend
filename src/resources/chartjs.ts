@@ -10,6 +10,8 @@ import {
   Tooltip,
   CategoryScale,
   Chart,
+  BarElement,
+  BarController,
 } from "chart.js";
 import { TextBarElement } from "../components/chart/timeline-chart/textbar-element";
 import { TimelineController } from "../components/chart/timeline-chart/timeline-controller";
@@ -26,6 +28,8 @@ Chart.register(
   TimeScale,
   LinearScale,
   LineController,
+  BarController,
+  BarElement,
   PointElement,
   LineElement,
   TextBarElement,

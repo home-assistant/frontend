@@ -4,6 +4,7 @@ import {
   mdiDevices,
   mdiHomeAssistant,
   mdiInformation,
+  mdiLightningBolt,
   mdiMapMarkerRadius,
   mdiMathLog,
   mdiNfcVariant,
@@ -105,12 +106,18 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       core: true,
     },
   ],
-  experimental: [
+  experiences: [
     {
       component: "tag",
       path: "/config/tags",
       translationKey: "ui.panel.config.tag.caption",
       iconPath: mdiNfcVariant,
+    },
+    {
+      component: "energy",
+      path: "/config/energy",
+      translationKey: "ui.panel.config.energy.caption",
+      iconPath: mdiLightningBolt,
     },
   ],
   lovelace: [
@@ -247,6 +254,10 @@ class HaPanelConfig extends HassRouterPage {
       entities: {
         tag: "ha-config-entities",
         load: () => import("./entities/ha-config-entities"),
+      },
+      energy: {
+        tag: "ha-config-energy",
+        load: () => import("./energy/ha-config-energy"),
       },
       integrations: {
         tag: "ha-config-integrations",

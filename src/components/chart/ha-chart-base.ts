@@ -23,11 +23,11 @@ export default class HaChartBase extends LitElement {
   @property({ attribute: "chart-type", reflect: true })
   public chartType: ChartType = "line";
 
-  @property({ attribute: false })
-  public data: ChartData = { datasets: [] };
+  @property({ attribute: false }) public data: ChartData = { datasets: [] };
 
-  @property({ attribute: false })
-  public options?: ChartOptions;
+  @property({ attribute: false }) public options?: ChartOptions;
+
+  @property({ attribute: false }) public plugins?: any[];
 
   @state() private _tooltip?: Tooltip;
 
@@ -50,11 +50,14 @@ export default class HaChartBase extends LitElement {
     if (!this.hasUpdated || !this.chart) {
       return;
     }
-
+    if (changedProps.has("plugins")) {
+      this.chart.destroy();
+      this._setupChart();
+      return;
+    }
     if (changedProps.has("type")) {
       this.chart.config.type = this.chartType;
     }
-
     if (changedProps.has("data")) {
       this.chart.data = this.data;
     }
@@ -67,7 +70,7 @@ export default class HaChartBase extends LitElement {
   protected render() {
     return html`
       ${this.options?.plugins?.legend?.display === true
-        ? html` <div class="chartLegend">
+        ? html`<div class="chartLegend">
             <ul>
               ${this.data.datasets.map(
                 (dataset, index) => html`<li
@@ -133,6 +136,14 @@ export default class HaChartBase extends LitElement {
                   )}
                 </ul>
               </div>
+              ${this._tooltip.footer
+                ? // footer has white-space: pre;
+                  // prettier-ignore
+                  html`<div class="footer">${Array.isArray(this._tooltip.footer)
+                      ? this._tooltip.footer.join("\n")
+                      : this._tooltip.footer}
+                  </div>`
+                : ""}
             </div>`
           : ""}
       </div>
@@ -148,14 +159,7 @@ export default class HaChartBase extends LitElement {
       type: this.chartType,
       data: this.data,
       options: this._createOptions(),
-      plugins: [
-        {
-          id: "afterRenderHook",
-          afterRender: (chart) => {
-            this._height = `${chart.height}px`;
-          },
-        },
-      ],
+      plugins: this._createPlugins(),
     });
   }
 
@@ -175,6 +179,22 @@ export default class HaChartBase extends LitElement {
         },
       },
     };
+  }
+
+  private _createPlugins() {
+    return [
+      ...(this.plugins || []),
+      {
+        id: "afterRenderHook",
+        afterRender: (chart) => {
+          this._height = `${chart.height}px`;
+        },
+        legend: {
+          ...this.options?.plugins?.legend,
+          display: false,
+        },
+      },
+    ];
   }
 
   private _legendClick(ev) {
@@ -301,6 +321,10 @@ export default class HaChartBase extends LitElement {
       .chartTooltip .title {
         text-align: center;
         font-weight: 500;
+      }
+      .chartTooltip .footer {
+        font-weight: 500;
+        white-space: pre;
       }
       .chartTooltip .beforeBody {
         text-align: center;

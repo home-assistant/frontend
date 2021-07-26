@@ -119,11 +119,11 @@ class StateHistoryChartLine extends LitElement {
   private _generateData() {
     let colorIndex = 0;
     const computedStyles = getComputedStyle(this);
-    const deviceStates = this.data;
+    const entityStates = this.data;
     const datasets: ChartDataset<"line">[] = [];
     let endTime: Date;
 
-    if (deviceStates.length === 0) {
+    if (entityStates.length === 0) {
       return;
     }
 
@@ -132,7 +132,7 @@ class StateHistoryChartLine extends LitElement {
       // Get the highest date from the last date of each device
       new Date(
         Math.max(
-          ...deviceStates.map((devSts) =>
+          ...entityStates.map((devSts) =>
             new Date(
               devSts.states[devSts.states.length - 1].last_changed
             ).getTime()
@@ -144,7 +144,7 @@ class StateHistoryChartLine extends LitElement {
     }
 
     const names = this.names || {};
-    deviceStates.forEach((states) => {
+    entityStates.forEach((states) => {
       const domain = states.domain;
       const name = names[states.entity_id] || states.name;
       // array containing [value1, value2, etc]

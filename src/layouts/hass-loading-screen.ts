@@ -16,7 +16,7 @@ class HassLoadingScreen extends LitElement {
 
   @property({ type: Boolean }) public rootnav = false;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   protected render(): TemplateResult {
     return html`
