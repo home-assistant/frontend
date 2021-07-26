@@ -276,8 +276,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       panelUrl: string
     ) {
       if (!panelUrl) {
-        return;
+        return undefined;
       }
+
       const panelComponent = this.hass?.panels?.[panelUrl]?.component_name;
 
       // If it's the first call we don't have panel info yet to check the component.
@@ -288,15 +289,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         : undefined;
 
       if (!fragment) {
-        return;
+        return undefined;
       }
 
       if (this.__loadedFragmetTranslations.has(fragment)) {
-        return;
+        return this.hass!.localize;
       }
       this.__loadedFragmetTranslations.add(fragment);
       const result = await getTranslation(fragment, language);
       await this._updateResources(result.language, result.data);
+      return this.hass!.localize;
     }
 
     private async _loadCoreTranslations(language: string) {

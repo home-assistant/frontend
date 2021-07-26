@@ -59,7 +59,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   current: "hass:current-ac",
   carbon_dioxide: "mdi:molecule-co2",
   carbon_monoxide: "mdi:molecule-co",
-  energy: "hass:flash",
+  energy: "hass:lightning-bolt",
   humidity: "hass:water-percent",
   illuminance: "hass:brightness-5",
   temperature: "hass:thermometer",

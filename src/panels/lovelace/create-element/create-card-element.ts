@@ -35,6 +35,18 @@ const LAZY_LOAD_TYPES = {
   "alarm-panel": () => import("../cards/hui-alarm-panel-card"),
   error: () => import("../cards/hui-error-card"),
   "empty-state": () => import("../cards/hui-empty-state-card"),
+  "energy-summary": () => import("../cards/hui-energy-summary-card"),
+  "energy-summary-graph": () =>
+    import("../cards/hui-energy-summary-graph-card"),
+  "energy-solar-graph": () => import("../cards/hui-energy-solar-graph-card"),
+  "energy-devices-graph": () =>
+    import("../cards/hui-energy-devices-graph-card"),
+  "energy-costs-table": () => import("../cards/hui-energy-costs-table-card"),
+  "energy-usage": () => import("../cards/hui-energy-usage-card"),
+  "energy-solar-consumed-gauge": () =>
+    import("../cards/hui-energy-solar-consumed-gauge-card"),
+  "energy-carbon-consumed-gauge": () =>
+    import("../cards/hui-energy-carbon-consumed-gauge-card"),
   grid: () => import("../cards/hui-grid-card"),
   starting: () => import("../cards/hui-starting-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),

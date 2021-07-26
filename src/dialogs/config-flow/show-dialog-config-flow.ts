@@ -39,6 +39,8 @@ export const showConfigFlowDialog = (
       const [step] = await Promise.all([
         createConfigFlow(hass, handler),
         hass.loadBackendTranslation("config", handler),
+        // Used as fallback if no header defined for step
+        hass.loadBackendTranslation("title", handler),
       ]);
       return step;
     },
