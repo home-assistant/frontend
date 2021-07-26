@@ -9,7 +9,8 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { hasTemplate } from "../../../common/string/has-template";
 import { extractSearchParam } from "../../../common/url/search-params";
-import "../../../components/buttons/ha-progress-button";
+import { HaProgressButton } from "../../../components/buttons/ha-progress-button";
+
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-expansion-panel";
@@ -300,7 +301,7 @@ class HaPanelDevService extends LitElement {
   );
 
   private async _callService(ev) {
-    const button = ev.currentTarget;
+    const button = ev.currentTarget as HaProgressButton;
     if (!this._serviceData?.service) {
       return;
     }
