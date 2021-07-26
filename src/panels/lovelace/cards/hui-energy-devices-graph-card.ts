@@ -116,7 +116,7 @@ export class HuiEnergyDevicesGraphCard
             ? html`<ha-chart-base
                 .data=${this._chartData}
                 .options=${this._chartOptions}
-                chartType="bar"
+                chart-type="bar"
               ></ha-chart-base>`
             : ""}
         </div>

@@ -29,6 +29,8 @@ import {
 } from "../../../data/forecast_solar";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/chart/ha-chart-base";
+import "../../../components/ha-switch";
+import "../../../components/ha-formfield";
 
 const SOLAR_COLOR = { border: "#FF9800", background: "#ffcb80" };
 
@@ -45,7 +47,11 @@ export class HuiEnergySolarGraphCard
 
   @state() private _chartData?: ChartData;
 
+  @state() private _forecasts?: Record<string, ForecastSolarForecast>;
+
   @state() private _chartOptions?: ChartOptions;
+
+  @state() private _showAllForecastData = false;
 
   private _fetching = false;
 
@@ -117,11 +123,17 @@ export class HuiEnergySolarGraphCard
             "has-header": !!this._config.title,
           })}"
         >
+          <ha-formfield label="Show all forecast data"
+            ><ha-switch
+              .checked=${this._showAllForecastData}
+              @change=${this._showAllForecastChanged}
+            ></ha-switch
+          ></ha-formfield>
           ${this._chartData
             ? html`<ha-chart-base
                 .data=${this._chartData}
                 .options=${this._chartOptions}
-                chartType="line"
+                chart-type="line"
               ></ha-chart-base>`
             : ""}
         </div>
@@ -204,10 +216,9 @@ export class HuiEnergySolarGraphCard
     startDate.setHours(0, 0, 0, 0);
 
     this._fetching = true;
-    const prefs = this._config!.prefs;
 
     const solarSources: SolarSourceTypeEnergyPreference[] =
-      prefs.energy_sources.filter(
+      this._config!.prefs.energy_sources.filter(
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
 
@@ -222,13 +233,21 @@ export class HuiEnergySolarGraphCard
       this._fetching = false;
     }
 
-    let forecasts: Record<string, ForecastSolarForecast> | undefined;
     if (
       isComponentLoaded(this.hass, "forecast_solar") &&
       solarSources.some((source) => source.config_entry_solar_forecast)
     ) {
-      forecasts = await getForecastSolarForecasts(this.hass);
+      this._forecasts = await getForecastSolarForecasts(this.hass);
     }
+
+    this._renderChart();
+  }
+
+  private _renderChart() {
+    const solarSources: SolarSourceTypeEnergyPreference[] =
+      this._config!.prefs.energy_sources.filter(
+        (source) => source.type === "solar"
+      ) as SolarSourceTypeEnergyPreference[];
 
     const statisticsData = Object.values(this._data!);
     const datasets: ChartDataset<"line">[] = [];
@@ -299,6 +318,8 @@ export class HuiEnergySolarGraphCard
         }
       }
 
+      const forecasts = this._forecasts;
+
       // Process solar forecast data.
       if (forecasts && source.config_entry_solar_forecast) {
         let forecastsData: Record<string, number> | undefined;
@@ -332,9 +353,18 @@ export class HuiEnergySolarGraphCard
           };
           data.push(forecast);
 
+          const today = new Date();
+          const tomorrow = new Date(today);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          tomorrow.setHours(0, 0, 0, 0);
+
           for (const [date, value] of Object.entries(forecastsData)) {
+            const dateObj = new Date(date);
+            if (dateObj > tomorrow && !this._showAllForecastData) {
+              continue;
+            }
             forecast.data.push({
-              x: new Date(date).getTime(),
+              x: dateObj.getTime(),
               y: value / 1000,
             });
           }
@@ -350,6 +380,11 @@ export class HuiEnergySolarGraphCard
     };
   }
 
+  private _showAllForecastChanged(ev) {
+    this._showAllForecastData = ev.target.checked;
+    this._renderChart();
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       ha-card {
@@ -360,6 +395,9 @@ export class HuiEnergySolarGraphCard
       }
       .has-header {
         padding-top: 0;
+      }
+      ha-formfield {
+        margin-bottom: 16px;
       }
     `;
   }

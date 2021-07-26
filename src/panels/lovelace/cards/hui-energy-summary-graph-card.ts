@@ -23,6 +23,7 @@ import {
 import { labDarken } from "../../../common/color/lab";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/chart/ha-chart-base";
+import { round } from "../../../common/number/round";
 
 const NEGATIVE = ["to_grid"];
 const ORDER = {
@@ -166,7 +167,7 @@ export class HuiEnergySummaryGraphCard
           type: "linear",
           ticks: {
             beginAtZero: true,
-            callback: (value) => Math.abs(value),
+            callback: (value) => Math.abs(round(value)),
           },
         },
       },

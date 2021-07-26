@@ -20,7 +20,8 @@ interface Tooltip extends TooltipModel<any> {
 export default class HaChartBase extends LitElement {
   public chart?: Chart;
 
-  @property() public chartType: ChartType = "line";
+  @property({ attribute: "chart-type", reflect: true })
+  public chartType: ChartType = "line";
 
   @property({ attribute: false }) public data: ChartData = { datasets: [] };
 
