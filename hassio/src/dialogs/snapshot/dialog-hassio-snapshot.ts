@@ -30,7 +30,8 @@ import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";
 @customElement("dialog-hassio-snapshot")
 class HassioSnapshotDialog
   extends LitElement
-  implements HassDialog<HassioSnapshotDialogParams> {
+  implements HassDialog<HassioSnapshotDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
@@ -297,8 +298,7 @@ class HassioSnapshotDialog
     if (window.location.href.includes("ui.nabu.casa")) {
       const confirm = await showConfirmationDialog(this, {
         title: "Potential slow download",
-        text:
-          "Downloading snapshots over the Nabu Casa URL will take some time, it is recomended to use your local URL instead, do you want to continue?",
+        text: "Downloading snapshots over the Nabu Casa URL will take some time, it is recomended to use your local URL instead, do you want to continue?",
         confirmText: "continue",
         dismissText: "cancel",
       });

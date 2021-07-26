@@ -4,12 +4,12 @@ import "../../../../../components/ha-switch";
 import "../../../../../components/ha-formfield";
 import { CSSResultGroup, html, LitElement, TemplateResult, css } from "lit";
 import "../../../../../components/ha-circular-progress";
+import { customElement, property, state } from "lit/decorators";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
 import { haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { customElement, property, state } from "lit/decorators";
 
 export interface ZWaveJSAddNodeDevice {
   id: string;
@@ -358,11 +358,12 @@ class DialogZWaveJSAddNode extends LitElement {
         }
 
         .failed {
-          color: var(--warning-color);
+          color: var(--error-color);
         }
 
         .stages {
           margin-top: 16px;
+          display: grid;
         }
 
         .flex-container .stage ha-svg-icon {
@@ -372,19 +373,6 @@ class DialogZWaveJSAddNode extends LitElement {
         }
         .stage {
           padding: 8px;
-        }
-
-        blockquote {
-          display: block;
-          background-color: #ddd;
-          padding: 8px;
-          margin: 8px 0;
-          font-size: 0.9em;
-        }
-
-        blockquote em {
-          font-size: 0.9em;
-          margin-top: 6px;
         }
 
         .flex-container {

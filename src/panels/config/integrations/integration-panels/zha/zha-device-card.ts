@@ -2,6 +2,8 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-listbox/paper-listbox";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import memoizeOne from "memoize-one";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import "../../../../../components/buttons/ha-call-service-button";
@@ -20,12 +22,10 @@ import {
   EntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../../../data/entity_registry";
-import memoizeOne from "memoize-one";
 import { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
 import { compare } from "../../../../../common/string/compare";
 import { getIeeeTail } from "./functions";
 import { slugify } from "../../../../../common/string/slugify";
-import { customElement, property, state } from "lit/decorators";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {

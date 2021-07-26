@@ -157,7 +157,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
 
   private get _inputElement(): { value: string } {
     // linter recommended the following syntax
-    return (this.shadowRoot!.getElementById("input") as unknown) as {
+    return this.shadowRoot!.getElementById("input") as unknown as {
       value: string;
     };
   }

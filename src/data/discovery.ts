@@ -9,7 +9,8 @@ export interface DiscoveryInformation {
   version: string;
 }
 
-export const fetchDiscoveryInformation = async (): Promise<DiscoveryInformation> => {
-  const response = await fetch("/api/discovery_info", { method: "GET" });
-  return response.json();
-};
+export const fetchDiscoveryInformation =
+  async (): Promise<DiscoveryInformation> => {
+    const response = await fetch("/api/discovery_info", { method: "GET" });
+    return response.json();
+  };

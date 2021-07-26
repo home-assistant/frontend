@@ -58,11 +58,8 @@ export class HuiDialogEditView extends LitElement {
       this._badges = [];
       this._cards = [];
     } else {
-      const {
-        cards,
-        badges,
-        ...viewConfig
-      } = this._params.lovelace!.config.views[this._params.viewIndex];
+      const { cards, badges, ...viewConfig } =
+        this._params.lovelace!.config.views[this._params.viewIndex];
       this._config = viewConfig;
       this._badges = badges ? processEditorEntities(badges) : [];
       this._cards = cards;

@@ -265,7 +265,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
   private _handleUIConfigChanged(ev: UIConfigChangedEvent) {
     ev.stopPropagation();
     const config = ev.detail.config;
-    this.value = (config as unknown) as T;
+    this.value = config as unknown as T;
   }
 
   private _handleYAMLChanged(ev: CustomEvent) {

@@ -31,9 +31,8 @@ export class HaDeviceActionsZWaveJS extends LitElement {
     if (changedProperties.has("device")) {
       this._entryId = this.device.config_entries[0];
 
-      const identifiers:
-        | ZWaveJSNodeIdentifiers
-        | undefined = getIdentifiersFromDevice(this.device);
+      const identifiers: ZWaveJSNodeIdentifiers | undefined =
+        getIdentifiersFromDevice(this.device);
       if (!identifiers) {
         return;
       }
@@ -52,9 +51,11 @@ export class HaDeviceActionsZWaveJS extends LitElement {
           )}
         </mwc-button>
       </a>
-      <mwc-button @click=${this._reinterviewClicked}
-        >Re-interview Device</mwc-button
-      >
+      <mwc-button @click=${this._reinterviewClicked}>
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.device_info.reinterview_device"
+        )}
+      </mwc-button>
     `;
   }
 

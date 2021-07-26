@@ -19,10 +19,9 @@ export class TextBarElement extends BarElement {
   draw(ctx) {
     super.draw(ctx);
     const options = this.options as TextBaroptions;
-    const { x, y, base, width, text } = (this as BarElement<
-      TextBarProps,
-      TextBaroptions
-    >).getProps(["x", "y", "base", "width", "text"]);
+    const { x, y, base, width, text } = (
+      this as BarElement<TextBarProps, TextBaroptions>
+    ).getProps(["x", "y", "base", "width", "text"]);
 
     if (!text) {
       return;

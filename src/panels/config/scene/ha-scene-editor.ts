@@ -383,9 +383,8 @@ export class HaSceneEditor extends SubscribeMixin(
                                 )}
                               >
                                 ${entities.map((entityId) => {
-                                  const entityStateObj = this.hass.states[
-                                    entityId
-                                  ];
+                                  const entityStateObj =
+                                    this.hass.states[entityId];
                                   if (!entityStateObj) {
                                     return html``;
                                   }
@@ -539,10 +538,11 @@ export class HaSceneEditor extends SubscribeMixin(
     this._scene = scene;
     const { context } = await activateScene(this.hass, this._scene.entity_id);
     this._activateContextId = context.id;
-    this._unsubscribeEvents = await this.hass!.connection.subscribeEvents<HassEvent>(
-      (event) => this._stateChanged(event),
-      "state_changed"
-    );
+    this._unsubscribeEvents =
+      await this.hass!.connection.subscribeEvents<HassEvent>(
+        (event) => this._stateChanged(event),
+        "state_changed"
+      );
   }
 
   private _showMoreInfo(ev: Event) {

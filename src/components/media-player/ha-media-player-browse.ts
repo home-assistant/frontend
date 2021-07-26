@@ -132,9 +132,8 @@ export class HaMediaPlayerBrowse extends LitElement {
       return html``;
     }
 
-    const currentItem = this._mediaPlayerItems[
-      this._mediaPlayerItems.length - 1
-    ];
+    const currentItem =
+      this._mediaPlayerItems[this._mediaPlayerItems.length - 1];
 
     const previousItem: MediaPlayerItem | undefined =
       this._mediaPlayerItems.length > 1

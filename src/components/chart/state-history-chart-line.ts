@@ -6,12 +6,17 @@ import { LineChartEntity, LineChartState } from "../../data/history";
 import { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 
+const safeParseFloat = (value) => {
+  const parsed = parseFloat(value);
+  return isFinite(parsed) ? parsed : null;
+};
+
 class StateHistoryChartLine extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public data: LineChartEntity[] = [];
 
-  @property({ type: Boolean }) public names = false;
+  @property() public names: boolean | Record<string, string> = false;
 
   @property() public unit?: string;
 
@@ -114,29 +119,23 @@ class StateHistoryChartLine extends LitElement {
   private _generateData() {
     let colorIndex = 0;
     const computedStyles = getComputedStyle(this);
-    const deviceStates = this.data;
+    const entityStates = this.data;
     const datasets: ChartDataset<"line">[] = [];
     let endTime: Date;
 
-    if (deviceStates.length === 0) {
+    if (entityStates.length === 0) {
       return;
-    }
-
-    function safeParseFloat(value) {
-      const parsed = parseFloat(value);
-      return isFinite(parsed) ? parsed : null;
     }
 
     endTime =
       this.endTime ||
       // Get the highest date from the last date of each device
       new Date(
-        Math.max.apply(
-          null,
-          deviceStates.map((devSts) =>
+        Math.max(
+          ...entityStates.map((devSts) =>
             new Date(
               devSts.states[devSts.states.length - 1].last_changed
-            ).getMilliseconds()
+            ).getTime()
           )
         )
       );
@@ -145,7 +144,7 @@ class StateHistoryChartLine extends LitElement {
     }
 
     const names = this.names || {};
-    deviceStates.forEach((states) => {
+    entityStates.forEach((states) => {
       const domain = states.domain;
       const name = names[states.entity_id] || states.name;
       // array containing [value1, value2, etc]

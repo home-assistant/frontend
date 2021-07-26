@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import { IronAutogrowTextareaElement } from "@polymer/iron-autogrow-textarea";
 import "@polymer/paper-input/paper-textarea";
 import {
   css,
@@ -28,11 +27,11 @@ import "./zha-device-pairing-status-card";
 class ZHAAddDevicesPage extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
-  @property() public isWide?: boolean;
+  @property({ type: Boolean }) public isWide?: boolean;
 
-  @property() public route?: Route;
+  @property({ attribute: false }) public route?: Route;
 
   @state() private _error?: string;
 
@@ -86,7 +85,7 @@ class ZHAAddDevicesPage extends LitElement {
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .route=${this.route}
+        .route=${this.route!}
         .tabs=${zhaTabs}
       >
         <mwc-button slot="toolbar-icon" @click=${this._toggleLogs}
@@ -171,8 +170,7 @@ class ZHAAddDevicesPage extends LitElement {
       if (this.shadowRoot) {
         const paperTextArea = this.shadowRoot.querySelector("paper-textarea");
         if (paperTextArea) {
-          const textArea = (paperTextArea.inputElement as IronAutogrowTextareaElement)
-            .textarea;
+          const textArea = (paperTextArea.inputElement as any).textarea;
           textArea.scrollTop = textArea.scrollHeight;
         }
       }

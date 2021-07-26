@@ -192,7 +192,8 @@ export class ZHAClusterCommands extends LitElement {
 
   private _onManufacturerCodeOverrideChanged(value: ChangeEvent): void {
     this._manufacturerCodeOverride = value.detail!.value;
-    this._issueClusterCommandServiceData = this._computeIssueClusterCommandServiceData();
+    this._issueClusterCommandServiceData =
+      this._computeIssueClusterCommandServiceData();
   }
 
   private _onHelpTap(): void {
@@ -201,7 +202,8 @@ export class ZHAClusterCommands extends LitElement {
 
   private _selectedCommandChanged(event: ItemSelectedEvent): void {
     this._selectedCommandIndex = event.target!.selected;
-    this._issueClusterCommandServiceData = this._computeIssueClusterCommandServiceData();
+    this._issueClusterCommandServiceData =
+      this._computeIssueClusterCommandServiceData();
   }
 
   static get styles(): CSSResultGroup {

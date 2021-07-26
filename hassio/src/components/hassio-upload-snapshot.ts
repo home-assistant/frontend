@@ -1,6 +1,5 @@
 import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiFolderUpload } from "@mdi/js";
-import "@polymer/iron-input/iron-input";
 import "@polymer/paper-input/paper-input-container";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";

@@ -39,6 +39,8 @@ export const showConfigFlowDialog = (
       const [step] = await Promise.all([
         createConfigFlow(hass, handler),
         hass.loadBackendTranslation("config", handler),
+        // Used as fallback if no header defined for step
+        hass.loadBackendTranslation("title", handler),
       ]);
       return step;
     },
@@ -177,5 +179,23 @@ export const showConfigFlowDialog = (
             <ha-markdown allowsvg breaks .content=${description}></ha-markdown>
           `
         : "";
+    },
+
+    renderLoadingDescription(hass, reason, handler, step) {
+      if (!["loading_flow", "loading_step"].includes(reason)) {
+        return "";
+      }
+      const domain = step?.handler || handler;
+      return hass.localize(
+        `ui.panel.config.integrations.config_flow.loading.${reason}`,
+        {
+          integration: domain
+            ? domainToName(hass.localize, domain)
+            : // when we are continuing a config flow, we only know the ID and not the domain
+              hass.localize(
+                "ui.panel.config.integrations.config_flow.loading.fallback_title"
+              ),
+        }
+      );
     },
   });

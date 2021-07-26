@@ -75,9 +75,8 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       const passiveRadiusColor = computedStyles.getPropertyValue(
         "--secondary-text-color"
       );
-      const homeRadiusColor = computedStyles.getPropertyValue(
-        "--primary-color"
-      );
+      const homeRadiusColor =
+        computedStyles.getPropertyValue("--primary-color");
 
       const stateLocations: MarkerLocation[] = stateItems.map(
         (entityState) => ({
@@ -410,9 +409,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private async _createEntry(values: ZoneMutableParams) {
     const created = await createZone(this.hass!, values);
-    this._storageItems = this._storageItems!.concat(
-      created
-    ).sort((ent1, ent2) => compare(ent1.name, ent2.name));
+    this._storageItems = this._storageItems!.concat(created).sort(
+      (ent1, ent2) => compare(ent1.name, ent2.name)
+    );
     if (this.narrow) {
       return;
     }

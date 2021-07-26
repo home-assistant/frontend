@@ -43,9 +43,9 @@ export class HaFileUpload extends LitElement {
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("_drag") && !this.uploading) {
-      (this.shadowRoot!.querySelector(
-        "paper-input-container"
-      ) as any)._setFocused(this._drag);
+      (
+        this.shadowRoot!.querySelector("paper-input-container") as any
+      )._setFocused(this._drag);
     }
   }
 

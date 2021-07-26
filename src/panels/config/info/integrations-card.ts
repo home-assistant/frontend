@@ -87,9 +87,8 @@ class IntegrationsCard extends LitElement {
                         >
                       `
                     : "";
-                const setupSeconds = this._setups?.[domain]?.seconds?.toFixed(
-                  2
-                );
+                const setupSeconds =
+                  this._setups?.[domain]?.seconds?.toFixed(2);
                 return html`
                   <tr>
                     <td>
@@ -100,7 +99,11 @@ class IntegrationsCard extends LitElement {
                       />
                     </td>
                     <td class="name">
-                      ${domainToName(this.hass.localize, domain, manifest)}<br />
+                      ${domainToName(
+                        this.hass.localize,
+                        domain,
+                        manifest
+                      )}<br />
                       <span class="domain">${domain}</span>
                       ${this.narrow
                         ? html`<div class="mobile-row">

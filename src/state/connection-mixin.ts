@@ -151,6 +151,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             integration,
             configFlow
           ),
+        loadFragmentTranslation: (fragment) =>
+          // @ts-ignore
+          this._loadFragmentTranslations(this.hass?.language, fragment),
         ...getState(),
         ...this._pendingHass,
       };

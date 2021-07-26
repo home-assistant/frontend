@@ -12,7 +12,8 @@ import { HassioSnapshotUploadDialogParams } from "./show-dialog-snapshot-upload"
 @customElement("dialog-hassio-snapshot-upload")
 export class DialogHassioSnapshotUpload
   extends LitElement
-  implements HassDialog<HassioSnapshotUploadDialogParams> {
+  implements HassDialog<HassioSnapshotUploadDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: HassioSnapshotUploadDialogParams;

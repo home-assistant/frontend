@@ -20,6 +20,7 @@ import {
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
+  energy: () => import("../panels/energy/ha-panel-energy"),
   calendar: () => import("../panels/calendar/ha-panel-calendar"),
   config: () => import("../panels/config/ha-panel-config"),
   custom: () => import("../panels/custom/ha-panel-custom"),
@@ -43,7 +44,7 @@ const COMPONENTS = {
 class PartialPanelResolver extends HassRouterPage {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Boolean }) public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   private _waitForStart = false;
 

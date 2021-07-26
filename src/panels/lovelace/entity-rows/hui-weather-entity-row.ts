@@ -171,8 +171,7 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         }
 
         .weather-icon {
-          --iron-icon-width: 40px;
-          --iron-icon-height: 40px;
+          --mdc-icon-size: 40px;
         }
 
         :host([rtl]) .flex {

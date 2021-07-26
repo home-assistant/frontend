@@ -53,11 +53,33 @@ export interface HistoryResult {
   timeline: TimelineEntity[];
 }
 
+export type StatisticType = "sum" | "min" | "max" | "mean";
+
+export interface Statistics {
+  [statisticId: string]: StatisticValue[];
+}
+
+export interface StatisticValue {
+  statistic_id: string;
+  start: string;
+  last_reset: string | null;
+  max: number | null;
+  mean: number | null;
+  min: number | null;
+  sum: number | null;
+  state: number | null;
+}
+
+export interface StatisticsMetaData {
+  unit_of_measurement: string;
+  statistic_id: string;
+}
+
 export const fetchRecent = (
-  hass,
-  entityId,
-  startTime,
-  endTime,
+  hass: HomeAssistant,
+  entityId: string,
+  startTime: Date,
+  endTime: Date,
   skipInitialState = false,
   significantChangesOnly?: boolean,
   minimalResponse = true
@@ -87,7 +109,7 @@ export const fetchDate = (
   hass: HomeAssistant,
   startTime: Date,
   endTime: Date,
-  entityId
+  entityId?: string
 ): Promise<HassEntity[][]> =>
   hass.callApi(
     "GET",
@@ -252,3 +274,74 @@ export const computeHistory = (
 
   return { line: unitStates, timeline: timelineDevices };
 };
+
+// Statistics
+
+export const getStatisticIds = (
+  hass: HomeAssistant,
+  statistic_type?: "mean" | "sum"
+) =>
+  hass.callWS<StatisticsMetaData[]>({
+    type: "history/list_statistic_ids",
+    statistic_type,
+  });
+
+export const fetchStatistics = (
+  hass: HomeAssistant,
+  startTime: Date,
+  endTime?: Date,
+  statistic_ids?: string[]
+) =>
+  hass.callWS<Statistics>({
+    type: "history/statistics_during_period",
+    start_time: startTime.toISOString(),
+    end_time: endTime?.toISOString(),
+    statistic_ids,
+  });
+
+export const calculateStatisticSumGrowth = (
+  values: StatisticValue[]
+): number | null => {
+  if (values.length === 0) {
+    return null;
+  }
+  if (values.length === 1) {
+    return values[0].sum;
+  }
+  const endSum = values[values.length - 1].sum;
+  if (endSum === null) {
+    return null;
+  }
+  const startSum = values[0].sum;
+  if (startSum === null) {
+    return endSum;
+  }
+  return endSum - startSum;
+};
+
+export const calculateStatisticsSumGrowth = (
+  data: Statistics,
+  stats: string[]
+): number | null => {
+  let totalGrowth = 0;
+
+  for (const stat of stats) {
+    if (!(stat in data)) {
+      return null;
+    }
+    const statGrowth = calculateStatisticSumGrowth(data[stat]);
+
+    if (statGrowth === null) {
+      return null;
+    }
+
+    totalGrowth += statGrowth;
+  }
+
+  return totalGrowth;
+};
+
+export const statisticsHaveType = (
+  stats: StatisticValue[],
+  type: StatisticType
+) => stats.some((stat) => stat[type] !== null);

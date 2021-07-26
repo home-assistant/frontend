@@ -28,11 +28,8 @@ export class CloudRemotePref extends LitElement {
 
     const { remote_enabled } = this.cloudStatus.prefs;
 
-    const {
-      remote_connected,
-      remote_domain,
-      remote_certificate,
-    } = this.cloudStatus;
+    const { remote_connected, remote_domain, remote_certificate } =
+      this.cloudStatus;
 
     if (!remote_certificate) {
       return html`

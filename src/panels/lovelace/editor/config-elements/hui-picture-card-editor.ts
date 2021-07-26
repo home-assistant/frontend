@@ -24,7 +24,8 @@ const cardConfigStruct = object({
 @customElement("hui-picture-card-editor")
 export class HuiPictureCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: PictureCardConfig;
