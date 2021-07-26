@@ -1,5 +1,5 @@
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
@@ -25,10 +25,27 @@ export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
 const rowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
     paper-item {
-      margin: -5px -10px;
       padding: 0;
+      margin: -10px;
+      margin-left: 0;
+    }
+    #content {
+      display: flex;
+      align-items: center;
+    }
+    ha-svg-icon {
+      padding-left: 2px;
+      margin-right: -2px;
+      color: var(--secondary-text-color);
+    }
+    :host(:not([selected])) ha-svg-icon {
+      display: none;
+    }
+    :host([selected]) paper-item {
+      margin-left: 10px;
     }
   </style>
+  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
   <paper-item>${formatAttributeName(item)}</paper-item>`;
 
 @customElement("ha-entity-attribute-picker")

@@ -1,5 +1,5 @@
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -28,10 +28,25 @@ export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
 const rowRenderer: ComboBoxLitRenderer<HassEntity> = (item) => html`<style>
     paper-icon-item {
-      margin: -10px;
       padding: 0;
+      margin: -8px;
+    }
+    #content {
+      display: flex;
+      align-items: center;
+    }
+    ha-svg-icon {
+      padding-left: 2px;
+      color: var(--secondary-text-color);
+    }
+    :host(:not([selected])) ha-svg-icon {
+      display: none;
+    }
+    :host([selected]) paper-icon-item {
+      margin-left: 0;
     }
   </style>
+  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
   <paper-icon-item>
     <state-badge slot="item-icon" .stateObj=${item}></state-badge>
     <paper-item-body two-line="">
