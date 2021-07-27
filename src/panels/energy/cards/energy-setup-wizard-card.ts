@@ -20,7 +20,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
 
   @state() private _step = 0;
 
-  private _preferences: EnergyPreferences = {
+  @state() private _preferences: EnergyPreferences = {
     currency: "€",
     energy_sources: [],
     device_consumption: [],
