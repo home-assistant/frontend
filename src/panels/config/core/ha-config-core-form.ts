@@ -23,6 +23,8 @@ class ConfigCoreForm extends LitElement {
 
   @state() private _location?: [number, number];
 
+  @state() private _currency?: string;
+
   @state() private _elevation?: string;
 
   @state() private _unitSystem?: ConfigUpdateValues["unit_system"];
@@ -143,6 +145,24 @@ class ConfigCoreForm extends LitElement {
               </paper-radio-button>
             </paper-radio-group>
           </div>
+          <div class="row">
+            <div class="flex">
+              ${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.currency"
+              )}
+            </div>
+
+            <paper-input
+              class="flex"
+              .label=${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.currency"
+              )}
+              name="currency"
+              .disabled=${disabled}
+              .value=${this._currencyValue}
+              @value-changed=${this._handleChange}
+            ></paper-input>
+          </div>
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._save} .disabled=${disabled}>
@@ -177,6 +197,12 @@ class ConfigCoreForm extends LitElement {
       },
     ]
   );
+
+  private get _currencyValue() {
+    return this._currency !== undefined
+      ? this._currency
+      : this.hass.config.currency;
+  }
 
   private get _elevationValue() {
     return this._elevation !== undefined
@@ -223,6 +249,7 @@ class ConfigCoreForm extends LitElement {
       await saveCoreConfig(this.hass, {
         latitude: location[0],
         longitude: location[1],
+        currency: this._currencyValue,
         elevation: Number(this._elevationValue),
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue,

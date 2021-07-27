@@ -22,4 +22,5 @@ export const demoConfig: HassConfig = {
   state: STATE_RUNNING,
   internal_url: "http://homeassistant.local:8123",
   external_url: null,
+  currency: "USD",
 };

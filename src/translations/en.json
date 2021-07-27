@@ -1086,7 +1086,8 @@
                 "metric_example": "Celsius, kilograms",
                 "save_button": "Save",
                 "external_url": "External URL",
-                "internal_url": "Internal URL"
+                "internal_url": "Internal URL",
+                "currency": "Currency"
               }
             }
           }
