@@ -280,24 +280,79 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
             >
               ${productionReturnedToGrid && hasSolarProduction
                 ? svg`<path
-                class="return"
-                d="M50,0 v20 c0,40 -10,35 -65,35 h20"
-                vector-effect="non-scaling-stroke"
-              ></path>`
+                    id="return"
+                    class="return"
+                    d="M50,0 v20 c0,40 -10,35 -30,35 h-20"
+                    vector-effect="non-scaling-stroke"
+                  ></path> `
                 : ""}
               ${totalSolarProduction
                 ? svg`<path
+                    id="solar"
                     class="solar"
-                    d="M50,0 v20 c0,40 10,35 65,35 h20"
+                    d="M50,0 v20 c0,40 10,35 30,35 h20"
                     vector-effect="non-scaling-stroke"
-                  ></path>`
+                  ></path> `
                 : ""}
               ${totalGridConsumption
                 ? svg`<path
-                class="grid"
-                d="M0,55 H100"
-                vector-effect="non-scaling-stroke"
-              ></path>`
+                    class="grid"
+                    id="grid"
+                    d="M0,55 H100"
+                    vector-effect="non-scaling-stroke"
+                  ></path> `
+                : ""}
+              ${productionReturnedToGrid && hasSolarProduction
+                ? svg`<circle r="2" class="return">
+                    <animateMotion
+                      dur="${
+                        6 -
+                        (productionReturnedToGrid /
+                          (totalGridConsumption +
+                            (totalSolarProduction || 0))) *
+                          5
+                      }s"
+                      repeatCount="indefinite"
+                      rotate="auto"
+                    >
+                      <mpath xlink:href="#return" />
+                    </animateMotion>
+                  </circle>`
+                : ""}
+              ${totalSolarProduction
+                ? svg`<circle r="2" class="solar">
+                    <animateMotion
+                      dur="${
+                        6 -
+                        ((totalSolarProduction -
+                          (productionReturnedToGrid || 0)) /
+                          (totalGridConsumption +
+                            (totalSolarProduction || 0))) *
+                          5
+                      }s"
+                      repeatCount="indefinite"
+                      rotate="auto"
+                    >
+                      <mpath xlink:href="#solar" />
+                    </animateMotion>
+                  </circle>`
+                : ""}
+              ${totalGridConsumption
+                ? svg`<circle r="2" class="grid">
+                    <animateMotion
+                      dur="${
+                        6 -
+                        (totalGridConsumption /
+                          (totalGridConsumption +
+                            (totalSolarProduction || 0))) *
+                          5
+                      }s"
+                      repeatCount="indefinite"
+                      rotate="auto"
+                    >
+                      <mpath xlink:href="#grid" />
+                    </animateMotion>
+                  </circle>`
                 : ""}
             </svg>
           </div>
@@ -445,9 +500,6 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       width: 100%;
       height: 100%;
     }
-    .circle svg circle {
-      animation: rotate-in 0.2s ease-in;
-    }
     .low-carbon line {
       stroke: #0f9d58;
     }
@@ -460,16 +512,23 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     .solar .circle {
       border-color: #ff9800;
     }
-    path.solar,
-    circle.solar {
+    circle.solar,
+    path.solar {
       stroke: #ff9800;
+    }
+    circle.solar {
+      fill: #ff9800;
     }
     circle.low-carbon {
       stroke: #0f9d58;
+      fill: #0f9d58;
     }
-    circle.return,
-    path.return {
+    path.return,
+    circle.return {
       stroke: #673ab7;
+    }
+    circle.return {
+      fill: #673ab7;
     }
     .return {
       color: #673ab7;
@@ -484,11 +543,18 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     path.grid {
       stroke: #126a9a;
     }
+    circle.grid {
+      fill: #126a9a;
+    }
     .home .circle {
       border: none;
     }
     .home .circle.border {
       border-color: var(--primary-color);
+    }
+    .circle svg circle {
+      animation: rotate-in 0.2s ease-in;
+      fill: none;
     }
     @keyframes rotate-in {
       from {

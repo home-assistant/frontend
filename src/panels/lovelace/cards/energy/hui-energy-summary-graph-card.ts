@@ -223,7 +223,7 @@ export class HuiEnergySummaryGraphCard
         mode: "nearest",
       },
       elements: {
-        bar: { borderWidth: 1.5 },
+        bar: { borderWidth: 1.5, borderRadius: 4 },
         point: {
           hitRadius: 5,
         },
