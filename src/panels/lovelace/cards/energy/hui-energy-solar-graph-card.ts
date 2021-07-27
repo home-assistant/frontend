@@ -8,29 +8,29 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../components/ha-card";
+import "../../../../components/ha-card";
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
-import { EnergySolarGraphCardConfig } from "./types";
-import { fetchStatistics, Statistics } from "../../../data/history";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergySolarGraphCardConfig } from "../types";
+import { fetchStatistics, Statistics } from "../../../../data/history";
 import {
   hex2rgb,
   lab2rgb,
   rgb2hex,
   rgb2lab,
-} from "../../../common/color/convert-color";
-import { labDarken } from "../../../common/color/lab";
-import { SolarSourceTypeEnergyPreference } from "../../../data/energy";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+} from "../../../../common/color/convert-color";
+import { labDarken } from "../../../../common/color/lab";
+import { SolarSourceTypeEnergyPreference } from "../../../../data/energy";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import {
   ForecastSolarForecast,
   getForecastSolarForecasts,
-} from "../../../data/forecast_solar";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/chart/ha-chart-base";
-import "../../../components/ha-switch";
-import "../../../components/ha-formfield";
+} from "../../../../data/forecast_solar";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import "../../../../components/chart/ha-chart-base";
+import "../../../../components/ha-switch";
+import "../../../../components/ha-formfield";
 
 const SOLAR_COLOR = { border: "#FF9800", background: "#ffcb80" };
 

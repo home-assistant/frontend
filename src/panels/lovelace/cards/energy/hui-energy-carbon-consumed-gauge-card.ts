@@ -1,23 +1,23 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { round } from "../../../common/number/round";
-import { subscribeOne } from "../../../common/util/subscribe-one";
-import "../../../components/ha-card";
-import "../../../components/ha-gauge";
-import { getConfigEntries } from "../../../data/config_entries";
-import { energySourcesByType } from "../../../data/energy";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import { round } from "../../../../common/number/round";
+import { subscribeOne } from "../../../../common/util/subscribe-one";
+import "../../../../components/ha-card";
+import "../../../../components/ha-gauge";
+import { getConfigEntries } from "../../../../data/config_entries";
+import { energySourcesByType } from "../../../../data/energy";
+import { subscribeEntityRegistry } from "../../../../data/entity_registry";
 import {
   calculateStatisticsSumGrowth,
   fetchStatistics,
   Statistics,
-} from "../../../data/history";
-import type { HomeAssistant } from "../../../types";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard } from "../types";
-import { severityMap } from "./hui-gauge-card";
-import type { EnergyCarbonGaugeCardConfig } from "./types";
+} from "../../../../data/history";
+import type { HomeAssistant } from "../../../../types";
+import { createEntityNotFoundWarning } from "../../components/hui-warning";
+import type { LovelaceCard } from "../../types";
+import { severityMap } from "../hui-gauge-card";
+import type { EnergyCarbonGaugeCardConfig } from "../types";
 
 @customElement("hui-energy-carbon-consumed-gauge-card")
 class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {

@@ -9,23 +9,23 @@ import {
   unsafeCSS,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import { round } from "../../../common/number/round";
-import "../../../components/chart/statistics-chart";
-import "../../../components/ha-card";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { round } from "../../../../common/number/round";
+import "../../../../components/chart/statistics-chart";
+import "../../../../components/ha-card";
 import {
   EnergyInfo,
   getEnergyInfo,
   GridSourceTypeEnergyPreference,
-} from "../../../data/energy";
+} from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   fetchStatistics,
   Statistics,
-} from "../../../data/history";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
-import { EnergyDevicesGraphCardConfig } from "./types";
+} from "../../../../data/history";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergyDevicesGraphCardConfig } from "../types";
 
 @customElement("hui-energy-costs-table-card")
 export class HuiEnergyCostsTableCard

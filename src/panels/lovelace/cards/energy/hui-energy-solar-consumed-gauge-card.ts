@@ -1,19 +1,19 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { round } from "../../../common/number/round";
-import "../../../components/ha-card";
-import "../../../components/ha-gauge";
-import { energySourcesByType } from "../../../data/energy";
+import { round } from "../../../../common/number/round";
+import "../../../../components/ha-card";
+import "../../../../components/ha-gauge";
+import { energySourcesByType } from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
   fetchStatistics,
   Statistics,
-} from "../../../data/history";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCard } from "../types";
-import { severityMap } from "./hui-gauge-card";
-import type { EnergySolarGaugeCardConfig } from "./types";
+} from "../../../../data/history";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import { severityMap } from "../hui-gauge-card";
+import type { EnergySolarGaugeCardConfig } from "../types";
 
 @customElement("hui-energy-solar-consumed-gauge-card")
 class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {

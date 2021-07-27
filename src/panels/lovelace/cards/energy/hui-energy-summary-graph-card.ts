@@ -8,22 +8,22 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../components/ha-card";
+import "../../../../components/ha-card";
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
-import { EnergySummaryGraphCardConfig } from "./types";
-import { fetchStatistics, Statistics } from "../../../data/history";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergySummaryGraphCardConfig } from "../types";
+import { fetchStatistics, Statistics } from "../../../../data/history";
 import {
   hex2rgb,
   lab2rgb,
   rgb2hex,
   rgb2lab,
-} from "../../../common/color/convert-color";
-import { labDarken } from "../../../common/color/lab";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/chart/ha-chart-base";
-import { round } from "../../../common/number/round";
+} from "../../../../common/color/convert-color";
+import { labDarken } from "../../../../common/color/lab";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import "../../../../components/chart/ha-chart-base";
+import { round } from "../../../../common/number/round";
 
 const NEGATIVE = ["to_grid"];
 const ORDER = {

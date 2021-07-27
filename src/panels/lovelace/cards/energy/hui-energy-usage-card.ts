@@ -1,21 +1,21 @@
 import { mdiHome, mdiLeaf, mdiSolarPower, mdiTransmissionTower } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { subscribeOne } from "../../../common/util/subscribe-one";
-import "../../../components/ha-svg-icon";
-import { getConfigEntries } from "../../../data/config_entries";
-import { energySourcesByType } from "../../../data/energy";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import { subscribeOne } from "../../../../common/util/subscribe-one";
+import "../../../../components/ha-svg-icon";
+import { getConfigEntries } from "../../../../data/config_entries";
+import { energySourcesByType } from "../../../../data/energy";
+import { subscribeEntityRegistry } from "../../../../data/entity_registry";
 import {
   calculateStatisticsSumGrowth,
   fetchStatistics,
   Statistics,
-} from "../../../data/history";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
-import { EnergySummaryCardConfig } from "./types";
-import "../../../components/ha-card";
-import { round } from "../../../common/number/round";
+} from "../../../../data/history";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergySummaryCardConfig } from "../types";
+import "../../../../components/ha-card";
+import { round } from "../../../../common/number/round";
 
 @customElement("hui-energy-usage-card")
 class HuiEnergyUsageCard extends LitElement implements LovelaceCard {
