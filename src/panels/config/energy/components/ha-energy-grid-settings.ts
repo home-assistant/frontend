@@ -214,10 +214,8 @@ export class EnergyGridSettings extends LitElement {
             energy_sources: [
               ...this.preferences.energy_sources,
               {
-                type: "grid",
+                ...emptyGridSourceEnergyPreference(),
                 flow_from: [flow],
-                flow_to: [],
-                cost_adjustment_day: 0,
               },
             ],
           };
@@ -251,10 +249,8 @@ export class EnergyGridSettings extends LitElement {
             energy_sources: [
               ...this.preferences.energy_sources,
               {
-                type: "grid",
+                ...emptyGridSourceEnergyPreference(),
                 flow_to: [flow],
-                flow_from: [],
-                cost_adjustment_day: 0,
               },
             ],
           };
