@@ -24,6 +24,7 @@ import {
   energySourcesByType,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
+  GridSourceTypeEnergyPreference,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
@@ -201,18 +202,35 @@ export class EnergyGridSettings extends LitElement {
   private _addFromSource() {
     showEnergySettingsGridFlowFromDialog(this, {
       currency: this.preferences.currency,
-      saveCallback: async (source) => {
-        const flowFrom = energySourcesByType(this.preferences).grid![0]
-          .flow_from;
+      saveCallback: async (flow) => {
+        let preferences: EnergyPreferences;
+        const gridSource = this.preferences.energy_sources.find(
+          (src) => src.type === "grid"
+        ) as GridSourceTypeEnergyPreference | undefined;
 
-        const preferences: EnergyPreferences = {
-          ...this.preferences,
-          energy_sources: this.preferences.energy_sources.map((src) =>
-            src.type === "grid"
-              ? { ...src, flow_from: [...flowFrom, source] }
-              : src
-          ),
-        };
+        if (!gridSource) {
+          preferences = {
+            ...this.preferences,
+            energy_sources: [
+              ...this.preferences.energy_sources,
+              {
+                type: "grid",
+                flow_from: [flow],
+                flow_to: [],
+                cost_adjustment_day: 0,
+              },
+            ],
+          };
+        } else {
+          preferences = {
+            ...this.preferences,
+            energy_sources: this.preferences.energy_sources.map((src) =>
+              src.type === "grid"
+                ? { ...src, flow_from: [...gridSource.flow_from, flow] }
+                : src
+            ),
+          };
+        }
         await this._savePreferences(preferences);
       },
     });
@@ -221,15 +239,35 @@ export class EnergyGridSettings extends LitElement {
   private _addToSource() {
     showEnergySettingsGridFlowToDialog(this, {
       currency: this.preferences.currency,
-      saveCallback: async (source) => {
-        const flowTo = energySourcesByType(this.preferences).grid![0].flow_to;
+      saveCallback: async (flow) => {
+        let preferences: EnergyPreferences;
+        const gridSource = this.preferences.energy_sources.find(
+          (src) => src.type === "grid"
+        ) as GridSourceTypeEnergyPreference | undefined;
 
-        const preferences: EnergyPreferences = {
-          ...this.preferences,
-          energy_sources: this.preferences.energy_sources.map((src) =>
-            src.type === "grid" ? { ...src, flow_to: [...flowTo, source] } : src
-          ),
-        };
+        if (!gridSource) {
+          preferences = {
+            ...this.preferences,
+            energy_sources: [
+              ...this.preferences.energy_sources,
+              {
+                type: "grid",
+                flow_to: [flow],
+                flow_from: [],
+                cost_adjustment_day: 0,
+              },
+            ],
+          };
+        } else {
+          preferences = {
+            ...this.preferences,
+            energy_sources: this.preferences.energy_sources.map((src) =>
+              src.type === "grid"
+                ? { ...src, flow_to: [...gridSource.flow_to, flow] }
+                : src
+            ),
+          };
+        }
         await this._savePreferences(preferences);
       },
     });
