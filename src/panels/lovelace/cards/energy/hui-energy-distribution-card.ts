@@ -401,7 +401,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       align-items: center;
     }
     .circle-container.solar {
-      height: 120px;
+      height: 130px;
     }
     .spacer {
       width: 80px;
