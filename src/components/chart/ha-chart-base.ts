@@ -272,7 +272,7 @@ export default class HaChartBase extends LitElement {
         border-radius: 50%;
         display: inline-block;
         height: 16px;
-        margin-right: 4px;
+        margin-right: 6px;
         width: 16px;
         flex-shrink: 0;
         box-sizing: border-box;
@@ -280,9 +280,10 @@ export default class HaChartBase extends LitElement {
       .chartTooltip .bullet {
         align-self: baseline;
       }
+      :host([rtl]) .chartLegend .bullet,
       :host([rtl]) .chartTooltip .bullet {
         margin-right: inherit;
-        margin-left: 4px;
+        margin-left: 6px;
       }
       .chartTooltip {
         padding: 8px;
@@ -314,6 +315,7 @@ export default class HaChartBase extends LitElement {
         white-space: pre-line;
         align-items: center;
         line-height: 16px;
+        padding: 4px 0;
       }
       .chartTooltip .title {
         text-align: center;

@@ -1,21 +1,21 @@
 import { mdiCashMultiple, mdiSolarPower } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-svg-icon";
+import "../../../../components/ha-svg-icon";
 import {
   energySourcesByType,
   GridSourceTypeEnergyPreference,
   SolarSourceTypeEnergyPreference,
-} from "../../../data/energy";
+} from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   fetchStatistics,
   Statistics,
-} from "../../../data/history";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
-import { EnergySummaryCardConfig } from "./types";
-import "../../../components/ha-card";
+} from "../../../../data/history";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergySummaryCardConfig } from "../types";
+import "../../../../components/ha-card";
 
 const renderSumStatHelper = (
   data: Statistics,

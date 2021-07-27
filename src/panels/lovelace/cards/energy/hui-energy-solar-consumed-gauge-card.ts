@@ -1,19 +1,19 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { round } from "../../../common/number/round";
-import "../../../components/ha-card";
-import "../../../components/ha-gauge";
-import { energySourcesByType } from "../../../data/energy";
+import { round } from "../../../../common/number/round";
+import "../../../../components/ha-card";
+import "../../../../components/ha-gauge";
+import { energySourcesByType } from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
   fetchStatistics,
   Statistics,
-} from "../../../data/history";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCard } from "../types";
-import { severityMap } from "./hui-gauge-card";
-import type { EnergySolarGaugeCardConfig } from "./types";
+} from "../../../../data/history";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import { severityMap } from "../hui-gauge-card";
+import type { EnergySolarGaugeCardConfig } from "../types";
 
 @customElement("hui-energy-solar-consumed-gauge-card")
 class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
@@ -77,7 +77,7 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
                 .locale=${this.hass!.locale}
                 label="%"
                 style=${styleMap({
-                  "--gauge-color": this._computeSeverity(64),
+                  "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
               <div class="name">Self consumed solar energy</div>`
@@ -87,8 +87,11 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
   }
 
   private _computeSeverity(numberValue: number): string {
-    if (numberValue > 50) {
+    if (numberValue > 75) {
       return severityMap.green;
+    }
+    if (numberValue < 50) {
+      return severityMap.yellow;
     }
     return severityMap.normal;
   }

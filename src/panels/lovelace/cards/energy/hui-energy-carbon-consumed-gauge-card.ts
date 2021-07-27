@@ -1,23 +1,23 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { round } from "../../../common/number/round";
-import { subscribeOne } from "../../../common/util/subscribe-one";
-import "../../../components/ha-card";
-import "../../../components/ha-gauge";
-import { getConfigEntries } from "../../../data/config_entries";
-import { energySourcesByType } from "../../../data/energy";
-import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import { round } from "../../../../common/number/round";
+import { subscribeOne } from "../../../../common/util/subscribe-one";
+import "../../../../components/ha-card";
+import "../../../../components/ha-gauge";
+import { getConfigEntries } from "../../../../data/config_entries";
+import { energySourcesByType } from "../../../../data/energy";
+import { subscribeEntityRegistry } from "../../../../data/entity_registry";
 import {
   calculateStatisticsSumGrowth,
   fetchStatistics,
   Statistics,
-} from "../../../data/history";
-import type { HomeAssistant } from "../../../types";
-import { createEntityNotFoundWarning } from "../components/hui-warning";
-import type { LovelaceCard } from "../types";
-import { severityMap } from "./hui-gauge-card";
-import type { EnergyCarbonGaugeCardConfig } from "./types";
+} from "../../../../data/history";
+import type { HomeAssistant } from "../../../../types";
+import { createEntityNotFoundWarning } from "../../components/hui-warning";
+import type { LovelaceCard } from "../../types";
+import { severityMap } from "../hui-gauge-card";
+import type { EnergyCarbonGaugeCardConfig } from "../types";
 
 @customElement("hui-energy-carbon-consumed-gauge-card")
 class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
@@ -103,7 +103,7 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
         (totalSolarProduction || 0) -
         (totalGridReturned || 0);
 
-      value = round((highCarbonEnergy / totalEnergyConsumed) * 100);
+      value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
     }
 
     return html`
@@ -116,23 +116,23 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
                 .locale=${this.hass!.locale}
                 label="%"
                 style=${styleMap({
-                  "--gauge-color": this._computeSeverity(64),
+                  "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <div class="name">High-carbon energy consumed</div>`
-          : html`Consumed high-carbon energy couldn't be calculated`}
+              <div class="name">Non-fossil energy consumed</div>`
+          : html`Consumed non-fossil energy couldn't be calculated`}
       </ha-card>
     `;
   }
 
   private _computeSeverity(numberValue: number): string {
-    if (numberValue > 50) {
+    if (numberValue < 10) {
       return severityMap.red;
     }
-    if (numberValue > 30) {
+    if (numberValue < 30) {
       return severityMap.yellow;
     }
-    if (numberValue < 10) {
+    if (numberValue > 75) {
       return severityMap.green;
     }
     return severityMap.normal;
