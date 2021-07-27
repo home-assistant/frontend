@@ -26,15 +26,10 @@ import "../../../../components/chart/ha-chart-base";
 import { round } from "../../../../common/number/round";
 
 const NEGATIVE = ["to_grid"];
-const ORDER = {
-  used_solar: 0,
-  from_grid: 100,
-  to_grid: 200,
-};
 const COLORS = {
-  to_grid: { border: "#56d256", background: "#87ceab" },
-  from_grid: { border: "#126A9A", background: "#88b5cd" },
-  used_solar: { border: "#FF9800", background: "#ffcb80" },
+  to_grid: { border: "#673ab7", background: "#b39bdb" },
+  from_grid: { border: "#126A9A", background: "#8ab5cd" },
+  used_solar: { border: "#FF9800", background: "#fecc8e" },
 };
 
 @customElement("hui-energy-summary-graph-card")
@@ -126,7 +121,7 @@ export class HuiEnergySummaryGraphCard
             ? html`<ha-chart-base
                 .data=${this._chartData}
                 .options=${this._chartOptions}
-                chartType="line"
+                chart-type="bar"
               ></ha-chart-base>`
             : ""}
         </div>
@@ -135,12 +130,18 @@ export class HuiEnergySummaryGraphCard
   }
 
   private _createOptions() {
+    const startDate = new Date();
+    startDate.setHours(0, 0, 0, 0);
+    const startTime = startDate.getTime();
+
     this._chartOptions = {
       parsing: false,
       animation: false,
       scales: {
         x: {
           type: "time",
+          suggestedMin: startTime,
+          suggestedMax: startTime + 24 * 60 * 60 * 1000,
           adapters: {
             date: {
               locale: this.hass.locale,
@@ -161,10 +162,15 @@ export class HuiEnergySummaryGraphCard
           time: {
             tooltipFormat: "datetimeseconds",
           },
+          offset: true,
         },
         y: {
           stacked: true,
           type: "linear",
+          title: {
+            display: true,
+            text: "kWh",
+          },
           ticks: {
             beginAtZero: true,
             callback: (value) => Math.abs(round(value)),
@@ -193,9 +199,13 @@ export class HuiEnergySummaryGraphCard
                 }
               }
               return [
-                `Total consumed: ${totalConsumed.toFixed(2)} kWh`,
-                `Total returned: ${totalReturned.toFixed(2)} kWh`,
-              ];
+                totalConsumed
+                  ? `Total consumed: ${totalConsumed.toFixed(2)} kWh`
+                  : "",
+                totalReturned
+                  ? `Total returned: ${totalReturned.toFixed(2)} kWh`
+                  : "",
+              ].filter(Boolean);
             },
           },
         },
@@ -213,10 +223,7 @@ export class HuiEnergySummaryGraphCard
         mode: "nearest",
       },
       elements: {
-        line: {
-          tension: 0.4,
-          borderWidth: 1.5,
-        },
+        bar: { borderWidth: 1.5 },
         point: {
           hitRadius: 5,
         },
@@ -280,7 +287,7 @@ export class HuiEnergySummaryGraphCard
     }
 
     const statisticsData = Object.values(this._data!);
-    const datasets: ChartDataset<"line">[] = [];
+    const datasets: ChartDataset<"bar">[] = [];
     let endTime: Date;
 
     if (statisticsData.length === 0) {
@@ -370,7 +377,7 @@ export class HuiEnergySummaryGraphCard
       const negative = NEGATIVE.includes(type);
 
       Object.entries(sources).forEach(([statId, source], idx) => {
-        const data: ChartDataset<"line">[] = [];
+        const data: ChartDataset<"bar">[] = [];
         const entity = this.hass.states[statId];
         const color = COLORS[type];
 
@@ -381,9 +388,6 @@ export class HuiEnergySummaryGraphCard
               : entity
               ? computeStateName(entity)
               : statId,
-          fill: true,
-          stepped: false,
-          order: ORDER[type] + idx,
           borderColor:
             idx > 0
               ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(color.border)), idx)))
@@ -394,7 +398,7 @@ export class HuiEnergySummaryGraphCard
                   lab2rgb(labDarken(rgb2lab(hex2rgb(color.background)), idx))
                 )
               : color.background,
-          stack: negative ? "negative" : "positive",
+          stack: "stack",
           data: [],
         });
 
@@ -402,6 +406,7 @@ export class HuiEnergySummaryGraphCard
         for (const key of uniqueKeys) {
           const value = key in source ? Math.round(source[key] * 100) / 100 : 0;
           const date = new Date(key);
+          // @ts-expect-error
           data[0].data.push({
             x: date.getTime(),
             y: value && negative ? -1 * value : value,

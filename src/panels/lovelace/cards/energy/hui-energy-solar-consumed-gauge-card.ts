@@ -77,7 +77,7 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
                 .locale=${this.hass!.locale}
                 label="%"
                 style=${styleMap({
-                  "--gauge-color": this._computeSeverity(64),
+                  "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
               <div class="name">Self consumed solar energy</div>`
@@ -87,8 +87,11 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
   }
 
   private _computeSeverity(numberValue: number): string {
-    if (numberValue > 50) {
+    if (numberValue > 75) {
       return severityMap.green;
+    }
+    if (numberValue < 50) {
+      return severityMap.yellow;
     }
     return severityMap.normal;
   }

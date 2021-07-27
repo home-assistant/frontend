@@ -103,7 +103,7 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
         (totalSolarProduction || 0) -
         (totalGridReturned || 0);
 
-      value = round((highCarbonEnergy / totalEnergyConsumed) * 100);
+      value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
     }
 
     return html`
@@ -116,23 +116,23 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
                 .locale=${this.hass!.locale}
                 label="%"
                 style=${styleMap({
-                  "--gauge-color": this._computeSeverity(64),
+                  "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <div class="name">High-carbon energy consumed</div>`
-          : html`Consumed high-carbon energy couldn't be calculated`}
+              <div class="name">Non-fossil energy consumed</div>`
+          : html`Consumed non-fossil energy couldn't be calculated`}
       </ha-card>
     `;
   }
 
   private _computeSeverity(numberValue: number): string {
-    if (numberValue > 50) {
+    if (numberValue < 10) {
       return severityMap.red;
     }
-    if (numberValue > 30) {
+    if (numberValue < 30) {
       return severityMap.yellow;
     }
-    if (numberValue < 10) {
+    if (numberValue > 75) {
       return severityMap.green;
     }
     return severityMap.normal;
