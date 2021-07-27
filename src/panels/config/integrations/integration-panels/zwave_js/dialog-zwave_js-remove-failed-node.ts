@@ -28,7 +28,7 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
 
   @state() private _node?: ZWaveJSRemovedNode;
 
-  private _subscribed?: UnsubscribeFunc;
+  private _subscribed?: Promise<UnsubscribeFunc>;
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
@@ -159,22 +159,20 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
     `;
   }
 
-  private async _startExclusion(): Promise<void> {
+  private _startExclusion(): void {
     if (!this.hass) {
       return;
     }
     this._status = "started";
-    try {
-      this._subscribed = await removeFailedNode(
-        this.hass,
-        this.entry_id!,
-        this.node_id!,
-        (message: any) => this._handleMessage(message)
-      );
-    } catch (error) {
+    this._subscribed = removeFailedNode(
+      this.hass,
+      this.entry_id!,
+      this.node_id!,
+      (message: any) => this._handleMessage(message)
+    ).catch((error) => {
       this._status = "failed";
       this._error = error;
-    }
+    });
   }
 
   private _handleMessage(message: any): void {
@@ -188,9 +186,9 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
     }
   }
 
-  private _unsubscribe(): void {
+  private async _unsubscribe(): Promise<void> {
     if (this._subscribed) {
-      this._subscribed();
+      (await this._subscribed)();
       this._subscribed = undefined;
     }
     if (this._status !== "finished") {
