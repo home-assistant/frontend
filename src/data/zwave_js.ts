@@ -178,6 +178,17 @@ export const reinterviewNode = (
     }
   );
 
+export const healNode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number
+): Promise<boolean> =>
+  hass.callWS({
+    type: "zwave_js/heal_node",
+    entry_id: entry_id,
+    node_id: node_id,
+  });
+
 export const healNetwork = (
   hass: HomeAssistant,
   entry_id: string
