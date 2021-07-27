@@ -249,7 +249,7 @@ class ConfigCoreForm extends LitElement {
       await saveCoreConfig(this.hass, {
         latitude: location[0],
         longitude: location[1],
-        currency: this._currencyValue,
+        currency: this._currencyValue || "",
         elevation: Number(this._elevationValue),
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue,
