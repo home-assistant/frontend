@@ -85,7 +85,8 @@ export class EnergyStrategy {
     // Only include if we have a grid.
     if (hasGrid) {
       view.cards!.push({
-        type: "energy-usage",
+        title: "Energy distribution",
+        type: "energy-distribution",
         prefs: energyPrefs,
         view_layout: { position: "sidebar" },
       });

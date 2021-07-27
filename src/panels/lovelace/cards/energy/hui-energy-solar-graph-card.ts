@@ -8,31 +8,31 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../components/ha-card";
+import "../../../../components/ha-card";
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
-import { EnergySolarGraphCardConfig } from "./types";
-import { fetchStatistics, Statistics } from "../../../data/history";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergySolarGraphCardConfig } from "../types";
+import { fetchStatistics, Statistics } from "../../../../data/history";
 import {
   hex2rgb,
   lab2rgb,
   rgb2hex,
   rgb2lab,
-} from "../../../common/color/convert-color";
-import { labDarken } from "../../../common/color/lab";
-import { SolarSourceTypeEnergyPreference } from "../../../data/energy";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+} from "../../../../common/color/convert-color";
+import { labDarken } from "../../../../common/color/lab";
+import { SolarSourceTypeEnergyPreference } from "../../../../data/energy";
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import {
   ForecastSolarForecast,
   getForecastSolarForecasts,
-} from "../../../data/forecast_solar";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/chart/ha-chart-base";
-import "../../../components/ha-switch";
-import "../../../components/ha-formfield";
+} from "../../../../data/forecast_solar";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import "../../../../components/chart/ha-chart-base";
+import "../../../../components/ha-switch";
+import "../../../../components/ha-formfield";
 
-const SOLAR_COLOR = { border: "#FF9800", background: "#ffcb80" };
+const SOLAR_COLOR = "#FF9800";
 
 @customElement("hui-energy-solar-graph-card")
 export class HuiEnergySolarGraphCard
@@ -123,17 +123,11 @@ export class HuiEnergySolarGraphCard
             "has-header": !!this._config.title,
           })}"
         >
-          <ha-formfield label="Show all forecast data"
-            ><ha-switch
-              .checked=${this._showAllForecastData}
-              @change=${this._showAllForecastChanged}
-            ></ha-switch
-          ></ha-formfield>
           ${this._chartData
             ? html`<ha-chart-base
                 .data=${this._chartData}
                 .options=${this._chartOptions}
-                chart-type="line"
+                chart-type="bar"
               ></ha-chart-base>`
             : ""}
         </div>
@@ -142,12 +136,18 @@ export class HuiEnergySolarGraphCard
   }
 
   private _createOptions() {
+    const startDate = new Date();
+    startDate.setHours(0, 0, 0, 0);
+    const startTime = startDate.getTime();
+
     this._chartOptions = {
       parsing: false,
       animation: false,
       scales: {
         x: {
           type: "time",
+          suggestedMin: startTime,
+          suggestedMax: startTime + 24 * 60 * 60 * 1000,
           adapters: {
             date: {
               locale: this.hass.locale,
@@ -168,9 +168,14 @@ export class HuiEnergySolarGraphCard
           time: {
             tooltipFormat: "datetimeseconds",
           },
+          offset: true,
         },
         y: {
           type: "linear",
+          title: {
+            display: true,
+            text: "kWh",
+          },
           ticks: {
             beginAtZero: true,
           },
@@ -199,9 +204,10 @@ export class HuiEnergySolarGraphCard
       },
       elements: {
         line: {
-          tension: 0.4,
+          tension: 0.3,
           borderWidth: 1.5,
         },
+        bar: { borderWidth: 1.5 },
         point: {
           hitRadius: 5,
         },
@@ -252,7 +258,7 @@ export class HuiEnergySolarGraphCard
       ) as SolarSourceTypeEnergyPreference[];
 
     const statisticsData = Object.values(this._data!);
-    const datasets: ChartDataset<"line">[] = [];
+    const datasets: ChartDataset<"bar">[] = [];
     let endTime: Date;
 
     if (statisticsData.length === 0) {
@@ -272,22 +278,18 @@ export class HuiEnergySolarGraphCard
     }
 
     solarSources.forEach((source, idx) => {
-      const data: ChartDataset<"line">[] = [];
+      const data: ChartDataset<"bar" | "line">[] = [];
       const entity = this.hass.states[source.stat_energy_from];
 
       const borderColor =
         idx > 0
-          ? rgb2hex(
-              lab2rgb(labDarken(rgb2lab(hex2rgb(SOLAR_COLOR.border)), idx))
-            )
-          : SOLAR_COLOR.border;
+          ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(SOLAR_COLOR)), idx)))
+          : SOLAR_COLOR;
 
       data.push({
         label: `Production ${
           entity ? computeStateName(entity) : source.stat_energy_from
         }`,
-        fill: true,
-        stepped: false,
         borderColor: borderColor,
         backgroundColor: borderColor + "7F",
         data: [],
@@ -343,6 +345,7 @@ export class HuiEnergySolarGraphCard
 
         if (forecastsData) {
           const forecast: ChartDataset<"line"> = {
+            type: "line",
             label: `Forecast ${
               entity ? computeStateName(entity) : source.stat_energy_from
             }`,
@@ -380,11 +383,6 @@ export class HuiEnergySolarGraphCard
     this._chartData = {
       datasets,
     };
-  }
-
-  private _showAllForecastChanged(ev) {
-    this._showAllForecastData = ev.target.checked;
-    this._renderChart();
   }
 
   static get styles(): CSSResultGroup {

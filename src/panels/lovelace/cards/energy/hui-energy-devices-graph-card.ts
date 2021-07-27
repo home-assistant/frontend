@@ -14,18 +14,18 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { getColorByIndex } from "../../../common/color/colors";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/chart/ha-chart-base";
-import "../../../components/ha-card";
+import { getColorByIndex } from "../../../../common/color/colors";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import "../../../../components/chart/ha-chart-base";
+import "../../../../components/ha-card";
 import {
   calculateStatisticSumGrowth,
   fetchStatistics,
   Statistics,
-} from "../../../data/history";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
-import { EnergyDevicesGraphCardConfig } from "./types";
+} from "../../../../data/history";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergyDevicesGraphCardConfig } from "../types";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
