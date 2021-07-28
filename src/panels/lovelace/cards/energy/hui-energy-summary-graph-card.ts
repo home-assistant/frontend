@@ -370,7 +370,7 @@ export class HuiEnergySummaryGraphCard
             totalStats[stat.start] =
               stat.start in totalStats ? totalStats[stat.start] + val : val;
           }
-          if (add) {
+          if (add && !(stat.start in set)) {
             set[stat.start] = val;
           }
           prevValue = stat.sum;
