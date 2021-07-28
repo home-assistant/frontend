@@ -312,25 +312,23 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       (entry) => entry.domain === "co2signal"
     );
 
-    if (!co2ConfigEntry) {
-      return;
-    }
-
     this._co2SignalEntity = undefined;
 
-    for (const entry of entityRegistryEntries) {
-      if (entry.config_entry_id !== co2ConfigEntry.entry_id) {
-        continue;
-      }
+    if (co2ConfigEntry) {
+      for (const entry of entityRegistryEntries) {
+        if (entry.config_entry_id !== co2ConfigEntry.entry_id) {
+          continue;
+        }
 
-      // The integration offers 2 entities. We want the % one.
-      const co2State = this.hass.states[entry.entity_id];
-      if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
-        continue;
-      }
+        // The integration offers 2 entities. We want the % one.
+        const co2State = this.hass.states[entry.entity_id];
+        if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
+          continue;
+        }
 
-      this._co2SignalEntity = co2State.entity_id;
-      break;
+        this._co2SignalEntity = co2State.entity_id;
+        break;
+      }
     }
 
     const startDate = new Date();

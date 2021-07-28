@@ -1,4 +1,5 @@
 import { HassEntity } from "home-assistant-js-websocket";
+import deepClone from "deep-clone-simple";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -378,19 +379,25 @@ const getMinStatisticStart = (stats: StatisticValue[][]): string | null => {
 const mergeSumStatistics = (stats: StatisticValue[][]) => {
   const result: { start: string; sum: number }[] = [];
 
-  while (stats.some((stat) => stat.length > 0)) {
-    const earliestStart = getMinStatisticStart(stats)!;
+  const statsCopy: StatisticValue[][] = deepClone(stats);
+
+  while (statsCopy.some((stat) => stat.length > 0)) {
+    const earliestStart = getMinStatisticStart(statsCopy)!;
 
     let sum = 0;
 
-    for (const stat of stats) {
+    for (const stat of statsCopy) {
       if (stat.length === 0) {
         continue;
       }
       if (stat[0].start !== earliestStart) {
         continue;
       }
-      sum += stat.shift()!.sum!;
+      const statVal = stat.shift()!;
+      if (!statVal.sum) {
+        continue;
+      }
+      sum += statVal.sum;
     }
 
     result.push({
@@ -410,7 +417,7 @@ export const calculateStatisticsSumGrowthWithPercentage = (
   percentageStat: StatisticValue[],
   sumStats: StatisticValue[][]
 ): number | null => {
-  let sum = 0;
+  let sum: number | null = null;
 
   if (sumStats.length === 0) {
     return null;
@@ -419,7 +426,6 @@ export const calculateStatisticsSumGrowthWithPercentage = (
   const sumStatsToProcess = mergeSumStatistics(sumStats);
   const percentageStatToProcess = [...percentageStat];
 
-  let matchedGrowthToPercentage = false;
   let lastSum: number | null = null;
 
   // pre-populate lastSum with last sum statistic _before_ the first percentage statistic
@@ -431,6 +437,10 @@ export const calculateStatisticsSumGrowthWithPercentage = (
   }
 
   while (percentageStatToProcess.length > 0) {
+    if (!sumStatsToProcess.length) {
+      return sum;
+    }
+
     // If they are not equal, pop the value that is earlier in time
     if (sumStatsToProcess[0].start !== percentageStatToProcess[0].start) {
       if (
@@ -449,15 +459,14 @@ export const calculateStatisticsSumGrowthWithPercentage = (
 
     if (lastSum !== null) {
       const sumGrowth = sumStatValue.sum! - lastSum;
-      sum += sumGrowth * (percentageStatValue.mean! / 100);
-      matchedGrowthToPercentage = true;
+      if (sum === null) {
+        sum = sumGrowth * (percentageStatValue.mean! / 100);
+      } else {
+        sum += sumGrowth * (percentageStatValue.mean! / 100);
+      }
     }
 
     lastSum = sumStatValue.sum;
-  }
-
-  if (!matchedGrowthToPercentage) {
-    return null;
   }
 
   return sum;
