@@ -150,7 +150,15 @@ class ConfigCoreForm extends LitElement {
             <div class="flex">
               ${this.hass.localize(
                 "ui.panel.config.core.section.core.core_config.currency"
-              )}
+              )}<br />
+              <a
+                href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
+                target="_blank"
+                rel="noopener noreferer"
+                >${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.find_currency_value"
+                )}</a
+              >
             </div>
 
             <paper-input
@@ -293,6 +301,10 @@ class ConfigCoreForm extends LitElement {
 
       .card-actions {
         text-align: right;
+      }
+
+      a {
+        color: var(--primary-color);
       }
     `;
   }
