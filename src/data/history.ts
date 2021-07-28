@@ -378,7 +378,7 @@ const getMinStatisticStart = (stats: StatisticValue[][]): string | null => {
 const mergeSumStatistics = (stats: StatisticValue[][]) => {
   const result: { start: string; sum: number }[] = [];
 
-  const statsCopy: StatisticValue[][] = stats.map(stat => [...stat]);
+  const statsCopy: StatisticValue[][] = stats.map((stat) => [...stat]);
 
   while (statsCopy.some((stat) => stat.length > 0)) {
     const earliestStart = getMinStatisticStart(statsCopy)!;
