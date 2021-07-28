@@ -74,7 +74,7 @@ export class HuiStatisticsGraphCardEditor
             .value=${this._days_to_show}
             min="1"
             .configValue=${"days_to_show"}
-            @value-changed="${this._valueChanged}"
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
         <ha-statistics-picker
