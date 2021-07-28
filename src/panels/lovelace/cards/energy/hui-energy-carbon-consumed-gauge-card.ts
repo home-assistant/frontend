@@ -10,6 +10,7 @@ import { energySourcesByType } from "../../../../data/energy";
 import { subscribeEntityRegistry } from "../../../../data/entity_registry";
 import {
   calculateStatisticsSumGrowth,
+  calculateStatisticsSumGrowthWithPercentage,
   fetchStatistics,
   Statistics,
 } from "../../../../data/history";
@@ -42,7 +43,6 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
 
     if (!this.hasUpdated) {
       this._getStatistics();
-      this._fetchCO2SignalEntity();
     }
   }
 
@@ -51,12 +51,12 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
-    if (!this._stats || this._co2SignalEntity === undefined) {
-      return html`Loading...`;
+    if (this._co2SignalEntity === null) {
+      return html``;
     }
 
-    if (!this._co2SignalEntity) {
-      return html``;
+    if (!this._stats || !this._co2SignalEntity) {
+      return html`Loading...`;
     }
 
     const co2State = this.hass.states[this._co2SignalEntity];
@@ -65,12 +65,6 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
       return html`<hui-warning>
         ${createEntityNotFoundWarning(this.hass, this._co2SignalEntity)}
       </hui-warning>`;
-    }
-
-    const co2percentage = Number(co2State.state);
-
-    if (isNaN(co2percentage)) {
-      return html``;
     }
 
     const prefs = this._config!.prefs;
@@ -83,7 +77,17 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
 
     let value: number | undefined;
 
-    if (totalGridConsumption) {
+    if (this._co2SignalEntity in this._stats && totalGridConsumption) {
+      const highCarbonEnergy =
+        calculateStatisticsSumGrowthWithPercentage(
+          this._stats[this._co2SignalEntity],
+          types
+            .grid![0].flow_from.map(
+              (flow) => this._stats![flow.stat_energy_from]
+            )
+            .filter(Boolean)
+        ) || 0;
+
       const totalSolarProduction = types.solar
         ? calculateStatisticsSumGrowth(
             this._stats,
@@ -95,8 +99,6 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
         this._stats,
         types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
       );
-
-      const highCarbonEnergy = (totalGridConsumption * co2percentage) / 100;
 
       const totalEnergyConsumed =
         totalGridConsumption +
@@ -171,6 +173,12 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
   }
 
   private async _getStatistics(): Promise<void> {
+    await this._fetchCO2SignalEntity();
+
+    if (this._co2SignalEntity === null) {
+      return;
+    }
+
     const startDate = new Date();
     startDate.setHours(0, 0, 0, 0);
     startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
@@ -190,6 +198,10 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
       for (const flowTo of source.flow_to) {
         statistics.push(flowTo.stat_energy_to);
       }
+    }
+
+    if (this._co2SignalEntity) {
+      statistics.push(this._co2SignalEntity);
     }
 
     this._stats = await fetchStatistics(
