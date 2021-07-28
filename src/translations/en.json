@@ -3109,6 +3109,10 @@
               "name": "History Graph",
               "description": "The History Graph card allows you to display a graph for each of the entities listed."
             },
+            "statistics-graph": {
+              "name": "Statistics Graph",
+              "description": "The Statistics Graph card allows you to display a graph of the statistics for each of the entities listed."
+            },
             "horizontal-stack": {
               "name": "Horizontal Stack",
               "description": "The Horizontal Stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
@@ -3135,6 +3139,7 @@
               "entity": "Entity",
               "hold_action": "Hold Action",
               "hours_to_show": "Hours to Show",
+              "days_to_show": "Days to Show",
               "icon": "Icon",
               "icon_height": "Icon Height",
               "image": "Image Path",
