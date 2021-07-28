@@ -38,10 +38,6 @@ export class HuiHistoryGraphCardEditor
     this._configEntities = processEditorEntities(config.entities);
   }
 
-  get _entity(): string {
-    return this._config!.entity || "";
-  }
-
   get _title(): string {
     return this._config!.title || "";
   }
