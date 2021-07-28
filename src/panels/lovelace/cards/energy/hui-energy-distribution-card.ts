@@ -9,6 +9,7 @@ import {
 import { css, html, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { ifDefined } from "lit/directives/if-defined";
 import { round } from "../../../../common/number/round";
 import { subscribeOne } from "../../../../common/util/subscribe-one";
 import "../../../../components/ha-card";
@@ -121,6 +122,8 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     let homeLowCarbonCircumference: number | undefined;
     let homeHighCarbonCircumference: number | undefined;
 
+    let electricityMapUrl: string | undefined;
+
     if (this._co2SignalEntity && this._co2SignalEntity in this._stats) {
       // Calculate high carbon consumption
       const highCarbonConsumption = calculateStatisticsSumGrowthWithPercentage(
@@ -129,6 +132,12 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
           .grid![0].flow_from.map((flow) => this._stats![flow.stat_energy_from])
           .filter(Boolean)
       );
+
+      const co2State = this.hass.states[this._co2SignalEntity];
+
+      if (co2State) {
+        electricityMapUrl = `https://www.electricitymap.org/zone/${co2State.attributes.country_code}`;
+      }
 
       if (highCarbonConsumption !== null) {
         const gridPctHighCarbon = highCarbonConsumption / totalConsumption;
@@ -159,10 +168,15 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                   : html`
                       <div class="circle-container low-carbon">
                         <span class="label">Non-fossil</span>
-                        <div class="circle">
+                        <a
+                          class="circle"
+                          href=${ifDefined(electricityMapUrl)}
+                          target="_blank"
+                          rel="noopener no referrer"
+                        >
                           <ha-svg-icon .path="${mdiLeaf}"></ha-svg-icon>
                           ${round(lowCarbonConsumption, 1)} kWh
-                        </div>
+                        </a>
                         <svg width="80" height="30">
                           <line x1="40" y1="0" x2="40" y2="30"></line>
                         </svg>
@@ -478,6 +492,8 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       font-size: 12px;
       line-height: 12px;
       position: relative;
+      text-decoration: none;
+      color: var(--primary-text-color);
     }
     ha-svg-icon {
       padding-bottom: 2px;

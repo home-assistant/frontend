@@ -75,7 +75,6 @@ export class DialogEnergySolarSettings
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
-        <p>Solar production for the win! <a href="#">Learn more</a></p>
 
         <ha-statistic-picker
           .hass=${this.hass}
@@ -212,6 +211,9 @@ export class DialogEnergySolarSettings
       haStyle,
       haStyleDialog,
       css`
+        ha-dialog {
+          --mdc-dialog-max-width: 430px;
+        }
         img {
           height: 24px;
           margin-right: 16px;
