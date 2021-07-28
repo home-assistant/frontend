@@ -178,10 +178,6 @@ export class HuiEnergyDevicesGraphCard
     const statisticsData = Object.values(this._data!);
     let endTime: Date;
 
-    if (statisticsData.length === 0) {
-      return;
-    }
-
     endTime = new Date(
       Math.max(
         ...statisticsData.map((stats) =>
@@ -190,7 +186,7 @@ export class HuiEnergyDevicesGraphCard
       )
     );
 
-    if (endTime > new Date()) {
+    if (!endTime || endTime > new Date()) {
       endTime = new Date();
     }
 
@@ -207,27 +203,30 @@ export class HuiEnergyDevicesGraphCard
       },
     ];
 
-    Object.entries(this._data).forEach(([id, statistics], idx) => {
-      const entity = this.hass.states[id];
-      const label = entity ? computeStateName(entity) : id;
+    for (let idx = 0; idx < prefs.device_consumption.length; idx++) {
+      const device = prefs.device_consumption[idx];
+      const entity = this.hass.states[device.stat_consumption];
+      const label = entity ? computeStateName(entity) : device.stat_consumption;
 
       const color = getColorByIndex(idx);
 
       borderColor.push(color);
       backgroundColor.push(color + "7F");
 
-      const value = calculateStatisticSumGrowth(statistics);
+      const value =
+        device.stat_consumption in this._data
+          ? calculateStatisticSumGrowth(this._data[device.stat_consumption])
+          : 0;
       data.push({
         // @ts-expect-error
         y: label,
         x: value || 0,
       });
-    });
+    }
 
     data.sort((a, b) => b.x - a.x);
 
     this._chartData = {
-      // labels,
       datasets,
     };
   }
