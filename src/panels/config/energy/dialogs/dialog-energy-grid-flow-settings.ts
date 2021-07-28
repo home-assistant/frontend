@@ -85,11 +85,11 @@ export class DialogEnergyGridFlowSettings
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
-        <p>
+        <div>
           ${this.hass.localize(
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.paragraph`
           )}
-        </p>
+        </div>
 
         <ha-statistic-picker
           .hass=${this.hass}
@@ -277,6 +277,9 @@ export class DialogEnergyGridFlowSettings
     return [
       haStyleDialog,
       css`
+        ha-dialog {
+          --mdc-dialog-max-width: 430px;
+        }
         ha-formfield {
           display: block;
         }
