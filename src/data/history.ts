@@ -345,3 +345,120 @@ export const statisticsHaveType = (
   stats: StatisticValue[],
   type: StatisticType
 ) => stats.some((stat) => stat[type] !== null);
+
+/**
+ * Get the earliest start from a list of statistics.
+ */
+const getMinStatisticStart = (stats: StatisticValue[][]): string | null => {
+  let earliestString: string | null = null;
+  let earliestTime: Date | null = null;
+
+  for (const stat of stats) {
+    if (stat.length === 0) {
+      continue;
+    }
+    const curTime = new Date(stat[0].start);
+
+    if (earliestString === null) {
+      earliestString = stat[0].start;
+      earliestTime = curTime;
+      continue;
+    }
+
+    if (curTime < earliestTime!) {
+      earliestString = stat[0].start;
+      earliestTime = curTime;
+    }
+  }
+
+  return earliestString;
+};
+
+// Merge multiple sum statistics into one
+const mergeSumStatistics = (stats: StatisticValue[][]) => {
+  const result: { start: string; sum: number }[] = [];
+
+  while (stats.some((stat) => stat.length > 0)) {
+    const earliestStart = getMinStatisticStart(stats)!;
+
+    let sum = 0;
+
+    for (const stat of stats) {
+      if (stat.length === 0) {
+        continue;
+      }
+      if (stat[0].start !== earliestStart) {
+        continue;
+      }
+      sum += stat.shift()!.sum!;
+    }
+
+    result.push({
+      start: earliestStart,
+      sum,
+    });
+  }
+
+  return result;
+};
+
+/**
+ * Get the growth of a statistic over the given period while applying a
+ * per-period percentage.
+ */
+export const calculateStatisticsSumGrowthWithPercentage = (
+  percentageStat: StatisticValue[],
+  sumStats: StatisticValue[][]
+): number | null => {
+  let sum = 0;
+
+  if (sumStats.length === 0) {
+    return null;
+  }
+
+  const sumStatsToProcess = mergeSumStatistics(sumStats);
+  const percentageStatToProcess = [...percentageStat];
+
+  let matchedGrowthToPercentage = false;
+  let lastSum: number | null = null;
+
+  // pre-populate lastSum with last sum statistic _before_ the first percentage statistic
+  for (const stat of sumStatsToProcess) {
+    if (new Date(stat.start) >= new Date(percentageStat[0].start)) {
+      break;
+    }
+    lastSum = stat.sum;
+  }
+
+  while (percentageStatToProcess.length > 0) {
+    // If they are not equal, pop the value that is earlier in time
+    if (sumStatsToProcess[0].start !== percentageStatToProcess[0].start) {
+      if (
+        new Date(sumStatsToProcess[0].start) <
+        new Date(percentageStatToProcess[0].start)
+      ) {
+        sumStatsToProcess.shift();
+      } else {
+        percentageStatToProcess.shift();
+      }
+      continue;
+    }
+
+    const sumStatValue = sumStatsToProcess.shift()!;
+    const percentageStatValue = percentageStatToProcess.shift()!;
+
+    if (lastSum !== null) {
+      const sumGrowth = sumStatValue.sum! - lastSum;
+      sum += sumGrowth * (percentageStatValue.mean! / 100);
+      matchedGrowthToPercentage = true;
+    }
+
+    lastSum = sumStatValue.sum;
+  }
+
+  if (!matchedGrowthToPercentage) {
+    return null;
+  }
+
+  return sum;
+};

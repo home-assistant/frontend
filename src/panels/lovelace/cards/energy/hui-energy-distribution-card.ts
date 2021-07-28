@@ -18,6 +18,7 @@ import { energySourcesByType } from "../../../../data/energy";
 import { subscribeEntityRegistry } from "../../../../data/entity_registry";
 import {
   calculateStatisticsSumGrowth,
+  calculateStatisticsSumGrowthWithPercentage,
   fetchStatistics,
   Statistics,
 } from "../../../../data/history";
@@ -52,11 +53,9 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
     if (!this._fetching && !this._stats) {
       this._fetching = true;
-      Promise.all([this._getStatistics(), this._fetchCO2SignalEntity()]).then(
-        () => {
-          this._fetching = false;
-        }
-      );
+      this._getStatistics().then(() => {
+        this._fetching = false;
+      });
     }
   }
 
@@ -102,20 +101,6 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       );
     }
 
-    // total consumption = consumption_from_grid + solar_production - return_to_grid
-
-    let co2percentage: number | undefined;
-
-    if (this._co2SignalEntity) {
-      const co2State = this.hass.states[this._co2SignalEntity];
-      if (co2State) {
-        co2percentage = Number(co2State.state);
-        if (isNaN(co2percentage)) {
-          co2percentage = undefined;
-        }
-      }
-    }
-
     const totalConsumption =
       totalGridConsumption +
       (totalSolarProduction || 0) -
@@ -133,22 +118,33 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
     let homeLowCarbonCircumference: number | undefined;
     let homeHighCarbonCircumference: number | undefined;
-    if (co2percentage !== undefined) {
-      const gridPctHighCarbon = co2percentage / 100;
 
-      lowCarbonConsumption =
-        totalGridConsumption - totalGridConsumption * gridPctHighCarbon;
+    if (this._co2SignalEntity && this._co2SignalEntity in this._stats) {
+      // Calculate high carbon consumption
+      const highCarbonConsumption = calculateStatisticsSumGrowthWithPercentage(
+        this._stats[this._co2SignalEntity],
+        types
+          .grid![0].flow_from.map((flow) => this._stats![flow.stat_energy_from])
+          .filter(Boolean)
+      );
 
-      const homePctGridHighCarbon =
-        (gridPctHighCarbon * totalGridConsumption) / totalConsumption;
+      if (highCarbonConsumption !== null) {
+        const gridPctHighCarbon = highCarbonConsumption / totalConsumption;
 
-      homeHighCarbonCircumference =
-        CIRCLE_CIRCUMFERENCE * homePctGridHighCarbon;
+        lowCarbonConsumption =
+          totalGridConsumption - totalGridConsumption * gridPctHighCarbon;
 
-      homeLowCarbonCircumference =
-        CIRCLE_CIRCUMFERENCE -
-        (homeSolarCircumference || 0) -
-        homeHighCarbonCircumference;
+        const homePctGridHighCarbon =
+          (gridPctHighCarbon * totalGridConsumption) / totalConsumption;
+
+        homeHighCarbonCircumference =
+          CIRCLE_CIRCUMFERENCE * homePctGridHighCarbon;
+
+        homeLowCarbonCircumference =
+          CIRCLE_CIRCUMFERENCE -
+          (homeSolarCircumference || 0) -
+          homeHighCarbonCircumference;
+      }
     }
 
     return html`
@@ -306,7 +302,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private async _fetchCO2SignalEntity() {
+  private async _getStatistics(): Promise<void> {
     const [configEntries, entityRegistryEntries] = await Promise.all([
       getConfigEntries(this.hass),
       subscribeOne(this.hass.connection, subscribeEntityRegistry),
@@ -319,6 +315,8 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     if (!co2ConfigEntry) {
       return;
     }
+
+    this._co2SignalEntity = undefined;
 
     for (const entry of entityRegistryEntries) {
       if (entry.config_entry_id !== co2ConfigEntry.entry_id) {
@@ -334,14 +332,17 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       this._co2SignalEntity = co2State.entity_id;
       break;
     }
-  }
 
-  private async _getStatistics(): Promise<void> {
     const startDate = new Date();
     startDate.setHours(0, 0, 0, 0);
     startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
 
     const statistics: string[] = [];
+
+    if (this._co2SignalEntity !== undefined) {
+      statistics.push(this._co2SignalEntity);
+    }
+
     const prefs = this._config!.prefs;
     for (const source of prefs.energy_sources) {
       if (source.type === "solar") {
