@@ -171,7 +171,7 @@ class HuiEnergySummaryCard extends LitElement implements LovelaceCard {
                           types
                             .grid![0].flow_from.map((flow) => flow.stat_cost)
                             .filter(Boolean) as string[],
-                          prefs.currency
+                          this.hass.config.currency!
                         )}
                   </div>
                 </div>

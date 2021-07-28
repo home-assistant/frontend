@@ -1,22 +1,15 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-
 import "../../../components/ha-svg-icon";
-import {
-  EnergyPreferences,
-  getEnergyPreferences,
-  saveEnergyPreferences,
-} from "../../../data/energy";
-
+import { EnergyPreferences, getEnergyPreferences } from "../../../data/energy";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
+import "./components/ha-energy-device-settings";
 import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
-import "./components/ha-energy-device-settings";
-import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 const INITIAL_CONFIG = {
   currency: "€",
@@ -72,18 +65,6 @@ class HaConfigEnergy extends LitElement {
         .route=${this.route}
         .tabs=${configSections.experiences}
       >
-        <ha-card .header=${"General energy settings"}>
-          <div class="card-content">
-            <paper-input
-              .label=${"Currency"}
-              .value=${this._preferences!.currency}
-              @value-changed=${this._currencyChanged}
-            >
-            </paper-input>
-
-            <mwc-button @click=${this._save}>Save</mwc-button>
-          </div>
-        </ha-card>
         <div class="container">
           <ha-energy-grid-settings
             .hass=${this.hass}
@@ -103,24 +84,6 @@ class HaConfigEnergy extends LitElement {
         </div>
       </hass-tabs-subpage>
     `;
-  }
-
-  private _currencyChanged(ev: CustomEvent) {
-    this._preferences!.currency = ev.detail.value;
-  }
-
-  private async _save() {
-    if (!this._preferences) {
-      return;
-    }
-    try {
-      this._preferences = await saveEnergyPreferences(
-        this.hass,
-        this._preferences
-      );
-    } catch (err) {
-      showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
-    }
   }
 
   private async _fetchConfig() {
