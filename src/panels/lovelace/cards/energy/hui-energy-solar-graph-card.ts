@@ -261,10 +261,6 @@ export class HuiEnergySolarGraphCard
     const datasets: ChartDataset<"bar">[] = [];
     let endTime: Date;
 
-    if (statisticsData.length === 0) {
-      return;
-    }
-
     endTime = new Date(
       Math.max(
         ...statisticsData.map((stats) =>
@@ -273,7 +269,7 @@ export class HuiEnergySolarGraphCard
       )
     );
 
-    if (endTime > new Date()) {
+    if (!endTime || endTime > new Date()) {
       endTime = new Date();
     }
 
