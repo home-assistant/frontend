@@ -3713,8 +3713,6 @@
       },
       "energy": {
         "setup": {
-          "header": "Setup your energy dashboard",
-          "slogan": "The world is heating up. Together we can fix that.",
           "next": "Next",
           "back": "Back",
           "done": "Show me my energy dashboard!"
