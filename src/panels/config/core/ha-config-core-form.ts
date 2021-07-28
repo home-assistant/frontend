@@ -7,6 +7,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { UNIT_C } from "../../../common/const";
+import { createCurrencyListEl } from "../../../components/currency-datalist";
 import "../../../components/ha-card";
 import "../../../components/map/ha-locations-editor";
 import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
@@ -167,6 +168,7 @@ class ConfigCoreForm extends LitElement {
                 "ui.panel.config.core.section.core.core_config.currency"
               )}
               name="currency"
+              list="currencies"
               .disabled=${disabled}
               .value=${this._currencyValue}
               @value-changed=${this._handleChange}
@@ -186,10 +188,16 @@ class ConfigCoreForm extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    const input = this.shadowRoot!.querySelector(
+
+    const tzInput = this.shadowRoot!.querySelector(
       "[name=timeZone]"
     ) as PaperInputElement;
-    input.inputElement.appendChild(createTimezoneListEl());
+    tzInput.inputElement.appendChild(createTimezoneListEl());
+
+    const cInput = this.shadowRoot!.querySelector(
+      "[name=currency]"
+    ) as PaperInputElement;
+    cInput.inputElement.appendChild(createCurrencyListEl());
   }
 
   private _markerLocation = memoizeOne(
@@ -266,13 +274,13 @@ class ConfigCoreForm extends LitElement {
       await saveCoreConfig(this.hass, {
         latitude: location[0],
         longitude: location[1],
-        currency: this._currencyValue || "",
+        currency: this._currencyValue,
         elevation: Number(this._elevationValue),
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue,
       });
     } catch (err) {
-      alert("FAIL");
+      alert(`Error saving config: ${err.message}`);
     } finally {
       this._working = false;
     }
