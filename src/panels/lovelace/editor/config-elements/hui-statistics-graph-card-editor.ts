@@ -71,7 +71,7 @@ export class HuiStatisticsGraphCardEditor
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._days_to_show}"
+            .value=${this._days_to_show}
             min="1"
             .configValue=${"days_to_show"}
             @value-changed="${this._valueChanged}"
