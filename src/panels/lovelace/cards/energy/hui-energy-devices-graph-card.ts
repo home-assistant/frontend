@@ -138,7 +138,7 @@ export class HuiEnergyDevicesGraphCard
           },
         },
       },
-      elements: { bar: { borderWidth: 1.5 } },
+      elements: { bar: { borderWidth: 1.5, borderRadius: 4 } },
       plugins: {
         tooltip: {
           mode: "nearest",
