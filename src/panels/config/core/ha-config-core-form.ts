@@ -12,6 +12,7 @@ import "../../../components/map/ha-locations-editor";
 import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
 import { createTimezoneListEl } from "../../../components/timezone-datalist";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
+import { SYMBOL_TO_ISO } from "../../../data/currency";
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import type { HomeAssistant } from "../../../types";
 
@@ -226,7 +227,15 @@ class ConfigCoreForm extends LitElement {
 
   private _handleChange(ev: PolymerChangedEvent<string>) {
     const target = ev.currentTarget as PaperInputElement;
-    this[`_${target.name}`] = target.value;
+    let value = target.value;
+
+    if (target.name === "currency" && value) {
+      if (value in SYMBOL_TO_ISO) {
+        value = SYMBOL_TO_ISO[value];
+      }
+    }
+
+    this[`_${target.name}`] = value;
   }
 
   private _locationChanged(ev) {
