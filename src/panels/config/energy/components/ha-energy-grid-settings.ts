@@ -201,7 +201,6 @@ export class EnergyGridSettings extends LitElement {
 
   private _addFromSource() {
     showEnergySettingsGridFlowFromDialog(this, {
-      currency: this.preferences.currency,
       saveCallback: async (flow) => {
         let preferences: EnergyPreferences;
         const gridSource = this.preferences.energy_sources.find(
@@ -236,7 +235,6 @@ export class EnergyGridSettings extends LitElement {
 
   private _addToSource() {
     showEnergySettingsGridFlowToDialog(this, {
-      currency: this.preferences.currency,
       saveCallback: async (flow) => {
         let preferences: EnergyPreferences;
         const gridSource = this.preferences.energy_sources.find(
@@ -273,7 +271,6 @@ export class EnergyGridSettings extends LitElement {
     const origSource: FlowFromGridSourceEnergyPreference =
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGridFlowFromDialog(this, {
-      currency: this.preferences.currency,
       source: { ...origSource },
       saveCallback: async (source) => {
         const flowFrom = energySourcesByType(this.preferences).grid![0]
@@ -301,7 +298,6 @@ export class EnergyGridSettings extends LitElement {
     const origSource: FlowToGridSourceEnergyPreference =
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGridFlowToDialog(this, {
-      currency: this.preferences.currency,
       source: { ...origSource },
       saveCallback: async (source) => {
         const flowTo = energySourcesByType(this.preferences).grid![0].flow_to;

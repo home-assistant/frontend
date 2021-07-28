@@ -203,7 +203,7 @@ export class DialogEnergyGridFlowSettings
               <span slot="suffix"
                 >${this.hass.localize(
                   `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.cost_number_suffix`,
-                  { currency: this._params.currency }
+                  { currency: this.hass.config.currency }
                 )}</span
               >
             </paper-input>`
