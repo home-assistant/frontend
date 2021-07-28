@@ -59,9 +59,9 @@ export class HuiStatisticsGraphCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
           <paper-input
