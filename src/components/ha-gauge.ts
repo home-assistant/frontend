@@ -13,6 +13,11 @@ const getAngle = (value: number, min: number, max: number) => {
   return (percentage * 180) / 100;
 };
 
+interface LevelDefinition {
+  level: number;
+  stroke: string;
+}
+
 @customElement("ha-gauge")
 export class Gauge extends LitElement {
   @property({ type: Number }) public min = 0;
@@ -22,6 +27,10 @@ export class Gauge extends LitElement {
   @property({ type: Number }) public value = 0;
 
   @property() public locale!: FrontendLocaleData;
+
+  @property({ type: Boolean, reflect: true }) public hand = false;
+
+  @property() public levels: LevelDefinition[] = [];
 
   @property() public label = "";
 
@@ -55,18 +64,52 @@ export class Gauge extends LitElement {
           class="dial"
           d="M 10 50 A 40 40 0 0 1 90 50"
         ></path>
-        <path
-          class="value"
-          d="M 90 50.001 A 40 40 0 0 1 10 50"
-          style=${ifDefined(
-            !isSafari
-              ? styleMap({ transform: `rotate(${this._angle}deg)` })
-              : undefined
-          )}
-          transform=${ifDefined(
-            isSafari ? `rotate(${this._angle} 50 50)` : undefined
-          )}
-        >
+
+        ${
+          this.levels.length
+            ? this.levels
+                .sort((a, b) => a.level - b.level)
+                .reverse()
+                .map((level) => {
+                  const angle = getAngle(level.level, this.min, this.max);
+                  return svg`<path
+                      stroke="${level.stroke}"
+                      class="level"
+                      d="M 10 50 a 40 40 0 0 1
+                      ${40 - 40 * Math.cos((angle * Math.PI) / 180)}
+                      ${-40 * Math.sin((angle * Math.PI) / 180)}
+                      "
+                    ></path>`;
+                })
+            : ""
+        }
+        ${
+          this.hand
+            ? svg`<path
+                class="hand"
+                d="M 50 50 L 10 50"
+                style=${ifDefined(
+                  !isSafari
+                    ? styleMap({ transform: `rotate(${this._angle}deg)` })
+                    : undefined
+                )}
+                transform=${ifDefined(
+                  isSafari ? `rotate(${this._angle} 50 50)` : undefined
+                )}
+              >`
+            : svg`<path
+                class="value"
+                d="M 90 50.001 A 40 40 0 0 1 10 50"
+                style=${ifDefined(
+                  !isSafari
+                    ? styleMap({ transform: `rotate(${this._angle}deg)` })
+                    : undefined
+                )}
+                transform=${ifDefined(
+                  isSafari ? `rotate(${this._angle} 50 50)` : undefined
+                )}
+              >`
+        }
         ${
           // Workaround for https://github.com/home-assistant/frontend/issues/6467
           isSafari
@@ -116,6 +159,17 @@ export class Gauge extends LitElement {
         stroke: var(--gauge-color);
         transform-origin: 50% 100%;
         transition: all 1s ease 0s;
+      }
+      .hand {
+        fill: none;
+        stroke-width: 5;
+        stroke: var(--gauge-color);
+        transform-origin: 50% 100%;
+        transition: all 1s ease 0s;
+      }
+      .level {
+        fill: none;
+        stroke-width: 15;
       }
       .gauge {
         display: block;
