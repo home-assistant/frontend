@@ -278,30 +278,30 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
               xmlns="http://www.w3.org/2000/svg"
               preserveAspectRatio="xMidYMid slice"
             >
-              ${productionReturnedToGrid && hasSolarProduction
+              ${hasReturnToGrid && hasSolarProduction
                 ? svg`<path
                     id="return"
                     class="return"
-                    d="M50,0 v18 c0,40 -10,35 -30,35 h-20"
+                    d="M47,0 v15 c0,40 -10,35 -30,35 h-20"
                     vector-effect="non-scaling-stroke"
                   ></path> `
                 : ""}
-              ${totalSolarProduction
+              ${hasSolarProduction
                 ? svg`<path
                     id="solar"
                     class="solar"
-                    d="M50,0 v18 c0,40 10,35 30,35 h20"
+                    d="M${
+                      hasReturnToGrid ? 53 : 50
+                    },0 v15 c0,40 10,35 30,35 h20"
                     vector-effect="non-scaling-stroke"
-                  ></path> `
+                  ></path>`
                 : ""}
-              ${totalGridConsumption
-                ? svg`<path
-                    class="grid"
-                    id="grid"
-                    d="M0,53 H100"
-                    vector-effect="non-scaling-stroke"
-                  ></path> `
-                : ""}
+              <path
+                class="grid"
+                id="grid"
+                d="M0,${hasSolarProduction ? 56 : 53} H100"
+                vector-effect="non-scaling-stroke"
+              ></path>
               ${productionReturnedToGrid && hasSolarProduction
                 ? svg`<circle r="1" class="return" vector-effect="non-scaling-stroke">
                     <animateMotion
