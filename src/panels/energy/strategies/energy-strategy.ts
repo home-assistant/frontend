@@ -110,12 +110,6 @@ export class EnergyStrategy {
       });
     }
 
-    view.cards!.push({
-      type: "energy-summary",
-      prefs: energyPrefs,
-      view_layout: { position: "sidebar" },
-    });
-
     return view;
   }
 }
