@@ -1084,9 +1084,11 @@
                 "unit_system_metric": "Metric",
                 "imperial_example": "Fahrenheit, pounds",
                 "metric_example": "Celsius, kilograms",
+                "find_currency_value": "Find your value",
                 "save_button": "Save",
                 "external_url": "External URL",
-                "internal_url": "Internal URL"
+                "internal_url": "Internal URL",
+                "currency": "Currency"
               }
             }
           }
