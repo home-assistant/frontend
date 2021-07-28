@@ -85,7 +85,6 @@ type EnergySource =
   | GridSourceTypeEnergyPreference;
 
 export interface EnergyPreferences {
-  currency: string;
   energy_sources: EnergySource[];
   device_consumption: DeviceConsumptionEnergyPreference[];
 }

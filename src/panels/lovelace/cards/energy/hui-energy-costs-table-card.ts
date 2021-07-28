@@ -11,6 +11,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { round } from "../../../../common/number/round";
+import { formatNumber } from "../../../../common/string/format_number";
 import "../../../../components/chart/statistics-chart";
 import "../../../../components/ha-card";
 import {
@@ -131,7 +132,10 @@ export class HuiEnergyCostsTableCard
                   <td
                     class="mdc-data-table__cell mdc-data-table__cell--numeric"
                   >
-                    ${this._config!.prefs.currency} ${cost.toFixed(2)}
+                    ${formatNumber(cost, this.hass.locale, {
+                      style: "currency",
+                      currency: this.hass.config.currency!,
+                    })}
                   </td>
                 </tr>`;
               })}
@@ -162,7 +166,10 @@ export class HuiEnergyCostsTableCard
                   <td
                     class="mdc-data-table__cell mdc-data-table__cell--numeric"
                   >
-                    ${this._config!.prefs.currency} ${cost.toFixed(2)}
+                    ${formatNumber(cost, this.hass.locale, {
+                      style: "currency",
+                      currency: this.hass.config.currency!,
+                    })}
                   </td>
                 </tr>`;
               })}
@@ -172,7 +179,10 @@ export class HuiEnergyCostsTableCard
                   ${round(totalEnergy)} kWh
                 </td>
                 <td class="mdc-data-table__cell mdc-data-table__cell--numeric">
-                  ${this._config!.prefs.currency} ${totalCost.toFixed(2)}
+                  ${formatNumber(totalCost, this.hass.locale, {
+                    style: "currency",
+                    currency: this.hass.config.currency!,
+                  })}
                 </td>
               </tr>
             </tbody>
