@@ -1,5 +1,4 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import deepClone from "deep-clone-simple";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
@@ -379,7 +378,7 @@ const getMinStatisticStart = (stats: StatisticValue[][]): string | null => {
 const mergeSumStatistics = (stats: StatisticValue[][]) => {
   const result: { start: string; sum: number }[] = [];
 
-  const statsCopy: StatisticValue[][] = deepClone(stats);
+  const statsCopy: StatisticValue[][] = stats.map(stat => [...stat]);
 
   while (statsCopy.some((stat) => stat.length > 0)) {
     const earliestStart = getMinStatisticStart(statsCopy)!;
