@@ -238,9 +238,19 @@ export class HuiEnergyCostsTableCard
         width: 100%;
         border: 0;
       }
+      .mdc-data-table__header-cell,
+      .mdc-data-table__cell {
+        color: var(--primary-text-color);
+        border-bottom-color: var(--divider-color);
+      }
+      .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
+        background-color: rgba(var(--rgb-primary-text-color), 0.04);
+      }
       .total {
-        background-color: var(--primary-background-color);
         --mdc-typography-body2-font-weight: 500;
+      }
+      .total .mdc-data-table__cell {
+        border-top: 1px solid var(--divider-color);
       }
       ha-card {
         height: 100%;
