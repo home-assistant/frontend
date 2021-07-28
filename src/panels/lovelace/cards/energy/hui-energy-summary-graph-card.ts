@@ -1,3 +1,4 @@
+import { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import {
   css,
   CSSResultGroup,
@@ -8,12 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "../../../../components/ha-card";
-import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCard } from "../../types";
-import { EnergySummaryGraphCardConfig } from "../types";
-import { fetchStatistics, Statistics } from "../../../../data/history";
+import { styleMap } from "lit/directives/style-map";
 import {
   hex2rgb,
   lab2rgb,
@@ -22,8 +18,14 @@ import {
 } from "../../../../common/color/convert-color";
 import { labDarken } from "../../../../common/color/lab";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import "../../../../components/chart/ha-chart-base";
 import { round } from "../../../../common/number/round";
+import { formatNumber } from "../../../../common/string/format_number";
+import "../../../../components/chart/ha-chart-base";
+import "../../../../components/ha-card";
+import { fetchStatistics, Statistics } from "../../../../data/history";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergySummaryGraphCardConfig } from "../types";
 
 const NEGATIVE = ["to_grid"];
 const COLORS = {
@@ -43,7 +45,9 @@ export class HuiEnergySummaryGraphCard
 
   @state() private _data?: Statistics;
 
-  @state() private _chartData?: ChartData;
+  @state() private _chartData: ChartData = {
+    datasets: [],
+  };
 
   @state() private _chartOptions?: ChartOptions;
 
@@ -111,19 +115,48 @@ export class HuiEnergySummaryGraphCard
     }
 
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card>
+        <h1 class="card-header">${this._config.title}</h1>
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
           })}"
         >
-          ${this._chartData
-            ? html`<ha-chart-base
-                .data=${this._chartData}
-                .options=${this._chartOptions}
-                chart-type="bar"
-              ></ha-chart-base>`
-            : ""}
+          <div class="chartLegend">
+            <ul>
+              ${this._chartData.datasets.map(
+                (dataset) => html`<li>
+                  <div>
+                    <div
+                      class="bullet"
+                      style=${styleMap({
+                        backgroundColor: dataset.backgroundColor as string,
+                        borderColor: dataset.borderColor as string,
+                      })}
+                    ></div>
+                    <span class="label">${dataset.label}</span>
+                  </div>
+                  <span class="value"
+                    >${formatNumber(
+                      Math.abs(
+                        dataset.data.reduce(
+                          (total, point) => total + (point as any).y,
+                          0
+                        ) as number
+                      ),
+                      this.hass.locale
+                    )}
+                    kWh</span
+                  >
+                </li>`
+              )}
+            </ul>
+          </div>
+          <ha-chart-base
+            .data=${this._chartData}
+            .options=${this._chartOptions}
+            chart-type="bar"
+          ></ha-chart-base>
         </div>
       </ha-card>
     `;
@@ -428,11 +461,45 @@ export class HuiEnergySummaryGraphCard
       ha-card {
         height: 100%;
       }
+      .card-header {
+        padding-bottom: 0;
+      }
       .content {
         padding: 16px;
       }
       .has-header {
         padding-top: 0;
+      }
+      .chartLegend ul {
+        padding-left: 20px;
+      }
+      .chartLegend li {
+        padding: 2px 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        box-sizing: border-box;
+        color: var(--secondary-text-color);
+      }
+      .chartLegend li > div {
+        display: flex;
+        align-items: center;
+      }
+      .chartLegend .bullet {
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 4px;
+        display: inline-block;
+        height: 16px;
+        margin-right: 6px;
+        width: 32px;
+        box-sizing: border-box;
+      }
+      .value {
+        font-weight: 300;
       }
     `;
   }

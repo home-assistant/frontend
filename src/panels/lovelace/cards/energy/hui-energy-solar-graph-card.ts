@@ -45,7 +45,9 @@ export class HuiEnergySolarGraphCard
 
   @state() private _data?: Statistics;
 
-  @state() private _chartData?: ChartData;
+  @state() private _chartData: ChartData = {
+    datasets: [],
+  };
 
   @state() private _forecasts?: Record<string, ForecastSolarForecast>;
 
@@ -123,13 +125,11 @@ export class HuiEnergySolarGraphCard
             "has-header": !!this._config.title,
           })}"
         >
-          ${this._chartData
-            ? html`<ha-chart-base
-                .data=${this._chartData}
-                .options=${this._chartOptions}
-                chart-type="bar"
-              ></ha-chart-base>`
-            : ""}
+          <ha-chart-base
+            .data=${this._chartData}
+            .options=${this._chartOptions}
+            chart-type="bar"
+          ></ha-chart-base>
         </div>
       </ha-card>
     `;
