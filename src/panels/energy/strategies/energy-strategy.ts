@@ -49,7 +49,7 @@ export class EnergyStrategy {
     // Only include if we have a grid source.
     if (hasGrid) {
       view.cards!.push({
-        title: "Electricity",
+        title: "Energy usage",
         type: "energy-summary-graph",
         prefs: energyPrefs,
       });
