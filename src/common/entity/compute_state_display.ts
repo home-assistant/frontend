@@ -21,6 +21,16 @@ export const computeStateDisplay = (
   }
 
   if (stateObj.attributes.unit_of_measurement) {
+    if (stateObj.attributes.device_class === "monetary") {
+      try {
+        return formatNumber(compareState, locale, {
+          style: "currency",
+          currency: stateObj.attributes.unit_of_measurement,
+        });
+      } catch (_err) {
+        // fallback to default
+      }
+    }
     return `${formatNumber(compareState, locale)} ${
       stateObj.attributes.unit_of_measurement
     }`;
