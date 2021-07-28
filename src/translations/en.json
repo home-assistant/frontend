@@ -2691,7 +2691,8 @@
             "node_ready": "Node Ready",
             "device_config": "Configure Device",
             "reinterview_device": "Re-interview Device",
-            "heal_node": "Heal Node"
+            "heal_node": "Heal Node",
+            "remove_failed": "Remove Failed Device"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
@@ -2743,6 +2744,14 @@
             "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
             "exclusion_failed": "The node could not be removed. Please check the logs for more information.",
             "exclusion_finished": "Node {id} has been removed from your Z-Wave network."
+          },
+          "remove_failed_node": {
+            "title": "Remove a Failed Z-Wave Device",
+            "introduction": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
+            "remove_device": "Remove Device",
+            "in_progress": "The device removal is in progress.",
+            "removal_finished": "Node {id} has been removed from your Z-Wave network.",
+            "removal_failed": "The device could not be removed from your Z-Wave network."
           },
           "reinterview_node": {
             "title": "Re-interview a Z-Wave Device",
