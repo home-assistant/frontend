@@ -104,7 +104,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
         ) || 0;
     }
 
-    const solarConsumption = Math.min(
+    const solarConsumption = Math.max(
       0,
       (totalSolarProduction || 0) - (productionReturnedToGrid || 0)
     );
