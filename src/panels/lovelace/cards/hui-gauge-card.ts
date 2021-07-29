@@ -212,12 +212,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
 
     const sectionsArray = Object.keys(sections);
-    return sectionsArray.map((severity) => {
-      return {
-        level: sections[severity],
-        stroke: severityMap[severity],
-      };
-    });
+    return sectionsArray.map((severity) => ({
+      level: sections[severity],
+      stroke: severityMap[severity],
+    }));
   }
 
   private _handleClick(): void {
