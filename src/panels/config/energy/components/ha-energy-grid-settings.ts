@@ -73,7 +73,7 @@ export class EnergyGridSettings extends LitElement {
             ${this.hass.localize("ui.panel.config.energy.grid.sub")}
             <a
               target="_blank"
-              rel="noopener noreferer"
+              rel="noopener noreferrer"
               href="${documentationUrl(
                 this.hass,
                 "/docs/energy/electricity-grid/"

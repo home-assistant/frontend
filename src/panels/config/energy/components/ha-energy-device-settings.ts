@@ -47,7 +47,7 @@ export class EnergyDeviceSettings extends LitElement {
             )}
             <a
               target="_blank"
-              rel="noopener noreferer"
+              rel="noopener noreferrer"
               href="${documentationUrl(
                 this.hass,
                 "/docs/energy/individual-devices/"

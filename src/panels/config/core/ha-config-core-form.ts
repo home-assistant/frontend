@@ -155,7 +155,7 @@ class ConfigCoreForm extends LitElement {
               <a
                 href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
                 target="_blank"
-                rel="noopener noreferer"
+                rel="noopener noreferrer"
                 >${this.hass.localize(
                   "ui.panel.config.core.section.core.core_config.find_currency_value"
                 )}</a
