@@ -152,7 +152,17 @@ export default class HaChartBase extends LitElement {
       .querySelector("canvas")!
       .getContext("2d")!;
 
-    this.chart = new (await import("../../resources/chartjs")).Chart(ctx, {
+    const ChartConstructor = (await import("../../resources/chartjs")).Chart;
+
+    const computedStyles = getComputedStyle(this);
+
+    ChartConstructor.defaults.borderColor =
+      computedStyles.getPropertyValue("--divider-color");
+    ChartConstructor.defaults.color = computedStyles.getPropertyValue(
+      "--secondary-text-color"
+    );
+
+    this.chart = new ChartConstructor(ctx, {
       type: this.chartType,
       data: this.data,
       options: this._createOptions(),

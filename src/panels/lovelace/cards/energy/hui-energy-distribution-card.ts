@@ -10,7 +10,7 @@ import { css, html, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import { round } from "../../../../common/number/round";
+import { formatNumber } from "../../../../common/string/format_number";
 import { subscribeOne } from "../../../../common/util/subscribe-one";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
@@ -140,13 +140,9 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       }
 
       if (highCarbonConsumption !== null) {
-        const gridPctHighCarbon = highCarbonConsumption / totalConsumption;
+        lowCarbonConsumption = totalGridConsumption - highCarbonConsumption;
 
-        lowCarbonConsumption =
-          totalGridConsumption - totalGridConsumption * gridPctHighCarbon;
-
-        const homePctGridHighCarbon =
-          (gridPctHighCarbon * totalGridConsumption) / totalConsumption;
+        const homePctGridHighCarbon = highCarbonConsumption / totalConsumption;
 
         homeHighCarbonCircumference =
           CIRCLE_CIRCUMFERENCE * homePctGridHighCarbon;
@@ -158,6 +154,15 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       }
     }
 
+    homeSolarCircumference = CIRCLE_CIRCUMFERENCE * 0.1;
+
+    homeHighCarbonCircumference = CIRCLE_CIRCUMFERENCE * 0.8;
+
+    homeLowCarbonCircumference =
+      CIRCLE_CIRCUMFERENCE -
+      (homeSolarCircumference || 0) -
+      homeHighCarbonCircumference;
+
     return html`
       <ha-card .header=${this._config.title}>
         <div class="card-content">
@@ -165,29 +170,39 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
             ? html`<div class="row">
                 ${lowCarbonConsumption === undefined
                   ? html`<div class="spacer"></div>`
-                  : html`
-                      <div class="circle-container low-carbon">
-                        <span class="label">Non-fossil</span>
-                        <a
-                          class="circle"
-                          href=${ifDefined(electricityMapUrl)}
-                          target="_blank"
-                          rel="noopener no referrer"
-                        >
-                          <ha-svg-icon .path="${mdiLeaf}"></ha-svg-icon>
-                          ${round(lowCarbonConsumption, 1)} kWh
-                        </a>
-                        <svg width="80" height="30">
-                          <line x1="40" y1="0" x2="40" y2="30"></line>
-                        </svg>
-                      </div>
-                    `}
+                  : html`<div class="circle-container low-carbon">
+                      <span class="label">Non-fossil</span>
+                      <a
+                        class="circle"
+                        href=${ifDefined(electricityMapUrl)}
+                        target="_blank"
+                        rel="noopener no referrer"
+                      >
+                        <ha-svg-icon .path="${mdiLeaf}"></ha-svg-icon>
+                        ${lowCarbonConsumption
+                          ? formatNumber(
+                              lowCarbonConsumption,
+                              this.hass.locale,
+                              { maximumFractionDigits: 1 }
+                            )
+                          : "-"}
+                        kWh
+                      </a>
+                      <svg width="80" height="30">
+                        <line x1="40" y1="0" x2="40" y2="30"></line>
+                      </svg>
+                    </div>`}
                 ${hasSolarProduction
                   ? html`<div class="circle-container solar">
                       <span class="label">Solar</span>
                       <div class="circle">
                         <ha-svg-icon .path="${mdiSolarPower}"></ha-svg-icon>
-                        ${round(totalSolarProduction || 0, 1)} kWh
+                        ${formatNumber(
+                          totalSolarProduction || 0,
+                          this.hass.locale,
+                          { maximumFractionDigits: 1 }
+                        )}
+                        kWh
                       </div>
                     </div>`
                   : ""}
@@ -204,7 +219,11 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                         class="small"
                         .path=${mdiArrowRight}
                       ></ha-svg-icon>`
-                    : ""}${round(totalGridConsumption, 1)}
+                    : ""}${formatNumber(
+                    totalGridConsumption,
+                    this.hass.locale,
+                    { maximumFractionDigits: 1 }
+                  )}
                   kWh
                 </span>
                 ${productionReturnedToGrid !== null
@@ -213,7 +232,12 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                         class="small"
                         .path=${mdiArrowLeft}
                       ></ha-svg-icon
-                      >${round(productionReturnedToGrid, 1)} kWh
+                      >${formatNumber(
+                        productionReturnedToGrid,
+                        this.hass.locale,
+                        { maximumFractionDigits: 1 }
+                      )}
+                      kWh
                     </span>`
                   : ""}
               </div>
@@ -228,41 +252,44 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                 })}"
               >
                 <ha-svg-icon .path="${mdiHome}"></ha-svg-icon>
-                ${round(totalConsumption, 1)} kWh
+                ${formatNumber(totalConsumption, this.hass.locale, {
+                  maximumFractionDigits: 1,
+                })}
+                kWh
                 ${homeSolarCircumference !== undefined ||
                 homeLowCarbonCircumference !== undefined
                   ? html`<svg>
                       ${homeSolarCircumference !== undefined
-                        ? svg`
-              <circle
-                  class="solar"
-                  cx="40"
-                  cy="40"
-                  r="38"
-                  stroke-dasharray="${homeSolarCircumference} ${
+                        ? svg`<circle
+                            class="solar"
+                            cx="40"
+                            cy="40"
+                            r="38"
+                            stroke-dasharray="${homeSolarCircumference} ${
                             CIRCLE_CIRCUMFERENCE - homeSolarCircumference
                           }"
-                  shape-rendering="geometricPrecision"
-                  stroke-dashoffset="0"
-                />`
+                            shape-rendering="geometricPrecision"
+                            stroke-dashoffset="-${
+                              CIRCLE_CIRCUMFERENCE - homeSolarCircumference
+                            }"
+                          />`
                         : ""}
-                      ${homeHighCarbonCircumference
-                        ? svg`
-                <circle
-                  class="low-carbon"
-                  cx="40"
-                  cy="40"
-                  r="38"
-                  stroke-dasharray="${homeLowCarbonCircumference} ${
-                            CIRCLE_CIRCUMFERENCE - homeLowCarbonCircumference!
+                      ${homeLowCarbonCircumference
+                        ? svg`<circle
+                            class="low-carbon"
+                            cx="40"
+                            cy="40"
+                            r="38"
+                            stroke-dasharray="${homeLowCarbonCircumference} ${
+                            CIRCLE_CIRCUMFERENCE - homeLowCarbonCircumference
                           }"
-                  stroke-dashoffset="${
-                    ((homeSolarCircumference || 0) +
-                      homeHighCarbonCircumference!) *
-                    -1
-                  }"
-                  shape-rendering="geometricPrecision"
-                />`
+                            stroke-dashoffset="-${
+                              CIRCLE_CIRCUMFERENCE -
+                              homeLowCarbonCircumference -
+                              (homeSolarCircumference || 0)
+                            }"
+                            shape-rendering="geometricPrecision"
+                          />`
                         : ""}
                       <circle
                         class="grid"
@@ -271,11 +298,11 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                         r="38"
                         stroke-dasharray="${homeHighCarbonCircumference ??
                         CIRCLE_CIRCUMFERENCE -
-                          homeSolarCircumference!} ${homeHighCarbonCircumference
+                          homeSolarCircumference!} ${homeHighCarbonCircumference !==
+                        undefined
                           ? CIRCLE_CIRCUMFERENCE - homeHighCarbonCircumference
                           : homeSolarCircumference}"
-                        stroke-dashoffset="${(homeSolarCircumference || 0) *
-                        -1}"
+                        stroke-dashoffset="0"
                         shape-rendering="geometricPrecision"
                       />
                     </svg>`
@@ -315,7 +342,11 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                 vector-effect="non-scaling-stroke"
               ></path>
               ${productionReturnedToGrid && hasSolarProduction
-                ? svg`<circle r="1" class="return" vector-effect="non-scaling-stroke">
+                ? svg`<circle
+                    r="1"
+                    class="return"
+                    vector-effect="non-scaling-stroke"
+                  >
                     <animateMotion
                       dur="${
                         6 -
@@ -332,8 +363,11 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                   </circle>`
                 : ""}
               ${totalSolarProduction
-                ? svg`
-                <circle r="1" class="solar" vector-effect="non-scaling-stroke">
+                ? svg`<circle
+                    r="1"
+                    class="solar"
+                    vector-effect="non-scaling-stroke"
+                  >
                     <animateMotion
                       dur="${
                         6 -
@@ -351,7 +385,11 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                   </circle>`
                 : ""}
               ${totalGridConsumption
-                ? svg`<circle r="1" class="grid" vector-effect="non-scaling-stroke">
+                ? svg`<circle
+                    r="1"
+                    class="grid"
+                    vector-effect="non-scaling-stroke"
+                  >
                     <animateMotion
                       dur="${
                         6 -
@@ -471,12 +509,15 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       flex-direction: column;
       align-items: center;
     }
+    .circle-container.low-carbon {
+      margin-right: 4px;
+    }
     .circle-container.solar {
+      margin-left: 4px;
       height: 130px;
     }
     .spacer {
-      width: 80px;
-      height: 30px;
+      width: 84px;
     }
     .circle {
       width: 80px;
@@ -519,67 +560,70 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       height: 100%;
     }
     .low-carbon line {
-      stroke: #0f9d58;
+      stroke: var(--energy-non-fossil-color);
     }
     .low-carbon .circle {
-      border-color: #0f9d58;
+      border-color: var(--energy-non-fossil-color);
     }
     .low-carbon ha-svg-icon {
-      color: #0f9d58;
+      color: var(--energy-non-fossil-color);
+    }
+    circle.low-carbon {
+      stroke: var(--energy-non-fossil-color);
+      fill: var(--energy-non-fossil-color);
     }
     .solar .circle {
-      border-color: #ff9800;
+      border-color: var(--energy-solar-color);
     }
     circle.solar,
     path.solar {
-      stroke: #ff9800;
+      stroke: var(--energy-solar-color);
     }
     circle.solar {
       stroke-width: 4;
-      fill: #ff9800;
-    }
-    circle.low-carbon {
-      stroke: #0f9d58;
-      fill: #0f9d58;
+      fill: var(--energy-solar-color);
     }
     path.return,
     circle.return {
-      stroke: #673ab7;
+      stroke: var(--energy-grid-return-color);
     }
     circle.return {
       stroke-width: 4;
-      fill: #673ab7;
+      fill: var(--energy-grid-return-color);
     }
     .return {
-      color: #673ab7;
+      color: var(--energy-grid-return-color);
     }
     .grid .circle {
-      border-color: #126a9a;
+      border-color: var(--energy-grid-consumption-color);
     }
     .consumption {
-      color: #126a9a;
+      color: var(--energy-grid-consumption-color);
     }
     circle.grid,
     path.grid {
-      stroke: #126a9a;
+      stroke: var(--energy-grid-consumption-color);
     }
     circle.grid {
       stroke-width: 4;
-      fill: #126a9a;
+      fill: var(--energy-grid-consumption-color);
     }
     .home .circle {
-      border: none;
-    }
-    .home .circle.border {
+      border-width: 0;
       border-color: var(--primary-color);
     }
+    .home .circle.border {
+      border-width: 2px;
+    }
     .circle svg circle {
-      animation: rotate-in 0.2s ease-in;
+      animation: rotate-in 0.6s ease-in;
+      transition: stroke-dashoffset 0.4s, stroke-dasharray 0.4s;
       fill: none;
     }
     @keyframes rotate-in {
       from {
-        stroke-dashoffset: 0;
+        stroke-dashoffset: 238.76104;
+        stroke-dasharray: 238.76104;
       }
     }
   `;
