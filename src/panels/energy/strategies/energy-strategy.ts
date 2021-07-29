@@ -50,7 +50,7 @@ export class EnergyStrategy {
     if (hasGrid) {
       view.cards!.push({
         title: "Energy usage",
-        type: "energy-summary-graph",
+        type: "energy-usage-graph",
         prefs: energyPrefs,
       });
     }
@@ -64,11 +64,10 @@ export class EnergyStrategy {
       });
     }
 
-    // Only include if we have a grid.
-    if (hasGrid) {
+    if (hasGrid || hasSolar) {
       view.cards!.push({
-        title: "Costs",
-        type: "energy-costs-table",
+        title: "Sources",
+        type: "energy-sources-table",
         prefs: energyPrefs,
       });
     }

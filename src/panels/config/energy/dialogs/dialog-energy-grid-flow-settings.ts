@@ -212,7 +212,15 @@ export class DialogEnergyGridFlowSettings
         <mwc-button @click=${this.closeDialog} slot="secondaryAction">
           ${this.hass.localize("ui.common.cancel")}
         </mwc-button>
-        <mwc-button @click=${this._save} slot="primaryAction">
+        <mwc-button
+          @click=${this._save}
+          .disabled=${!this._source[
+            this._params!.direction === "from"
+              ? "stat_energy_from"
+              : "stat_energy_to"
+          ]}
+          slot="primaryAction"
+        >
           ${this.hass.localize("ui.common.save")}
         </mwc-button>
       </ha-dialog>
@@ -231,32 +239,42 @@ export class DialogEnergyGridFlowSettings
   }
 
   private _numberPriceChanged(ev: CustomEvent) {
-    this._source!.number_energy_price = Number(ev.detail.value);
-    this._source!.entity_energy_price = null;
     this._costStat = null;
+    this._source = {
+      ...this._source!,
+      number_energy_price: Number(ev.detail.value),
+      entity_energy_price: null,
+    };
   }
 
   private _priceStatChanged(ev: CustomEvent) {
     this._costStat = ev.detail.value;
-    this._source!.entity_energy_price = null;
-    this._source!.number_energy_price = null;
+    this._source = {
+      ...this._source!,
+      entity_energy_price: null,
+      number_energy_price: null,
+    };
   }
 
   private _priceEntityChanged(ev: CustomEvent) {
-    this._source!.entity_energy_price = ev.detail.value;
-    this._source!.number_energy_price = null;
     this._costStat = null;
+    this._source = {
+      ...this._source!,
+      entity_energy_price: ev.detail.value,
+      number_energy_price: null,
+    };
   }
 
   private _statisticChanged(ev: CustomEvent<{ value: string }>) {
-    this._source![
-      this._params!.direction === "from" ? "stat_energy_from" : "stat_energy_to"
-    ] = ev.detail.value;
-    this._source![
-      this._params!.direction === "from"
+    this._source = {
+      ...this._source!,
+      [this._params!.direction === "from"
+        ? "stat_energy_from"
+        : "stat_energy_to"]: ev.detail.value,
+      [this._params!.direction === "from"
         ? "entity_energy_from"
-        : "entity_energy_to"
-    ] = ev.detail.value;
+        : "entity_energy_to"]: ev.detail.value,
+    };
   }
 
   private async _save() {

@@ -31,8 +31,10 @@ import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-formfield";
-
-const SOLAR_COLOR = "#FF9800";
+import {
+  formatNumber,
+  numberFormatToLocale,
+} from "../../../../common/string/format_number";
 
 @customElement("hui-energy-solar-graph-card")
 export class HuiEnergySolarGraphCard
@@ -119,7 +121,10 @@ export class HuiEnergySolarGraphCard
     }
 
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card>
+        ${this._config.title
+          ? html`<h1 class="card-header">${this._config.title}</h1>`
+          : ""}
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -166,7 +171,7 @@ export class HuiEnergySolarGraphCard
                 : {},
           },
           time: {
-            tooltipFormat: "datetimeseconds",
+            tooltipFormat: "datetime",
           },
           offset: true,
         },
@@ -186,7 +191,10 @@ export class HuiEnergySolarGraphCard
           mode: "nearest",
           callbacks: {
             label: (context) =>
-              `${context.dataset.label}: ${context.parsed.y} kWh`,
+              `${context.dataset.label}: ${formatNumber(
+                context.parsed.y,
+                this.hass.locale
+              )} kWh`,
           },
         },
         filler: {
@@ -212,6 +220,8 @@ export class HuiEnergySolarGraphCard
           hitRadius: 5,
         },
       },
+      // @ts-expect-error
+      locale: numberFormatToLocale(this.hass.locale),
     };
   }
 
@@ -219,6 +229,7 @@ export class HuiEnergySolarGraphCard
     if (this._fetching) {
       return;
     }
+
     const startDate = new Date();
     startDate.setHours(0, 0, 0, 0);
     startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
@@ -273,20 +284,25 @@ export class HuiEnergySolarGraphCard
       endTime = new Date();
     }
 
+    const computedStyles = getComputedStyle(this);
+    const solarColor = computedStyles
+      .getPropertyValue("--energy-solar-color")
+      .trim();
+
     solarSources.forEach((source, idx) => {
       const data: ChartDataset<"bar" | "line">[] = [];
       const entity = this.hass.states[source.stat_energy_from];
 
       const borderColor =
         idx > 0
-          ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(SOLAR_COLOR)), idx)))
-          : SOLAR_COLOR;
+          ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(solarColor)), idx)))
+          : solarColor;
 
       data.push({
         label: `Production ${
           entity ? computeStateName(entity) : source.stat_energy_from
         }`,
-        borderColor: borderColor,
+        borderColor,
         backgroundColor: borderColor + "7F",
         data: [],
       });
@@ -307,7 +323,7 @@ export class HuiEnergySolarGraphCard
           if (prevStart === point.start) {
             continue;
           }
-          const value = Math.round((point.sum - prevValue) * 100) / 100;
+          const value = point.sum - prevValue;
           const date = new Date(point.start);
           data[0].data.push({
             x: date.getTime(),
@@ -347,7 +363,9 @@ export class HuiEnergySolarGraphCard
             }`,
             fill: false,
             stepped: false,
-            borderColor: "#000",
+            borderColor: computedStyles.getPropertyValue(
+              "--primary-text-color"
+            ),
             borderDash: [7, 5],
             pointRadius: 0,
             data: [],
@@ -385,6 +403,9 @@ export class HuiEnergySolarGraphCard
     return css`
       ha-card {
         height: 100%;
+      }
+      .card-header {
+        padding-bottom: 0;
       }
       .content {
         padding: 16px;

@@ -109,6 +109,8 @@ class StateHistoryChartLine extends LitElement {
             hitRadius: 5,
           },
         },
+        // @ts-expect-error
+        locale: numberFormatToLocale(this.hass.locale),
       };
     }
     if (changedProps.has("data")) {

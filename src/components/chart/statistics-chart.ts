@@ -16,6 +16,7 @@ import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateName } from "../../common/entity/compute_state_name";
+import { numberFormatToLocale } from "../../common/string/format_number";
 import {
   Statistics,
   statisticsHaveType,
@@ -119,7 +120,7 @@ class StatisticsChart extends LitElement {
                 : {},
           },
           time: {
-            tooltipFormat: "datetimeseconds",
+            tooltipFormat: "datetime",
           },
         },
         y: {
@@ -157,6 +158,8 @@ class StatisticsChart extends LitElement {
           hitRadius: 5,
         },
       },
+      // @ts-expect-error
+      locale: numberFormatToLocale(this.hass.locale),
     };
   }
 

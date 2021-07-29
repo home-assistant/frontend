@@ -31,6 +31,7 @@ export const darkStyles = {
   "codemirror-property": "#C792EA",
   "codemirror-qualifier": "#DECB6B",
   "codemirror-type": "#DECB6B",
+  "energy-grid-return-color": "#b39bdb",
 };
 
 export const derivedStyles = {

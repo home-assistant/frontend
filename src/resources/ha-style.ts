@@ -82,6 +82,14 @@ documentContainer.innerHTML = `<custom-style>
       --state-climate-dry-color: #efbd07;
       --state-climate-idle-color: #8a8a8a;
 
+      /* energy */
+      --energy-grid-consumption-color: #126a9a;
+      --energy-grid-return-color: #673ab7;
+      --energy-solar-color: #ff9800;
+      --energy-non-fossil-color: #0f9d58;
+
+      --rgb-energy-solar-color: 255, 152, 0;
+
       /*
         Paper-styles color.html dependency is stripped on build.
         When a default paper-style color is used, it needs to be copied
