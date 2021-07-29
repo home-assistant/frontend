@@ -102,10 +102,7 @@ export class HaStatisticPicker extends LitElement {
             ? html`<a
                 target="_blank"
                 rel="noopener noreferrer"
-                href="${documentationUrl(
-                  this.hass,
-                  "/more-info/statistics/"
-                )}"
+                href="${documentationUrl(this.hass, "/more-info/statistics/")}"
                 >${this.hass.localize(
                   "ui.components.statistic-picker.learn_more"
                 )}</a
