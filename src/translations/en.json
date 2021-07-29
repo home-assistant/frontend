@@ -3059,7 +3059,7 @@
             },
             "gauge": {
               "name": "Gauge",
-              "display_as_dial": "Display as needle gauge?",
+              "needle_gauge": "Display as needle gauge?",
               "severity": {
                 "define": "Define Severity?",
                 "green": "Green",

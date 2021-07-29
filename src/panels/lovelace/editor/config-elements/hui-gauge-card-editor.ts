@@ -140,7 +140,7 @@ export class HuiGaugeCardEditor
         ></paper-input>
         <ha-formfield
           .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.card.gauge.display_as_dial"
+            "ui.panel.lovelace.editor.card.gauge.needle_gauge"
           )}
           .dir=${computeRTLDirection(this.hass)}
         >

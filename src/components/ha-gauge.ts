@@ -28,7 +28,7 @@ export class Gauge extends LitElement {
 
   @property() public locale!: FrontendLocaleData;
 
-  @property({ type: Boolean }) public needle = false;
+  @property({ type: Boolean }) public needle?: boolean;
 
   @property() public levels?: LevelDefinition[];
 
@@ -87,7 +87,7 @@ export class Gauge extends LitElement {
           this.needle
             ? svg`<path
                 class="needle"
-                d="M 25 50 L 2.5 52.5 L 25 55 z"
+                d="M 25 47.5 L 2.5 50 L 25 52.5 z"
                 style=${ifDefined(
                   !isSafari
                     ? styleMap({ transform: `rotate(${this._angle}deg)` })
