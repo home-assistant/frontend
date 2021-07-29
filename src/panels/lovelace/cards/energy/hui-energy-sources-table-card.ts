@@ -100,7 +100,10 @@ export class HuiEnergySourcesTableCard
           flow.number_energy_price
       );
 
-    return html` <ha-card .header="${this._config.title}">
+    return html` <ha-card>
+      ${this._config.title
+        ? html`<h1 class="card-header">${this._config.title}</h1>`
+        : ""}
       <div class="mdc-data-table">
         <div class="mdc-data-table__table-container">
           <table class="mdc-data-table__table" aria-label="Dessert calories">
@@ -391,6 +394,9 @@ export class HuiEnergySourcesTableCard
       }
       ha-card {
         height: 100%;
+      }
+      .card-header {
+        padding-bottom: 0;
       }
       .content {
         padding: 16px;

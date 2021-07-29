@@ -110,7 +110,10 @@ export class HuiEnergyDevicesGraphCard
     }
 
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card>
+        ${this._config.title
+          ? html`<h1 class="card-header">${this._config.title}</h1>`
+          : ""}
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -242,6 +245,9 @@ export class HuiEnergyDevicesGraphCard
     return css`
       ha-card {
         height: 100%;
+      }
+      .card-header {
+        padding-bottom: 0;
       }
       .content {
         padding: 16px;
