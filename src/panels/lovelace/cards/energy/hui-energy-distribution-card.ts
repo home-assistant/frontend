@@ -140,13 +140,9 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       }
 
       if (highCarbonConsumption !== null) {
-        const gridPctHighCarbon = highCarbonConsumption / totalConsumption;
+        lowCarbonConsumption = totalGridConsumption - highCarbonConsumption;
 
-        lowCarbonConsumption =
-          totalGridConsumption - totalGridConsumption * gridPctHighCarbon;
-
-        const homePctGridHighCarbon =
-          (gridPctHighCarbon * totalGridConsumption) / totalConsumption;
+        const homePctGridHighCarbon = highCarbonConsumption / totalConsumption;
 
         homeHighCarbonCircumference =
           CIRCLE_CIRCUMFERENCE * homePctGridHighCarbon;
