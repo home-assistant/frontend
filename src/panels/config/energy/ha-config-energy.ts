@@ -12,7 +12,6 @@ import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
 
 const INITIAL_CONFIG = {
-  currency: "€",
   energy_sources: [],
   device_consumption: [],
 };

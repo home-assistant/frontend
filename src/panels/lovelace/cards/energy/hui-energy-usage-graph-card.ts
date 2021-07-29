@@ -9,39 +9,34 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { styleMap } from "lit/directives/style-map";
 import {
   hex2rgb,
   lab2rgb,
   rgb2hex,
   rgb2lab,
 } from "../../../../common/color/convert-color";
+import { hexBlend } from "../../../../common/color/hex";
 import { labDarken } from "../../../../common/color/lab";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { round } from "../../../../common/number/round";
-import { formatNumber } from "../../../../common/string/format_number";
+import {
+  formatNumber,
+  numberFormatToLocale,
+} from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import { fetchStatistics, Statistics } from "../../../../data/history";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
-import { EnergySummaryGraphCardConfig } from "../types";
+import { EnergyUsageGraphCardConfig } from "../types";
 
-const NEGATIVE = ["to_grid"];
-const COLORS = {
-  to_grid: { border: "#673ab7", background: "#b39bdb" },
-  from_grid: { border: "#126A9A", background: "#8ab5cd" },
-  used_solar: { border: "#FF9800", background: "#fecc8e" },
-};
-
-@customElement("hui-energy-summary-graph-card")
-export class HuiEnergySummaryGraphCard
+@customElement("hui-energy-usage-graph-card")
+export class HuiEnergyUsageGraphCard
   extends LitElement
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _config?: EnergySummaryGraphCardConfig;
+  @state() private _config?: EnergyUsageGraphCardConfig;
 
   @state() private _data?: Statistics;
 
@@ -81,7 +76,7 @@ export class HuiEnergySummaryGraphCard
     return 3;
   }
 
-  public setConfig(config: EnergySummaryGraphCardConfig): void {
+  public setConfig(config: EnergyUsageGraphCardConfig): void {
     this._config = config;
   }
 
@@ -95,7 +90,7 @@ export class HuiEnergySummaryGraphCard
     }
 
     const oldConfig = changedProps.get("_config") as
-      | EnergySummaryGraphCardConfig
+      | EnergyUsageGraphCardConfig
       | undefined;
 
     if (oldConfig !== this._config) {
@@ -122,36 +117,6 @@ export class HuiEnergySummaryGraphCard
             "has-header": !!this._config.title,
           })}"
         >
-          <div class="chartLegend">
-            <ul>
-              ${this._chartData.datasets.map(
-                (dataset) => html`<li>
-                  <div>
-                    <div
-                      class="bullet"
-                      style=${styleMap({
-                        backgroundColor: dataset.backgroundColor as string,
-                        borderColor: dataset.borderColor as string,
-                      })}
-                    ></div>
-                    <span class="label">${dataset.label}</span>
-                  </div>
-                  <span class="value"
-                    >${formatNumber(
-                      Math.abs(
-                        dataset.data.reduce(
-                          (total, point) => total + (point as any).y,
-                          0
-                        ) as number
-                      ),
-                      this.hass.locale
-                    )}
-                    kWh</span
-                  >
-                </li>`
-              )}
-            </ul>
-          </div>
           <ha-chart-base
             .data=${this._chartData}
             .options=${this._chartOptions}
@@ -193,7 +158,7 @@ export class HuiEnergySummaryGraphCard
                 : {},
           },
           time: {
-            tooltipFormat: "datetimeseconds",
+            tooltipFormat: "datetime",
           },
           offset: true,
         },
@@ -206,7 +171,8 @@ export class HuiEnergySummaryGraphCard
           },
           ticks: {
             beginAtZero: true,
-            callback: (value) => Math.abs(round(value)),
+            callback: (value) =>
+              formatNumber(Math.abs(value), this.hass.locale),
           },
         },
       },
@@ -218,7 +184,10 @@ export class HuiEnergySummaryGraphCard
           filter: (val) => val.formattedValue !== "0",
           callbacks: {
             label: (context) =>
-              `${context.dataset.label}: ${Math.abs(context.parsed.y)} kWh`,
+              `${context.dataset.label}: ${formatNumber(
+                Math.abs(context.parsed.y),
+                this.hass.locale
+              )} kWh`,
             footer: (contexts) => {
               let totalConsumed = 0;
               let totalReturned = 0;
@@ -233,10 +202,16 @@ export class HuiEnergySummaryGraphCard
               }
               return [
                 totalConsumed
-                  ? `Total consumed: ${totalConsumed.toFixed(2)} kWh`
+                  ? `Total consumed: ${formatNumber(
+                      totalConsumed,
+                      this.hass.locale
+                    )} kWh`
                   : "",
                 totalReturned
-                  ? `Total returned: ${totalReturned.toFixed(2)} kWh`
+                  ? `Total returned: ${formatNumber(
+                      totalReturned,
+                      this.hass.locale
+                    )} kWh`
                   : "",
               ].filter(Boolean);
             },
@@ -261,6 +236,8 @@ export class HuiEnergySummaryGraphCard
           hitRadius: 5,
         },
       },
+      // @ts-expect-error
+      locale: numberFormatToLocale(this.hass.locale),
     };
   }
 
@@ -344,6 +321,23 @@ export class HuiEnergySummaryGraphCard
     } = {};
     const summedData: { [key: string]: { [start: string]: number } } = {};
 
+    const computedStyles = getComputedStyle(this);
+    const colors = {
+      to_grid: computedStyles
+        .getPropertyValue("--energy-grid-return-color")
+        .trim(),
+      from_grid: computedStyles
+        .getPropertyValue("--energy-grid-consumption-color")
+        .trim(),
+      used_solar: computedStyles
+        .getPropertyValue("--energy-solar-color")
+        .trim(),
+    };
+
+    const backgroundColor = computedStyles
+      .getPropertyValue("--card-background-color")
+      .trim();
+
     Object.entries(statistics).forEach(([key, statIds]) => {
       const sum = ["solar", "to_grid"].includes(key);
       const add = key !== "solar";
@@ -407,12 +401,13 @@ export class HuiEnergySummaryGraphCard
     const uniqueKeys = Array.from(new Set(allKeys));
 
     Object.entries(combinedData).forEach(([type, sources]) => {
-      const negative = NEGATIVE.includes(type);
-
       Object.entries(sources).forEach(([statId, source], idx) => {
         const data: ChartDataset<"bar">[] = [];
         const entity = this.hass.states[statId];
-        const color = COLORS[type];
+        const borderColor =
+          idx > 0
+            ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(colors[type])), idx)))
+            : colors[type];
 
         data.push({
           label:
@@ -421,28 +416,20 @@ export class HuiEnergySummaryGraphCard
               : entity
               ? computeStateName(entity)
               : statId,
-          borderColor:
-            idx > 0
-              ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(color.border)), idx)))
-              : color.border,
-          backgroundColor:
-            idx > 0
-              ? rgb2hex(
-                  lab2rgb(labDarken(rgb2lab(hex2rgb(color.background)), idx))
-                )
-              : color.background,
+          borderColor,
+          backgroundColor: hexBlend(borderColor, backgroundColor, 50),
           stack: "stack",
           data: [],
         });
 
         // Process chart data.
         for (const key of uniqueKeys) {
-          const value = key in source ? Math.round(source[key] * 100) / 100 : 0;
+          const value = source[key] || 0;
           const date = new Date(key);
           // @ts-expect-error
           data[0].data.push({
             x: date.getTime(),
-            y: value && negative ? -1 * value : value,
+            y: value && type === "to_grid" ? -1 * value : value,
           });
         }
 
@@ -470,43 +457,12 @@ export class HuiEnergySummaryGraphCard
       .has-header {
         padding-top: 0;
       }
-      .chartLegend ul {
-        padding-left: 20px;
-      }
-      .chartLegend li {
-        padding: 2px 8px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        box-sizing: border-box;
-        color: var(--secondary-text-color);
-      }
-      .chartLegend li > div {
-        display: flex;
-        align-items: center;
-      }
-      .chartLegend .bullet {
-        border-width: 1px;
-        border-style: solid;
-        border-radius: 4px;
-        display: inline-block;
-        height: 16px;
-        margin-right: 6px;
-        width: 32px;
-        box-sizing: border-box;
-      }
-      .value {
-        font-weight: 300;
-      }
     `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-energy-summary-graph-card": HuiEnergySummaryGraphCard;
+    "hui-energy-usage-graph-card": HuiEnergyUsageGraphCard;
   }
 }

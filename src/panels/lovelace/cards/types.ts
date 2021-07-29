@@ -101,7 +101,7 @@ export interface EnergyDistributionCardConfig extends LovelaceCardConfig {
   title?: string;
   prefs: EnergyPreferences;
 }
-export interface EnergySummaryGraphCardConfig extends LovelaceCardConfig {
+export interface EnergyUsageGraphCardConfig extends LovelaceCardConfig {
   type: "energy-summary-graph";
   title?: string;
   prefs: EnergyPreferences;
@@ -115,6 +115,12 @@ export interface EnergySolarGraphCardConfig extends LovelaceCardConfig {
 
 export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
   type: "energy-devices-graph";
+  title?: string;
+  prefs: EnergyPreferences;
+}
+
+export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
+  type: "energy-sources-table";
   title?: string;
   prefs: EnergyPreferences;
 }

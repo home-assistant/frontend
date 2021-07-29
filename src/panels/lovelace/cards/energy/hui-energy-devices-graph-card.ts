@@ -16,6 +16,10 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { getColorByIndex } from "../../../../common/color/colors";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
+import {
+  formatNumber,
+  numberFormatToLocale,
+} from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import {
@@ -144,12 +148,15 @@ export class HuiEnergyDevicesGraphCard
           mode: "nearest",
           callbacks: {
             label: (context) =>
-              `${context.dataset.label}: ${
-                Math.round(context.parsed.x * 100) / 100
-              } kWh`,
+              `${context.dataset.label}: ${formatNumber(
+                context.parsed.x,
+                this.hass.locale
+              )} kWh`,
           },
         },
       },
+      // @ts-expect-error
+      locale: numberFormatToLocale(this.hass.locale),
     };
   }
 
