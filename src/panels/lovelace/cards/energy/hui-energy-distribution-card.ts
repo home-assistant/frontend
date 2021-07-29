@@ -104,17 +104,17 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
         ) || 0;
     }
 
-    const totalConsumption =
-      totalGridConsumption +
-      (totalSolarProduction || 0) -
-      (productionReturnedToGrid || 0);
+    const solarConsumption = Math.max(
+      0,
+      (totalSolarProduction || 0) - (productionReturnedToGrid || 0)
+    );
+
+    const totalHomeConsumption = totalGridConsumption + solarConsumption;
 
     let homeSolarCircumference: number | undefined;
     if (hasSolarProduction) {
-      const homePctSolar =
-        ((totalSolarProduction || 0) - (productionReturnedToGrid || 0)) /
-        totalConsumption;
-      homeSolarCircumference = CIRCLE_CIRCUMFERENCE * homePctSolar;
+      homeSolarCircumference =
+        CIRCLE_CIRCUMFERENCE * (solarConsumption / totalHomeConsumption);
     }
 
     let lowCarbonConsumption: number | undefined;
@@ -142,10 +142,8 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       if (highCarbonConsumption !== null) {
         lowCarbonConsumption = totalGridConsumption - highCarbonConsumption;
 
-        const homePctGridHighCarbon = highCarbonConsumption / totalConsumption;
-
         homeHighCarbonCircumference =
-          CIRCLE_CIRCUMFERENCE * homePctGridHighCarbon;
+          CIRCLE_CIRCUMFERENCE * (highCarbonConsumption / totalHomeConsumption);
 
         homeLowCarbonCircumference =
           CIRCLE_CIRCUMFERENCE -
@@ -153,15 +151,6 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
           homeHighCarbonCircumference;
       }
     }
-
-    homeSolarCircumference = CIRCLE_CIRCUMFERENCE * 0.1;
-
-    homeHighCarbonCircumference = CIRCLE_CIRCUMFERENCE * 0.8;
-
-    homeLowCarbonCircumference =
-      CIRCLE_CIRCUMFERENCE -
-      (homeSolarCircumference || 0) -
-      homeHighCarbonCircumference;
 
     return html`
       <ha-card .header=${this._config.title}>
@@ -252,7 +241,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
                 })}"
               >
                 <ha-svg-icon .path="${mdiHome}"></ha-svg-icon>
-                ${formatNumber(totalConsumption, this.hass.locale, {
+                ${formatNumber(totalHomeConsumption, this.hass.locale, {
                   maximumFractionDigits: 1,
                 })}
                 kWh

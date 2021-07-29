@@ -102,10 +102,9 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
 
       const totalEnergyConsumed =
         totalGridConsumption +
-        (totalSolarProduction || 0) -
-        (totalGridReturned || 0);
+        Math.max(0, (totalSolarProduction || 0) - (totalGridReturned || 0));
 
-      value = round((highCarbonEnergy / totalEnergyConsumed) * 100);
+      value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
     }
 
     return html`
