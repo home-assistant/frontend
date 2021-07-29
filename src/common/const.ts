@@ -63,6 +63,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   humidity: "hass:water-percent",
   illuminance: "hass:brightness-5",
   temperature: "hass:thermometer",
+  monetary: "mdi:cash",
   pressure: "hass:gauge",
   power: "hass:flash",
   power_factor: "hass:angle-acute",
