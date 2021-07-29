@@ -101,7 +101,7 @@ export class HaStatisticPicker extends LitElement {
           >${item.id === "" || item.id === "__missing"
             ? html`<a
                 target="_blank"
-                rel="noopener noreferer"
+                rel="noopener noreferrer"
                 href="${documentationUrl(
                   this.hass,
                   "/more-info/energy/statistics"
