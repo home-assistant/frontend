@@ -87,7 +87,7 @@ export class Gauge extends LitElement {
           this.hand
             ? svg`<path
                 class="hand"
-                d="M 50 50 L 10 50"
+                d="M 50 45 A 5 5 0 0 1 50 55 L 10 50"
                 style=${ifDefined(
                   !isSafari
                     ? styleMap({ transform: `rotate(${this._angle}deg)` })
@@ -161,9 +161,8 @@ export class Gauge extends LitElement {
         transition: all 1s ease 0s;
       }
       .hand {
-        fill: none;
-        stroke-width: 5;
-        stroke: var(--gauge-color);
+        fill: var(--gauge-color);
+        stroke: none;
         transform-origin: 50% 100%;
         transition: all 1s ease 0s;
       }
