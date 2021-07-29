@@ -47,7 +47,7 @@ export class EnergySolarSettings extends LitElement {
             ${this.hass.localize("ui.panel.config.energy.solar.sub")}
             <a
               target="_blank"
-              rel="noopener noreferer"
+              rel="noopener noreferrer"
               href="${documentationUrl(
                 this.hass,
                 "/docs/energy/solar-panels/"
