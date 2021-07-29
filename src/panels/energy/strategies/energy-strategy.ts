@@ -22,8 +22,6 @@ export class EnergyStrategy {
 
     const view: LovelaceViewConfig = { cards: [] };
 
-    return setupWizard();
-
     let energyPrefs: EnergyPreferences;
 
     try {
