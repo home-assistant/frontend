@@ -28,7 +28,7 @@ export class Gauge extends LitElement {
 
   @property() public locale!: FrontendLocaleData;
 
-  @property({ type: Boolean, reflect: true }) public hand = false;
+  @property({ type: Boolean, reflect: true }) public dial = false;
 
   @property() public levels: LevelDefinition[] = [];
 
@@ -69,25 +69,25 @@ export class Gauge extends LitElement {
           this.levels.length
             ? this.levels
                 .sort((a, b) => a.level - b.level)
-                .reverse()
                 .map((level) => {
                   const angle = getAngle(level.level, this.min, this.max);
                   return svg`<path
                       stroke="${level.stroke}"
                       class="level"
-                      d="M 10 50 a 40 40 0 0 1
-                      ${40 - 40 * Math.cos((angle * Math.PI) / 180)}
-                      ${-40 * Math.sin((angle * Math.PI) / 180)}
+                      d="M
+                        ${50 - 40 * Math.cos((angle * Math.PI) / 180)}
+                        ${50 - 40 * Math.sin((angle * Math.PI) / 180)}
+                       A 40 40 0 0 1 90 50
                       "
                     ></path>`;
                 })
             : ""
         }
         ${
-          this.hand
+          this.dial
             ? svg`<path
-                class="hand"
-                d="M 50 45 A 5 5 0 0 1 50 55 L 10 50"
+                class="dial-hand"
+                d="M 50 45 A 5 5 0 0 1 50 55 L 2.5 50 Z"
                 style=${ifDefined(
                   !isSafari
                     ? styleMap({ transform: `rotate(${this._angle}deg)` })
@@ -96,7 +96,8 @@ export class Gauge extends LitElement {
                 transform=${ifDefined(
                   isSafari ? `rotate(${this._angle} 50 50)` : undefined
                 )}
-              >`
+              >
+              `
             : svg`<path
                 class="value"
                 d="M 90 50.001 A 40 40 0 0 1 10 50"
@@ -123,6 +124,11 @@ export class Gauge extends LitElement {
             : ""
         }
         </path>
+        ${
+          this.dial
+            ? svg`<circle cx="50" cy="50" r="10" class="dial-hand" />`
+            : ""
+        }
       </svg>
       <svg class="text">
         <text class="value-text">
@@ -160,9 +166,8 @@ export class Gauge extends LitElement {
         transform-origin: 50% 100%;
         transition: all 1s ease 0s;
       }
-      .hand {
+      .dial-hand {
         fill: var(--gauge-color);
-        stroke: none;
         transform-origin: 50% 100%;
         transition: all 1s ease 0s;
       }

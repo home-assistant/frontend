@@ -133,8 +133,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             .unit_of_measurement ||
           ""}
           style=${styleMap({
-            "--gauge-color": this._computeSeverity(entityState),
+            "--gauge-color": this._config.dial
+              ? "var(--label-badge-blue)"
+              : this._computeSeverity(entityState),
           })}
+          ?dial=${this._config!.dial}
+          .levels=${this._config!.dial ? this._severityLevels() : []}
         ></ha-gauge>
         <div class="name">
           ${this._config.name || computeStateName(stateObj)}
@@ -198,6 +202,22 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       return severityMap[sortable[2][0]];
     }
     return severityMap.normal;
+  }
+
+  private _severityLevels() {
+    const sections = this._config!.severity;
+
+    if (!sections) {
+      return [];
+    }
+
+    const sectionsArray = Object.keys(sections);
+    return sectionsArray.map((severity) => {
+      return {
+        level: sections[severity],
+        stroke: severityMap[severity],
+      };
+    });
   }
 
   private _handleClick(): void {
