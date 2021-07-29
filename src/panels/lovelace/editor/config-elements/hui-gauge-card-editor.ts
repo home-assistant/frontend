@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, number, object, optional, string } from "superstruct";
+import { assert, boolean, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
@@ -23,6 +23,7 @@ const cardConfigStruct = object({
   max: optional(number()),
   severity: optional(object()),
   theme: optional(string()),
+  dial: optional(boolean()),
 });
 
 const includeDomains = ["counter", "input_number", "number", "sensor"];
@@ -138,6 +139,15 @@ export class HuiGaugeCardEditor
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <ha-formfield
+          .label=${"Display as dial"}
+          .dir=${computeRTLDirection(this.hass)}
+        >
+          <ha-switch
+            .checked="${this._config!.dial !== undefined}"
+            @change="${this._toggleDial}"
+          ></ha-switch
+        ></ha-formfield>
+        <ha-formfield
           .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.gauge.severity.define"
           )}
@@ -210,6 +220,22 @@ export class HuiGaugeCardEditor
         }
       `,
     ];
+  }
+
+  private _toggleDial(ev: EntitiesEditorEvent): void {
+    if (!this._config || !this.hass) {
+      return;
+    }
+    if ((ev.target as EditorTarget).checked) {
+      this._config = {
+        ...this._config,
+        dial: true,
+      };
+    } else {
+      this._config = { ...this._config };
+      delete this._config.dial;
+    }
+    fireEvent(this, "config-changed", { config: this._config });
   }
 
   private _toggleSeverity(ev: EntitiesEditorEvent): void {
