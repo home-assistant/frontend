@@ -131,6 +131,9 @@ class HaEntitiesPickerLight extends LitElement {
   private async _addEntity(event: PolymerChangedEvent<string>) {
     event.stopPropagation();
     const toAdd = event.detail.value;
+    if (!toAdd) {
+      return;
+    }
     (event.currentTarget as any).value = "";
     if (!toAdd) {
       return;
