@@ -104,7 +104,7 @@ export class HaStatisticPicker extends LitElement {
                 rel="noopener noreferrer"
                 href="${documentationUrl(
                   this.hass,
-                  "/more-info/energy/statistics"
+                  "/more-info/statistics/"
                 )}"
                 >${this.hass.localize(
                   "ui.components.statistic-picker.learn_more"
