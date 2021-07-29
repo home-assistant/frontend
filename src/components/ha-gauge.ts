@@ -28,7 +28,7 @@ export class Gauge extends LitElement {
 
   @property() public locale!: FrontendLocaleData;
 
-  @property({ type: Boolean }) public dial = false;
+  @property({ type: Boolean }) public needle = false;
 
   @property() public levels?: LevelDefinition[];
 
@@ -84,9 +84,9 @@ export class Gauge extends LitElement {
             : ""
         }
         ${
-          this.dial
+          this.needle
             ? svg`<path
-                class="dial-hand"
+                class="needle"
                 d="M 25 50 L 2.5 52.5 L 25 55 z"
                 style=${ifDefined(
                   !isSafari
@@ -161,7 +161,7 @@ export class Gauge extends LitElement {
         transform-origin: 50% 100%;
         transition: all 1s ease 0s;
       }
-      .dial-hand {
+      .needle {
         fill: var(--primary-text-color);
         transform-origin: 50% 100%;
         transition: all 1s ease 0s;

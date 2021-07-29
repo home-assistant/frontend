@@ -133,12 +133,12 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
             .unit_of_measurement ||
           ""}
           style=${styleMap({
-            "--gauge-color": this._config.dial
+            "--gauge-color": this._config.needle
               ? "var(--label-badge-blue)"
               : this._computeSeverity(entityState),
           })}
-          .dial=${this._config!.dial}
-          .levels=${this._config!.dial ? this._severityLevels() : undefined}
+          .needle=${this._config!.needle}
+          .levels=${this._config!.needle ? this._severityLevels() : undefined}
         ></ha-gauge>
         <div class="name">
           ${this._config.name || computeStateName(stateObj)}

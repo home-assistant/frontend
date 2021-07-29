@@ -23,7 +23,7 @@ const cardConfigStruct = object({
   max: optional(number()),
   severity: optional(object()),
   theme: optional(string()),
-  dial: optional(boolean()),
+  needle: optional(boolean()),
 });
 
 const includeDomains = ["counter", "input_number", "number", "sensor"];
@@ -145,8 +145,8 @@ export class HuiGaugeCardEditor
           .dir=${computeRTLDirection(this.hass)}
         >
           <ha-switch
-            .checked="${this._config!.dial !== undefined}"
-            @change="${this._toggleDial}"
+            .checked="${this._config!.needle !== undefined}"
+            @change="${this._toggleNeedle}"
           ></ha-switch
         ></ha-formfield>
         <ha-formfield
@@ -224,18 +224,18 @@ export class HuiGaugeCardEditor
     ];
   }
 
-  private _toggleDial(ev: EntitiesEditorEvent): void {
+  private _toggleNeedle(ev: EntitiesEditorEvent): void {
     if (!this._config || !this.hass) {
       return;
     }
     if ((ev.target as EditorTarget).checked) {
       this._config = {
         ...this._config,
-        dial: true,
+        needle: true,
       };
     } else {
       this._config = { ...this._config };
-      delete this._config.dial;
+      delete this._config.needle;
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
