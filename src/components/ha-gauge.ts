@@ -28,9 +28,9 @@ export class Gauge extends LitElement {
 
   @property() public locale!: FrontendLocaleData;
 
-  @property({ type: Boolean, reflect: true }) public dial = false;
+  @property({ type: Boolean }) public dial = false;
 
-  @property() public levels: LevelDefinition[] = [];
+  @property() public levels?: LevelDefinition[];
 
   @property() public label = "";
 
@@ -66,7 +66,7 @@ export class Gauge extends LitElement {
         ></path>
 
         ${
-          this.levels.length
+          this.levels
             ? this.levels
                 .sort((a, b) => a.level - b.level)
                 .map((level) => {
@@ -87,7 +87,7 @@ export class Gauge extends LitElement {
           this.dial
             ? svg`<path
                 class="dial-hand"
-                d="M 50 45 A 5 5 0 0 1 50 55 L 2.5 50 Z"
+                d="M 25 50 L 2.5 52.5 L 25 55 z"
                 style=${ifDefined(
                   !isSafari
                     ? styleMap({ transform: `rotate(${this._angle}deg)` })
@@ -124,11 +124,6 @@ export class Gauge extends LitElement {
             : ""
         }
         </path>
-        ${
-          this.dial
-            ? svg`<circle cx="50" cy="50" r="10" class="dial-hand" />`
-            : ""
-        }
       </svg>
       <svg class="text">
         <text class="value-text">
@@ -167,7 +162,7 @@ export class Gauge extends LitElement {
         transition: all 1s ease 0s;
       }
       .dial-hand {
-        fill: var(--gauge-color);
+        fill: var(--primary-text-color);
         transform-origin: 50% 100%;
         transition: all 1s ease 0s;
       }
