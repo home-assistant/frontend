@@ -139,7 +139,9 @@ export class HuiGaugeCardEditor
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <ha-formfield
-          .label=${"Display as dial"}
+          .label=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.gauge.display_as_dial"
+          )}
           .dir=${computeRTLDirection(this.hass)}
         >
           <ha-switch
