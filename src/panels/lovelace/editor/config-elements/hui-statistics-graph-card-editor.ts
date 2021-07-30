@@ -78,7 +78,7 @@ export class HuiStatisticsGraphCardEditor
       ? Array.isArray(this._config!.stat_types)
         ? this._config!.stat_types
         : [this._config!.stat_types]
-      : [];
+      : ["mean", "min", "max", "sum"];
   }
 
   protected render(): TemplateResult {
