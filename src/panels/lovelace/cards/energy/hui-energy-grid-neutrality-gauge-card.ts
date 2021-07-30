@@ -92,7 +92,9 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
                 max="1"
                 .value=${value}
                 .valueText=${formatNumber(
-                  Math.abs(returnedToGrid! - consumedFromGrid!)
+                  Math.abs(returnedToGrid! - consumedFromGrid!),
+                  this.hass.locale,
+                  { maximumFractionDigits: 2 }
                 )}
                 .locale=${this.hass!.locale}
                 .levels=${LEVELS}
