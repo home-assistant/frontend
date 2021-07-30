@@ -64,23 +64,6 @@ export class EnergyStrategy {
       });
     }
 
-    if (hasGrid || hasSolar) {
-      view.cards!.push({
-        title: "Sources",
-        type: "energy-sources-table",
-        prefs: energyPrefs,
-      });
-    }
-
-    // Only include if we have at least 1 device in the config.
-    if (energyPrefs.device_consumption.length) {
-      view.cards!.push({
-        title: "Monitor individual devices",
-        type: "energy-devices-graph",
-        prefs: energyPrefs,
-      });
-    }
-
     // Only include if we have a grid.
     if (hasGrid) {
       view.cards!.push({
@@ -88,6 +71,14 @@ export class EnergyStrategy {
         type: "energy-distribution",
         prefs: energyPrefs,
         view_layout: { position: "sidebar" },
+      });
+    }
+
+    if (hasGrid || hasSolar) {
+      view.cards!.push({
+        title: "Sources",
+        type: "energy-sources-table",
+        prefs: energyPrefs,
       });
     }
 
@@ -106,6 +97,15 @@ export class EnergyStrategy {
         type: "energy-carbon-consumed-gauge",
         prefs: energyPrefs,
         view_layout: { position: "sidebar" },
+      });
+    }
+
+    // Only include if we have at least 1 device in the config.
+    if (energyPrefs.device_consumption.length) {
+      view.cards!.push({
+        title: "Monitor individual devices",
+        type: "energy-devices-graph",
+        prefs: energyPrefs,
       });
     }
 
