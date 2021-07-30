@@ -62,7 +62,7 @@ export class DialogEnergyDeviceSettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitOfMeasurement=${energyUnits}
-          .label=${`Device production energy (kWh)`}
+          .label=${`Device consumption energy (kWh)`}
           entities-only
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
