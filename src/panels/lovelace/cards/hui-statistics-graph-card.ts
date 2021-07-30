@@ -114,7 +114,10 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       | StatisticsGraphCardConfig
       | undefined;
 
-    if (oldConfig?.entities !== this._config.entities) {
+    if (
+      oldConfig?.entities !== this._config.entities ||
+      oldConfig?.days_to_show !== this._config.days_to_show
+    ) {
       this._getStatistics();
       // statistics are created every hour
       clearInterval(this._interval);
