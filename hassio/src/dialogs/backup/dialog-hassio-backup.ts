@@ -275,7 +275,14 @@ class HassioBackupDialog
 
     this.hass
 
-      .callApi("POST", `hassio/backups/${this._backup!.slug}/remove`)
+      .callApi(
+        atLeastVersion(this.hass.config.version, 2021, 8) ? "DELETE" : "POST",
+        `hassio/${
+          atLeastVersion(this.hass.config.version, 2021, 8)
+            ? "backups"
+            : "snapshots"
+        }/${this._backup!.slug}/remove`
+      )
       .then(
         () => {
           if (this._dialogParams!.onDelete) {
@@ -294,7 +301,11 @@ class HassioBackupDialog
     try {
       signedPath = await getSignedPath(
         this.hass,
-        `/api/hassio/backups/${this._backup!.slug}/download`
+        `/api/hassio/${
+          atLeastVersion(this.hass.config.version, 2021, 8)
+            ? "backups"
+            : "snapshots"
+        }/${this._backup!.slug}/download`
       );
     } catch (err) {
       await showAlertDialog(this, {
