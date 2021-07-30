@@ -58,7 +58,7 @@ class StatisticsChart extends LitElement {
     if (!this.hasUpdated) {
       this._createOptions();
     }
-    if (changedProps.has("statisticsData")) {
+    if (changedProps.has("statisticsData") || changedProps.has("statTypes")) {
       this._generateData();
     }
   }
@@ -164,6 +164,9 @@ class StatisticsChart extends LitElement {
   }
 
   private _generateData() {
+    if (!this.statisticsData) {
+      return;
+    }
     let colorIndex = 0;
     const statisticsData = Object.values(this.statisticsData);
     const totalDataSets: ChartDataset<"line">[] = [];

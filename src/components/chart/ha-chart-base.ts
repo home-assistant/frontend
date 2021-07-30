@@ -55,7 +55,7 @@ export default class HaChartBase extends LitElement {
       this._setupChart();
       return;
     }
-    if (changedProps.has("type")) {
+    if (changedProps.has("chartType")) {
       this.chart.config.type = this.chartType;
     }
     if (changedProps.has("data")) {
