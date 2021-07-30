@@ -23,8 +23,10 @@ import "../../../../components/chart/statistics-chart";
 import "../../../../components/ha-card";
 import {
   EnergyInfo,
+  EnergyPreferences,
   energySourcesByType,
   getEnergyInfo,
+  getEnergyPreferences,
 } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
@@ -47,6 +49,8 @@ export class HuiEnergySourcesTableCard
   @state() private _stats?: Statistics;
 
   @state() private _energyInfo?: EnergyInfo;
+
+  private _prefs?: EnergyPreferences;
 
   public getCardSize(): Promise<number> | number {
     return 3;
@@ -75,7 +79,7 @@ export class HuiEnergySourcesTableCard
     let totalSolar = 0;
     let totalCost = 0;
 
-    const types = energySourcesByType(this._config.prefs);
+    const types = energySourcesByType(this._prefs!);
 
     const computedStyles = getComputedStyle(this);
     const solarColor = computedStyles
@@ -342,8 +346,18 @@ export class HuiEnergySourcesTableCard
     startDate.setHours(0, 0, 0, 0);
     startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
 
+    let prefs = this._config!.prefs;
+
+    if (!prefs) {
+      try {
+        prefs = this._prefs = await getEnergyPreferences(this.hass!);
+      } catch (e) {
+        return;
+      }
+    }
+
     const statistics: string[] = Object.values(this._energyInfo!.cost_sensors);
-    const prefs = this._config!.prefs;
+
     for (const source of prefs.energy_sources) {
       if (source.type === "solar") {
         statistics.push(source.stat_energy_from);

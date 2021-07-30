@@ -15,7 +15,11 @@ import { subscribeOne } from "../../../../common/util/subscribe-one";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import { getConfigEntries } from "../../../../data/config_entries";
-import { energySourcesByType } from "../../../../data/energy";
+import {
+  EnergyPreferences,
+  energySourcesByType,
+  getEnergyPreferences,
+} from "../../../../data/energy";
 import { subscribeEntityRegistry } from "../../../../data/entity_registry";
 import {
   calculateStatisticsSumGrowth,
@@ -40,6 +44,8 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
   @state() private _co2SignalEntity?: string;
 
   private _fetching = false;
+
+  private _prefs?: EnergyPreferences;
 
   public setConfig(config: EnergyDistributionCardConfig): void {
     this._config = config;
@@ -69,7 +75,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       return html`Loading…`;
     }
 
-    const prefs = this._config!.prefs;
+    const prefs = this._prefs!;
     const types = energySourcesByType(prefs);
 
     // The strategy only includes this card if we have a grid.
@@ -440,7 +446,16 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       statistics.push(this._co2SignalEntity);
     }
 
-    const prefs = this._config!.prefs;
+    let prefs = this._config!.prefs;
+
+    if (!prefs) {
+      try {
+        prefs = this._prefs = await getEnergyPreferences(this.hass);
+      } catch (e) {
+        return;
+      }
+    }
+
     for (const source of prefs.energy_sources) {
       if (source.type === "solar") {
         statistics.push(source.stat_energy_from);

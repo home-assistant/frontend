@@ -24,6 +24,7 @@ import {
 } from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
+import { getEnergyPreferences } from "../../../../data/energy";
 import { fetchStatistics, Statistics } from "../../../../data/history";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
@@ -252,7 +253,17 @@ export class HuiEnergyUsageGraphCard
     startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
 
     this._fetching = true;
-    const prefs = this._config!.prefs;
+
+    let prefs = this._config!.prefs;
+
+    if (!prefs) {
+      try {
+        prefs = await getEnergyPreferences(this.hass!);
+      } catch (e) {
+        return;
+      }
+    }
+
     const statistics: {
       to_grid?: string[];
       from_grid?: string[];

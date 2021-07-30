@@ -3,7 +3,11 @@ import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
-import { energySourcesByType } from "../../../../data/energy";
+import {
+  EnergyPreferences,
+  energySourcesByType,
+  getEnergyPreferences,
+} from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
   fetchStatistics,
@@ -21,6 +25,8 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
   @state() private _config?: EnergySolarGaugeCardConfig;
 
   @state() private _stats?: Statistics;
+
+  private _prefs?: EnergyPreferences;
 
   public getCardSize(): number {
     return 4;
@@ -47,7 +53,7 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
       return html`Loading...`;
     }
 
-    const prefs = this._config!.prefs;
+    const prefs = this._prefs!;
     const types = energySourcesByType(prefs);
 
     const totalSolarProduction = calculateStatisticsSumGrowth(
@@ -106,8 +112,17 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
     startDate.setHours(0, 0, 0, 0);
     startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
 
+    let prefs = this._config!.prefs;
+
+    if (!prefs) {
+      try {
+        prefs = this._prefs = await getEnergyPreferences(this.hass!);
+      } catch (e) {
+        return;
+      }
+    }
+
     const statistics: string[] = [];
-    const prefs = this._config!.prefs;
     for (const source of prefs.energy_sources) {
       if (source.type === "solar") {
         statistics.push(source.stat_energy_from);

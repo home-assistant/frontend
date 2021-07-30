@@ -4,7 +4,11 @@ import { formatNumber } from "../../../../common/string/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import type { LevelDefinition } from "../../../../components/ha-gauge";
-import { GridSourceTypeEnergyPreference } from "../../../../data/energy";
+import {
+  EnergyPreferences,
+  getEnergyPreferences,
+  GridSourceTypeEnergyPreference,
+} from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
   fetchStatistics,
@@ -27,6 +31,8 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
   @state() private _config?: EnergyGridGaugeCardConfig;
 
   @state() private _stats?: Statistics;
+
+  private _prefs?: EnergyPreferences;
 
   public getCardSize(): number {
     return 4;
@@ -53,7 +59,7 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
       return html`Loading...`;
     }
 
-    const prefs = this._config!.prefs;
+    const prefs = this._prefs!;
     const gridSource = prefs.energy_sources.find(
       (src) => src.type === "grid"
     ) as GridSourceTypeEnergyPreference | undefined;
@@ -116,8 +122,17 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
     startDate.setHours(0, 0, 0, 0);
     startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
 
+    let prefs = this._config!.prefs;
+
+    if (!prefs) {
+      try {
+        prefs = this._prefs = await getEnergyPreferences(this.hass!);
+      } catch (e) {
+        return;
+      }
+    }
+
     const statistics: string[] = [];
-    const prefs = this._config!.prefs;
     for (const source of prefs.energy_sources) {
       if (source.type === "solar") {
         continue;

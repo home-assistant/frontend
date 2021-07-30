@@ -21,7 +21,11 @@ import {
   rgb2lab,
 } from "../../../../common/color/convert-color";
 import { labDarken } from "../../../../common/color/lab";
-import { SolarSourceTypeEnergyPreference } from "../../../../data/energy";
+import {
+  EnergyPreferences,
+  getEnergyPreferences,
+  SolarSourceTypeEnergyPreference,
+} from "../../../../data/energy";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import {
   ForecastSolarForecast,
@@ -58,6 +62,8 @@ export class HuiEnergySolarGraphCard
   @state() private _showAllForecastData = false;
 
   private _fetching = false;
+
+  private _prefs?: EnergyPreferences;
 
   private _interval?: number;
 
@@ -236,8 +242,18 @@ export class HuiEnergySolarGraphCard
 
     this._fetching = true;
 
+    let prefs = this._config!.prefs;
+
+    if (!prefs) {
+      try {
+        prefs = this._prefs = await getEnergyPreferences(this.hass);
+      } catch (e) {
+        return;
+      }
+    }
+
     const solarSources: SolarSourceTypeEnergyPreference[] =
-      this._config!.prefs.energy_sources.filter(
+      prefs.energy_sources.filter(
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
 
@@ -264,7 +280,7 @@ export class HuiEnergySolarGraphCard
 
   private _renderChart() {
     const solarSources: SolarSourceTypeEnergyPreference[] =
-      this._config!.prefs.energy_sources.filter(
+      this._prefs!.energy_sources.filter(
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
 

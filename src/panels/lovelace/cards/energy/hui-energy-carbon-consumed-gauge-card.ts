@@ -6,7 +6,11 @@ import { subscribeOne } from "../../../../common/util/subscribe-one";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import { getConfigEntries } from "../../../../data/config_entries";
-import { energySourcesByType } from "../../../../data/energy";
+import {
+  EnergyPreferences,
+  energySourcesByType,
+  getEnergyPreferences,
+} from "../../../../data/energy";
 import { subscribeEntityRegistry } from "../../../../data/entity_registry";
 import {
   calculateStatisticsSumGrowth,
@@ -29,6 +33,8 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
   @state() private _stats?: Statistics;
 
   @state() private _co2SignalEntity?: string | null;
+
+  private _prefs?: EnergyPreferences;
 
   public getCardSize(): number {
     return 4;
@@ -67,7 +73,7 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
       </hui-warning>`;
     }
 
-    const prefs = this._config!.prefs;
+    const prefs = this._prefs!;
     const types = energySourcesByType(prefs);
 
     const totalGridConsumption = calculateStatisticsSumGrowth(
@@ -183,7 +189,16 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
     startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
 
     const statistics: string[] = [];
-    const prefs = this._config!.prefs;
+    let prefs = this._config!.prefs;
+
+    if (!prefs) {
+      try {
+        prefs = this._prefs = await getEnergyPreferences(this.hass);
+      } catch (e) {
+        return;
+      }
+    }
+
     for (const source of prefs.energy_sources) {
       if (source.type === "solar") {
         statistics.push(source.stat_energy_from);
