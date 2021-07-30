@@ -60,10 +60,14 @@ export class Gauge extends LitElement {
   protected render() {
     return svg`
       <svg viewBox="0 0 100 50" class="gauge">
-        <path
+        ${
+          !this.needle || !this.levels
+            ? svg`<path
           class="dial"
           d="M 10 50 A 40 40 0 0 1 90 50"
-        ></path>
+        ></path>`
+            : ""
+        }
 
         ${
           this.levels
