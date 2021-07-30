@@ -13,7 +13,7 @@ const getAngle = (value: number, min: number, max: number) => {
   return (percentage * 180) / 100;
 };
 
-interface LevelDefinition {
+export interface LevelDefinition {
   level: number;
   stroke: string;
 }
@@ -25,6 +25,8 @@ export class Gauge extends LitElement {
   @property({ type: Number }) public max = 100;
 
   @property({ type: Number }) public value = 0;
+
+  @property({ type: String }) public valueText?: string;
 
   @property() public locale!: FrontendLocaleData;
 
@@ -127,7 +129,9 @@ export class Gauge extends LitElement {
       </svg>
       <svg class="text">
         <text class="value-text">
-          ${formatNumber(this.value, this.locale)} ${this.label}
+          ${this.valueText || formatNumber(this.value, this.locale)} ${
+      this.label
+    }
         </text>
       </svg>`;
   }
