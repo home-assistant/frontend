@@ -202,7 +202,7 @@ export class HuiEnergySourcesTableCard
                     flow.stat_cost ||
                     this._energyInfo!.cost_sensors[flow.stat_energy_from];
                   const cost = cost_stat
-                    ? calculateStatisticSumGrowth(this._stats![cost_stat])
+                    ? calculateStatisticSumGrowth(this._stats![cost_stat]) || 0
                     : null;
                   if (cost !== null) {
                     totalCost += cost;
@@ -260,7 +260,8 @@ export class HuiEnergySourcesTableCard
                     flow.stat_compensation ||
                     this._energyInfo!.cost_sensors[flow.stat_energy_to];
                   const cost = cost_stat
-                    ? calculateStatisticSumGrowth(this._stats![cost_stat])
+                    ? (calculateStatisticSumGrowth(this._stats![cost_stat]) ||
+                        0) * -1
                     : null;
                   if (cost !== null) {
                     totalCost += cost;
