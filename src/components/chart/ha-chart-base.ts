@@ -55,7 +55,7 @@ export default class HaChartBase extends LitElement {
       this._setupChart();
       return;
     }
-    if (changedProps.has("type")) {
+    if (changedProps.has("chartType")) {
       this.chart.config.type = this.chartType;
     }
     if (changedProps.has("data")) {
@@ -136,12 +136,9 @@ export default class HaChartBase extends LitElement {
                   )}
                 </ul>
               </div>
-              ${this._tooltip.footer
-                ? // footer has white-space: pre;
-                  // prettier-ignore
-                  html`<div class="footer">${Array.isArray(this._tooltip.footer)
-                      ? this._tooltip.footer.join("\n")
-                      : this._tooltip.footer}
+              ${this._tooltip.footer.length
+                ? html`<div class="footer">
+                    ${this._tooltip.footer.map((item) => html`${item}<br />`)}
                   </div>`
                 : ""}
             </div>`
@@ -155,7 +152,17 @@ export default class HaChartBase extends LitElement {
       .querySelector("canvas")!
       .getContext("2d")!;
 
-    this.chart = new (await import("../../resources/chartjs")).Chart(ctx, {
+    const ChartConstructor = (await import("../../resources/chartjs")).Chart;
+
+    const computedStyles = getComputedStyle(this);
+
+    ChartConstructor.defaults.borderColor =
+      computedStyles.getPropertyValue("--divider-color");
+    ChartConstructor.defaults.color = computedStyles.getPropertyValue(
+      "--secondary-text-color"
+    );
+
+    this.chart = new ChartConstructor(ctx, {
       type: this.chartType,
       data: this.data,
       options: this._createOptions(),
@@ -275,7 +282,7 @@ export default class HaChartBase extends LitElement {
         border-radius: 50%;
         display: inline-block;
         height: 16px;
-        margin-right: 4px;
+        margin-right: 6px;
         width: 16px;
         flex-shrink: 0;
         box-sizing: border-box;
@@ -283,9 +290,10 @@ export default class HaChartBase extends LitElement {
       .chartTooltip .bullet {
         align-self: baseline;
       }
+      :host([rtl]) .chartLegend .bullet,
       :host([rtl]) .chartTooltip .bullet {
         margin-right: inherit;
-        margin-left: 4px;
+        margin-left: 6px;
       }
       .chartTooltip {
         padding: 8px;
@@ -317,6 +325,7 @@ export default class HaChartBase extends LitElement {
         white-space: pre-line;
         align-items: center;
         line-height: 16px;
+        padding: 4px 0;
       }
       .chartTooltip .title {
         text-align: center;
@@ -324,7 +333,6 @@ export default class HaChartBase extends LitElement {
       }
       .chartTooltip .footer {
         font-weight: 500;
-        white-space: pre;
       }
       .chartTooltip .beforeBody {
         text-align: center;

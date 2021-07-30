@@ -22,45 +22,11 @@ import { compare } from "../../common/string/compare";
 import { getStatisticIds, StatisticsMetaData } from "../../data/history";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
+import { documentationUrl } from "../../util/documentation-url";
 import "../ha-combo-box";
 import type { HaComboBox } from "../ha-combo-box";
 import "../ha-svg-icon";
 import "./state-badge";
-
-// vaadin-combo-box-item
-
-const rowRenderer: ComboBoxLitRenderer<{
-  id: string;
-  name: string;
-  state?: HassEntity;
-}> = (item) => html`<style>
-    paper-icon-item {
-      padding: 0;
-      margin: -8px;
-    }
-    #content {
-      display: flex;
-      align-items: center;
-    }
-    ha-svg-icon {
-      padding-left: 2px;
-      color: var(--secondary-text-color);
-    }
-    :host(:not([selected])) ha-svg-icon {
-      display: none;
-    }
-    :host([selected]) paper-icon-item {
-      margin-left: 0;
-    }
-  </style>
-  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
-  <paper-icon-item>
-    <state-badge slot="item-icon" .stateObj=${item.state}></state-badge>
-    <paper-item-body two-line="">
-      ${item.name}
-      <span secondary>${item.id}</span>
-    </paper-item-body>
-  </paper-icon-item>`;
 
 @customElement("ha-statistic-picker")
 export class HaStatisticPicker extends LitElement {
@@ -99,6 +65,53 @@ export class HaStatisticPicker extends LitElement {
 
   private _init = false;
 
+  private _rowRenderer: ComboBoxLitRenderer<{
+    id: string;
+    name: string;
+    state?: HassEntity;
+  }> = (item) => html`<style>
+      paper-icon-item {
+        padding: 0;
+        margin: -8px;
+      }
+      #content {
+        display: flex;
+        align-items: center;
+      }
+      ha-svg-icon {
+        padding-left: 2px;
+        color: var(--secondary-text-color);
+      }
+      :host(:not([selected])) ha-svg-icon {
+        display: none;
+      }
+      :host([selected]) paper-icon-item {
+        margin-left: 0;
+      }
+      a {
+        color: var(--primary-color);
+      }
+    </style>
+    <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
+    <paper-icon-item>
+      <state-badge slot="item-icon" .stateObj=${item.state}></state-badge>
+      <paper-item-body two-line="">
+        ${item.name}
+        <span secondary
+          >${item.id === "" || item.id === "__missing"
+            ? html`<a
+                target="_blank"
+                rel="noopener noreferrer"
+                href="${documentationUrl(this.hass, "/more-info/statistics/")}"
+                >${this.hass.localize(
+                  "ui.components.statistic-picker.learn_more"
+                )}</a
+              >`
+            : item.id}</span
+        >
+      </paper-item-body>
+    </paper-icon-item>`;
+
   private _getStatistics = memoizeOne(
     (
       statisticIds: StatisticsMetaData[],
@@ -110,7 +123,7 @@ export class HaStatisticPicker extends LitElement {
           {
             id: "",
             name: this.hass.localize(
-              "ui.components.statistics-picker.no_statistics"
+              "ui.components.statistic-picker.no_statistics"
             ),
           },
         ];
@@ -142,10 +155,27 @@ export class HaStatisticPicker extends LitElement {
         });
       });
 
-      if (output.length === 1) {
-        return output;
+      if (!output.length) {
+        return [
+          {
+            id: "",
+            name: this.hass.localize("ui.components.statistic-picker.no_match"),
+          },
+        ];
       }
-      return output.sort((a, b) => compare(a.name || "", b.name || ""));
+
+      if (output.length > 1) {
+        output.sort((a, b) => compare(a.name || "", b.name || ""));
+      }
+
+      output.push({
+        id: "__missing",
+        name: this.hass.localize(
+          "ui.components.statistic-picker.missing_entity"
+        ),
+      });
+
+      return output;
     }
   );
 
@@ -195,7 +225,7 @@ export class HaStatisticPicker extends LitElement {
           ? this.hass.localize("ui.components.statistic-picker.statistic")
           : this.label}
         .value=${this._value}
-        .renderer=${rowRenderer}
+        .renderer=${this._rowRenderer}
         .disabled=${this.disabled}
         item-value-path="id"
         item-id-path="id"
@@ -216,7 +246,10 @@ export class HaStatisticPicker extends LitElement {
 
   private _statisticChanged(ev: PolymerChangedEvent<string>) {
     ev.stopPropagation();
-    const newValue = ev.detail.value;
+    let newValue = ev.detail.value;
+    if (newValue === "__missing") {
+      newValue = "";
+    }
 
     if (newValue !== this._value) {
       this._setValue(newValue);

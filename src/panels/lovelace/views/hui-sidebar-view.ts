@@ -17,9 +17,8 @@ import type {
 } from "../../../data/lovelace";
 import type { HomeAssistant } from "../../../types";
 import { HuiErrorCard } from "../cards/hui-error-card";
+import { HuiCardOptions } from "../components/hui-card-options";
 import type { Lovelace, LovelaceCard } from "../types";
-
-let editCodeLoaded = false;
 
 export class SideBarView extends LitElement implements LovelaceViewElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -36,6 +35,24 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
 
   @state() private _config?: LovelaceViewConfig;
 
+  private _mqlListenerRef?: () => void;
+
+  private _mql?: MediaQueryList;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._mql = window.matchMedia("(min-width: 760px)");
+    this._mqlListenerRef = this._createCards.bind(this);
+    this._mql.addListener(this._mqlListenerRef);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._mql?.removeListener(this._mqlListenerRef!);
+    this._mqlListenerRef = undefined;
+    this._mql = undefined;
+  }
+
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
   }
@@ -43,8 +60,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
   public willUpdate(changedProperties: PropertyValues): void {
     super.willUpdate(changedProperties);
 
-    if (this.lovelace?.editMode && !editCodeLoaded) {
-      editCodeLoaded = true;
+    if (this.lovelace?.editMode) {
       import("./default-view-editable");
     }
 
@@ -71,7 +87,8 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.lovelace?.editMode && this.cards.length === 0
+      <div class="container"></div>
+      ${this.lovelace?.editMode
         ? html`
             <ha-fab
               .label=${this.hass!.localize(
@@ -97,49 +114,53 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
   private _createCards(): void {
     const mainDiv = document.createElement("div");
     mainDiv.id = "main";
-    const sidebarDiv = document.createElement("div");
-    sidebarDiv.id = "sidebar";
+
+    let sidebarDiv: HTMLDivElement;
+    if (this._mql?.matches) {
+      sidebarDiv = document.createElement("div");
+      sidebarDiv.id = "sidebar";
+    } else {
+      sidebarDiv = mainDiv;
+    }
 
     if (this.hasUpdated) {
       const oldMain = this.renderRoot.querySelector("#main");
       const oldSidebar = this.renderRoot.querySelector("#sidebar");
+      const container = this.renderRoot.querySelector(".container")!;
       if (oldMain) {
-        this.renderRoot.removeChild(oldMain);
+        container.removeChild(oldMain);
       }
       if (oldSidebar) {
-        this.renderRoot.removeChild(oldSidebar);
+        container.removeChild(oldSidebar);
       }
-      this.renderRoot.appendChild(mainDiv);
-      this.renderRoot.appendChild(sidebarDiv);
+      container.appendChild(mainDiv);
+      container.appendChild(sidebarDiv);
     } else {
       this.updateComplete.then(() => {
-        this.renderRoot.appendChild(mainDiv);
-        this.renderRoot.appendChild(sidebarDiv);
+        const container = this.renderRoot.querySelector(".container")!;
+        container.appendChild(mainDiv);
+        container.appendChild(sidebarDiv);
       });
     }
 
     this.cards.forEach((card: LovelaceCard, idx) => {
       const cardConfig = this._config?.cards?.[idx];
+      let element: LovelaceCard | HuiCardOptions;
       if (this.isStrategy || !this.lovelace?.editMode) {
         card.editMode = false;
-        if (cardConfig?.view_layout?.position !== "sidebar") {
-          mainDiv.appendChild(card);
-        } else {
-          sidebarDiv.appendChild(card);
-        }
-        return;
-      }
-
-      const wrapper = document.createElement("hui-card-options");
-      wrapper.hass = this.hass;
-      wrapper.lovelace = this.lovelace;
-      wrapper.path = [this.index!, 0];
-      card.editMode = true;
-      wrapper.appendChild(card);
-      if (cardConfig?.view_layout?.position !== "sidebar") {
-        mainDiv.appendChild(card);
+        element = card;
       } else {
-        sidebarDiv.appendChild(card);
+        element = document.createElement("hui-card-options");
+        element.hass = this.hass;
+        element.lovelace = this.lovelace;
+        element.path = [this.index!, idx];
+        card.editMode = true;
+        element.appendChild(card);
+      }
+      if (cardConfig?.view_layout?.position !== "sidebar") {
+        mainDiv.appendChild(element);
+      } else {
+        sidebarDiv.appendChild(element);
       }
     });
   }
@@ -147,13 +168,17 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
   static get styles(): CSSResultGroup {
     return css`
       :host {
-        display: flex;
+        display: block;
         padding-top: 4px;
-        margin-left: 4px;
-        margin-right: 4px;
         height: 100%;
         box-sizing: border-box;
+      }
+
+      .container {
+        display: flex;
         justify-content: center;
+        margin-left: 4px;
+        margin-right: 4px;
       }
 
       #main {
@@ -166,27 +191,18 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
         max-width: 380px;
       }
 
-      :host > div {
+      .container > div {
         min-width: 0;
         box-sizing: border-box;
       }
 
-      :host > div > * {
+      .container > div > * {
         display: block;
         margin: var(--masonry-view-card-margin, 4px 4px 8px);
       }
 
-      @media (max-width: 760px) {
-        :host {
-          flex-direction: column;
-        }
-        #sidebar {
-          max-width: unset;
-        }
-      }
-
       @media (max-width: 500px) {
-        :host > div > * {
+        .container > div > * {
           margin-left: 0;
           margin-right: 0;
         }

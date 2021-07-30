@@ -19,6 +19,7 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
+import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsDeviceDialog } from "../dialogs/show-dialogs-energy";
 import { energyCardStyles } from "./styles";
 
@@ -33,12 +34,29 @@ export class EnergyDeviceSettings extends LitElement {
     return html`
       <ha-card>
         <h1 class="card-header">
-          <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>Monitor individual
-          devices
+          <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
+          ${this.hass.localize(
+            "ui.panel.config.energy.device_consumption.title"
+          )}
         </h1>
 
         <div class="card-content">
-          <p>Monitor individual devices.</p>
+          <p>
+            ${this.hass.localize(
+              "ui.panel.config.energy.device_consumption.sub"
+            )}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="${documentationUrl(
+                this.hass,
+                "/docs/energy/individual-devices/"
+              )}"
+              >${this.hass.localize(
+                "ui.panel.config.energy.device_consumption.learn_more"
+              )}</a
+            >
+          </p>
           <h3>Devices</h3>
           ${this.preferences.device_consumption.map((device) => {
             const entityState = this.hass.states[device.stat_consumption];

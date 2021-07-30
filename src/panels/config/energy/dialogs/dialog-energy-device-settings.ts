@@ -58,12 +58,11 @@ export class DialogEnergyDeviceSettings
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
-        <p>Track your devices <a href="#">Learn more</a></p>
 
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitOfMeasurement=${energyUnits}
-          .label=${`Device production energy (kWh)`}
+          .label=${`Device consumption energy (kWh)`}
           entities-only
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>

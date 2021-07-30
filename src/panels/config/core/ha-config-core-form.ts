@@ -7,11 +7,13 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { UNIT_C } from "../../../common/const";
+import { createCurrencyListEl } from "../../../components/currency-datalist";
 import "../../../components/ha-card";
 import "../../../components/map/ha-locations-editor";
 import type { MarkerLocation } from "../../../components/map/ha-locations-editor";
 import { createTimezoneListEl } from "../../../components/timezone-datalist";
 import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
+import { SYMBOL_TO_ISO } from "../../../data/currency";
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import type { HomeAssistant } from "../../../types";
 
@@ -22,6 +24,8 @@ class ConfigCoreForm extends LitElement {
   @state() private _working = false;
 
   @state() private _location?: [number, number];
+
+  @state() private _currency?: string;
 
   @state() private _elevation?: string;
 
@@ -143,6 +147,33 @@ class ConfigCoreForm extends LitElement {
               </paper-radio-button>
             </paper-radio-group>
           </div>
+          <div class="row">
+            <div class="flex">
+              ${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.currency"
+              )}<br />
+              <a
+                href="https://en.wikipedia.org/wiki/ISO_4217#Active_codes"
+                target="_blank"
+                rel="noopener noreferrer"
+                >${this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.find_currency_value"
+                )}</a
+              >
+            </div>
+
+            <paper-input
+              class="flex"
+              .label=${this.hass.localize(
+                "ui.panel.config.core.section.core.core_config.currency"
+              )}
+              name="currency"
+              list="currencies"
+              .disabled=${disabled}
+              .value=${this._currencyValue}
+              @value-changed=${this._handleChange}
+            ></paper-input>
+          </div>
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._save} .disabled=${disabled}>
@@ -157,10 +188,16 @@ class ConfigCoreForm extends LitElement {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    const input = this.shadowRoot!.querySelector(
+
+    const tzInput = this.shadowRoot!.querySelector(
       "[name=timeZone]"
     ) as PaperInputElement;
-    input.inputElement.appendChild(createTimezoneListEl());
+    tzInput.inputElement.appendChild(createTimezoneListEl());
+
+    const cInput = this.shadowRoot!.querySelector(
+      "[name=currency]"
+    ) as PaperInputElement;
+    cInput.inputElement.appendChild(createCurrencyListEl());
   }
 
   private _markerLocation = memoizeOne(
@@ -177,6 +214,12 @@ class ConfigCoreForm extends LitElement {
       },
     ]
   );
+
+  private get _currencyValue() {
+    return this._currency !== undefined
+      ? this._currency
+      : this.hass.config.currency;
+  }
 
   private get _elevationValue() {
     return this._elevation !== undefined
@@ -200,7 +243,15 @@ class ConfigCoreForm extends LitElement {
 
   private _handleChange(ev: PolymerChangedEvent<string>) {
     const target = ev.currentTarget as PaperInputElement;
-    this[`_${target.name}`] = target.value;
+    let value = target.value;
+
+    if (target.name === "currency" && value) {
+      if (value in SYMBOL_TO_ISO) {
+        value = SYMBOL_TO_ISO[value];
+      }
+    }
+
+    this[`_${target.name}`] = value;
   }
 
   private _locationChanged(ev) {
@@ -223,12 +274,13 @@ class ConfigCoreForm extends LitElement {
       await saveCoreConfig(this.hass, {
         latitude: location[0],
         longitude: location[1],
+        currency: this._currencyValue,
         elevation: Number(this._elevationValue),
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue,
       });
     } catch (err) {
-      alert("FAIL");
+      alert(`Error saving config: ${err.message}`);
     } finally {
       this._working = false;
     }
@@ -257,6 +309,10 @@ class ConfigCoreForm extends LitElement {
 
       .card-actions {
         text-align: right;
+      }
+
+      a {
+        color: var(--primary-color);
       }
     `;
   }
