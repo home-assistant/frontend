@@ -64,7 +64,9 @@ export const formatNumber = (
   if (typeof num === "string") {
     return num;
   }
-  return round(num, options?.maximumFractionDigits).toString();
+  return `${round(num, options?.maximumFractionDigits).toString()}${
+    options?.style === "currency" ? ` ${options.currency}` : ""
+  }`;
 };
 
 /**
