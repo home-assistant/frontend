@@ -1,4 +1,5 @@
 import { FrontendLocaleData, NumberFormat } from "../../data/translation";
+import { round } from "../number/round";
 
 export const numberFormatToLocale = (
   localeOptions: FrontendLocaleData
@@ -60,7 +61,12 @@ export const formatNumber = (
       ).format(Number(num));
     }
   }
-  return num.toString();
+  if (typeof num === "string") {
+    return num;
+  }
+  return `${round(num, options?.maximumFractionDigits).toString()}${
+    options?.style === "currency" ? ` ${options.currency}` : ""
+  }`;
 };
 
 /**
