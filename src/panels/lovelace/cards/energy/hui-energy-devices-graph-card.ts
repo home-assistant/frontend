@@ -14,18 +14,22 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { getColorByIndex } from "../../../common/color/colors";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import "../../../components/chart/ha-chart-base";
-import "../../../components/ha-card";
+import { getColorByIndex } from "../../../../common/color/colors";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import {
+  formatNumber,
+  numberFormatToLocale,
+} from "../../../../common/string/format_number";
+import "../../../../components/chart/ha-chart-base";
+import "../../../../components/ha-card";
 import {
   calculateStatisticSumGrowth,
   fetchStatistics,
   Statistics,
-} from "../../../data/history";
-import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
-import { EnergyDevicesGraphCardConfig } from "./types";
+} from "../../../../data/history";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { EnergyDevicesGraphCardConfig } from "../types";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
@@ -106,7 +110,10 @@ export class HuiEnergyDevicesGraphCard
     }
 
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card>
+        ${this._config.title
+          ? html`<h1 class="card-header">${this._config.title}</h1>`
+          : ""}
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,
@@ -138,18 +145,21 @@ export class HuiEnergyDevicesGraphCard
           },
         },
       },
-      elements: { bar: { borderWidth: 1.5 } },
+      elements: { bar: { borderWidth: 1.5, borderRadius: 4 } },
       plugins: {
         tooltip: {
           mode: "nearest",
           callbacks: {
             label: (context) =>
-              `${context.dataset.label}: ${
-                Math.round(context.parsed.x * 100) / 100
-              } kWh`,
+              `${context.dataset.label}: ${formatNumber(
+                context.parsed.x,
+                this.hass.locale
+              )} kWh`,
           },
         },
       },
+      // @ts-expect-error
+      locale: numberFormatToLocale(this.hass.locale),
     };
   }
 
@@ -178,10 +188,6 @@ export class HuiEnergyDevicesGraphCard
     const statisticsData = Object.values(this._data!);
     let endTime: Date;
 
-    if (statisticsData.length === 0) {
-      return;
-    }
-
     endTime = new Date(
       Math.max(
         ...statisticsData.map((stats) =>
@@ -190,7 +196,7 @@ export class HuiEnergyDevicesGraphCard
       )
     );
 
-    if (endTime > new Date()) {
+    if (!endTime || endTime > new Date()) {
       endTime = new Date();
     }
 
@@ -207,27 +213,30 @@ export class HuiEnergyDevicesGraphCard
       },
     ];
 
-    Object.entries(this._data).forEach(([id, statistics], idx) => {
-      const entity = this.hass.states[id];
-      const label = entity ? computeStateName(entity) : id;
+    for (let idx = 0; idx < prefs.device_consumption.length; idx++) {
+      const device = prefs.device_consumption[idx];
+      const entity = this.hass.states[device.stat_consumption];
+      const label = entity ? computeStateName(entity) : device.stat_consumption;
 
       const color = getColorByIndex(idx);
 
       borderColor.push(color);
       backgroundColor.push(color + "7F");
 
-      const value = calculateStatisticSumGrowth(statistics);
+      const value =
+        device.stat_consumption in this._data
+          ? calculateStatisticSumGrowth(this._data[device.stat_consumption])
+          : 0;
       data.push({
         // @ts-expect-error
         y: label,
         x: value || 0,
       });
-    });
+    }
 
     data.sort((a, b) => b.x - a.x);
 
     this._chartData = {
-      // labels,
       datasets,
     };
   }
@@ -236,6 +245,9 @@ export class HuiEnergyDevicesGraphCard
     return css`
       ha-card {
         height: 100%;
+      }
+      .card-header {
+        padding-bottom: 0;
       }
       .content {
         padding: 16px;

@@ -1,19 +1,18 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
-import { round } from "../../../common/number/round";
-import "../../../components/ha-card";
-import "../../../components/ha-gauge";
-import { energySourcesByType } from "../../../data/energy";
+import "../../../../components/ha-card";
+import "../../../../components/ha-gauge";
+import { energySourcesByType } from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
   fetchStatistics,
   Statistics,
-} from "../../../data/history";
-import type { HomeAssistant } from "../../../types";
-import type { LovelaceCard } from "../types";
-import { severityMap } from "./hui-gauge-card";
-import type { EnergySolarGaugeCardConfig } from "./types";
+} from "../../../../data/history";
+import type { HomeAssistant } from "../../../../types";
+import type { LovelaceCard } from "../../types";
+import { severityMap } from "../hui-gauge-card";
+import type { EnergySolarGaugeCardConfig } from "../types";
 
 @customElement("hui-energy-solar-consumed-gauge-card")
 class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
@@ -63,32 +62,41 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
 
     let value: number | undefined;
 
-    if (productionReturnedToGrid !== null && totalSolarProduction !== null) {
-      const cosumedSolar = totalSolarProduction - productionReturnedToGrid;
-      value = round((cosumedSolar / totalSolarProduction) * 100);
+    if (productionReturnedToGrid !== null && totalSolarProduction) {
+      const cosumedSolar = Math.max(
+        0,
+        totalSolarProduction - productionReturnedToGrid
+      );
+      value = (cosumedSolar / totalSolarProduction) * 100;
     }
+
     return html`
       <ha-card>
-        ${value
-          ? html` <ha-gauge
+        ${value !== undefined
+          ? html`<ha-gauge
                 min="0"
                 max="100"
                 .value=${value}
                 .locale=${this.hass!.locale}
                 label="%"
                 style=${styleMap({
-                  "--gauge-color": this._computeSeverity(64),
+                  "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
               <div class="name">Self consumed solar energy</div>`
-          : html`Self consumed solar energy couldn't be calculated`}
+          : totalSolarProduction === 0
+          ? "You have not produced any solar energy"
+          : "Self consumed solar energy couldn't be calculated"}
       </ha-card>
     `;
   }
 
   private _computeSeverity(numberValue: number): string {
-    if (numberValue > 50) {
+    if (numberValue > 75) {
       return severityMap.green;
+    }
+    if (numberValue < 50) {
+      return severityMap.yellow;
     }
     return severityMap.normal;
   }

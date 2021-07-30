@@ -2,6 +2,7 @@ import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { getColorByIndex } from "../../common/color/colors";
+import { numberFormatToLocale } from "../../common/string/format_number";
 import { LineChartEntity, LineChartState } from "../../data/history";
 import { HomeAssistant } from "../../types";
 import "./ha-chart-base";
@@ -109,6 +110,8 @@ class StateHistoryChartLine extends LitElement {
             hitRadius: 5,
           },
         },
+        // @ts-expect-error
+        locale: numberFormatToLocale(this.hass.locale),
       };
     }
     if (changedProps.has("data")) {

@@ -20,8 +20,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
 
   @state() private _step = 0;
 
-  private _preferences: EnergyPreferences = {
-    currency: "€",
+  @state() private _preferences: EnergyPreferences = {
     energy_sources: [],
     device_consumption: [],
   };
@@ -42,9 +41,6 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
 
   protected render(): TemplateResult {
     return html`
-      <h2>${this.hass.localize("ui.panel.energy.setup.header")}</h2>
-      <h3>${this.hass.localize("ui.panel.energy.setup.slogan")}</h3>
-
       <p>Step ${this._step + 1} of 3</p>
       ${this._step === 0
         ? html` <ha-energy-grid-settings
@@ -65,15 +61,15 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
           ></ha-energy-device-settings>`}
       <div class="buttons">
         ${this._step > 0
-          ? html`<mwc-button @click=${this._back}
+          ? html`<mwc-button outlined @click=${this._back}
               >${this.hass.localize("ui.panel.energy.setup.back")}</mwc-button
             >`
           : html`<div></div>`}
         ${this._step < 2
-          ? html`<mwc-button outlined @click=${this._next}
+          ? html`<mwc-button unelevated @click=${this._next}
               >${this.hass.localize("ui.panel.energy.setup.next")}</mwc-button
             >`
-          : html`<mwc-button raised @click=${this._setupDone}>
+          : html`<mwc-button unelevated @click=${this._setupDone}>
               ${this.hass.localize("ui.panel.energy.setup.done")}
             </mwc-button>`}
       </div>

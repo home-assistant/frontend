@@ -60,6 +60,7 @@ const hassAttributeUtil = {
       "power",
       "power_factor",
       "pressure",
+      "monetary",
       "signal_strength",
       "temperature",
       "timestamp",

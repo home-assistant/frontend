@@ -390,6 +390,13 @@
           "failed_create_area": "Failed to create area."
         }
       },
+      "statistic-picker": {
+        "statistic": "Statistic",
+        "no_statistics": "You don't have any statistics",
+        "no_match": "No matching statistics found",
+        "missing_entity": "Why is my entity not listed?",
+        "learn_more": "Learn more about statistics"
+      },
       "addon-picker": {
         "addon": "Add-on",
         "error": {
@@ -992,8 +999,9 @@
           "description": "Monitor your energy production and consumption",
           "currency": "",
           "grid": {
-            "title": "Configure grid",
-            "sub": "Configure the different tarrifs for the energy you consume from the grid, and, if you return energy to the grid, the energy you return to the grid.",
+            "title": "Electricity grid",
+            "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
+            "learn_more": "More information on how to get started.",
             "flow_dialog": {
               "from": {
                 "header": "Configure grid consumption",
@@ -1002,7 +1010,7 @@
                 "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
                 "no_cost": "Do not track costs",
                 "cost_stat": "Use an entity tracking the total costs",
-                "cost_stat_input": "Entity keeping track of the total costs",
+                "cost_stat_input": "Total Costs Entity",
                 "cost_entity": "Use an entity with current price",
                 "cost_entity_input": "Entity with the current price",
                 "cost_number": "Use a static price",
@@ -1016,7 +1024,7 @@
                 "cost_para": "Do you get money back when you return energy to the grid?",
                 "no_cost": "I do not get money back",
                 "cost_stat": "Use an entity tracking the total recieved money",
-                "cost_stat_input": "Entity keeping track of the total of received money",
+                "cost_stat_input": "Total Compensation Entity",
                 "cost_entity": "Use an entity with current rate",
                 "cost_entity_input": "Entity with the current rate",
                 "cost_number": "Use a static rate",
@@ -1026,12 +1034,17 @@
             }
           },
           "solar": {
+            "title": "Solar Panels",
+            "sub": "Let Home Assistant monitor your solar panels and give you insight on their performance.",
+            "learn_more": "More information on how to get started.",
             "stat_production": "Your solar energy production",
             "stat_return_to_grid": "Solar energy returned to the grid",
             "stat_predicted_production": "Prediction of your solar energy production"
           },
           "device_consumption": {
-            "description": "If you measure the power consumption of individual devices, you can select the entities with the power consumption below",
+            "title": "Individual devices",
+            "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
+            "learn_more": "More information on how to get started.",
             "add_stat": "Pick entity to track energy of",
             "selected_stat": "Tracking energy for"
           }
@@ -1084,9 +1097,11 @@
                 "unit_system_metric": "Metric",
                 "imperial_example": "Fahrenheit, pounds",
                 "metric_example": "Celsius, kilograms",
+                "find_currency_value": "Find your value",
                 "save_button": "Save",
                 "external_url": "External URL",
-                "internal_url": "Internal URL"
+                "internal_url": "Internal URL",
+                "currency": "Currency"
               }
             }
           }
@@ -2688,7 +2703,9 @@
             "node_status": "Node Status",
             "node_ready": "Node Ready",
             "device_config": "Configure Device",
-            "reinterview_device": "Re-interview Device"
+            "reinterview_device": "Re-interview Device",
+            "heal_node": "Heal Node",
+            "remove_failed": "Remove Failed Device"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
@@ -2741,6 +2758,14 @@
             "exclusion_failed": "The node could not be removed. Please check the logs for more information.",
             "exclusion_finished": "Node {id} has been removed from your Z-Wave network."
           },
+          "remove_failed_node": {
+            "title": "Remove a Failed Z-Wave Device",
+            "introduction": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
+            "remove_device": "Remove Device",
+            "in_progress": "The device removal is in progress.",
+            "removal_finished": "Node {id} has been removed from your Z-Wave network.",
+            "removal_failed": "The device could not be removed from your Z-Wave network."
+          },
           "reinterview_node": {
             "title": "Re-interview a Z-Wave Device",
             "introduction": "Re-interview a device on your Z-Wave network. Use this feature if your device has missing or incorrect functionality.",
@@ -2762,6 +2787,17 @@
             "healing_complete": "Network healing is complete.",
             "healing_failed": "Healing failed. Additional information may be available in the logs.",
             "healing_cancelled": "Network healing has been cancelled."
+          },
+          "heal_node": {
+            "title": "Heal a Z-Wave Device",
+            "introduction": "Tell {device} to update its routes back to the controller. This can help with communication issues if you have recently moved the device or your controller.",
+            "traffic_warning": "The healing process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the heal is in progress.",
+            "start_heal": "Heal Device",
+            "healing_failed": "{device} could not be healed.",
+            "healing_failed_check_logs": "Additional information may be available in the logs.",
+            "healing_complete": "{device} has been healed.",
+            "in_progress": "{device} healing is in progress.",
+            "network_heal_in_progress": "A Z-Wave network heal is already in progress. Please wait for it to finish before healing an individual device."
           },
           "logs": {
             "title": "Z-Wave JS Logs",
@@ -3059,6 +3095,7 @@
             },
             "gauge": {
               "name": "Gauge",
+              "needle_gauge": "Display as needle gauge?",
               "severity": {
                 "define": "Define Severity?",
                 "green": "Green",
@@ -3086,6 +3123,10 @@
               "name": "History Graph",
               "description": "The History Graph card allows you to display a graph for each of the entities listed."
             },
+            "statistics-graph": {
+              "name": "Statistics Graph",
+              "description": "The Statistics Graph card allows you to display a graph of the statistics for each of the entities listed."
+            },
             "horizontal-stack": {
               "name": "Horizontal Stack",
               "description": "The Horizontal Stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
@@ -3112,6 +3153,7 @@
               "entity": "Entity",
               "hold_action": "Hold Action",
               "hours_to_show": "Hours to Show",
+              "days_to_show": "Days to Show",
               "icon": "Icon",
               "icon_height": "Icon Height",
               "image": "Image Path",
@@ -3685,8 +3727,6 @@
       },
       "energy": {
         "setup": {
-          "header": "Setup your energy dashboard",
-          "slogan": "The world is heating up. Together we can fix that.",
           "next": "Next",
           "back": "Back",
           "done": "Show me my energy dashboard!"

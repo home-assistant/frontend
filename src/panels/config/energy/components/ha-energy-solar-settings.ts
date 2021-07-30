@@ -19,6 +19,7 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
+import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsSolarDialog } from "../dialogs/show-dialogs-energy";
 import { energyCardStyles } from "./styles";
 
@@ -37,14 +38,24 @@ export class EnergySolarSettings extends LitElement {
     return html`
       <ha-card>
         <h1 class="card-header">
-          <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>Configure solar
-          panels
+          <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.energy.solar.title")}
         </h1>
 
         <div class="card-content">
           <p>
-            Let Home Assistant monitor your solar panels and give you insight on
-            their performace.
+            ${this.hass.localize("ui.panel.config.energy.solar.sub")}
+            <a
+              target="_blank"
+              rel="noopener noreferrer"
+              href="${documentationUrl(
+                this.hass,
+                "/docs/energy/solar-panels/"
+              )}"
+              >${this.hass.localize(
+                "ui.panel.config.energy.solar.learn_more"
+              )}</a
+            >
           </p>
           <h3>Solar production</h3>
           ${solarSources.map((source) => {
