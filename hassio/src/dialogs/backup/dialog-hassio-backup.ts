@@ -26,6 +26,7 @@ import { fileDownload } from "../../../../src/util/file_download";
 import "../../components/supervisor-backup-content";
 import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
 import { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
+import { atLeastVersion } from "../../../../src/common/config/version";
 
 @customElement("dialog-hassio-backup")
 class HassioBackupDialog
@@ -185,7 +186,11 @@ class HassioBackupDialog
         .callApi(
           "POST",
 
-          `hassio/backups/${this._backup!.slug}/restore/partial`,
+          `hassio/${
+            atLeastVersion(this.hass.config.version, 2021, 8)
+              ? "backups"
+              : "snapshots"
+          }/${this._backup!.slug}/restore/partial`,
           backupDetails
         )
         .then(
@@ -232,7 +237,11 @@ class HassioBackupDialog
       this.hass
         .callApi(
           "POST",
-          `hassio/backups/${this._backup!.slug}/restore/full`,
+          `hassio/${
+            atLeastVersion(this.hass.config.version, 2021, 8)
+              ? "backups"
+              : "snapshots"
+          }/${this._backup!.slug}/restore/full`,
           backupDetails
         )
         .then(
