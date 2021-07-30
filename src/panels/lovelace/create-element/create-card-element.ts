@@ -47,6 +47,8 @@ const LAZY_LOAD_TYPES = {
     import("../cards/energy/hui-energy-distribution-card"),
   "energy-solar-consumed-gauge": () =>
     import("../cards/energy/hui-energy-solar-consumed-gauge-card"),
+  "energy-grid-neutrality-gauge": () =>
+    import("../cards/energy/hui-energy-grid-neutrality-gauge-card"),
   "energy-carbon-consumed-gauge": () =>
     import("../cards/energy/hui-energy-carbon-consumed-gauge-card"),
   grid: () => import("../cards/hui-grid-card"),

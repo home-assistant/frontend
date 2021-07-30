@@ -131,6 +131,12 @@ export interface EnergySolarGaugeCardConfig extends LovelaceCardConfig {
   prefs: EnergyPreferences;
 }
 
+export interface EnergyGridGaugeCardConfig extends LovelaceCardConfig {
+  type: "energy-grid-result-gauge";
+  title?: string;
+  prefs: EnergyPreferences;
+}
+
 export interface EnergyCarbonGaugeCardConfig extends LovelaceCardConfig {
   type: "energy-carbon-consumed-gauge";
   title?: string;

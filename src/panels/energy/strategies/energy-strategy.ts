@@ -1,4 +1,8 @@
-import { EnergyPreferences, getEnergyPreferences } from "../../../data/energy";
+import {
+  EnergyPreferences,
+  getEnergyPreferences,
+  GridSourceTypeEnergyPreference,
+} from "../../../data/energy";
 import { LovelaceViewConfig } from "../../../data/lovelace";
 import { LovelaceViewStrategy } from "../../lovelace/strategies/get-strategy";
 
@@ -39,9 +43,10 @@ export class EnergyStrategy {
 
     view.type = "sidebar";
 
-    const hasGrid = energyPrefs.energy_sources.some(
+    const hasGrid = energyPrefs.energy_sources.find(
       (source) => source.type === "grid"
-    );
+    ) as GridSourceTypeEnergyPreference;
+    const hasReturn = hasGrid && hasGrid.flow_to.length;
     const hasSolar = energyPrefs.energy_sources.some(
       (source) => source.type === "solar"
     );
@@ -95,6 +100,15 @@ export class EnergyStrategy {
     if (hasSolar) {
       view.cards!.push({
         type: "energy-solar-consumed-gauge",
+        prefs: energyPrefs,
+        view_layout: { position: "sidebar" },
+      });
+    }
+
+    // Only include if we have a grid source & return.
+    if (hasReturn) {
+      view.cards!.push({
+        type: "energy-grid-neutrality-gauge",
         prefs: energyPrefs,
         view_layout: { position: "sidebar" },
       });
