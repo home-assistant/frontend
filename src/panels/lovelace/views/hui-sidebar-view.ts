@@ -35,6 +35,24 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
 
   @state() private _config?: LovelaceViewConfig;
 
+  private _mqlListenerRef?: () => void;
+
+  private _mql?: MediaQueryList;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._mql = window.matchMedia("(min-width: 760px)");
+    this._mqlListenerRef = this._createCards.bind(this);
+    this._mql.addListener(this._mqlListenerRef);
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._mql?.removeListener(this._mqlListenerRef!);
+    this._mqlListenerRef = undefined;
+    this._mql = undefined;
+  }
+
   public setConfig(config: LovelaceViewConfig): void {
     this._config = config;
   }
@@ -96,8 +114,14 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
   private _createCards(): void {
     const mainDiv = document.createElement("div");
     mainDiv.id = "main";
-    const sidebarDiv = document.createElement("div");
-    sidebarDiv.id = "sidebar";
+
+    let sidebarDiv: HTMLDivElement;
+    if (this._mql?.matches) {
+      sidebarDiv = document.createElement("div");
+      sidebarDiv.id = "sidebar";
+    } else {
+      sidebarDiv = mainDiv;
+    }
 
     if (this.hasUpdated) {
       const oldMain = this.renderRoot.querySelector("#main");
@@ -175,15 +199,6 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
       .container > div > * {
         display: block;
         margin: var(--masonry-view-card-margin, 4px 4px 8px);
-      }
-
-      @media (max-width: 760px) {
-        .container {
-          flex-direction: column;
-        }
-        #sidebar {
-          max-width: unset;
-        }
       }
 
       @media (max-width: 500px) {
