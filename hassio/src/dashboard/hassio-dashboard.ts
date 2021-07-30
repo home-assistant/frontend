@@ -59,6 +59,8 @@ class HassioDashboard extends LitElement {
           display: grid;
           max-width: 1400px;
           justify-content: center;
+          grid-template-columns: repeat(2, auto);
+          gap: 16px;
         }
         .content > * {
           display: block;
