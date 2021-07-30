@@ -91,7 +91,9 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
                 min="-1"
                 max="1"
                 .value=${value}
-                .valueText=${formatNumber(returnedToGrid! - consumedFromGrid!)}
+                .valueText=${formatNumber(
+                  Math.abs(returnedToGrid! - consumedFromGrid!)
+                )}
                 .locale=${this.hass!.locale}
                 .levels=${LEVELS}
                 label="kWh"
@@ -99,8 +101,8 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
               ></ha-gauge>
               <div class="name">
                 ${returnedToGrid! >= consumedFromGrid!
-                  ? "Good job! You returned more energy than you used!"
-                  : "Oh, oh, seems like you didn't produce enough energy"}
+                  ? "Returned to the grid"
+                  : "Consumed from the grid"}
               </div>`
           : "Grid neutrality could not be calculated"}
       </ha-card>
