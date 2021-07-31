@@ -16,7 +16,10 @@ import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { numberFormatToLocale } from "../../common/string/format_number";
+import {
+  formatNumber,
+  numberFormatToLocale,
+} from "../../common/string/format_number";
 import {
   getStatisticIds,
   Statistics,
@@ -144,7 +147,10 @@ class StatisticsChart extends LitElement {
           mode: "nearest",
           callbacks: {
             label: (context) =>
-              `${context.dataset.label}: ${context.parsed.y} ${
+              `${context.dataset.label}: ${formatNumber(
+                context.parsed.y,
+                this.hass.locale
+              )} ${
                 // @ts-ignore
                 context.dataset.unit || ""
               }`,
