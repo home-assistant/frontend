@@ -42,6 +42,9 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: EnergyCarbonGaugeCardConfig): void {
     this._config = config;
+    if (config.prefs) {
+      this._prefs = config.prefs;
+    }
   }
 
   public willUpdate(changedProps) {
@@ -189,7 +192,7 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
     startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
 
     const statistics: string[] = [];
-    let prefs = this._config!.prefs;
+    let prefs = this._prefs;
 
     if (!prefs) {
       try {

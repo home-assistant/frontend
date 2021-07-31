@@ -58,6 +58,9 @@ export class HuiEnergySourcesTableCard
 
   public setConfig(config: EnergySourcesTableCardConfig): void {
     this._config = config;
+    if (config.prefs) {
+      this._prefs = config.prefs;
+    }
   }
 
   public willUpdate() {
@@ -346,7 +349,7 @@ export class HuiEnergySourcesTableCard
     startDate.setHours(0, 0, 0, 0);
     startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
 
-    let prefs = this._config!.prefs;
+    let prefs = this._prefs;
 
     if (!prefs) {
       try {

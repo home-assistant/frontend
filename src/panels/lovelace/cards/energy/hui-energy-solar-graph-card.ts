@@ -95,6 +95,9 @@ export class HuiEnergySolarGraphCard
 
   public setConfig(config: EnergySolarGraphCardConfig): void {
     this._config = config;
+    if (config.prefs) {
+      this._prefs = config.prefs;
+    }
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -242,7 +245,7 @@ export class HuiEnergySolarGraphCard
 
     this._fetching = true;
 
-    let prefs = this._config!.prefs;
+    let prefs = this._prefs;
 
     if (!prefs) {
       try {

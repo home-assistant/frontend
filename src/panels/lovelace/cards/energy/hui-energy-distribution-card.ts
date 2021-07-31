@@ -49,6 +49,9 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: EnergyDistributionCardConfig): void {
     this._config = config;
+    if (config.prefs) {
+      this._prefs = config.prefs;
+    }
   }
 
   public getCardSize(): Promise<number> | number {
@@ -446,7 +449,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       statistics.push(this._co2SignalEntity);
     }
 
-    let prefs = this._config!.prefs;
+    let prefs = this._prefs;
 
     if (!prefs) {
       try {
