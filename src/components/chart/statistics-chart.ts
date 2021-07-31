@@ -33,6 +33,8 @@ class StatisticsChart extends LitElement {
 
   @property() public names: boolean | Record<string, string> = false;
 
+  @property() public unit?: string;
+
   @property({ attribute: false }) public endTime?: Date;
 
   @property({ type: Array }) public statTypes: Array<StatisticType> = [
@@ -127,13 +129,20 @@ class StatisticsChart extends LitElement {
           ticks: {
             maxTicksLimit: 7,
           },
+          title: {
+            display: this.unit,
+            text: this.unit,
+          },
         },
       },
       plugins: {
         tooltip: {
           mode: "nearest",
           callbacks: {
-            label: (context) => `${context.dataset.label}: ${context.parsed.y}`,
+            label: (context) =>
+              `${context.dataset.label}: ${context.parsed.y} ${
+                this.unit || ""
+              }`,
           },
         },
         filler: {
@@ -237,59 +246,46 @@ class StatisticsChart extends LitElement {
       const color = getColorByIndex(colorIndex);
       colorIndex++;
 
-      const addDataSet = (
-        nameY: string,
-        borderColor: string,
-        backgroundColor: string,
-        step = false,
-        fill?: boolean | number | string
-      ) => {
-        statDataSets.push({
-          label: nameY,
-          fill: fill || false,
-          borderColor,
-          backgroundColor: backgroundColor,
-          stepped: step ? "before" : false,
-          pointRadius: 0,
-          data: [],
-        });
-      };
-
       const statTypes: this["statTypes"] = [];
-
-      const sortedTypes = [...this.statTypes].sort((a, _b) => {
-        if (a === "min") {
-          return -1;
-        }
-        if (a === "max") {
-          return +1;
-        }
-        return 0;
-      });
 
       const drawBands =
         this.statTypes.includes("mean") && statisticsHaveType(stats, "mean");
 
+      const sortedTypes = drawBands
+        ? [...this.statTypes].sort((a, b) => {
+            if (a === "min" || b === "max") {
+              return -1;
+            }
+            if (a === "max" || b === "min") {
+              return +1;
+            }
+            return 0;
+          })
+        : this.statTypes;
+
       sortedTypes.forEach((type) => {
         if (statisticsHaveType(stats, type)) {
           statTypes.push(type);
-          addDataSet(
-            `${name} (${this.hass.localize(
+          statDataSets.push({
+            label: `${name} (${this.hass.localize(
               `ui.components.statistics_charts.statistic_types.${type}`
-            )})`,
-            drawBands && (type === "min" || type === "max")
-              ? color + "7F"
-              : color,
-            color + "7F",
-            false,
-            drawBands
+            )})
+            `,
+            fill: drawBands
               ? type === "min"
                 ? "+1"
                 : type === "max"
                 ? "-1"
                 : false
-              : false
-          );
+              : false,
+            borderColor:
+              drawBands && (type === "min" || type === "max")
+                ? color + "7F"
+                : color,
+            backgroundColor: color + "3F",
+            pointRadius: 0,
+            data: [],
+          });
         }
       });
 

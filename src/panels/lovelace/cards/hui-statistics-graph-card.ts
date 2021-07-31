@@ -34,6 +34,8 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: StatisticsGraphCardConfig;
 
+  @state() private _unitOfMeasurement?: string;
+
   private _entities: string[] = [];
 
   private _names: Record<string, string> = {};
@@ -133,6 +135,18 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
+    const firstUof =
+      this.hass.states[this._entities[0]]?.attributes.unit_of_measurement;
+
+    const unitOfMeasurement =
+      firstUof &&
+      this._entities.every(
+        (entity) =>
+          firstUof === this.hass?.states[entity].attributes.unit_of_measurement
+      )
+        ? firstUof
+        : undefined;
+
     return html`
       <ha-card .header="${this._config.title}">
         <div
@@ -147,6 +161,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
             .chartType=${this._config.chart_type || "line"}
             .statTypes=${this._config.stat_types!}
             .names=${this._names}
+            .unit=${unitOfMeasurement}
           ></statistics-chart>
         </div>
       </ha-card>
