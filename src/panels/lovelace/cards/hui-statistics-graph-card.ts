@@ -81,6 +81,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
       ? processConfigEntities(config.entities)
       : [];
 
+    this._entities = [];
     configEntities.forEach((entity) => {
       this._entities.push(entity.entity);
       if (entity.name) {
