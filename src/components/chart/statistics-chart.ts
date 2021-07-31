@@ -18,8 +18,10 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { numberFormatToLocale } from "../../common/string/format_number";
 import {
+  getStatisticIds,
   Statistics,
   statisticsHaveType,
+  StatisticsMetaData,
   StatisticType,
 } from "../../data/history";
 import type { HomeAssistant } from "../../types";
@@ -30,6 +32,8 @@ class StatisticsChart extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public statisticsData!: Statistics;
+
+  @property({ type: Array }) public statisticIds?: StatisticsMetaData[];
 
   @property() public names: boolean | Record<string, string> = false;
 
@@ -48,12 +52,12 @@ class StatisticsChart extends LitElement {
 
   @property({ type: Boolean }) public isLoadingData = false;
 
-  @state() private _chartData?: ChartData;
+  @state() private _chartData: ChartData = { datasets: [] };
 
   @state() private _chartOptions?: ChartOptions;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return !(changedProps.size === 1 && changedProps.has("hass"));
+    return changedProps.size > 1 || !changedProps.has("hass");
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -141,7 +145,8 @@ class StatisticsChart extends LitElement {
           callbacks: {
             label: (context) =>
               `${context.dataset.label}: ${context.parsed.y} ${
-                this.unit || ""
+                // @ts-ignore
+                context.dataset.unit || ""
               }`,
           },
         },
@@ -149,7 +154,7 @@ class StatisticsChart extends LitElement {
           propagate: true,
         },
         legend: {
-          display: false,
+          display: true,
           labels: {
             usePointStyle: true,
           },
@@ -163,6 +168,7 @@ class StatisticsChart extends LitElement {
           tension: 0.4,
           borderWidth: 1.5,
         },
+        bar: { borderWidth: 1.5, borderRadius: 4 },
         point: {
           hitRadius: 5,
         },
@@ -172,10 +178,19 @@ class StatisticsChart extends LitElement {
     };
   }
 
-  private _generateData() {
+  private async _getStatisticIds() {
+    this.statisticIds = await getStatisticIds(this.hass);
+  }
+
+  private async _generateData() {
     if (!this.statisticsData) {
       return;
     }
+
+    if (!this.statisticIds) {
+      await this._getStatisticIds();
+    }
+
     let colorIndex = 0;
     const statisticsData = Object.values(this.statisticsData);
     const totalDataSets: ChartDataset<"line">[] = [];
@@ -200,6 +215,8 @@ class StatisticsChart extends LitElement {
       endTime = new Date();
     }
 
+    let unit: string | undefined | null;
+
     const names = this.names || {};
     statisticsData.forEach((stats) => {
       const firstStat = stats[0];
@@ -212,6 +229,19 @@ class StatisticsChart extends LitElement {
           name = firstStat.statistic_id;
         }
       }
+
+      const meta = this.statisticIds!.find(
+        (stat) => stat.statistic_id === firstStat.statistic_id
+      );
+
+      if (!this.unit) {
+        if (unit === undefined) {
+          unit = meta?.unit_of_measurement;
+        } else if (unit !== meta?.unit_of_measurement) {
+          unit = null;
+        }
+      }
+
       // array containing [value1, value2, etc]
       let prevValues: Array<number | null> | null = null;
 
@@ -265,6 +295,7 @@ class StatisticsChart extends LitElement {
 
       sortedTypes.forEach((type) => {
         if (statisticsHaveType(stats, type)) {
+          const band = drawBands && (type === "min" || type === "max");
           statTypes.push(type);
           statDataSets.push({
             label: `${name} (${this.hass.localize(
@@ -278,13 +309,13 @@ class StatisticsChart extends LitElement {
                 ? "-1"
                 : false
               : false,
-            borderColor:
-              drawBands && (type === "min" || type === "max")
-                ? color + "7F"
-                : color,
-            backgroundColor: color + "3F",
+            borderColor: band ? color + "7F" : color,
+            backgroundColor: band ? color + "3F" : color + "7F",
             pointRadius: 0,
             data: [],
+            // @ts-ignore
+            unit: meta?.unit_of_measurement,
+            band,
           });
         }
       });
@@ -316,6 +347,19 @@ class StatisticsChart extends LitElement {
       // Concat two arrays
       Array.prototype.push.apply(totalDataSets, statDataSets);
     });
+
+    if (unit !== null) {
+      this._chartOptions = {
+        ...this._chartOptions,
+        scales: {
+          ...this._chartOptions!.scales,
+          y: {
+            ...(this._chartOptions!.scales!.y as Record<string, unknown>),
+            title: { display: unit, text: unit },
+          },
+        },
+      };
+    }
 
     this._chartData = {
       datasets: totalDataSets,
