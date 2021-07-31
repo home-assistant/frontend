@@ -219,6 +219,7 @@ export interface EnergyCollection extends Collection<EnergyData> {
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
+  _refreshTimeout?: number;
 }
 
 export const getEnergyDataCollection = (
@@ -238,6 +239,22 @@ export const getEnergyDataCollection = (
         // Detect by checking `e.code === "not_found"
         collection.prefs = await getEnergyPreferences(hass);
       }
+
+      if (collection._refreshTimeout) {
+        clearTimeout(collection._refreshTimeout);
+      }
+      // The stats are created every hour
+      // Schedule a refresh for 20 minutes past the hour
+      const nextFetch = new Date();
+      if (nextFetch.getMinutes() > 20) {
+        nextFetch.setHours(nextFetch.getHours() + 1);
+      }
+      nextFetch.setMinutes(20);
+
+      collection._refreshTimeout = window.setTimeout(
+        () => collection.refresh(),
+        nextFetch.getTime() - Date.now()
+      );
 
       return getEnergyData(
         hass,
