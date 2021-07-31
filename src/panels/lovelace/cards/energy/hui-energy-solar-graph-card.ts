@@ -13,7 +13,6 @@ import { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergySolarGraphCardConfig } from "../types";
-import { fetchStatistics, Statistics } from "../../../../data/history";
 import {
   hex2rgb,
   lab2rgb,
@@ -22,8 +21,8 @@ import {
 } from "../../../../common/color/convert-color";
 import { labDarken } from "../../../../common/color/lab";
 import {
-  EnergyPreferences,
-  getEnergyPreferences,
+  EnergyData,
+  getEnergyData,
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
@@ -49,7 +48,7 @@ export class HuiEnergySolarGraphCard
 
   @state() private _config?: EnergySolarGraphCardConfig;
 
-  @state() private _data?: Statistics;
+  @state() private _data?: EnergyData;
 
   @state() private _chartData: ChartData = {
     datasets: [],
@@ -62,8 +61,6 @@ export class HuiEnergySolarGraphCard
   @state() private _showAllForecastData = false;
 
   private _fetching = false;
-
-  private _prefs?: EnergyPreferences;
 
   private _interval?: number;
 
@@ -95,9 +92,6 @@ export class HuiEnergySolarGraphCard
 
   public setConfig(config: EnergySolarGraphCardConfig): void {
     this._config = config;
-    if (config.prefs) {
-      this._prefs = config.prefs;
-    }
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -239,37 +233,22 @@ export class HuiEnergySolarGraphCard
       return;
     }
 
-    const startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
-
     this._fetching = true;
 
-    let prefs = this._prefs;
-
-    if (!prefs) {
-      try {
-        prefs = this._prefs = await getEnergyPreferences(this.hass);
-      } catch (e) {
-        return;
-      }
-    }
-
-    const solarSources: SolarSourceTypeEnergyPreference[] =
-      prefs.energy_sources.filter(
-        (source) => source.type === "solar"
-      ) as SolarSourceTypeEnergyPreference[];
-
     try {
-      this._data = await fetchStatistics(
-        this.hass!,
-        startDate,
-        undefined,
-        solarSources.map((source) => source.stat_energy_from)
-      );
+      this._data = await (this._config!.energyDataPromise ||
+        getEnergyData(this.hass!));
     } finally {
       this._fetching = false;
     }
+
+    // Remove the data promise so we don't use it again
+    delete this._config!.energyDataPromise;
+
+    const solarSources: SolarSourceTypeEnergyPreference[] =
+      this._data.prefs.energy_sources.filter(
+        (source) => source.type === "solar"
+      ) as SolarSourceTypeEnergyPreference[];
 
     if (
       isComponentLoaded(this.hass, "forecast_solar") &&
@@ -283,11 +262,11 @@ export class HuiEnergySolarGraphCard
 
   private _renderChart() {
     const solarSources: SolarSourceTypeEnergyPreference[] =
-      this._prefs!.energy_sources.filter(
+      this._data!.prefs.energy_sources.filter(
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
 
-    const statisticsData = Object.values(this._data!);
+    const statisticsData = Object.values(this._data!.stats);
     const datasets: ChartDataset<"bar">[] = [];
     let endTime: Date;
 
@@ -330,8 +309,8 @@ export class HuiEnergySolarGraphCard
       let prevStart: string | null = null;
 
       // Process solar production data.
-      if (this._data![source.stat_energy_from]) {
-        for (const point of this._data![source.stat_energy_from]) {
+      if (this._data!.stats[source.stat_energy_from]) {
+        for (const point of this._data!.stats[source.stat_energy_from]) {
           if (!point.sum) {
             continue;
           }

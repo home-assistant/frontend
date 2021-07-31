@@ -1,19 +1,22 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatNumber } from "../../../../common/string/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import type { LevelDefinition } from "../../../../components/ha-gauge";
 import {
-  EnergyPreferences,
-  getEnergyPreferences,
+  EnergyData,
+  getEnergyData,
   GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import {
-  calculateStatisticsSumGrowth,
-  fetchStatistics,
-  Statistics,
-} from "../../../../data/history";
+import { calculateStatisticsSumGrowth } from "../../../../data/history";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridGaugeCardConfig } from "../types";
@@ -30,9 +33,9 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: EnergyGridGaugeCardConfig;
 
-  @state() private _stats?: Statistics;
+  @state() private _data?: EnergyData;
 
-  private _prefs?: EnergyPreferences;
+  private _fetching = false;
 
   public getCardSize(): number {
     return 4;
@@ -40,16 +43,18 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: EnergyGridGaugeCardConfig): void {
     this._config = config;
-    if (config.prefs) {
-      this._prefs = config.prefs;
-    }
   }
 
-  public willUpdate(changedProps) {
+  public willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
-    if (!this.hasUpdated) {
-      this._getStatistics();
+    if (!this._fetching && this._config && this.hass) {
+      this._fetching = true;
+      (this._config.energyDataPromise || getEnergyData(this.hass!)).then(
+        (data) => {
+          this._data = data;
+        }
+      );
     }
   }
 
@@ -58,11 +63,11 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
-    if (!this._stats) {
+    if (!this._data) {
       return html`Loading...`;
     }
 
-    const prefs = this._prefs!;
+    const prefs = this._data.prefs;
     const gridSource = prefs.energy_sources.find(
       (src) => src.type === "grid"
     ) as GridSourceTypeEnergyPreference | undefined;
@@ -74,12 +79,12 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
     }
 
     const consumedFromGrid = calculateStatisticsSumGrowth(
-      this._stats,
+      this._data.stats,
       gridSource.flow_from.map((flow) => flow.stat_energy_from)
     );
 
     const returnedToGrid = calculateStatisticsSumGrowth(
-      this._stats,
+      this._data.stats,
       gridSource.flow_to.map((flow) => flow.stat_energy_to)
     );
 
@@ -118,44 +123,6 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
           : "Grid neutrality could not be calculated"}
       </ha-card>
     `;
-  }
-
-  private async _getStatistics(): Promise<void> {
-    const startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
-
-    let prefs = this._prefs;
-
-    if (!prefs) {
-      try {
-        prefs = this._prefs = await getEnergyPreferences(this.hass!);
-      } catch (e) {
-        return;
-      }
-    }
-
-    const statistics: string[] = [];
-    for (const source of prefs.energy_sources) {
-      if (source.type === "solar") {
-        continue;
-      }
-
-      // grid source
-      for (const flowFrom of source.flow_from) {
-        statistics.push(flowFrom.stat_energy_from);
-      }
-      for (const flowTo of source.flow_to) {
-        statistics.push(flowTo.stat_energy_to);
-      }
-    }
-
-    this._stats = await fetchStatistics(
-      this.hass!,
-      startDate,
-      undefined,
-      statistics
-    );
   }
 
   static get styles(): CSSResultGroup {

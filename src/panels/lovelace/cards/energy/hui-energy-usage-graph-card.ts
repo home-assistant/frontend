@@ -24,8 +24,7 @@ import {
 } from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import { getEnergyPreferences } from "../../../../data/energy";
-import { fetchStatistics, Statistics } from "../../../../data/history";
+import { EnergyData, getEnergyData } from "../../../../data/energy";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyUsageGraphCardConfig } from "../types";
@@ -38,8 +37,6 @@ export class HuiEnergyUsageGraphCard
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyUsageGraphCardConfig;
-
-  @state() private _data?: Statistics;
 
   @state() private _chartData: ChartData = {
     datasets: [],
@@ -67,10 +64,9 @@ export class HuiEnergyUsageGraphCard
     this._getStatistics();
     // statistics are created every hour
     clearInterval(this._interval);
-    this._interval = window.setInterval(
-      () => this._getStatistics(),
-      1000 * 60 * 60
-    );
+    this._interval = window.setInterval(() => {
+      this._getStatistics();
+    }, 1000 * 60 * 60);
   }
 
   public getCardSize(): Promise<number> | number {
@@ -248,21 +244,20 @@ export class HuiEnergyUsageGraphCard
     if (this._fetching) {
       return;
     }
-    const startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
 
     this._fetching = true;
 
-    let prefs = this._config!.prefs;
+    let energyData: EnergyData;
 
-    if (!prefs) {
-      try {
-        prefs = await getEnergyPreferences(this.hass!);
-      } catch (e) {
-        return;
-      }
+    try {
+      energyData = await (this._config!.energyDataPromise ||
+        getEnergyData(this.hass!));
+    } finally {
+      this._fetching = false;
     }
+
+    // Remove the data promise so we don't use it again
+    delete this._config!.energyDataPromise;
 
     const statistics: {
       to_grid?: string[];
@@ -270,7 +265,7 @@ export class HuiEnergyUsageGraphCard
       solar?: string[];
     } = {};
 
-    for (const source of prefs.energy_sources) {
+    for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
         if (statistics.solar) {
           statistics.solar.push(source.stat_energy_from);
@@ -297,19 +292,7 @@ export class HuiEnergyUsageGraphCard
       }
     }
 
-    try {
-      this._data = await fetchStatistics(
-        this.hass!,
-        startDate,
-        undefined,
-        // Array.flat()
-        ([] as string[]).concat(...Object.values(statistics))
-      );
-    } finally {
-      this._fetching = false;
-    }
-
-    const statisticsData = Object.values(this._data!);
+    const statisticsData = Object.values(energyData.stats);
     const datasets: ChartDataset<"bar">[] = [];
     let endTime: Date;
 
@@ -357,7 +340,7 @@ export class HuiEnergyUsageGraphCard
       const totalStats: { [start: string]: number } = {};
       const sets: { [statId: string]: { [start: string]: number } } = {};
       statIds!.forEach((id) => {
-        const stats = this._data![id];
+        const stats = energyData.stats[id];
         if (!stats) {
           return;
         }

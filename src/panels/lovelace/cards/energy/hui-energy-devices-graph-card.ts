@@ -22,7 +22,7 @@ import {
 } from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import { getEnergyPreferences } from "../../../../data/energy";
+import { getEnergyData } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   fetchStatistics,
@@ -168,27 +168,19 @@ export class HuiEnergyDevicesGraphCard
     if (this._fetching) {
       return;
     }
-    const startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
+    const energyData = await (this._config!.energyDataPromise ||
+      getEnergyData(this.hass));
 
     this._fetching = true;
-    let prefs = this._config!.prefs;
-
-    if (!prefs) {
-      try {
-        prefs = await getEnergyPreferences(this.hass);
-      } catch (e) {
-        return;
-      }
-    }
 
     try {
       this._data = await fetchStatistics(
         this.hass!,
-        startDate,
+        energyData.startDate,
         undefined,
-        prefs.device_consumption.map((device) => device.stat_consumption)
+        energyData.prefs.device_consumption.map(
+          (device) => device.stat_consumption
+        )
       );
     } finally {
       this._fetching = false;
@@ -222,8 +214,8 @@ export class HuiEnergyDevicesGraphCard
       },
     ];
 
-    for (let idx = 0; idx < prefs.device_consumption.length; idx++) {
-      const device = prefs.device_consumption[idx];
+    for (let idx = 0; idx < energyData.prefs.device_consumption.length; idx++) {
+      const device = energyData.prefs.device_consumption[idx];
       const entity = this.hass.states[device.stat_consumption];
       const label = entity ? computeStateName(entity) : device.stat_consumption;
 

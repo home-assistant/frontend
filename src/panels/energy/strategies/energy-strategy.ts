@@ -1,5 +1,6 @@
 import {
   EnergyPreferences,
+  getEnergyData,
   getEnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
@@ -26,10 +27,10 @@ export class EnergyStrategy {
 
     const view: LovelaceViewConfig = { cards: [] };
 
-    let energyPrefs: EnergyPreferences;
+    let prefs: EnergyPreferences;
 
     try {
-      energyPrefs = await getEnergyPreferences(hass);
+      prefs = await getEnergyPreferences(hass);
     } catch (e) {
       if (e.code === "not_found") {
         return setupWizard();
@@ -43,20 +44,22 @@ export class EnergyStrategy {
 
     view.type = "sidebar";
 
-    const hasGrid = energyPrefs.energy_sources.find(
+    const hasGrid = prefs.energy_sources.find(
       (source) => source.type === "grid"
     ) as GridSourceTypeEnergyPreference;
     const hasReturn = hasGrid && hasGrid.flow_to.length;
-    const hasSolar = energyPrefs.energy_sources.some(
+    const hasSolar = prefs.energy_sources.some(
       (source) => source.type === "solar"
     );
+
+    const energyDataPromise = getEnergyData(hass, { prefs });
 
     // Only include if we have a grid source.
     if (hasGrid) {
       view.cards!.push({
         title: "Energy usage",
         type: "energy-usage-graph",
-        prefs: energyPrefs,
+        energyDataPromise,
       });
     }
 
@@ -65,7 +68,7 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Solar production",
         type: "energy-solar-graph",
-        prefs: energyPrefs,
+        energyDataPromise,
       });
     }
 
@@ -74,7 +77,7 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Energy distribution",
         type: "energy-distribution",
-        prefs: energyPrefs,
+        energyDataPromise,
         view_layout: { position: "sidebar" },
       });
     }
@@ -83,7 +86,7 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Sources",
         type: "energy-sources-table",
-        prefs: energyPrefs,
+        energyDataPromise,
       });
     }
 
@@ -91,7 +94,7 @@ export class EnergyStrategy {
     if (hasSolar) {
       view.cards!.push({
         type: "energy-solar-consumed-gauge",
-        prefs: energyPrefs,
+        energyDataPromise,
         view_layout: { position: "sidebar" },
       });
     }
@@ -100,7 +103,7 @@ export class EnergyStrategy {
     if (hasReturn) {
       view.cards!.push({
         type: "energy-grid-neutrality-gauge",
-        prefs: energyPrefs,
+        energyDataPromise,
         view_layout: { position: "sidebar" },
       });
     }
@@ -109,17 +112,17 @@ export class EnergyStrategy {
     if (hasGrid) {
       view.cards!.push({
         type: "energy-carbon-consumed-gauge",
-        prefs: energyPrefs,
+        energyDataPromise,
         view_layout: { position: "sidebar" },
       });
     }
 
     // Only include if we have at least 1 device in the config.
-    if (energyPrefs.device_consumption.length) {
+    if (prefs.device_consumption.length) {
       view.cards!.push({
         title: "Monitor individual devices",
         type: "energy-devices-graph",
-        prefs: energyPrefs,
+        energyDataPromise,
       });
     }
 
