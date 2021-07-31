@@ -34,8 +34,6 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: StatisticsGraphCardConfig;
 
-  @state() private _unitOfMeasurement?: string;
-
   private _entities: string[] = [];
 
   private _names: Record<string, string> = {};
