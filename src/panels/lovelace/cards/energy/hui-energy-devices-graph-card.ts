@@ -17,12 +17,10 @@ import {
 } from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import {
-  EnergyData,
-  getEnergyDataCollection,
-} from "../../../../data/energy";
+import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
+  fetchStatistics,
   Statistics,
 } from "../../../../data/history";
 import { FrontendLocaleData } from "../../../../data/translation";
@@ -120,7 +118,13 @@ export class HuiEnergyDevicesGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
-    this._data = await getEnergyDataCollection(this.hass).getDeviceStats();
+    const energyCollection = getEnergyDataCollection(this.hass);
+    this._data = await fetchStatistics(
+      this.hass,
+      energyCollection.start,
+      energyCollection.end,
+      energyCollection.getDeviceStatIds()
+    );
 
     const statisticsData = Object.values(this._data!);
     let endTime: Date;

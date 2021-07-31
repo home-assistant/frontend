@@ -52,14 +52,13 @@ export class EnergyStrategy {
       (source) => source.type === "solar"
     );
 
-    const energyCollection = getEnergyDataCollection(hass, prefs);
+    getEnergyDataCollection(hass, prefs);
 
     // Only include if we have a grid source.
     if (hasGrid) {
       view.cards!.push({
         title: "Energy usage",
         type: "energy-usage-graph",
-        energyCollection,
       });
     }
 
@@ -68,7 +67,6 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Solar production",
         type: "energy-solar-graph",
-        energyCollection,
       });
     }
 
@@ -77,7 +75,6 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Energy distribution",
         type: "energy-distribution",
-        energyCollection,
         view_layout: { position: "sidebar" },
       });
     }
@@ -86,16 +83,6 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Sources",
         type: "energy-sources-table",
-        energyCollection,
-      });
-    }
-
-    // Only include if we have a solar source.
-    if (hasSolar) {
-      view.cards!.push({
-        type: "energy-solar-consumed-gauge",
-        energyCollection,
-        view_layout: { position: "sidebar" },
       });
     }
 
@@ -103,7 +90,14 @@ export class EnergyStrategy {
     if (hasReturn) {
       view.cards!.push({
         type: "energy-grid-neutrality-gauge",
-        energyCollection,
+        view_layout: { position: "sidebar" },
+      });
+    }
+
+    // Only include if we have a solar source.
+    if (hasSolar && hasReturn) {
+      view.cards!.push({
+        type: "energy-solar-consumed-gauge",
         view_layout: { position: "sidebar" },
       });
     }
@@ -112,7 +106,6 @@ export class EnergyStrategy {
     if (hasGrid) {
       view.cards!.push({
         type: "energy-carbon-consumed-gauge",
-        energyCollection,
         view_layout: { position: "sidebar" },
       });
     }
@@ -122,7 +115,6 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Monitor individual devices",
         type: "energy-devices-graph",
-        energyCollection,
       });
     }
 
