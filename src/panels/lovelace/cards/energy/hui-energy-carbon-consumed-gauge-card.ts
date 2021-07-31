@@ -1,19 +1,20 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { round } from "../../../../common/number/round";
-import { subscribeOne } from "../../../../common/util/subscribe-one";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
-import { getConfigEntries } from "../../../../data/config_entries";
-import { energySourcesByType } from "../../../../data/energy";
-import { subscribeEntityRegistry } from "../../../../data/entity_registry";
+import {
+  EnergyData,
+  energySourcesByType,
+  getEnergyDataCollection,
+} from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
   calculateStatisticsSumGrowthWithPercentage,
-  fetchStatistics,
-  Statistics,
 } from "../../../../data/history";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import { createEntityNotFoundWarning } from "../../components/hui-warning";
 import type { LovelaceCard } from "../../types";
@@ -21,14 +22,15 @@ import { severityMap } from "../hui-gauge-card";
 import type { EnergyCarbonGaugeCardConfig } from "../types";
 
 @customElement("hui-energy-carbon-consumed-gauge-card")
-class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
+class HuiEnergyCarbonGaugeCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyCarbonGaugeCardConfig;
 
-  @state() private _stats?: Statistics;
-
-  @state() private _co2SignalEntity?: string | null;
+  @state() private _data?: EnergyData;
 
   public getCardSize(): number {
     return 4;
@@ -38,12 +40,12 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  public willUpdate(changedProps) {
-    super.willUpdate(changedProps);
-
-    if (!this.hasUpdated) {
-      this._getStatistics();
-    }
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass).subscribe((data) => {
+        this._data = data;
+      }),
+    ];
   }
 
   protected render(): TemplateResult {
@@ -51,52 +53,55 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
-    if (this._co2SignalEntity === null) {
-      return html``;
-    }
-
-    if (!this._stats || !this._co2SignalEntity) {
+    if (!this._data) {
       return html`Loading...`;
     }
 
-    const co2State = this.hass.states[this._co2SignalEntity];
+    if (!this._data.co2SignalEntity) {
+      return html``;
+    }
+
+    const co2State = this.hass.states[this._data.co2SignalEntity];
 
     if (!co2State) {
       return html`<hui-warning>
-        ${createEntityNotFoundWarning(this.hass, this._co2SignalEntity)}
+        ${createEntityNotFoundWarning(this.hass, this._data.co2SignalEntity)}
       </hui-warning>`;
     }
 
-    const prefs = this._config!.prefs;
+    const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
     const totalGridConsumption = calculateStatisticsSumGrowth(
-      this._stats,
+      this._data.stats,
       types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
     );
 
     let value: number | undefined;
 
-    if (this._co2SignalEntity in this._stats && totalGridConsumption) {
+    if (
+      this._data.co2SignalEntity in this._data.stats &&
+      totalGridConsumption
+    ) {
       const highCarbonEnergy =
         calculateStatisticsSumGrowthWithPercentage(
-          this._stats[this._co2SignalEntity],
+          this._data.stats[this._data.co2SignalEntity],
           types
             .grid![0].flow_from.map(
-              (flow) => this._stats![flow.stat_energy_from]
+              (flow) => this._data!.stats![flow.stat_energy_from]
             )
             .filter(Boolean)
         ) || 0;
 
       const totalSolarProduction = types.solar
         ? calculateStatisticsSumGrowth(
-            this._stats,
+            this._data.stats,
             types.solar.map((source) => source.stat_energy_from)
           )
         : undefined;
 
       const totalGridReturned = calculateStatisticsSumGrowth(
-        this._stats,
+        this._data.stats,
         types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
       );
 
@@ -137,78 +142,6 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
       return severityMap.green;
     }
     return severityMap.normal;
-  }
-
-  private async _fetchCO2SignalEntity() {
-    const [configEntries, entityRegistryEntries] = await Promise.all([
-      getConfigEntries(this.hass),
-      subscribeOne(this.hass.connection, subscribeEntityRegistry),
-    ]);
-
-    const co2ConfigEntry = configEntries.find(
-      (entry) => entry.domain === "co2signal"
-    );
-
-    if (!co2ConfigEntry) {
-      this._co2SignalEntity = null;
-      return;
-    }
-
-    for (const entry of entityRegistryEntries) {
-      if (entry.config_entry_id !== co2ConfigEntry.entry_id) {
-        continue;
-      }
-
-      // The integration offers 2 entities. We want the % one.
-      const co2State = this.hass.states[entry.entity_id];
-      if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
-        continue;
-      }
-
-      this._co2SignalEntity = co2State.entity_id;
-      return;
-    }
-    this._co2SignalEntity = null;
-  }
-
-  private async _getStatistics(): Promise<void> {
-    await this._fetchCO2SignalEntity();
-
-    if (this._co2SignalEntity === null) {
-      return;
-    }
-
-    const startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
-
-    const statistics: string[] = [];
-    const prefs = this._config!.prefs;
-    for (const source of prefs.energy_sources) {
-      if (source.type === "solar") {
-        statistics.push(source.stat_energy_from);
-        continue;
-      }
-
-      // grid source
-      for (const flowFrom of source.flow_from) {
-        statistics.push(flowFrom.stat_energy_from);
-      }
-      for (const flowTo of source.flow_to) {
-        statistics.push(flowTo.stat_energy_to);
-      }
-    }
-
-    if (this._co2SignalEntity) {
-      statistics.push(this._co2SignalEntity);
-    }
-
-    this._stats = await fetchStatistics(
-      this.hass!,
-      startDate,
-      undefined,
-      statistics
-    );
   }
 
   static get styles(): CSSResultGroup {
