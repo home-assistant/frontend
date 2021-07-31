@@ -79,6 +79,10 @@ class HuiEnergyCarbonGaugeCard
 
     let value: number | undefined;
 
+    if (totalGridConsumption === 0) {
+      value = 100;
+    }
+
     if (
       this._data.co2SignalEntity in this._data.stats &&
       totalGridConsumption
@@ -97,17 +101,18 @@ class HuiEnergyCarbonGaugeCard
         ? calculateStatisticsSumGrowth(
             this._data.stats,
             types.solar.map((source) => source.stat_energy_from)
-          )
-        : undefined;
+          ) || 0
+        : 0;
 
-      const totalGridReturned = calculateStatisticsSumGrowth(
-        this._data.stats,
-        types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
-      );
+      const totalGridReturned =
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
+        ) || 0;
 
       const totalEnergyConsumed =
         totalGridConsumption +
-        Math.max(0, (totalSolarProduction || 0) - (totalGridReturned || 0));
+        Math.max(0, totalSolarProduction - totalGridReturned);
 
       value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
     }
