@@ -27,9 +27,8 @@ class HaStatisticsPicker extends LitElement {
       return html``;
     }
 
-    const currentStatistics = this._currentStatistics;
     return html`
-      ${currentStatistics.map(
+      ${this._currentStatistics.map(
         (statisticId) => html`
           <div>
             <ha-statistic-picker
