@@ -6,23 +6,24 @@ import {
   mdiSolarPower,
   mdiTransmissionTower,
 } from "@mdi/js";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { formatNumber } from "../../../../common/string/format_number";
-import { subscribeOne } from "../../../../common/util/subscribe-one";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
-import { getConfigEntries } from "../../../../data/config_entries";
-import { energySourcesByType } from "../../../../data/energy";
-import { subscribeEntityRegistry } from "../../../../data/entity_registry";
+import {
+  EnergyData,
+  energySourcesByType,
+  getEnergyDataCollection,
+} from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
   calculateStatisticsSumGrowthWithPercentage,
-  fetchStatistics,
-  Statistics,
 } from "../../../../data/history";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyDistributionCardConfig } from "../types";
@@ -30,34 +31,30 @@ import { EnergyDistributionCardConfig } from "../types";
 const CIRCLE_CIRCUMFERENCE = 238.76104;
 
 @customElement("hui-energy-distribution-card")
-class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
+class HuiEnergyDistrubutionCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyDistributionCardConfig;
 
-  @state() private _stats?: Statistics;
-
-  @state() private _co2SignalEntity?: string;
-
-  private _fetching = false;
+  @state() private _data?: EnergyData;
 
   public setConfig(config: EnergyDistributionCardConfig): void {
     this._config = config;
   }
 
-  public getCardSize(): Promise<number> | number {
-    return 3;
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass).subscribe((data) => {
+        this._data = data;
+      }),
+    ];
   }
 
-  public willUpdate(changedProps) {
-    super.willUpdate(changedProps);
-
-    if (!this._fetching && !this._stats) {
-      this._fetching = true;
-      this._getStatistics().then(() => {
-        this._fetching = false;
-      });
-    }
+  public getCardSize(): Promise<number> | number {
+    return 3;
   }
 
   protected render() {
@@ -65,11 +62,11 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
       return html``;
     }
 
-    if (!this._stats) {
+    if (!this._data) {
       return html`Loading…`;
     }
 
-    const prefs = this._config!.prefs;
+    const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
     // The strategy only includes this card if we have a grid.
@@ -80,7 +77,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
     const totalGridConsumption =
       calculateStatisticsSumGrowth(
-        this._stats,
+        this._data.stats,
         types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
       ) ?? 0;
 
@@ -89,7 +86,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     if (hasSolarProduction) {
       totalSolarProduction =
         calculateStatisticsSumGrowth(
-          this._stats,
+          this._data.stats,
           types.solar!.map((source) => source.stat_energy_from)
         ) || 0;
     }
@@ -99,7 +96,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
     if (hasReturnToGrid) {
       productionReturnedToGrid =
         calculateStatisticsSumGrowth(
-          this._stats,
+          this._data.stats,
           types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
         ) || 0;
     }
@@ -124,16 +121,21 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
 
     let electricityMapUrl: string | undefined;
 
-    if (this._co2SignalEntity && this._co2SignalEntity in this._stats) {
+    if (
+      this._data.co2SignalEntity &&
+      this._data.co2SignalEntity in this._data.stats
+    ) {
       // Calculate high carbon consumption
       const highCarbonConsumption = calculateStatisticsSumGrowthWithPercentage(
-        this._stats[this._co2SignalEntity],
+        this._data.stats[this._data.co2SignalEntity],
         types
-          .grid![0].flow_from.map((flow) => this._stats![flow.stat_energy_from])
+          .grid![0].flow_from.map(
+            (flow) => this._data!.stats[flow.stat_energy_from]
+          )
           .filter(Boolean)
       );
 
-      const co2State = this.hass.states[this._co2SignalEntity];
+      const co2State = this.hass.states[this._data.co2SignalEntity];
 
       if (co2State) {
         electricityMapUrl = `https://www.electricitymap.org/zone/${co2State.attributes.country_code}`;
@@ -399,69 +401,6 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
         </div>
       </ha-card>
     `;
-  }
-
-  private async _getStatistics(): Promise<void> {
-    const [configEntries, entityRegistryEntries] = await Promise.all([
-      getConfigEntries(this.hass),
-      subscribeOne(this.hass.connection, subscribeEntityRegistry),
-    ]);
-
-    const co2ConfigEntry = configEntries.find(
-      (entry) => entry.domain === "co2signal"
-    );
-
-    this._co2SignalEntity = undefined;
-
-    if (co2ConfigEntry) {
-      for (const entry of entityRegistryEntries) {
-        if (entry.config_entry_id !== co2ConfigEntry.entry_id) {
-          continue;
-        }
-
-        // The integration offers 2 entities. We want the % one.
-        const co2State = this.hass.states[entry.entity_id];
-        if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
-          continue;
-        }
-
-        this._co2SignalEntity = co2State.entity_id;
-        break;
-      }
-    }
-
-    const startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
-
-    const statistics: string[] = [];
-
-    if (this._co2SignalEntity !== undefined) {
-      statistics.push(this._co2SignalEntity);
-    }
-
-    const prefs = this._config!.prefs;
-    for (const source of prefs.energy_sources) {
-      if (source.type === "solar") {
-        statistics.push(source.stat_energy_from);
-        continue;
-      }
-
-      // grid source
-      for (const flowFrom of source.flow_from) {
-        statistics.push(flowFrom.stat_energy_from);
-      }
-      for (const flowTo of source.flow_to) {
-        statistics.push(flowTo.stat_energy_to);
-      }
-    }
-
-    this._stats = await fetchStatistics(
-      this.hass!,
-      startDate,
-      undefined,
-      statistics
-    );
   }
 
   static styles = css`

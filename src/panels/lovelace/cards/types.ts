@@ -1,4 +1,3 @@
-import { EnergyPreferences } from "../../../data/energy";
 import { StatisticType } from "../../../data/history";
 import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { FullCalendarView } from "../../../types";
@@ -93,54 +92,45 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
 export interface EnergySummaryCardConfig extends LovelaceCardConfig {
   type: "energy-summary";
   title?: string;
-  prefs: EnergyPreferences;
 }
 
 export interface EnergyDistributionCardConfig extends LovelaceCardConfig {
   type: "energy-distribution";
   title?: string;
-  prefs: EnergyPreferences;
 }
 export interface EnergyUsageGraphCardConfig extends LovelaceCardConfig {
   type: "energy-summary-graph";
   title?: string;
-  prefs: EnergyPreferences;
 }
 
 export interface EnergySolarGraphCardConfig extends LovelaceCardConfig {
   type: "energy-solar-graph";
   title?: string;
-  prefs: EnergyPreferences;
 }
 
 export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
   type: "energy-devices-graph";
   title?: string;
-  prefs: EnergyPreferences;
 }
 
 export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
   type: "energy-sources-table";
   title?: string;
-  prefs: EnergyPreferences;
 }
 
 export interface EnergySolarGaugeCardConfig extends LovelaceCardConfig {
   type: "energy-solar-consumed-gauge";
   title?: string;
-  prefs: EnergyPreferences;
 }
 
 export interface EnergyGridGaugeCardConfig extends LovelaceCardConfig {
   type: "energy-grid-result-gauge";
   title?: string;
-  prefs: EnergyPreferences;
 }
 
 export interface EnergyCarbonGaugeCardConfig extends LovelaceCardConfig {
   type: "energy-carbon-consumed-gauge";
   title?: string;
-  prefs: EnergyPreferences;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
