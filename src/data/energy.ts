@@ -144,7 +144,7 @@ export interface EnergyData {
   co2SignalEntity?: string;
 }
 
-export const getEnergyData = async (
+const getEnergyData = async (
   hass: HomeAssistant,
   prefs: EnergyPreferences,
   start: Date,
