@@ -1,3 +1,4 @@
+import { Collection, getCollection } from "home-assistant-js-websocket";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
 import { ConfigEntry, getConfigEntries } from "./config_entries";
@@ -134,7 +135,8 @@ export const energySourcesByType = (prefs: EnergyPreferences) => {
 };
 
 export interface EnergyData {
-  startDate: Date;
+  start: Date;
+  end?: Date;
   prefs: EnergyPreferences;
   info: EnergyInfo;
   stats: Statistics;
@@ -144,24 +146,10 @@ export interface EnergyData {
 
 export const getEnergyData = async (
   hass: HomeAssistant,
-  options: { startDate?: Date; prefs?: EnergyPreferences } = {}
+  prefs: EnergyPreferences,
+  start: Date,
+  end?: Date
 ): Promise<EnergyData> => {
-  let prefs = options.prefs;
-
-  if (!prefs) {
-    // This will raise if not found.
-    // Detect by checking `e.code === "not_found"
-    prefs = await getEnergyPreferences(hass);
-  }
-
-  let startDate = options.startDate;
-
-  if (!startDate) {
-    startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
-  }
-
   const [configEntries, entityRegistryEntries, info] = await Promise.all([
     getConfigEntries(hass),
     subscribeOne(hass.connection, subscribeEntityRegistry),
@@ -212,14 +200,71 @@ export const getEnergyData = async (
     }
   }
 
-  const stats = await fetchStatistics(hass!, startDate, undefined, statIDs);
+  const stats = await fetchStatistics(hass!, start, end, statIDs);
 
   return {
-    startDate,
+    start,
+    end,
     info,
     prefs,
     stats,
     co2SignalConfigEntry,
     co2SignalEntity,
   };
+};
+
+export interface EnergyCollection extends Collection<EnergyData> {
+  prefs?: EnergyPreferences;
+  clearPrefs(): void;
+  setPeriod(newStart: Date, newEnd?: Date): void;
+  getDeviceStats(): Promise<Statistics>;
+}
+
+export const getEnergyDataCollection = (
+  hass: HomeAssistant,
+  prefs?: EnergyPreferences
+): EnergyCollection => {
+  if ((hass.connection as any)._energy) {
+    return (hass.connection as any)._energy;
+  }
+
+  let start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setTime(start.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
+
+  let end: Date | undefined;
+
+  const collection = getCollection<EnergyData>(
+    hass.connection,
+    "_energy",
+    async () => {
+      if (!collection.prefs) {
+        // This will raise if not found.
+        // Detect by checking `e.code === "not_found"
+        collection.prefs = await getEnergyPreferences(hass);
+      }
+
+      return getEnergyData(hass, collection.prefs, start, end);
+    }
+  ) as EnergyCollection;
+
+  collection.prefs = prefs;
+  collection.clearPrefs = () => {
+    collection.prefs = undefined;
+  };
+  collection.setPeriod = (newStart: Date, newEnd?: Date) => {
+    start = newStart;
+    end = newEnd;
+  };
+  collection.getDeviceStats = async () =>
+    fetchStatistics(
+      hass,
+      start,
+      end,
+      collection.state.prefs.device_consumption.map(
+        (device) => device.stat_consumption
+      )
+    );
+
+  return collection;
 };

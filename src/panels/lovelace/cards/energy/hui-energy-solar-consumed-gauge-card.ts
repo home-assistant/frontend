@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import "../../../../components/ha-card";
@@ -13,23 +7,33 @@ import "../../../../components/ha-gauge";
 import {
   EnergyData,
   energySourcesByType,
-  getEnergyData,
+  getEnergyDataCollection,
 } from "../../../../data/energy";
 import { calculateStatisticsSumGrowth } from "../../../../data/history";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import { severityMap } from "../hui-gauge-card";
 import type { EnergySolarGaugeCardConfig } from "../types";
 
 @customElement("hui-energy-solar-consumed-gauge-card")
-class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
+class HuiEnergySolarGaugeCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EnergySolarGaugeCardConfig;
 
   @state() private _data?: EnergyData;
 
-  private _fetching = false;
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass!).subscribe((data) => {
+        this._data = data;
+      }),
+    ];
+  }
 
   public getCardSize(): number {
     return 4;
@@ -37,19 +41,6 @@ class HuiEnergySolarGaugeCard extends LitElement implements LovelaceCard {
 
   public setConfig(config: EnergySolarGaugeCardConfig): void {
     this._config = config;
-  }
-
-  public willUpdate(changedProps: PropertyValues) {
-    super.willUpdate(changedProps);
-
-    if (!this._fetching && this._config && this.hass) {
-      this._fetching = true;
-      (this._config.energyDataPromise || getEnergyData(this.hass!)).then(
-        (data) => {
-          this._data = data;
-        }
-      );
-    }
   }
 
   protected render(): TemplateResult {

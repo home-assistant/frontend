@@ -1,12 +1,7 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import memoizeOne from "memoize-one";
 import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
@@ -22,7 +17,7 @@ import {
 import { labDarken } from "../../../../common/color/lab";
 import {
   EnergyData,
-  getEnergyData,
+  getEnergyDataCollection,
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
@@ -38,17 +33,17 @@ import {
   formatNumber,
   numberFormatToLocale,
 } from "../../../../common/string/format_number";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
+import { FrontendLocaleData } from "../../../../data/translation";
 
 @customElement("hui-energy-solar-graph-card")
 export class HuiEnergySolarGraphCard
-  extends LitElement
+  extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergySolarGraphCardConfig;
-
-  @state() private _data?: EnergyData;
 
   @state() private _chartData: ChartData = {
     datasets: [],
@@ -56,34 +51,14 @@ export class HuiEnergySolarGraphCard
 
   @state() private _forecasts?: Record<string, ForecastSolarForecast>;
 
-  @state() private _chartOptions?: ChartOptions;
-
   @state() private _showAllForecastData = false;
 
-  private _fetching = false;
-
-  private _interval?: number;
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._interval) {
-      clearInterval(this._interval);
-      this._interval = undefined;
-    }
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    if (!this.hasUpdated) {
-      return;
-    }
-    this._getStatistics();
-    // statistics are created every hour
-    clearInterval(this._interval);
-    this._interval = window.setInterval(
-      () => this._getStatistics(),
-      1000 * 60 * 60
-    );
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass).subscribe((data) =>
+        this._getStatistics(data)
+      ),
+    ];
   }
 
   public getCardSize(): Promise<number> | number {
@@ -92,30 +67,6 @@ export class HuiEnergySolarGraphCard
 
   public setConfig(config: EnergySolarGraphCardConfig): void {
     this._config = config;
-  }
-
-  public willUpdate(changedProps: PropertyValues) {
-    super.willUpdate(changedProps);
-    if (!this.hasUpdated) {
-      this._createOptions();
-    }
-    if (!this._config || !changedProps.has("_config")) {
-      return;
-    }
-
-    const oldConfig = changedProps.get("_config") as
-      | EnergySolarGraphCardConfig
-      | undefined;
-
-    if (oldConfig !== this._config) {
-      this._getStatistics();
-      // statistics are created every hour
-      clearInterval(this._interval);
-      this._interval = window.setInterval(
-        () => this._getStatistics(),
-        1000 * 60 * 60
-      );
-    }
   }
 
   protected render(): TemplateResult {
@@ -135,7 +86,10 @@ export class HuiEnergySolarGraphCard
         >
           <ha-chart-base
             .data=${this._chartData}
-            .options=${this._chartOptions}
+            .options=${this._createOptions(
+              getEnergyDataCollection(this.hass).state,
+              this.hass.locale
+            )}
             chart-type="bar"
           ></ha-chart-base>
         </div>
@@ -143,110 +97,101 @@ export class HuiEnergySolarGraphCard
     `;
   }
 
-  private _createOptions() {
-    const startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    const startTime = startDate.getTime();
+  private _createOptions = memoizeOne(
+    (
+      energyData: EnergyData | undefined,
+      locale: FrontendLocaleData
+    ): ChartOptions | undefined => {
+      if (!energyData) {
+        return undefined;
+      }
 
-    this._chartOptions = {
-      parsing: false,
-      animation: false,
-      scales: {
-        x: {
-          type: "time",
-          suggestedMin: startTime,
-          suggestedMax: startTime + 24 * 60 * 60 * 1000,
-          adapters: {
-            date: {
-              locale: this.hass.locale,
+      const startTime = energyData.start.getTime();
+
+      return {
+        parsing: false,
+        animation: false,
+        scales: {
+          x: {
+            type: "time",
+            suggestedMin: startTime,
+            suggestedMax: startTime + 24 * 60 * 60 * 1000,
+            adapters: {
+              date: {
+                locale: locale,
+              },
+            },
+            ticks: {
+              maxRotation: 0,
+              sampleSize: 5,
+              autoSkipPadding: 20,
+              major: {
+                enabled: true,
+              },
+              font: (context) =>
+                context.tick && context.tick.major
+                  ? ({ weight: "bold" } as any)
+                  : {},
+            },
+            time: {
+              tooltipFormat: "datetime",
+            },
+            offset: true,
+          },
+          y: {
+            type: "linear",
+            title: {
+              display: true,
+              text: "kWh",
+            },
+            ticks: {
+              beginAtZero: true,
             },
           },
-          ticks: {
-            maxRotation: 0,
-            sampleSize: 5,
-            autoSkipPadding: 20,
-            major: {
-              enabled: true,
+        },
+        plugins: {
+          tooltip: {
+            mode: "nearest",
+            callbacks: {
+              label: (context) =>
+                `${context.dataset.label}: ${formatNumber(
+                  context.parsed.y,
+                  locale
+                )} kWh`,
             },
-            font: (context) =>
-              context.tick && context.tick.major
-                ? ({ weight: "bold" } as any)
-                : {},
           },
-          time: {
-            tooltipFormat: "datetime",
+          filler: {
+            propagate: false,
           },
-          offset: true,
-        },
-        y: {
-          type: "linear",
-          title: {
-            display: true,
-            text: "kWh",
-          },
-          ticks: {
-            beginAtZero: true,
+          legend: {
+            display: false,
+            labels: {
+              usePointStyle: true,
+            },
           },
         },
-      },
-      plugins: {
-        tooltip: {
+        hover: {
           mode: "nearest",
-          callbacks: {
-            label: (context) =>
-              `${context.dataset.label}: ${formatNumber(
-                context.parsed.y,
-                this.hass.locale
-              )} kWh`,
+        },
+        elements: {
+          line: {
+            tension: 0.3,
+            borderWidth: 1.5,
+          },
+          bar: { borderWidth: 1.5, borderRadius: 4 },
+          point: {
+            hitRadius: 5,
           },
         },
-        filler: {
-          propagate: false,
-        },
-        legend: {
-          display: false,
-          labels: {
-            usePointStyle: true,
-          },
-        },
-      },
-      hover: {
-        mode: "nearest",
-      },
-      elements: {
-        line: {
-          tension: 0.3,
-          borderWidth: 1.5,
-        },
-        bar: { borderWidth: 1.5, borderRadius: 4 },
-        point: {
-          hitRadius: 5,
-        },
-      },
-      // @ts-expect-error
-      locale: numberFormatToLocale(this.hass.locale),
-    };
-  }
-
-  private async _getStatistics(): Promise<void> {
-    if (this._fetching) {
-      return;
+        // @ts-expect-error
+        locale: numberFormatToLocale(locale),
+      };
     }
+  );
 
-    this._fetching = true;
-
-    try {
-      this._data = await (this._config!.energyDataPromise ||
-        getEnergyData(this.hass!));
-    } finally {
-      this._fetching = false;
-    }
-
-    // Remove the data promise so we don't use it again
-    delete this._config!.energyDataPromise;
-
+  private async _getStatistics(energyData: EnergyData): Promise<void> {
     const solarSources: SolarSourceTypeEnergyPreference[] =
-      this._data.prefs.energy_sources.filter(
+      energyData.prefs.energy_sources.filter(
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
 
@@ -257,16 +202,7 @@ export class HuiEnergySolarGraphCard
       this._forecasts = await getForecastSolarForecasts(this.hass);
     }
 
-    this._renderChart();
-  }
-
-  private _renderChart() {
-    const solarSources: SolarSourceTypeEnergyPreference[] =
-      this._data!.prefs.energy_sources.filter(
-        (source) => source.type === "solar"
-      ) as SolarSourceTypeEnergyPreference[];
-
-    const statisticsData = Object.values(this._data!.stats);
+    const statisticsData = Object.values(energyData.stats);
     const datasets: ChartDataset<"bar">[] = [];
     let endTime: Date;
 
@@ -309,8 +245,8 @@ export class HuiEnergySolarGraphCard
       let prevStart: string | null = null;
 
       // Process solar production data.
-      if (this._data!.stats[source.stat_energy_from]) {
-        for (const point of this._data!.stats[source.stat_energy_from]) {
+      if (energyData.stats[source.stat_energy_from]) {
+        for (const point of energyData.stats[source.stat_energy_from]) {
           if (!point.sum) {
             continue;
           }

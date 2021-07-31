@@ -6,7 +6,8 @@ import {
   mdiSolarPower,
   mdiTransmissionTower,
 } from "@mdi/js";
-import { css, html, LitElement, PropertyValues, svg } from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, html, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -16,12 +17,13 @@ import "../../../../components/ha-svg-icon";
 import {
   EnergyData,
   energySourcesByType,
-  getEnergyData,
+  getEnergyDataCollection,
 } from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
   calculateStatisticsSumGrowthWithPercentage,
 } from "../../../../data/history";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyDistributionCardConfig } from "../types";
@@ -29,30 +31,26 @@ import { EnergyDistributionCardConfig } from "../types";
 const CIRCLE_CIRCUMFERENCE = 238.76104;
 
 @customElement("hui-energy-distribution-card")
-class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
+class HuiEnergyDistrubutionCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyDistributionCardConfig;
 
   @state() private _data?: EnergyData;
 
-  private _fetching = false;
-
   public setConfig(config: EnergyDistributionCardConfig): void {
     this._config = config;
   }
 
-  public willUpdate(changedProps: PropertyValues) {
-    super.willUpdate(changedProps);
-
-    if (!this._fetching && this._config && this.hass) {
-      this._fetching = true;
-      (this._config.energyDataPromise || getEnergyData(this.hass!)).then(
-        (data) => {
-          this._data = data;
-        }
-      );
-    }
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass).subscribe((data) => {
+        this._data = data;
+      }),
+    ];
   }
 
   public getCardSize(): Promise<number> | number {

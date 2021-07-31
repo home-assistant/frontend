@@ -1,11 +1,5 @@
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { round } from "../../../../common/number/round";
@@ -14,12 +8,13 @@ import "../../../../components/ha-gauge";
 import {
   EnergyData,
   energySourcesByType,
-  getEnergyData,
+  getEnergyDataCollection,
 } from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
   calculateStatisticsSumGrowthWithPercentage,
 } from "../../../../data/history";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import { createEntityNotFoundWarning } from "../../components/hui-warning";
 import type { LovelaceCard } from "../../types";
@@ -27,14 +22,15 @@ import { severityMap } from "../hui-gauge-card";
 import type { EnergyCarbonGaugeCardConfig } from "../types";
 
 @customElement("hui-energy-carbon-consumed-gauge-card")
-class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
+class HuiEnergyCarbonGaugeCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyCarbonGaugeCardConfig;
 
   @state() private _data?: EnergyData;
-
-  private _fetching = false;
 
   public getCardSize(): number {
     return 4;
@@ -44,17 +40,12 @@ class HuiEnergyCarbonGaugeCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  public willUpdate(changedProps: PropertyValues) {
-    super.willUpdate(changedProps);
-
-    if (!this._fetching && this._config && this.hass) {
-      this._fetching = true;
-      (this._config.energyDataPromise || getEnergyData(this.hass!)).then(
-        (data) => {
-          this._data = data;
-        }
-      );
-    }
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass).subscribe((data) => {
+        this._data = data;
+      }),
+    ];
   }
 
   protected render(): TemplateResult {

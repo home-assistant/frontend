@@ -1,6 +1,6 @@
 import {
   EnergyPreferences,
-  getEnergyData,
+  getEnergyDataCollection,
   getEnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
@@ -52,14 +52,14 @@ export class EnergyStrategy {
       (source) => source.type === "solar"
     );
 
-    const energyDataPromise = getEnergyData(hass, { prefs });
+    const energyCollection = getEnergyDataCollection(hass, prefs);
 
     // Only include if we have a grid source.
     if (hasGrid) {
       view.cards!.push({
         title: "Energy usage",
         type: "energy-usage-graph",
-        energyDataPromise,
+        energyCollection,
       });
     }
 
@@ -68,7 +68,7 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Solar production",
         type: "energy-solar-graph",
-        energyDataPromise,
+        energyCollection,
       });
     }
 
@@ -77,7 +77,7 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Energy distribution",
         type: "energy-distribution",
-        energyDataPromise,
+        energyCollection,
         view_layout: { position: "sidebar" },
       });
     }
@@ -86,7 +86,7 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Sources",
         type: "energy-sources-table",
-        energyDataPromise,
+        energyCollection,
       });
     }
 
@@ -94,7 +94,7 @@ export class EnergyStrategy {
     if (hasSolar) {
       view.cards!.push({
         type: "energy-solar-consumed-gauge",
-        energyDataPromise,
+        energyCollection,
         view_layout: { position: "sidebar" },
       });
     }
@@ -103,7 +103,7 @@ export class EnergyStrategy {
     if (hasReturn) {
       view.cards!.push({
         type: "energy-grid-neutrality-gauge",
-        energyDataPromise,
+        energyCollection,
         view_layout: { position: "sidebar" },
       });
     }
@@ -112,7 +112,7 @@ export class EnergyStrategy {
     if (hasGrid) {
       view.cards!.push({
         type: "energy-carbon-consumed-gauge",
-        energyDataPromise,
+        energyCollection,
         view_layout: { position: "sidebar" },
       });
     }
@@ -122,7 +122,7 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Monitor individual devices",
         type: "energy-devices-graph",
-        energyDataPromise,
+        energyCollection,
       });
     }
 

@@ -1,11 +1,11 @@
 // @ts-ignore
 import dataTableStyles from "@material/data-table/dist/mdc.data-table.min.css";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
   html,
   LitElement,
-  PropertyValues,
   TemplateResult,
   unsafeCSS,
 } from "lit";
@@ -25,16 +25,17 @@ import "../../../../components/ha-card";
 import {
   EnergyData,
   energySourcesByType,
-  getEnergyData,
+  getEnergyDataCollection,
 } from "../../../../data/energy";
 import { calculateStatisticSumGrowth } from "../../../../data/history";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergySourcesTableCardConfig } from "../types";
 
 @customElement("hui-energy-sources-table-card")
 export class HuiEnergySourcesTableCard
-  extends LitElement
+  extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -43,7 +44,13 @@ export class HuiEnergySourcesTableCard
 
   @state() private _data?: EnergyData;
 
-  private _fetching = false;
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass).subscribe((data) => {
+        this._data = data;
+      }),
+    ];
+  }
 
   public getCardSize(): Promise<number> | number {
     return 3;
@@ -51,19 +58,6 @@ export class HuiEnergySourcesTableCard
 
   public setConfig(config: EnergySourcesTableCardConfig): void {
     this._config = config;
-  }
-
-  public willUpdate(changedProps: PropertyValues) {
-    super.willUpdate(changedProps);
-
-    if (!this._fetching && this._config && this.hass) {
-      this._fetching = true;
-      (this._config.energyDataPromise || getEnergyData(this.hass!)).then(
-        (data) => {
-          this._data = data;
-        }
-      );
-    }
   }
 
   protected render(): TemplateResult {

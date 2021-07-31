@@ -4,16 +4,11 @@ import {
   ChartOptions,
   ParsedDataType,
 } from "chart.js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../../common/color/colors";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
@@ -22,19 +17,20 @@ import {
 } from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import { getEnergyData } from "../../../../data/energy";
+import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
-  fetchStatistics,
   Statistics,
 } from "../../../../data/history";
+import { FrontendLocaleData } from "../../../../data/translation";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyDevicesGraphCardConfig } from "../types";
 
 @customElement("hui-energy-devices-graph-card")
 export class HuiEnergyDevicesGraphCard
-  extends LitElement
+  extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -45,32 +41,12 @@ export class HuiEnergyDevicesGraphCard
 
   @state() private _chartData?: ChartData;
 
-  @state() private _chartOptions?: ChartOptions;
-
-  private _fetching = false;
-
-  private _interval?: number;
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._interval) {
-      clearInterval(this._interval);
-      this._interval = undefined;
-    }
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    if (!this.hasUpdated) {
-      return;
-    }
-    this._getStatistics();
-    // statistics are created every hour
-    clearInterval(this._interval);
-    this._interval = window.setInterval(
-      () => this._getStatistics(),
-      1000 * 60 * 60
-    );
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass).subscribe((data) =>
+        this._getStatistics(data)
+      ),
+    ];
   }
 
   public getCardSize(): Promise<number> | number {
@@ -79,30 +55,6 @@ export class HuiEnergyDevicesGraphCard
 
   public setConfig(config: EnergyDevicesGraphCardConfig): void {
     this._config = config;
-  }
-
-  public willUpdate(changedProps: PropertyValues) {
-    super.willUpdate(changedProps);
-    if (!this.hasUpdated) {
-      this._createOptions();
-    }
-    if (!this._config || !changedProps.has("_config")) {
-      return;
-    }
-
-    const oldConfig = changedProps.get("_config") as
-      | EnergyDevicesGraphCardConfig
-      | undefined;
-
-    if (oldConfig !== this._config) {
-      this._getStatistics();
-      // statistics are created every hour
-      clearInterval(this._interval);
-      this._interval = window.setInterval(
-        () => this._getStatistics(),
-        1000 * 60 * 60
-      );
-    }
   }
 
   protected render(): TemplateResult {
@@ -123,7 +75,10 @@ export class HuiEnergyDevicesGraphCard
           ${this._chartData
             ? html`<ha-chart-base
                 .data=${this._chartData}
-                .options=${this._chartOptions}
+                .options=${this._createOptions(
+                  getEnergyDataCollection(this.hass).state,
+                  this.hass.locale
+                )}
                 chart-type="bar"
               ></ha-chart-base>`
             : ""}
@@ -132,59 +87,48 @@ export class HuiEnergyDevicesGraphCard
     `;
   }
 
-  private _createOptions() {
-    this._chartOptions = {
-      parsing: false,
-      animation: false,
-      responsive: true,
-      indexAxis: "y",
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: "kWh",
+  private _createOptions = memoizeOne(
+    (
+      energyData: EnergyData | undefined,
+      locale: FrontendLocaleData
+    ): ChartOptions | undefined => {
+      if (!energyData) {
+        return undefined;
+      }
+      return {
+        parsing: false,
+        animation: false,
+        responsive: true,
+        indexAxis: "y",
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: "kWh",
+            },
           },
         },
-      },
-      elements: { bar: { borderWidth: 1.5, borderRadius: 4 } },
-      plugins: {
-        tooltip: {
-          mode: "nearest",
-          callbacks: {
-            label: (context) =>
-              `${context.dataset.label}: ${formatNumber(
-                context.parsed.x,
-                this.hass.locale
-              )} kWh`,
+        elements: { bar: { borderWidth: 1.5, borderRadius: 4 } },
+        plugins: {
+          tooltip: {
+            mode: "nearest",
+            callbacks: {
+              label: (context) =>
+                `${context.dataset.label}: ${formatNumber(
+                  context.parsed.x,
+                  locale
+                )} kWh`,
+            },
           },
         },
-      },
-      // @ts-expect-error
-      locale: numberFormatToLocale(this.hass.locale),
-    };
-  }
-
-  private async _getStatistics(): Promise<void> {
-    if (this._fetching) {
-      return;
+        // @ts-expect-error
+        locale: numberFormatToLocale(this.hass.locale),
+      };
     }
-    const energyData = await (this._config!.energyDataPromise ||
-      getEnergyData(this.hass));
+  );
 
-    this._fetching = true;
-
-    try {
-      this._data = await fetchStatistics(
-        this.hass!,
-        energyData.startDate,
-        undefined,
-        energyData.prefs.device_consumption.map(
-          (device) => device.stat_consumption
-        )
-      );
-    } finally {
-      this._fetching = false;
-    }
+  private async _getStatistics(energyData: EnergyData): Promise<void> {
+    this._data = await getEnergyDataCollection(this.hass).getDeviceStats();
 
     const statisticsData = Object.values(this._data!);
     let endTime: Date;

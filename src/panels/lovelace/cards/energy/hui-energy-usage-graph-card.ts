@@ -1,14 +1,9 @@
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import {
   hex2rgb,
   lab2rgb,
@@ -24,14 +19,16 @@ import {
 } from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import { EnergyData, getEnergyData } from "../../../../data/energy";
+import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
+import { FrontendLocaleData } from "../../../../data/translation";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyUsageGraphCardConfig } from "../types";
 
 @customElement("hui-energy-usage-graph-card")
 export class HuiEnergyUsageGraphCard
-  extends LitElement
+  extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -42,31 +39,12 @@ export class HuiEnergyUsageGraphCard
     datasets: [],
   };
 
-  @state() private _chartOptions?: ChartOptions;
-
-  private _fetching = false;
-
-  private _interval?: number;
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._interval) {
-      clearInterval(this._interval);
-      this._interval = undefined;
-    }
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    if (!this.hasUpdated) {
-      return;
-    }
-    this._getStatistics();
-    // statistics are created every hour
-    clearInterval(this._interval);
-    this._interval = window.setInterval(() => {
-      this._getStatistics();
-    }, 1000 * 60 * 60);
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass).subscribe((data) =>
+        this._getStatistics(data)
+      ),
+    ];
   }
 
   public getCardSize(): Promise<number> | number {
@@ -75,30 +53,6 @@ export class HuiEnergyUsageGraphCard
 
   public setConfig(config: EnergyUsageGraphCardConfig): void {
     this._config = config;
-  }
-
-  public willUpdate(changedProps: PropertyValues) {
-    super.willUpdate(changedProps);
-    if (!this.hasUpdated) {
-      this._createOptions();
-    }
-    if (!this._config || !changedProps.has("_config")) {
-      return;
-    }
-
-    const oldConfig = changedProps.get("_config") as
-      | EnergyUsageGraphCardConfig
-      | undefined;
-
-    if (oldConfig !== this._config) {
-      this._getStatistics();
-      // statistics are created every hour
-      clearInterval(this._interval);
-      this._interval = window.setInterval(
-        () => this._getStatistics(),
-        1000 * 60 * 60
-      );
-    }
   }
 
   protected render(): TemplateResult {
@@ -118,7 +72,10 @@ export class HuiEnergyUsageGraphCard
         >
           <ha-chart-base
             .data=${this._chartData}
-            .options=${this._chartOptions}
+            .options=${this._createOptions(
+              getEnergyDataCollection(this.hass).state,
+              this.hass.locale
+            )}
             chart-type="bar"
           ></ha-chart-base>
         </div>
@@ -126,139 +83,127 @@ export class HuiEnergyUsageGraphCard
     `;
   }
 
-  private _createOptions() {
-    const startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    const startTime = startDate.getTime();
+  private _createOptions = memoizeOne(
+    (
+      energyData: EnergyData | undefined,
+      locale: FrontendLocaleData
+    ): ChartOptions | undefined => {
+      if (!energyData) {
+        return undefined;
+      }
 
-    this._chartOptions = {
-      parsing: false,
-      animation: false,
-      scales: {
-        x: {
-          type: "time",
-          suggestedMin: startTime,
-          suggestedMax: startTime + 24 * 60 * 60 * 1000,
-          adapters: {
-            date: {
-              locale: this.hass.locale,
+      const startTime = energyData.start.getTime();
+
+      return {
+        parsing: false,
+        animation: false,
+        scales: {
+          x: {
+            type: "time",
+            suggestedMin: startTime,
+            suggestedMax: startTime + 24 * 60 * 60 * 1000,
+            adapters: {
+              date: {
+                locale: locale,
+              },
+            },
+            ticks: {
+              maxRotation: 0,
+              sampleSize: 5,
+              autoSkipPadding: 20,
+              major: {
+                enabled: true,
+              },
+              font: (context) =>
+                context.tick && context.tick.major
+                  ? ({ weight: "bold" } as any)
+                  : {},
+            },
+            time: {
+              tooltipFormat: "datetime",
+            },
+            offset: true,
+          },
+          y: {
+            stacked: true,
+            type: "linear",
+            title: {
+              display: true,
+              text: "kWh",
+            },
+            ticks: {
+              beginAtZero: true,
+              callback: (value) => formatNumber(Math.abs(value), locale),
             },
           },
-          ticks: {
-            maxRotation: 0,
-            sampleSize: 5,
-            autoSkipPadding: 20,
-            major: {
-              enabled: true,
-            },
-            font: (context) =>
-              context.tick && context.tick.major
-                ? ({ weight: "bold" } as any)
-                : {},
-          },
-          time: {
-            tooltipFormat: "datetime",
-          },
-          offset: true,
         },
-        y: {
-          stacked: true,
-          type: "linear",
-          title: {
-            display: true,
-            text: "kWh",
-          },
-          ticks: {
-            beginAtZero: true,
-            callback: (value) =>
-              formatNumber(Math.abs(value), this.hass.locale),
-          },
-        },
-      },
-      plugins: {
-        tooltip: {
-          mode: "x",
-          intersect: true,
-          position: "nearest",
-          filter: (val) => val.formattedValue !== "0",
-          callbacks: {
-            label: (context) =>
-              `${context.dataset.label}: ${formatNumber(
-                Math.abs(context.parsed.y),
-                this.hass.locale
-              )} kWh`,
-            footer: (contexts) => {
-              let totalConsumed = 0;
-              let totalReturned = 0;
-              for (const context of contexts) {
-                const value = (context.dataset.data[context.dataIndex] as any)
-                  .y;
-                if (value > 0) {
-                  totalConsumed += value;
-                } else {
-                  totalReturned += Math.abs(value);
+        plugins: {
+          tooltip: {
+            mode: "x",
+            intersect: true,
+            position: "nearest",
+            filter: (val) => val.formattedValue !== "0",
+            callbacks: {
+              label: (context) =>
+                `${context.dataset.label}: ${formatNumber(
+                  Math.abs(context.parsed.y),
+                  locale
+                )} kWh`,
+              footer: (contexts) => {
+                let totalConsumed = 0;
+                let totalReturned = 0;
+                for (const context of contexts) {
+                  const value = (context.dataset.data[context.dataIndex] as any)
+                    .y;
+                  if (value > 0) {
+                    totalConsumed += value;
+                  } else {
+                    totalReturned += Math.abs(value);
+                  }
                 }
-              }
-              return [
-                totalConsumed
-                  ? `Total consumed: ${formatNumber(
-                      totalConsumed,
-                      this.hass.locale
-                    )} kWh`
-                  : "",
-                totalReturned
-                  ? `Total returned: ${formatNumber(
-                      totalReturned,
-                      this.hass.locale
-                    )} kWh`
-                  : "",
-              ].filter(Boolean);
+                return [
+                  totalConsumed
+                    ? `Total consumed: ${formatNumber(
+                        totalConsumed,
+                        locale
+                      )} kWh`
+                    : "",
+                  totalReturned
+                    ? `Total returned: ${formatNumber(
+                        totalReturned,
+                        locale
+                      )} kWh`
+                    : "",
+                ].filter(Boolean);
+              },
+            },
+          },
+          filler: {
+            propagate: false,
+          },
+          legend: {
+            display: false,
+            labels: {
+              usePointStyle: true,
             },
           },
         },
-        filler: {
-          propagate: false,
+        hover: {
+          mode: "nearest",
         },
-        legend: {
-          display: false,
-          labels: {
-            usePointStyle: true,
+        elements: {
+          bar: { borderWidth: 1.5, borderRadius: 4 },
+          point: {
+            hitRadius: 5,
           },
         },
-      },
-      hover: {
-        mode: "nearest",
-      },
-      elements: {
-        bar: { borderWidth: 1.5, borderRadius: 4 },
-        point: {
-          hitRadius: 5,
-        },
-      },
-      // @ts-expect-error
-      locale: numberFormatToLocale(this.hass.locale),
-    };
-  }
-
-  private async _getStatistics(): Promise<void> {
-    if (this._fetching) {
-      return;
+        // @ts-expect-error
+        locale: numberFormatToLocale(locale),
+      };
     }
+  );
 
-    this._fetching = true;
-
-    let energyData: EnergyData;
-
-    try {
-      energyData = await (this._config!.energyDataPromise ||
-        getEnergyData(this.hass!));
-    } finally {
-      this._fetching = false;
-    }
-
-    // Remove the data promise so we don't use it again
-    delete this._config!.energyDataPromise;
-
+  private async _getStatistics(energyData: EnergyData): Promise<void> {
     const statistics: {
       to_grid?: string[];
       from_grid?: string[];
