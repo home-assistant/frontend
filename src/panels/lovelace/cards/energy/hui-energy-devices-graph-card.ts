@@ -123,12 +123,10 @@ export class HuiEnergyDevicesGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
-    const energyCollection = getEnergyDataCollection(this.hass);
-
     this._data = await fetchStatistics(
       this.hass,
-      energyCollection.start,
-      energyCollection.end,
+      energyData.start,
+      energyData.end,
       energyData.prefs.device_consumption.map(
         (device) => device.stat_consumption
       )
