@@ -16,6 +16,7 @@ import {
 } from "../../../../common/color/convert-color";
 import { labDarken } from "../../../../common/color/lab";
 import {
+  EnergyCollection,
   EnergyData,
   getEnergyDataCollection,
   SolarSourceTypeEnergyPreference,
@@ -87,7 +88,7 @@ export class HuiEnergySolarGraphCard
           <ha-chart-base
             .data=${this._chartData}
             .options=${this._createOptions(
-              getEnergyDataCollection(this.hass).state,
+              getEnergyDataCollection(this.hass),
               this.hass.locale
             )}
             chart-type="bar"
@@ -99,14 +100,10 @@ export class HuiEnergySolarGraphCard
 
   private _createOptions = memoizeOne(
     (
-      energyData: EnergyData | undefined,
+      energyCollection: EnergyCollection,
       locale: FrontendLocaleData
-    ): ChartOptions | undefined => {
-      if (!energyData) {
-        return undefined;
-      }
-
-      const startTime = energyData.start.getTime();
+    ): ChartOptions => {
+      const startTime = energyCollection.start.getTime();
 
       return {
         parsing: false,

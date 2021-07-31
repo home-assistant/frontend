@@ -19,7 +19,11 @@ import {
 } from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
+import {
+  EnergyCollection,
+  EnergyData,
+  getEnergyDataCollection,
+} from "../../../../data/energy";
 import { FrontendLocaleData } from "../../../../data/translation";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -73,7 +77,7 @@ export class HuiEnergyUsageGraphCard
           <ha-chart-base
             .data=${this._chartData}
             .options=${this._createOptions(
-              getEnergyDataCollection(this.hass).state,
+              getEnergyDataCollection(this.hass),
               this.hass.locale
             )}
             chart-type="bar"
@@ -85,14 +89,10 @@ export class HuiEnergyUsageGraphCard
 
   private _createOptions = memoizeOne(
     (
-      energyData: EnergyData | undefined,
+      energyCollection: EnergyCollection,
       locale: FrontendLocaleData
-    ): ChartOptions | undefined => {
-      if (!energyData) {
-        return undefined;
-      }
-
-      const startTime = energyData.start.getTime();
+    ): ChartOptions => {
+      const startTime = energyCollection.start.getTime();
 
       return {
         parsing: false,

@@ -214,6 +214,8 @@ export const getEnergyData = async (
 };
 
 export interface EnergyCollection extends Collection<EnergyData> {
+  start: Date;
+  end?: Date;
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
@@ -228,12 +230,6 @@ export const getEnergyDataCollection = (
     return (hass.connection as any)._energy;
   }
 
-  let start = new Date();
-  start.setHours(0, 0, 0, 0);
-  start.setTime(start.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
-
-  let end: Date | undefined;
-
   const collection = getCollection<EnergyData>(
     hass.connection,
     "_energy",
@@ -244,23 +240,32 @@ export const getEnergyDataCollection = (
         collection.prefs = await getEnergyPreferences(hass);
       }
 
-      return getEnergyData(hass, collection.prefs, start, end);
+      return getEnergyData(
+        hass,
+        collection.prefs,
+        collection.start,
+        collection.end
+      );
     }
   ) as EnergyCollection;
 
   collection.prefs = prefs;
+  collection.start = new Date();
+  collection.start.setHours(0, 0, 0, 0);
+  collection.start.setTime(collection.start.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
+
   collection.clearPrefs = () => {
     collection.prefs = undefined;
   };
   collection.setPeriod = (newStart: Date, newEnd?: Date) => {
-    start = newStart;
-    end = newEnd;
+    collection.start = newStart;
+    collection.end = newEnd;
   };
   collection.getDeviceStats = async () =>
     fetchStatistics(
       hass,
-      start,
-      end,
+      collection.start,
+      collection.end,
       collection.state.prefs.device_consumption.map(
         (device) => device.stat_consumption
       )

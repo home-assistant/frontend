@@ -17,7 +17,10 @@ import {
 } from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
+import {
+  EnergyData,
+  getEnergyDataCollection,
+} from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   Statistics,
@@ -75,10 +78,7 @@ export class HuiEnergyDevicesGraphCard
           ${this._chartData
             ? html`<ha-chart-base
                 .data=${this._chartData}
-                .options=${this._createOptions(
-                  getEnergyDataCollection(this.hass).state,
-                  this.hass.locale
-                )}
+                .options=${this._createOptions(this.hass.locale)}
                 chart-type="bar"
               ></ha-chart-base>`
             : ""}
@@ -88,43 +88,35 @@ export class HuiEnergyDevicesGraphCard
   }
 
   private _createOptions = memoizeOne(
-    (
-      energyData: EnergyData | undefined,
-      locale: FrontendLocaleData
-    ): ChartOptions | undefined => {
-      if (!energyData) {
-        return undefined;
-      }
-      return {
-        parsing: false,
-        animation: false,
-        responsive: true,
-        indexAxis: "y",
-        scales: {
-          x: {
-            title: {
-              display: true,
-              text: "kWh",
-            },
+    (locale: FrontendLocaleData): ChartOptions => ({
+      parsing: false,
+      animation: false,
+      responsive: true,
+      indexAxis: "y",
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "kWh",
           },
         },
-        elements: { bar: { borderWidth: 1.5, borderRadius: 4 } },
-        plugins: {
-          tooltip: {
-            mode: "nearest",
-            callbacks: {
-              label: (context) =>
-                `${context.dataset.label}: ${formatNumber(
-                  context.parsed.x,
-                  locale
-                )} kWh`,
-            },
+      },
+      elements: { bar: { borderWidth: 1.5, borderRadius: 4 } },
+      plugins: {
+        tooltip: {
+          mode: "nearest",
+          callbacks: {
+            label: (context) =>
+              `${context.dataset.label}: ${formatNumber(
+                context.parsed.x,
+                locale
+              )} kWh`,
           },
         },
-        // @ts-expect-error
-        locale: numberFormatToLocale(this.hass.locale),
-      };
-    }
+      },
+      // @ts-expect-error
+      locale: numberFormatToLocale(this.hass.locale),
+    })
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
