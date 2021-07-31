@@ -132,7 +132,7 @@ class HuiEnergyDistrubutionCard extends LitElement implements LovelaceCard {
         this._data.stats[this._data.co2SignalEntity],
         types
           .grid![0].flow_from.map(
-            (flow) => this._data.stats[flow.stat_energy_from]
+            (flow) => this._data!.stats[flow.stat_energy_from]
           )
           .filter(Boolean)
       );
