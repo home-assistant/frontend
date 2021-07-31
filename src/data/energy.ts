@@ -243,18 +243,22 @@ export const getEnergyDataCollection = (
       if (collection._refreshTimeout) {
         clearTimeout(collection._refreshTimeout);
       }
-      // The stats are created every hour
-      // Schedule a refresh for 20 minutes past the hour
-      const nextFetch = new Date();
-      if (nextFetch.getMinutes() > 20) {
-        nextFetch.setHours(nextFetch.getHours() + 1);
-      }
-      nextFetch.setMinutes(20);
 
-      collection._refreshTimeout = window.setTimeout(
-        () => collection.refresh(),
-        nextFetch.getTime() - Date.now()
-      );
+      if (!collection.end || collection.end > new Date()) {
+        // The stats are created every hour
+        // Schedule a refresh for 20 minutes past the hour
+        // If the end is larger than the current time.
+        const nextFetch = new Date();
+        if (nextFetch.getMinutes() > 20) {
+          nextFetch.setHours(nextFetch.getHours() + 1);
+        }
+        nextFetch.setMinutes(20);
+
+        collection._refreshTimeout = window.setTimeout(
+          () => collection.refresh(),
+          nextFetch.getTime() - Date.now()
+        );
+      }
 
       return getEnergyData(
         hass,
