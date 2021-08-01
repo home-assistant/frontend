@@ -1,3 +1,4 @@
+import { endOfToday } from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
@@ -220,6 +221,8 @@ export interface EnergyCollection extends Collection<EnergyData> {
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
   _refreshTimeout?: number;
+  _updatePeriodTimeout?: number;
+  _active: number;
 }
 
 export const getEnergyDataCollection = (
@@ -244,7 +247,10 @@ export const getEnergyDataCollection = (
         clearTimeout(collection._refreshTimeout);
       }
 
-      if (!collection.end || collection.end > new Date()) {
+      if (
+        collection._active &&
+        (!collection.end || collection.end > new Date())
+      ) {
         // The stats are created every hour
         // Schedule a refresh for 20 minutes past the hour
         // If the end is larger than the current time.
@@ -269,10 +275,36 @@ export const getEnergyDataCollection = (
     }
   ) as EnergyCollection;
 
+  const origSubscribe = collection.subscribe;
+
+  collection.subscribe = (subscriber: (data: EnergyData) => void) => {
+    const unsub = origSubscribe(subscriber);
+    collection._active++;
+    return () => {
+      collection._active--;
+      if (collection._active < 1) {
+        clearTimeout(collection._refreshTimeout);
+        collection._refreshTimeout = undefined;
+      }
+      unsub();
+    };
+  };
+
+  collection._active = 0;
   collection.prefs = prefs;
   collection.start = new Date();
   collection.start.setHours(0, 0, 0, 0);
   collection.start.setTime(collection.start.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
+
+  collection._updatePeriodTimeout = window.setTimeout(
+    () => {
+      collection.start = new Date();
+      collection.start.setHours(0, 0, 0, 0);
+      collection.start.setTime(collection.start.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
+      collection.refresh();
+    },
+    endOfToday().getTime() + 1 + 1000 * 60 * 60 - Date.now() // Switch to next day an hour after the day changed
+  );
 
   collection.clearPrefs = () => {
     collection.prefs = undefined;
@@ -280,6 +312,10 @@ export const getEnergyDataCollection = (
   collection.setPeriod = (newStart: Date, newEnd?: Date) => {
     collection.start = newStart;
     collection.end = newEnd;
+    if (collection._updatePeriodTimeout) {
+      clearTimeout(collection._updatePeriodTimeout);
+    }
+    collection._updatePeriodTimeout = undefined;
   };
   return collection;
 };
