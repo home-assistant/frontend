@@ -133,6 +133,7 @@ class StatisticsChart extends LitElement {
           },
         },
         y: {
+          beginAtZero: false,
           ticks: {
             maxTicksLimit: 7,
           },
@@ -328,6 +329,8 @@ class StatisticsChart extends LitElement {
 
       let prevDate: Date | null = null;
       // Process chart data.
+      let initVal: number | null = null;
+      let prevSum: number | null = null;
       stats.forEach((stat) => {
         const date = new Date(stat.start);
         if (prevDate === date) {
@@ -338,7 +341,12 @@ class StatisticsChart extends LitElement {
         statTypes.forEach((type) => {
           let val: number | null;
           if (type === "sum") {
-            val = stat.state;
+            if (!initVal) {
+              initVal = val = stat.state;
+              prevSum = stat.sum;
+            } else {
+              val = initVal + ((stat.sum || 0) - prevSum!);
+            }
           } else {
             val = stat[type];
           }
