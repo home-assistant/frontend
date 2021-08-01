@@ -5,6 +5,7 @@ import memoizeOne from "memoize-one";
 import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
+import { endOfToday, startOfToday } from "date-fns";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergySolarGraphCardConfig } from "../types";
@@ -16,7 +17,6 @@ import {
 } from "../../../../common/color/convert-color";
 import { labDarken } from "../../../../common/color/lab";
 import {
-  EnergyCollection,
   EnergyData,
   getEnergyDataCollection,
   SolarSourceTypeEnergyPreference,
@@ -54,6 +54,10 @@ export class HuiEnergySolarGraphCard
 
   @state() private _showAllForecastData = false;
 
+  @state() private _start = startOfToday();
+
+  @state() private _end = endOfToday();
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       getEnergyDataCollection(this.hass).subscribe((data) =>
@@ -88,7 +92,8 @@ export class HuiEnergySolarGraphCard
           <ha-chart-base
             .data=${this._chartData}
             .options=${this._createOptions(
-              getEnergyDataCollection(this.hass),
+              this._start,
+              this._end,
               this.hass.locale
             )}
             chart-type="bar"
@@ -99,91 +104,84 @@ export class HuiEnergySolarGraphCard
   }
 
   private _createOptions = memoizeOne(
-    (
-      energyCollection: EnergyCollection,
-      locale: FrontendLocaleData
-    ): ChartOptions => {
-      const startTime = energyCollection.start.getTime();
-
-      return {
-        parsing: false,
-        animation: false,
-        scales: {
-          x: {
-            type: "time",
-            suggestedMin: startTime,
-            suggestedMax: startTime + 24 * 60 * 60 * 1000,
-            adapters: {
-              date: {
-                locale: locale,
-              },
+    (start: Date, end: Date, locale: FrontendLocaleData): ChartOptions => ({
+      parsing: false,
+      animation: false,
+      scales: {
+        x: {
+          type: "time",
+          suggestedMin: start.getTime(),
+          suggestedMax: end.getTime(),
+          adapters: {
+            date: {
+              locale: locale,
             },
-            ticks: {
-              maxRotation: 0,
-              sampleSize: 5,
-              autoSkipPadding: 20,
-              major: {
-                enabled: true,
-              },
-              font: (context) =>
-                context.tick && context.tick.major
-                  ? ({ weight: "bold" } as any)
-                  : {},
-            },
-            time: {
-              tooltipFormat: "datetime",
-            },
-            offset: true,
           },
-          y: {
-            type: "linear",
-            title: {
-              display: true,
-              text: "kWh",
+          ticks: {
+            maxRotation: 0,
+            sampleSize: 5,
+            autoSkipPadding: 20,
+            major: {
+              enabled: true,
             },
-            ticks: {
-              beginAtZero: true,
-            },
+            font: (context) =>
+              context.tick && context.tick.major
+                ? ({ weight: "bold" } as any)
+                : {},
+          },
+          time: {
+            tooltipFormat: "datetime",
+          },
+          offset: true,
+        },
+        y: {
+          type: "linear",
+          title: {
+            display: true,
+            text: "kWh",
+          },
+          ticks: {
+            beginAtZero: true,
           },
         },
-        plugins: {
-          tooltip: {
-            mode: "nearest",
-            callbacks: {
-              label: (context) =>
-                `${context.dataset.label}: ${formatNumber(
-                  context.parsed.y,
-                  locale
-                )} kWh`,
-            },
-          },
-          filler: {
-            propagate: false,
-          },
-          legend: {
-            display: false,
-            labels: {
-              usePointStyle: true,
-            },
-          },
-        },
-        hover: {
+      },
+      plugins: {
+        tooltip: {
           mode: "nearest",
-        },
-        elements: {
-          line: {
-            tension: 0.3,
-            borderWidth: 1.5,
-          },
-          bar: { borderWidth: 1.5, borderRadius: 4 },
-          point: {
-            hitRadius: 5,
+          callbacks: {
+            label: (context) =>
+              `${context.dataset.label}: ${formatNumber(
+                context.parsed.y,
+                locale
+              )} kWh`,
           },
         },
-        // @ts-expect-error
-        locale: numberFormatToLocale(locale),
-      };
-    }
+        filler: {
+          propagate: false,
+        },
+        legend: {
+          display: false,
+          labels: {
+            usePointStyle: true,
+          },
+        },
+      },
+      hover: {
+        mode: "nearest",
+      },
+      elements: {
+        line: {
+          tension: 0.3,
+          borderWidth: 1.5,
+        },
+        bar: { borderWidth: 1.5, borderRadius: 4 },
+        point: {
+          hitRadius: 5,
+        },
+      },
+      // @ts-expect-error
+      locale: numberFormatToLocale(locale),
+    })
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
@@ -324,6 +322,9 @@ export class HuiEnergySolarGraphCard
       // Concat two arrays
       Array.prototype.push.apply(datasets, data);
     });
+
+    this._start = energyData.start;
+    this._end = energyData.end || endOfToday();
 
     this._chartData = {
       datasets,

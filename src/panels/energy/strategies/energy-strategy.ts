@@ -54,6 +54,10 @@ export class EnergyStrategy {
 
     getEnergyDataCollection(hass, prefs);
 
+    view.cards!.push({
+      type: "energy-date-selection",
+    });
+
     // Only include if we have a grid source.
     if (hasGrid) {
       view.cards!.push({

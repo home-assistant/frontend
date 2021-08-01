@@ -425,7 +425,13 @@
       "date-range-picker": {
         "start_date": "Start date",
         "end_date": "End date",
-        "select": "Select"
+        "select": "Select",
+        "ranges": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "this_week": "This week",
+          "last_week": "Last week"
+        }
       },
       "relative_time": {
         "never": "Never",
@@ -2805,22 +2811,6 @@
             "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
             "log_level_changed": "Log Level changed to: {level}"
           }
-        }
-      },
-      "history": {
-        "ranges": {
-          "today": "Today",
-          "yesterday": "Yesterday",
-          "this_week": "This week",
-          "last_week": "Last week"
-        }
-      },
-      "logbook": {
-        "ranges": {
-          "today": "Today",
-          "yesterday": "Yesterday",
-          "this_week": "This week",
-          "last_week": "Last week"
         }
       },
       "lovelace": {

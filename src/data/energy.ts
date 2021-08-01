@@ -1,4 +1,10 @@
-import { addHours, endOfToday, startOfToday, startOfYesterday } from "date-fns";
+import {
+  addHours,
+  endOfToday,
+  endOfYesterday,
+  startOfToday,
+  startOfYesterday,
+} from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
@@ -112,11 +118,13 @@ export const getEnergyPreferences = (hass: HomeAssistant) =>
 export const saveEnergyPreferences = (
   hass: HomeAssistant,
   prefs: Partial<EnergyPreferences>
-) =>
-  hass.callWS<EnergyPreferences>({
+) => {
+  getEnergyDataCollection(hass).clearPrefs();
+  return hass.callWS<EnergyPreferences>({
     type: "energy/save_prefs",
     ...prefs,
   });
+};
 
 interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
@@ -201,7 +209,7 @@ const getEnergyData = async (
     }
   }
 
-  const stats = await fetchStatistics(hass!, start, end, statIDs);
+  const stats = await fetchStatistics(hass!, addHours(start, -1), end, statIDs); // Subtract 1 hour from start to get starting point data
 
   return {
     start,
@@ -294,14 +302,13 @@ export const getEnergyDataCollection = (
   collection.prefs = prefs;
   const now = new Date();
   // Set start to start of today if we have data for today, otherwise yesterday
-  collection.start = addHours(
-    now.getHours() > 0 ? startOfToday() : startOfYesterday(),
-    -1
-  );
+  collection.start = now.getHours() > 0 ? startOfToday() : startOfYesterday();
+  collection.end = now.getHours() > 0 ? endOfToday() : endOfYesterday();
 
   collection._updatePeriodTimeout = window.setTimeout(
     () => {
-      collection.start = addHours(startOfToday(), -1);
+      collection.start = startOfToday();
+      collection.end = endOfToday();
     },
     addHours(endOfToday(), 1).getTime() - Date.now() // Switch to next day an hour after the day changed
   );
