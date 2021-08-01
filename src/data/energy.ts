@@ -118,13 +118,19 @@ export const getEnergyPreferences = (hass: HomeAssistant) =>
 export const saveEnergyPreferences = (
   hass: HomeAssistant,
   prefs: Partial<EnergyPreferences>
-) => {
-  getEnergyDataCollection(hass).clearPrefs();
-  return hass.callWS<EnergyPreferences>({
-    type: "energy/save_prefs",
-    ...prefs,
-  });
-};
+) =>
+  hass
+    .callWS<EnergyPreferences>({
+      type: "energy/save_prefs",
+      ...prefs,
+    })
+    .then(() => {
+      const energyCollection = getEnergyDataCollection(hass);
+      energyCollection.clearPrefs();
+      if (energyCollection._active) {
+        energyCollection.refresh();
+      }
+    });
 
 interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
