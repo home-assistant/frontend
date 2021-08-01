@@ -330,6 +330,7 @@ export const getEnergyDataCollection = (
     collection.end = newEnd;
     if (collection._updatePeriodTimeout) {
       clearTimeout(collection._updatePeriodTimeout);
+      collection._updatePeriodTimeout = undefined;
     }
     if (
       collection.start.getTime() === startOfToday().getTime() &&
@@ -337,7 +338,6 @@ export const getEnergyDataCollection = (
     ) {
       scheduleUpdatePeriod();
     }
-    collection._updatePeriodTimeout = undefined;
   };
   return collection;
 };
