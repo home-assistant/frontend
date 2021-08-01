@@ -52,8 +52,6 @@ export class HuiEnergySolarGraphCard
 
   @state() private _forecasts?: Record<string, ForecastSolarForecast>;
 
-  @state() private _showAllForecastData = false;
-
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
@@ -301,14 +299,9 @@ export class HuiEnergySolarGraphCard
           };
           data.push(forecast);
 
-          const today = new Date();
-          const tomorrow = new Date(today);
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          tomorrow.setHours(0, 0, 0, 0);
-
           for (const [date, value] of Object.entries(forecastsData)) {
             const dateObj = new Date(date);
-            if (dateObj > tomorrow && !this._showAllForecastData) {
+            if (!energyData.end || dateObj > energyData.end) {
               continue;
             }
             forecast.data.push({
