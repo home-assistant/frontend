@@ -1,4 +1,4 @@
-import { mdiPlus } from "@mdi/js";
+import { mdiArrowLeft, mdiArrowRight, mdiPlus } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -18,6 +18,7 @@ import type {
 import type { HomeAssistant } from "../../../types";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import { HuiCardOptions } from "../components/hui-card-options";
+import { replaceCard } from "../editor/config-util";
 import type { Lovelace, LovelaceCard } from "../types";
 
 export class SideBarView extends LitElement implements LovelaceViewElement {
@@ -155,6 +156,28 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
         element.lovelace = this.lovelace;
         element.path = [this.index!, idx];
         card.editMode = true;
+        const movePositionButton = document.createElement("mwc-icon-button");
+        movePositionButton.slot = "buttons";
+        const moveIcon = document.createElement("ha-svg-icon");
+        moveIcon.path =
+          cardConfig?.view_layout?.position !== "sidebar"
+            ? mdiArrowRight
+            : mdiArrowLeft;
+        movePositionButton.appendChild(moveIcon);
+        movePositionButton.addEventListener("click", () => {
+          this.lovelace!.saveConfig(
+            replaceCard(this.lovelace!.config, [this.index!, idx], {
+              ...cardConfig!,
+              view_layout: {
+                position:
+                  cardConfig?.view_layout?.position !== "sidebar"
+                    ? "sidebar"
+                    : "main",
+              },
+            })
+          );
+        });
+        element.appendChild(movePositionButton);
         element.appendChild(card);
       }
       if (cardConfig?.view_layout?.position !== "sidebar") {
@@ -188,6 +211,7 @@ export class SideBarView extends LitElement implements LovelaceViewElement {
 
       #sidebar {
         flex-grow: 1;
+        flex-shrink: 0;
         max-width: 380px;
       }
 
