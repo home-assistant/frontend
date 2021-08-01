@@ -219,7 +219,6 @@ export interface EnergyCollection extends Collection<EnergyData> {
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
-  getDeviceStatIds(): string[];
 }
 
 export const getEnergyDataCollection = (
@@ -261,9 +260,5 @@ export const getEnergyDataCollection = (
     collection.start = newStart;
     collection.end = newEnd;
   };
-  collection.getDeviceStatIds = () =>
-    collection.state.prefs.device_consumption.map(
-      (device) => device.stat_consumption
-    );
   return collection;
 };
