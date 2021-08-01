@@ -4,6 +4,7 @@ import {
   ChartOptions,
   ParsedDataType,
 } from "chart.js";
+import { addHours } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -125,7 +126,7 @@ export class HuiEnergyDevicesGraphCard
   private async _getStatistics(energyData: EnergyData): Promise<void> {
     this._data = await fetchStatistics(
       this.hass,
-      energyData.start,
+      addHours(energyData.start, -1),
       energyData.end,
       energyData.prefs.device_consumption.map(
         (device) => device.stat_consumption

@@ -1,3 +1,10 @@
+import {
+  addHours,
+  endOfToday,
+  endOfYesterday,
+  startOfToday,
+  startOfYesterday,
+} from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
@@ -108,14 +115,21 @@ export const getEnergyPreferences = (hass: HomeAssistant) =>
     type: "energy/get_prefs",
   });
 
-export const saveEnergyPreferences = (
+export const saveEnergyPreferences = async (
   hass: HomeAssistant,
   prefs: Partial<EnergyPreferences>
-) =>
-  hass.callWS<EnergyPreferences>({
+) => {
+  const newPrefs = hass.callWS<EnergyPreferences>({
     type: "energy/save_prefs",
     ...prefs,
   });
+  const energyCollection = getEnergyDataCollection(hass);
+  energyCollection.clearPrefs();
+  if (energyCollection._active) {
+    energyCollection.refresh();
+  }
+  return newPrefs;
+};
 
 interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
@@ -200,7 +214,7 @@ const getEnergyData = async (
     }
   }
 
-  const stats = await fetchStatistics(hass!, start, end, statIDs);
+  const stats = await fetchStatistics(hass!, addHours(start, -1), end, statIDs); // Subtract 1 hour from start to get starting point data
 
   return {
     start,
@@ -219,6 +233,9 @@ export interface EnergyCollection extends Collection<EnergyData> {
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
+  _refreshTimeout?: number;
+  _updatePeriodTimeout?: number;
+  _active: number;
 }
 
 export const getEnergyDataCollection = (
@@ -239,6 +256,29 @@ export const getEnergyDataCollection = (
         collection.prefs = await getEnergyPreferences(hass);
       }
 
+      if (collection._refreshTimeout) {
+        clearTimeout(collection._refreshTimeout);
+      }
+
+      if (
+        collection._active &&
+        (!collection.end || collection.end > new Date())
+      ) {
+        // The stats are created every hour
+        // Schedule a refresh for 20 minutes past the hour
+        // If the end is larger than the current time.
+        const nextFetch = new Date();
+        if (nextFetch.getMinutes() > 20) {
+          nextFetch.setHours(nextFetch.getHours() + 1);
+        }
+        nextFetch.setMinutes(20);
+
+        collection._refreshTimeout = window.setTimeout(
+          () => collection.refresh(),
+          nextFetch.getTime() - Date.now()
+        );
+      }
+
       return getEnergyData(
         hass,
         collection.prefs,
@@ -248,10 +288,39 @@ export const getEnergyDataCollection = (
     }
   ) as EnergyCollection;
 
+  const origSubscribe = collection.subscribe;
+
+  collection.subscribe = (subscriber: (data: EnergyData) => void) => {
+    const unsub = origSubscribe(subscriber);
+    collection._active++;
+    return () => {
+      collection._active--;
+      if (collection._active < 1) {
+        clearTimeout(collection._refreshTimeout);
+        collection._refreshTimeout = undefined;
+      }
+      unsub();
+    };
+  };
+
+  collection._active = 0;
   collection.prefs = prefs;
-  collection.start = new Date();
-  collection.start.setHours(0, 0, 0, 0);
-  collection.start.setTime(collection.start.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
+  const now = new Date();
+  // Set start to start of today if we have data for today, otherwise yesterday
+  collection.start = now.getHours() > 0 ? startOfToday() : startOfYesterday();
+  collection.end = now.getHours() > 0 ? endOfToday() : endOfYesterday();
+
+  const scheduleUpdatePeriod = () => {
+    collection._updatePeriodTimeout = window.setTimeout(
+      () => {
+        collection.start = startOfToday();
+        collection.end = endOfToday();
+        scheduleUpdatePeriod();
+      },
+      addHours(endOfToday(), 1).getTime() - Date.now() // Switch to next day an hour after the day changed
+    );
+  };
+  scheduleUpdatePeriod();
 
   collection.clearPrefs = () => {
     collection.prefs = undefined;
@@ -259,6 +328,16 @@ export const getEnergyDataCollection = (
   collection.setPeriod = (newStart: Date, newEnd?: Date) => {
     collection.start = newStart;
     collection.end = newEnd;
+    if (collection._updatePeriodTimeout) {
+      clearTimeout(collection._updatePeriodTimeout);
+      collection._updatePeriodTimeout = undefined;
+    }
+    if (
+      collection.start.getTime() === startOfToday().getTime() &&
+      collection.end?.getTime() === endOfToday().getTime()
+    ) {
+      scheduleUpdatePeriod();
+    }
   };
   return collection;
 };
