@@ -1,4 +1,4 @@
-import { endOfToday } from "date-fns";
+import { addHours, endOfToday, startOfToday, startOfYesterday } from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
@@ -292,18 +292,18 @@ export const getEnergyDataCollection = (
 
   collection._active = 0;
   collection.prefs = prefs;
-  collection.start = new Date();
-  collection.start.setHours(0, 0, 0, 0);
-  collection.start.setTime(collection.start.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
+  const now = new Date();
+  // Set start to start of today if we have data for today, otherwise yesterday
+  collection.start = addHours(
+    now.getHours() > 0 ? startOfToday() : startOfYesterday(),
+    -1
+  );
 
   collection._updatePeriodTimeout = window.setTimeout(
     () => {
-      collection.start = new Date();
-      collection.start.setHours(0, 0, 0, 0);
-      collection.start.setTime(collection.start.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
-      collection.refresh();
+      collection.start = addHours(startOfToday(), -1);
     },
-    endOfToday().getTime() + 1 + 1000 * 60 * 60 - Date.now() // Switch to next day an hour after the day changed
+    addHours(endOfToday(), 1).getTime() - Date.now() // Switch to next day an hour after the day changed
   );
 
   collection.clearPrefs = () => {
