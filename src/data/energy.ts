@@ -115,23 +115,21 @@ export const getEnergyPreferences = (hass: HomeAssistant) =>
     type: "energy/get_prefs",
   });
 
-export const saveEnergyPreferences = (
+export const saveEnergyPreferences = async (
   hass: HomeAssistant,
   prefs: Partial<EnergyPreferences>
-) =>
-  hass
-    .callWS<EnergyPreferences>({
-      type: "energy/save_prefs",
-      ...prefs,
-    })
-    .then((newPrefs) => {
-      const energyCollection = getEnergyDataCollection(hass);
-      energyCollection.clearPrefs();
-      if (energyCollection._active) {
-        energyCollection.refresh();
-      }
-      return newPrefs;
-    });
+) => {
+  const newPrefs = hass.callWS<EnergyPreferences>({
+    type: "energy/save_prefs",
+    ...prefs,
+  });
+  const energyCollection = getEnergyDataCollection(hass);
+  energyCollection.clearPrefs();
+  if (energyCollection._active) {
+    energyCollection.refresh();
+  }
+  return newPrefs;
+};
 
 interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
@@ -312,13 +310,17 @@ export const getEnergyDataCollection = (
   collection.start = now.getHours() > 0 ? startOfToday() : startOfYesterday();
   collection.end = now.getHours() > 0 ? endOfToday() : endOfYesterday();
 
-  collection._updatePeriodTimeout = window.setTimeout(
-    () => {
-      collection.start = startOfToday();
-      collection.end = endOfToday();
-    },
-    addHours(endOfToday(), 1).getTime() - Date.now() // Switch to next day an hour after the day changed
-  );
+  const scheduleUpdatePeriod = () => {
+    collection._updatePeriodTimeout = window.setTimeout(
+      () => {
+        collection.start = startOfToday();
+        collection.end = endOfToday();
+        scheduleUpdatePeriod();
+      },
+      addHours(endOfToday(), 1).getTime() - Date.now() // Switch to next day an hour after the day changed
+    );
+  };
+  scheduleUpdatePeriod();
 
   collection.clearPrefs = () => {
     collection.prefs = undefined;
@@ -328,6 +330,12 @@ export const getEnergyDataCollection = (
     collection.end = newEnd;
     if (collection._updatePeriodTimeout) {
       clearTimeout(collection._updatePeriodTimeout);
+    }
+    if (
+      collection.start.getTime() === startOfToday().getTime() &&
+      collection.end?.getTime() === endOfToday().getTime()
+    ) {
+      scheduleUpdatePeriod();
     }
     collection._updatePeriodTimeout = undefined;
   };
