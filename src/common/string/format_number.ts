@@ -78,7 +78,10 @@ const getDefaultFormatOptions = (
   num: string | number,
   options?: Intl.NumberFormatOptions
 ): Intl.NumberFormatOptions => {
-  const defaultOptions: Intl.NumberFormatOptions = options || {};
+  const defaultOptions: Intl.NumberFormatOptions = {
+    maximumFractionDigits: 2,
+    ...options,
+  };
 
   if (typeof num !== "string") {
     return defaultOptions;

@@ -1,15 +1,17 @@
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatNumber } from "../../../../common/string/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
 import type { LevelDefinition } from "../../../../components/ha-gauge";
-import { GridSourceTypeEnergyPreference } from "../../../../data/energy";
 import {
-  calculateStatisticsSumGrowth,
-  fetchStatistics,
-  Statistics,
-} from "../../../../data/history";
+  EnergyData,
+  getEnergyDataCollection,
+  GridSourceTypeEnergyPreference,
+} from "../../../../data/energy";
+import { calculateStatisticsSumGrowth } from "../../../../data/history";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridGaugeCardConfig } from "../types";
@@ -21,12 +23,23 @@ const LEVELS: LevelDefinition[] = [
 ];
 
 @customElement("hui-energy-grid-neutrality-gauge-card")
-class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
+class HuiEnergyGridGaugeCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EnergyGridGaugeCardConfig;
 
-  @state() private _stats?: Statistics;
+  @state() private _data?: EnergyData;
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass!).subscribe((data) => {
+        this._data = data;
+      }),
+    ];
+  }
 
   public getCardSize(): number {
     return 4;
@@ -36,24 +49,16 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
-  public willUpdate(changedProps) {
-    super.willUpdate(changedProps);
-
-    if (!this.hasUpdated) {
-      this._getStatistics();
-    }
-  }
-
   protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
 
-    if (!this._stats) {
+    if (!this._data) {
       return html`Loading...`;
     }
 
-    const prefs = this._config!.prefs;
+    const prefs = this._data.prefs;
     const gridSource = prefs.energy_sources.find(
       (src) => src.type === "grid"
     ) as GridSourceTypeEnergyPreference | undefined;
@@ -65,12 +70,12 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
     }
 
     const consumedFromGrid = calculateStatisticsSumGrowth(
-      this._stats,
+      this._data.stats,
       gridSource.flow_from.map((flow) => flow.stat_energy_from)
     );
 
     const returnedToGrid = calculateStatisticsSumGrowth(
-      this._stats,
+      this._data.stats,
       gridSource.flow_to.map((flow) => flow.stat_energy_to)
     );
 
@@ -109,35 +114,6 @@ class HuiEnergyGridGaugeCard extends LitElement implements LovelaceCard {
           : "Grid neutrality could not be calculated"}
       </ha-card>
     `;
-  }
-
-  private async _getStatistics(): Promise<void> {
-    const startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
-
-    const statistics: string[] = [];
-    const prefs = this._config!.prefs;
-    for (const source of prefs.energy_sources) {
-      if (source.type === "solar") {
-        continue;
-      }
-
-      // grid source
-      for (const flowFrom of source.flow_from) {
-        statistics.push(flowFrom.stat_energy_from);
-      }
-      for (const flowTo of source.flow_to) {
-        statistics.push(flowTo.stat_energy_to);
-      }
-    }
-
-    this._stats = await fetchStatistics(
-      this.hass!,
-      startDate,
-      undefined,
-      statistics
-    );
   }
 
   static get styles(): CSSResultGroup {

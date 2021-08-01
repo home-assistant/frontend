@@ -1,14 +1,10 @@
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { startOfToday, endOfToday } from "date-fns";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
 import {
   hex2rgb,
   lab2rgb,
@@ -24,52 +20,36 @@ import {
 } from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import { fetchStatistics, Statistics } from "../../../../data/history";
+import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
+import { FrontendLocaleData } from "../../../../data/translation";
+import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyUsageGraphCardConfig } from "../types";
 
 @customElement("hui-energy-usage-graph-card")
 export class HuiEnergyUsageGraphCard
-  extends LitElement
+  extends SubscribeMixin(LitElement)
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyUsageGraphCardConfig;
 
-  @state() private _data?: Statistics;
-
   @state() private _chartData: ChartData = {
     datasets: [],
   };
 
-  @state() private _chartOptions?: ChartOptions;
+  @state() private _start = startOfToday();
 
-  private _fetching = false;
+  @state() private _end = endOfToday();
 
-  private _interval?: number;
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._interval) {
-      clearInterval(this._interval);
-      this._interval = undefined;
-    }
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-    if (!this.hasUpdated) {
-      return;
-    }
-    this._getStatistics();
-    // statistics are created every hour
-    clearInterval(this._interval);
-    this._interval = window.setInterval(
-      () => this._getStatistics(),
-      1000 * 60 * 60
-    );
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      getEnergyDataCollection(this.hass).subscribe((data) =>
+        this._getStatistics(data)
+      ),
+    ];
   }
 
   public getCardSize(): Promise<number> | number {
@@ -78,30 +58,6 @@ export class HuiEnergyUsageGraphCard
 
   public setConfig(config: EnergyUsageGraphCardConfig): void {
     this._config = config;
-  }
-
-  public willUpdate(changedProps: PropertyValues) {
-    super.willUpdate(changedProps);
-    if (!this.hasUpdated) {
-      this._createOptions();
-    }
-    if (!this._config || !changedProps.has("_config")) {
-      return;
-    }
-
-    const oldConfig = changedProps.get("_config") as
-      | EnergyUsageGraphCardConfig
-      | undefined;
-
-    if (oldConfig !== this._config) {
-      this._getStatistics();
-      // statistics are created every hour
-      clearInterval(this._interval);
-      this._interval = window.setInterval(
-        () => this._getStatistics(),
-        1000 * 60 * 60
-      );
-    }
   }
 
   protected render(): TemplateResult {
@@ -121,7 +77,11 @@ export class HuiEnergyUsageGraphCard
         >
           <ha-chart-base
             .data=${this._chartData}
-            .options=${this._chartOptions}
+            .options=${this._createOptions(
+              this._start,
+              this._end,
+              this.hass.locale
+            )}
             chart-type="bar"
           ></ha-chart-base>
         </div>
@@ -129,22 +89,18 @@ export class HuiEnergyUsageGraphCard
     `;
   }
 
-  private _createOptions() {
-    const startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    const startTime = startDate.getTime();
-
-    this._chartOptions = {
+  private _createOptions = memoizeOne(
+    (start: Date, end: Date, locale: FrontendLocaleData): ChartOptions => ({
       parsing: false,
       animation: false,
       scales: {
         x: {
           type: "time",
-          suggestedMin: startTime,
-          suggestedMax: startTime + 24 * 60 * 60 * 1000,
+          suggestedMin: start.getTime(),
+          suggestedMax: end.getTime(),
           adapters: {
             date: {
-              locale: this.hass.locale,
+              locale: locale,
             },
           },
           ticks: {
@@ -173,8 +129,7 @@ export class HuiEnergyUsageGraphCard
           },
           ticks: {
             beginAtZero: true,
-            callback: (value) =>
-              formatNumber(Math.abs(value), this.hass.locale),
+            callback: (value) => formatNumber(Math.abs(value), locale),
           },
         },
       },
@@ -188,7 +143,7 @@ export class HuiEnergyUsageGraphCard
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
                 Math.abs(context.parsed.y),
-                this.hass.locale
+                locale
               )} kWh`,
             footer: (contexts) => {
               let totalConsumed = 0;
@@ -204,16 +159,10 @@ export class HuiEnergyUsageGraphCard
               }
               return [
                 totalConsumed
-                  ? `Total consumed: ${formatNumber(
-                      totalConsumed,
-                      this.hass.locale
-                    )} kWh`
+                  ? `Total consumed: ${formatNumber(totalConsumed, locale)} kWh`
                   : "",
                 totalReturned
-                  ? `Total returned: ${formatNumber(
-                      totalReturned,
-                      this.hass.locale
-                    )} kWh`
+                  ? `Total returned: ${formatNumber(totalReturned, locale)} kWh`
                   : "",
               ].filter(Boolean);
             },
@@ -239,27 +188,18 @@ export class HuiEnergyUsageGraphCard
         },
       },
       // @ts-expect-error
-      locale: numberFormatToLocale(this.hass.locale),
-    };
-  }
+      locale: numberFormatToLocale(locale),
+    })
+  );
 
-  private async _getStatistics(): Promise<void> {
-    if (this._fetching) {
-      return;
-    }
-    const startDate = new Date();
-    startDate.setHours(0, 0, 0, 0);
-    startDate.setTime(startDate.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
-
-    this._fetching = true;
-    const prefs = this._config!.prefs;
+  private async _getStatistics(energyData: EnergyData): Promise<void> {
     const statistics: {
       to_grid?: string[];
       from_grid?: string[];
       solar?: string[];
     } = {};
 
-    for (const source of prefs.energy_sources) {
+    for (const source of energyData.prefs.energy_sources) {
       if (source.type === "solar") {
         if (statistics.solar) {
           statistics.solar.push(source.stat_energy_from);
@@ -286,23 +226,17 @@ export class HuiEnergyUsageGraphCard
       }
     }
 
-    try {
-      this._data = await fetchStatistics(
-        this.hass!,
-        startDate,
-        undefined,
-        // Array.flat()
-        ([] as string[]).concat(...Object.values(statistics))
-      );
-    } finally {
-      this._fetching = false;
-    }
-
-    const statisticsData = Object.values(this._data!);
+    const statisticsData = Object.values(energyData.stats);
     const datasets: ChartDataset<"bar">[] = [];
     let endTime: Date;
 
+    this._start = energyData.start;
+    this._end = energyData.end || endOfToday();
+
     if (statisticsData.length === 0) {
+      this._chartData = {
+        datasets,
+      };
       return;
     }
 
@@ -346,7 +280,7 @@ export class HuiEnergyUsageGraphCard
       const totalStats: { [start: string]: number } = {};
       const sets: { [statId: string]: { [start: string]: number } } = {};
       statIds!.forEach((id) => {
-        const stats = this._data![id];
+        const stats = energyData.stats[id];
         if (!stats) {
           return;
         }
