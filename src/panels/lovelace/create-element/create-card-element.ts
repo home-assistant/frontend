@@ -51,6 +51,8 @@ const LAZY_LOAD_TYPES = {
     import("../cards/energy/hui-energy-grid-neutrality-gauge-card"),
   "energy-carbon-consumed-gauge": () =>
     import("../cards/energy/hui-energy-carbon-consumed-gauge-card"),
+  "energy-date-selection": () =>
+    import("../cards/energy/hui-energy-date-selection-card"),
   grid: () => import("../cards/hui-grid-card"),
   starting: () => import("../cards/hui-starting-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),

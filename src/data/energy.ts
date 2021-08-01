@@ -1,4 +1,16 @@
+import {
+  addHours,
+  endOfToday,
+  endOfYesterday,
+  startOfToday,
+  startOfYesterday,
+} from "date-fns";
+import { Collection, getCollection } from "home-assistant-js-websocket";
+import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
+import { ConfigEntry, getConfigEntries } from "./config_entries";
+import { subscribeEntityRegistry } from "./entity_registry";
+import { fetchStatistics, Statistics } from "./history";
 
 export const emptyFlowFromGridSourceEnergyPreference =
   (): FlowFromGridSourceEnergyPreference => ({
@@ -103,14 +115,21 @@ export const getEnergyPreferences = (hass: HomeAssistant) =>
     type: "energy/get_prefs",
   });
 
-export const saveEnergyPreferences = (
+export const saveEnergyPreferences = async (
   hass: HomeAssistant,
   prefs: Partial<EnergyPreferences>
-) =>
-  hass.callWS<EnergyPreferences>({
+) => {
+  const newPrefs = hass.callWS<EnergyPreferences>({
     type: "energy/save_prefs",
     ...prefs,
   });
+  const energyCollection = getEnergyDataCollection(hass);
+  energyCollection.clearPrefs();
+  if (energyCollection._active) {
+    energyCollection.refresh();
+  }
+  return newPrefs;
+};
 
 interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
@@ -127,4 +146,198 @@ export const energySourcesByType = (prefs: EnergyPreferences) => {
     }
   }
   return types;
+};
+
+export interface EnergyData {
+  start: Date;
+  end?: Date;
+  prefs: EnergyPreferences;
+  info: EnergyInfo;
+  stats: Statistics;
+  co2SignalConfigEntry?: ConfigEntry;
+  co2SignalEntity?: string;
+}
+
+const getEnergyData = async (
+  hass: HomeAssistant,
+  prefs: EnergyPreferences,
+  start: Date,
+  end?: Date
+): Promise<EnergyData> => {
+  const [configEntries, entityRegistryEntries, info] = await Promise.all([
+    getConfigEntries(hass),
+    subscribeOne(hass.connection, subscribeEntityRegistry),
+    getEnergyInfo(hass),
+  ]);
+
+  const co2SignalConfigEntry = configEntries.find(
+    (entry) => entry.domain === "co2signal"
+  );
+
+  let co2SignalEntity: string | undefined;
+
+  if (co2SignalConfigEntry) {
+    for (const entry of entityRegistryEntries) {
+      if (entry.config_entry_id !== co2SignalConfigEntry.entry_id) {
+        continue;
+      }
+
+      // The integration offers 2 entities. We want the % one.
+      const co2State = hass.states[entry.entity_id];
+      if (!co2State || co2State.attributes.unit_of_measurement !== "%") {
+        continue;
+      }
+
+      co2SignalEntity = co2State.entity_id;
+      break;
+    }
+  }
+
+  const statIDs: string[] = [];
+
+  if (co2SignalEntity !== undefined) {
+    statIDs.push(co2SignalEntity);
+  }
+
+  for (const source of prefs.energy_sources) {
+    if (source.type === "solar") {
+      statIDs.push(source.stat_energy_from);
+      continue;
+    }
+
+    // grid source
+    for (const flowFrom of source.flow_from) {
+      statIDs.push(flowFrom.stat_energy_from);
+    }
+    for (const flowTo of source.flow_to) {
+      statIDs.push(flowTo.stat_energy_to);
+    }
+  }
+
+  const stats = await fetchStatistics(hass!, addHours(start, -1), end, statIDs); // Subtract 1 hour from start to get starting point data
+
+  return {
+    start,
+    end,
+    info,
+    prefs,
+    stats,
+    co2SignalConfigEntry,
+    co2SignalEntity,
+  };
+};
+
+export interface EnergyCollection extends Collection<EnergyData> {
+  start: Date;
+  end?: Date;
+  prefs?: EnergyPreferences;
+  clearPrefs(): void;
+  setPeriod(newStart: Date, newEnd?: Date): void;
+  _refreshTimeout?: number;
+  _updatePeriodTimeout?: number;
+  _active: number;
+}
+
+export const getEnergyDataCollection = (
+  hass: HomeAssistant,
+  prefs?: EnergyPreferences
+): EnergyCollection => {
+  if ((hass.connection as any)._energy) {
+    return (hass.connection as any)._energy;
+  }
+
+  const collection = getCollection<EnergyData>(
+    hass.connection,
+    "_energy",
+    async () => {
+      if (!collection.prefs) {
+        // This will raise if not found.
+        // Detect by checking `e.code === "not_found"
+        collection.prefs = await getEnergyPreferences(hass);
+      }
+
+      if (collection._refreshTimeout) {
+        clearTimeout(collection._refreshTimeout);
+      }
+
+      if (
+        collection._active &&
+        (!collection.end || collection.end > new Date())
+      ) {
+        // The stats are created every hour
+        // Schedule a refresh for 20 minutes past the hour
+        // If the end is larger than the current time.
+        const nextFetch = new Date();
+        if (nextFetch.getMinutes() > 20) {
+          nextFetch.setHours(nextFetch.getHours() + 1);
+        }
+        nextFetch.setMinutes(20);
+
+        collection._refreshTimeout = window.setTimeout(
+          () => collection.refresh(),
+          nextFetch.getTime() - Date.now()
+        );
+      }
+
+      return getEnergyData(
+        hass,
+        collection.prefs,
+        collection.start,
+        collection.end
+      );
+    }
+  ) as EnergyCollection;
+
+  const origSubscribe = collection.subscribe;
+
+  collection.subscribe = (subscriber: (data: EnergyData) => void) => {
+    const unsub = origSubscribe(subscriber);
+    collection._active++;
+    return () => {
+      collection._active--;
+      if (collection._active < 1) {
+        clearTimeout(collection._refreshTimeout);
+        collection._refreshTimeout = undefined;
+      }
+      unsub();
+    };
+  };
+
+  collection._active = 0;
+  collection.prefs = prefs;
+  const now = new Date();
+  // Set start to start of today if we have data for today, otherwise yesterday
+  collection.start = now.getHours() > 0 ? startOfToday() : startOfYesterday();
+  collection.end = now.getHours() > 0 ? endOfToday() : endOfYesterday();
+
+  const scheduleUpdatePeriod = () => {
+    collection._updatePeriodTimeout = window.setTimeout(
+      () => {
+        collection.start = startOfToday();
+        collection.end = endOfToday();
+        scheduleUpdatePeriod();
+      },
+      addHours(endOfToday(), 1).getTime() - Date.now() // Switch to next day an hour after the day changed
+    );
+  };
+  scheduleUpdatePeriod();
+
+  collection.clearPrefs = () => {
+    collection.prefs = undefined;
+  };
+  collection.setPeriod = (newStart: Date, newEnd?: Date) => {
+    collection.start = newStart;
+    collection.end = newEnd;
+    if (collection._updatePeriodTimeout) {
+      clearTimeout(collection._updatePeriodTimeout);
+      collection._updatePeriodTimeout = undefined;
+    }
+    if (
+      collection.start.getTime() === startOfToday().getTime() &&
+      collection.end?.getTime() === endOfToday().getTime()
+    ) {
+      scheduleUpdatePeriod();
+    }
+  };
+  return collection;
 };

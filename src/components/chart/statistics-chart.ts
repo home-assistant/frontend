@@ -16,10 +16,15 @@ import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../common/color/colors";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { numberFormatToLocale } from "../../common/string/format_number";
 import {
+  formatNumber,
+  numberFormatToLocale,
+} from "../../common/string/format_number";
+import {
+  getStatisticIds,
   Statistics,
   statisticsHaveType,
+  StatisticsMetaData,
   StatisticType,
 } from "../../data/history";
 import type { HomeAssistant } from "../../types";
@@ -31,7 +36,11 @@ class StatisticsChart extends LitElement {
 
   @property({ attribute: false }) public statisticsData!: Statistics;
 
+  @property({ type: Array }) public statisticIds?: StatisticsMetaData[];
+
   @property() public names: boolean | Record<string, string> = false;
+
+  @property() public unit?: string;
 
   @property({ attribute: false }) public endTime?: Date;
 
@@ -46,12 +55,12 @@ class StatisticsChart extends LitElement {
 
   @property({ type: Boolean }) public isLoadingData = false;
 
-  @state() private _chartData?: ChartData;
+  @state() private _chartData: ChartData = { datasets: [] };
 
   @state() private _chartOptions?: ChartOptions;
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    return !(changedProps.size === 1 && changedProps.has("hass"));
+    return changedProps.size > 1 || !changedProps.has("hass");
   }
 
   public willUpdate(changedProps: PropertyValues) {
@@ -124,8 +133,13 @@ class StatisticsChart extends LitElement {
           },
         },
         y: {
+          beginAtZero: false,
           ticks: {
             maxTicksLimit: 7,
+          },
+          title: {
+            display: this.unit,
+            text: this.unit,
           },
         },
       },
@@ -133,14 +147,21 @@ class StatisticsChart extends LitElement {
         tooltip: {
           mode: "nearest",
           callbacks: {
-            label: (context) => `${context.dataset.label}: ${context.parsed.y}`,
+            label: (context) =>
+              `${context.dataset.label}: ${formatNumber(
+                context.parsed.y,
+                this.hass.locale
+              )} ${
+                // @ts-ignore
+                context.dataset.unit || ""
+              }`,
           },
         },
         filler: {
           propagate: true,
         },
         legend: {
-          display: false,
+          display: true,
           labels: {
             usePointStyle: true,
           },
@@ -154,6 +175,7 @@ class StatisticsChart extends LitElement {
           tension: 0.4,
           borderWidth: 1.5,
         },
+        bar: { borderWidth: 1.5, borderRadius: 4 },
         point: {
           hitRadius: 5,
         },
@@ -163,10 +185,19 @@ class StatisticsChart extends LitElement {
     };
   }
 
-  private _generateData() {
+  private async _getStatisticIds() {
+    this.statisticIds = await getStatisticIds(this.hass);
+  }
+
+  private async _generateData() {
     if (!this.statisticsData) {
       return;
     }
+
+    if (!this.statisticIds) {
+      await this._getStatisticIds();
+    }
+
     let colorIndex = 0;
     const statisticsData = Object.values(this.statisticsData);
     const totalDataSets: ChartDataset<"line">[] = [];
@@ -191,6 +222,8 @@ class StatisticsChart extends LitElement {
       endTime = new Date();
     }
 
+    let unit: string | undefined | null;
+
     const names = this.names || {};
     statisticsData.forEach((stats) => {
       const firstStat = stats[0];
@@ -203,6 +236,19 @@ class StatisticsChart extends LitElement {
           name = firstStat.statistic_id;
         }
       }
+
+      const meta = this.statisticIds!.find(
+        (stat) => stat.statistic_id === firstStat.statistic_id
+      );
+
+      if (!this.unit) {
+        if (unit === undefined) {
+          unit = meta?.unit_of_measurement;
+        } else if (unit !== meta?.unit_of_measurement) {
+          unit = null;
+        }
+      }
+
       // array containing [value1, value2, etc]
       let prevValues: Array<number | null> | null = null;
 
@@ -237,64 +283,54 @@ class StatisticsChart extends LitElement {
       const color = getColorByIndex(colorIndex);
       colorIndex++;
 
-      const addDataSet = (
-        nameY: string,
-        borderColor: string,
-        backgroundColor: string,
-        step = false,
-        fill?: boolean | number | string
-      ) => {
-        statDataSets.push({
-          label: nameY,
-          fill: fill || false,
-          borderColor,
-          backgroundColor: backgroundColor,
-          stepped: step ? "before" : false,
-          pointRadius: 0,
-          data: [],
-        });
-      };
-
       const statTypes: this["statTypes"] = [];
-
-      const sortedTypes = [...this.statTypes].sort((a, _b) => {
-        if (a === "min") {
-          return -1;
-        }
-        if (a === "max") {
-          return +1;
-        }
-        return 0;
-      });
 
       const drawBands =
         this.statTypes.includes("mean") && statisticsHaveType(stats, "mean");
 
+      const sortedTypes = drawBands
+        ? [...this.statTypes].sort((a, b) => {
+            if (a === "min" || b === "max") {
+              return -1;
+            }
+            if (a === "max" || b === "min") {
+              return +1;
+            }
+            return 0;
+          })
+        : this.statTypes;
+
       sortedTypes.forEach((type) => {
         if (statisticsHaveType(stats, type)) {
+          const band = drawBands && (type === "min" || type === "max");
           statTypes.push(type);
-          addDataSet(
-            `${name} (${this.hass.localize(
+          statDataSets.push({
+            label: `${name} (${this.hass.localize(
               `ui.components.statistics_charts.statistic_types.${type}`
-            )})`,
-            drawBands && (type === "min" || type === "max")
-              ? color + "7F"
-              : color,
-            color + "7F",
-            false,
-            drawBands
+            )})
+            `,
+            fill: drawBands
               ? type === "min"
                 ? "+1"
                 : type === "max"
                 ? "-1"
                 : false
-              : false
-          );
+              : false,
+            borderColor: band ? color + "7F" : color,
+            backgroundColor: band ? color + "3F" : color + "7F",
+            pointRadius: 0,
+            data: [],
+            // @ts-ignore
+            unit: meta?.unit_of_measurement,
+            band,
+          });
         }
       });
 
       let prevDate: Date | null = null;
       // Process chart data.
+      let initVal: number | null = null;
+      let prevSum: number | null = null;
       stats.forEach((stat) => {
         const date = new Date(stat.start);
         if (prevDate === date) {
@@ -305,7 +341,12 @@ class StatisticsChart extends LitElement {
         statTypes.forEach((type) => {
           let val: number | null;
           if (type === "sum") {
-            val = stat.state;
+            if (!initVal) {
+              initVal = val = stat.state;
+              prevSum = stat.sum;
+            } else {
+              val = initVal + ((stat.sum || 0) - prevSum!);
+            }
           } else {
             val = stat[type];
           }
@@ -320,6 +361,19 @@ class StatisticsChart extends LitElement {
       // Concat two arrays
       Array.prototype.push.apply(totalDataSets, statDataSets);
     });
+
+    if (unit !== null) {
+      this._chartOptions = {
+        ...this._chartOptions,
+        scales: {
+          ...this._chartOptions!.scales,
+          y: {
+            ...(this._chartOptions!.scales!.y as Record<string, unknown>),
+            title: { display: unit, text: unit },
+          },
+        },
+      };
+    }
 
     this._chartData = {
       datasets: totalDataSets,
