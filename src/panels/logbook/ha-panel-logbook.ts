@@ -4,6 +4,15 @@ import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import {
+  addDays,
+  endOfToday,
+  endOfWeek,
+  endOfYesterday,
+  startOfToday,
+  startOfWeek,
+  startOfYesterday,
+} from "date-fns";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -55,17 +64,11 @@ export class HaPanelLogbook extends LitElement {
     super();
 
     const start = new Date();
-    start.setHours(start.getHours() - 2);
-    start.setMinutes(0);
-    start.setSeconds(0);
-    start.setMilliseconds(0);
+    start.setHours(start.getHours() - 2, 0, 0, 0);
     this._startDate = start;
 
     const end = new Date();
-    end.setHours(end.getHours() + 1);
-    end.setMinutes(0);
-    end.setSeconds(0);
-    end.setMilliseconds(0);
+    end.setHours(end.getHours() + 1, 0, 0, 0);
     this._endDate = end;
   }
 
@@ -140,42 +143,20 @@ export class HaPanelLogbook extends LitElement {
     this._fetchUserPromise = this._fetchUserNames();
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayEnd = new Date(today);
-    todayEnd.setDate(todayEnd.getDate() + 1);
-    todayEnd.setMilliseconds(todayEnd.getMilliseconds() - 1);
-
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const yesterdayEnd = new Date(today);
-    yesterdayEnd.setMilliseconds(yesterdayEnd.getMilliseconds() - 1);
-
-    const thisWeekStart = new Date(today);
-    thisWeekStart.setDate(today.getDate() - today.getDay());
-    const thisWeekEnd = new Date(thisWeekStart);
-    thisWeekEnd.setDate(thisWeekStart.getDate() + 7);
-    thisWeekEnd.setMilliseconds(thisWeekEnd.getMilliseconds() - 1);
-
-    const lastWeekStart = new Date(today);
-    lastWeekStart.setDate(today.getDate() - today.getDay() - 7);
-    const lastWeekEnd = new Date(lastWeekStart);
-    lastWeekEnd.setDate(lastWeekStart.getDate() + 7);
-    lastWeekEnd.setMilliseconds(lastWeekEnd.getMilliseconds() - 1);
+    const weekStart = startOfWeek(today);
+    const weekEnd = endOfWeek(today);
 
     this._ranges = {
-      [this.hass.localize("ui.panel.logbook.ranges.today")]: [today, todayEnd],
-      [this.hass.localize("ui.panel.logbook.ranges.yesterday")]: [
-        yesterday,
-        yesterdayEnd,
+      [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
+        startOfToday(),
+        endOfToday(),
       ],
-      [this.hass.localize("ui.panel.logbook.ranges.this_week")]: [
-        thisWeekStart,
-        thisWeekEnd,
-      ],
-      [this.hass.localize("ui.panel.logbook.ranges.last_week")]: [
-        lastWeekStart,
-        lastWeekEnd,
-      ],
+      [this.hass.localize("ui.components.date-range-picker.ranges.yesterday")]:
+        [startOfYesterday(), endOfYesterday()],
+      [this.hass.localize("ui.components.date-range-picker.ranges.this_week")]:
+        [weekStart, weekEnd],
+      [this.hass.localize("ui.components.date-range-picker.ranges.last_week")]:
+        [addDays(weekStart, -7), addDays(weekEnd, -7)],
     };
   }
 
