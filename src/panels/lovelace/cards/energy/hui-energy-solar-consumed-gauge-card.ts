@@ -55,9 +55,13 @@ class HuiEnergySolarGaugeCard
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
+    if (!types.solar) {
+      return html``;
+    }
+
     const totalSolarProduction = calculateStatisticsSumGrowth(
       this._data.stats,
-      types.solar!.map((source) => source.stat_energy_from)
+      types.solar.map((source) => source.stat_energy_from)
     );
 
     const productionReturnedToGrid = calculateStatisticsSumGrowth(

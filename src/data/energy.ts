@@ -124,12 +124,13 @@ export const saveEnergyPreferences = (
       type: "energy/save_prefs",
       ...prefs,
     })
-    .then(() => {
+    .then((newPrefs) => {
       const energyCollection = getEnergyDataCollection(hass);
       energyCollection.clearPrefs();
       if (energyCollection._active) {
         energyCollection.refresh();
       }
+      return newPrefs;
     });
 
 interface EnergySourceByType {
