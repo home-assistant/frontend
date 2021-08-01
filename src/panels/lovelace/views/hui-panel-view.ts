@@ -71,6 +71,13 @@ export class PanelView extends LitElement implements LovelaceViewElement {
 
   protected render(): TemplateResult {
     return html`
+      ${this.cards!.length > 1
+        ? html`<hui-warning>
+            ${this.hass!.localize(
+              "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
+            )}
+          </hui-warning>`
+        : ""}
       ${this._card}
       ${this.lovelace?.editMode && this.cards.length === 0
         ? html`
@@ -117,18 +124,6 @@ export class PanelView extends LitElement implements LovelaceViewElement {
     card.editMode = true;
     wrapper.appendChild(card);
     this._card = wrapper;
-
-    if (this.cards!.length > 1) {
-      const warning = document.createElement("hui-warning");
-      warning.setAttribute(
-        "style",
-        "position: absolute; top: 0; width: 100%; box-sizing: border-box;"
-      );
-      warning.innerText = this.hass!.localize(
-        "ui.panel.lovelace.editor.view.panel_mode.warning_multiple_cards"
-      );
-      this._card = warning;
-    }
   }
 
   static get styles(): CSSResultGroup {
