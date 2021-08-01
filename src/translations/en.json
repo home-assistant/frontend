@@ -2950,6 +2950,12 @@
             "tab_visibility": "Visibility",
             "visibility": {
               "select_users": "Select which users should see this view in the navigation"
+            },
+            "type": "View type",
+            "types": {
+              "masonary": "Masonary (default)",
+              "sidebar": "Sidebar",
+              "panel": "Panel (1 card)"
             }
           },
           "edit_badges": {
@@ -3243,8 +3249,6 @@
           },
           "view": {
             "panel_mode": {
-              "title": "Panel Mode?",
-              "description": "This renders the first card at full width. Other cards in this view as well as badges will not be rendered.",
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },
