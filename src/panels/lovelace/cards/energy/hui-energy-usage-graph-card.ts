@@ -230,7 +230,13 @@ export class HuiEnergyUsageGraphCard
     const datasets: ChartDataset<"bar">[] = [];
     let endTime: Date;
 
+    this._start = energyData.start;
+    this._end = energyData.end || endOfToday();
+
     if (statisticsData.length === 0) {
+      this._chartData = {
+        datasets,
+      };
       return;
     }
 
@@ -367,9 +373,6 @@ export class HuiEnergyUsageGraphCard
         Array.prototype.push.apply(datasets, data);
       });
     });
-
-    this._start = energyData.start;
-    this._end = energyData.end || endOfToday();
 
     this._chartData = {
       datasets,

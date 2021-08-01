@@ -301,7 +301,10 @@ export class HuiEnergySolarGraphCard
 
           for (const [date, value] of Object.entries(forecastsData)) {
             const dateObj = new Date(date);
-            if (!energyData.end || dateObj > energyData.end) {
+            if (
+              dateObj < energyData.start ||
+              (energyData.end && dateObj > energyData.end)
+            ) {
               continue;
             }
             forecast.data.push({
