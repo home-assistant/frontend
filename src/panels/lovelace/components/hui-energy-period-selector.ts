@@ -1,11 +1,5 @@
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
-import {
-  endOfToday,
-  addDays,
-  endOfDay,
-  isToday,
-  startOfToday,
-} from "date-fns";
+import { endOfToday, addDays, endOfDay, isToday, startOfToday } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
