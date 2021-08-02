@@ -208,9 +208,23 @@ const getEnergyData = async (
     // grid source
     for (const flowFrom of source.flow_from) {
       statIDs.push(flowFrom.stat_energy_from);
+      if (flowFrom.stat_cost) {
+        statIDs.push(flowFrom.stat_cost);
+      }
+      const costStatId = info.cost_sensors[flowFrom.stat_energy_from];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
     }
     for (const flowTo of source.flow_to) {
       statIDs.push(flowTo.stat_energy_to);
+      if (flowTo.stat_compensation) {
+        statIDs.push(flowTo.stat_compensation);
+      }
+      const costStatId = info.cost_sensors[flowTo.stat_energy_to];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
     }
   }
 
