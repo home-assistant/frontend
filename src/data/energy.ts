@@ -240,15 +240,23 @@ export interface EnergyCollection extends Collection<EnergyData> {
 
 export const getEnergyDataCollection = (
   hass: HomeAssistant,
-  prefs?: EnergyPreferences
+  options: { prefs?: EnergyPreferences; key?: string } = {}
 ): EnergyCollection => {
-  if ((hass.connection as any)._energy) {
-    return (hass.connection as any)._energy;
+  let key = "_energy";
+  if (options.key) {
+    if (!options.key.startsWith("energy_")) {
+      throw new Error("Key need to start with energy_");
+    }
+    key = `_${options.key}`;
+  }
+
+  if ((hass.connection as any)[key]) {
+    return (hass.connection as any)[key];
   }
 
   const collection = getCollection<EnergyData>(
     hass.connection,
-    "_energy",
+    key,
     async () => {
       if (!collection.prefs) {
         // This will raise if not found.
@@ -304,7 +312,7 @@ export const getEnergyDataCollection = (
   };
 
   collection._active = 0;
-  collection.prefs = prefs;
+  collection.prefs = options.prefs;
   const now = new Date();
   // Set start to start of today if we have data for today, otherwise yesterday
   collection.start = now.getHours() > 0 ? startOfToday() : startOfYesterday();

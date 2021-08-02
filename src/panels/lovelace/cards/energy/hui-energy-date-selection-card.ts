@@ -37,9 +37,9 @@ export class HuiEnergyDateSelectionCard
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass).subscribe((data) =>
-        this._updateDates(data)
-      ),
+      getEnergyDataCollection(this.hass, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => this._updateDates(data)),
     ];
   }
 
@@ -103,7 +103,9 @@ export class HuiEnergyDateSelectionCard
     ) {
       return;
     }
-    const energyCollection = getEnergyDataCollection(this.hass);
+    const energyCollection = getEnergyDataCollection(this.hass, {
+      key: this._config?.collection_key,
+    });
     energyCollection.setPeriod(ev.detail.startDate, ev.detail.endDate);
     energyCollection.refresh();
   }
