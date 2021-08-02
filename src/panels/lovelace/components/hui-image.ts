@@ -19,6 +19,10 @@ import { HomeAssistant } from "../../../types";
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
 
+const MAX_IMAGE_WIDTH = 640;
+const ASPECT_RATIO_DEFAULT = 9 / 16;
+const SCALING_FACTOR = 2;
+
 export interface StateSpecificConfig {
   [state: string]: string;
 }
@@ -228,19 +232,19 @@ export class HuiImage extends LitElement {
       return;
     }
 
-    // One the first render we will known know the width
+    // One the first render we will not know the width
     const element_width = this._image.offsetWidth
       ? this._image.offsetWidth
-      : 640;
+      : MAX_IMAGE_WIDTH;
     // Because the aspect ratio might result in a smaller image,
     // we ask for 200% of what we need to make sure the image is
     // still clear. In practice, for 4k sources, this is still
     // an order of magnitude smaller.
-    const width = Math.ceil(element_width * 2);
+    const width = Math.ceil(element_width * SCALING_FACTOR);
     // If the image has not rendered yet we may have a zero height
     const height = this._image.offsetHeight
-      ? this._image.offsetHeight * 2
-      : Math.ceil(element_width * 2 * (9 / 16));
+      ? this._image.offsetHeight * SCALING_FACTOR
+      : Math.ceil(element_width * SCALING_FACTOR * ASPECT_RATIO_DEFAULT);
 
     this._cameraImageSrc = await fetchThumbnailUrlWithCache(
       this.hass,
