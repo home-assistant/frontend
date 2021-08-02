@@ -4,7 +4,6 @@ import {
   addDays,
   endOfDay,
   isToday,
-  isYesterday,
   startOfToday,
 } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -41,19 +40,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       return html``;
     }
 
-    const isStartToday = isToday(this._startDate);
-    let label;
-    if (isStartToday) {
-      label = "Today";
-    } else if (isYesterday(this._startDate)) {
-      label = "Yesterday";
-    } else {
-      label = formatDate(this._startDate, this.hass.locale);
-    }
-
     return html`
       <div class="row">
-        <div class="label">${label}</div>
+        <div class="label">
+          ${formatDate(this._startDate, this.hass.locale)}
+        </div>
 
         <mwc-icon-button label="Previous Day" @click=${this._pickPreviousDay}>
           <ha-svg-icon .path=${mdiChevronLeft}></ha-svg-icon>
@@ -65,7 +56,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         <mwc-button
           dense
           outlined
-          .disabled=${isStartToday}
+          .disabled=${isToday(this._startDate)}
           @click=${this._pickToday}
           >Today</mwc-button
         >
