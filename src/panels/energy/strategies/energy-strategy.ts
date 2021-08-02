@@ -52,10 +52,11 @@ export class EnergyStrategy {
       (source) => source.type === "solar"
     );
 
-    getEnergyDataCollection(hass, prefs);
+    getEnergyDataCollection(hass, { prefs, key: "energy_dashboard" });
 
     view.cards!.push({
       type: "energy-date-selection",
+      collection_key: "energy_dashboard",
     });
 
     // Only include if we have a grid source.
@@ -63,6 +64,7 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Energy usage",
         type: "energy-usage-graph",
+        collection_key: "energy_dashboard",
       });
     }
 
@@ -71,6 +73,7 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Solar production",
         type: "energy-solar-graph",
+        collection_key: "energy_dashboard",
       });
     }
 
@@ -80,6 +83,7 @@ export class EnergyStrategy {
         title: "Energy distribution",
         type: "energy-distribution",
         view_layout: { position: "sidebar" },
+        collection_key: "energy_dashboard",
       });
     }
 
@@ -87,6 +91,7 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Sources",
         type: "energy-sources-table",
+        collection_key: "energy_dashboard",
       });
     }
 
@@ -95,6 +100,7 @@ export class EnergyStrategy {
       view.cards!.push({
         type: "energy-grid-neutrality-gauge",
         view_layout: { position: "sidebar" },
+        collection_key: "energy_dashboard",
       });
     }
 
@@ -103,6 +109,7 @@ export class EnergyStrategy {
       view.cards!.push({
         type: "energy-solar-consumed-gauge",
         view_layout: { position: "sidebar" },
+        collection_key: "energy_dashboard",
       });
     }
 
@@ -111,6 +118,7 @@ export class EnergyStrategy {
       view.cards!.push({
         type: "energy-carbon-consumed-gauge",
         view_layout: { position: "sidebar" },
+        collection_key: "energy_dashboard",
       });
     }
 
@@ -119,6 +127,7 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Monitor individual devices",
         type: "energy-devices-graph",
+        collection_key: "energy_dashboard",
       });
     }
 
