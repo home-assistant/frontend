@@ -1,5 +1,5 @@
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
-import { endOfToday, addDays, endOfDay, isToday, isYesterday } from "date-fns";
+import { endOfToday, addDays, endOfDay, isToday, startOfToday } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -9,6 +9,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import "@material/mwc-icon-button/mwc-icon-button";
 import "../../../components/ha-svg-icon";
+import "@material/mwc-button/mwc-button";
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -33,27 +34,32 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       return html``;
     }
 
-    const isStartToday = isToday(this._startDate);
-    let label;
-    if (isStartToday) {
-      label = "Today";
-    } else if (isYesterday(this._startDate)) {
-      label = "Yesterday";
-    } else {
-      label = formatDate(this._startDate, this.hass.locale);
-    }
-
     return html`
       <div class="row">
+        <div class="label">
+          ${formatDate(this._startDate, this.hass.locale)}
+        </div>
+
         <mwc-icon-button label="Previous Day" @click=${this._pickPreviousDay}>
           <ha-svg-icon .path=${mdiChevronLeft}></ha-svg-icon>
         </mwc-icon-button>
-        <div class="label">${label}</div>
         <mwc-icon-button label="Next Day" @click=${this._pickNextDay}>
           <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
         </mwc-icon-button>
+
+        <mwc-button
+          dense
+          outlined
+          .disabled=${isToday(this._startDate)}
+          @click=${this._pickToday}
+          >Today</mwc-button
+        >
       </div>
     `;
+  }
+
+  private _pickToday() {
+    this._setDate(startOfToday());
   }
 
   private _pickPreviousDay() {
@@ -83,11 +89,29 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       .row {
         display: flex;
         align-items: center;
+        justify-content: flex-end;
       }
       .label {
-        flex: 1;
+        padding: 0 8px;
         text-align: center;
         font-size: 20px;
+      }
+      mwc-icon-button {
+        --mdc-icon-button-size: 28px;
+      }
+      mwc-button {
+        padding-left: 8px;
+        --mdc-theme-primary: currentColor;
+        --mdc-button-outline-color: currentColor;
+
+        --mdc-button-disabled-outline-color: rgba(
+          var(--rgb-text-primary-color),
+          0.5
+        );
+        --mdc-button-disabled-ink-color: rgba(
+          var(--rgb-text-primary-color),
+          0.5
+        );
       }
     `;
   }

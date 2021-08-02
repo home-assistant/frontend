@@ -13,7 +13,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
 import "../../layouts/ha-app-layout";
-import { mdiCog } from "@mdi/js";
 
 import { haStyle } from "../../resources/styles";
 import "../lovelace/views/hui-view";
@@ -60,13 +59,11 @@ class PanelEnergy extends LitElement {
       <ha-app-layout>
         <app-header fixed slot="header">
           <app-toolbar>
-            <div class="nav-title">
-              <ha-menu-button
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>
-              <div main-title>${this.hass.localize("panel.energy")}</div>
-            </div>
+            <ha-menu-button
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+            ></ha-menu-button>
+            <div main-title>${this.hass.localize("panel.energy")}</div>
             ${this.narrow
               ? ""
               : html`
@@ -75,11 +72,6 @@ class PanelEnergy extends LitElement {
                     collectionKey="energy_dashboard"
                   ></hui-energy-period-selector>
                 `}
-            <a href="/config/energy?historyBack=1">
-              <mwc-icon-button>
-                <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
-              </mwc-icon-button>
-            </a>
           </app-toolbar>
         </app-header>
         <hui-view
@@ -128,12 +120,9 @@ class PanelEnergy extends LitElement {
           display: flex;
           justify-content: space-between;
         }
-        .nav-title {
-          display: flex;
-          align-items: center;
-        }
         hui-energy-period-selector {
-          width: 300px;
+          width: 100%;
+          padding-left: 16px;
         }
       `,
     ];
