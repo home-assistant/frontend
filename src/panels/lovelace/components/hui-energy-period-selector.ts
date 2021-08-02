@@ -1,4 +1,4 @@
-import { mdiRayEndArrow, mdiRayStartArrow } from "@mdi/js";
+import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
 import { endOfToday, addDays, endOfDay, isToday, isYesterday } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -43,16 +43,16 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
     return html`
       <div class="row">
-        <mwc-icon-button label="Day back" @click=${this._pickPreviousDay}>
-          <ha-svg-icon .path=${mdiRayEndArrow}></ha-svg-icon>
+        <mwc-icon-button label="Previous Day" @click=${this._pickPreviousDay}>
+          <ha-svg-icon .path=${mdiChevronLeft}></ha-svg-icon>
         </mwc-icon-button>
         <div class="label">${label}</div>
         <mwc-icon-button
           .disabled=${isStartToday}
-          label="Day forward"
+          label="Next Day"
           @click=${this._pickNextDay}
         >
-          <ha-svg-icon .path=${mdiRayStartArrow}></ha-svg-icon>
+          <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
         </mwc-icon-button>
       </div>
     `;
