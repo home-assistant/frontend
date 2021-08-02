@@ -54,11 +54,13 @@ export class EnergyStrategy {
 
     getEnergyDataCollection(hass, { prefs, key: "energy_dashboard" });
 
-    view.cards!.push({
-      type: "energy-date-selection",
-      collection_key: "energy_dashboard",
-      view_layout: { position: "sidebar" },
-    });
+    if (info.narrow) {
+      view.cards!.push({
+        type: "energy-date-selection",
+        collection_key: "energy_dashboard",
+        view_layout: { position: "sidebar" },
+      });
+    }
 
     // Only include if we have a grid source.
     if (hasGrid) {
