@@ -12,6 +12,8 @@ import { ConfigEntry, getConfigEntries } from "./config_entries";
 import { subscribeEntityRegistry } from "./entity_registry";
 import { fetchStatistics, Statistics } from "./history";
 
+const energyCollectionKeys: string[] = [];
+
 export const emptyFlowFromGridSourceEnergyPreference =
   (): FlowFromGridSourceEnergyPreference => ({
     stat_energy_from: "",
@@ -123,11 +125,7 @@ export const saveEnergyPreferences = async (
     type: "energy/save_prefs",
     ...prefs,
   });
-  const energyCollection = getEnergyDataCollection(hass);
-  energyCollection.clearPrefs();
-  if (energyCollection._active) {
-    energyCollection.refresh();
-  }
+  clearEnergyCollectionPreferences(hass);
   return newPrefs;
 };
 
@@ -208,9 +206,23 @@ const getEnergyData = async (
     // grid source
     for (const flowFrom of source.flow_from) {
       statIDs.push(flowFrom.stat_energy_from);
+      if (flowFrom.stat_cost) {
+        statIDs.push(flowFrom.stat_cost);
+      }
+      const costStatId = info.cost_sensors[flowFrom.stat_energy_from];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
     }
     for (const flowTo of source.flow_to) {
       statIDs.push(flowTo.stat_energy_to);
+      if (flowTo.stat_compensation) {
+        statIDs.push(flowTo.stat_compensation);
+      }
+      const costStatId = info.cost_sensors[flowTo.stat_energy_to];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
     }
   }
 
@@ -238,17 +250,37 @@ export interface EnergyCollection extends Collection<EnergyData> {
   _active: number;
 }
 
+const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
+  energyCollectionKeys.forEach((key) => {
+    const energyCollection = getEnergyDataCollection(hass, { key });
+    energyCollection.clearPrefs();
+    if (energyCollection._active) {
+      energyCollection.refresh();
+    }
+  });
+};
+
 export const getEnergyDataCollection = (
   hass: HomeAssistant,
-  prefs?: EnergyPreferences
+  options: { prefs?: EnergyPreferences; key?: string } = {}
 ): EnergyCollection => {
-  if ((hass.connection as any)._energy) {
-    return (hass.connection as any)._energy;
+  let key = "_energy";
+  if (options.key) {
+    if (!options.key.startsWith("energy_")) {
+      throw new Error("Key need to start with energy_");
+    }
+    key = `_${options.key}`;
   }
+
+  if ((hass.connection as any)[key]) {
+    return (hass.connection as any)[key];
+  }
+
+  energyCollectionKeys.push(options.key || "energy");
 
   const collection = getCollection<EnergyData>(
     hass.connection,
-    "_energy",
+    key,
     async () => {
       if (!collection.prefs) {
         // This will raise if not found.
@@ -304,7 +336,7 @@ export const getEnergyDataCollection = (
   };
 
   collection._active = 0;
-  collection.prefs = prefs;
+  collection.prefs = options.prefs;
   const now = new Date();
   // Set start to start of today if we have data for today, otherwise yesterday
   collection.start = now.getHours() > 0 ? startOfToday() : startOfYesterday();

@@ -59,11 +59,19 @@ const REDIRECTS: Redirects = {
     component: "zwave_js",
     redirect: "/config/zwave_js/dashboard",
   },
+  config_energy: {
+    component: "energy",
+    redirect: "/config/energy/dashboard",
+  },
   devices: {
     redirect: "/config/devices/dashboard",
   },
   entities: {
     redirect: "/config/entities",
+  },
+  energy: {
+    component: "energy",
+    redirect: "/energy",
   },
   areas: {
     redirect: "/config/areas/dashboard",
