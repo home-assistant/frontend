@@ -11,6 +11,7 @@ import { css, html, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import "@material/mwc-button";
 import { formatNumber } from "../../../../common/string/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
@@ -401,6 +402,15 @@ class HuiEnergyDistrubutionCard
             </svg>
           </div>
         </div>
+        ${this._config.linkDashboard
+          ? html`
+              <div class="card-actions">
+                <a href="/energy"
+                  ><mwc-button> Go to the energy dashboard </mwc-button></a
+                >
+              </div>
+            `
+          : ""}
       </ha-card>
     `;
   }
@@ -555,6 +565,9 @@ class HuiEnergyDistrubutionCard
         stroke-dashoffset: 238.76104;
         stroke-dasharray: 238.76104;
       }
+    }
+    .card-actions a {
+      text-decoration: none;
     }
   `;
 }
