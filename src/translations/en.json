@@ -1052,7 +1052,10 @@
             "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
             "learn_more": "More information on how to get started.",
             "add_stat": "Pick entity to track energy of",
-            "selected_stat": "Tracking energy for"
+            "selected_stat": "Tracking energy for",
+            "dialog": {
+              "selected_stat_intro": "Select the entity that represents the device energy usage."
+            }
           }
         },
         "helpers": {
