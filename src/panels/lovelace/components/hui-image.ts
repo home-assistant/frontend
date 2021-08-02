@@ -90,7 +90,7 @@ export class HuiImage extends LitElement {
   protected handleIntersectionCallback(entries) {
     const wasImageVisible = this.imageVisible;
     for (const entry of entries) {
-      this.imageVisible = !!entry.intersectionRatio;
+      this.imageVisible = entry.isIntersecting;
     }
     if (
       this.imageVisible &&
