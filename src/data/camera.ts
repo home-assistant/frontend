@@ -39,7 +39,8 @@ export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
 export const fetchThumbnailUrlWithCache = (
   hass: HomeAssistant,
   entityId: string,
-  ...args: any[]
+  width: number,
+  height: number
 ) =>
   timeCachePromiseFunc(
     "_cameraTmbUrl",
@@ -47,16 +48,18 @@ export const fetchThumbnailUrlWithCache = (
     fetchThumbnailUrl,
     hass,
     entityId,
-    args
+    width,
+    height
   );
 
 export const fetchThumbnailUrl = async (
   hass: HomeAssistant,
   entityId: string,
-  ...args: any[]
+  width: number,
+  height: number
 ) => {
   const path = await getSignedPath(hass, `/api/camera_proxy/${entityId}`);
-  return hass.hassUrl(`${path.path}&width=${args[0][0]}&height=${args[0][1]}`);
+  return hass.hassUrl(`${path.path}&width=${width}&height=${height}`);
 };
 
 export const fetchStreamUrl = async (
