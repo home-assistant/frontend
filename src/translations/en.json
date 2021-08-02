@@ -2946,7 +2946,7 @@
             },
             "type": "View type",
             "types": {
-              "masonary": "Masonary (default)",
+              "masonry": "Masonry (default)",
               "sidebar": "Sidebar",
               "panel": "Panel (1 card)"
             }
