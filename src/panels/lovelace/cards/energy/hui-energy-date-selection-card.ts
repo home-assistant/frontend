@@ -1,19 +1,9 @@
-import {
-  startOfWeek,
-  endOfWeek,
-  startOfToday,
-  endOfToday,
-  startOfYesterday,
-  endOfYesterday,
-  addDays,
-} from "date-fns";
+import { mdiRayEndArrow, mdiRayStartArrow } from "@mdi/js";
+import { endOfToday, addDays, endOfDay, isToday, isYesterday } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../../components/chart/ha-chart-base";
-import "../../../../components/ha-card";
-import "../../../../components/ha-date-range-picker";
-import type { DateRangePickerRanges } from "../../../../components/ha-date-range-picker";
+import { formatDate } from "../../../../common/datetime/format_date";
 import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
@@ -29,8 +19,6 @@ export class HuiEnergyDateSelectionCard
 
   @state() private _config?: EnergyDevicesGraphCardConfig;
 
-  @state() private _ranges?: DateRangePickerRanges;
-
   @state() _startDate?: Date;
 
   @state() _endDate?: Date;
@@ -41,30 +29,6 @@ export class HuiEnergyDateSelectionCard
         key: this._config?.collection_key,
       }).subscribe((data) => this._updateDates(data)),
     ];
-  }
-
-  public willUpdate() {
-    if (!this.hasUpdated) {
-      const today = new Date();
-      const weekStart = startOfWeek(today);
-      const weekEnd = endOfWeek(today);
-
-      this._ranges = {
-        [this.hass.localize("ui.components.date-range-picker.ranges.today")]: [
-          startOfToday(),
-          endOfToday(),
-        ],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.yesterday"
-        )]: [startOfYesterday(), endOfYesterday()],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.this_week"
-        )]: [weekStart, weekEnd],
-        [this.hass.localize(
-          "ui.components.date-range-picker.ranges.last_week"
-        )]: [addDays(weekStart, -7), addDays(weekEnd, -7)],
-      };
-    }
   }
 
   public getCardSize(): Promise<number> | number {
@@ -80,15 +44,48 @@ export class HuiEnergyDateSelectionCard
       return html``;
     }
 
+    const isStartToday = isToday(this._startDate);
+    let label;
+    if (isStartToday) {
+      label = "Today";
+    } else if (isYesterday(this._startDate)) {
+      label = "Yesterday";
+    } else {
+      label = formatDate(this._startDate, this.hass.locale);
+    }
+
     return html`
-      <ha-date-range-picker
-        .hass=${this.hass}
-        .startDate=${this._startDate}
-        .endDate=${this._endDate!}
-        .ranges=${this._ranges}
-        @change=${this._dateRangeChanged}
-      ></ha-date-range-picker>
+      <div class="row">
+        <mwc-icon-button label="Day back" @click=${this._pickPreviousDay}>
+          <ha-svg-icon .path=${mdiRayEndArrow}></ha-svg-icon>
+        </mwc-icon-button>
+        <div class="label">${label}</div>
+        <mwc-icon-button
+          .disabled=${isStartToday}
+          label="Day forward"
+          @click=${this._pickNextDay}
+        >
+          <ha-svg-icon .path=${mdiRayStartArrow}></ha-svg-icon>
+        </mwc-icon-button>
+      </div>
     `;
+  }
+
+  private _pickPreviousDay() {
+    this._setDate(addDays(this._startDate!, -1));
+  }
+
+  private _pickNextDay() {
+    this._setDate(addDays(this._startDate!, +1));
+  }
+
+  private _setDate(startDate: Date) {
+    const endDate = endOfDay(startDate);
+    const energyCollection = getEnergyDataCollection(this.hass, {
+      key: this._config?.collection_key,
+    });
+    energyCollection.setPeriod(startDate, endDate);
+    energyCollection.refresh();
   }
 
   private _updateDates(energyData: EnergyData): void {
@@ -96,22 +93,18 @@ export class HuiEnergyDateSelectionCard
     this._endDate = energyData.end || endOfToday();
   }
 
-  private _dateRangeChanged(ev: CustomEvent): void {
-    if (
-      ev.detail.startDate.getTime() === this._startDate!.getTime() &&
-      ev.detail.endDate.getTime() === this._endDate!.getTime()
-    ) {
-      return;
-    }
-    const energyCollection = getEnergyDataCollection(this.hass, {
-      key: this._config?.collection_key,
-    });
-    energyCollection.setPeriod(ev.detail.startDate, ev.detail.endDate);
-    energyCollection.refresh();
-  }
-
   static get styles(): CSSResultGroup {
-    return css``;
+    return css`
+      .row {
+        display: flex;
+        align-items: center;
+      }
+      .label {
+        flex: 1;
+        text-align: center;
+        font-size: 20px;
+      }
+    `;
   }
 }
 

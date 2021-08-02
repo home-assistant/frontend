@@ -57,6 +57,7 @@ export class EnergyStrategy {
     view.cards!.push({
       type: "energy-date-selection",
       collection_key: "energy_dashboard",
+      view_layout: { position: "sidebar" },
     });
 
     // Only include if we have a grid source.
