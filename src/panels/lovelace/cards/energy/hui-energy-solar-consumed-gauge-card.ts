@@ -1,9 +1,12 @@
+import { mdiInformation } from "@mdi/js";
+import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
+import "../../../../components/ha-svg-icon";
 import {
   EnergyData,
   energySourcesByType,
@@ -81,6 +84,13 @@ class HuiEnergySolarGaugeCard
 
     return html`
       <ha-card>
+        <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+        <paper-tooltip animation-delay="0" for="info" position="left">
+          This card represents how much of the solar energy was not used by your
+          home and was returned to the grid. If you frequently return a lot, try
+          to conserve this energy by installing a battery or buying an electric
+          car to charge.
+        </paper-tooltip>
         ${value !== undefined
           ? html`<ha-gauge
                 min="0"
@@ -136,6 +146,18 @@ class HuiEnergySolarGaugeCard
         width: 100%;
         font-size: 15px;
         margin-top: 8px;
+      }
+
+      ha-svg-icon {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        color: var(--secondary-text-color);
+      }
+      paper-tooltip {
+        width: 80%;
+        max-width: 250px;
+        margin-top: 10%;
       }
     `;
   }

@@ -1,8 +1,11 @@
+import { mdiInformation } from "@mdi/js";
+import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatNumber } from "../../../../common/string/format_number";
 import "../../../../components/ha-card";
+import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-gauge";
 import type { LevelDefinition } from "../../../../components/ha-gauge";
 import {
@@ -91,6 +94,13 @@ class HuiEnergyGridGaugeCard
 
     return html`
       <ha-card>
+        <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+        <paper-tooltip animation-delay="0" for="info" position="left">
+          This card represents your energy dependency. If it's green, it means
+          you produced more energy than that you consumed from the grid. If it's
+          in the red, it means that you relied on the grid for part of your
+          home's energy consumption.
+        </paper-tooltip>
         ${value !== undefined
           ? html`<ha-gauge
                 min="-1"
@@ -141,6 +151,18 @@ class HuiEnergyGridGaugeCard
         width: 100%;
         font-size: 15px;
         margin-top: 8px;
+      }
+
+      ha-svg-icon {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        color: var(--secondary-text-color);
+      }
+      paper-tooltip {
+        width: 80%;
+        max-width: 250px;
+        margin-top: 10%;
       }
     `;
   }

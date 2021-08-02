@@ -1,3 +1,5 @@
+import { mdiInformation } from "@mdi/js";
+import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -5,6 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import { round } from "../../../../common/number/round";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
+import "../../../../components/ha-svg-icon";
 import {
   EnergyData,
   energySourcesByType,
@@ -118,8 +121,14 @@ class HuiEnergyCarbonGaugeCard
     }
 
     return html`
-      <ha-card
-        >${value !== undefined
+      <ha-card>
+        <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+        <paper-tooltip animation-delay="0" for="info" position="left">
+          This card represents how much of the energy consumed by your home was
+          generated using non-fossil fuels like solar, wind and nuclear.
+        </paper-tooltip>
+
+        ${value !== undefined
           ? html` <ha-gauge
                 min="0"
                 max="100"
@@ -175,6 +184,18 @@ class HuiEnergyCarbonGaugeCard
         width: 100%;
         font-size: 15px;
         margin-top: 8px;
+      }
+
+      ha-svg-icon {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        color: var(--secondary-text-color);
+      }
+      paper-tooltip {
+        width: 80%;
+        max-width: 250px;
+        margin-top: 10%;
       }
     `;
   }
