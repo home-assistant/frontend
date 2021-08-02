@@ -13,7 +13,6 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "../../components/ha-menu-button";
 import "../../layouts/ha-app-layout";
-import { mdiCog } from "@mdi/js";
 
 import { haStyle } from "../../resources/styles";
 import "../lovelace/views/hui-view";
@@ -75,11 +74,6 @@ class PanelEnergy extends LitElement {
                     collectionKey="energy_dashboard"
                   ></hui-energy-period-selector>
                 `}
-            <a href="/config/energy?historyBack=1">
-              <mwc-icon-button>
-                <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
-              </mwc-icon-button>
-            </a>
           </app-toolbar>
         </app-header>
         <hui-view
@@ -133,7 +127,8 @@ class PanelEnergy extends LitElement {
           align-items: center;
         }
         hui-energy-period-selector {
-          width: 300px;
+          width: 100%;
+          padding-left: 16px;
         }
       `,
     ];
