@@ -1,35 +1,18 @@
-import { mdiRayEndArrow, mdiRayStartArrow } from "@mdi/js";
-import { endOfToday, addDays, endOfDay, isToday, isYesterday } from "date-fns";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { formatDate } from "../../../../common/datetime/format_date";
-import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
-import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyDevicesGraphCardConfig } from "../types";
+import "../../components/hui-energy-period-selector";
 
 @customElement("hui-energy-date-selection-card")
 export class HuiEnergyDateSelectionCard
-  extends SubscribeMixin(LitElement)
+  extends LitElement
   implements LovelaceCard
 {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyDevicesGraphCardConfig;
-
-  @state() _startDate?: Date;
-
-  @state() _endDate?: Date;
-
-  public hassSubscribe(): UnsubscribeFunc[] {
-    return [
-      getEnergyDataCollection(this.hass, {
-        key: this._config?.collection_key,
-      }).subscribe((data) => this._updateDates(data)),
-    ];
-  }
 
   public getCardSize(): Promise<number> | number {
     return 1;
@@ -40,71 +23,20 @@ export class HuiEnergyDateSelectionCard
   }
 
   protected render(): TemplateResult {
-    if (!this.hass || !this._config || !this._startDate) {
+    if (!this.hass || !this._config) {
       return html``;
     }
 
-    const isStartToday = isToday(this._startDate);
-    let label;
-    if (isStartToday) {
-      label = "Today";
-    } else if (isYesterday(this._startDate)) {
-      label = "Yesterday";
-    } else {
-      label = formatDate(this._startDate, this.hass.locale);
-    }
-
     return html`
-      <div class="row">
-        <mwc-icon-button label="Day back" @click=${this._pickPreviousDay}>
-          <ha-svg-icon .path=${mdiRayEndArrow}></ha-svg-icon>
-        </mwc-icon-button>
-        <div class="label">${label}</div>
-        <mwc-icon-button
-          .disabled=${isStartToday}
-          label="Day forward"
-          @click=${this._pickNextDay}
-        >
-          <ha-svg-icon .path=${mdiRayStartArrow}></ha-svg-icon>
-        </mwc-icon-button>
-      </div>
+      <hui-energy-period-selector
+        .hass=${this.hass}
+        .collectionKey=${this._config.collection_key}
+      ></hui-energy-period-selector>
     `;
-  }
-
-  private _pickPreviousDay() {
-    this._setDate(addDays(this._startDate!, -1));
-  }
-
-  private _pickNextDay() {
-    this._setDate(addDays(this._startDate!, +1));
-  }
-
-  private _setDate(startDate: Date) {
-    const endDate = endOfDay(startDate);
-    const energyCollection = getEnergyDataCollection(this.hass, {
-      key: this._config?.collection_key,
-    });
-    energyCollection.setPeriod(startDate, endDate);
-    energyCollection.refresh();
-  }
-
-  private _updateDates(energyData: EnergyData): void {
-    this._startDate = energyData.start;
-    this._endDate = energyData.end || endOfToday();
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      .row {
-        display: flex;
-        align-items: center;
-      }
-      .label {
-        flex: 1;
-        text-align: center;
-        font-size: 20px;
-      }
-    `;
+    return css``;
   }
 }
 
