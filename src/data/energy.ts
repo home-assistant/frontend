@@ -12,6 +12,8 @@ import { ConfigEntry, getConfigEntries } from "./config_entries";
 import { subscribeEntityRegistry } from "./entity_registry";
 import { fetchStatistics, Statistics } from "./history";
 
+const energyCollectionKeys: string[] = [];
+
 export const emptyFlowFromGridSourceEnergyPreference =
   (): FlowFromGridSourceEnergyPreference => ({
     stat_energy_from: "",
@@ -123,11 +125,7 @@ export const saveEnergyPreferences = async (
     type: "energy/save_prefs",
     ...prefs,
   });
-  const energyCollection = getEnergyDataCollection(hass);
-  energyCollection.clearPrefs();
-  if (energyCollection._active) {
-    energyCollection.refresh();
-  }
+  clearEnergyCollectionPreferences(hass);
   return newPrefs;
 };
 
@@ -252,6 +250,16 @@ export interface EnergyCollection extends Collection<EnergyData> {
   _active: number;
 }
 
+const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
+  energyCollectionKeys.forEach((key) => {
+    const energyCollection = getEnergyDataCollection(hass, { key });
+    energyCollection.clearPrefs();
+    if (energyCollection._active) {
+      energyCollection.refresh();
+    }
+  });
+};
+
 export const getEnergyDataCollection = (
   hass: HomeAssistant,
   options: { prefs?: EnergyPreferences; key?: string } = {}
@@ -267,6 +275,8 @@ export const getEnergyDataCollection = (
   if ((hass.connection as any)[key]) {
     return (hass.connection as any)[key];
   }
+
+  energyCollectionKeys.push(options.key || "energy");
 
   const collection = getCollection<EnergyData>(
     hass.connection,

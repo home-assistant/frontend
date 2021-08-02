@@ -7,6 +7,8 @@ import { formatDate } from "../../../common/datetime/format_date";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
+import "@material/mwc-icon-button/mwc-icon-button";
+import "../../../components/ha-svg-icon";
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -47,11 +49,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           <ha-svg-icon .path=${mdiChevronLeft}></ha-svg-icon>
         </mwc-icon-button>
         <div class="label">${label}</div>
-        <mwc-icon-button
-          .disabled=${isStartToday}
-          label="Next Day"
-          @click=${this._pickNextDay}
-        >
+        <mwc-icon-button label="Next Day" @click=${this._pickNextDay}>
           <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
         </mwc-icon-button>
       </div>
