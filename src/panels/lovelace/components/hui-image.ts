@@ -228,6 +228,9 @@ export class HuiImage extends LitElement {
       return;
     }
 
+    const height = this._image.offsetHeight
+      ? this._image.offsetHeight * 2
+      : Math.ceil((this._image.offsetWidth * 2 * 3) / 4);
     // Because the aspect ratio might result in a smaller image,
     // we ask for 200% of what we need to make sure the image is
     // still clear. In practice, for 4k sources, this is still
@@ -236,7 +239,7 @@ export class HuiImage extends LitElement {
       this.hass,
       this.cameraImage,
       this._image.offsetWidth * 2,
-      this._image.offsetHeight * 2
+      height
     );
   }
 
