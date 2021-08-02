@@ -399,6 +399,15 @@ class HuiEnergyDistrubutionCard
             </svg>
           </div>
         </div>
+        ${this._config.linkDashboard
+          ? html`
+              <div class="card-actions">
+                <a href="/energy"
+                  ><mwc-button> Go to the energy dashboard </mwc-button></a
+                >
+              </div>
+            `
+          : ""}
       </ha-card>
     `;
   }
@@ -553,6 +562,9 @@ class HuiEnergyDistrubutionCard
         stroke-dashoffset: 238.76104;
         stroke-dasharray: 238.76104;
       }
+    }
+    .card-actions a {
+      text-decoration: none;
     }
   `;
 }

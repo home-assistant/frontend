@@ -97,6 +97,7 @@ export interface EnergySummaryCardConfig extends LovelaceCardConfig {
 export interface EnergyDistributionCardConfig extends LovelaceCardConfig {
   type: "energy-distribution";
   title?: string;
+  linkDashboard?: boolean;
 }
 export interface EnergyUsageGraphCardConfig extends LovelaceCardConfig {
   type: "energy-summary-graph";
