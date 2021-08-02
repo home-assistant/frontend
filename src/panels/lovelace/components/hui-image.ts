@@ -51,9 +51,13 @@ export class HuiImage extends LitElement {
 
   @property() public darkModeFilter?: string;
 
+  @state() public imageVisible?: boolean;
+
   @state() private _loadError?: boolean;
 
   @state() private _cameraImageSrc?: string;
+
+  @property() private _intersectionObserver?: IntersectionObserver;
 
   @query("img") private _image!: HTMLImageElement;
 
@@ -66,11 +70,38 @@ export class HuiImage extends LitElement {
     if (this.cameraImage && this.cameraView !== "live") {
       this._startUpdateCameraInterval();
     }
+    this._intersectionObserver = new IntersectionObserver(
+      this.handleIntersectionCallback.bind(this),
+      {
+        root: document.rootElement,
+        rootMargin: "0px",
+        threshold: [0.0],
+      }
+    );
+    this._intersectionObserver.observe(this);
   }
 
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._stopUpdateCameraInterval();
+    if (this._intersectionObserver) {
+      this._intersectionObserver.disconnect();
+    }
+  }
+
+  protected handleIntersectionCallback(entries) {
+    const wasImageVisible = this.imageVisible;
+    for (const entry of entries) {
+      this.imageVisible = !!entry.intersectionRatio;
+    }
+    if (
+      this.imageVisible &&
+      !wasImageVisible &&
+      this._shouldStartCameraUpdates()
+    ) {
+      this._startUpdateCameraInterval();
+      this._updateCameraImageSrc();
+    }
   }
 
   protected render(): TemplateResult {
@@ -172,18 +203,35 @@ export class HuiImage extends LitElement {
     `;
   }
 
+  protected _shouldStartCameraUpdates(oldHass?: HomeAssistant): boolean {
+    if (!oldHass || oldHass.connected !== this.hass!.connected) {
+      if (this.hass!.connected && this.cameraView !== "live") {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  protected _shouldStopCameraUpdates(oldHass?: HomeAssistant): boolean {
+    if (!oldHass || oldHass.connected !== this.hass!.connected) {
+      if (!this.hass!.connected) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   protected updated(changedProps: PropertyValues): void {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.connected !== this.hass!.connected) {
-        if (this.hass!.connected && this.cameraView !== "live") {
-          this._updateCameraImageSrc();
-          this._startUpdateCameraInterval();
-        } else if (!this.hass!.connected) {
-          this._stopUpdateCameraInterval();
-          this._cameraImageSrc = undefined;
-          this._loadError = true;
-        }
+
+      if (this._shouldStartCameraUpdates(oldHass)) {
+        this._updateCameraImageSrc();
+        this._startUpdateCameraInterval();
+      } else if (this._shouldStopCameraUpdates(oldHass)) {
+        this._stopUpdateCameraInterval();
+        this._cameraImageSrc = undefined;
+        this._loadError = true;
       }
     } else if (changedProps.has("cameraImage") && this.cameraView !== "live") {
       this._updateCameraImageSrc();
@@ -219,7 +267,7 @@ export class HuiImage extends LitElement {
   }
 
   private async _updateCameraImageSrc(): Promise<void> {
-    if (!this.hass || !this.cameraImage) {
+    if (!this.hass || !this.cameraImage || !this.imageVisible) {
       return;
     }
 
