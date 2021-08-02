@@ -202,21 +202,15 @@ export class HuiImage extends LitElement {
   }
 
   protected _shouldStartCameraUpdates(oldHass?: HomeAssistant): boolean {
-    if (!oldHass || oldHass.connected !== this.hass!.connected) {
-      if (this.hass!.connected && this.cameraView !== "live") {
-        return true;
-      }
-    }
-    return false;
+    return !!(!oldHass ||
+      (oldHass.connected !== this.hass!.connected &&
+        this.hass!.connected &&
+        this.cameraView !== "live"));
   }
 
   protected _shouldStopCameraUpdates(oldHass?: HomeAssistant): boolean {
-    if (!oldHass || oldHass.connected !== this.hass!.connected) {
-      if (!this.hass!.connected) {
-        return true;
-      }
-    }
-    return false;
+    return !!(!oldHass ||
+      (oldHass.connected !== this.hass!.connected && !this.hass!.connected));
   }
 
   protected updated(changedProps: PropertyValues): void {
