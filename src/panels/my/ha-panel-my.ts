@@ -70,6 +70,7 @@ const REDIRECTS: Redirects = {
     redirect: "/config/entities",
   },
   energy: {
+    component: "energy",
     redirect: "/energy",
   },
   areas: {
