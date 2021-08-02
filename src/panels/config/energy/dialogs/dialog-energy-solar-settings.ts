@@ -87,8 +87,8 @@ export class DialogEnergySolarSettings
 
         <h3>Solar production forecast</h3>
         <p>
-          We can predict how much energy your solar panels will produce, you can
-          link or setup an integration that will provide this data.
+          Adding solar production forecast information will allow you to quickly
+          see your expected production for today.
         </p>
 
         <ha-formfield label="Don't forecast production">

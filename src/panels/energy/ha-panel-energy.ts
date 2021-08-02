@@ -20,6 +20,7 @@ import "../lovelace/views/hui-view";
 import { HomeAssistant } from "../../types";
 import { Lovelace } from "../lovelace/types";
 import { LovelaceConfig } from "../../data/lovelace";
+import "../lovelace/components/hui-energy-period-selector";
 
 const LOVELACE_CONFIG: LovelaceConfig = {
   views: [
@@ -59,11 +60,21 @@ class PanelEnergy extends LitElement {
       <ha-app-layout>
         <app-header fixed slot="header">
           <app-toolbar>
-            <ha-menu-button
-              .hass=${this.hass}
-              .narrow=${this.narrow}
-            ></ha-menu-button>
-            <div main-title>${this.hass.localize("panel.energy")}</div>
+            <div class="nav-title">
+              <ha-menu-button
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
+              <div main-title>${this.hass.localize("panel.energy")}</div>
+            </div>
+            ${this.narrow
+              ? ""
+              : html`
+                  <hui-energy-period-selector
+                    .hass=${this.hass}
+                    collectionKey="energy_dashboard"
+                  ></hui-energy-period-selector>
+                `}
             <a href="/config/energy?historyBack=1">
               <mwc-icon-button>
                 <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
@@ -112,6 +123,17 @@ class PanelEnergy extends LitElement {
       css`
         mwc-icon-button {
           color: var(--text-primary-color);
+        }
+        app-toolbar {
+          display: flex;
+          justify-content: space-between;
+        }
+        .nav-title {
+          display: flex;
+          align-items: center;
+        }
+        hui-energy-period-selector {
+          width: 300px;
         }
       `,
     ];
