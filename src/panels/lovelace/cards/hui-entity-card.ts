@@ -44,7 +44,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     entities: string[],
     entitiesFill: string[]
   ) {
-    const includeDomains = ["sensor", "light", "switch"];
+    const includeDomains = ["light", "proximity", "sensor", "switch"];
     const maxEntities = 1;
     const foundEntities = findEntities(
       hass,

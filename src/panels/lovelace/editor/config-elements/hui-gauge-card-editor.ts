@@ -26,7 +26,13 @@ const cardConfigStruct = object({
   needle: optional(boolean()),
 });
 
-const includeDomains = ["counter", "input_number", "number", "sensor"];
+const includeDomains = [
+  "counter",
+  "input_number",
+  "number",
+  "proximity",
+  "sensor",
+];
 
 @customElement("hui-gauge-card-editor")
 export class HuiGaugeCardEditor

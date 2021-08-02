@@ -14,7 +14,13 @@ import type { LovelaceCardEditor } from "../../types";
 import type { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const includeDomains = ["sensor"];
+const includeDomains = [
+  "counter",
+  "input_number",
+  "number",
+  "proximity",
+  "sensor",
+];
 
 @customElement("hui-graph-footer-editor")
 export class HuiGraphFooterEditor

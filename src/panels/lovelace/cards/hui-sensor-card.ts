@@ -8,7 +8,13 @@ import { LovelaceCardEditor } from "../types";
 import { HuiEntityCard } from "./hui-entity-card";
 import { EntityCardConfig, SensorCardConfig } from "./types";
 
-const includeDomains = ["counter", "input_number", "number", "sensor"];
+const includeDomains = [
+  "counter",
+  "input_number",
+  "number",
+  "proximity",
+  "sensor",
+];
 
 @customElement("hui-sensor-card")
 class HuiSensorCard extends HuiEntityCard {

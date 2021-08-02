@@ -21,7 +21,13 @@ import { GraphHeaderFooterConfig } from "./types";
 
 const MINUTE = 60000;
 const HOUR = MINUTE * 60;
-const includeDomains = ["counter", "input_number", "number", "sensor"];
+const includeDomains = [
+  "counter",
+  "input_number",
+  "number",
+  "proximity",
+  "sensor",
+];
 
 @customElement("hui-graph-header-footer")
 export class HuiGraphHeaderFooter
