@@ -226,8 +226,9 @@ export class HuiImage extends LitElement {
         this._startUpdateCameraInterval();
       } else if (this._shouldStopCameraUpdates(oldHass)) {
         this._stopUpdateCameraInterval();
-        this._cameraImageSrc = undefined;
-        this._loadError = true;
+        // We used to set load error when stopping
+        // but that resulted in every image being broken
+        // when a phone is locked and unlocked
       }
     } else if (changedProps.has("cameraImage") && this.cameraView !== "live") {
       this._updateCameraImageSrc();
@@ -276,6 +277,7 @@ export class HuiImage extends LitElement {
       return;
     }
 
+<<<<<<< HEAD
     // One the first render we will not know the width
     const element_width = this._image.offsetWidth
       ? this._image.offsetWidth
