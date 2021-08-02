@@ -1,6 +1,5 @@
 import {
   EnergyPreferences,
-  getEnergyDataCollection,
   getEnergyPreferences,
   GridSourceTypeEnergyPreference,
 } from "../../../data/energy";
@@ -51,8 +50,6 @@ export class EnergyStrategy {
     const hasSolar = prefs.energy_sources.some(
       (source) => source.type === "solar"
     );
-
-    getEnergyDataCollection(hass, { prefs, key: "energy_dashboard" });
 
     if (info.narrow) {
       view.cards!.push({
