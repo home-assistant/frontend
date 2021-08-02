@@ -211,11 +211,9 @@ const getEnergyData = async (
       if (flowFrom.stat_cost) {
         statIDs.push(flowFrom.stat_cost);
       }
-      if (flowFrom.number_energy_price || flowFrom.entity_energy_price) {
-        const statId = info.cost_sensors[flowFrom.stat_energy_from];
-        if (statId) {
-          statIDs.push(statId);
-        }
+      const costStatId = info.cost_sensors[flowFrom.stat_energy_from];
+      if (costStatId) {
+        statIDs.push(costStatId);
       }
     }
     for (const flowTo of source.flow_to) {
@@ -223,11 +221,9 @@ const getEnergyData = async (
       if (flowTo.stat_compensation) {
         statIDs.push(flowTo.stat_compensation);
       }
-      if (flowTo.number_energy_price || flowTo.entity_energy_price) {
-        const statId = info.cost_sensors[flowTo.stat_energy_to];
-        if (statId) {
-          statIDs.push(statId);
-        }
+      const costStatId = info.cost_sensors[flowTo.stat_energy_to];
+      if (costStatId) {
+        statIDs.push(costStatId);
       }
     }
   }
