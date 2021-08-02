@@ -350,7 +350,7 @@ export const generateDefaultViewConfig = (
 
     if (grid && grid.flow_from.length > 0) {
       areaCards.push({
-        title: "Energy distribution",
+        title: "Energy distribution today",
         type: "energy-distribution",
         linkDashboard: true,
       });
