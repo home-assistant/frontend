@@ -59,13 +59,11 @@ class PanelEnergy extends LitElement {
       <ha-app-layout>
         <app-header fixed slot="header">
           <app-toolbar>
-            <div class="nav-title">
-              <ha-menu-button
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-              ></ha-menu-button>
-              <div main-title>${this.hass.localize("panel.energy")}</div>
-            </div>
+            <ha-menu-button
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+            ></ha-menu-button>
+            <div main-title>${this.hass.localize("panel.energy")}</div>
             ${this.narrow
               ? ""
               : html`
@@ -121,10 +119,6 @@ class PanelEnergy extends LitElement {
         app-toolbar {
           display: flex;
           justify-content: space-between;
-        }
-        .nav-title {
-          display: flex;
-          align-items: center;
         }
         hui-energy-period-selector {
           width: 100%;
