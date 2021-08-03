@@ -23,6 +23,7 @@ import { mockTranslations } from "./stubs/translations";
 import { mockEnergy } from "./stubs/energy";
 import { mockConfig } from "./stubs/config";
 import { energyEntities } from "./stubs/entities";
+import { mockForecastSolar } from "./stubs/forecast_solar";
 
 class HaDemo extends HomeAssistantAppEl {
   protected async _initializeHass() {
@@ -51,6 +52,7 @@ class HaDemo extends HomeAssistantAppEl {
     mockMediaPlayer(hass);
     mockFrontend(hass);
     mockEnergy(hass);
+    mockForecastSolar(hass);
     mockConfig(hass);
     mockPersistentNotification(hass);
 
