@@ -89,9 +89,10 @@ class HuiEnergySolarGaugeCard
         <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
         <paper-tooltip animation-delay="0" for="info" position="left">
           This card represents how much of the solar energy was not used by your
-          home and was returned to the grid. If you frequently return a lot, try
-          to conserve this energy by installing a battery or buying an electric
-          car to charge.
+          home and was returned to the grid.
+          <br /><br />
+          If you frequently return a lot, try to conserve this energy by
+          installing a battery or buying an electric car to charge.
         </paper-tooltip>
         ${value !== undefined
           ? html`<ha-gauge
