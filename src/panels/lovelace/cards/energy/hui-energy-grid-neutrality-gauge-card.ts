@@ -98,10 +98,11 @@ class HuiEnergyGridGaugeCard
       <ha-card>
         <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
         <paper-tooltip animation-delay="0" for="info" position="left">
-          This card represents your energy dependency. If it's green, it means
-          you produced more energy than that you consumed from the grid. If it's
-          in the red, it means that you relied on the grid for part of your
-          home's energy consumption.
+          This card represents your energy dependency.
+          <br /><br />
+          If it's green, it means you produced more energy than that you
+          consumed from the grid. If it's in the red, it means that you relied
+          on the grid for part of your home's energy consumption.
         </paper-tooltip>
         ${value !== undefined
           ? html`<ha-gauge
