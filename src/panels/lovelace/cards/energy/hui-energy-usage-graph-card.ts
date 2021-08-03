@@ -1,5 +1,5 @@
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { startOfToday, endOfToday } from "date-fns";
+import { startOfToday, endOfToday, isToday } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -84,6 +84,13 @@ export class HuiEnergyUsageGraphCard
             )}
             chart-type="bar"
           ></ha-chart-base>
+          ${!this._chartData.datasets.length
+            ? html`<div class="no-data">
+                ${isToday(this._start)
+                  ? "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."
+                  : "There is not data for this period."}
+              </div>`
+            : ""}
         </div>
       </ha-card>
     `;
@@ -243,7 +250,7 @@ export class HuiEnergyUsageGraphCard
     endTime = new Date(
       Math.max(
         ...statisticsData.map((stats) =>
-          new Date(stats[stats.length - 1].start).getTime()
+          stats.length ? new Date(stats[stats.length - 1].start).getTime() : 0
         )
       )
     );
@@ -352,6 +359,7 @@ export class HuiEnergyUsageGraphCard
               : entity
               ? computeStateName(entity)
               : statId,
+          order: type === "used_solar" ? 0 : idx + 1,
           borderColor,
           backgroundColor: hexBlend(borderColor, backgroundColor, 50),
           stack: "stack",
@@ -392,6 +400,19 @@ export class HuiEnergyUsageGraphCard
       }
       .has-header {
         padding-top: 0;
+      }
+      .no-data {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20%;
+        margin-left: 32px;
+        box-sizing: border-box;
       }
     `;
   }

@@ -1003,7 +1003,6 @@
         "energy": {
           "caption": "Energy",
           "description": "Monitor your energy production and consumption",
-          "currency": "",
           "grid": {
             "title": "Electricity grid",
             "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",

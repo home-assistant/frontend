@@ -4,6 +4,7 @@ import {
   ChartOptions,
   ParsedDataType,
 } from "chart.js";
+import { getRelativePosition } from "chart.js/helpers";
 import { addHours } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -11,6 +12,7 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../../common/color/colors";
+import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
   formatNumber,
@@ -120,6 +122,18 @@ export class HuiEnergyDevicesGraphCard
       },
       // @ts-expect-error
       locale: numberFormatToLocale(this.hass.locale),
+      onClick: (e: any) => {
+        const chart = e.chart;
+        const canvasPosition = getRelativePosition(e, chart);
+
+        const index = Math.abs(
+          chart.scales.y.getValueForPixel(canvasPosition.y)
+        );
+        fireEvent(this, "hass-more-info", {
+          // @ts-ignore
+          entityId: this._chartData?.datasets[0]?.data[index]?.entity_id,
+        });
+      },
     })
   );
 
@@ -139,7 +153,7 @@ export class HuiEnergyDevicesGraphCard
     endTime = new Date(
       Math.max(
         ...statisticsData.map((stats) =>
-          new Date(stats[stats.length - 1].start).getTime()
+          stats.length ? new Date(stats[stats.length - 1].start).getTime() : 0
         )
       )
     );
@@ -162,19 +176,13 @@ export class HuiEnergyDevicesGraphCard
       },
     ];
 
-    for (let idx = 0; idx < energyData.prefs.device_consumption.length; idx++) {
-      const device = energyData.prefs.device_consumption[idx];
+    energyData.prefs.device_consumption.forEach((device, idx) => {
       const entity = this.hass.states[device.stat_consumption];
       const label = entity ? computeStateName(entity) : device.stat_consumption;
 
-      const color = getColorByIndex(idx);
-
-      borderColor.push(color);
-      backgroundColor.push(color + "7F");
-
       const value =
-        device.stat_consumption in this._data
-          ? calculateStatisticSumGrowth(this._data[device.stat_consumption]) ||
+        device.stat_consumption in this._data!
+          ? calculateStatisticSumGrowth(this._data![device.stat_consumption]) ||
             0
           : 0;
 
@@ -182,10 +190,19 @@ export class HuiEnergyDevicesGraphCard
         // @ts-expect-error
         y: label,
         x: value,
+        entity_id: device.stat_consumption,
+        idx,
       });
-    }
+    });
 
     data.sort((a, b) => b.x - a.x);
+
+    data.forEach((d: any) => {
+      const color = getColorByIndex(d.idx);
+
+      borderColor.push(color);
+      backgroundColor.push(color + "7F");
+    });
 
     this._chartData = {
       datasets,
