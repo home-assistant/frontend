@@ -1,5 +1,5 @@
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { startOfToday, endOfToday } from "date-fns";
+import { startOfToday, endOfToday, isToday } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -86,9 +86,9 @@ export class HuiEnergyUsageGraphCard
           ></ha-chart-base>
           ${!this._chartData.datasets.length
             ? html`<div class="no-data">
-                ${this._start.getTime() > Date.now()
-                  ? "This chart does not support future dates."
-                  : "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."}
+                ${isToday(this._start)
+                  ? "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."
+                  : "There is not data for this period."}
               </div>`
             : ""}
         </div>

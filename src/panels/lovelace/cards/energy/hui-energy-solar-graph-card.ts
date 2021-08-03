@@ -10,7 +10,7 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import { endOfToday, startOfToday } from "date-fns";
+import { endOfToday, isToday, startOfToday } from "date-fns";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergySolarGraphCardConfig } from "../types";
@@ -99,9 +99,9 @@ export class HuiEnergySolarGraphCard
           ></ha-chart-base>
           ${!this._chartData.datasets.length
             ? html`<div class="no-data">
-                ${this._start.getTime() > Date.now()
-                  ? "There is not data for this period."
-                  : "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."}
+                ${isToday(this._start)
+                  ? "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."
+                  : "There is not data for this period."}
               </div>`
             : ""}
         </div>
