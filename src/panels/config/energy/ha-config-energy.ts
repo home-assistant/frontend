@@ -64,6 +64,12 @@ class HaConfigEnergy extends LitElement {
         .route=${this.route}
         .tabs=${configSections.experiences}
       >
+        <ha-card>
+          <div class="card-content">
+            After setting up a new device, it can take up to 2 hours for new
+            data to arrive in your energy dashboard.
+          </div>
+        </ha-card>
         <div class="container">
           <ha-energy-grid-settings
             .hass=${this.hass}
@@ -112,7 +118,7 @@ class HaConfigEnergy extends LitElement {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
           grid-gap: 8px 8px;
-          padding: 8px;
+          margin: 8px;
         }
       `,
     ];

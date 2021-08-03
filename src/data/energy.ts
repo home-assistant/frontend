@@ -228,7 +228,7 @@ const getEnergyData = async (
 
   const stats = await fetchStatistics(hass!, addHours(start, -1), end, statIDs); // Subtract 1 hour from start to get starting point data
 
-  return {
+  const data = {
     start,
     end,
     info,
@@ -237,6 +237,8 @@ const getEnergyData = async (
     co2SignalConfigEntry,
     co2SignalEntity,
   };
+
+  return data;
 };
 
 export interface EnergyCollection extends Collection<EnergyData> {
@@ -300,10 +302,10 @@ export const getEnergyDataCollection = (
         // Schedule a refresh for 20 minutes past the hour
         // If the end is larger than the current time.
         const nextFetch = new Date();
-        if (nextFetch.getMinutes() > 20) {
+        if (nextFetch.getMinutes() >= 20) {
           nextFetch.setHours(nextFetch.getHours() + 1);
         }
-        nextFetch.setMinutes(20);
+        nextFetch.setMinutes(20, 0, 0);
 
         collection._refreshTimeout = window.setTimeout(
           () => collection.refresh(),
@@ -360,15 +362,15 @@ export const getEnergyDataCollection = (
   collection.setPeriod = (newStart: Date, newEnd?: Date) => {
     collection.start = newStart;
     collection.end = newEnd;
-    if (collection._updatePeriodTimeout) {
-      clearTimeout(collection._updatePeriodTimeout);
-      collection._updatePeriodTimeout = undefined;
-    }
     if (
       collection.start.getTime() === startOfToday().getTime() &&
-      collection.end?.getTime() === endOfToday().getTime()
+      collection.end?.getTime() === endOfToday().getTime() &&
+      !collection._updatePeriodTimeout
     ) {
       scheduleUpdatePeriod();
+    } else if (collection._updatePeriodTimeout) {
+      clearTimeout(collection._updatePeriodTimeout);
+      collection._updatePeriodTimeout = undefined;
     }
   };
   return collection;

@@ -10,7 +10,6 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
 import "@material/mwc-button";
 import { formatNumber } from "../../../../common/string/format_number";
 import "../../../../components/ha-card";
@@ -122,7 +121,8 @@ class HuiEnergyDistrubutionCard
     let homeLowCarbonCircumference: number | undefined;
     let homeHighCarbonCircumference: number | undefined;
 
-    let electricityMapUrl: string | undefined;
+    // This fallback is used in the demo
+    let electricityMapUrl = "https://www.electricitymap.org";
 
     if (
       this._data.co2SignalEntity &&
@@ -140,8 +140,8 @@ class HuiEnergyDistrubutionCard
 
       const co2State = this.hass.states[this._data.co2SignalEntity];
 
-      if (co2State) {
-        electricityMapUrl = `https://www.electricitymap.org/zone/${co2State.attributes.country_code}`;
+      if (co2State?.attributes.country_code) {
+        electricityMapUrl += `/zone/${co2State.attributes.country_code}`;
       }
 
       if (highCarbonConsumption !== null) {
@@ -168,7 +168,7 @@ class HuiEnergyDistrubutionCard
                       <span class="label">Non-fossil</span>
                       <a
                         class="circle"
-                        href=${ifDefined(electricityMapUrl)}
+                        href=${electricityMapUrl}
                         target="_blank"
                         rel="noopener no referrer"
                       >

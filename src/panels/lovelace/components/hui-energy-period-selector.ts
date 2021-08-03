@@ -104,14 +104,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         --mdc-theme-primary: currentColor;
         --mdc-button-outline-color: currentColor;
 
-        --mdc-button-disabled-outline-color: rgba(
-          var(--rgb-text-primary-color),
-          0.5
-        );
-        --mdc-button-disabled-ink-color: rgba(
-          var(--rgb-text-primary-color),
-          0.5
-        );
+        --mdc-button-disabled-outline-color: var(--disabled-text-color);
+        --mdc-button-disabled-ink-color: var(--disabled-text-color);
       }
     `;
   }
