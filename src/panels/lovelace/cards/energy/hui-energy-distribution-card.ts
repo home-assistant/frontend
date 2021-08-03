@@ -402,7 +402,7 @@ class HuiEnergyDistrubutionCard
             </svg>
           </div>
         </div>
-        ${this._config.linkDashboard
+        ${this._config.link_dashboard
           ? html`
               <div class="card-actions">
                 <a href="/energy"
