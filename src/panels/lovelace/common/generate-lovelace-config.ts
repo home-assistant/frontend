@@ -352,7 +352,7 @@ export const generateDefaultViewConfig = (
       areaCards.push({
         title: "Energy distribution today",
         type: "energy-distribution",
-        linkDashboard: true,
+        link_dashboard: true,
       });
     }
   }
