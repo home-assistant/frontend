@@ -58,6 +58,11 @@ export class DialogEnergyDeviceSettings
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
+        <div>
+          ${this.hass.localize(
+            `ui.panel.config.energy.device_consumption.dialog.selected_stat_intro`
+          )}
+        </div>
 
         <ha-statistic-picker
           .hass=${this.hass}
