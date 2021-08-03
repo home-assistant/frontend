@@ -302,7 +302,7 @@ export const getEnergyDataCollection = (
         // Schedule a refresh for 20 minutes past the hour
         // If the end is larger than the current time.
         const nextFetch = new Date();
-        if (nextFetch.getMinutes() > 20) {
+        if (nextFetch.getMinutes() >= 20) {
           nextFetch.setHours(nextFetch.getHours() + 1);
         }
         nextFetch.setMinutes(20);
