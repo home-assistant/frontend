@@ -32,7 +32,7 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
         {
           title: "Energy distribution today",
           type: "energy-distribution",
-          linkDashboard: true,
+          link_dashboard: true,
         },
         {
           type: "thermostat",
