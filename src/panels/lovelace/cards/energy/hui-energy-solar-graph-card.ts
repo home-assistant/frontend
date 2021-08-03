@@ -101,7 +101,7 @@ export class HuiEnergySolarGraphCard
             ? html`<div class="no-data">
                 ${this._start.getTime() > Date.now()
                   ? "There is not data for this period."
-                  : "There is no data to show. It can take up to an hour for new data to arrive after you configure your energy dashboard."}
+                  : "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."}
               </div>`
             : ""}
         </div>

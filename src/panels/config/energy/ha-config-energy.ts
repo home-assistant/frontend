@@ -66,7 +66,7 @@ class HaConfigEnergy extends LitElement {
       >
         <ha-card>
           <div class="card-content">
-            After setting up a new device, it can take up to an hour for new
+            After setting up a new device, it can take up to 2 hours for new
             data to arrive in your energy dashboard.
           </div>
         </ha-card>

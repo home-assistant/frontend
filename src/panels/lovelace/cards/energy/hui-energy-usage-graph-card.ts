@@ -88,7 +88,7 @@ export class HuiEnergyUsageGraphCard
             ? html`<div class="no-data">
                 ${this._start.getTime() > Date.now()
                   ? "This chart does not support future dates."
-                  : "There is no data to show. It can take up to an hour for new data to arrive after you configure your energy dashboard."}
+                  : "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."}
               </div>`
             : ""}
         </div>
