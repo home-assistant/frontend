@@ -85,8 +85,8 @@ const generateMeanStatistics = (
       statistic_id: id,
       start: currentDate.toISOString(),
       mean,
-      min: mean,
-      max: mean,
+      min: mean - Math.random() * maxDiff,
+      max: mean + Math.random() * maxDiff,
       last_reset: "1970-01-01T00:00:00+00:00",
       state: mean,
       sum: null,
@@ -340,11 +340,12 @@ export const mockHistory = (mockHass: MockHomeAssistant) => {
       return results;
     }
   );
+  mockHass.mockWS("history/list_statistic_ids", () => []);
   mockHass.mockWS(
     "history/statistics_during_period",
     ({ statistic_ids, start_time, end_time }, hass) => {
       const start = new Date(start_time);
-      const end = new Date(end_time);
+      const end = end_time ? new Date(end_time) : new Date();
 
       const statistics: Record<string, StatisticValue[]> = {};
 
