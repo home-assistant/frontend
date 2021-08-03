@@ -60,9 +60,9 @@ export class HuiViewEditor extends LitElement {
 
   get _type(): string {
     if (!this._config) {
-      return "masonary";
+      return "masonry";
     }
-    return this._config.panel ? "panel" : this._config.type || "masonary";
+    return this._config.panel ? "panel" : this._config.type || "masonry";
   }
 
   set config(config: LovelaceViewConfig) {
@@ -125,7 +125,7 @@ export class HuiViewEditor extends LitElement {
             attr-for-selected="type"
             @iron-select=${this._typeChanged}
           >
-            ${["masonary", "sidebar", "panel"].map(
+            ${["masonry", "sidebar", "panel"].map(
               (type) => html`<paper-item .type=${type}>
                 ${this.hass.localize(
                   `ui.panel.lovelace.editor.edit_view.types.${type}`
@@ -167,7 +167,7 @@ export class HuiViewEditor extends LitElement {
       ...this._config,
     };
     delete newConfig.panel;
-    if (selected === "masonary") {
+    if (selected === "masonry") {
       delete newConfig.type;
     } else {
       newConfig.type = selected;
