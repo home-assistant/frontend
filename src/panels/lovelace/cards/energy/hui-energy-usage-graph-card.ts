@@ -84,6 +84,13 @@ export class HuiEnergyUsageGraphCard
             )}
             chart-type="bar"
           ></ha-chart-base>
+          ${!this._chartData.datasets.length
+            ? html`<div class="no-data">
+                ${this._start.getTime() > Date.now()
+                  ? "This chart does not support future dates."
+                  : "There is no data to show. It can take up to an hour for new data to arrive after you configure your energy dashboard."}
+              </div>`
+            : ""}
         </div>
       </ha-card>
     `;
@@ -393,6 +400,19 @@ export class HuiEnergyUsageGraphCard
       }
       .has-header {
         padding-top: 0;
+      }
+      .no-data {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20%;
+        margin-left: 32px;
+        box-sizing: border-box;
       }
     `;
   }
