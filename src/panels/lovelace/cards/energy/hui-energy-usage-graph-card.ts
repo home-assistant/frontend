@@ -352,6 +352,7 @@ export class HuiEnergyUsageGraphCard
               : entity
               ? computeStateName(entity)
               : statId,
+          order: type === "used_solar" ? 0 : idx + 1,
           borderColor,
           backgroundColor: hexBlend(borderColor, backgroundColor, 50),
           stack: "stack",

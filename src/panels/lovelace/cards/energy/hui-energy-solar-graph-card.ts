@@ -271,6 +271,9 @@ export class HuiEnergySolarGraphCard
             forecastsData = forecasts![configEntryId]?.wh_hours;
             return;
           }
+          if (!forecasts![configEntryId]) {
+            return;
+          }
           Object.entries(forecasts![configEntryId].wh_hours).forEach(
             ([date, value]) => {
               if (date in forecastsData!) {
