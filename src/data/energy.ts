@@ -228,7 +228,7 @@ const getEnergyData = async (
 
   const stats = await fetchStatistics(hass!, addHours(start, -1), end, statIDs); // Subtract 1 hour from start to get starting point data
 
-  return {
+  const data = {
     start,
     end,
     info,
@@ -237,6 +237,8 @@ const getEnergyData = async (
     co2SignalConfigEntry,
     co2SignalEntity,
   };
+
+  return data;
 };
 
 export interface EnergyCollection extends Collection<EnergyData> {
