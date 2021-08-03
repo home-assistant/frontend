@@ -54,6 +54,15 @@ class PanelEnergy extends LitElement {
     }
   }
 
+  protected updated(changedProps: PropertyValues) {
+    if (
+      changedProps.has("narrow") &&
+      changedProps.get("narrow") !== undefined
+    ) {
+      this._reloadView();
+    }
+  }
+
   protected render(): TemplateResult {
     return html`
       <ha-app-layout>
@@ -123,6 +132,7 @@ class PanelEnergy extends LitElement {
         hui-energy-period-selector {
           width: 100%;
           padding-left: 16px;
+          --disabled-text-color: rgba(var(--rgb-text-primary-color), 0.5);
         }
       `,
     ];
