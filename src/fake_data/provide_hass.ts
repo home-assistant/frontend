@@ -266,6 +266,7 @@ export const provideHass = (
     updateStates,
     updateTranslations,
     addTranslations,
+    loadFragmentTranslation: async (_fragment: string) => hass().localize,
     addEntities,
     mockWS(type, callback) {
       wsCommands[type] = callback;

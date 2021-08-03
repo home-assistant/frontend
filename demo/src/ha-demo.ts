@@ -20,6 +20,9 @@ import { mockShoppingList } from "./stubs/shopping_list";
 import { mockSystemLog } from "./stubs/system_log";
 import { mockTemplate } from "./stubs/template";
 import { mockTranslations } from "./stubs/translations";
+import { mockEnergy } from "./stubs/energy";
+import { mockConfig } from "./stubs/config";
+import { energyEntities } from "./stubs/entities";
 
 class HaDemo extends HomeAssistantAppEl {
   protected async _initializeHass() {
@@ -47,7 +50,11 @@ class HaDemo extends HomeAssistantAppEl {
     mockEvents(hass);
     mockMediaPlayer(hass);
     mockFrontend(hass);
+    mockEnergy(hass);
+    mockConfig(hass);
     mockPersistentNotification(hass);
+
+    hass.addEntities(energyEntities());
 
     // Once config is loaded AND localize, set entities and apply theme.
     Promise.all([selectedDemoConfig, localizePromise]).then(
