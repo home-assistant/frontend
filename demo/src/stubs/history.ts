@@ -173,30 +173,56 @@ const statisticsFunctions: Record<
     const morningEnd = new Date(start.getTime() + 10 * 60 * 60 * 1000);
     const morningLow = generateSumStatistics(id, start, morningEnd, 0, 0.7);
     const eveningStart = new Date(start.getTime() + 20 * 60 * 60 * 1000);
+    const morningFinalVal = morningLow.length
+      ? morningLow[morningLow.length - 1].sum!
+      : 0;
+    const empty = generateSumStatistics(
+      id,
+      morningEnd,
+      eveningStart,
+      morningFinalVal,
+      0
+    );
     const eveningLow = generateSumStatistics(
       id,
       eveningStart,
       end,
-      morningLow.length ? morningLow[morningLow.length - 1].sum! : 0,
+      morningFinalVal,
       0.7
     );
-    return [...morningLow, ...eveningLow];
+    return [...morningLow, ...empty, ...eveningLow];
   },
-  "sensor.energy_consumption_tarif_2": (
-    id: string,
-    start: Date,
-    _end: Date
-  ) => {
+  "sensor.energy_consumption_tarif_2": (id: string, start: Date, end: Date) => {
     const morningEnd = new Date(start.getTime() + 9 * 60 * 60 * 1000);
     const eveningStart = new Date(start.getTime() + 20 * 60 * 60 * 1000);
-    return generateSumStatistics(id, morningEnd, eveningStart, 0, 0.3);
+    const highTarif = generateSumStatistics(
+      id,
+      morningEnd,
+      eveningStart,
+      0,
+      0.3
+    );
+    const highTarifFinalVal = highTarif.length
+      ? highTarif[highTarif.length - 1].sum!
+      : 0;
+    const morning = generateSumStatistics(id, start, morningEnd, 0, 0);
+    const evening = generateSumStatistics(
+      id,
+      eveningStart,
+      end,
+      highTarifFinalVal,
+      0
+    );
+    return [...morning, ...highTarif, ...evening];
   },
-  "sensor.energy_production_tarif_1": () => [],
-  "sensor.energy_production_tarif_1_compensation": () => [],
-  "sensor.energy_production_tarif_2": (id, start, _end) => {
+  "sensor.energy_production_tarif_1": (id, start, end) =>
+    generateSumStatistics(id, start, end, 0, 0),
+  "sensor.energy_production_tarif_1_compensation": (id, start, end) =>
+    generateSumStatistics(id, start, end, 0, 0),
+  "sensor.energy_production_tarif_2": (id, start, end) => {
     const productionStart = new Date(start.getTime() + 9 * 60 * 60 * 1000);
     const productionEnd = new Date(start.getTime() + 21 * 60 * 60 * 1000);
-    return generateCurvedStatistics(
+    const production = generateCurvedStatistics(
       id,
       productionStart,
       productionEnd,
@@ -204,11 +230,23 @@ const statisticsFunctions: Record<
       0.15,
       true
     );
+    const productionFinalVal = production.length
+      ? production[production.length - 1].sum!
+      : 0;
+    const morning = generateSumStatistics(id, start, productionStart, 0, 0);
+    const evening = generateSumStatistics(
+      id,
+      productionEnd,
+      end,
+      productionFinalVal,
+      0
+    );
+    return [...morning, ...production, ...evening];
   },
-  "sensor.solar_production": (id, start, _end) => {
+  "sensor.solar_production": (id, start, end) => {
     const productionStart = new Date(start.getTime() + 7 * 60 * 60 * 1000);
     const productionEnd = new Date(start.getTime() + 23 * 60 * 60 * 1000);
-    return generateCurvedStatistics(
+    const production = generateCurvedStatistics(
       id,
       productionStart,
       productionEnd,
@@ -216,6 +254,18 @@ const statisticsFunctions: Record<
       0.3,
       true
     );
+    const productionFinalVal = production.length
+      ? production[production.length - 1].sum!
+      : 0;
+    const morning = generateSumStatistics(id, start, productionStart, 0, 0);
+    const evening = generateSumStatistics(
+      id,
+      productionEnd,
+      end,
+      productionFinalVal,
+      0
+    );
+    return [...morning, ...production, ...evening];
   },
   "sensor.grid_fossil_fuel_percentage": (id, start, end) =>
     generateMeanStatistics(id, start, end, 35, 1.3),
@@ -311,14 +361,14 @@ export const mockHistory = (mockHass: MockHomeAssistant) => {
                   start,
                   end,
                   state,
-                  state * (state < 80 ? 0.05 : 0.5)
+                  state * (state > 80 ? 0.01 : 0.05)
                 )
               : generateMeanStatistics(
                   id,
                   start,
                   end,
                   state,
-                  state * (state < 80 ? 0.05 : 0.5)
+                  state * (state > 80 ? 0.05 : 0.1)
                 );
         }
       });

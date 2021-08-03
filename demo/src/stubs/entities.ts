@@ -88,7 +88,7 @@ export const energyEntities = () =>
     },
     "sensor.energy_car": {
       entity_id: "sensor.energy_car",
-      state: "88.6",
+      state: "4",
       attributes: {
         last_reset: "1970-01-01T00:00:00:00+00",
         friendly_name: "Electric car",
@@ -97,7 +97,7 @@ export const energyEntities = () =>
     },
     "sensor.energy_ac": {
       entity_id: "sensor.energy_ac",
-      state: "88.6",
+      state: "3",
       attributes: {
         last_reset: "1970-01-01T00:00:00:00+00",
         friendly_name: "Air conditioning",
@@ -106,7 +106,7 @@ export const energyEntities = () =>
     },
     "sensor.energy_washing_machine": {
       entity_id: "sensor.energy_washing_machine",
-      state: "60",
+      state: "6",
       attributes: {
         last_reset: "1970-01-01T00:00:00:00+00",
         friendly_name: "Washing machine",
@@ -115,7 +115,7 @@ export const energyEntities = () =>
     },
     "sensor.energy_dryer": {
       entity_id: "sensor.energy_dryer",
-      state: "55",
+      state: "5.5",
       attributes: {
         last_reset: "1970-01-01T00:00:00:00+00",
         friendly_name: "Dryer",
@@ -124,7 +124,7 @@ export const energyEntities = () =>
     },
     "sensor.energy_heat_pump": {
       entity_id: "sensor.energy_heat_pump",
-      state: "88.6",
+      state: "6",
       attributes: {
         last_reset: "1970-01-01T00:00:00:00+00",
         friendly_name: "Heat pump",
@@ -133,7 +133,7 @@ export const energyEntities = () =>
     },
     "sensor.energy_boiler": {
       entity_id: "sensor.energy_boiler",
-      state: "88.6",
+      state: "7",
       attributes: {
         last_reset: "1970-01-01T00:00:00:00+00",
         friendly_name: "Boiler",
