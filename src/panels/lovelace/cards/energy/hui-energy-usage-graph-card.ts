@@ -88,7 +88,7 @@ export class HuiEnergyUsageGraphCard
             ? html`<div class="no-data">
                 ${isToday(this._start)
                   ? "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."
-                  : "There is not data for this period."}
+                  : "There is no data for this period."}
               </div>`
             : ""}
         </div>
