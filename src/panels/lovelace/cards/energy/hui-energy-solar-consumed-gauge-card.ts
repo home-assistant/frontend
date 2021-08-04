@@ -88,11 +88,14 @@ class HuiEnergySolarGaugeCard
       <ha-card>
         <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
         <paper-tooltip animation-delay="0" for="info" position="left">
-          This card represents how much of the solar energy was used by your
-          home and was not returned to the grid.
-          <br /><br />
-          If you frequently produce more than you consume, try to conserve this
-          energy by installing a battery or buying an electric car to charge.
+          <span>
+            This card represents how much of the solar energy was used by your
+            home and was not returned to the grid.
+            <br /><br />
+            If you frequently produce more than you consume, try to conserve
+            this energy by installing a battery or buying an electric car to
+            charge.
+          </span>
         </paper-tooltip>
         ${value !== undefined
           ? html`<ha-gauge
@@ -157,10 +160,14 @@ class HuiEnergySolarGaugeCard
         top: 4px;
         color: var(--secondary-text-color);
       }
+      paper-tooltip > span {
+        font-size: 12px;
+        line-height: 12px;
+      }
       paper-tooltip {
         width: 80%;
         max-width: 250px;
-        margin-top: 10%;
+        top: 8px !important;
       }
     `;
   }
