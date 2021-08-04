@@ -126,8 +126,10 @@ class HuiEnergyCarbonGaugeCard
       <ha-card>
         <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
         <paper-tooltip animation-delay="0" for="info" position="left">
-          This card represents how much of the energy consumed by your home was
-          generated using non-fossil fuels like solar, wind and nuclear.
+          <span>
+            This card represents how much of the energy consumed by your home
+            was generated using non-fossil fuels like solar, wind and nuclear.
+          </span>
         </paper-tooltip>
 
         ${value !== undefined
@@ -194,10 +196,14 @@ class HuiEnergyCarbonGaugeCard
         top: 4px;
         color: var(--secondary-text-color);
       }
+      paper-tooltip > span {
+        font-size: 12px;
+        line-height: 12px;
+      }
       paper-tooltip {
         width: 80%;
         max-width: 250px;
-        margin-top: 10%;
+        top: 8px !important;
       }
     `;
   }
