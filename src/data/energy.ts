@@ -12,7 +12,7 @@ import { ConfigEntry, getConfigEntries } from "./config_entries";
 import { subscribeEntityRegistry } from "./entity_registry";
 import { fetchStatistics, Statistics } from "./history";
 
-const energyCollectionKeys: string[] = [];
+const energyCollectionKeys: (string | undefined)[] = [];
 
 export const emptyFlowFromGridSourceEnergyPreference =
   (): FlowFromGridSourceEnergyPreference => ({
@@ -278,7 +278,7 @@ export const getEnergyDataCollection = (
     return (hass.connection as any)[key];
   }
 
-  energyCollectionKeys.push(options.key || "energy");
+  energyCollectionKeys.push(options.key);
 
   const collection = getCollection<EnergyData>(
     hass.connection,
