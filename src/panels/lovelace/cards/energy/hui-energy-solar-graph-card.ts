@@ -276,21 +276,26 @@ export class HuiEnergySolarGraphCard
 
       // Process solar forecast data.
       if (forecasts && source.config_entry_solar_forecast) {
-        let forecastsData: Record<string, number> | undefined;
+        const forecastsData: Record<string, number> | undefined = {};
         source.config_entry_solar_forecast.forEach((configEntryId) => {
-          if (!forecastsData) {
-            forecastsData = forecasts![configEntryId]?.wh_hours;
-            return;
-          }
           if (!forecasts![configEntryId]) {
             return;
           }
           Object.entries(forecasts![configEntryId].wh_hours).forEach(
             ([date, value]) => {
-              if (date in forecastsData!) {
-                forecastsData![date] += value;
+              const dateObj = new Date(date);
+              if (
+                dateObj < energyData.start ||
+                (energyData.end && dateObj > energyData.end)
+              ) {
+                return;
+              }
+              dateObj.setMinutes(0, 0, 0);
+              const time = dateObj.getTime();
+              if (time in forecastsData) {
+                forecastsData[time] += value;
               } else {
-                forecastsData![date] = value;
+                forecastsData[time] = value;
               }
             }
           );
@@ -298,16 +303,9 @@ export class HuiEnergySolarGraphCard
 
         if (forecastsData) {
           const solarForecastData: ScatterDataPoint[] = [];
-          for (const [date, value] of Object.entries(forecastsData)) {
-            const dateObj = new Date(date);
-            if (
-              dateObj < energyData.start ||
-              (energyData.end && dateObj > energyData.end)
-            ) {
-              continue;
-            }
+          for (const [time, value] of Object.entries(forecastsData)) {
             solarForecastData.push({
-              x: dateObj.getTime(),
+              x: Number(time),
               y: value / 1000,
             });
           }
