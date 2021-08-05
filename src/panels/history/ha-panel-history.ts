@@ -12,7 +12,7 @@ import "../../components/chart/state-history-charts";
 import { computeHistory, fetchDate } from "../../data/history";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, Route } from "../../types";
 
 class HaPanelHistory extends LitElement {
   @property() hass!: HomeAssistant;
@@ -28,6 +28,8 @@ class HaPanelHistory extends LitElement {
   @property() _isLoading = false;
 
   @property() _stateHistory?;
+
+  @property() public route!: Route;
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 
@@ -145,6 +147,9 @@ class HaPanelHistory extends LitElement {
         lastWeekEnd,
       ],
     };
+
+    const routeSegments = this.route.path.split("/");
+    this._entityId = routeSegments.length > 1 ? routeSegments[1] : "";
   }
 
   protected updated(changedProps: PropertyValues) {
