@@ -24,10 +24,10 @@ import type { LovelaceCard, LovelaceCardEditor } from "../types";
 import type { GaugeCardConfig } from "./types";
 
 export const severityMap = {
-  red: "var(--label-badge-red)",
-  green: "var(--label-badge-green)",
-  yellow: "var(--label-badge-yellow)",
-  normal: "var(--label-badge-blue)",
+  red: "var(--error-color)",
+  green: "var(--success-color)",
+  yellow: "var(--warning-color)",
+  normal: "var(--info-color)",
 };
 
 @customElement("hui-gauge-card")
