@@ -36,8 +36,8 @@ export class HaFormSelect extends LitElement implements HaFormElement {
       <paper-menu-button
         horizontal-align="right"
         vertical-offset="8"
-        .opened="${this._opened}"
-        @keydown="${this._keyPressed}"
+        .opened=${this._opened}
+        @keydown=${this._keyPressed}
       >
         <div class="dropdown-trigger" slot="dropdown-trigger">
           <paper-ripple></paper-ripple>
