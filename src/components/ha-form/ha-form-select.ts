@@ -6,7 +6,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-ripple/paper-ripple";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-svg-icon";
 import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./ha-form";
@@ -21,7 +21,9 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @query("ha-paper-dropdown-menu", true) private _input?: HTMLElement;
+  @state() private _opened = false;
+
+  @query("paper-input", true) private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {
@@ -31,7 +33,12 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-menu-button horizontal-align="right" vertical-offset="8">
+      <paper-menu-button
+        horizontal-align="right"
+        vertical-offset="8"
+        .opened="${this._opened}"
+        @keydown="${this._keyPressed}"
+      >
         <div class="dropdown-trigger" slot="dropdown-trigger">
           <paper-ripple></paper-ripple>
           <paper-input
@@ -53,9 +60,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
                   <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
                 </mwc-icon-button>`
               : ""}
-            <mwc-icon-button slot="suffix">
-              <ha-svg-icon .path=${mdiMenuDown}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-svg-icon slot="suffix" .path=${mdiMenuDown}></ha-svg-icon>
           </paper-input>
         </div>
         <paper-listbox
@@ -100,6 +105,12 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     fireEvent(this, "value-changed", {
       value: ev.detail.value.itemValue,
     });
+  }
+
+  private _keyPressed(ev: KeyboardEvent) {
+    if (ev.key === "ArrowUp" || ev.key === "ArrowDown") {
+      this._opened = true;
+    }
   }
 
   static get styles(): CSSResultGroup {
