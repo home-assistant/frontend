@@ -4,7 +4,13 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import { classMap } from "lit/directives/class-map";
 import "../../../../components/ha-card";
-import { ChartData, ChartDataset, ChartOptions } from "chart.js";
+import {
+  ChartData,
+  ChartDataset,
+  ChartOptions,
+  ScatterDataPoint,
+} from "chart.js";
+import { endOfToday, isToday, startOfToday } from "date-fns";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergySolarGraphCardConfig } from "../types";
@@ -16,7 +22,6 @@ import {
 } from "../../../../common/color/convert-color";
 import { labDarken } from "../../../../common/color/lab";
 import {
-  EnergyCollection,
   EnergyData,
   getEnergyDataCollection,
   SolarSourceTypeEnergyPreference,
@@ -28,8 +33,6 @@ import {
 } from "../../../../data/forecast_solar";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/chart/ha-chart-base";
-import "../../../../components/ha-switch";
-import "../../../../components/ha-formfield";
 import {
   formatNumber,
   numberFormatToLocale,
@@ -50,15 +53,15 @@ export class HuiEnergySolarGraphCard
     datasets: [],
   };
 
-  @state() private _forecasts?: Record<string, ForecastSolarForecast>;
+  @state() private _start = startOfToday();
 
-  @state() private _showAllForecastData = false;
+  @state() private _end = endOfToday();
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass).subscribe((data) =>
-        this._getStatistics(data)
-      ),
+      getEnergyDataCollection(this.hass, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => this._getStatistics(data)),
     ];
   }
 
@@ -88,102 +91,103 @@ export class HuiEnergySolarGraphCard
           <ha-chart-base
             .data=${this._chartData}
             .options=${this._createOptions(
-              getEnergyDataCollection(this.hass),
+              this._start,
+              this._end,
               this.hass.locale
             )}
             chart-type="bar"
           ></ha-chart-base>
+          ${!this._chartData.datasets.length
+            ? html`<div class="no-data">
+                ${isToday(this._start)
+                  ? "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."
+                  : "There is no data for this period."}
+              </div>`
+            : ""}
         </div>
       </ha-card>
     `;
   }
 
   private _createOptions = memoizeOne(
-    (
-      energyCollection: EnergyCollection,
-      locale: FrontendLocaleData
-    ): ChartOptions => {
-      const startTime = energyCollection.start.getTime();
-
-      return {
-        parsing: false,
-        animation: false,
-        scales: {
-          x: {
-            type: "time",
-            suggestedMin: startTime,
-            suggestedMax: startTime + 24 * 60 * 60 * 1000,
-            adapters: {
-              date: {
-                locale: locale,
-              },
+    (start: Date, end: Date, locale: FrontendLocaleData): ChartOptions => ({
+      parsing: false,
+      animation: false,
+      scales: {
+        x: {
+          type: "time",
+          suggestedMin: start.getTime(),
+          suggestedMax: end.getTime(),
+          adapters: {
+            date: {
+              locale: locale,
             },
-            ticks: {
-              maxRotation: 0,
-              sampleSize: 5,
-              autoSkipPadding: 20,
-              major: {
-                enabled: true,
-              },
-              font: (context) =>
-                context.tick && context.tick.major
-                  ? ({ weight: "bold" } as any)
-                  : {},
-            },
-            time: {
-              tooltipFormat: "datetime",
-            },
-            offset: true,
           },
-          y: {
-            type: "linear",
-            title: {
-              display: true,
-              text: "kWh",
+          ticks: {
+            maxRotation: 0,
+            sampleSize: 5,
+            autoSkipPadding: 20,
+            major: {
+              enabled: true,
             },
-            ticks: {
-              beginAtZero: true,
-            },
+            font: (context) =>
+              context.tick && context.tick.major
+                ? ({ weight: "bold" } as any)
+                : {},
+          },
+          time: {
+            tooltipFormat: "datetime",
+          },
+          offset: true,
+        },
+        y: {
+          type: "linear",
+          title: {
+            display: true,
+            text: "kWh",
+          },
+          ticks: {
+            beginAtZero: true,
           },
         },
-        plugins: {
-          tooltip: {
-            mode: "nearest",
-            callbacks: {
-              label: (context) =>
-                `${context.dataset.label}: ${formatNumber(
-                  context.parsed.y,
-                  locale
-                )} kWh`,
-            },
-          },
-          filler: {
-            propagate: false,
-          },
-          legend: {
-            display: false,
-            labels: {
-              usePointStyle: true,
-            },
-          },
-        },
-        hover: {
+      },
+      plugins: {
+        tooltip: {
           mode: "nearest",
-        },
-        elements: {
-          line: {
-            tension: 0.3,
-            borderWidth: 1.5,
-          },
-          bar: { borderWidth: 1.5, borderRadius: 4 },
-          point: {
-            hitRadius: 5,
+          callbacks: {
+            label: (context) =>
+              `${context.dataset.label}: ${formatNumber(
+                context.parsed.y,
+                locale
+              )} kWh`,
           },
         },
-        // @ts-expect-error
-        locale: numberFormatToLocale(locale),
-      };
-    }
+        filler: {
+          propagate: false,
+        },
+        legend: {
+          display: false,
+          labels: {
+            usePointStyle: true,
+          },
+        },
+      },
+      hover: {
+        mode: "nearest",
+      },
+      elements: {
+        line: {
+          tension: 0.3,
+          borderWidth: 1.5,
+        },
+        bar: { borderWidth: 1.5, borderRadius: 4 },
+        point: {
+          hitRadius: 5,
+        },
+      },
+      // @ts-expect-error
+      locale: numberFormatToLocale(locale),
+    })
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
@@ -192,11 +196,12 @@ export class HuiEnergySolarGraphCard
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
 
+    let forecasts: Record<string, ForecastSolarForecast>;
     if (
       isComponentLoaded(this.hass, "forecast_solar") &&
       solarSources.some((source) => source.config_entry_solar_forecast)
     ) {
-      this._forecasts = await getForecastSolarForecasts(this.hass);
+      forecasts = await getForecastSolarForecasts(this.hass);
     }
 
     const statisticsData = Object.values(energyData.stats);
@@ -206,7 +211,7 @@ export class HuiEnergySolarGraphCard
     endTime = new Date(
       Math.max(
         ...statisticsData.map((stats) =>
-          new Date(stats[stats.length - 1].start).getTime()
+          stats.length ? new Date(stats[stats.length - 1].start).getTime() : 0
         )
       )
     );
@@ -229,17 +234,10 @@ export class HuiEnergySolarGraphCard
           ? rgb2hex(lab2rgb(labDarken(rgb2lab(hex2rgb(solarColor)), idx)))
           : solarColor;
 
-      data.push({
-        label: `Production ${
-          entity ? computeStateName(entity) : source.stat_energy_from
-        }`,
-        borderColor,
-        backgroundColor: borderColor + "7F",
-        data: [],
-      });
-
       let prevValue: number | null = null;
       let prevStart: string | null = null;
+
+      const solarProductionData: ScatterDataPoint[] = [];
 
       // Process solar production data.
       if (energyData.stats[source.stat_energy_from]) {
@@ -256,7 +254,7 @@ export class HuiEnergySolarGraphCard
           }
           const value = point.sum - prevValue;
           const date = new Date(point.start);
-          data[0].data.push({
+          solarProductionData.push({
             x: date.getTime(),
             y: value,
           });
@@ -265,7 +263,16 @@ export class HuiEnergySolarGraphCard
         }
       }
 
-      const forecasts = this._forecasts;
+      if (solarProductionData.length) {
+        data.push({
+          label: `Production ${
+            entity ? computeStateName(entity) : source.stat_energy_from
+          }`,
+          borderColor,
+          backgroundColor: borderColor + "7F",
+          data: solarProductionData,
+        });
+      }
 
       // Process solar forecast data.
       if (forecasts && source.config_entry_solar_forecast) {
@@ -273,6 +280,9 @@ export class HuiEnergySolarGraphCard
         source.config_entry_solar_forecast.forEach((configEntryId) => {
           if (!forecastsData) {
             forecastsData = forecasts![configEntryId]?.wh_hours;
+            return;
+          }
+          if (!forecasts![configEntryId]) {
             return;
           }
           Object.entries(forecasts![configEntryId].wh_hours).forEach(
@@ -287,35 +297,35 @@ export class HuiEnergySolarGraphCard
         });
 
         if (forecastsData) {
-          const forecast: ChartDataset<"line"> = {
-            type: "line",
-            label: `Forecast ${
-              entity ? computeStateName(entity) : source.stat_energy_from
-            }`,
-            fill: false,
-            stepped: false,
-            borderColor: computedStyles.getPropertyValue(
-              "--primary-text-color"
-            ),
-            borderDash: [7, 5],
-            pointRadius: 0,
-            data: [],
-          };
-          data.push(forecast);
-
-          const today = new Date();
-          const tomorrow = new Date(today);
-          tomorrow.setDate(tomorrow.getDate() + 1);
-          tomorrow.setHours(0, 0, 0, 0);
-
+          const solarForecastData: ScatterDataPoint[] = [];
           for (const [date, value] of Object.entries(forecastsData)) {
             const dateObj = new Date(date);
-            if (dateObj > tomorrow && !this._showAllForecastData) {
+            if (
+              dateObj < energyData.start ||
+              (energyData.end && dateObj > energyData.end)
+            ) {
               continue;
             }
-            forecast.data.push({
+            solarForecastData.push({
               x: dateObj.getTime(),
               y: value / 1000,
+            });
+          }
+
+          if (solarForecastData.length) {
+            data.push({
+              type: "line",
+              label: `Forecast ${
+                entity ? computeStateName(entity) : source.stat_energy_from
+              }`,
+              fill: false,
+              stepped: false,
+              borderColor: computedStyles.getPropertyValue(
+                "--primary-text-color"
+              ),
+              borderDash: [7, 5],
+              pointRadius: 0,
+              data: solarForecastData,
             });
           }
         }
@@ -324,6 +334,9 @@ export class HuiEnergySolarGraphCard
       // Concat two arrays
       Array.prototype.push.apply(datasets, data);
     });
+
+    this._start = energyData.start;
+    this._end = energyData.end || endOfToday();
 
     this._chartData = {
       datasets,
@@ -344,8 +357,18 @@ export class HuiEnergySolarGraphCard
       .has-header {
         padding-top: 0;
       }
-      ha-formfield {
-        margin-bottom: 16px;
+      .no-data {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20%;
+        margin-left: 32px;
+        box-sizing: border-box;
       }
     `;
   }

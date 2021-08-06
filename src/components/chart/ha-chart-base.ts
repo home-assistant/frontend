@@ -29,9 +29,11 @@ export default class HaChartBase extends LitElement {
 
   @property({ attribute: false }) public plugins?: any[];
 
-  @state() private _tooltip?: Tooltip;
+  @property({ type: Number }) public height?: number;
 
-  @state() private _height?: string;
+  @state() private _chartHeight?: number;
+
+  @state() private _tooltip?: Tooltip;
 
   @state() private _hiddenDatasets: Set<number> = new Set();
 
@@ -96,11 +98,8 @@ export default class HaChartBase extends LitElement {
       <div
         class="chartContainer"
         style=${styleMap({
-          height:
-            this.chartType === "timeline"
-              ? `${this.data.datasets.length * 30 + 30}px`
-              : this._height,
-          overflow: this._height ? "initial" : "hidden",
+          height: `${this.height ?? this._chartHeight}px`,
+          overflow: this._chartHeight ? "initial" : "hidden",
         })}
       >
         <canvas></canvas>
@@ -194,7 +193,7 @@ export default class HaChartBase extends LitElement {
       {
         id: "afterRenderHook",
         afterRender: (chart) => {
-          this._height = `${chart.height}px`;
+          this._chartHeight = chart.height;
         },
         legend: {
           ...this.options?.plugins?.legend,
@@ -255,8 +254,8 @@ export default class HaChartBase extends LitElement {
         height: 0;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
       }
-      :host(:not([chart-type="timeline"])) canvas {
-        max-height: 400px;
+      canvas {
+        max-height: var(--chart-max-height, 400px);
       }
       .chartLegend {
         text-align: center;

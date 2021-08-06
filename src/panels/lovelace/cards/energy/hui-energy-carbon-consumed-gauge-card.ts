@@ -1,3 +1,5 @@
+import { mdiInformation } from "@mdi/js";
+import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -5,6 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import { round } from "../../../../common/number/round";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
+import "../../../../components/ha-svg-icon";
 import {
   EnergyData,
   energySourcesByType,
@@ -42,7 +45,9 @@ class HuiEnergyCarbonGaugeCard
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass).subscribe((data) => {
+      getEnergyDataCollection(this.hass, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => {
         this._data = data;
       }),
     ];
@@ -79,6 +84,10 @@ class HuiEnergyCarbonGaugeCard
 
     let value: number | undefined;
 
+    if (totalGridConsumption === 0) {
+      value = 100;
+    }
+
     if (
       this._data.co2SignalEntity in this._data.stats &&
       totalGridConsumption
@@ -97,24 +106,33 @@ class HuiEnergyCarbonGaugeCard
         ? calculateStatisticsSumGrowth(
             this._data.stats,
             types.solar.map((source) => source.stat_energy_from)
-          )
-        : undefined;
+          ) || 0
+        : 0;
 
-      const totalGridReturned = calculateStatisticsSumGrowth(
-        this._data.stats,
-        types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
-      );
+      const totalGridReturned =
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
+        ) || 0;
 
       const totalEnergyConsumed =
         totalGridConsumption +
-        Math.max(0, (totalSolarProduction || 0) - (totalGridReturned || 0));
+        Math.max(0, totalSolarProduction - totalGridReturned);
 
       value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
     }
 
     return html`
-      <ha-card
-        >${value !== undefined
+      <ha-card>
+        <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+        <paper-tooltip animation-delay="0" for="info" position="left">
+          <span>
+            This card represents how much of the energy consumed by your home
+            was generated using non-fossil fuels like solar, wind and nuclear.
+          </span>
+        </paper-tooltip>
+
+        ${value !== undefined
           ? html` <ha-gauge
                 min="0"
                 max="100"
@@ -170,6 +188,22 @@ class HuiEnergyCarbonGaugeCard
         width: 100%;
         font-size: 15px;
         margin-top: 8px;
+      }
+
+      ha-svg-icon {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        color: var(--secondary-text-color);
+      }
+      paper-tooltip > span {
+        font-size: 12px;
+        line-height: 12px;
+      }
+      paper-tooltip {
+        width: 80%;
+        max-width: 250px;
+        top: 8px !important;
       }
     `;
   }

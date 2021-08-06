@@ -10,7 +10,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { ifDefined } from "lit/directives/if-defined";
+import "@material/mwc-button";
 import { formatNumber } from "../../../../common/string/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
@@ -47,7 +47,9 @@ class HuiEnergyDistrubutionCard
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass).subscribe((data) => {
+      getEnergyDataCollection(this.hass, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => {
         this._data = data;
       }),
     ];
@@ -119,7 +121,8 @@ class HuiEnergyDistrubutionCard
     let homeLowCarbonCircumference: number | undefined;
     let homeHighCarbonCircumference: number | undefined;
 
-    let electricityMapUrl: string | undefined;
+    // This fallback is used in the demo
+    let electricityMapUrl = "https://www.electricitymap.org";
 
     if (
       this._data.co2SignalEntity &&
@@ -137,8 +140,8 @@ class HuiEnergyDistrubutionCard
 
       const co2State = this.hass.states[this._data.co2SignalEntity];
 
-      if (co2State) {
-        electricityMapUrl = `https://www.electricitymap.org/zone/${co2State.attributes.country_code}`;
+      if (co2State?.attributes.country_code) {
+        electricityMapUrl += `/zone/${co2State.attributes.country_code}`;
       }
 
       if (highCarbonConsumption !== null) {
@@ -165,7 +168,7 @@ class HuiEnergyDistrubutionCard
                       <span class="label">Non-fossil</span>
                       <a
                         class="circle"
-                        href=${ifDefined(electricityMapUrl)}
+                        href=${electricityMapUrl}
                         target="_blank"
                         rel="noopener no referrer"
                       >
@@ -399,6 +402,15 @@ class HuiEnergyDistrubutionCard
             </svg>
           </div>
         </div>
+        ${this._config.link_dashboard
+          ? html`
+              <div class="card-actions">
+                <a href="/energy"
+                  ><mwc-button> Go to the energy dashboard </mwc-button></a
+                >
+              </div>
+            `
+          : ""}
       </ha-card>
     `;
   }
@@ -553,6 +565,9 @@ class HuiEnergyDistrubutionCard
         stroke-dashoffset: 238.76104;
         stroke-dasharray: 238.76104;
       }
+    }
+    .card-actions a {
+      text-decoration: none;
     }
   `;
 }

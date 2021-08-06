@@ -425,7 +425,13 @@
       "date-range-picker": {
         "start_date": "Start date",
         "end_date": "End date",
-        "select": "Select"
+        "select": "Select",
+        "ranges": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "this_week": "This week",
+          "last_week": "Last week"
+        }
       },
       "relative_time": {
         "never": "Never",
@@ -997,7 +1003,6 @@
         "energy": {
           "caption": "Energy",
           "description": "Monitor your energy production and consumption",
-          "currency": "",
           "grid": {
             "title": "Electricity grid",
             "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
@@ -1046,7 +1051,10 @@
             "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
             "learn_more": "More information on how to get started.",
             "add_stat": "Pick entity to track energy of",
-            "selected_stat": "Tracking energy for"
+            "selected_stat": "Tracking energy for",
+            "dialog": {
+              "selected_stat_intro": "Select the entity that represents the device energy usage."
+            }
           }
         },
         "helpers": {
@@ -2807,22 +2815,6 @@
           }
         }
       },
-      "history": {
-        "ranges": {
-          "today": "Today",
-          "yesterday": "Yesterday",
-          "this_week": "This week",
-          "last_week": "Last week"
-        }
-      },
-      "logbook": {
-        "ranges": {
-          "today": "Today",
-          "yesterday": "Yesterday",
-          "this_week": "This week",
-          "last_week": "Last week"
-        }
-      },
       "lovelace": {
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
@@ -2950,6 +2942,12 @@
             "tab_visibility": "Visibility",
             "visibility": {
               "select_users": "Select which users should see this view in the navigation"
+            },
+            "type": "View type",
+            "types": {
+              "masonry": "Masonry (default)",
+              "sidebar": "Sidebar",
+              "panel": "Panel (1 card)"
             }
           },
           "edit_badges": {
@@ -3243,8 +3241,6 @@
           },
           "view": {
             "panel_mode": {
-              "title": "Panel Mode?",
-              "description": "This renders the first card at full width. Other cards in this view as well as badges will not be rendered.",
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },

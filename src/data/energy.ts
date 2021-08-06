@@ -1,9 +1,18 @@
+import {
+  addHours,
+  endOfToday,
+  endOfYesterday,
+  startOfToday,
+  startOfYesterday,
+} from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
 import { ConfigEntry, getConfigEntries } from "./config_entries";
 import { subscribeEntityRegistry } from "./entity_registry";
 import { fetchStatistics, Statistics } from "./history";
+
+const energyCollectionKeys: (string | undefined)[] = [];
 
 export const emptyFlowFromGridSourceEnergyPreference =
   (): FlowFromGridSourceEnergyPreference => ({
@@ -108,14 +117,17 @@ export const getEnergyPreferences = (hass: HomeAssistant) =>
     type: "energy/get_prefs",
   });
 
-export const saveEnergyPreferences = (
+export const saveEnergyPreferences = async (
   hass: HomeAssistant,
   prefs: Partial<EnergyPreferences>
-) =>
-  hass.callWS<EnergyPreferences>({
+) => {
+  const newPrefs = hass.callWS<EnergyPreferences>({
     type: "energy/save_prefs",
     ...prefs,
   });
+  clearEnergyCollectionPreferences(hass);
+  return newPrefs;
+};
 
 interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
@@ -194,15 +206,29 @@ const getEnergyData = async (
     // grid source
     for (const flowFrom of source.flow_from) {
       statIDs.push(flowFrom.stat_energy_from);
+      if (flowFrom.stat_cost) {
+        statIDs.push(flowFrom.stat_cost);
+      }
+      const costStatId = info.cost_sensors[flowFrom.stat_energy_from];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
     }
     for (const flowTo of source.flow_to) {
       statIDs.push(flowTo.stat_energy_to);
+      if (flowTo.stat_compensation) {
+        statIDs.push(flowTo.stat_compensation);
+      }
+      const costStatId = info.cost_sensors[flowTo.stat_energy_to];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
     }
   }
 
-  const stats = await fetchStatistics(hass!, start, end, statIDs);
+  const stats = await fetchStatistics(hass!, addHours(start, -1), end, statIDs); // Subtract 1 hour from start to get starting point data
 
-  return {
+  const data = {
     start,
     end,
     info,
@@ -211,6 +237,8 @@ const getEnergyData = async (
     co2SignalConfigEntry,
     co2SignalEntity,
   };
+
+  return data;
 };
 
 export interface EnergyCollection extends Collection<EnergyData> {
@@ -219,25 +247,70 @@ export interface EnergyCollection extends Collection<EnergyData> {
   prefs?: EnergyPreferences;
   clearPrefs(): void;
   setPeriod(newStart: Date, newEnd?: Date): void;
-  getDeviceStatIds(): string[];
+  _refreshTimeout?: number;
+  _updatePeriodTimeout?: number;
+  _active: number;
 }
+
+const clearEnergyCollectionPreferences = (hass: HomeAssistant) => {
+  energyCollectionKeys.forEach((key) => {
+    const energyCollection = getEnergyDataCollection(hass, { key });
+    energyCollection.clearPrefs();
+    if (energyCollection._active) {
+      energyCollection.refresh();
+    }
+  });
+};
 
 export const getEnergyDataCollection = (
   hass: HomeAssistant,
-  prefs?: EnergyPreferences
+  options: { prefs?: EnergyPreferences; key?: string } = {}
 ): EnergyCollection => {
-  if ((hass.connection as any)._energy) {
-    return (hass.connection as any)._energy;
+  let key = "_energy";
+  if (options.key) {
+    if (!options.key.startsWith("energy_")) {
+      throw new Error("Key need to start with energy_");
+    }
+    key = `_${options.key}`;
   }
+
+  if ((hass.connection as any)[key]) {
+    return (hass.connection as any)[key];
+  }
+
+  energyCollectionKeys.push(options.key);
 
   const collection = getCollection<EnergyData>(
     hass.connection,
-    "_energy",
+    key,
     async () => {
       if (!collection.prefs) {
         // This will raise if not found.
         // Detect by checking `e.code === "not_found"
         collection.prefs = await getEnergyPreferences(hass);
+      }
+
+      if (collection._refreshTimeout) {
+        clearTimeout(collection._refreshTimeout);
+      }
+
+      if (
+        collection._active &&
+        (!collection.end || collection.end > new Date())
+      ) {
+        // The stats are created every hour
+        // Schedule a refresh for 20 minutes past the hour
+        // If the end is larger than the current time.
+        const nextFetch = new Date();
+        if (nextFetch.getMinutes() >= 20) {
+          nextFetch.setHours(nextFetch.getHours() + 1);
+        }
+        nextFetch.setMinutes(20, 0, 0);
+
+        collection._refreshTimeout = window.setTimeout(
+          () => collection.refresh(),
+          nextFetch.getTime() - Date.now()
+        );
       }
 
       return getEnergyData(
@@ -249,10 +322,39 @@ export const getEnergyDataCollection = (
     }
   ) as EnergyCollection;
 
-  collection.prefs = prefs;
-  collection.start = new Date();
-  collection.start.setHours(0, 0, 0, 0);
-  collection.start.setTime(collection.start.getTime() - 1000 * 60 * 60); // subtract 1 hour to get a startpoint
+  const origSubscribe = collection.subscribe;
+
+  collection.subscribe = (subscriber: (data: EnergyData) => void) => {
+    const unsub = origSubscribe(subscriber);
+    collection._active++;
+    return () => {
+      collection._active--;
+      if (collection._active < 1) {
+        clearTimeout(collection._refreshTimeout);
+        collection._refreshTimeout = undefined;
+      }
+      unsub();
+    };
+  };
+
+  collection._active = 0;
+  collection.prefs = options.prefs;
+  const now = new Date();
+  // Set start to start of today if we have data for today, otherwise yesterday
+  collection.start = now.getHours() > 0 ? startOfToday() : startOfYesterday();
+  collection.end = now.getHours() > 0 ? endOfToday() : endOfYesterday();
+
+  const scheduleUpdatePeriod = () => {
+    collection._updatePeriodTimeout = window.setTimeout(
+      () => {
+        collection.start = startOfToday();
+        collection.end = endOfToday();
+        scheduleUpdatePeriod();
+      },
+      addHours(endOfToday(), 1).getTime() - Date.now() // Switch to next day an hour after the day changed
+    );
+  };
+  scheduleUpdatePeriod();
 
   collection.clearPrefs = () => {
     collection.prefs = undefined;
@@ -260,10 +362,16 @@ export const getEnergyDataCollection = (
   collection.setPeriod = (newStart: Date, newEnd?: Date) => {
     collection.start = newStart;
     collection.end = newEnd;
+    if (
+      collection.start.getTime() === startOfToday().getTime() &&
+      collection.end?.getTime() === endOfToday().getTime() &&
+      !collection._updatePeriodTimeout
+    ) {
+      scheduleUpdatePeriod();
+    } else if (collection._updatePeriodTimeout) {
+      clearTimeout(collection._updatePeriodTimeout);
+      collection._updatePeriodTimeout = undefined;
+    }
   };
-  collection.getDeviceStatIds = () =>
-    collection.state.prefs.device_consumption.map(
-      (device) => device.stat_consumption
-    );
   return collection;
 };

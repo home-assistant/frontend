@@ -1,9 +1,12 @@
+import { mdiInformation } from "@mdi/js";
+import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import "../../../../components/ha-card";
 import "../../../../components/ha-gauge";
+import "../../../../components/ha-svg-icon";
 import {
   EnergyData,
   energySourcesByType,
@@ -29,7 +32,9 @@ class HuiEnergySolarGaugeCard
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
-      getEnergyDataCollection(this.hass!).subscribe((data) => {
+      getEnergyDataCollection(this.hass!, {
+        key: this._config?.collection_key,
+      }).subscribe((data) => {
         this._data = data;
       }),
     ];
@@ -55,9 +60,13 @@ class HuiEnergySolarGaugeCard
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
+    if (!types.solar) {
+      return html``;
+    }
+
     const totalSolarProduction = calculateStatisticsSumGrowth(
       this._data.stats,
-      types.solar!.map((source) => source.stat_energy_from)
+      types.solar.map((source) => source.stat_energy_from)
     );
 
     const productionReturnedToGrid = calculateStatisticsSumGrowth(
@@ -77,6 +86,17 @@ class HuiEnergySolarGaugeCard
 
     return html`
       <ha-card>
+        <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+        <paper-tooltip animation-delay="0" for="info" position="left">
+          <span>
+            This card represents how much of the solar energy was used by your
+            home and was not returned to the grid.
+            <br /><br />
+            If you frequently produce more than you consume, try to conserve
+            this energy by installing a battery or buying an electric car to
+            charge.
+          </span>
+        </paper-tooltip>
         ${value !== undefined
           ? html`<ha-gauge
                 min="0"
@@ -132,6 +152,22 @@ class HuiEnergySolarGaugeCard
         width: 100%;
         font-size: 15px;
         margin-top: 8px;
+      }
+
+      ha-svg-icon {
+        position: absolute;
+        right: 4px;
+        top: 4px;
+        color: var(--secondary-text-color);
+      }
+      paper-tooltip > span {
+        font-size: 12px;
+        line-height: 12px;
+      }
+      paper-tooltip {
+        width: 80%;
+        max-width: 250px;
+        top: 8px !important;
       }
     `;
   }
