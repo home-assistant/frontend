@@ -429,10 +429,8 @@ class HuiEnergyDistrubutionCard
                     class="battery-house"
                     d="M55,100 v-15 c0,-35 10,-30 30,-30 h20"
                     vector-effect="non-scaling-stroke"
-                  ></path>`
-                : ""}
-              ${hasBattery && hasReturnToGrid
-                ? svg`<path
+                  ></path>
+                  <path
                     id="battery-grid"
                     class="battery-grid"
                     d="M45,100 v-15 c0,-35 -10,-30 -30,-30 h-20"
@@ -659,8 +657,11 @@ class HuiEnergyDistrubutionCard
     path.battery-house {
       stroke: var(--energy-battery-out-color);
     }
-    path.battery-grid {
+    path.battery-solar {
       stroke: var(--energy-battery-in-color);
+    }
+    path.battery-grid {
+      stroke: var(--energy-grid-consumption-color);
     }
     path.return,
     circle.return {
