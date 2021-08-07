@@ -244,6 +244,8 @@ export class HuiEnergyUsageGraphCard
       to_grid?: string[];
       from_grid?: string[];
       solar?: string[];
+      to_battery?: string[];
+      from_battery?: string[];
     } = {};
 
     for (const source of energyData.prefs.energy_sources) {
@@ -252,6 +254,17 @@ export class HuiEnergyUsageGraphCard
           statistics.solar.push(source.stat_energy_from);
         } else {
           statistics.solar = [source.stat_energy_from];
+        }
+        continue;
+      }
+
+      if (source.type === "battery") {
+        if (statistics.to_battery) {
+          statistics.to_battery.push(source.stat_energy_to);
+          statistics.from_battery!.push(source.stat_energy_from);
+        } else {
+          statistics.to_battery = [source.stat_energy_to];
+          statistics.from_battery = [source.stat_energy_from];
         }
         continue;
       }
@@ -306,9 +319,19 @@ export class HuiEnergyUsageGraphCard
     }
 
     const combinedData: {
-      [key: string]: { [statId: string]: { [start: string]: number } };
+      to_grid?: { [statId: string]: { [start: string]: number } };
+      to_battery?: { [statId: string]: { [start: string]: number } };
+      from_grid?: { [statId: string]: { [start: string]: number } };
+      used_grid?: { [statId: string]: { [start: string]: number } };
+      used_solar?: { [statId: string]: { [start: string]: number } };
+      used_battery?: { [statId: string]: { [start: string]: number } };
     } = {};
-    const summedData: { [key: string]: { [start: string]: number } } = {};
+    const summedData: {
+      to_grid?: { [start: string]: number };
+      to_battery?: { [start: string]: number };
+      from_battery?: { [start: string]: number };
+      solar?: { [start: string]: number };
+    } = {};
 
     const computedStyles = getComputedStyle(this);
     const colors = {
@@ -318,9 +341,23 @@ export class HuiEnergyUsageGraphCard
       from_grid: computedStyles
         .getPropertyValue("--energy-grid-consumption-color")
         .trim(),
+      used_grid: computedStyles
+        .getPropertyValue("--energy-grid-consumption-color")
+        .trim(),
       used_solar: computedStyles
         .getPropertyValue("--energy-solar-color")
         .trim(),
+      to_battery: computedStyles
+        .getPropertyValue("--energy-battery-in-color")
+        .trim(),
+      used_battery: computedStyles
+        .getPropertyValue("--energy-battery-out-color")
+        .trim(),
+    };
+    const labels = {
+      used_grid: "Combined from grid",
+      used_solar: "Consumed solar",
+      used_battery: "Consumed battery",
     };
 
     const backgroundColor = computedStyles
@@ -328,8 +365,10 @@ export class HuiEnergyUsageGraphCard
       .trim();
 
     Object.entries(statistics).forEach(([key, statIds]) => {
-      const sum = ["solar", "to_grid"].includes(key);
-      const add = key !== "solar";
+      const sum = ["solar", "to_grid", "to_battery", "from_battery"].includes(
+        key
+      );
+      const add = !["solar", "from_battery"].includes(key);
       const totalStats: { [start: string]: number } = {};
       const sets: { [statId: string]: { [start: string]: number } } = {};
       statIds!.forEach((id) => {
@@ -374,15 +413,69 @@ export class HuiEnergyUsageGraphCard
       }
     });
 
-    if (summedData.to_grid && summedData.solar) {
+    const left_to_grid = {};
+    const left_to_battery = {};
+    if ((summedData.to_grid || summedData.to_battery) && summedData.solar) {
       const used_solar = {};
       for (const start of Object.keys(summedData.solar)) {
-        used_solar[start] = Math.max(
-          (summedData.solar[start] || 0) - (summedData.to_grid[start] || 0),
-          0
-        );
+        used_solar[start] =
+          (summedData.solar[start] || 0) -
+          (summedData.to_grid?.[start] || 0) -
+          (summedData.to_battery?.[start] || 0);
+        if (used_solar[start] < 0) {
+          left_to_grid[start] =
+            (summedData.to_grid?.[start] || 0) + (used_solar[start] || 0);
+          used_solar[start] = 0;
+          if (left_to_grid[start] < 0) {
+            left_to_battery[start] =
+              (summedData.to_battery?.[start] || 0) +
+              (left_to_grid[start] || 0);
+            left_to_grid[start] = 0;
+          }
+        }
       }
-      combinedData.used_solar = { used_solar: used_solar };
+      combinedData.used_solar = { used_solar };
+    }
+
+    if (summedData.from_battery) {
+      if (summedData.to_grid) {
+        const used_battery = {};
+        for (const start of Object.keys(summedData.from_battery)) {
+          used_battery[start] =
+            (summedData.from_battery![start] || 0) - (left_to_grid[start] || 0);
+        }
+        combinedData.used_battery = { used_battery };
+      } else {
+        combinedData.used_battery = { used_battery: summedData.from_battery };
+      }
+    }
+
+    if (combinedData.from_grid && summedData.to_battery) {
+      const used_grid = {};
+      for (const start of Object.keys(left_to_battery)) {
+        let noOfSources = 0;
+        for (const stats of Object.values(combinedData.from_grid)) {
+          if (stats[start]) {
+            noOfSources++;
+          }
+          if (noOfSources > 1) {
+            break;
+          }
+        }
+        if (noOfSources === 1) {
+          combinedData.from_grid[Object.keys(combinedData.from_grid)[0]][
+            start
+          ] -= left_to_battery[start] || 0;
+        } else {
+          let total_grid = 0;
+          Object.values(combinedData.from_grid).forEach((stats) => {
+            total_grid += stats[start] || 0;
+            delete stats[start];
+          });
+          used_grid[start] = total_grid - (left_to_battery[start] || 0);
+        }
+      }
+      combinedData.used_grid = { used_grid };
     }
 
     let allKeys: string[] = [];
@@ -406,8 +499,8 @@ export class HuiEnergyUsageGraphCard
 
         data.push({
           label:
-            type === "used_solar"
-              ? "Consumed solar"
+            type in labels
+              ? labels[type]
               : entity
               ? computeStateName(entity)
               : statId,
@@ -425,7 +518,10 @@ export class HuiEnergyUsageGraphCard
           // @ts-expect-error
           data[0].data.push({
             x: date.getTime(),
-            y: value && type === "to_grid" ? -1 * value : value,
+            y:
+              value && ["to_grid", "to_battery"].includes(type)
+                ? -1 * value
+                : value,
           });
         }
 
