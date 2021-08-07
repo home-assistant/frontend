@@ -1902,6 +1902,7 @@
               "title": "Remote Control",
               "connected": "Connected",
               "not_connected": "Not Connected",
+              "reconnecting": "Reconnecting",
               "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
               "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
               "instance_is_available": "Your instance is available at",
