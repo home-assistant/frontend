@@ -1,3 +1,4 @@
+import { startOfDay, startOfMonth } from "date-fns";
 import { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
@@ -405,4 +406,68 @@ export const calculateStatisticsSumGrowthWithPercentage = (
   });
 
   return sum;
+};
+
+export const reduceSumStatisticsByDay = (
+  values: StatisticValue[]
+): StatisticValue[] => {
+  if (!values.length) {
+    return [];
+  }
+  const result: StatisticValue[] = [];
+  let lastValue: StatisticValue;
+  let prevDate: number | undefined;
+  for (const value of values) {
+    const date = new Date(value.start).getDate();
+    if (prevDate === undefined) {
+      prevDate = date;
+    }
+    if (prevDate !== date) {
+      // Last value of the day
+      result.push({
+        ...lastValue!,
+        start: startOfDay(new Date(lastValue!.start)).toISOString(),
+      });
+      prevDate = date;
+    }
+    lastValue = value;
+  }
+  // Add final value
+  result.push({
+    ...lastValue!,
+    start: startOfDay(new Date(lastValue!.start)).toISOString(),
+  });
+  return result;
+};
+
+export const reduceSumStatisticsByMonth = (
+  values: StatisticValue[]
+): StatisticValue[] => {
+  if (!values.length) {
+    return [];
+  }
+  const result: StatisticValue[] = [];
+  let lastValue: StatisticValue;
+  let prevMonth: number | undefined;
+  for (const value of values) {
+    const month = new Date(value.start).getMonth();
+    if (prevMonth === undefined) {
+      prevMonth = month;
+    }
+    if (prevMonth !== month) {
+      // Last value of the day
+      result.push({
+        ...lastValue!,
+        start: startOfMonth(new Date(lastValue!.start)).toISOString(),
+      });
+      prevMonth = month;
+    }
+    lastValue = value;
+  }
+  // Add final value
+  result.push({
+    ...lastValue!,
+    start: startOfMonth(new Date(lastValue!.start)).toISOString(),
+  });
+  return result;
 };

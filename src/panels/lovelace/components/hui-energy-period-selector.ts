@@ -1,15 +1,40 @@
 import { mdiChevronLeft, mdiChevronRight } from "@mdi/js";
-import { endOfToday, addDays, endOfDay, isToday, startOfToday } from "date-fns";
+import {
+  endOfToday,
+  addDays,
+  endOfDay,
+  startOfToday,
+  endOfWeek,
+  endOfMonth,
+  startOfWeek,
+  startOfMonth,
+  addMonths,
+  addWeeks,
+  startOfYear,
+  addYears,
+  endOfYear,
+} from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { formatDate } from "../../../common/datetime/format_date";
+import {
+  formatDate,
+  formatDateShort,
+} from "../../../common/datetime/format_date";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, ToggleButton } from "../../../types";
 import "@material/mwc-icon-button/mwc-icon-button";
 import "../../../components/ha-svg-icon";
 import "@material/mwc-button/mwc-button";
+import "../../../components/ha-button-toggle-group";
+
+const viewButtons: ToggleButton[] = [
+  { label: "Day", value: "day" },
+  { label: "Week", value: "week" },
+  { label: "Month", value: "month" },
+  { label: "Year", value: "year" },
+];
 
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
@@ -20,6 +45,8 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @state() _startDate?: Date;
 
   @state() _endDate?: Date;
+
+  @state() private _period: "day" | "week" | "month" | "year" = "day";
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -37,41 +64,105 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     return html`
       <div class="row">
         <div class="label">
-          ${formatDate(this._startDate, this.hass.locale)}
+          ${this._period === "day"
+            ? formatDate(this._startDate, this.hass.locale)
+            : this._period === "month"
+            ? this._startDate.toLocaleString(this.hass.locale.language, {
+                month: "long",
+              })
+            : this._period === "year"
+            ? this._startDate.toLocaleString(this.hass.locale.language, {
+                year: "numeric",
+              })
+            : `${formatDateShort(
+                this._startDate,
+                this.hass.locale
+              )} - ${formatDateShort(
+                this._endDate || new Date(),
+                this.hass.locale
+              )}`}
         </div>
 
-        <mwc-icon-button label="Previous Day" @click=${this._pickPreviousDay}>
+        <mwc-icon-button label="Previous" @click=${this._pickPrevious}>
           <ha-svg-icon .path=${mdiChevronLeft}></ha-svg-icon>
         </mwc-icon-button>
-        <mwc-icon-button label="Next Day" @click=${this._pickNextDay}>
+        <mwc-icon-button label="Next" @click=${this._pickNext}>
           <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
         </mwc-icon-button>
 
-        <mwc-button
+        <mwc-button dense outlined @click=${this._pickToday}>
+          Today
+        </mwc-button>
+        <ha-button-toggle-group
+          .buttons=${viewButtons}
+          .active=${this._period}
           dense
-          outlined
-          .disabled=${isToday(this._startDate)}
-          @click=${this._pickToday}
-          >Today</mwc-button
-        >
+          @value-changed=${this._handleView}
+        ></ha-button-toggle-group>
       </div>
     `;
   }
 
+  private _handleView(ev: CustomEvent): void {
+    this._period = ev.detail.value;
+    const currentStart = this._startDate || startOfToday();
+    this._setDate(
+      this._period === "day"
+        ? currentStart
+        : this._period === "week"
+        ? startOfWeek(currentStart, { weekStartsOn: 1 })
+        : this._period === "month"
+        ? startOfMonth(currentStart)
+        : startOfYear(currentStart)
+    );
+  }
+
   private _pickToday() {
-    this._setDate(startOfToday());
+    this._setDate(
+      this._period === "day"
+        ? startOfToday()
+        : this._period === "week"
+        ? startOfWeek(new Date(), { weekStartsOn: 1 })
+        : this._period === "month"
+        ? startOfMonth(new Date())
+        : startOfYear(new Date())
+    );
   }
 
-  private _pickPreviousDay() {
-    this._setDate(addDays(this._startDate!, -1));
+  private _pickPrevious() {
+    const newStart =
+      this._period === "day"
+        ? addDays(this._startDate!, -1)
+        : this._period === "week"
+        ? addWeeks(this._startDate!, -1)
+        : this._period === "month"
+        ? addMonths(this._startDate!, -1)
+        : addYears(this._startDate!, -1);
+    this._setDate(newStart);
   }
 
-  private _pickNextDay() {
-    this._setDate(addDays(this._startDate!, +1));
+  private _pickNext() {
+    const newStart =
+      this._period === "day"
+        ? addDays(this._startDate!, 1)
+        : this._period === "week"
+        ? addWeeks(this._startDate!, 1)
+        : this._period === "month"
+        ? addMonths(this._startDate!, 1)
+        : addYears(this._startDate!, 1);
+    this._setDate(newStart);
   }
 
   private _setDate(startDate: Date) {
-    const endDate = endOfDay(startDate);
+    const endDate =
+      this._period === "day"
+        ? endOfDay(startDate)
+        : this._period === "week"
+        ? endOfWeek(startDate, { weekStartsOn: 1 })
+        : this._period === "month"
+        ? endOfMonth(startDate)
+        : endOfYear(startDate);
+
     const energyCollection = getEnergyDataCollection(this.hass, {
       key: this.collectionKey,
     });
@@ -96,16 +187,20 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         text-align: center;
         font-size: 20px;
       }
+      :host {
+        --mdc-button-outline-color: currentColor;
+        --primary-color: currentColor;
+        --mdc-theme-primary: currentColor;
+        --mdc-button-disabled-outline-color: var(--disabled-text-color);
+        --mdc-button-disabled-ink-color: var(--disabled-text-color);
+        --mdc-icon-button-ripple-opacity: 0.2;
+      }
       mwc-icon-button {
         --mdc-icon-button-size: 28px;
       }
-      mwc-button {
+      mwc-button,
+      ha-button-toggle-group {
         padding-left: 8px;
-        --mdc-theme-primary: currentColor;
-        --mdc-button-outline-color: currentColor;
-
-        --mdc-button-disabled-outline-color: var(--disabled-text-color);
-        --mdc-button-disabled-ink-color: var(--disabled-text-color);
       }
     `;
   }

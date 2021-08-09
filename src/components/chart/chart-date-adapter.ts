@@ -86,11 +86,15 @@ _adapters._date.override({
       case "week":
         return formatDate(new Date(time), this.options.locale);
       case "month":
-        return formatDate(new Date(time), this.options.locale);
+        return new Date(time).toLocaleString(this.options.locale.language, {
+          month: "long",
+        });
       case "quarter":
         return formatDate(new Date(time), this.options.locale);
       case "year":
-        return formatDate(new Date(time), this.options.locale);
+        return new Date(time).toLocaleString(this.options.locale.language, {
+          year: "numeric",
+        });
       default:
         return "";
     }

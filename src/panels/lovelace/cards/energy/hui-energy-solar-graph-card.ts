@@ -10,7 +10,13 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import { endOfToday, isToday, startOfToday } from "date-fns";
+import {
+  addHours,
+  differenceInDays,
+  endOfToday,
+  isToday,
+  startOfToday,
+} from "date-fns";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergySolarGraphCardConfig } from "../types";
@@ -39,6 +45,10 @@ import {
 } from "../../../../common/string/format_number";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { FrontendLocaleData } from "../../../../data/translation";
+import {
+  reduceSumStatisticsByMonth,
+  reduceSumStatisticsByDay,
+} from "../../../../data/history";
 
 @customElement("hui-energy-solar-graph-card")
 export class HuiEnergySolarGraphCard
@@ -110,84 +120,98 @@ export class HuiEnergySolarGraphCard
   }
 
   private _createOptions = memoizeOne(
-    (start: Date, end: Date, locale: FrontendLocaleData): ChartOptions => ({
-      parsing: false,
-      animation: false,
-      scales: {
-        x: {
-          type: "time",
-          suggestedMin: start.getTime(),
-          suggestedMax: end.getTime(),
-          adapters: {
-            date: {
-              locale: locale,
+    (start: Date, end: Date, locale: FrontendLocaleData): ChartOptions => {
+      const dayDifference = differenceInDays(end, start);
+      return {
+        parsing: false,
+        animation: false,
+        scales: {
+          x: {
+            type: "time",
+            suggestedMin: (dayDifference > 2
+              ? addHours(start, -11)
+              : start
+            ).getTime(),
+            suggestedMax: (dayDifference > 2
+              ? addHours(end, -11)
+              : end
+            ).getTime(),
+            adapters: {
+              date: {
+                locale: locale,
+              },
+            },
+            ticks: {
+              maxRotation: 0,
+              sampleSize: 5,
+              autoSkipPadding: 20,
+              major: {
+                enabled: true,
+              },
+              font: (context) =>
+                context.tick && context.tick.major
+                  ? ({ weight: "bold" } as any)
+                  : {},
+            },
+            time: {
+              tooltipFormat:
+                dayDifference > 35
+                  ? "month"
+                  : dayDifference > 2
+                  ? "day"
+                  : "datetime",
+            },
+            offset: true,
+          },
+          y: {
+            type: "linear",
+            title: {
+              display: true,
+              text: "kWh",
+            },
+            ticks: {
+              beginAtZero: true,
             },
           },
-          ticks: {
-            maxRotation: 0,
-            sampleSize: 5,
-            autoSkipPadding: 20,
-            major: {
-              enabled: true,
+        },
+        plugins: {
+          tooltip: {
+            mode: "nearest",
+            callbacks: {
+              label: (context) =>
+                `${context.dataset.label}: ${formatNumber(
+                  context.parsed.y,
+                  locale
+                )} kWh`,
             },
-            font: (context) =>
-              context.tick && context.tick.major
-                ? ({ weight: "bold" } as any)
-                : {},
           },
-          time: {
-            tooltipFormat: "datetime",
+          filler: {
+            propagate: false,
           },
-          offset: true,
-        },
-        y: {
-          type: "linear",
-          title: {
-            display: true,
-            text: "kWh",
-          },
-          ticks: {
-            beginAtZero: true,
+          legend: {
+            display: false,
+            labels: {
+              usePointStyle: true,
+            },
           },
         },
-      },
-      plugins: {
-        tooltip: {
+        hover: {
           mode: "nearest",
-          callbacks: {
-            label: (context) =>
-              `${context.dataset.label}: ${formatNumber(
-                context.parsed.y,
-                locale
-              )} kWh`,
+        },
+        elements: {
+          line: {
+            tension: 0.3,
+            borderWidth: 1.5,
+          },
+          bar: { borderWidth: 1.5, borderRadius: 4 },
+          point: {
+            hitRadius: 5,
           },
         },
-        filler: {
-          propagate: false,
-        },
-        legend: {
-          display: false,
-          labels: {
-            usePointStyle: true,
-          },
-        },
-      },
-      hover: {
-        mode: "nearest",
-      },
-      elements: {
-        line: {
-          tension: 0.3,
-          borderWidth: 1.5,
-        },
-        bar: { borderWidth: 1.5, borderRadius: 4 },
-        point: {
-          hitRadius: 5,
-        },
-      },
-      // @ts-expect-error
-      locale: numberFormatToLocale(locale),
-    })
+        // @ts-expect-error
+        locale: numberFormatToLocale(locale),
+      };
+    }
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
@@ -225,6 +249,11 @@ export class HuiEnergySolarGraphCard
       .getPropertyValue("--energy-solar-color")
       .trim();
 
+    const dayDifference = differenceInDays(
+      energyData.end || new Date(),
+      energyData.start
+    );
+
     solarSources.forEach((source, idx) => {
       const data: ChartDataset<"bar" | "line">[] = [];
       const entity = this.hass.states[source.stat_energy_from];
@@ -241,7 +270,17 @@ export class HuiEnergySolarGraphCard
 
       // Process solar production data.
       if (energyData.stats[source.stat_energy_from]) {
-        for (const point of energyData.stats[source.stat_energy_from]) {
+        const stats =
+          dayDifference > 35
+            ? reduceSumStatisticsByMonth(
+                energyData.stats[source.stat_energy_from]
+              )
+            : dayDifference > 2
+            ? reduceSumStatisticsByDay(
+                energyData.stats[source.stat_energy_from]
+              )
+            : energyData.stats[source.stat_energy_from];
+        for (const point of stats) {
           if (!point.sum) {
             continue;
           }
