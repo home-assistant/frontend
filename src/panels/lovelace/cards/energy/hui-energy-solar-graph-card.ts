@@ -269,7 +269,7 @@ export class HuiEnergySolarGraphCard
       const solarProductionData: ScatterDataPoint[] = [];
 
       // Process solar production data.
-      if (energyData.stats[source.stat_energy_from]) {
+      if (source.stat_energy_from in energyData.stats) {
         const stats =
           dayDifference > 35
             ? reduceSumStatisticsByMonth(
@@ -280,8 +280,9 @@ export class HuiEnergySolarGraphCard
                 energyData.stats[source.stat_energy_from]
               )
             : energyData.stats[source.stat_energy_from];
+
         for (const point of stats) {
-          if (!point.sum) {
+          if (point.sum === null) {
             continue;
           }
           if (prevValue === null) {

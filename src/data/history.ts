@@ -1,4 +1,4 @@
-import { startOfDay, startOfMonth } from "date-fns";
+import { addDays, addMonths, startOfDay, startOfMonth } from "date-fns";
 import { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
@@ -415,6 +415,16 @@ export const reduceSumStatisticsByDay = (
     return [];
   }
   const result: StatisticValue[] = [];
+  if (
+    values.length > 1 &&
+    new Date(values[0].start).getDate() === new Date(values[1].start).getDate()
+  ) {
+    // add init value if the first value isn't end of previous period
+    result.push({
+      ...values[0]!,
+      start: startOfMonth(addDays(new Date(values[0].start), -1)).toISOString(),
+    });
+  }
   let lastValue: StatisticValue;
   let prevDate: number | undefined;
   for (const value of values) {
@@ -447,6 +457,19 @@ export const reduceSumStatisticsByMonth = (
     return [];
   }
   const result: StatisticValue[] = [];
+  if (
+    values.length > 1 &&
+    new Date(values[0].start).getMonth() ===
+      new Date(values[1].start).getMonth()
+  ) {
+    // add init value if the first value isn't end of previous period
+    result.push({
+      ...values[0]!,
+      start: startOfMonth(
+        addMonths(new Date(values[0].start), -1)
+      ).toISOString(),
+    });
+  }
   let lastValue: StatisticValue;
   let prevMonth: number | undefined;
   for (const value of values) {

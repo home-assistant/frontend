@@ -332,10 +332,11 @@ export class HuiEnergyUsageGraphCard
         if (!stats) {
           return;
         }
+
         const set = {};
         let prevValue: number;
         stats.forEach((stat) => {
-          if (!stat.sum) {
+          if (stat.sum === null) {
             return;
           }
           if (!prevValue) {
