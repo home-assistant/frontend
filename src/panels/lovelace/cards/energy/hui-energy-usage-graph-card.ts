@@ -355,7 +355,7 @@ export class HuiEnergyUsageGraphCard
         data.push({
           label:
             type === "used_solar"
-              ? "Solar"
+              ? "Consumed solar"
               : entity
               ? computeStateName(entity)
               : statId,
