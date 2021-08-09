@@ -329,7 +329,14 @@ export class HuiEnergySolarGraphCard
               ) {
                 return;
               }
-              dateObj.setMinutes(0, 0, 0);
+              if (dayDifference > 35) {
+                dateObj.setDate(1);
+              }
+              if (dayDifference > 2) {
+                dateObj.setHours(0, 0, 0, 0);
+              } else {
+                dateObj.setMinutes(0, 0, 0);
+              }
               const time = dateObj.getTime();
               if (time in forecastsData) {
                 forecastsData[time] += value;
