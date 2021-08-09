@@ -13,6 +13,10 @@ import {
   startOfYear,
   addYears,
   endOfYear,
+  isSameWeek,
+  isSameDay,
+  isSameMonth,
+  isSameYear,
 } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -46,7 +50,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @state() _endDate?: Date;
 
-  @state() private _period: "day" | "week" | "month" | "year" = "day";
+  @state() private _period?: "day" | "week" | "month" | "year";
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -173,6 +177,15 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   private _updateDates(energyData: EnergyData): void {
     this._startDate = energyData.start;
     this._endDate = energyData.end || endOfToday();
+    this._period = isSameDay(this._startDate, this._endDate)
+      ? "day"
+      : isSameWeek(this._startDate, this._endDate, { weekStartsOn: 1 })
+      ? "week"
+      : isSameMonth(this._startDate, this._endDate)
+      ? "month"
+      : isSameYear(this._startDate, this._endDate)
+      ? "year"
+      : undefined;
   }
 
   static get styles(): CSSResultGroup {
