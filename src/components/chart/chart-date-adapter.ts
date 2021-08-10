@@ -35,7 +35,14 @@ import {
   endOfQuarter,
   endOfYear,
 } from "date-fns";
-import { formatDate, formatDateShort } from "../../common/datetime/format_date";
+import {
+  formatDate,
+  formatDateMonth,
+  formatDateMonthYear,
+  formatDateShort,
+  formatDateWeekday,
+  formatDateYear,
+} from "../../common/datetime/format_date";
 import {
   formatDateTime,
   formatDateTimeWithSeconds,
@@ -53,8 +60,11 @@ const FORMATS = {
   minute: "minute",
   hour: "hour",
   day: "day",
+  date: "date",
+  weekday: "weekday",
   week: "week",
   month: "month",
+  monthyear: "monthyear",
   quarter: "quarter",
   year: "year",
 };
@@ -81,20 +91,22 @@ _adapters._date.override({
         return formatTime(new Date(time), this.options.locale);
       case "hour":
         return formatTime(new Date(time), this.options.locale);
+      case "weekday":
+        return formatDateWeekday(new Date(time), this.options.locale);
+      case "date":
+        return formatDate(new Date(time), this.options.locale);
       case "day":
         return formatDateShort(new Date(time), this.options.locale);
       case "week":
         return formatDate(new Date(time), this.options.locale);
       case "month":
-        return new Date(time).toLocaleString(this.options.locale.language, {
-          month: "long",
-        });
+        return formatDateMonth(new Date(time), this.options.locale);
+      case "monthyear":
+        return formatDateMonthYear(new Date(time), this.options.locale);
       case "quarter":
         return formatDate(new Date(time), this.options.locale);
       case "year":
-        return new Date(time).toLocaleString(this.options.locale.language, {
-          year: "numeric",
-        });
+        return formatDateYear(new Date(time), this.options.locale);
       default:
         return "";
     }

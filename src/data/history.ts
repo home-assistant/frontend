@@ -411,7 +411,7 @@ export const calculateStatisticsSumGrowthWithPercentage = (
 export const reduceSumStatisticsByDay = (
   values: StatisticValue[]
 ): StatisticValue[] => {
-  if (!values.length) {
+  if (!values?.length) {
     return [];
   }
   const result: StatisticValue[] = [];
@@ -453,7 +453,7 @@ export const reduceSumStatisticsByDay = (
 export const reduceSumStatisticsByMonth = (
   values: StatisticValue[]
 ): StatisticValue[] => {
-  if (!values.length) {
+  if (!values?.length) {
     return [];
   }
   const result: StatisticValue[] = [];

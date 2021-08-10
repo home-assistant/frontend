@@ -6,6 +6,7 @@ import {
   startOfToday,
   endOfWeek,
   endOfMonth,
+  startOfDay,
   startOfWeek,
   startOfMonth,
   addMonths,
@@ -13,17 +14,17 @@ import {
   startOfYear,
   addYears,
   endOfYear,
-  isSameWeek,
-  isSameDay,
-  isSameMonth,
-  isSameYear,
+  isWithinInterval,
+  differenceInDays,
 } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import {
   formatDate,
+  formatDateMonthYear,
   formatDateShort,
+  formatDateYear,
 } from "../../../common/datetime/format_date";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
@@ -71,13 +72,9 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
           ${this._period === "day"
             ? formatDate(this._startDate, this.hass.locale)
             : this._period === "month"
-            ? this._startDate.toLocaleString(this.hass.locale.language, {
-                month: "long",
-              })
+            ? formatDateMonthYear(this._startDate, this.hass.locale)
             : this._period === "year"
-            ? this._startDate.toLocaleString(this.hass.locale.language, {
-                year: "numeric",
-              })
+            ? formatDateYear(this._startDate, this.hass.locale)
             : `${formatDateShort(
                 this._startDate,
                 this.hass.locale
@@ -109,15 +106,24 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   private _handleView(ev: CustomEvent): void {
     this._period = ev.detail.value;
-    const currentStart = this._startDate || startOfToday();
+    const today = startOfToday();
+    const start =
+      !this._startDate ||
+      isWithinInterval(today, {
+        start: this._startDate,
+        end: this._endDate || endOfToday(),
+      })
+        ? today
+        : this._startDate;
+
     this._setDate(
       this._period === "day"
-        ? currentStart
+        ? startOfDay(start)
         : this._period === "week"
-        ? startOfWeek(currentStart, { weekStartsOn: 1 })
+        ? startOfWeek(start, { weekStartsOn: 1 })
         : this._period === "month"
-        ? startOfMonth(currentStart)
-        : startOfYear(currentStart)
+        ? startOfMonth(start)
+        : startOfYear(start)
     );
   }
 
@@ -177,15 +183,17 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   private _updateDates(energyData: EnergyData): void {
     this._startDate = energyData.start;
     this._endDate = energyData.end || endOfToday();
-    this._period = isSameDay(this._startDate, this._endDate)
-      ? "day"
-      : isSameWeek(this._startDate, this._endDate, { weekStartsOn: 1 })
-      ? "week"
-      : isSameMonth(this._startDate, this._endDate)
-      ? "month"
-      : isSameYear(this._startDate, this._endDate)
-      ? "year"
-      : undefined;
+    const dayDifference = differenceInDays(this._endDate, this._startDate);
+    this._period =
+      dayDifference < 1
+        ? "day"
+        : dayDifference === 6
+        ? "week"
+        : dayDifference > 26 && dayDifference < 31 // 28, 29, 30 or 31 days in a month
+        ? "month"
+        : dayDifference === 364 || dayDifference === 365 // Leap year
+        ? "year"
+        : undefined;
   }
 
   static get styles(): CSSResultGroup {

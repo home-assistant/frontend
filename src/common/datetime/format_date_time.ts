@@ -4,6 +4,12 @@ import { FrontendLocaleData } from "../../data/translation";
 import { toLocaleStringSupportsOptions } from "./check_options_support";
 import { useAmPm } from "./use_am_pm";
 
+// August 9, 2021, 8:23 AM
+export const formatDateTime = toLocaleStringSupportsOptions
+  ? (dateObj: Date, locale: FrontendLocaleData) =>
+      formatDateTimeMem(locale).format(dateObj)
+  : (dateObj: Date, locale: FrontendLocaleData) =>
+      format(dateObj, "MMMM D, YYYY, HH:mm" + useAmPm(locale) ? " A" : "");
 const formatDateTimeMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
@@ -16,12 +22,12 @@ const formatDateTimeMem = memoizeOne(
     })
 );
 
-export const formatDateTime = toLocaleStringSupportsOptions
+// August 9, 2021, 8:23:15 AM
+export const formatDateTimeWithSeconds = toLocaleStringSupportsOptions
   ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateTimeMem(locale).format(dateObj)
+      formatDateTimeWithSecondsMem(locale).format(dateObj)
   : (dateObj: Date, locale: FrontendLocaleData) =>
-      format(dateObj, "MMMM D, YYYY, HH:mm" + useAmPm(locale) ? " A" : "");
-
+      format(dateObj, "MMMM D, YYYY, HH:mm:ss" + useAmPm(locale) ? " A" : "");
 const formatDateTimeWithSecondsMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
@@ -35,8 +41,20 @@ const formatDateTimeWithSecondsMem = memoizeOne(
     })
 );
 
-export const formatDateTimeWithSeconds = toLocaleStringSupportsOptions
+// 9/8/2021, 8:23 AM
+export const formatDateTimeNumeric = toLocaleStringSupportsOptions
   ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateTimeWithSecondsMem(locale).format(dateObj)
+      formatDateTimeNumericMem(locale).format(dateObj)
   : (dateObj: Date, locale: FrontendLocaleData) =>
-      format(dateObj, "MMMM D, YYYY, HH:mm:ss" + useAmPm(locale) ? " A" : "");
+      format(dateObj, "M/D/YYYY, HH:mm" + useAmPm(locale) ? " A" : "");
+const formatDateTimeNumericMem = memoizeOne(
+  (locale: FrontendLocaleData) =>
+    new Intl.DateTimeFormat(locale.language, {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: useAmPm(locale),
+    })
+);

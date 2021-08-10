@@ -156,10 +156,14 @@ export class HuiEnergySolarGraphCard
             time: {
               tooltipFormat:
                 dayDifference > 35
-                  ? "month"
+                  ? "monthyear"
+                  : dayDifference > 7
+                  ? "date"
                   : dayDifference > 2
-                  ? "day"
-                  : "datetime",
+                  ? "weekday"
+                  : dayDifference > 0
+                  ? "datetime"
+                  : "hour",
             },
             offset: true,
           },
