@@ -151,6 +151,12 @@ export class HuiEnergyUsageGraphCard
                   : dayDifference > 0
                   ? "datetime"
                   : "hour",
+              minUnit:
+                dayDifference > 35
+                  ? "month"
+                  : dayDifference > 2
+                  ? "day"
+                  : "hour",
             },
             offset: true,
           },
