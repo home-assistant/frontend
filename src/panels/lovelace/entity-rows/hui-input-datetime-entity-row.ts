@@ -1,9 +1,6 @@
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
-import type { HaDateInput } from "../../../components/ha-date-input";
-import "../../../components/paper-time-input";
-import type { PaperTimeInput } from "../../../components/paper-time-input";
 import { UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
 import { setInputDateTimeValue } from "../../../data/input_datetime";
 import type { HomeAssistant } from "../../../types";
@@ -11,16 +8,13 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { EntityConfig, LovelaceRow } from "./types";
+import "../../../components/ha-time-input";
 
 @customElement("hui-input-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EntityConfig;
-
-  @query("paper-time-input") private _timeInputEl?: PaperTimeInput;
-
-  @query("ha-date-input") private _dateInputEl?: HaDateInput;
 
   public setConfig(config: EntityConfig): void {
     if (!config) {
@@ -55,7 +49,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
               <ha-date-input
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 .value=${`${stateObj.attributes.year}-${stateObj.attributes.month}-${stateObj.attributes.day}`}
-                @value-changed=${this._selectedValueChanged}
+                @value-changed=${this._dateChanged}
               >
               </ha-date-input>
               ${stateObj.attributes.has_time ? "," : ""}
@@ -63,19 +57,18 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
           : ``}
         ${stateObj.attributes.has_time
           ? html`
-              <paper-time-input
+              <ha-time-input
+                .value=${stateObj.state === UNKNOWN
+                  ? ""
+                  : stateObj.attributes.has_date
+                  ? stateObj.state.split(" ")[1]
+                  : stateObj.state}
+                .locale=${this.hass.locale}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
-                .hour=${stateObj.state === UNKNOWN
-                  ? ""
-                  : ("0" + stateObj.attributes.hour).slice(-2)}
-                .min=${stateObj.state === UNKNOWN
-                  ? ""
-                  : ("0" + stateObj.attributes.minute).slice(-2)}
-                @change=${this._selectedValueChanged}
-                @click=${this._stopEventPropagation}
                 hide-label
-                .format=${24}
-              ></paper-time-input>
+                @value-changed=${this._timeChanged}
+                @click=${this._stopEventPropagation}
+              ></ha-time-input>
             `
           : ``}
       </hui-generic-entity-row>
@@ -86,16 +79,26 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     ev.stopPropagation();
   }
 
-  private _selectedValueChanged(ev): void {
+  private _timeChanged(ev): void {
+    const stateObj = this.hass!.states[this._config!.entity];
+    setInputDateTimeValue(
+      this.hass!,
+      stateObj.entity_id,
+      ev.detail.value,
+      stateObj.attributes.has_date ? stateObj.state.split(" ")[0] : undefined
+    );
+    ev.target.blur();
+  }
+
+  private _dateChanged(ev): void {
     const stateObj = this.hass!.states[this._config!.entity];
 
-    const time = this._timeInputEl
-      ? this._timeInputEl.value?.trim()
-      : undefined;
-
-    const date = this._dateInputEl ? this._dateInputEl.value : undefined;
-
-    setInputDateTimeValue(this.hass!, stateObj.entity_id, time, date);
+    setInputDateTimeValue(
+      this.hass!,
+      stateObj.entity_id,
+      stateObj.attributes.has_time ? stateObj.state.split(" ")[1] : undefined,
+      ev.detail.value
+    );
 
     ev.target.blur();
   }

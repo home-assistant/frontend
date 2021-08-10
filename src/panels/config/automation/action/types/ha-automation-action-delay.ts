@@ -1,11 +1,9 @@
-import "@polymer/paper-input/paper-input";
 import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { hasTemplate } from "../../../../../common/string/has-template";
-import "../../../../../components/entity/ha-entity-picker";
-import { HaFormTimeData } from "../../../../../components/ha-form/ha-form";
-import "../../../../../components/ha-service-picker";
+import type { HaDurationData } from "../../../../../components/ha-duration-input";
+import "../../../../../components/ha-duration-input";
 import { DelayAction } from "../../../../../data/script";
 import { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
@@ -16,7 +14,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
 
   @property() public action!: DelayAction;
 
-  @property() public _timeData!: HaFormTimeData;
+  @property() public _timeData!: HaDurationData;
 
   public static get defaultConfig() {
     return { delay: "" };
@@ -62,11 +60,11 @@ export class HaDelayAction extends LitElement implements ActionElement {
   }
 
   protected render() {
-    return html`<ha-time-input
+    return html`<ha-duration-input
       .data=${this._timeData}
       enableMillisecond
       @value-changed=${this._valueChanged}
-    ></ha-time-input>`;
+    ></ha-duration-input>`;
   }
 
   private _valueChanged(ev: CustomEvent) {
