@@ -1,8 +1,9 @@
 import { STATE_NOT_RUNNING } from "home-assistant-js-websocket";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { subscribeOne } from "../../../common/util/subscribe-one";
 import { subscribeAreaRegistry } from "../../../data/area_registry";
 import { subscribeDeviceRegistry } from "../../../data/device_registry";
-import { getEnergyPreferences } from "../../../data/energy";
+import { EnergyPreferences, getEnergyPreferences } from "../../../data/energy";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { generateDefaultViewConfig } from "../common/generate-lovelace-config";
 import {
@@ -38,15 +39,21 @@ export class OriginalStatesStrategy {
       subscribeEntityRegistry(hass.connection, () => undefined);
     }
 
-    const [areaEntries, deviceEntries, entityEntries, localize, energyPrefs] =
+    let energyPromise: Promise<EnergyPreferences> | undefined;
+
+    if (isComponentLoaded(hass, "energy")) {
+      energyPromise = getEnergyPreferences(hass);
+    }
+
+    const [areaEntries, deviceEntries, entityEntries, localize] =
       await Promise.all([
         subscribeOne(hass.connection, subscribeAreaRegistry),
         subscribeOne(hass.connection, subscribeDeviceRegistry),
         subscribeOne(hass.connection, subscribeEntityRegistry),
         hass.loadBackendTranslation("title"),
-        // It raises if not configured, just swallow that.
-        getEnergyPreferences(hass).catch(() => undefined),
       ]);
+
+    const energyPrefs = energyPromise ? await energyPromise : undefined;
 
     // User can override default view. If they didn't, we will add one
     // that contains all entities.
