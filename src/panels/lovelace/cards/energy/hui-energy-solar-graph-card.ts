@@ -201,7 +201,11 @@ export class HuiEnergySolarGraphCard
       isComponentLoaded(this.hass, "forecast_solar") &&
       solarSources.some((source) => source.config_entry_solar_forecast)
     ) {
-      forecasts = await getForecastSolarForecasts(this.hass);
+      try {
+        forecasts = await getForecastSolarForecasts(this.hass);
+      } catch (_e) {
+        // ignore
+      }
     }
 
     const statisticsData = Object.values(energyData.stats);
