@@ -7,8 +7,12 @@ import {
   svg,
 } from "lit";
 import { customElement, property } from "lit/decorators";
-import { NODE_SIZE, SPACING } from "./hat-script-graph";
+import { NODE_SIZE, SPACING } from "./hat-graph-const";
 
+/**
+ * @attribute active
+ * @attribute track
+ */
 @customElement("hat-graph-node")
 export class HatGraphNode extends LitElement {
   @property() iconPath?: string;

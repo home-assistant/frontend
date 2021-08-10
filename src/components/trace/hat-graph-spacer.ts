@@ -1,7 +1,11 @@
 import { css, LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import { SPACING, NODE_SIZE } from "./hat-script-graph";
+import { SPACING, NODE_SIZE } from "./hat-graph-const";
 
+/**
+ * @attribute active
+ * @attribute track
+ */
 @customElement("hat-graph-spacer")
 export class HatGraphSpacer extends LitElement {
   @property({ reflect: true, type: Boolean }) disabled?: boolean;

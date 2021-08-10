@@ -1,7 +1,7 @@
 import { css, html, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import { BRANCH_HEIGHT, SPACING } from "./hat-script-graph";
+import { BRANCH_HEIGHT, SPACING } from "./hat-graph-const";
 
 interface BranchConfig {
   x: number;
@@ -11,6 +11,10 @@ interface BranchConfig {
   track: boolean;
 }
 
+/**
+ * @attribute active
+ * @attribute track
+ */
 @customElement("hat-graph-branch")
 export class HatGraphBranch extends LitElement {
   @property({ reflect: true, type: Boolean }) disabled?: boolean;

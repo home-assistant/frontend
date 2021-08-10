@@ -43,10 +43,7 @@ import "../ha-svg-icon";
 import "./hat-graph-node";
 import "./hat-graph-spacer";
 import "./hat-graph-branch";
-
-export const SPACING = 10;
-export const NODE_SIZE = 30;
-export const BRANCH_HEIGHT = 20;
+import { NODE_SIZE, SPACING, BRANCH_HEIGHT } from "./hat-graph-const";
 
 export interface NodeInfo {
   path: string;
@@ -103,6 +100,30 @@ export class HatScriptGraph extends LitElement {
     return this.render_condition_node(config, path);
   }
 
+  private typeRenderers = {
+    condition: this.render_condition_node,
+    delay: this.render_delay_node,
+    event: this.render_event_node,
+    scene: this.render_scene_node,
+    service: this.render_service_node,
+    wait_template: this.render_wait_node,
+    wait_for_trigger: this.render_wait_node,
+    repeat: this.render_repeat_node,
+    choose: this.render_choose_node,
+    device_id: this.render_device_node,
+    other: this.render_other_node,
+  };
+
+  private render_action_node(node: Action, path: string, graphStart = false) {
+    const type =
+      Object.keys(this.typeRenderers).find((key) => key in node) || "other";
+    this.renderedNodes[path] = { config: node, path };
+    if (this.trace && path in this.trace.trace) {
+      this.trackedNodes[path] = this.renderedNodes[path];
+    }
+    return this.typeRenderers[type].bind(this)(node, path, graphStart);
+  }
+
   private render_choose_node(
     config: ChooseAction,
     path: string,
@@ -152,7 +173,10 @@ export class HatScriptGraph extends LitElement {
                     ?active=${this.selected === branch_path}
                   ></hat-graph-node>
                   ${ensureArray(branch.sequence).map((action, j) =>
-                    this.render_node(action, `${branch_path}/sequence/${j}`)
+                    this.render_action_node(
+                      action,
+                      `${branch_path}/sequence/${j}`
+                    )
                   )}
                 </div>
               `;
@@ -161,7 +185,7 @@ export class HatScriptGraph extends LitElement {
         <div ?track=${track_default}>
           <hat-graph-spacer ?track=${track_default}></hat-graph-spacer>
           ${ensureArray(config.default)?.map((action, i) =>
-            this.render_node(action, `${path}/default/${i}`)
+            this.render_action_node(action, `${path}/default/${i}`)
           )}
         </div>
       </hat-graph-branch>
@@ -173,21 +197,23 @@ export class HatScriptGraph extends LitElement {
     path: string,
     graphStart = false
   ) {
-    const trace = (this.trace.trace[path] as ConditionTraceStep[]) || undefined;
+    const trace = this.trace.trace[path] as ConditionTraceStep[] | undefined;
     let track = false;
     let trackPass = false;
     let trackFailed = false;
-    for (const trc of trace) {
-      if (trc.result) {
-        track = true;
-        if (trc.result.result) {
-          trackPass = true;
-        } else {
-          trackFailed = true;
+    if (trace) {
+      for (const trc of trace) {
+        if (trc.result) {
+          track = true;
+          if (trc.result.result) {
+            trackPass = true;
+          } else {
+            trackFailed = true;
+          }
         }
-      }
-      if (trackPass && trackFailed) {
-        break;
+        if (trackPass && trackFailed) {
+          break;
+        }
       }
     }
     return html`
@@ -300,7 +326,7 @@ export class HatScriptGraph extends LitElement {
         ></hat-graph-node>
         <div ?track=${trace}>
           ${ensureArray(node.repeat.sequence).map((action, i) =>
-            this.render_node(action, `${path}/repeat/sequence/${i}`)
+            this.render_action_node(action, `${path}/repeat/sequence/${i}`)
           )}
         </div>
       </hat-graph-branch>
@@ -370,30 +396,6 @@ export class HatScriptGraph extends LitElement {
     `;
   }
 
-  private typeRenderers = {
-    condition: this.render_condition_node,
-    delay: this.render_delay_node,
-    event: this.render_event_node,
-    scene: this.render_scene_node,
-    service: this.render_service_node,
-    wait_template: this.render_wait_node,
-    wait_for_trigger: this.render_wait_node,
-    repeat: this.render_repeat_node,
-    choose: this.render_choose_node,
-    device_id: this.render_device_node,
-    other: this.render_other_node,
-  };
-
-  private render_node(node: Action, path: string, graphStart = false) {
-    const type =
-      Object.keys(this.typeRenderers).find((key) => key in node) || "other";
-    this.renderedNodes[path] = { config: node, path };
-    if (this.trace && path in this.trace.trace) {
-      this.trackedNodes[path] = this.renderedNodes[path];
-    }
-    return this.typeRenderers[type].bind(this)(node, path, graphStart);
-  }
-
   protected render() {
     const paths = Object.keys(this.trackedNodes);
     const trigger_nodes =
@@ -417,12 +419,12 @@ export class HatScriptGraph extends LitElement {
             : ""}
           ${"action" in this.trace.config
             ? html`${ensureArray(this.trace.config.action).map((action, i) =>
-                this.render_node(action, `action/${i}`)
+                this.render_action_node(action, `action/${i}`)
               )}`
             : ""}
           ${"sequence" in this.trace.config
             ? html`${ensureArray(this.trace.config.sequence).map((action, i) =>
-                this.render_node(action, `sequence/${i}`, i === 0)
+                this.render_action_node(action, `sequence/${i}`, i === 0)
               )}`
             : ""}
         </div>
