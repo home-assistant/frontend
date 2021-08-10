@@ -7,6 +7,7 @@ import "../../../../../components/ha-duration-input";
 import { DelayAction } from "../../../../../data/script";
 import { HomeAssistant } from "../../../../../types";
 import { ActionElement } from "../ha-automation-action-row";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
 
 @customElement("ha-automation-action-delay")
 export class HaDelayAction extends LitElement implements ActionElement {
@@ -20,7 +21,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
     return { delay: "" };
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues) {
     if (!changedProperties.has("action")) {
       return;
     }
@@ -34,29 +35,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
       return;
     }
 
-    if (typeof this.action.delay !== "object") {
-      if (typeof this.action.delay === "string" || isNaN(this.action.delay)) {
-        const parts = this.action.delay?.toString().split(":") || [];
-        this._timeData = {
-          hours: Number(parts[0]) || 0,
-          minutes: Number(parts[1]) || 0,
-          seconds: Number(parts[2]) || 0,
-          milliseconds: Number(parts[3]) || 0,
-        };
-      } else {
-        this._timeData = { seconds: this.action.delay };
-      }
-      return;
-    }
-    const { days, minutes, seconds, milliseconds } = this.action.delay;
-    let { hours } = this.action.delay || 0;
-    hours = (hours || 0) + (days || 0) * 24;
-    this._timeData = {
-      hours: hours,
-      minutes: minutes,
-      seconds: seconds,
-      milliseconds: milliseconds,
-    };
+    this._timeData = createDurationData(this.action.delay);
   }
 
   protected render() {
