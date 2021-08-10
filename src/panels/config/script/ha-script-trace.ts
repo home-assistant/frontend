@@ -6,12 +6,11 @@ import {
   mdiRefresh,
 } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
-import type { NodeInfo } from "../../../components/trace/hat-graph";
 import "../../../components/trace/hat-script-graph";
 import { getLogbookDataForContext, LogbookEntry } from "../../../data/logbook";
 import { ScriptEntity } from "../../../data/script";
@@ -31,6 +30,10 @@ import "../../../components/trace/ha-trace-config";
 import "../../../components/trace/ha-trace-logbook";
 import "../../../components/trace/ha-trace-path-details";
 import "../../../components/trace/ha-trace-timeline";
+import type {
+  HatScriptGraph,
+  NodeInfo,
+} from "../../../components/trace/hat-script-graph";
 
 @customElement("ha-script-trace")
 export class HaScriptTrace extends LitElement {
@@ -63,12 +66,14 @@ export class HaScriptTrace extends LitElement {
     | "logbook"
     | "blueprint" = "details";
 
+  @query("hat-script-graph") private _graph?: HatScriptGraph;
+
   protected render(): TemplateResult {
     const stateObj = this.scriptEntityId
       ? this.hass.states[this.scriptEntityId]
       : undefined;
 
-    const graph = this.shadowRoot!.querySelector("hat-script-graph");
+    const graph = this._graph;
     const trackedNodes = graph?.trackedNodes;
     const renderedNodes = graph?.renderedNodes;
 
@@ -274,10 +279,10 @@ export class HaScriptTrace extends LitElement {
     this._loadTraces(params.get("run_id") || undefined);
   }
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
+  public willUpdate(changedProps) {
+    super.willUpdate(changedProps);
 
-    // Only reset if automationId has changed and we had one before.
+    // Only reset if scriptEntityId has changed and we had one before.
     if (changedProps.get("scriptEntityId")) {
       this._traces = undefined;
       this._runId = undefined;
@@ -291,7 +296,6 @@ export class HaScriptTrace extends LitElement {
     if (changedProps.has("_runId") && this._runId) {
       this._trace = undefined;
       this._logbookEntries = undefined;
-      this.shadowRoot!.querySelector("select")!.value = this._runId;
       this._loadTrace();
     }
   }
@@ -417,14 +421,13 @@ export class HaScriptTrace extends LitElement {
     this._logbookEntries = traceInfo.logbookEntries;
   }
 
-  private _showTab(ev) {
+  private _showTab(ev: Event) {
     this._view = (ev.target as any).view;
   }
 
-  private _timelinePathPicked(ev) {
+  private _timelinePathPicked(ev: CustomEvent) {
     const path = ev.detail.value;
-    const nodes =
-      this.shadowRoot!.querySelector("hat-script-graph")!.trackedNodes;
+    const nodes = this._graph!.trackedNodes;
     if (nodes[path]) {
       this._selected = nodes[path];
     }
