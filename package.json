@@ -17,7 +17,7 @@
     "lint": "yarn run lint:eslint && yarn run lint:prettier && yarn run lint:types",
     "format": "yarn run format:eslint && yarn run format:prettier",
     "mocha": "ts-mocha -p test-mocha/tsconfig.test.json \"test-mocha/**/*.ts\"",
-    "test": "yarn run lint && yarn run mocha"
+    "test": "yarn run mocha"
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
