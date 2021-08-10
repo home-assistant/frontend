@@ -2,9 +2,9 @@ import { HaDurationData } from "../../components/ha-duration-input";
 import { ForDict } from "../../data/automation";
 
 export const createDurationData = (
-  duration: string | number | ForDict
+  duration: string | number | ForDict | undefined
 ): HaDurationData => {
-  if (!duration) {
+  if (duration === undefined) {
     return {};
   }
   if (typeof duration !== "object") {
