@@ -9,6 +9,7 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
@@ -80,6 +81,8 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   @property() public trigger!: Trigger;
 
+  @state() private _warnings?: string[];
+
   @state() private _yamlMode = false;
 
   protected render() {
@@ -118,6 +121,20 @@ export default class HaAutomationTriggerRow extends LitElement {
               </mwc-list-item>
             </ha-button-menu>
           </div>
+          ${this._warnings
+            ? html`<div class="warning">
+                ${this.hass.localize("ui.errors.config.editor_not_supported")}:
+                <br />
+                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
+                  ? html` <ul>
+                      ${this._warnings!.map(
+                        (warning) => html`<li>${warning}</li>`
+                      )}
+                    </ul>`
+                  : ""}
+                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
+              </div>`
+            : ""}
           ${yamlMode
             ? html`
                 ${selected === -1
@@ -170,7 +187,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                   @value-changed=${this._idChanged}
                 >
                 </paper-input>
-                <div>
+                <div @ui-mode-not-available=${this._handleUiModeNotAvailable}>
                   ${dynamicElement(
                     `ha-automation-trigger-${this.trigger.platform}`,
                     { hass: this.hass, trigger: this.trigger }
@@ -180,6 +197,13 @@ export default class HaAutomationTriggerRow extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  private _handleUiModeNotAvailable(ev: CustomEvent) {
+    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    if (!this._yamlMode) {
+      this._yamlMode = true;
+    }
   }
 
   private _handleAction(ev: CustomEvent<ActionDetail>) {
@@ -258,6 +282,7 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _switchYamlMode() {
+    this._warnings = undefined;
     this._yamlMode = !this._yamlMode;
   }
 
