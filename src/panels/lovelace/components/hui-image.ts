@@ -71,10 +71,7 @@ export class HuiImage extends LitElement {
       this._startUpdateCameraInterval();
     }
     this._intersectionObserver = new IntersectionObserver(
-      this.handleIntersectionCallback.bind(this),
-      {
-        threshold: [0.0],
-      }
+      this.handleIntersectionCallback.bind(this)
     );
     this._intersectionObserver.observe(this);
   }
