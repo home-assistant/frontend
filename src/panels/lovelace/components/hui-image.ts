@@ -202,8 +202,7 @@ export class HuiImage extends LitElement {
                 height: `${this._lastImageHeight || "100"}px`,
               })}
             ></div>`
-          : ""}
-        ${imageSrc === undefined || this._loadState === LoadState.Loading
+          : imageSrc === undefined || this._loadState === LoadState.Loading
           ? html`<ha-circular-progress
               class="render-spinner"
               active
@@ -333,6 +332,9 @@ export class HuiImage extends LitElement {
       width,
       height
     );
+    if (this._cameraImageSrc === undefined) {
+      this._onImageError();
+    }
   }
 
   static get styles(): CSSResultGroup {
