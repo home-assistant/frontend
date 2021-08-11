@@ -203,11 +203,17 @@ export class HuiImage extends LitElement {
               })}
             ></div>`
           : imageSrc === undefined || this._loadState === LoadState.Loading
-          ? html`<ha-circular-progress
-              class="render-spinner"
-              active
-              size="small"
-            ></ha-circular-progress>`
+          ? html`<div
+              style=${styleMap({
+                height: `${this._lastImageHeight || "100"}px`,
+              })}
+            >
+              <ha-circular-progress
+                class="render-spinner"
+                active
+                size="small"
+              ></ha-circular-progress>
+            </div>`
           : ""}
       </div>
     `;
