@@ -25,8 +25,8 @@ const SCALING_FACTOR = 2;
 
 enum LoadState {
   Loading = 1,
-  NotLoading,
-  Error,
+  NotLoading = 2,
+  Error = 3,
 }
 
 export interface StateSpecificConfig {
@@ -59,7 +59,7 @@ export class HuiImage extends LitElement {
 
   @state() private _imageVisible? = false;
 
-  @state() private _loadState = LoadState.Loading;
+  @state() private _loadState?: LoadState;
 
   @state() private _cameraImageSrc?: string;
 
@@ -73,7 +73,9 @@ export class HuiImage extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._loadState = LoadState.Loading;
+    if (this._loadState === undefined) {
+      this._loadState = LoadState.Loading;
+    }
     if (this.cameraImage && this.cameraView !== "live") {
       this._startIntersectionObserverOrUpdates();
     }
@@ -83,7 +85,6 @@ export class HuiImage extends LitElement {
     super.disconnectedCallback();
     this._stopUpdateCameraInterval();
     this._stopIntersectionObserver();
-    this._loadState = LoadState.NotLoading;
     this._imageVisible = undefined;
   }
 
