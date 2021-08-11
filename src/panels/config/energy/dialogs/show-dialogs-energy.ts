@@ -1,5 +1,6 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import {
+  BatterySourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
@@ -33,6 +34,11 @@ export interface EnergySettingsSolarDialogParams {
   saveCallback: (source: SolarSourceTypeEnergyPreference) => Promise<void>;
 }
 
+export interface EnergySettingsBatteryDialogParams {
+  source?: BatterySourceTypeEnergyPreference;
+  saveCallback: (source: BatterySourceTypeEnergyPreference) => Promise<void>;
+}
+
 export interface EnergySettingsDeviceDialogParams {
   saveCallback: (device: DeviceConsumptionEnergyPreference) => Promise<void>;
 }
@@ -44,6 +50,17 @@ export const showEnergySettingsDeviceDialog = (
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-energy-device-settings",
     dialogImport: () => import("./dialog-energy-device-settings"),
+    dialogParams: dialogParams,
+  });
+};
+
+export const showEnergySettingsBatteryDialog = (
+  element: HTMLElement,
+  dialogParams: EnergySettingsBatteryDialogParams
+): void => {
+  fireEvent(element, "show-dialog", {
+    dialogTag: "dialog-energy-battery-settings",
+    dialogImport: () => import("./dialog-energy-battery-settings"),
     dialogParams: dialogParams,
   });
 };
