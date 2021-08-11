@@ -7,10 +7,14 @@ interface ResultCache<T> {
 export const timeCachePromiseFunc = async <T>(
   cacheKey: string,
   cacheTime: number,
-  func: (hass: HomeAssistant, entityId: string, ...args: any[]) => Promise<T>,
+  func: (
+    hass: HomeAssistant,
+    entityId: string,
+    ...args: unknown[]
+  ) => Promise<T>,
   hass: HomeAssistant,
   entityId: string,
-  ...args: any[]
+  ...args: unknown[]
 ): Promise<T> => {
   let cache: ResultCache<T> | undefined = (hass as any)[cacheKey];
 
