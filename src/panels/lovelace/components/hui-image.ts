@@ -25,7 +25,7 @@ const SCALING_FACTOR = 2;
 
 enum LoadState {
   Loading = 1,
-  NotLoading = 2,
+  Loaded = 2,
   Error = 3,
 }
 
@@ -191,7 +191,7 @@ export class HuiImage extends LitElement {
                 style=${styleMap({
                   filter,
                   display:
-                    this._loadState === LoadState.NotLoading ? "block" : "none",
+                    this._loadState === LoadState.Loaded ? "block" : "none",
                 })}
               />
             `}
@@ -296,7 +296,7 @@ export class HuiImage extends LitElement {
   }
 
   private async _onImageLoad(): Promise<void> {
-    this._loadState = LoadState.NotLoading;
+    this._loadState = LoadState.Loaded;
     this._lastImageHeight = this._image.offsetHeight;
     await this.updateComplete;
   }
@@ -305,7 +305,7 @@ export class HuiImage extends LitElement {
     // If we hit the interval and it was still loading
     // it means we timed out so we should show the error.
     if (this._loadState === LoadState.Loading) {
-      this._loadState = LoadState.Error;
+      this._onImageError();
     }
     return this._updateCameraImageSrc();
   }
