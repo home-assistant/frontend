@@ -278,7 +278,7 @@ export class HuiImage extends LitElement {
     this._updateCameraImageSrc();
     if (this.cameraImage && this.isConnected) {
       this._cameraUpdater = window.setInterval(
-        () => this._updateCameraImageSrc(),
+        () => this._updateCameraImageSrcAtInterval(),
         UPDATE_INTERVAL
       );
     }
@@ -299,6 +299,15 @@ export class HuiImage extends LitElement {
     this._loadState = LoadState.NotLoading;
     this._lastImageHeight = this._image.offsetHeight;
     await this.updateComplete;
+  }
+
+  private async _updateCameraImageSrcAtInterval(): Promise<void> {
+    // If we hit the interval and it was still loading
+    // it means we timed out so we should show the error.
+    if (this._loadState === LoadState.Loading) {
+      this._loadState = LoadState.Error;
+    }
+    return this._updateCameraImageSrc();
   }
 
   private async _updateCameraImageSrc(): Promise<void> {
