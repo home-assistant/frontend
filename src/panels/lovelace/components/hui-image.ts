@@ -70,10 +70,6 @@ export class HuiImage extends LitElement {
     if (this.cameraImage && this.cameraView !== "live") {
       this._startUpdateCameraInterval();
     }
-    this._intersectionObserver = new IntersectionObserver(
-      this.handleIntersectionCallback.bind(this)
-    );
-    this._intersectionObserver.observe(this);
   }
 
   public disconnectedCallback(): void {
@@ -86,13 +82,11 @@ export class HuiImage extends LitElement {
   }
 
   protected handleIntersectionCallback(entries: IntersectionObserverEntry[]) {
-    const wasImageVisible = this._imageVisible;
     this._imageVisible = entries[0].isIntersecting;
-    if (
-      this._imageVisible &&
-      !wasImageVisible &&
-      this._shouldStartCameraUpdates()
-    ) {
+  }
+
+  protected willUpdate(changedProps: PropertyValues): void {
+    if (changedProps.has("_imageVisible") && this._shouldStartCameraUpdates()) {
       this._startUpdateCameraInterval();
       this._updateCameraImageSrc();
     }
@@ -233,6 +227,12 @@ export class HuiImage extends LitElement {
 
   private _startUpdateCameraInterval(): void {
     this._stopUpdateCameraInterval();
+    if (!this._intersectionObserver) {
+      this._intersectionObserver = new IntersectionObserver(
+        this.handleIntersectionCallback.bind(this)
+      );
+      this._intersectionObserver.observe(this);
+    }
     if (this.cameraImage && this.isConnected) {
       this._cameraUpdater = window.setInterval(
         () => this._updateCameraImageSrc(),
