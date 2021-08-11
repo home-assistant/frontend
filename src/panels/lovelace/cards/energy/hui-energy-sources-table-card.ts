@@ -73,6 +73,7 @@ export class HuiEnergySourcesTableCard
 
     let totalGrid = 0;
     let totalSolar = 0;
+    let totalBattery = 0;
     let totalCost = 0;
 
     const types = energySourcesByType(this._data.prefs);
@@ -80,6 +81,12 @@ export class HuiEnergySourcesTableCard
     const computedStyles = getComputedStyle(this);
     const solarColor = computedStyles
       .getPropertyValue("--energy-solar-color")
+      .trim();
+    const batteryFromColor = computedStyles
+      .getPropertyValue("--energy-battery-out-color")
+      .trim();
+    const batteryToColor = computedStyles
+      .getPropertyValue("--energy-battery-in-color")
       .trim();
     const returnColor = computedStyles
       .getPropertyValue("--energy-grid-return-color")
@@ -184,6 +191,99 @@ export class HuiEnergySourcesTableCard
                       class="mdc-data-table__cell mdc-data-table__cell--numeric"
                     >
                       ${formatNumber(totalSolar, this.hass.locale)} kWh
+                    </td>
+                    ${showCosts
+                      ? html`<td class="mdc-data-table__cell"></td>`
+                      : ""}
+                  </tr>`
+                : ""}
+              ${types.battery?.map((source, idx) => {
+                const entityFrom = this.hass.states[source.stat_energy_from];
+                const entityTo = this.hass.states[source.stat_energy_to];
+                const energyFrom =
+                  calculateStatisticSumGrowth(
+                    this._data!.stats[source.stat_energy_from]
+                  ) || 0;
+                const energyTo =
+                  calculateStatisticSumGrowth(
+                    this._data!.stats[source.stat_energy_to]
+                  ) || 0;
+                totalBattery += energyFrom - energyTo;
+                const fromColor =
+                  idx > 0
+                    ? rgb2hex(
+                        lab2rgb(
+                          labDarken(rgb2lab(hex2rgb(batteryFromColor)), idx)
+                        )
+                      )
+                    : batteryFromColor;
+                const toColor =
+                  idx > 0
+                    ? rgb2hex(
+                        lab2rgb(
+                          labDarken(rgb2lab(hex2rgb(batteryToColor)), idx)
+                        )
+                      )
+                    : batteryToColor;
+                return html`<tr class="mdc-data-table__row">
+                    <td class="mdc-data-table__cell cell-bullet">
+                      <div
+                        class="bullet"
+                        style=${styleMap({
+                          borderColor: fromColor,
+                          backgroundColor: fromColor + "7F",
+                        })}
+                      ></div>
+                    </td>
+                    <th class="mdc-data-table__cell" scope="row">
+                      ${entityFrom
+                        ? computeStateName(entityFrom)
+                        : source.stat_energy_from}
+                    </th>
+                    <td
+                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                    >
+                      ${formatNumber(energyFrom, this.hass.locale)} kWh
+                    </td>
+                    ${showCosts
+                      ? html`<td class="mdc-data-table__cell"></td>`
+                      : ""}
+                  </tr>
+                  <tr class="mdc-data-table__row">
+                    <td class="mdc-data-table__cell cell-bullet">
+                      <div
+                        class="bullet"
+                        style=${styleMap({
+                          borderColor: toColor,
+                          backgroundColor: toColor + "7F",
+                        })}
+                      ></div>
+                    </td>
+                    <th class="mdc-data-table__cell" scope="row">
+                      ${entityTo
+                        ? computeStateName(entityTo)
+                        : source.stat_energy_from}
+                    </th>
+                    <td
+                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                    >
+                      ${formatNumber(energyTo * -1, this.hass.locale)} kWh
+                    </td>
+                    ${showCosts
+                      ? html`<td class="mdc-data-table__cell"></td>`
+                      : ""}
+                  </tr>`;
+              })}
+              ${types.battery
+                ? html`<tr class="mdc-data-table__row total">
+                    <td class="mdc-data-table__cell"></td>
+                    <th class="mdc-data-table__cell" scope="row">
+                      Battery total
+                    </th>
+                    <td
+                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                    >
+                      ${formatNumber(totalBattery, this.hass.locale)} kWh
                     </td>
                     ${showCosts
                       ? html`<td class="mdc-data-table__cell"></td>`
