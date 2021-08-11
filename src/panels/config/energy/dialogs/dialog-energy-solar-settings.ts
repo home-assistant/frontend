@@ -21,6 +21,7 @@ import "../../../../components/entity/ha-entity-picker";
 import type { HaRadio } from "../../../../components/ha-radio";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
 import { ConfigEntry, getConfigEntries } from "../../../../data/config_entries";
+import { brandsUrl } from "../../../../util/brands-url";
 
 const energyUnits = ["kWh"];
 
@@ -117,7 +118,11 @@ export class DialogEnergySolarSettings
                     <img
                       referrerpolicy="no-referrer"
                       style="height: 24px; margin-right: 16px;"
-                      src="https://brands.home-assistant.io/forecast_solar/icon.png"
+                      src=${brandsUrl({
+                        domain: "forecast_solar",
+                        type: "icon",
+                        darkOptimized: this.hass.selectedTheme?.dark,
+                      })}
                     />${entry.title}
                   </div>`}
                 >

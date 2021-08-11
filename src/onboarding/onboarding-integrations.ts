@@ -78,6 +78,7 @@ class OnboardingIntegrations extends LitElement {
               .domain=${entry.domain}
               .title=${title}
               badgeIcon="hass:check"
+              .darkOptimizedIcon=${this.hass.selectedTheme?.dark}
             ></integration-badge>
           `,
         ];
@@ -94,6 +95,7 @@ class OnboardingIntegrations extends LitElement {
                 clickable
                 .domain=${flow.handler}
                 .title=${title}
+                .darkOptimizedIcon=${this.hass.selectedTheme?.dark}
               ></integration-badge>
             </button>
           `,

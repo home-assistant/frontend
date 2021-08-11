@@ -34,6 +34,7 @@ import {
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
+import { brandsUrl } from "../../../../util/brands-url";
 import { documentationUrl } from "../../../../util/documentation-url";
 import {
   showEnergySettingsGridFlowFromDialog,
@@ -152,7 +153,11 @@ export class EnergyGridSettings extends LitElement {
             (entry) => html`<div class="row" .entry=${entry}>
               <img
                 referrerpolicy="no-referrer"
-                src="https://brands.home-assistant.io/co2signal/icon.png"
+                src=${brandsUrl({
+                  domain: "co2signal",
+                  type: "icon",
+                  darkOptimized: this.hass.selectedTheme?.dark,
+                })}
               />
               <span class="content">${entry.title}</span>
               <a href=${`/config/integrations#config_entry=${entry.entry_id}`}>
@@ -170,7 +175,11 @@ export class EnergyGridSettings extends LitElement {
                 <div class="row border-bottom">
                   <img
                     referrerpolicy="no-referrer"
-                    src="https://brands.home-assistant.io/co2signal/icon.png"
+                    src=${brandsUrl({
+                      domain: "co2signal",
+                      type: "icon",
+                      darkOptimized: this.hass.selectedTheme?.dark,
+                    })}
                   />
                   <mwc-button @click=${this._addCO2Sensor}>
                     Add CO2 signal integration
