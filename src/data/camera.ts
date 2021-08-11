@@ -39,7 +39,8 @@ export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
 export const fetchThumbnailUrlWithCache = (
   hass: HomeAssistant,
   entityId: string,
-  ...args: any[]
+  width: number,
+  height: number
 ) =>
   timeCachePromiseFunc(
     "_cameraTmbUrl",
