@@ -67,9 +67,8 @@ export class HuiImage extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._startIntersectionObserver();
     if (this.cameraImage && this.cameraView !== "live") {
-      this._startUpdateCameraInterval();
+      this._startIntersectionObserverOrUpdates();
     }
   }
 
@@ -213,7 +212,7 @@ export class HuiImage extends LitElement {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
       if (this._shouldStartCameraUpdates(oldHass)) {
-        this._startUpdateCameraInterval();
+        this._startIntersectionObserverOrUpdates();
       } else if (this._shouldStopCameraUpdates(oldHass)) {
         this._stopUpdateCameraInterval();
         // We used to set load error when stopping
@@ -221,22 +220,23 @@ export class HuiImage extends LitElement {
         // when a phone is locked and unlocked
       }
     } else if (changedProps.has("cameraImage") && this.cameraView !== "live") {
-      this._startUpdateCameraInterval();
+      this._startIntersectionObserverOrUpdates();
     }
   }
 
-  private _startIntersectionObserver(): void {
-    if (!this._intersectionObserver) {
-      if ("IntersectionObserver" in window) {
+  private _startIntersectionObserverOrUpdates(): void {
+    if ("IntersectionObserver" in window) {
+      if (!this._intersectionObserver) {
         this._intersectionObserver = new IntersectionObserver(
           this.handleIntersectionCallback.bind(this)
         );
-        this._intersectionObserver.observe(this);
-      } else {
-        // No support for IntersectionObserver
-        // assume all images are visible
-        this._imageVisible = true;
       }
+      this._intersectionObserver.observe(this);
+    } else {
+      // No support for IntersectionObserver
+      // assume all images are visible
+      this._imageVisible = true;
+      this._startUpdateCameraInterval();
     }
   }
 
