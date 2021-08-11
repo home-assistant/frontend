@@ -261,7 +261,7 @@ export class HuiImage extends LitElement {
   }
 
   private async _updateCameraImageSrc(): Promise<void> {
-    if (!this.hass || !this.cameraImage || !this.imageVisible) {
+    if (!this.hass || !this.cameraImage || !this._imageVisible) {
       return;
     }
 
