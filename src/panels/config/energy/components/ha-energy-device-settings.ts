@@ -101,7 +101,7 @@ export class EnergyDeviceSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you wan't to delete this device?",
+        title: "Are you sure you want to delete this device?",
       }))
     ) {
       return;

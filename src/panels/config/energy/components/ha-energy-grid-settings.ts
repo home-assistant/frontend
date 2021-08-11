@@ -203,7 +203,7 @@ export class EnergyGridSettings extends LitElement {
     if (
       !(await showConfirmationDialog(this, {
         title:
-          "Are you sure you wan't to delete this integration? It will remove the entities it provides",
+          "Are you sure you want to delete this integration? It will remove the entities it provides",
       }))
     ) {
       return;
@@ -340,7 +340,7 @@ export class EnergyGridSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you wan't to delete this source?",
+        title: "Are you sure you want to delete this source?",
       }))
     ) {
       return;
@@ -370,7 +370,7 @@ export class EnergyGridSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you wan't to delete this source?",
+        title: "Are you sure you want to delete this source?",
       }))
     ) {
       return;
