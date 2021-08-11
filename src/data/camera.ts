@@ -54,7 +54,8 @@ export const fetchThumbnailUrlWithCache = (
 export const fetchThumbnailUrl = async (
   hass: HomeAssistant,
   entityId: string,
-  ...args: any[]
+  width: number,
+  height: number
 ) => {
   const path = await getSignedPath(hass, `/api/camera_proxy/${entityId}`);
   return hass.hassUrl(`${path.path}&width=${width}&height=${height}`);
