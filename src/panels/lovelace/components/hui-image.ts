@@ -57,7 +57,7 @@ export class HuiImage extends LitElement {
 
   @state() private _cameraImageSrc?: string;
 
-  @property() private _intersectionObserver?: IntersectionObserver;
+  private _intersectionObserver?: IntersectionObserver;
 
   @query("img") private _image!: HTMLImageElement;
 
