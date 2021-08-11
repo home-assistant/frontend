@@ -91,7 +91,7 @@ export class HuiImage extends LitElement {
       if (this._shouldStartCameraUpdates()) {
         this._startUpdateCameraInterval();
       }
-    } else if (this._shouldStopCameraUpdates()) {
+    } else {
       this._stopUpdateCameraInterval();
     }
   }
