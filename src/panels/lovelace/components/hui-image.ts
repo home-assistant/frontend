@@ -226,13 +226,15 @@ export class HuiImage extends LitElement {
 
   private _startIntersectionObserver(): void {
     if (!this._intersectionObserver) {
-      if (!window.intersectionObserver) {
-        this._imageVisible = true;
-      } else {
+      if ("IntersectionObserver" in window) {
         this._intersectionObserver = new IntersectionObserver(
           this.handleIntersectionCallback.bind(this)
         );
         this._intersectionObserver.observe(this);
+      } else {
+        // No support for IntersectionObserver
+        // assume all images are visible
+        this._imageVisible = true;
       }
     }
   }
