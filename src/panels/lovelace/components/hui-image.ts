@@ -227,20 +227,13 @@ export class HuiImage extends LitElement {
     );
   }
 
-  protected _shouldStopCameraUpdates(oldHass?: HomeAssistant): boolean {
-    return !!(
-      (!oldHass || oldHass.connected !== this.hass!.connected) &&
-      !this.hass!.connected
-    );
-  }
-
   protected updated(changedProps: PropertyValues): void {
     if (changedProps.has("hass")) {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
       if (this._shouldStartCameraUpdates(oldHass)) {
         this._startIntersectionObserverOrUpdates();
-      } else if (this._shouldStopCameraUpdates(oldHass)) {
+      } else if (!this.hass!.connected) {
         this._stopUpdateCameraInterval();
         // We used to set load error when stopping
         // but that resulted in every image being broken
