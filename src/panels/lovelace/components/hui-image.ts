@@ -82,16 +82,14 @@ export class HuiImage extends LitElement {
     if (this._intersectionObserver) {
       this._intersectionObserver.disconnect();
     }
-    this.imageVisible = undefined;
+    this._imageVisible = undefined;
   }
 
   protected handleIntersectionCallback(entries: IntersectionObserverEntry[]) {
-    const wasImageVisible = this.imageVisible;
-    for (const entry of entries) {
-      this.imageVisible = entry.isIntersecting;
-    }
+    const wasImageVisible = this._imageVisible;
+    this._imageVisible = entries[0].isIntersecting;
     if (
-      this.imageVisible &&
+      this._imageVisible &&
       !wasImageVisible &&
       this._shouldStartCameraUpdates()
     ) {
