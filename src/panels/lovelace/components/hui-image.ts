@@ -88,7 +88,6 @@ export class HuiImage extends LitElement {
   protected willUpdate(changedProps: PropertyValues): void {
     if (changedProps.has("_imageVisible") && this._shouldStartCameraUpdates()) {
       this._startUpdateCameraInterval();
-      this._updateCameraImageSrc();
     }
   }
 
@@ -211,7 +210,6 @@ export class HuiImage extends LitElement {
       const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
       if (this._shouldStartCameraUpdates(oldHass)) {
-        this._updateCameraImageSrc();
         this._startUpdateCameraInterval();
       } else if (this._shouldStopCameraUpdates(oldHass)) {
         this._stopUpdateCameraInterval();
@@ -220,13 +218,13 @@ export class HuiImage extends LitElement {
         // when a phone is locked and unlocked
       }
     } else if (changedProps.has("cameraImage") && this.cameraView !== "live") {
-      this._updateCameraImageSrc();
       this._startUpdateCameraInterval();
     }
   }
 
   private _startUpdateCameraInterval(): void {
     this._stopUpdateCameraInterval();
+    this._updateCameraImageSrc();
     if (!this._intersectionObserver) {
       this._intersectionObserver = new IntersectionObserver(
         this.handleIntersectionCallback.bind(this)
