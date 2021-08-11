@@ -1149,6 +1149,7 @@ class HassioAddonInfo extends LitElement {
           margin-bottom: 16px;
         }
         img.logo {
+          max-width: 100%;
           max-height: 60px;
           margin: 16px 0;
           display: block;
