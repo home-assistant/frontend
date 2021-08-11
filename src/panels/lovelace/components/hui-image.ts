@@ -23,6 +23,12 @@ const MAX_IMAGE_WIDTH = 640;
 const ASPECT_RATIO_DEFAULT = 9 / 16;
 const SCALING_FACTOR = 2;
 
+enum LoadState {
+  Loading = 1,
+  NotLoading,
+  Error,
+}
+
 export interface StateSpecificConfig {
   [state: string]: string;
 }
@@ -51,9 +57,9 @@ export class HuiImage extends LitElement {
 
   @property() public darkModeFilter?: string;
 
-  @state() private _imageVisible?: boolean;
+  @state() private _imageVisible? = false;
 
-  @state() private _loadError?: boolean;
+  @state() private _loadState = LoadState.Loading;
 
   @state() private _cameraImageSrc?: string;
 
@@ -67,6 +73,7 @@ export class HuiImage extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
+    this._loadState = LoadState.Loading;
     if (this.cameraImage && this.cameraView !== "live") {
       this._startIntersectionObserverOrUpdates();
     }
@@ -76,7 +83,7 @@ export class HuiImage extends LitElement {
     super.disconnectedCallback();
     this._stopUpdateCameraInterval();
     this._stopIntersectionObserver();
-    this._loadError = undefined;
+    this._loadState = LoadState.NotLoading;
     this._imageVisible = undefined;
   }
 
@@ -172,6 +179,8 @@ export class HuiImage extends LitElement {
                 .stateObj=${cameraObj}
               ></ha-camera-stream>
             `
+          : imageSrc === undefined
+          ? html``
           : html`
               <img
                 id="image"
@@ -180,17 +189,25 @@ export class HuiImage extends LitElement {
                 @load=${this._onImageLoad}
                 style=${styleMap({
                   filter,
-                  display: this._loadError ? "none" : "block",
+                  display:
+                    this._loadState === LoadState.NotLoading ? "block" : "none",
                 })}
               />
             `}
-        ${this._loadError
+        ${this._loadState === LoadState.Error
           ? html`<div
               id="brokenImage"
               style=${styleMap({
                 height: `${this._lastImageHeight || "100"}px`,
               })}
             ></div>`
+          : ""}
+        ${imageSrc === undefined || this._loadState === LoadState.Loading
+          ? html`<ha-circular-progress
+              class="render-spinner"
+              active
+              size="small"
+            ></ha-circular-progress>`
           : ""}
       </div>
     `;
@@ -269,13 +286,13 @@ export class HuiImage extends LitElement {
   }
 
   private _onImageError(): void {
-    this._loadError = true;
+    this._loadState = LoadState.Error;
   }
 
   private async _onImageLoad(): Promise<void> {
-    this._loadError = false;
-    await this.updateComplete;
+    this._loadState = LoadState.NotLoading;
     this._lastImageHeight = this._image.offsetHeight;
+    await this.updateComplete;
   }
 
   private async _updateCameraImageSrc(): Promise<void> {
