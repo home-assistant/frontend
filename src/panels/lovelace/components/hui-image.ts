@@ -67,7 +67,6 @@ export class HuiImage extends LitElement {
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._loadError = false;
     if (this.cameraImage && this.cameraView !== "live") {
       this._startIntersectionObserverOrUpdates();
     }
@@ -77,6 +76,7 @@ export class HuiImage extends LitElement {
     super.disconnectedCallback();
     this._stopUpdateCameraInterval();
     this._stopIntersectionObserver();
+    this._loadError = false;
     this._imageVisible = undefined;
   }
 
