@@ -84,7 +84,10 @@ export class HuiImage extends LitElement {
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
-    if (changedProps.has("_imageVisible")) {
+    if (!changedProps.has("_imageVisible")) {
+      return;
+    }
+    if (this._imageVisible) {
       if (this._shouldStartCameraUpdates()) {
         this._startUpdateCameraInterval();
       }
