@@ -21,8 +21,7 @@ export class HatGraphNode extends LitElement {
 
   @property({ reflect: true, type: Boolean }) graphStart?: boolean;
 
-  @property({ reflect: true, type: Boolean, attribute: "nofocus" })
-  noFocus = false;
+  @property({ type: Boolean, attribute: "nofocus" }) noFocus = false;
 
   @property({ reflect: true, type: Number }) badge?: number;
 
@@ -41,8 +40,6 @@ export class HatGraphNode extends LitElement {
     const width = SPACING + NODE_SIZE;
     return html`
       <svg
-        width="${width}px"
-        height="${height}px"
         viewBox="-${Math.ceil(width / 2)} -${this.graphStart
           ? Math.ceil(height / 2)
           : Math.ceil((NODE_SIZE + SPACING * 2) / 2)} ${width} ${height}"
@@ -92,6 +89,11 @@ export class HatGraphNode extends LitElement {
       :host {
         display: flex;
         flex-direction: column;
+        width: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing));
+        height: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing) + 1);
+      }
+      :host([graphStart]) {
+        height: calc(var(--hat-graph-node-size) + 2);
       }
       :host([track]) {
         --stroke-clr: var(--track-clr);
@@ -111,13 +113,9 @@ export class HatGraphNode extends LitElement {
       :host([disabled]) circle {
         stroke: var(--disabled-clr);
       }
-      :host-context([disabled]) {
-        --stroke-clr: var(--disabled-clr);
-      }
-      :host([nofocus]):host-context([active]),
-      :host([nofocus]):host-context(:focus) {
-        --circle-clr: var(--active-clr);
-        --icon-clr: var(--default-icon-clr);
+      svg {
+        width: 100%;
+        height: 100%;
       }
       circle,
       path.connector {

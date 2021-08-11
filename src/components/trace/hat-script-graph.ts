@@ -149,6 +149,7 @@ export class HatScriptGraph extends LitElement {
           .graphStart=${graphStart}
           .iconPath=${mdiCallSplit}
           ?track=${trace !== undefined}
+          ?active=${this.selected === path}
           slot="head"
           nofocus
         ></hat-graph-node>
@@ -228,6 +229,7 @@ export class HatScriptGraph extends LitElement {
           .graphStart=${graphStart}
           slot="head"
           ?track=${track}
+          ?active=${this.selected === path}
           .iconPath=${mdiAbTesting}
           nofocus
         ></hat-graph-node>
@@ -241,6 +243,7 @@ export class HatScriptGraph extends LitElement {
           .iconPath=${mdiClose}
           nofocus
           ?track=${trackFailed}
+          ?active=${this.selected === path}
         ></hat-graph-node>
       </hat-graph-branch>
     `;
@@ -315,12 +318,14 @@ export class HatScriptGraph extends LitElement {
           .graphStart=${graphStart}
           .iconPath=${mdiRefresh}
           ?track=${path in this.trace.trace}
+          ?active=${this.selected === path}
           slot="head"
           nofocus
         ></hat-graph-node>
         <hat-graph-node
           .iconPath=${mdiArrowUp}
           ?track=${repeats > 1}
+          ?active=${this.selected === path}
           nofocus
           .badge=${repeats > 1 ? repeats : undefined}
         ></hat-graph-node>
