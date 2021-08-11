@@ -56,7 +56,7 @@ export const fetchThumbnailUrl = async (
   ...args: any[]
 ) => {
   const path = await getSignedPath(hass, `/api/camera_proxy/${entityId}`);
-  return hass.hassUrl(`${path.path}&width=${args[0][0]}&height=${args[0][1]}`);
+  return hass.hassUrl(`${path.path}&width=${width}&height=${height}`);
 };
 
 export const fetchStreamUrl = async (
