@@ -76,7 +76,7 @@ export class HuiImage extends LitElement {
     super.disconnectedCallback();
     this._stopUpdateCameraInterval();
     this._stopIntersectionObserver();
-    this._loadError = false;
+    this._loadError = undefined;
     this._imageVisible = undefined;
   }
 
