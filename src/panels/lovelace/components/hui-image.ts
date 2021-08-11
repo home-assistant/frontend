@@ -89,7 +89,7 @@ export class HuiImage extends LitElement {
         this._startUpdateCameraInterval();
       }
     } else if (this._shouldStopCameraUpdates()) {
-      this._startUpdateCameraInterval();
+      this._stopUpdateCameraInterval();
     }
   }
 
@@ -275,7 +275,7 @@ export class HuiImage extends LitElement {
   }
 
   private async _updateCameraImageSrc(): Promise<void> {
-    if (!this.hass || !this.cameraImage || !this._imageVisible) {
+    if (!this.hass || !this.cameraImage) {
       return;
     }
 
