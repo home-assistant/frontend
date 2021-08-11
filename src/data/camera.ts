@@ -48,7 +48,8 @@ export const fetchThumbnailUrlWithCache = (
     fetchThumbnailUrl,
     hass,
     entityId,
-    ...args
+    width,
+    height
   );
 
 export const fetchThumbnailUrl = async (
