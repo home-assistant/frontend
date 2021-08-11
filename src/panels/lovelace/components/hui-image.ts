@@ -226,10 +226,14 @@ export class HuiImage extends LitElement {
 
   private _startIntersectionObserver(): void {
     if (!this._intersectionObserver) {
-      this._intersectionObserver = new IntersectionObserver(
-        this.handleIntersectionCallback.bind(this)
-      );
-      this._intersectionObserver.observe(this);
+      if (!window.intersectionObserver) {
+        this._imageVisible = true;
+      } else {
+        this._intersectionObserver = new IntersectionObserver(
+          this.handleIntersectionCallback.bind(this)
+        );
+        this._intersectionObserver.observe(this);
+      }
     }
   }
 
@@ -284,18 +288,20 @@ export class HuiImage extends LitElement {
 
 <<<<<<< HEAD
     // One the first render we will not know the width
-    const element_width = this._image.offsetWidth
-      ? this._image.offsetWidth
-      : MAX_IMAGE_WIDTH;
+    const element_width =
+      this._image && this._image.offsetWidth
+        ? this._image.offsetWidth
+        : MAX_IMAGE_WIDTH;
     // Because the aspect ratio might result in a smaller image,
     // we ask for 200% of what we need to make sure the image is
     // still clear. In practice, for 4k sources, this is still
     // an order of magnitude smaller.
     const width = Math.ceil(element_width * SCALING_FACTOR);
     // If the image has not rendered yet we may have a zero height
-    const height = this._image.offsetHeight
-      ? this._image.offsetHeight * SCALING_FACTOR
-      : Math.ceil(element_width * SCALING_FACTOR * ASPECT_RATIO_DEFAULT);
+    const height =
+      this._image && this._image.offsetHeight
+        ? this._image.offsetHeight * SCALING_FACTOR
+        : Math.ceil(element_width * SCALING_FACTOR * ASPECT_RATIO_DEFAULT);
 
     this._cameraImageSrc = await fetchThumbnailUrlWithCache(
       this.hass,
