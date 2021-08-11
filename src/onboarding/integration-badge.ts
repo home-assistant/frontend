@@ -11,13 +11,19 @@ class IntegrationBadge extends LitElement {
 
   @property() public badgeIcon?: string;
 
+  @property({ type: Boolean }) public darkOptimizedIcon?: boolean;
+
   @property({ type: Boolean, reflect: true }) public clickable = false;
 
   protected render(): TemplateResult {
     return html`
       <div class="icon">
         <img
-          src=${brandsUrl(this.domain, "icon")}
+          src=${brandsUrl({
+            domain: this.domain,
+            type: "icon",
+            darkOptimized: this.darkOptimizedIcon,
+          })}
           referrerpolicy="no-referrer"
         />
         ${this.badgeIcon

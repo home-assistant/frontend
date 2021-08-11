@@ -94,7 +94,12 @@ class IntegrationsCard extends LitElement {
                     <td>
                       <img
                         loading="lazy"
-                        src=${brandsUrl(domain, "icon", true)}
+                        src=${brandsUrl({
+                          domain: domain,
+                          type: "icon",
+                          useFallback: true,
+                          darkOptimized: this.hass.selectedTheme?.dark,
+                        })}
                         referrerpolicy="no-referrer"
                       />
                     </td>
