@@ -125,7 +125,7 @@ export class EnergySolarSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you wan't to delete this source?",
+        title: "Are you sure you want to delete this source?",
       }))
     ) {
       return;
