@@ -83,7 +83,7 @@ export class HuiImage extends LitElement {
     this._imageVisible = entries[0].isIntersecting;
   }
 
-  protected willUpdate(changedProps: PropertyValues): void {
+  public willUpdate(changedProps: PropertyValues): void {
     if (!changedProps.has("_imageVisible")) {
       return;
     }
