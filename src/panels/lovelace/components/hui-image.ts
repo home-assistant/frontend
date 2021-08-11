@@ -75,9 +75,7 @@ export class HuiImage extends LitElement {
   public disconnectedCallback(): void {
     super.disconnectedCallback();
     this._stopUpdateCameraInterval();
-    if (this._intersectionObserver) {
-      this._intersectionObserver.disconnect();
-    }
+    this._stopIntersectionObserver();
     this._imageVisible = undefined;
   }
 
@@ -86,7 +84,11 @@ export class HuiImage extends LitElement {
   }
 
   protected willUpdate(changedProps: PropertyValues): void {
-    if (changedProps.has("_imageVisible") && this._shouldStartCameraUpdates()) {
+    if (changedProps.has("_imageVisible")) {
+      if (this._shouldStartCameraUpdates()) {
+        this._startUpdateCameraInterval();
+      }
+    } else if (this._shouldStopCameraUpdates()) {
       this._startUpdateCameraInterval();
     }
   }
@@ -222,15 +224,25 @@ export class HuiImage extends LitElement {
     }
   }
 
-  private _startUpdateCameraInterval(): void {
-    this._stopUpdateCameraInterval();
-    this._updateCameraImageSrc();
+  private _startIntersectionObserver(): void {
     if (!this._intersectionObserver) {
       this._intersectionObserver = new IntersectionObserver(
         this.handleIntersectionCallback.bind(this)
       );
       this._intersectionObserver.observe(this);
     }
+  }
+
+  private _stopIntersectionObserver(): void {
+    if (this._intersectionObserver) {
+      this._intersectionObserver.disconnect();
+    }
+  }
+
+  private _startUpdateCameraInterval(): void {
+    this._stopUpdateCameraInterval();
+    this._updateCameraImageSrc();
+    this._startIntersectionObserver();
     if (this.cameraImage && this.isConnected) {
       this._cameraUpdater = window.setInterval(
         () => this._updateCameraImageSrc(),
