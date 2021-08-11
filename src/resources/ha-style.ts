@@ -38,11 +38,11 @@ documentContainer.innerHTML = `<custom-style>
       --scrollbar-thumb-color: rgb(194, 194, 194);
 
       --error-color: #db4437;
-      --warning-color: #FF9800;
-      --success-color: #0f9d58;
-      --info-color: #4285f4;
+      --warning-color: #ffa600;
+      --success-color: #43a047;
+      --info-color: #039be5;
 
-      /* background and sidebar */
+      /* backgrounds */
       --card-background-color: #ffffff;
       --primary-background-color: #fafafa;
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
@@ -55,8 +55,9 @@ documentContainer.innerHTML = `<custom-style>
       --label-badge-blue: #039be5;
       --label-badge-green: #0DA035;
       --label-badge-yellow: #f4b400;
+      --label-badge-grey: #9e9e9e;
 
-      /* states and badges */
+      /* states */
       --state-icon-color: #44739e;
       /* an active state is anything that would require attention */ 
       --state-icon-active-color: #FDD835;
@@ -88,23 +89,6 @@ documentContainer.innerHTML = `<custom-style>
       --energy-solar-color: #ff9800;
       --energy-non-fossil-color: #0f9d58;
 
-      --rgb-energy-solar-color: 255, 152, 0;
-
-      /*
-        Paper-styles color.html dependency is stripped on build.
-        When a default paper-style color is used, it needs to be copied
-        from paper-styles/color.html to here.
-      */
-
-      --paper-grey-50: #fafafa; /* default for: --mwc-switch-unchecked-button-color */
-      --paper-grey-200: #eeeeee;  /* for ha-date-picker-style */
-      --paper-grey-500: #9e9e9e;  /* --label-badge-grey */
-
-      /* for paper-slider */
-      --paper-green-400: #66bb6a;
-      --paper-blue-400: #42a5f5;
-      --paper-orange-400: #ffa726;
-
       /* opacity for dark text on a light background */
       --dark-divider-opacity: 0.12;
       --dark-disabled-opacity: 0.38; /* or hint text or icon */
@@ -116,9 +100,6 @@ documentContainer.innerHTML = `<custom-style>
       --light-disabled-opacity: 0.3; /* or hint text or icon */
       --light-secondary-opacity: 0.7;
       --light-primary-opacity: 1.0;
-
-      /* set our slider style */
-      --ha-slider-pin-font-size: 15px;
 
       /* rgb */
       --rgb-primary-color: 3, 169, 244;

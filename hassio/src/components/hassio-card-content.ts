@@ -80,11 +80,11 @@ class HassioCardContent extends LitElement {
         color: var(--secondary-text-color);
       }
       ha-svg-icon.update {
-        color: var(--paper-orange-400);
+        color: var(--warning-color);
       }
       ha-svg-icon.running,
       ha-svg-icon.installed {
-        color: var(--paper-green-400);
+        color: var(--success-color);
       }
       ha-svg-icon.hassupdate,
       ha-svg-icon.snapshot {
@@ -122,7 +122,7 @@ class HassioCardContent extends LitElement {
       }
       .dot {
         position: absolute;
-        background-color: var(--paper-orange-400);
+        background-color: var(--warning-color);
         width: 12px;
         height: 12px;
         top: 8px;

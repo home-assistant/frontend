@@ -140,7 +140,6 @@ class HuiEnergySolarGaugeCard
       }
 
       ha-gauge {
-        --gauge-color: var(--label-badge-blue);
         width: 100%;
         max-width: 250px;
       }

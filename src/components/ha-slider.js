@@ -19,14 +19,14 @@ class HaSlider extends PaperSliderClass {
             }
 
             .pin > .slider-knob > .slider-knob-inner {
-              font-size:  var(--ha-slider-pin-font-size, 10px);
+              font-size:  var(--ha-slider-pin-font-size, 15px);
               line-height: normal;
               cursor: pointer;
             }
 
             .disabled.ring > .slider-knob > .slider-knob-inner {
-              background-color: var(--paper-slider-disabled-knob-color, var(--paper-grey-400));
-              border: 2px solid var(--paper-slider-disabled-knob-color, var(--paper-grey-400));
+              background-color: var(--paper-slider-disabled-knob-color, var(--disabled-text-color));
+              border: 2px solid var(--paper-slider-disabled-knob-color, var(--disabled-text-color));
             }
 
             .pin > .slider-knob > .slider-knob-inner::before {

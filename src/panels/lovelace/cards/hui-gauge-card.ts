@@ -170,7 +170,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _computeSeverity(numberValue: number): string {
+  private _computeSeverity(numberValue: number): string | undefined {
+    if (this._config!.needle) {
+      return undefined;
+    }
     const sections = this._config!.severity;
 
     if (!sections) {
@@ -240,7 +243,6 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       }
 
       ha-gauge {
-        --gauge-color: var(--label-badge-blue);
         width: 100%;
         max-width: 250px;
       }
