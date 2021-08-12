@@ -16,18 +16,18 @@
         "shopping_list": "কেনাকাটার তালিকা",
         "states": "ওভারভিউ"
     },
+    "state": {
+        "default": {
+            "unavailable": "পাওয়া যাচ্ছে না",
+            "unknown": "অজানা"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
                 "off": "বন্ধ",
                 "on": "চালু"
             }
-        }
-    },
-    "state": {
-        "default": {
-            "unavailable": "পাওয়া যাচ্ছে না",
-            "unknown": "অজানা"
         }
     },
     "ui": {

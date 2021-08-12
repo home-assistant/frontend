@@ -1,4 +1,12 @@
 {
+    "config_entry": {
+        "disabled_by": {
+            "user": "Brûker"
+        }
+    },
+    "groups": {
+        "system-users": "Brûkers"
+    },
     "panel": {
         "config": "Konfiguraasje",
         "history": "Skiednis",
@@ -6,6 +14,14 @@
         "mailbox": "Postfak",
         "map": "Kaart",
         "shopping_list": "Boadskiplist"
+    },
+    "state": {
+        "default": {
+            "off": "Út",
+            "on": "Oan",
+            "unavailable": "Net beskikber",
+            "unknown": "Ûnbekend"
+        }
     },
     "state_attributes": {
         "climate": {
@@ -29,19 +45,44 @@
             "home": "Thús"
         }
     },
-    "state": {
-        "default": {
-            "off": "Út",
-            "on": "Oan",
-            "unavailable": "Net beskikber",
-            "unknown": "Ûnbekend"
-        }
-    },
     "supervisor": {
+        "addon": {
+            "dashboard": {
+                "capability": {
+                    "label": {
+                        "docker": "docker"
+                    }
+                },
+                "install": "ynstallearje",
+                "start": "start",
+                "stop": "stop"
+            },
+            "panel": {
+                "info": "Ynfo"
+            }
+        },
+        "backup": {
+            "create": "Meitsje",
+            "created": "Makke",
+            "delete_backup_confirm": "ferwiderje",
+            "failed_to_delete": "Ferwiderje is mislearre",
+            "selected": "{number} selekteare"
+        },
         "common": {
-            "close": "Slute"
+            "close": "Slute",
+            "no": "Nee",
+            "refresh": "Ferfarskje",
+            "restart": "Opnij starte",
+            "restart_name": "{Name} opnij starte",
+            "yes": "Ja"
         },
         "dialog": {
+            "network": {
+                "open": "Iepenje"
+            },
+            "registries": {
+                "username": "Brûkersnamme"
+            },
             "repositories": {
                 "add": "Tafoegje"
             },
@@ -50,24 +91,19 @@
                 "text": "Wolle jo de add-on opnij starte mei jo feroaringen?"
             },
             "update": {
-                "create_snapshot": "Meitsje in momintopname fan {name} foardat jo bywurkje",
-                "snapshot": "Momintopname",
-                "snapshotting": "Momintopname oanmeitsjen fan {name}",
                 "updating": "{name} bywurkje nei ferzje {version}"
             }
         },
         "my": {
             "error_addon_not_found": "Add-on net fûn"
         },
-        "snapshot": {
-            "created": "Makke",
-            "delete_snapshot_confirm": "ferwiderje",
-            "failed_to_delete": "Ferwiderje is mislearre",
-            "selected": "{number} selekteare"
-        },
         "system": {
+            "host": {
+                "change": "Feroarje"
+            },
             "supervisor": {
-                "search": "Sykje"
+                "search": "Sykje",
+                "warning": "Warskoging"
             }
         }
     },
@@ -121,12 +157,30 @@
                     "name": "Namme"
                 }
             },
+            "blueprint-picker": {
+                "add_user": "Brûker tafoegje"
+            },
+            "calendar": {
+                "today": "Hjoed"
+            },
             "data-table": {
                 "clear": "Opklearje"
+            },
+            "date-range-picker": {
+                "ranges": {
+                    "last_week": "Foarige wike",
+                    "this_week": "Dizze wike",
+                    "today": "Hjoed",
+                    "yesterday": "Juster"
+                }
             },
             "device-picker": {
                 "device": "Apparaat",
                 "toggle": "Skeakelje"
+            },
+            "user-picker": {
+                "add_user": "Brûker tafoegje",
+                "no_user": "Gjin brûker"
             }
         },
         "dialogs": {
@@ -135,6 +189,9 @@
             },
             "quick-bar": {
                 "commands": {
+                    "navigation": {
+                        "users": "Brûkers"
+                    },
                     "types": {
                         "navigation": "Navigearje",
                         "server_control": "Server"
@@ -223,12 +280,18 @@
                 },
                 "blueprint": {
                     "overview": {
+                        "headers": {
+                            "name": "Namme"
+                        },
                         "share_blueprint": "Diel blaudruk"
                     }
                 },
                 "cloud": {
                     "account": {
-                        "connecting": "Ferbine ..."
+                        "connecting": "Ferbine ...",
+                        "tts": {
+                            "try": "bisykje"
+                        }
                     },
                     "alexa": {
                         "title": "Alexa"
@@ -241,7 +304,10 @@
                     "data_table": {
                         "device": "Apparaat"
                     },
-                    "device_not_found": "Apparaat net fûn."
+                    "device_not_found": "Apparaat net fûn.",
+                    "disabled_by": {
+                        "user": "Gebrûker"
+                    }
                 },
                 "helpers": {
                     "types": {
@@ -254,7 +320,12 @@
                 },
                 "integrations": {
                     "config_entry": {
-                        "configure": "Ynstelle"
+                        "configure": "Ynstelle",
+                        "disable": {
+                            "disabled_by": {
+                                "user": "Gebrûker"
+                            }
+                        }
                     },
                     "disable": {
                         "show": "Toan"
@@ -303,12 +374,18 @@
                     }
                 },
                 "users": {
+                    "add_user": {
+                        "caption": "Brûker tafoegje"
+                    },
                     "editor": {
-                        "password_changed": "It wachtwurd is feroare!"
+                        "password_changed": "It wachtwurd is feroare!",
+                        "username": "Brûkersnamme"
                     },
                     "picker": {
                         "headers": {
-                            "name": "Namme"
+                            "is_owner": "Eigner",
+                            "name": "Namme",
+                            "username": "Brûkersnamme"
                         }
                     }
                 },
@@ -328,13 +405,6 @@
                     "services": {
                         "cancel_command": "Opdracht annulearje"
                     }
-                }
-            },
-            "error": {
-                "supervisor": {
-                    "ask": "Om help freegje",
-                    "system_health": "Kontrolearje systeem sûnens",
-                    "title": "Koe it paniel Supervisor net lade!"
                 }
             },
             "lovelace": {
