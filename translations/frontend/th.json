@@ -8,6 +8,7 @@
         "calendar": "ปฏิทิน",
         "config": "การตั้งค่า",
         "developer_tools": "เครื่องมือสำหรับนักพัฒนา",
+        "energy": "พลังงาน",
         "history": "ประวัติการทำงาน",
         "logbook": "สมุดบันทึก",
         "mailbox": "กล่องจดหมาย",
@@ -15,6 +16,12 @@
         "profile": "ข้อมูลส่วนตัว",
         "shopping_list": "รายการซื้อของ",
         "states": "ภาพรวม"
+    },
+    "state": {
+        "default": {
+            "unavailable": "ไม่พร้อมใช้งาน",
+            "unknown": "ไม่ทราบสถานะ"
+        }
     },
     "state_attributes": {
         "climate": {
@@ -69,12 +76,6 @@
         "person": {
             "home": "อยู่บ้าน",
             "not_home": "ไม่อยู่บ้าน"
-        }
-    },
-    "state": {
-        "default": {
-            "unavailable": "ไม่พร้อมใช้งาน",
-            "unknown": "ไม่ทราบสถานะ"
         }
     },
     "ui": {
@@ -276,6 +277,9 @@
                 }
             },
             "zha_device_info": {
+                "buttons": {
+                    "reconfigure": "กำหนดค่าอุปกรณ์ใหม่"
+                },
                 "manuf": "โดย {manufacturer}",
                 "no_area": "ไม่มีห้อง",
                 "power_source": "แหล่งพลังงาน",
@@ -284,6 +288,18 @@
                     "remove": "ลบอุปกรณ์ออกจากเครือข่าย Zigbee"
                 },
                 "unknown": "ไม่ทราบสถานะ"
+            },
+            "zha_reconfigure_device": {
+                "bind_header": "ผูก",
+                "button_hide": "ซ่อนรายละเอียด",
+                "button_show": "แสดงรายละเอียด",
+                "cluster_header": "กลุ่ม",
+                "configuration_complete": "การกำหนดค่าอุปกรณ์ใหม่เสร็จสมบูรณ์",
+                "configuration_failed": "การกำหนดค่าอุปกรณ์ใหม่ล้มเหลว ข้อมูลเพิ่มเติมอาจมีอยู่ในบันทึกของระบบ",
+                "configuring_alt": "กำลังกำหนดค่า",
+                "reporting_header": "การรายงาน",
+                "run_in_background": "คุณสามารถปิดกล่องโต้ตอบนี้ได้ การกำหนดค่าใหม่จะยังทำงานต่อไปในพื้นหลัง",
+                "start_reconfiguration": "เริ่มการกำหนดค่าใหม่"
             }
         },
         "duration": {
@@ -321,9 +337,9 @@
                     "picker": {
                         "create_area": "สร้างห้องใหม่",
                         "header": "ค่าของห้อง",
-                        "integrations_page": "หน้าการทำงานร่วมกัน",
+                        "integrations_page": "หน้าตัวประสานงาน",
                         "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
-                        "introduction2": "สำหรับการวางอุปกรณ์นี้ลงในห้องนี้ ใช้ลิงค์ด้านล่างเพื่อไปยังหน้า 'การทำงานร่วมกัน' และคลิ๊กทีุ่่ม 'ตั้งค่าให้ทำงานร่วมกัน' เพื่อที่จะให้แสดงการ์ดสำหรับอุปกรณ์นั้น",
+                        "introduction2": "สำหรับการวางอุปกรณ์ลงในพื้นที่ ใช้ลิงค์ด้านล่างเพื่อไปยังหน้าตัวประสานงาน และคลิ๊กเลือกที่การประสานงานที่มีการตั้งค่าแล้ว เพื่อที่จะให้แสดงการ์ดสำหรับอุปกรณ์",
                         "no_areas": "ดูเหมือนว่าคุณยังไม่มีห้องเลย!"
                     }
                 },
@@ -339,7 +355,6 @@
                             "header": "การกระทำ",
                             "introduction": "ใช้สำหรับการกระทำที่ Home Assistant จะทำต่อเมื่อระบบอัตโนมัติมีการเรียกใช้งาน",
                             "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับ Action",
-                            "type_select": "ประเภทการทำงาน",
                             "type": {
                                 "condition": {
                                     "label": "สถานะ"
@@ -368,6 +383,7 @@
                                     "wait_template": "แบบ รอ"
                                 }
                             },
+                            "type_select": "ประเภทการทำงาน",
                             "unsupported_action": "ไม่รองรับการดำเนินการ: {action}"
                         },
                         "alias": "ชื่อ",
@@ -379,7 +395,6 @@
                             "header": "เงื่อนไข",
                             "introduction": "เงื่อนไขเป็นส่วนที่ปล่อยว่างได้ของกฎอัตโนมัติและสามารถใช้เพื่อป้องกันไม่ให้เกิดการกระทำเมื่อถูกเรียกใช้งาน เงื่อนไขดูคล้ายกับการกระตุ้น แต่แตกต่างกันมาก การกระตุ้นจะพิจารณาเหตุการณ์ที่เกิดขึ้นในระบบในขณะที่เงื่อนไขจะดูเฉพาะที่ระบบจะดูในตอนนี้เท่านั้น การกระตุ้นสามารถสังเกตได้จากสวิตช์ที่กำลังเปิดอยู่ โดยเงื่อนไขสามารถเห็นได้เฉพาะเมื่อสวิตช์เปิดหรือปิดอยู่เท่านั้น",
                             "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับเงื่อนไข",
-                            "type_select": "ประเภทเงื่อนไข",
                             "type": {
                                 "and": {
                                     "label": "และ"
@@ -430,6 +445,7 @@
                                     "zone": "โซน"
                                 }
                             },
+                            "type_select": "ประเภทเงื่อนไข",
                             "unsupported_condition": "ไม่รองรับเงื่อนไข: {condition}"
                         },
                         "default_name": "ระบบอัตโนมัติใหม่",
@@ -449,7 +465,6 @@
                             "header": "ทริกเกอร์",
                             "introduction": "ทริกเกอร์คือสิ่งที่เริ่มต้นในการประมวลผลกฎอัตโนมัติ คุณสามารถระบุทริกเกอร์หลายรายการสำหรับกฎเดียวกันได้ เมื่อตัวทริกเกอร์เริ่มทำงานผู้ช่วยแรกจะตรวจสอบเงื่อนไขหากมีและเรียกการดำเนินการ.\n\n[เรียนรู้เพิ่มเติมเกี่ยวกับทริกเกอร์] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับ Trigger",
-                            "type_select": "ประเภททริกเกอร์",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -505,15 +520,15 @@
                                     "label": "แบบ",
                                     "value_template": "ค่าแบบ"
                                 },
+                                "time": {
+                                    "at": "ที่",
+                                    "label": "เวลา"
+                                },
                                 "time_pattern": {
                                     "hours": "ชั่วโมง",
                                     "label": "รูปแบบเวลา",
                                     "minutes": "นาที",
                                     "seconds": "วินาที"
-                                },
-                                "time": {
-                                    "at": "ที่",
-                                    "label": "เวลา"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -528,6 +543,7 @@
                                     "zone": "โซน"
                                 }
                             },
+                            "type_select": "ประเภททริกเกอร์",
                             "unsupported_platform": "แพลตฟอร์มที่ไม่สนับสนุน: {platform}"
                         },
                         "unsaved_confirm": "คุณมีการเปลี่ยนแปลงที่ยังไม่ได้บันทึก คุณแน่ใจหรือไม่ว่าต้องการออก?"
@@ -535,7 +551,7 @@
                     "picker": {
                         "add_automation": "เพิ่มระบบอัตโนมัติ",
                         "header": "เครื่องมือแก้ไข ระบบอัตโนมัติ",
-                        "introduction": "เป็นตัวช่วยแก้ไขที่ทำให้คุณสามารถสร้างหรือแก้ไขการทำงานอัตโนมัติ\nโปรดอ่าน [คำแนะนำ] (https://home-assistant.io/docs/automation/editor/) เพื่อให้การกำหนดค่าของคุณเป็นไปได้อย่างถูกต้อง",
+                        "introduction": "The automation editor allows you to create and edit automations. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
                         "learn_more": "เรียนรู้เพิ่มเติมเกี่ยวกับ Automation",
                         "no_automations": "เราไม่พบระบบอัตโนมัติใด ๆ สามารถแก้ไขได้",
                         "pick_automation": "เลือกระบบอัตโนมัติเพื่อแก้ไข"
@@ -545,12 +561,14 @@
                     "account": {
                         "connected": "เชื่อมต่อแล้ว",
                         "google": {
+                            "not_configured_text": "ก่อนที่คุณจะใช้ Google Assistant ได้ คุณต้องเปิดใช้งานทักษะ Home Assistant Cloud สำหรับ Google Assistant ในแอป Google Home ก่อน",
+                            "not_configured_title": "ไม่ได้เปิดใช้งาน Google Assistant",
                             "title": "Google Assistant"
                         },
                         "nabu_casa_account": "บัญชี Nabu Casa",
                         "sign_out": "ลงชื่อออก"
                     },
-                    "description_features": "ควบคุมการทำงานจากนอกบ้าน ร่วมกับ Alexa และ Google Assistant",
+                    "description_features": "ควบคุมบ้านในยามที่คุณไม่อยู่บ้าน ควบคู่ไปกับ Alexa และ Google Assistant",
                     "description_login": "ลงชื่อเข้าใช้เป็น {email}",
                     "description_not_login": "ยังไม่ได้เข้าสู่ระบบ",
                     "forgot_password": {
@@ -626,6 +644,7 @@
                 },
                 "devices": {
                     "caption": "อุปกรณ์",
+                    "description": "จัดการอุปกรณ์ที่กำหนดค่าไว้แล้ว",
                     "scene": {
                         "create": "สร้างฉากด้วยอุปกรณ์",
                         "no_scenes": "ไม่มีฉาก",
@@ -642,10 +661,10 @@
                         "introduction2": "ใช้เอนทิตี้รีจิสตรีเพื่อแทนที่ชื่อเปลี่ยนรหัสประจำเอนทิตีหรือลบรายการออกจาก Home Assistant \nหมายเหตุ: การลบรายการเอนทิตีรีจิสตรีจะไม่ลบเอนทิตี โดยทำตามลิงก์ด้านล่างและลบออกจากหน้าการรวมระบบ"
                     }
                 },
-                "header": "การตั้งค่า Home Assistant",
+                "header": "ตั้งค่า Home Assistant",
                 "integrations": {
                     "attention": "ต้องระบุ",
-                    "caption": "การทำงานร่วมกัน",
+                    "caption": "ตัวประสานงาน",
                     "config_entry": {
                         "delete_confirm": "แน่ใจหรือว่าต้องการจะลบการบูรณาการนี้",
                         "device_unavailable": "อุปกรณ์นี้ไม่พร้อมใช้งาน",
@@ -660,13 +679,16 @@
                         "external_step": {
                             "description": "ขั้นตอนนี้กำหนดให้คุณเยี่ยมชมเว็บไซต์ภายนอกเพื่อทำให้การดำเนินการสมบูรณ์",
                             "open_site": "เปิดเว็บไซต์"
+                        },
+                        "loading": {
+                            "fallback_title": "ตัวประสานงาน"
                         }
                     },
                     "configure": "ปรับแต่ง",
-                    "configured": "ตั้งค่าไว้แล้ว",
+                    "configured": "ตั้งค่าแล้ว",
                     "description": "จัดการการเชื่อมต่อของอุปกรณ์กับการบริการ",
                     "discovered": "ค้นพบแล้ว",
-                    "new": "สร้างการทำงานร่วมกันอันใหม่",
+                    "new": "สร้างตัวประสานงานใหม่",
                     "none": "ยังไม่มีการกำหนดค่าใดๆ เลย",
                     "reconfigure": "กำหนดค่าใหม่"
                 },
@@ -753,6 +775,10 @@
                 "zha": {
                     "add_device_page": {
                         "spinner": "กำลังค้นหาอุปกรณ์ ZHA Zigbee ..."
+                    },
+                    "device_pairing_card": {
+                        "CONFIGURED": "การกำหนดค่าเสร็จสมบูรณ์",
+                        "CONFIGURED_status_text": "กำลังเริ่มการทำงาน"
                     }
                 },
                 "zwave": {
@@ -787,6 +813,17 @@
                         "start_network": "กําลังเริ่มเครือข่าย Z-Wave...",
                         "stop_network": "หยุดการใช้งานเครือข่าย Z-Wave..."
                     }
+                },
+                "zwave_js": {
+                    "common": {
+                        "source": "แหล่งที่มา"
+                    },
+                    "device_info": {
+                        "device_config": "กำหนดค่าอุปกรณ์"
+                    },
+                    "node_config": {
+                        "parameter": "พารามิเตอร์"
+                    }
                 }
             },
             "developer-tools": {
@@ -808,6 +845,12 @@
                     }
                 }
             },
+            "energy": {
+                "setup": {
+                    "back": "กลับ",
+                    "next": "ต่อไป"
+                }
+            },
             "lovelace": {
                 "cards": {
                     "empty_state": {
@@ -819,7 +862,7 @@
                         "call_service": "เรียกบริการ {name}",
                         "hold": "ถือ:",
                         "more_info": "แสดงข้อมูลเพิ่มเติม: {name}",
-                        "navigate_to": "นำทางไปยัง {location}",
+                        "navigate_to": "ไปยัง {location}",
                         "tap": "แตะ:",
                         "toggle": "สลับ {name}",
                         "url": "เปิดหน้าต่างเพื่อไปยัง {url_path}"
@@ -894,7 +937,6 @@
                         "unsaved_changes": "การเปลี่ยนแปลงที่ยังไม่ได้ถูกบันทึก"
                     },
                     "save_config": {
-                        "cancel": "ไม่เป็นไร",
                         "header": "ควบคุม Lovelace UI ในแบบของคุณ",
                         "para": "โดยเริ่มต้น Home Assistant จะควบคุมส่วนต่อประสานผู้ใช้งานเอง เมื่อมี Entity หรือส่วนควบคุมใหม่ๆ จะถูกแสดงขึ้นให้เอง แต่ถ้าคุณอยากจะควบคุมเอง เราจะไม่มีการอัพเดทตามข้างต้นให้กับคุณ",
                         "para_sure": "คุณแน่ใจหรือไม่ว่าต้องการควบคุมส่วนต่อประสานผู้ใช้งาน?",
@@ -1070,7 +1112,7 @@
                     "intro": "อุปกรณ์และบริการแสดงอยู่ใน Home Assistant เป็นการผสานรวม คุณสามารถตั้งค่าตอนนี้หรือทำภายหลังจากหน้าจอการตั้งค่า",
                     "more_integrations": "เพิ่มเติม"
                 },
-                "intro": "พร้อมที่จะปลุกบ้านของคุณแล้วหรือยัง เรียกความเป็นส่วนตัวของคุณและเข้าร่วมกับชุมชนของเราดูสิ!",
+                "intro": "คุณพร้อมที่จะปลุกบ้านของคุณให้มีชีวิตแล้วหรือยัง อย่าลืมว่าคุณไม่ได้อยู่โดดเดี่ยวเดียวดาย ลองมาเข้าร่วมกับชุมชนนักประดิษฐ์จากทั่วโลกของเรากันไหม?",
                 "user": {
                     "create_account": "สร้างบัญชี",
                     "data": {
@@ -1107,7 +1149,7 @@
                 "language": {
                     "dropdown_label": "ภาษา",
                     "header": "ภาษา",
-                    "link_promo": "ช่วยเราแปลภาษาเป็นประเทศของคุณ"
+                    "link_promo": "ช่วยเราแปลภาษา"
                 },
                 "logout": "ออกจากระบบ",
                 "long_lived_access_tokens": {
@@ -1124,18 +1166,18 @@
                     "prompt_copy_token": "จด Access Token ของคุณไว้ที่อื่นด้วย มันจะไม่แสดงให้เห็นอีกแล้วหลังจากนี้",
                     "prompt_name": "ชื่อ?"
                 },
+                "mfa": {
+                    "confirm_disable": "คุณแน่ใจหรือไม่ว่าต้องการปิดใช้งาน {name} ?",
+                    "disable": "ปิดการใช้งาน",
+                    "enable": "เปิดใช้งาน",
+                    "header": "โมดูลการพิสูจน์ตัวตนแบบหลายปัจจัย"
+                },
                 "mfa_setup": {
                     "close": "ปิด",
                     "step_done": "ติดตั้งเสร็จแล้วในขั้นตอนที่ {step}",
                     "submit": "ส่งข้อมูล",
                     "title_aborted": "ยกเลิก",
                     "title_success": "สำเร็จ!"
-                },
-                "mfa": {
-                    "confirm_disable": "คุณแน่ใจหรือไม่ว่าต้องการปิดใช้งาน {name} ?",
-                    "disable": "ปิดการใช้งาน",
-                    "enable": "เปิดใช้งาน",
-                    "header": "โมดูลการพิสูจน์ตัวตนแบบหลายปัจจัย"
                 },
                 "push_notifications": {
                     "description": "ส่งการแจ้งเตือนไปยังอุปกรณ์นี้",

@@ -9,6 +9,14 @@
         "shopping_list": "खरीदारी की सूची",
         "states": "स्थिति"
     },
+    "state": {
+        "default": {
+            "off": "बंद",
+            "on": "चालू",
+            "unavailable": "अनुपलब्ध",
+            "unknown": "अनजान"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -56,14 +64,6 @@
         "person": {
             "home": "घर",
             "not_home": "बाहर"
-        }
-    },
-    "state": {
-        "default": {
-            "off": "बंद",
-            "on": "चालू",
-            "unavailable": "अनुपलब्ध",
-            "unknown": "अनजान"
         }
     },
     "ui": {
@@ -202,31 +202,6 @@
                     "register": {
                         "password": "पासवर्ड"
                     }
-                },
-                "core": {
-                    "section": {
-                        "core": {
-                            "analytics": {
-                                "learn_more": "हम आपके जानकारी को कैसे संसाधित करते हैं",
-                                "preference": {
-                                    "diagnostics": {
-                                        "description": "अप्रत्याशित त्रुटि होने पर क्रैश रिपोर्ट साझा करें"
-                                    },
-                                    "usage_supervisor": {
-                                        "description": "नाम, संस्करण और क्षमताएं"
-                                    },
-                                    "usage": {
-                                        "description": "नाम और संस्करण जानकारी",
-                                        "title": "उप्योग किये एकीकरण"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "filtering": {
-                    "clear": "विशद",
-                    "filtering_by": "द्वारा छान रहे हैं"
                 },
                 "integrations": {
                     "add_integration": "एकीकरण जोड़ें",

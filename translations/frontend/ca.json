@@ -17,6 +17,7 @@
         "calendar": "Calendari",
         "config": "Configuració",
         "developer_tools": "Eines per a desenvolupadors",
+        "energy": "Energia",
         "history": "Historial",
         "logbook": "Diari de registre",
         "mailbox": "Bústia",
@@ -25,6 +26,14 @@
         "profile": "Perfil",
         "shopping_list": "Llista de la compra",
         "states": "Visualització general"
+    },
+    "state": {
+        "default": {
+            "off": "Off",
+            "on": "On",
+            "unavailable": "No disponible",
+            "unknown": "Desconegut"
+        }
     },
     "state_attributes": {
         "climate": {
@@ -92,14 +101,6 @@
         "person": {
             "home": "A casa",
             "not_home": "Fora"
-        }
-    },
-    "state": {
-        "default": {
-            "off": "Off",
-            "on": "On",
-            "unavailable": "No disponible",
-            "unknown": "Desconegut"
         }
     },
     "supervisor": {
@@ -267,6 +268,26 @@
                 "not_installed": "El complement no està instal·lat"
             }
         },
+        "backup": {
+            "addons": "Complements",
+            "confirm_password": "Confirma la contrasenya de la instantània",
+            "could_not_create": "No s'ha pogut crear la instantània",
+            "create": "Crea",
+            "create_blocked_not_running": "Ara mateix no és possible crear una instantània perquè el sistema es troba en estat {state}.",
+            "created": "Creada",
+            "delete_backup_confirm": "suprimeix",
+            "delete_selected": "Suprimeix les instantànies seleccionades",
+            "enter_password": "Introdueix una contrasenya.",
+            "failed_to_delete": "No s'ha pogut suprimir",
+            "folders": "Carpetes",
+            "name": "Nom de la instantània",
+            "password": "Contrasenya de la instantània",
+            "password_protection": "Protecció amb contrasenya",
+            "passwords_not_matching": "Les contrasenyes no coincideixen",
+            "select_type": "Selecciona què vols restaurar",
+            "selected": "{number} seleccionada/es",
+            "type": "Tipus d'instantània"
+        },
         "common": {
             "cancel": "Cancel·la",
             "close": "Tanca",
@@ -366,9 +387,6 @@
                 "text": "Vols reiniciar el complement amb els teus canvis?"
             },
             "update": {
-                "create_snapshot": "Crea una instantània de {name} abans d'actualitzar",
-                "snapshot": "Instantània",
-                "snapshotting": "Creant instantània de {name}",
                 "updating": "S'està actualitzant {name} a la versió {version}"
             }
         },
@@ -383,47 +401,8 @@
         },
         "panel": {
             "dashboard": "Panell",
-            "snapshots": "Instantànies",
             "store": "Directori de complements",
             "system": "Sistema"
-        },
-        "snapshot": {
-            "addons": "Complements",
-            "available_snapshots": "Instantànies disponibles",
-            "confirm_password": "Confirma la contrasenya de la instantània",
-            "could_not_create": "No s'ha pogut crear la instantània",
-            "create": "Crea",
-            "create_blocked_not_running": "Ara mateix no és possible crear una instantània perquè el sistema es troba en estat {state}.",
-            "create_snapshot": "Crea instantània",
-            "created": "Creada",
-            "delete_selected": "Suprimeix les instantànies seleccionades",
-            "delete_snapshot_confirm": "suprimeix",
-            "delete_snapshot_text": "Vols suprimir {number} {number, plural,\n  one {instantània}\n  other {instantànies}\n}?",
-            "delete_snapshot_title": "Suprimeix instantània",
-            "description": "Les instantànies et permeten fer una còpia de seguretat i recuperar les dades de la teva instància de Home Assistant.",
-            "enter_password": "Introdueix una contrasenya.",
-            "failed_to_delete": "No s'ha pogut suprimir",
-            "folder": {
-                "addons/local": "Complements locals",
-                "homeassistant": "Configuració de Home Assistant",
-                "media": "Mitjans",
-                "share": "Share",
-                "ssl": "SSL"
-            },
-            "folders": "Carpetes",
-            "full_snapshot": "Instantània completa",
-            "name": "Nom de la instantània",
-            "no_snapshots": "Encara no tens instantànies.",
-            "partial_snapshot": "Instantània parcial",
-            "password": "Contrasenya de la instantània",
-            "password_protected": "protegit amb contrasenya",
-            "password_protection": "Protecció amb contrasenya",
-            "passwords_not_matching": "Les contrasenyes no coincideixen",
-            "security": "Seguretat",
-            "select_type": "Selecciona què vols restaurar",
-            "selected": "{number} seleccionada/es",
-            "type": "Tipus d'instantània",
-            "upload_snapshot": "Puja instantània"
         },
         "store": {
             "missing_addons": "Falten complements? Activa el mode avançat a la pàgina de perfil d'usuari",
@@ -760,6 +739,12 @@
             },
             "date-range-picker": {
                 "end_date": "Data final",
+                "ranges": {
+                    "last_week": "Setmana passada",
+                    "this_week": "Aquesta setmana",
+                    "today": "Avui",
+                    "yesterday": "Ahir"
+                },
                 "select": "Selecciona",
                 "start_date": "Data inici"
             },
@@ -851,10 +836,10 @@
                 "documentation": "documentació",
                 "learn_adding_local_media": "Més informació sobre com afegir contingut multimèdia a la {documentation}.",
                 "local_media_files": "Col·loca els fitxers de vídeo, àudio i imatge al directori multimèdia i podràs navegar-hi i reproduir-los des del navegador o els reproductors multimèdia compatibles.",
+                "media-player-browser": "Navegador multimèdia",
                 "media_browsing_error": "Error de navegació multimèdia",
                 "media_not_supported": "El reproductor multimèdia de navegador no és compatible amb aquest tipus de mitjà",
                 "media_player": "Reproductor multimèdia",
-                "media-player-browser": "Navegador multimèdia",
                 "no_items": "Sense elements",
                 "no_local_media_found": "No s'ha trobat cap mitjà local",
                 "no_media_folder": "Sembla que encara no has creat cap directori multimèdia.",
@@ -923,6 +908,23 @@
             },
             "service-picker": {
                 "service": "Servei"
+            },
+            "statistic-picker": {
+                "learn_more": "Més informació sobre les estadístiques",
+                "missing_entity": "Per què no apareix una entitat?",
+                "no_match": "No s'ha trobat cap estadística coincident",
+                "no_statistics": "No tens estadístiques",
+                "statistic": "Estadística"
+            },
+            "statistics_charts": {
+                "loading_statistics": "Carregant estadístiques...",
+                "no_statistics_found": "No s'han trobat estadístiques.",
+                "statistic_types": {
+                    "max": "màxims",
+                    "mean": "mitjana",
+                    "min": "mínims",
+                    "sum": "suma"
+                }
             },
             "target-picker": {
                 "add_area_id": "Selecciona àrea",
@@ -1112,6 +1114,10 @@
                 "form": {
                     "header": "Opcions"
                 },
+                "loading": {
+                    "loading_flow": "Espera mentre s'inicialitzen les opcions de {integration}",
+                    "loading_step": "Carregant el següent pas de {integration}"
+                },
                 "success": {
                     "description": "Opcions guardades amb èxit."
                 }
@@ -1125,13 +1131,13 @@
                         "core": "General",
                         "customize": "Personalització",
                         "devices": "Dispositius",
+                        "energy": "Energia",
                         "entities": "Entitats",
                         "helpers": "Ajudants",
                         "info": "Informació",
                         "integrations": "Integracions",
                         "logs": "Registres",
                         "lovelace": "Panells Lovelace",
-                        "navigate_to": "Vés a {panel}",
                         "person": "Persones",
                         "scene": "Escenes",
                         "script": "Programes (scripts)",
@@ -1360,7 +1366,6 @@
                             "introduction": "Les accions són allò que farà Home Assistant quan es dispari l'automatització.",
                             "learn_more": "Més informació sobre les accions",
                             "name": "Acció",
-                            "type_select": "Tipus d'acció",
                             "type": {
                                 "choose": {
                                     "add_option": "Afegeix opció",
@@ -1401,7 +1406,6 @@
                                 "repeat": {
                                     "label": "Repeteix",
                                     "sequence": "Accions",
-                                    "type_select": "Tipus de repetició",
                                     "type": {
                                         "count": {
                                             "label": "Comptador"
@@ -1414,7 +1418,8 @@
                                             "conditions": "Condicions de \"Mentre\"",
                                             "label": "Mentre"
                                         }
-                                    }
+                                    },
+                                    "type_select": "Tipus de repetició"
                                 },
                                 "scene": {
                                     "label": "Activa escena"
@@ -1434,6 +1439,7 @@
                                     "wait_template": "Plantilla d'espera"
                                 }
                             },
+                            "type_select": "Tipus d'acció",
                             "unsupported_action": "Acció no compatible amb l'editor visual: {action}"
                         },
                         "alias": "Nom",
@@ -1452,7 +1458,6 @@
                             "introduction": "Les condicions són opcionals i impedeixen que s'executi l'automatització tret de que totes elles se satisfacin.",
                             "learn_more": "Més informació sobre les condicions",
                             "name": "Condició",
-                            "type_select": "Tipus de condició",
                             "type": {
                                 "and": {
                                     "label": "I (AND lògic)"
@@ -1524,6 +1529,7 @@
                                     "zone": "Zona"
                                 }
                             },
+                            "type_select": "Tipus de condició",
                             "unsupported_condition": "Condició no compatible amb l'editor visual: {condition}"
                         },
                         "copy_to_clipboard": "Copia al porta-retalls",
@@ -1543,7 +1549,7 @@
                             "queued": "Longitud de la cua"
                         },
                         "modes": {
-                            "description": "El mode controla què passa quan es dispara l'automatització i encara hi ha accions d'un disparament anterior executant-se. Consulta {documentation_link} per a més informació.",
+                            "description": "El mode controla què passa quan es dispara l'automatització i encara hi ha accions d'un disparament anterior executant-se. Consulta la {documentation_link} per a més informació.",
                             "documentation": "documentació d'automatització",
                             "label": "Mode",
                             "parallel": "Paral·lel",
@@ -1563,9 +1569,8 @@
                             "header": "Disparadors",
                             "id": "ID del disparador (utilitzat per la condició de disparador)",
                             "introduction": "Els disparadors són les regles que fan que s'executi una automatització. Pots definir més d'un disparador per a cada automatització. Una vegada salti un disparador, Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
-                            "learn_more": "Més informació sobre els activadors",
+                            "learn_more": "Més informació sobre els disparadors",
                             "name": "Disparador",
-                            "type_select": "Tipus de disparador",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1631,17 +1636,17 @@
                                     "label": "Plantilla",
                                     "value_template": "Plantilla de valor"
                                 },
-                                "time_pattern": {
-                                    "hours": "Hores",
-                                    "label": "Patró temporal",
-                                    "minutes": "Minuts",
-                                    "seconds": "Segons"
-                                },
                                 "time": {
                                     "at": "A les",
                                     "label": "Temporal",
                                     "type_input": "Valor d'un ajudant de data/hora",
                                     "type_value": "Temps fix"
+                                },
+                                "time_pattern": {
+                                    "hours": "Hores",
+                                    "label": "Patró temporal",
+                                    "minutes": "Minuts",
+                                    "seconds": "Segons"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1656,6 +1661,7 @@
                                     "zone": "Zona"
                                 }
                             },
+                            "type_select": "Tipus de disparador",
                             "unsupported_platform": "Plataforma no compatible amb l'editor visual: {platform}"
                         },
                         "unsaved_confirm": "Hi ha canvis no desats. Segur que vols sortir?"
@@ -1788,6 +1794,7 @@
                             "instance_will_be_available": "La teva instància estarà disponible a",
                             "link_learn_how_it_works": "Informació sobre com funciona",
                             "not_connected": "No connectat",
+                            "reconnecting": "Tornant a connectar",
                             "remote_enabled": {
                                 "caption": "Connexió automàtica",
                                 "description": "Activa aquesta opció per assegurar-te que la teva instància de Home Assistant sempre sigui accessible de forma remota."
@@ -1818,9 +1825,9 @@
                             "loading": "Carregant...",
                             "manage": "Gestiona",
                             "no_hooks_yet": "Sembla que encara no tens cap webhook. Comença configurant una ",
+                            "no_hooks_yet2": "o bé creant una",
                             "no_hooks_yet_link_automation": "automatització de webhook",
                             "no_hooks_yet_link_integration": "integració basada en webhook",
-                            "no_hooks_yet2": "o bé creant una",
                             "title": "Webhooks"
                         }
                     },
@@ -1935,41 +1942,13 @@
                     "description": "Sistema d'unitats, ubicació, zona horària i altres paràmetres generals",
                     "section": {
                         "core": {
-                            "analytics": {
-                                "documentation": "Abans d'activar això, revisa't la documentació d'anàlisi a {link}, per entendre el què s'enviarà i com s'emmagatzemarà.",
-                                "header": "Dades analítiques",
-                                "instance_id": "ID de la instància: {huuid}",
-                                "introduction": "Comparteix informació de la teva instal·lació per ajudar a millorar Home Assistant i ajudar-nos a convèncer als fabricants perquè afegeixin control local i funcions centrades en la privadesa.",
-                                "learn_more": "Com processem les teves dades",
-                                "needs_base": "Has d'habilitar l'anàlisi bàsica perquè aquesta opció estigui disponible",
-                                "preference": {
-                                    "base": {
-                                        "description": "ID de la instància, versió i tipus d'instal·lació.",
-                                        "title": "Anàlisi bàsica"
-                                    },
-                                    "diagnostics": {
-                                        "description": "Comparteix informes d'error quan es produeixin errors inesperats.",
-                                        "title": "Diagnòstics"
-                                    },
-                                    "statistics": {
-                                        "description": "Nombre total d'entitats utilitzades, usuaris i altres elements.",
-                                        "title": "Estadístiques d’ús"
-                                    },
-                                    "usage_supervisor": {
-                                        "description": "Noms, versions i funcionalitats.",
-                                        "title": "Integracions i complements utilitzats"
-                                    },
-                                    "usage": {
-                                        "description": "Noms i informació de versió.",
-                                        "title": "Integracions utilitzades"
-                                    }
-                                }
-                            },
                             "core_config": {
+                                "currency": "Moneda",
                                 "edit_requires_storage": "L'editor està desactivat ja que la configuració es troba a configuration.yaml.",
                                 "elevation": "Altitud",
                                 "elevation_meters": "metres",
                                 "external_url": "URL extern",
+                                "find_currency_value": "Troba el teu valor",
                                 "imperial_example": "Fahrenheit, lliures",
                                 "internal_url": "URL intern",
                                 "latitude": "Latitud",
@@ -2098,6 +2077,63 @@
                     "update": "Actualitza",
                     "update_device_error": "No s'ha pogut actualitzar el dispositiu"
                 },
+                "energy": {
+                    "caption": "Energia",
+                    "description": "Monitoritza la teva producció i consum d'energia",
+                    "device_consumption": {
+                        "add_stat": "Tria una entitat per fer-li el seguiment d'energia",
+                        "dialog": {
+                            "selected_stat_intro": "Seleccional l'entitat que representa el consum d'energia del dispositiu."
+                        },
+                        "learn_more": "Més informació sobre com començar.",
+                        "selected_stat": "Seguint energia de",
+                        "sub": "El seguiment de consum d'energia de dispositius individuals permet a Home Assistant desglossar l'ús d'energia per dispositius.",
+                        "title": "Dispositius individuals"
+                    },
+                    "grid": {
+                        "flow_dialog": {
+                            "from": {
+                                "cost_entity": "Utilitza una entitat amb el preu actual",
+                                "cost_entity_input": "Entitat amb el preu actual",
+                                "cost_number": "Utilitza un preu estàtic",
+                                "cost_number_input": "Preu per kWh",
+                                "cost_number_suffix": "{currency}/kWh",
+                                "cost_para": "Tria com vols que Home Assistant faci el seguiment dels costos de l'energia consumida.",
+                                "cost_stat": "Utilitza una entitat que segueix els costos totals",
+                                "cost_stat_input": "Entitat de costos totals",
+                                "energy_stat": "Energia consumida (kWh)",
+                                "header": "Configura el consum de xarxa",
+                                "no_cost": "No facis seguiment de costos",
+                                "paragraph": "El consum de xarxa és l'energia que va des de la xarxa pública a casa teva."
+                            },
+                            "to": {
+                                "cost_entity": "Utilitza una entitat amb el preu actual",
+                                "cost_entity_input": "Entitat amb el preu actual",
+                                "cost_number": "Utilitza un preu estàtic",
+                                "cost_number_input": "Preu per kWh",
+                                "cost_number_suffix": "{currency}/kWh",
+                                "cost_para": "Et retornen diners quan exportes energia a la xarxa?",
+                                "cost_stat": "Utilitza una entitat que segueix el total de diners rebuts",
+                                "cost_stat_input": "Entitat de compensació total",
+                                "energy_stat": "Energia exportada a la xarxa (kWh)",
+                                "header": "Configura la producció a xarxa",
+                                "no_cost": "No em retornen diners",
+                                "paragraph": "La producció a xarxa és l'energia que va des dels teus panells fotovoltaics a la xarxa pública."
+                            }
+                        },
+                        "learn_more": "Més informació sobre com començar.",
+                        "sub": "Configura la quantitat d'energia que consumeixes i retornes a la xarxa (en cas que també en produeixis). Això fa que Home Assistant faci un seguiment complet de l'energia utilitzada a casa.",
+                        "title": "Xarxa elèctrica"
+                    },
+                    "solar": {
+                        "learn_more": "Més informació sobre com començar.",
+                        "stat_predicted_production": "Previsió de la teva producció d'energia solar",
+                        "stat_production": "Producció d'energia solar",
+                        "stat_return_to_grid": "Energia solar exportada a la xarxa",
+                        "sub": "Fes que Home Assistant analitzi els panells solars i et doni informació sobre el seu rendiment.",
+                        "title": "Panells fotovoltaics"
+                    }
+                },
                 "entities": {
                     "caption": "Entitats",
                     "description": "Gestiona les entitats conegudes",
@@ -2148,14 +2184,6 @@
                         }
                     }
                 },
-                "filtering": {
-                    "clear": "Esborra",
-                    "filtering_by": "Filtratge per",
-                    "show": "Mostra"
-                },
-                "hassio": {
-                    "button": "Configura"
-                },
                 "header": "Configuració de Home Assistant",
                 "helpers": {
                     "caption": "Ajudants",
@@ -2205,16 +2233,11 @@
                     "server": "servidor",
                     "setup_time": "Temps de configuració",
                     "source": "Font:",
-                    "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml",
                     "system_health": {
                         "manage": "Gestiona",
                         "more_info": "més informació"
-                    }
-                },
-                "integration_panel_move": {
-                    "link_integration_page": "pàgina d'integracions",
-                    "missing_zha": "Trobes a faltar el panell de configuració de ZHA? S'ha traslladat a l'entrada ZHA de la {integrations_page}.",
-                    "missing_zwave": "Trobes a faltar el panell de configuració de Z-Wave? S'ha traslladat a l'entrada Z-Wave de la {integrations_page}."
+                    },
+                    "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml"
                 },
                 "integrations": {
                     "add_integration": "Afegeix integració",
@@ -2229,8 +2252,6 @@
                         "depends_on_cloud": "Depèn del núvol",
                         "device_unavailable": "Dispositiu no disponible",
                         "devices": "{count} {count, plural,\n  one {dispositiu}\n  other {dispositius}\n}",
-                        "disable_error": "S'ha produït un error en activar o desactivar la integració",
-                        "disable_restart_confirm": "Reinicia Home Assistant per acabar de desactivar aquesta integració",
                         "disable": {
                             "disable_confirm": "Estàs segur que vols desactivar aquesta entrada de configuració? Els seus dispositius i entitats es desactivaran.",
                             "disabled": "Desactivada",
@@ -2241,6 +2262,8 @@
                             },
                             "disabled_cause": "Desactivada per {cause}"
                         },
+                        "disable_error": "S'ha produït un error en activar o desactivar la integració",
+                        "disable_restart_confirm": "Reinicia Home Assistant per acabar de desactivar aquesta integració",
                         "disabled_polling": "Sondeig automàtic per l'obtenció de dades actualitzades desactivat",
                         "documentation": "Documentació",
                         "enable_restart_confirm": "Reinicia Home Assistant per acabar d'activar aquesta integració",
@@ -2248,11 +2271,9 @@
                         "entity_unavailable": "Entitat no disponible",
                         "firmware": "Firmware: {version}",
                         "hub": "Connectat a través de",
-                        "logs": "registres",
                         "manuf": "de {manufacturer}",
                         "no_area": "Sense àrea",
                         "not_loaded": "No carregada",
-                        "options": "Opcions",
                         "provided_by_custom_integration": "Proporcionada per una integració personalitzada",
                         "reload": "Torna a carregar",
                         "reload_confirm": "La integració s'ha tornat a carregar",
@@ -2284,7 +2305,11 @@
                             "open_site": "Vés al lloc web"
                         },
                         "finish": "Finalitza",
-                        "loading_first_time": "Espera mentre s'instal·la la integració",
+                        "loading": {
+                            "fallback_title": "la integració",
+                            "loading_flow": "Espera mentre es configura {integration}",
+                            "loading_step": "Carregant el següent pas de {integration}"
+                        },
                         "next": "Següent",
                         "not_all_required_fields": "No s'han omplert tots els camps obligatoris.",
                         "not_loaded": "No s'ha pogut carregar la integració, prova de reiniciar Home Assistant.",
@@ -2301,7 +2326,6 @@
                     "details": "Detalls de la integració",
                     "disable": {
                         "disabled_integrations": "{number} desactivada/es",
-                        "hide_disabled": "Amaga integracions desactivades",
                         "show": "Mostra",
                         "show_disabled": "Mostra integracions desactivades"
                     },
@@ -2312,7 +2336,6 @@
                         "confirm_delete_ignore_title": "Vols deixar d'ignorar {name}?",
                         "confirm_ignore": "Estàs segur que no vols configurar aquesta integració? Pots desfer-ho fent clic a 'Mostra les integracions ignorades' al menú de la part superior dreta.",
                         "confirm_ignore_title": "Ignorar descobriment de {name}?",
-                        "hide_ignored": "Amaga les integracions ignorades",
                         "ignore": "Ignora",
                         "ignored": "Ignorada",
                         "show_ignored": "Mostra les integracions ignorades",
@@ -2432,7 +2455,6 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Configura",
                     "description_listen": "Escolta d'un tòpic",
                     "description_publish": "Publicació d'un paquet",
                     "listening_to": "Escoltant a",
@@ -2446,7 +2468,6 @@
                     "topic": "tòpic"
                 },
                 "ozw": {
-                    "button": "Configura",
                     "common": {
                         "controller": "Controlador",
                         "instance": "Instància",
@@ -2471,6 +2492,11 @@
                         "nodes": "Nodes",
                         "select_instance": "Selecciona instància"
                     },
+                    "network": {
+                        "header": "Gestió de la xarxa",
+                        "introduction": "Gestiona les funcions de tota la xarxa.",
+                        "node_count": "{count} nodes"
+                    },
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "S'han cosultat tots els nodes",
@@ -2491,10 +2517,9 @@
                         "starting": "Iniciant",
                         "unknown": "Desconegut"
                     },
-                    "network": {
-                        "header": "Gestió de la xarxa",
-                        "introduction": "Gestiona les funcions de tota la xarxa.",
-                        "node_count": "{count} nodes"
+                    "node": {
+                        "button": "Detalls del node",
+                        "not_found": "No s'ha trobat el node"
                     },
                     "node_config": {
                         "header": "Configuració de node",
@@ -2523,10 +2548,6 @@
                         "static": "Obtenint valors estàtics del dispositiu",
                         "versions": "Obtenint informació de programari i versions de classes de comandes",
                         "wakeup": "Configurant el suport per a cues de despertar i missatges"
-                    },
-                    "node": {
-                        "button": "Detalls del node",
-                        "not_found": "No s'ha trobat el node"
                     },
                     "nodes_table": {
                         "failed": "Ha fallat",
@@ -2711,7 +2732,7 @@
                             "input_number": "Entrades numèriques",
                             "input_select": "Entrades de selecció",
                             "input_text": "Entrades de text",
-                            "introduction": "Algunes parts de Home Assistant es poden actualitzar sense necessitat reiniciar-lo. Si prems actualitza s'esborrarà la configuració YAML actual i se'n carregarà la nova.",
+                            "introduction": "Algunes parts de Home Assistant es poden actualitzar sense necessitar reiniciar-lo. Si prems alguna de les opcions de sota s'esborrarà la seva configuració YAML actual i se'n carregarà la nova.",
                             "min_max": "Entitats min/max",
                             "mqtt": "Entitats MQTT configurades manualment",
                             "person": "Persones",
@@ -2832,7 +2853,6 @@
                         "search_again": "Torna a cercar",
                         "spinner": "S'estan cercant dispositius ZHA Zigbee..."
                     },
-                    "button": "Configura",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributs del clúster seleccionat",
                         "get_zigbee_attribute": "Obtenir l'atribut Zigbee",
@@ -2862,12 +2882,7 @@
                     },
                     "configuration_page": {
                         "shortcuts_title": "Dreceres",
-                        "update_button": "Actualitza la configuració",
-                        "zha_options": {
-                            "default_light_transition": "Temps de transició predeterminat (segons)",
-                            "enable_identify_on_join": "Activa l'efecte d'identificació quan els dispositius s'uneixin a la xarxa",
-                            "title": "Opcions globals"
-                        }
+                        "update_button": "Actualitza la configuració"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuració completada",
@@ -2949,123 +2964,7 @@
                     "introduction": "Les zones et permeten definir certes regions del planeta. Quan una persona es trobi dins d'una zona, l'estat prendrà el nom d'aquesta zona. També es poden utilitzar com a disparadors o condicions durant la creació d'automatitzacions.",
                     "no_zones_created_yet": "Sembla que encara no has creat cap zona."
                 },
-                "zwave_js": {
-                    "add_node": {
-                        "cancel_inclusion": "Cancel·la la inclusió",
-                        "controller_in_inclusion_mode": "El controlador Z-Wave ara està en mode d'inclusió.",
-                        "follow_device_instructions": "Segueix les instruccions del teu dispositiu per activar la vinculació al dispositiu.",
-                        "inclusion_failed": "No s'ha pogut afegir el node. Consulta els registres per a més informació.",
-                        "inclusion_finished": "S'ha afegit el node.",
-                        "interview_failed": "Ha fallat la consulta del dispositiu. Pots trobar informació addicional als registres.",
-                        "interview_started": "S'està consultant el dispositiu. Això pot trigar una estona.",
-                        "introduction": "Aquest assistent et guiarà perquè afegeixis un node a la teva xarxa Z-Wave.",
-                        "secure_inclusion_warning": "Els dispositius segurs necessiten una amplada de banda més gran; si tens molts dispositius segurs pot ser que la xarxa Z-Wave vagi més lenta. Et recomanem que utilitzis la inclusió segura només en dispositius que realment ho necessitin com ara panys i controls de portes.",
-                        "start_inclusion": "Inicia la inclusió",
-                        "start_secure_inclusion": "Inicia la inclusió segura",
-                        "title": "Afegeix un node Z-Wave",
-                        "use_secure_inclusion": "Utilitza la inclusió segura",
-                        "view_device": "Mostra el dispositiu"
-                    },
-                    "button": "Configura",
-                    "common": {
-                        "add_node": "Afegeix node",
-                        "close": "Tanca",
-                        "heal_network": "Guareix la xarxa",
-                        "home_id": "ID principal",
-                        "network": "Xarxa",
-                        "node_id": "ID del node",
-                        "reconfigure_server": "Torna a configurar el servidor",
-                        "remove_node": "Elimina node"
-                    },
-                    "dashboard": {
-                        "driver_version": "Versió del controlador",
-                        "dump_dead_nodes_text": "Alguns dels nodes no han respost i s'han donat com a morts. Aquests no s'exportaran completament.",
-                        "dump_dead_nodes_title": "Alguns dels teus nodes estan morts",
-                        "dump_debug": "Baixa un fitxer de buidatge de la xarxa per ajudar-te a diagnosticar problemes",
-                        "dump_not_ready_confirm": "Baixa",
-                        "dump_not_ready_text": "Si fas una exportació mentre tots els nodes no estan preparats, pots perdre dades útils. Deixa més temps perque la xarxa consulti tots els nodes. Vols seguir amb el procés?",
-                        "dump_not_ready_title": "Encara no tots els nodes estan preparats",
-                        "header": "Gestiona la teva xarxa Z-Wave",
-                        "home_id": "ID principal",
-                        "introduction": "Gestiona la teva xarxa i nodes Z-Wave",
-                        "nodes_ready": "Nodes preparats",
-                        "server_version": "Versió del servidor"
-                    },
-                    "device_info": {
-                        "device_config": "Configura dispositiu",
-                        "node_ready": "Node preparat",
-                        "node_status": "Estat del node",
-                        "zwave_info": "Informació Z-Wave"
-                    },
-                    "heal_network": {
-                        "healing_cancelled": "La guarició de la xarxa s'ha cancel·lat.",
-                        "healing_complete": "La guarició de la xarxa s'ha completat.",
-                        "healing_failed": "La guarició ha fallat. Pots trobar informació addicional als registres.",
-                        "in_progress": "La guarició de la xarxa està en curs. Trigarà una estona.",
-                        "introduction": "Inicia una guarició de la teva xarxa Z-Wave. La guarició de xarxa farà que tots els dispositius tornin a calcular les seves rutes cap al controlador. Es recomana si recentment has canviat o mogut dispositius o el controlador.",
-                        "run_in_background": "Pots tancar aquest diàleg, la guarició de la xarxa continuarà en segon pla.",
-                        "start_heal": "Comença la guarició",
-                        "stop_heal": "Atura la guarició",
-                        "title": "Guareix la xarxa Z-Wave",
-                        "traffic_warning": "El procés de guarició genera una gran quantitat de trànsit a la xarxa Z-Wave. Això pot fer que els dispositius responguin lentament (o gens) mentre la guarició està en procés."
-                    },
-                    "logs": {
-                        "log_level": "Nivell dels registres",
-                        "log_level_changed": "Nivell de registre canviat a: {level}",
-                        "subscribed_to_logs": "Subscrit a missatges de registre Z-Wave JS...",
-                        "title": "Registres de Z-Wave JS"
-                    },
-                    "navigation": {
-                        "logs": "Registres",
-                        "network": "Xarxa"
-                    },
-                    "network_status": {
-                        "connected": "Connectat",
-                        "connecting": "Connectant",
-                        "unknown": "Desconegut"
-                    },
-                    "node_config": {
-                        "attribution": "Els paràmetres de configuració i descripcions del dispositiu els proporcionen {device_database}",
-                        "battery_device_notice": "Els dispositius amb bateria han d'estar desperts per actualitzar-ne la configuració. Consulta el manual del dispositiu per saber com despertar-lo.",
-                        "error_device_not_found": "Dispositiu no trobat",
-                        "header": "Configuració de dispositiu Z-Wave",
-                        "introduction": "Gestiona i ajusta els paràmetres de configuració específics del dispositiu (node) seleccionat",
-                        "parameter_is_read_only": "Aquest paràmetre de només lectura.",
-                        "set_param_accepted": "El paràmetre s'ha actualitzat.",
-                        "set_param_error": "S'ha produït un error.",
-                        "set_param_queued": "El canvi de paràmetre s'ha posat en espera i s'actualitzarà quan es desperti el dispositiu.",
-                        "zwave_js_device_database": "Base de dades de dispositiu Z-Wave JS"
-                    },
-                    "node_status": {
-                        "alive": "Viu",
-                        "asleep": "Adormit",
-                        "awake": "Despert",
-                        "dead": "Mort",
-                        "unknown": "Desconegut"
-                    },
-                    "reinterview_node": {
-                        "battery_device_warning": "Hauràs de despertar els dispositius amb bateria abans d'iniciar el procés de consulta. Fes un cop d'ull al manual del dispositiu per saber com despertar-lo.",
-                        "in_progress": "S'està consultant el dispositiu. Això pot trigar una estona.",
-                        "interview_complete": "Consulta del dispositiu completada.",
-                        "interview_failed": "Ha fallat la consulta del dispositiu. Pots trobar informació addicional als registres.",
-                        "introduction": "Torna a consultar un dispositiu de la xarxa Zigbee. Fes-ho si el dispositiu no funciona correctament.",
-                        "run_in_background": "Pots tancar aquest diàleg, la consulta continuarà en segon pla.",
-                        "start_reinterview": "Torna a iniciar consulta",
-                        "title": "Torna a consultar un dispositiu Z-Wave"
-                    },
-                    "remove_node": {
-                        "cancel_exclusion": "Cancel·la l'exclusió",
-                        "controller_in_exclusion_mode": "El controlador Z-Wave ara està en mode d'exclusió.",
-                        "exclusion_failed": "No s'ha pogut eliminar el node. Consulta els registres per a més informació.",
-                        "exclusion_finished": "El node {id} s'ha eliminat de la teva xarxa Z-Wave.",
-                        "follow_device_instructions": "Segueix les instruccions del teu dispositiu per activar l'exclusió al dispositiu.",
-                        "introduction": "Elimina un node de la xarxa Z-Wave i suprimeix el dispositiu i entitats associades de Home Assistant.",
-                        "start_exclusion": "Inicia l'exclusió",
-                        "title": "Elimina un node Z-Wave"
-                    }
-                },
                 "zwave": {
-                    "button": "Configura",
                     "common": {
                         "index": "Índex",
                         "instance": "Instància",
@@ -3136,7 +3035,7 @@
                         "add_node_secure": "Afegeix node amb seguretat",
                         "cancel_command": "Cancel·lar ordre",
                         "heal_network": "Guareix la xarxa",
-                        "heal_node": "Guareix node",
+                        "heal_node": "Cura node",
                         "node_info": "Informació de node",
                         "print_node": "Imprimeix node",
                         "refresh_entity": "Actualitza l'entitat",
@@ -3153,6 +3052,144 @@
                     },
                     "values": {
                         "header": "Valors dels node"
+                    }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Cancel·la la inclusió",
+                        "controller_in_inclusion_mode": "El controlador Z-Wave ara està en mode d'inclusió.",
+                        "follow_device_instructions": "Segueix les instruccions del teu dispositiu per activar la vinculació al dispositiu.",
+                        "inclusion_failed": "No s'ha pogut afegir el node. Consulta els registres per a més informació.",
+                        "inclusion_finished": "S'ha afegit el node.",
+                        "interview_failed": "Ha fallat la consulta del dispositiu. Pots trobar informació addicional als registres.",
+                        "interview_started": "S'està consultant el dispositiu. Això pot trigar una estona.",
+                        "introduction": "Aquest assistent et guiarà perquè afegeixis un node a la teva xarxa Z-Wave.",
+                        "secure_inclusion_warning": "Els dispositius segurs necessiten una amplada de banda més gran; si tens molts dispositius segurs pot ser que la xarxa Z-Wave vagi més lenta. Et recomanem que utilitzis la inclusió segura només en dispositius que realment ho necessitin com ara panys i controls de portes.",
+                        "start_inclusion": "Inicia la inclusió",
+                        "start_secure_inclusion": "Inicia la inclusió segura",
+                        "title": "Afegeix un node Z-Wave",
+                        "use_secure_inclusion": "Utilitza la inclusió segura",
+                        "view_device": "Mostra el dispositiu"
+                    },
+                    "common": {
+                        "add_node": "Afegeix node",
+                        "close": "Tanca",
+                        "heal_network": "Guareix la xarxa",
+                        "home_id": "ID principal",
+                        "network": "Xarxa",
+                        "node_id": "ID del node",
+                        "reconfigure_server": "Torna a configurar el servidor",
+                        "remove_node": "Elimina node",
+                        "source": "Font"
+                    },
+                    "dashboard": {
+                        "driver_version": "Versió del controlador",
+                        "dump_dead_nodes_text": "Alguns dels nodes no han respost i s'han donat com a morts. Aquests no s'exportaran completament.",
+                        "dump_dead_nodes_title": "Alguns dels teus nodes estan morts",
+                        "dump_debug": "Baixa un fitxer de buidatge de la xarxa per ajudar-te a diagnosticar problemes",
+                        "dump_not_ready_confirm": "Baixa",
+                        "dump_not_ready_text": "Si fas una exportació mentre tots els nodes no estan preparats, pots perdre dades útils. Deixa més temps perque la xarxa consulti tots els nodes. Vols seguir amb el procés?",
+                        "dump_not_ready_title": "Encara no tots els nodes estan preparats",
+                        "header": "Gestiona la teva xarxa Z-Wave",
+                        "home_id": "ID principal",
+                        "introduction": "Gestiona la teva xarxa i nodes Z-Wave",
+                        "nodes_ready": "Nodes preparats",
+                        "server_version": "Versió del servidor"
+                    },
+                    "device_info": {
+                        "device_config": "Configura dispositiu",
+                        "heal_node": "Cura node",
+                        "node_ready": "Node preparat",
+                        "node_status": "Estat del node",
+                        "reinterview_device": "Torna a consultar dispositiu",
+                        "remove_failed": "Suprimeix dispositiu fallit",
+                        "zwave_info": "Informació Z-Wave"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "La guarició de la xarxa s'ha cancel·lat.",
+                        "healing_complete": "La guarició de la xarxa s'ha completat.",
+                        "healing_failed": "La guarició ha fallat. Pots trobar informació addicional als registres.",
+                        "in_progress": "La guarició de la xarxa està en curs. Trigarà una estona.",
+                        "introduction": "Inicia una guarició de la teva xarxa Z-Wave. La guarició de xarxa farà que tots els dispositius tornin a calcular les seves rutes cap al controlador. Es recomana si recentment has canviat o mogut dispositius o el controlador.",
+                        "run_in_background": "Pots tancar aquest diàleg, la guarició de la xarxa continuarà en segon pla.",
+                        "start_heal": "Comença la guarició",
+                        "stop_heal": "Atura la guarició",
+                        "title": "Guareix la xarxa Z-Wave",
+                        "traffic_warning": "El procés de guarició genera una gran quantitat de trànsit a la xarxa Z-Wave. Això pot fer que els dispositius responguin lentament (o gens) mentre la guarició està en procés."
+                    },
+                    "heal_node": {
+                        "healing_complete": "{device} s'ha curat.",
+                        "healing_failed": "{device} no s'ha pogut curar.",
+                        "healing_failed_check_logs": "Pots trobar informació addicional als registres.",
+                        "in_progress": "La curació de {device} està en curs.",
+                        "introduction": "Fes que {device} actualitzi les seves rutes cap al controlador. Això pot ajudar amb problemes de comunicació si recentment has canviat o mogut el dispositiu o el controlador.",
+                        "network_heal_in_progress": "Una curació de xarxa Z-Wave ja està en curs. Espera que acabi abans de curar un dispositiu específic.",
+                        "start_heal": "Cura dispositiu",
+                        "title": "Cura dispositiu Z-Wave",
+                        "traffic_warning": "El procés de curació genera una gran quantitat de trànsit a la xarxa Z-Wave. Això pot fer que els dispositius responguin lentament (o gens) mentre dura el procés."
+                    },
+                    "logs": {
+                        "log_level": "Nivell dels registres",
+                        "log_level_changed": "Nivell de registre canviat a: {level}",
+                        "subscribed_to_logs": "Subscrit a missatges de registre Z-Wave JS...",
+                        "title": "Registres de Z-Wave JS"
+                    },
+                    "navigation": {
+                        "logs": "Registres",
+                        "network": "Xarxa"
+                    },
+                    "network_status": {
+                        "connected": "Connectat",
+                        "connecting": "Connectant",
+                        "unknown": "Desconegut"
+                    },
+                    "node_config": {
+                        "attribution": "Els paràmetres de configuració i descripcions del dispositiu els proporcionen {device_database}",
+                        "battery_device_notice": "Els dispositius amb bateria han d'estar desperts per actualitzar-ne la configuració. Consulta el manual del dispositiu per saber com despertar-lo.",
+                        "error_device_not_found": "Dispositiu no trobat",
+                        "header": "Configuració de dispositiu Z-Wave",
+                        "introduction": "Gestiona i ajusta els paràmetres de configuració específics del dispositiu (node) seleccionat",
+                        "parameter": "Paràmetre",
+                        "parameter_is_read_only": "Aquest paràmetre de només lectura.",
+                        "set_param_accepted": "El paràmetre s'ha actualitzat.",
+                        "set_param_error": "S'ha produït un error.",
+                        "set_param_queued": "El canvi de paràmetre s'ha posat en espera i s'actualitzarà quan es desperti el dispositiu.",
+                        "zwave_js_device_database": "Base de dades de dispositiu Z-Wave JS"
+                    },
+                    "node_status": {
+                        "alive": "Viu",
+                        "asleep": "Adormit",
+                        "awake": "Despert",
+                        "dead": "Mort",
+                        "unknown": "Desconegut"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Hauràs de despertar els dispositius amb bateria abans d'iniciar el procés de consulta. Fes un cop d'ull al manual del dispositiu per saber com despertar-lo.",
+                        "in_progress": "S'està consultant el dispositiu. Això pot trigar una estona.",
+                        "interview_complete": "Consulta del dispositiu completada.",
+                        "interview_failed": "Ha fallat la consulta del dispositiu. Pots trobar informació addicional als registres.",
+                        "introduction": "Torna a consultar un dispositiu de la xarxa Zigbee. Fes-ho si el dispositiu no funciona correctament.",
+                        "run_in_background": "Pots tancar aquest diàleg, la consulta continuarà en segon pla.",
+                        "start_reinterview": "Torna a iniciar consulta",
+                        "title": "Torna a consultar un dispositiu Z-Wave"
+                    },
+                    "remove_failed_node": {
+                        "in_progress": "La supressió del dispositiu està en curs.",
+                        "introduction": "Suprimeix un dispositiu fallit de la xarxa Z-Wave. Fes-ho si no pots excloure un dispositiu de forma normal (perquè està malmès).",
+                        "removal_failed": "El dispositiu no s'ha pogut suprimir de la xarxa Z-Wave.",
+                        "removal_finished": "El node {id} s'ha suprimit de la xarxa Z-Wave.",
+                        "remove_device": "Suprimeix dispositiu",
+                        "title": "Suprimeix un dispositiu Z-Wave fallit"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Cancel·la l'exclusió",
+                        "controller_in_exclusion_mode": "El controlador Z-Wave ara està en mode d'exclusió.",
+                        "exclusion_failed": "No s'ha pogut eliminar el node. Consulta els registres per a més informació.",
+                        "exclusion_finished": "El node {id} s'ha eliminat de la teva xarxa Z-Wave.",
+                        "follow_device_instructions": "Segueix les instruccions del teu dispositiu per activar l'exclusió al dispositiu.",
+                        "introduction": "Elimina un node de la xarxa Z-Wave i suprimeix el dispositiu i entitats associades de Home Assistant.",
+                        "start_exclusion": "Inicia l'exclusió",
+                        "title": "Elimina un node Z-Wave"
                     }
                 }
             },
@@ -3236,31 +3273,16 @@
                     }
                 }
             },
-            "error": {
-                "go_back": "Torna",
-                "supervisor": {
-                    "ask": "Sol·licita ajuda",
-                    "observer": "Comprova l'observador",
-                    "reboot": "Intenta reiniciar l'amfitrió",
-                    "system_health": "Comprova l'estat del sistema",
-                    "title": "No s'ha pogut carregar el panell del Supervisor!",
-                    "wait": "Si acabes de començar, assegura't que has deixat passar prou temps perquè el Supervisor s'iniciï."
-                }
-            },
-            "history": {
-                "ranges": {
-                    "last_week": "La setmana passada",
-                    "this_week": "Aquesta setmana",
-                    "today": "Avui",
-                    "yesterday": "Ahir"
-                }
-            },
-            "logbook": {
-                "ranges": {
-                    "last_week": "La setmana passada",
-                    "this_week": "Aquesta setmana",
-                    "today": "Avui",
-                    "yesterday": "Ahir"
+            "energy": {
+                "charts": {
+                    "by_device": "Consum per dispositiu",
+                    "solar": "Solar",
+                    "stat_house_energy_meter": "Consum total d'energia"
+                },
+                "setup": {
+                    "back": "Torna",
+                    "done": "Mostra'm el tauler d'energia!",
+                    "next": "Següent"
                 }
             },
             "lovelace": {
@@ -3374,7 +3396,6 @@
                         "entities": {
                             "description": "La targeta entitats és la més habitual. Agrupa diferents tipus d'entitats en una llista.",
                             "edit_special_row": "Fes clic al botó edita per veure els detalls de la fila",
-                            "entity_row_editor": "Editor de files d'entitats",
                             "entity_row": {
                                 "attribute": "Atribut",
                                 "button": "Botó",
@@ -3386,6 +3407,7 @@
                                 "section": "Secció",
                                 "weblink": "Enllaç web"
                             },
+                            "entity_row_editor": "Editor de files d'entitats",
                             "name": "Entitats",
                             "secondary_info_values": {
                                 "brightness": "Brillantor",
@@ -3412,6 +3434,7 @@
                         "gauge": {
                             "description": "La galga és una targeta bàsica que et permet mostrar les dades d'un sensor de manera visual.",
                             "name": "Galga",
+                            "needle_gauge": "Mostrar indicador d'agulla?",
                             "severity": {
                                 "define": "Definir gravetat?",
                                 "green": "Verd",
@@ -3424,6 +3447,7 @@
                             "attribute": "Atribut",
                             "camera_image": "Entitat de càmera",
                             "camera_view": "Visualització de càmera",
+                            "days_to_show": "Dies a mostrar",
                             "double_tap_action": "Acció en tocar dues vegades",
                             "entities": "Entitats",
                             "entity": "Entitat",
@@ -3537,6 +3561,10 @@
                             "integration_not_loaded": "Aquesta targeta necessita que la integració `shopping_list` estigui configurada.",
                             "name": "Llista de compres"
                         },
+                        "statistics-graph": {
+                            "description": "Amb la targeta gràfic d'estadístiques pot visualitzar un gràfic amb estadístiques de cadascuna de les entitats establertes.",
+                            "name": "Gràfic d'estadístiques"
+                        },
                         "thermostat": {
                             "description": "La targeta termòstat et permet controlar una entitat de tipus climatització. Pots canviar-ne tant la temperatura com el mode.",
                             "name": "Termòstat"
@@ -3606,6 +3634,12 @@
                         "tab_badges": "Insígnies",
                         "tab_settings": "Configuració",
                         "tab_visibility": "Visibilitat",
+                        "type": "Tipus de visualització",
+                        "types": {
+                            "masonry": "Maçonari (predeterminat)",
+                            "panel": "Panell (1 targeta)",
+                            "sidebar": "Barra lateral"
+                        },
                         "visibility": {
                             "select_users": "Selecciona quins usuaris podran veure aquesta visualització a la navegació"
                         }
@@ -3660,7 +3694,6 @@
                         "unsaved_changes": "Canvis sense desar"
                     },
                     "save_config": {
-                        "cancel": "M'ho he repensat",
                         "close": "Tanca",
                         "empty_config": "Comença amb un panell buit",
                         "header": "Pren el control de la interfície d'usuari Lovelace",
@@ -3689,8 +3722,6 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Això renderitza la primera targeta a amplada completa. Les altres targetes i insígnies d'aquesta visualització no es renderitzaran.",
-                            "title": "Mode panell?",
                             "warning_multiple_cards": "Aquesta visualització conté més d'una targeta, però les visualitzacions en mode panell només poden mostrar una targeta."
                         }
                     }
@@ -3893,8 +3924,7 @@
             },
             "page-onboarding": {
                 "analytics": {
-                    "finish": "Següent",
-                    "intro": "Comparteix dades analítiques de la teva instància. Aquestes dades estaran disponibles públicament a {link}"
+                    "finish": "Següent"
                 },
                 "core-config": {
                     "button_detect": "Detecta",
@@ -3918,10 +3948,8 @@
                     "confirm_password": "Confirma la contrasenya de la instantània",
                     "description": "També pots restaurar des d'una instantània anterior.",
                     "folders": "Carpetes",
-                    "full_snapshot": "Instantània completa",
                     "hide_log": "Amaga el registre complet",
                     "in_progress": "Restauració en curs",
-                    "partial_snapshot": "Instantània parcial",
                     "password": "Contrasenya de la instantània",
                     "password_protection": "Protecció amb contrasenya",
                     "select_type": "Selecciona què vols restaurar",
@@ -4003,18 +4031,18 @@
                     "prompt_copy_token": "Copia't el token d'autenticació d'accés. No es tornarà a mostrar més endavant.",
                     "prompt_name": "Posa un nom al token"
                 },
+                "mfa": {
+                    "confirm_disable": "Estàs segur que vols desactivar {name}?",
+                    "disable": "Desactiva",
+                    "enable": "Activa",
+                    "header": "Mòduls d'autenticació amb múltiples passos"
+                },
                 "mfa_setup": {
                     "close": "Tanca",
                     "step_done": "Configuració feta per a {step}",
                     "submit": "Envia",
                     "title_aborted": "S'ha avortat",
                     "title_success": "Èxit!"
-                },
-                "mfa": {
-                    "confirm_disable": "Estàs segur que vols desactivar {name}?",
-                    "disable": "Desactiva",
-                    "enable": "Activa",
-                    "header": "Mòduls d'autenticació amb múltiples passos"
                 },
                 "number_format": {
                     "description": "Tria el format dels números.",
