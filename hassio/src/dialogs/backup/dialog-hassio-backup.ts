@@ -188,7 +188,7 @@ class HassioBackupDialog
           "POST",
 
           `hassio/${
-            atLeastVersion(this.hass.config.version, 2021, 8)
+            atLeastVersion(this.hass.config.version, 2021, 9)
               ? "backups"
               : "snapshots"
           }/${this._backup!.slug}/restore/partial`,
@@ -239,7 +239,7 @@ class HassioBackupDialog
         .callApi(
           "POST",
           `hassio/${
-            atLeastVersion(this.hass.config.version, 2021, 8)
+            atLeastVersion(this.hass.config.version, 2021, 9)
               ? "backups"
               : "snapshots"
           }/${this._backup!.slug}/restore/full`,
@@ -277,9 +277,9 @@ class HassioBackupDialog
     this.hass
 
       .callApi(
-        atLeastVersion(this.hass.config.version, 2021, 8) ? "DELETE" : "POST",
+        atLeastVersion(this.hass.config.version, 2021, 9) ? "DELETE" : "POST",
         `hassio/${
-          atLeastVersion(this.hass.config.version, 2021, 8)
+          atLeastVersion(this.hass.config.version, 2021, 9)
             ? "backups"
             : "snapshots"
         }/${this._backup!.slug}/remove`
@@ -303,7 +303,7 @@ class HassioBackupDialog
       signedPath = await getSignedPath(
         this.hass,
         `/api/hassio/${
-          atLeastVersion(this.hass.config.version, 2021, 8)
+          atLeastVersion(this.hass.config.version, 2021, 9)
             ? "backups"
             : "snapshots"
         }/${this._backup!.slug}/download`
