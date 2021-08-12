@@ -1,17 +1,35 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { hasTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/entity/ha-entity-picker";
-import { ForDict, NumericStateTrigger } from "../../../../../data/automation";
+import { NumericStateTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
 import { handleChangeEvent } from "../ha-automation-trigger-row";
+import "../../../../../components/ha-duration-input";
 
 @customElement("ha-automation-trigger-numeric_state")
 export default class HaNumericStateTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public trigger!: NumericStateTrigger;
+
+  public willUpdate(changedProperties: PropertyValues) {
+    if (!changedProperties.has("trigger")) {
+      return;
+    }
+    // Check for templates in trigger. If found, revert to YAML mode.
+    if (this.trigger && hasTemplate(this.trigger)) {
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
+      );
+    }
+  }
 
   public static get defaultConfig() {
     return {
@@ -21,23 +39,8 @@ export default class HaNumericStateTrigger extends LitElement {
 
   public render() {
     const { value_template, entity_id, attribute, below, above } = this.trigger;
-    let trgFor = this.trigger.for;
+    const trgFor = createDurationData(this.trigger.for);
 
-    if (
-      trgFor &&
-      ((trgFor as ForDict).hours ||
-        (trgFor as ForDict).minutes ||
-        (trgFor as ForDict).seconds)
-    ) {
-      // If the trigger was defined using the yaml dict syntax, convert it to
-      // the equivalent string format
-      let { hours = 0, minutes = 0, seconds = 0 } = trgFor as ForDict;
-      hours = hours.toString();
-      minutes = minutes.toString().padStart(2, "0");
-      seconds = seconds.toString().padStart(2, "0");
-
-      trgFor = `${hours}:${minutes}:${seconds}`;
-    }
     return html`
       <ha-entity-picker
         .value="${entity_id}"
@@ -82,14 +85,14 @@ export default class HaNumericStateTrigger extends LitElement {
         @value-changed=${this._valueChanged}
         dir="ltr"
       ></paper-textarea>
-      <paper-input
+      <ha-duration-input
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.state.for"
         )}
-        name="for"
-        .value=${trgFor}
+        .name=${"for"}
+        .data=${trgFor}
         @value-changed=${this._valueChanged}
-      ></paper-input>
+      ></ha-duration-input>
     `;
   }
 

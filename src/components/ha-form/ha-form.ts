@@ -2,7 +2,7 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HaTimeData } from "../ha-time-input";
+import { HaDurationData } from "../ha-duration-input";
 import "./ha-form-boolean";
 import "./ha-form-constant";
 import "./ha-form-float";
@@ -88,7 +88,7 @@ export type HaFormFloatData = number;
 export type HaFormBooleanData = boolean;
 export type HaFormSelectData = string;
 export type HaFormMultiSelectData = string[];
-export type HaFormTimeData = HaTimeData;
+export type HaFormTimeData = HaDurationData;
 
 export interface HaFormElement extends LitElement {
   schema: HaFormSchema | HaFormSchema[];
