@@ -1051,6 +1051,25 @@
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
             "learn_more": "More information on how to get started."
           },
+          "gas": {
+            "title": "Gas Cosumption",
+            "sub": "Let Home Assistant monitor your gas usage.",
+            "learn_more": "More information on how to get started.",
+            "dialog": {
+              "header": "Configure gas consumption",
+              "paragraph": "Gas consumption is the volume of gas that flows from to your home.",
+              "energy_stat": "Consumed Energy (m³)",
+              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
+              "no_cost": "Do not track costs",
+              "cost_stat": "Use an entity tracking the total costs",
+              "cost_stat_input": "Total Costs Entity",
+              "cost_entity": "Use an entity with current price",
+              "cost_entity_input": "Entity with the current price",
+              "cost_number": "Use a static price",
+              "cost_number_input": "Price per m³",
+              "cost_number_suffix": "{currency}/m³"
+            }
+          },
           "device_consumption": {
             "title": "Individual devices",
             "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
