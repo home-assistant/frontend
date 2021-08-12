@@ -42,6 +42,7 @@ export const FIXED_DOMAIN_ICONS = {
   remote: "hass:remote",
   scene: "hass:palette",
   script: "hass:script-text",
+  select: "hass:format-list-bulleted",
   sensor: "hass:eye",
   simple_alarm: "hass:bell",
   sun: "hass:white-balance-sunny",
@@ -58,10 +59,11 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   current: "hass:current-ac",
   carbon_dioxide: "mdi:molecule-co2",
   carbon_monoxide: "mdi:molecule-co",
-  energy: "hass:flash",
+  energy: "hass:lightning-bolt",
   humidity: "hass:water-percent",
   illuminance: "hass:brightness-5",
   temperature: "hass:thermometer",
+  monetary: "mdi:cash",
   pressure: "hass:gauge",
   power: "hass:flash",
   power_factor: "hass:angle-acute",
@@ -83,6 +85,7 @@ export const DOMAINS_WITH_CARD = [
   "number",
   "scene",
   "script",
+  "select",
   "timer",
   "vacuum",
   "water_heater",
@@ -121,6 +124,7 @@ export const DOMAINS_HIDE_MORE_INFO = [
   "input_text",
   "number",
   "scene",
+  "select",
 ];
 
 /** Domains that should have the history hidden in the more info dialog. */

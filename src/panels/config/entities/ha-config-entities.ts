@@ -442,20 +442,18 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       this._entries
     );
 
-    const {
-      filteredEntities,
-      filteredDomains,
-    } = this._filteredEntitiesAndDomains(
-      this._entities,
-      this._devices,
-      this._areas,
-      this._stateEntities,
-      this._searchParms,
-      this._showDisabled,
-      this._showUnavailable,
-      this._showReadOnly,
-      this._entries
-    );
+    const { filteredEntities, filteredDomains } =
+      this._filteredEntitiesAndDomains(
+        this._entities,
+        this._devices,
+        this._areas,
+        this._stateEntities,
+        this._searchParms,
+        this._showDisabled,
+        this._showUnavailable,
+        this._showReadOnly,
+        this._entries
+      );
 
     const includeZHAFab = filteredDomains.includes("zha");
 

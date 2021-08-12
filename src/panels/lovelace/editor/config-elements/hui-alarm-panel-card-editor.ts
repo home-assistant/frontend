@@ -27,7 +27,8 @@ const includeDomains = ["alarm_control_panel"];
 @customElement("hui-alarm-panel-card-editor")
 export class HuiAlarmPanelCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: AlarmPanelCardConfig;
@@ -58,7 +59,13 @@ export class HuiAlarmPanelCardEditor
       return html``;
     }
 
-    const states = ["arm_home", "arm_away", "arm_night", "arm_custom_bypass"];
+    const states = [
+      "arm_home",
+      "arm_away",
+      "arm_night",
+      "arm_vacation",
+      "arm_custom_bypass",
+    ];
 
     return html`
       <div class="card-config">

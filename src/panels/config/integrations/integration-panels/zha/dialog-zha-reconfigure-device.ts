@@ -35,9 +35,8 @@ class DialogZHAReconfigureDevice extends LitElement {
     ClusterConfigurationStatus
   > = new Map();
 
-  @state() private _params:
-    | ZHAReconfigureDeviceDialogParams
-    | undefined = undefined;
+  @state() private _params: ZHAReconfigureDeviceDialogParams | undefined =
+    undefined;
 
   @state() private _allSuccessful = true;
 
@@ -341,9 +340,10 @@ class DialogZHAReconfigureDevice extends LitElement {
       this._unsubscribe();
       this._status = this._allSuccessful ? "finished" : "failed";
     } else {
-      const clusterConfigurationStatus = this._clusterConfigurationStatuses!.get(
-        message.zha_channel_msg_data.cluster_id
-      );
+      const clusterConfigurationStatus =
+        this._clusterConfigurationStatuses!.get(
+          message.zha_channel_msg_data.cluster_id
+        );
       if (message.type === ZHA_CHANNEL_MSG_BIND) {
         if (!this._stages) {
           this._stages = ["binding"];

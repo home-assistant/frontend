@@ -31,7 +31,8 @@ import { atLeastVersion } from "../../../../src/common/config/version";
 @customElement("dialog-hassio-backup")
 class HassioBackupDialog
   extends LitElement
-  implements HassDialog<HassioBackupDialogParams> {
+  implements HassDialog<HassioBackupDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _error?: string;
@@ -317,8 +318,7 @@ class HassioBackupDialog
     if (window.location.href.includes("ui.nabu.casa")) {
       const confirm = await showConfirmationDialog(this, {
         title: "Potential slow download",
-        text:
-          "Downloading backups over the Nabu Casa URL will take some time, it is recomended to use your local URL instead, do you want to continue?",
+        text: "Downloading backups over the Nabu Casa URL will take some time, it is recomended to use your local URL instead, do you want to continue?",
         confirmText: "continue",
         dismissText: "cancel",
       });

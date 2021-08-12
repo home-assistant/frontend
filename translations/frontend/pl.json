@@ -205,7 +205,7 @@
                     }
                 },
                 "changelog": "Lista zmian",
-                "cpu_usage": "Zużycie procesora przez dodatek",
+                "cpu_usage": "Użycie procesora przez dodatek",
                 "hostname": "Nazwa hosta",
                 "install": "zainstaluj",
                 "new_update_available": "{name} {version} jest dostępna",
@@ -239,7 +239,7 @@
                     "enable": "Włącz tryb ochrony",
                     "title": "Ostrzeżenie: Tryb ochrony jest wyłączony!"
                 },
-                "ram_usage": "Zużycie pamięci przez dodatek",
+                "ram_usage": "Użycie pamięci przez dodatek",
                 "rebuild": "przeinstaluj",
                 "restart": "uruchom ponownie",
                 "start": "uruchom",
@@ -433,8 +433,8 @@
         },
         "system": {
             "core": {
-                "cpu_usage": "Zużycie procesora przez HA Core",
-                "ram_usage": "Zużycie pamięci przez HA Core"
+                "cpu_usage": "Użycie procesora przez HA Core",
+                "ram_usage": "Użycie pamięci przez HA Core"
             },
             "host": {
                 "change": "Zmień",
@@ -469,7 +469,7 @@
                 "beta_release_items": "Obejmuje to wersje beta dla:",
                 "beta_warning": "Wersje beta są przeznaczone dla testerów i wczesnych użytkowników i mogą zawierać niestabilne zmiany w kodzie",
                 "channel": "Kanał",
-                "cpu_usage": "Zużycie procesora przez Supervisora",
+                "cpu_usage": "Użycie procesora przez Supervisora",
                 "failed_to_reload": "Nie udało się wczytać ponownie Supervisora",
                 "failed_to_set_option": "Nie udało się ustawić opcji Supervisora",
                 "failed_to_update": "Nie udało się zaktualizować Supervisora",
@@ -477,7 +477,7 @@
                 "join_beta_description": "Pobieraj aktualizacje beta dla Home Assistanta (RC), Supervisora i hosta",
                 "leave_beta_action": "Opuść kanał beta",
                 "leave_beta_description": "Pobieraj stabilne aktualizacje dla Home Assistanta, Supervisora i hosta",
-                "ram_usage": "Zużycie pamięci przez Supervisora",
+                "ram_usage": "Użycie pamięci przez Supervisora",
                 "reload_supervisor": "Wczytaj ponownie",
                 "search": "Szukaj",
                 "share_diagnostics": "Udostępnij dane diagnostyczne",
@@ -2319,7 +2319,7 @@
                     "none": "Nic jeszcze nie zostało skonfigurowane",
                     "none_found": "Nie znaleziono integracji",
                     "none_found_detail": "Dostosuj kryteria wyszukiwania.",
-                    "note_about_integrations": "Jeszcze nie wszystkie integracje można skonfigurować za pomocą interfejsu użytkownika.",
+                    "note_about_integrations": "Żadne integracje nie pasują do Twojego wyszukiwania. Integracja, którą chcesz skonfigurować, może być jeszcze niedostępna do skonfigurowania za pomocą interfejsu użytkownika.",
                     "note_about_website_reference": "Więcej jest dostępnych na stronie integracji ",
                     "reconfigure": "Zmień konfigurację",
                     "rename_dialog": "Edytuj nazwę tego wpisu konfiguracji",
@@ -2962,9 +2962,11 @@
                     "common": {
                         "add_node": "Dodaj węzeł",
                         "close": "Zamknij",
+                        "heal_network": "Uzdrawiaj sieć",
                         "home_id": "Identyfikator domu",
                         "network": "Sieć",
                         "node_id": "Identyfikator węzła",
+                        "reconfigure_server": "Ponownie skonfiguruj serwer",
                         "remove_node": "Usuń węzeł"
                     },
                     "dashboard": {
@@ -2986,6 +2988,18 @@
                         "node_ready": "gotowy",
                         "node_status": "Stan węzła",
                         "zwave_info": "Informacje Z-Wave"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Uzdrawianie sieci zostało anulowane.",
+                        "healing_complete": "Uzdrawianie sieci zostało zakończone.",
+                        "healing_failed": "Uzdrawianie nie powiodło się. Dodatkowe informacje mogą być dostępne w logach.",
+                        "in_progress": "Trwa uzdrawianie sieci. To zajmie trochę czasu.",
+                        "introduction": "Rozpocznij uzdrawianie sieci Z-Wave. Uzdrawianie sieci spowoduje, że wszystkie urządzenia ponownie obliczą swoje trasy z powrotem do kontrolera i jest zalecane, jeśli niedawno przeniesiono urządzenia lub kontroler.",
+                        "run_in_background": "Możesz zamknąć to okno, a uzdrawianie sieci będzie kontynuowane w tle.",
+                        "start_heal": "Rozpocznij uzdrawianie",
+                        "stop_heal": "Zatrzymaj uzdrawianie",
+                        "title": "Uzdrawianie sieci Z-Wave",
+                        "traffic_warning": "Proces uzdrawiania generuje duży ruch w sieci Z-Wave. Może to spowodować, że urządzenia będą reagować powoli (lub wcale) podczas trwania uzdrawiania."
                     },
                     "logs": {
                         "log_level": "Poziom loga",

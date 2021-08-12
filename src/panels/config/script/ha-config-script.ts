@@ -42,6 +42,10 @@ class HaConfigScript extends HassRouterPage {
       edit: {
         tag: "ha-script-editor",
       },
+      trace: {
+        tag: "ha-script-trace",
+        load: () => import("./ha-script-trace"),
+      },
     },
   };
 
@@ -81,7 +85,7 @@ class HaConfigScript extends HassRouterPage {
 
     if (
       (!changedProps || changedProps.has("route")) &&
-      this._currentPage === "edit"
+      this._currentPage !== "dashboard"
     ) {
       pageEl.creatingNew = undefined;
       const scriptEntityId = this.routeTail.path.substr(1);

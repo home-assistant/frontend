@@ -13,7 +13,7 @@ class HassErrorScreen extends LitElement {
 
   @property({ type: Boolean }) public rootnav = false;
 
-  @property() public narrow?: boolean;
+  @property({ type: Boolean }) public narrow = false;
 
   @property() public error?: string;
 

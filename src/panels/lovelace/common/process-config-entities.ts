@@ -11,40 +11,38 @@ export const processConfigEntities = <
     throw new Error("Entities need to be an array");
   }
 
-  return entities.map(
-    (entityConf, index): T => {
-      if (
-        typeof entityConf === "object" &&
-        !Array.isArray(entityConf) &&
-        entityConf.type
-      ) {
-        return entityConf;
-      }
+  return entities.map((entityConf, index): T => {
+    if (
+      typeof entityConf === "object" &&
+      !Array.isArray(entityConf) &&
+      entityConf.type
+    ) {
+      return entityConf;
+    }
 
-      let config: T;
+    let config: T;
 
-      if (typeof entityConf === "string") {
-        config = { entity: entityConf } as T;
-      } else if (typeof entityConf === "object" && !Array.isArray(entityConf)) {
-        if (!("entity" in entityConf)) {
-          throw new Error(
-            `Entity object at position ${index} is missing entity field.`
-          );
-        }
-        config = entityConf as T;
-      } else {
-        throw new Error(`Invalid entity specified at position ${index}.`);
-      }
-
-      if (!isValidEntityId((config as EntityConfig).entity!)) {
+    if (typeof entityConf === "string") {
+      config = { entity: entityConf } as T;
+    } else if (typeof entityConf === "object" && !Array.isArray(entityConf)) {
+      if (!("entity" in entityConf)) {
         throw new Error(
-          `Invalid entity ID at position ${index}: ${
-            (config as EntityConfig).entity
-          }`
+          `Entity object at position ${index} is missing entity field.`
         );
       }
-
-      return config;
+      config = entityConf as T;
+    } else {
+      throw new Error(`Invalid entity specified at position ${index}.`);
     }
-  );
+
+    if (!isValidEntityId((config as EntityConfig).entity!)) {
+      throw new Error(
+        `Invalid entity ID at position ${index}: ${
+          (config as EntityConfig).entity
+        }`
+      );
+    }
+
+    return config;
+  });
 };

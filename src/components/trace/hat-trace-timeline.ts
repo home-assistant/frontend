@@ -121,9 +121,8 @@ class LogbookRenderer {
       return;
     }
 
-    const previousEntryDate = this.pendingItems[
-      this.pendingItems.length - 1
-    ][0];
+    const previousEntryDate =
+      this.pendingItems[this.pendingItems.length - 1][0];
 
     // If logbook entry is too long after the last one,
     // add a time passed label

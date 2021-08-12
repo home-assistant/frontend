@@ -22,6 +22,7 @@ import {
   enableConfigEntry,
   reloadConfigEntry,
   updateConfigEntry,
+  ERROR_STATES,
 } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -37,12 +38,6 @@ import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
-
-const ERROR_STATES: ConfigEntry["state"][] = [
-  "migration_error",
-  "setup_error",
-  "setup_retry",
-];
 
 const integrationsWithPanel = {
   hassio: "/hassio/dashboard",
@@ -303,7 +298,7 @@ export class HaIntegrationCard extends LitElement {
           >
             <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
           </mwc-icon-button>
-          <mwc-list-item @request-selected="${this._editEntryName}">
+          <mwc-list-item @request-selected="${this._handleRename}">
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"
             )}
@@ -418,6 +413,15 @@ export class HaIntegrationCard extends LitElement {
 
   private _showOptions(ev) {
     showOptionsFlowDialog(this, ev.target.closest("ha-card").configEntry);
+  }
+
+  private _handleRename(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._editEntryName(
+      ((ev.target as HTMLElement).closest("ha-card") as any).configEntry
+    );
   }
 
   private _handleReload(ev: CustomEvent<RequestSelectedDetail>): void {
@@ -578,8 +582,7 @@ export class HaIntegrationCard extends LitElement {
     });
   }
 
-  private async _editEntryName(ev) {
-    const configEntry = ev.target.closest("ha-card").configEntry;
+  private async _editEntryName(configEntry: ConfigEntry) {
     const newName = await showPromptDialog(this, {
       title: this.hass.localize("ui.panel.config.integrations.rename_dialog"),
       defaultValue: configEntry.title,

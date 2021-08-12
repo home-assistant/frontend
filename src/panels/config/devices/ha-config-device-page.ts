@@ -110,18 +110,19 @@ export class HaConfigDevicePage extends LitElement {
         )
   );
 
-  private _computeArea = memoizeOne((areas, device):
-    | AreaRegistryEntry
-    | undefined => {
-    if (!areas || !device || !device.area_id) {
-      return undefined;
+  private _computeArea = memoizeOne(
+    (areas, device): AreaRegistryEntry | undefined => {
+      if (!areas || !device || !device.area_id) {
+        return undefined;
+      }
+      return areas.find((area) => area.area_id === device.area_id);
     }
-    return areas.find((area) => area.area_id === device.area_id);
-  });
+  );
 
-  private _batteryEntity = memoizeOne((entities: EntityRegistryEntry[]):
-    | EntityRegistryEntry
-    | undefined => findBatteryEntity(this.hass, entities));
+  private _batteryEntity = memoizeOne(
+    (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
+      findBatteryEntity(this.hass, entities)
+  );
 
   private _batteryChargingEntity = memoizeOne(
     (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
@@ -240,7 +241,11 @@ export class HaConfigDevicePage extends LitElement {
                     integrations.length
                       ? html`
                           <img
-                            src=${brandsUrl(integrations[0], "logo")}
+                            src=${brandsUrl({
+                              domain: integrations[0],
+                              type: "logo",
+                              darkOptimized: this.hass.selectedTheme?.dark,
+                            })}
                             referrerpolicy="no-referrer"
                             @load=${this._onImageLoad}
                             @error=${this._onImageError}

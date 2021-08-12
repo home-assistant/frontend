@@ -820,6 +820,7 @@
                     "was_unplugged": "is niet aangesloten",
                     "was_unsafe": "was onveilig"
                 },
+                "retrieval_error": "Fout tijdens het ophalen van de logboekregel",
                 "show_trace": "Tracering weergeven"
             },
             "media-browser": {
@@ -941,9 +942,9 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Of nieuw ontdekte apparaten voor {integratie} automatisch moeten worden toegevoegd.",
+                "enable_new_entities_description": "Of nieuw ontdekte apparaten voor {integration} automatisch moeten worden toegevoegd.",
                 "enable_new_entities_label": "Voeg nieuwe entiteiten automatisch toe",
-                "enable_polling_description": "Of Home Assistant automatisch moet pollen voor updates voor {integration} entiteiten",
+                "enable_polling_description": "Of Home Assistant automatisch moet pollen voor {integration} entiteiten updates.",
                 "enable_polling_label": "Schakel polling voor updates in.",
                 "restart_home_assistant": "U moet Home Assistant opnieuw starten om uw wijzigingen door te voeren.",
                 "title": "Systeeminstellingen voor {integration}",
@@ -1512,6 +1513,11 @@
                                         "wed": "woensdag"
                                     }
                                 },
+                                "trigger": {
+                                    "id": "Trigger Id",
+                                    "label": "Trigger",
+                                    "no_triggers": "Geen triggers beschikbaar"
+                                },
                                 "zone": {
                                     "entity": "Entiteit met locatie",
                                     "label": "Zone",
@@ -1555,6 +1561,7 @@
                             "delete_confirm": "Weet je zeker dat je dit item wilt verwijderen?",
                             "duplicate": "Dupliceren",
                             "header": "",
+                            "id": "Trigger-ID (gebruikt door de triggervoorwaarde)",
                             "introduction": "Triggers starten de verwerking van een automatiseringsregel. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert Home Assistant de eventuele voorwaarden en roept hij de actie aan.",
                             "learn_more": "Meer informatie over triggers",
                             "name": "Trigger",
@@ -2089,7 +2096,7 @@
                     "unknown_error": "Onbekende fout",
                     "unnamed_device": "Naamloos apparaat",
                     "update": "Bijwerken",
-                    "update_device_error": "Updaten van het apparaat mislukt"
+                    "update_device_error": "Bijwerken van het apparaat mislukt"
                 },
                 "entities": {
                     "caption": "Entiteiten",
@@ -2318,7 +2325,7 @@
                     "none": "Er is nog niets geconfigureerd",
                     "none_found": "Geen integraties gevonden",
                     "none_found_detail": "Pas uw zoekcriteria aan.",
-                    "note_about_integrations": "Nog niet alle integraties kunnen via de UI worden geconfigureerd.",
+                    "note_about_integrations": "Er kwamen geen integraties overeen met uw zoekopdracht. De integratie die u wilt instellen, is mogelijk nog niet beschikbaar om via de gebruikersinterface in te stellen.",
                     "note_about_website_reference": "Meer zijn beschikbaar op de ",
                     "reconfigure": "Herconfigureer",
                     "rename_dialog": "Bewerk de naam van dit configuratie item",
@@ -2663,10 +2670,12 @@
                         },
                         "save_script": "Script opslaan",
                         "sequence": "Reeks",
-                        "sequence_sentence": "De reeks van acties in dit script."
+                        "sequence_sentence": "De reeks van acties in dit script.",
+                        "show_trace": "Tracering weergeven"
                     },
                     "picker": {
                         "add_script": "Voeg script toe",
+                        "dev_script": "Debug script",
                         "duplicate": "Dupliceer",
                         "duplicate_script": "Script dupliceren",
                         "edit_script": "Bewerk script",
@@ -2961,9 +2970,11 @@
                     "common": {
                         "add_node": "Knooppunt toevoegen",
                         "close": "Sluiten",
+                        "heal_network": "Herstel netwerk",
                         "home_id": "Home ID",
                         "network": "Netwerk",
                         "node_id": "Knooppunt-ID",
+                        "reconfigure_server": "Herconfigureer server",
                         "remove_node": "Knooppunt verwijderen"
                     },
                     "dashboard": {
@@ -2985,6 +2996,18 @@
                         "node_ready": "Knooppunt gereed",
                         "node_status": "Knooppuntstatus",
                         "zwave_info": "Z-Wave info"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Netwerkherstel is geannuleerd.",
+                        "healing_complete": "Netwerkherstel is compleet.",
+                        "healing_failed": "Herstellen mislukt. Aanvullende informatie is mogelijk beschikbaar in de logboeken.",
+                        "in_progress": "Netwerkherstel wordt uitgevoerd. Dit zal eveen duren.",
+                        "introduction": "Start een netwerkherstel op uw Z-Wave netwerk. Een netwerkherstel zorgt ervoor dat alle apparaten hun routes naar de controller opnieuw berekenen en wordt aanbevolen als je recent apparaten of uw controller hebt verplaatst.",
+                        "run_in_background": "U kunt dit dialoogvenster sluiten en het netwerkherstel zal voortzetten op de achtergrond.",
+                        "start_heal": "Start herstellen",
+                        "stop_heal": "Stop herstellen",
+                        "title": "Herstel uw Z-Wave netwerk",
+                        "traffic_warning": "Het herstelproces genereert een grote hoeveelheid verkeer op het Z-wave netwerk. Dit kan ertoe leiden dat apparaten traag reageren (of helemaal niet) als het herstel wordt uitgevoerd."
                     },
                     "logs": {
                         "log_level": "Log niveau",
@@ -3147,7 +3170,7 @@
                         "available_events": "Beschikbare gebeurtenissen",
                         "count_listeners": " ({count} luisteraars)",
                         "data": "Gebeurtenis data (YAML, optioneel)",
-                        "description": "Start een evenement op de Home Assistant-gebeurtenisbus",
+                        "description": "Vermeld een gebeurtenis in de gebeurtenisbus.",
                         "documentation": "Gebeurtenissen documentatie",
                         "event_fired": "Gebeurtenis {name} uitgevoerd",
                         "fire_event": "Gebeurtenis uitvoeren",

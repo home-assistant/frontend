@@ -2,7 +2,6 @@
 
 const gulp = require("gulp");
 const path = require("path");
-const cpx = require("cpx");
 const fs = require("fs-extra");
 const paths = require("../paths");
 
@@ -13,8 +12,10 @@ const polyPath = (...parts) => path.resolve(paths.polymer_dir, ...parts);
 const copyFileDir = (fromFile, toDir) =>
   fs.copySync(fromFile, path.join(toDir, path.basename(fromFile)));
 
-const genStaticPath = (staticDir) => (...parts) =>
-  path.resolve(staticDir, ...parts);
+const genStaticPath =
+  (staticDir) =>
+  (...parts) =>
+    path.resolve(staticDir, ...parts);
 
 function copyTranslations(staticDir) {
   const staticPath = genStaticPath(staticDir);
@@ -62,9 +63,12 @@ function copyLoaderJS(staticDir) {
 function copyFonts(staticDir) {
   const staticPath = genStaticPath(staticDir);
   // Local fonts
-  cpx.copySync(
-    npmPath("roboto-fontface/fonts/roboto/*.woff2"),
-    staticPath("fonts/roboto")
+  fs.copySync(
+    npmPath("roboto-fontface/fonts/roboto/"),
+    staticPath("fonts/roboto/"),
+    {
+      filter: (src) => !src.includes(".") || src.endsWith(".woff2"),
+    }
   );
 }
 

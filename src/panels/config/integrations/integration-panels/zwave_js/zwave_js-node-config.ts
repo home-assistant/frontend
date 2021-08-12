@@ -59,18 +59,18 @@ const getDevice = memoizeOne(
     entries?.find((device) => device.id === deviceId)
 );
 
-const getNodeId = memoizeOne((device: DeviceRegistryEntry):
-  | number
-  | undefined => {
-  const identifier = device.identifiers.find(
-    (ident) => ident[0] === "zwave_js"
-  );
-  if (!identifier) {
-    return undefined;
-  }
+const getNodeId = memoizeOne(
+  (device: DeviceRegistryEntry): number | undefined => {
+    const identifier = device.identifiers.find(
+      (ident) => ident[0] === "zwave_js"
+    );
+    if (!identifier) {
+      return undefined;
+    }
 
-  return parseInt(identifier[1].split("-")[1]);
-});
+    return parseInt(identifier[1].split("-")[1]);
+  }
+);
 
 @customElement("zwave_js-node-config")
 class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
@@ -176,7 +176,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
               ? html`
                   ${Object.entries(this._config).map(
                     ([id, item]) => html` <ha-settings-row
-                      class="content config-item"
+                      class="config-item"
                       .configId=${id}
                       .narrow=${this.narrow}
                     >
@@ -194,6 +194,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
   private _generateConfigBox(id, item): TemplateResult {
     const result = this._results[id];
     const labelAndDescription = html`
+      <span slot="prefix" class="prefix">
+        ${this.hass.localize("ui.panel.config.zwave_js.node_config.parameter")}
+        <br />
+        <span>${item.property}</span>
+      </span>
       <span slot="heading">${item.metadata.label}</span>
       <span slot="description">
         ${item.metadata.description}
@@ -469,6 +474,20 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
         ha-settings-row {
           --paper-time-input-justify-content: flex-end;
           border-top: 1px solid var(--divider-color);
+          padding: 4px 16px;
+        }
+
+        .prefix {
+          color: var(--secondary-text-color);
+          text-align: center;
+          text-transform: uppercase;
+          font-size: 0.8em;
+          padding-right: 24px;
+          line-height: 1.5em;
+        }
+
+        .prefix span {
+          font-size: 1.3em;
         }
 
         :host(:not([narrow])) ha-settings-row paper-input {

@@ -197,7 +197,7 @@
                         "backup": "copia de seguridad",
                         "default": "predeterminado",
                         "homeassistant": "homeassistant",
-                        "manager": "gerente"
+                        "manager": "administrador"
                     },
                     "stage": {
                         "description": "Los complementos pueden tener una de tres etapas: \n\n {icon_stable} ** Estable **: estos son complementos listos para usarse en producción. \n\n {icon_experimental} ** Experimental **: estos pueden contener errores y pueden estar inacabados. \n\n {icon_deprecated} ** Obsoleto **: estos complementos ya no recibirán actualizaciones.",
@@ -2319,7 +2319,7 @@
                     "none": "Todavía no hay nada configurado",
                     "none_found": "No se han encontrado integraciones",
                     "none_found_detail": "Ajusta tus criterios de búsqueda.",
-                    "note_about_integrations": "Todavía no se pueden configurar todas las integraciones a través de la interfaz de usuario.",
+                    "note_about_integrations": "No hay integraciones que coincidan con tu búsqueda, es posible que la integración que deseas configurar aún no esté disponible para configurar a través de la interfaz de usuario.",
                     "note_about_website_reference": "Hay más disponibles en el ",
                     "reconfigure": "Reconfigurar",
                     "rename_dialog": "Edita el nombre de esta entrada de configuración",
@@ -2962,9 +2962,11 @@
                     "common": {
                         "add_node": "Añadir Nodo",
                         "close": "Cerrar",
+                        "heal_network": "Sanar red",
                         "home_id": "ID de casa",
                         "network": "Red",
                         "node_id": "ID del Nodo",
+                        "reconfigure_server": "Reconfigurar el servidor",
                         "remove_node": "Eliminar Nodo"
                     },
                     "dashboard": {
@@ -2986,6 +2988,18 @@
                         "node_ready": "Nodo listo",
                         "node_status": "Estado del Nodo",
                         "zwave_info": "Información de Z-Wave"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Se ha cancelado la curación de la red.",
+                        "healing_complete": "La curación de la red se ha completado.",
+                        "healing_failed": "La curación falló. Puede haber información adicional disponible en los registros.",
+                        "in_progress": "La curación de la red está en curso. Esto llevará algún tiempo.",
+                        "introduction": "Inicia una cura de red en tu red Z-Wave. Una curación de la red hará que todos los dispositivos vuelvan a calcular sus rutas de regreso al controlador y se recomienda si has movido dispositivos o tu controlador recientemente.",
+                        "run_in_background": "Puedes cerrar este cuadro de diálogo y la curación de la red continuará en segundo plano.",
+                        "start_heal": "Iniciar la curación",
+                        "stop_heal": "Detener la curación",
+                        "title": "Sana tu red Z-Wave",
+                        "traffic_warning": "El proceso de curación genera una gran cantidad de tráfico en la red Z-Wave. Esto puede hacer que los dispositivos respondan lentamente (o no respondan en absoluto) mientras la curación está en curso."
                     },
                     "logs": {
                         "log_level": "Nivel de registro",

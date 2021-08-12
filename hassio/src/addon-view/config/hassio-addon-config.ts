@@ -2,7 +2,6 @@ import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
-import "@polymer/iron-autogrow-textarea/iron-autogrow-textarea";
 import { DEFAULT_SCHEMA, Type } from "js-yaml";
 import {
   css,
@@ -134,7 +133,7 @@ class HassioAddonConfig extends LitElement {
               ></ha-form>`
             : html` <ha-yaml-editor
                 @value-changed=${this._configChanged}
-                .schema=${ADDON_YAML_SCHEMA}
+                .yamlSchema=${ADDON_YAML_SCHEMA}
               ></ha-yaml-editor>`}
           ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
           ${!this._yamlMode ||
@@ -328,10 +327,6 @@ class HassioAddonConfig extends LitElement {
         .errors {
           color: var(--error-color);
           margin-top: 16px;
-        }
-        iron-autogrow-textarea {
-          width: 100%;
-          font-family: var(--code-font-family, monospace);
         }
         .syntaxerror {
           color: var(--error-color);

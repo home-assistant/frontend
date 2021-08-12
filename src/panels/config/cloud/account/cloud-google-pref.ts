@@ -22,11 +22,8 @@ export class CloudGooglePref extends LitElement {
       return html``;
     }
 
-    const {
-      google_enabled,
-      google_report_state,
-      google_secure_devices_pin,
-    } = this.cloudStatus.prefs;
+    const { google_enabled, google_report_state, google_secure_devices_pin } =
+      this.cloudStatus.prefs;
 
     return html`
       <ha-card

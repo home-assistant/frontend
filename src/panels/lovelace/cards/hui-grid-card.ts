@@ -87,9 +87,17 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
           grid-column: 1 / 1;
         }
 
-        :host([square]) #root > *:first-child {
+        :host([square]) #root > *:not([hidden]) {
           grid-row: 1 / 1;
           grid-column: 1 / 1;
+        }
+        :host([square]) #root > *:not([hidden]) ~ *:not([hidden]) {
+          /*
+	       * Remove grid-row and grid-column from every element that comes after
+	       * the first not-hidden element
+	       */
+          grid-row: unset;
+          grid-column: unset;
         }
       `,
     ];

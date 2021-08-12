@@ -24,7 +24,8 @@ const cardConfigStruct = object({
 @customElement("hui-logbook-card-editor")
 export class HuiLogbookCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: LogbookCardConfig;
@@ -85,6 +86,7 @@ export class HuiLogbookCardEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._hours_to_show}
+            min="1"
             .configValue=${"hours_to_show"}
             @value-changed=${this._valueChanged}
           ></paper-input>

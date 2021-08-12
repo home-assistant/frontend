@@ -24,7 +24,8 @@ const includeDomains = ["plant"];
 @customElement("hui-plant-status-card-editor")
 export class HuiPlantStatusCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: PlantStatusCardConfig;

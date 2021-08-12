@@ -1,6 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -15,6 +15,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -38,7 +39,6 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import "../ha-svg-icon";
 import "./ha-devices-picker";
-import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 
 interface DevicesByArea {
   [areaId: string]: AreaDevices;
@@ -52,20 +52,27 @@ interface AreaDevices {
 
 const rowRenderer: ComboBoxLitRenderer<AreaDevices> = (item) => html`<style>
     paper-item {
-      width: 100%;
-      margin: -10px 0;
       padding: 0;
+      margin: -10px;
+      margin-left: 0;
     }
-    mwc-icon-button {
-      float: right;
+    #content {
+      display: flex;
+      align-items: center;
     }
-    .devices {
+    ha-svg-icon {
+      padding-left: 2px;
+      margin-right: -2px;
+      color: var(--secondary-text-color);
+    }
+    :host(:not([selected])) ha-svg-icon {
       display: none;
     }
-    .devices.visible {
-      display: block;
+    :host([selected]) paper-item {
+      margin-left: 10px;
     }
   </style>
+  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
   <paper-item>
     <paper-item-body two-line="">
       <div class="name">${item.name}</div>

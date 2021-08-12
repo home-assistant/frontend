@@ -820,6 +820,7 @@
                     "was_unplugged": "wurde ausgesteckt",
                     "was_unsafe": "war unsicher"
                 },
+                "retrieval_error": "Fehler beim Abrufen von Logbucheinträgen",
                 "show_trace": "Trace anzeigen"
             },
             "media-browser": {
@@ -1512,6 +1513,11 @@
                                         "wed": "Mittwoch"
                                     }
                                 },
+                                "trigger": {
+                                    "id": "Trigger-ID",
+                                    "label": "Trigger",
+                                    "no_triggers": "Keine Trigger verfügbar"
+                                },
                                 "zone": {
                                     "entity": "Entität mit Standort",
                                     "label": "Zone",
@@ -1555,6 +1561,7 @@
                             "delete_confirm": "Möchtest du das wirklich löschen?",
                             "duplicate": "Duplizieren",
                             "header": "Auslöser",
+                            "id": "Trigger-ID (wird von der Triggerbedingung verwendet)",
                             "introduction": "Auslöser starten automatisierte Abläufe. Es ist möglich, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.",
                             "learn_more": "Erfahre mehr über Auslöser",
                             "name": "Auslöser",
@@ -2318,7 +2325,7 @@
                     "none": "Noch nichts konfiguriert",
                     "none_found": "Keine Integrationen gefunden",
                     "none_found_detail": "Passe deine Suchkriterien an.",
-                    "note_about_integrations": "Nicht alle Integrationen können über die Benutzeroberfläche konfiguriert werden.",
+                    "note_about_integrations": "Es wurden keine Integrationen für deine Suche gefunden. Möglicherweise ist die Integration, die du einrichten möchtest, noch nicht zum Einrichten über die Benutzeroberfläche verfügbar.",
                     "note_about_website_reference": "Weitere Informationen findest du auf der ",
                     "reconfigure": "Neu konfigurieren",
                     "rename_dialog": "Bearbeite den Namen dieses Konfigurationseintrags",
@@ -2663,10 +2670,12 @@
                         },
                         "save_script": "Skript speichern",
                         "sequence": "Sequenz",
-                        "sequence_sentence": "Die Abfolge der Aktionen dieses Skripts."
+                        "sequence_sentence": "Die Abfolge der Aktionen dieses Skripts.",
+                        "show_trace": "Trace anzeigen"
                     },
                     "picker": {
                         "add_script": "Neues Skript erstellen",
+                        "dev_script": "Debug-Skript",
                         "duplicate": "Duplizieren",
                         "duplicate_script": "Skript duplizieren",
                         "edit_script": "Skript bearbeiten",
@@ -2961,9 +2970,11 @@
                     "common": {
                         "add_node": "Knoten hinzufügen",
                         "close": "Schließen",
+                        "heal_network": "Netzwerk heilen",
                         "home_id": "Heim-ID",
                         "network": "Netzwerk",
                         "node_id": "Knoten-ID",
+                        "reconfigure_server": "Server neu konfigurieren",
                         "remove_node": "Knoten entfernen"
                     },
                     "dashboard": {
@@ -2985,6 +2996,18 @@
                         "node_ready": "Node Bereit",
                         "node_status": "Node Status",
                         "zwave_info": "Z-Wave Info"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Die Netzwerkheilung wurde abgebrochen.",
+                        "healing_complete": "Die Netzwerkheilung ist abgeschlossen.",
+                        "healing_failed": "Heilung fehlgeschlagen. Zusätzliche Informationen könnten in den Protokollen verfügbar sein.",
+                        "in_progress": "Die Netzwerkheilung ist im Gange. Dies wird einige Zeit in Anspruch nehmen.",
+                        "introduction": "Startet einen Netzwerk-Heal im Z-Wave-Netzwerk. Ein Netzwerk-Heal veranlasst alle Geräte, ihre Routen zurück zum Controller neu zu berechnen und wird empfohlen, wenn kürzlich Geräte oder Controller verschoben wurden.",
+                        "run_in_background": "Dieser Dialog kann geschlossen werden und die Netzwerkheilung wird im Hintergrund fortgesetzt.",
+                        "start_heal": "Starten der Heilung",
+                        "stop_heal": "Stoppen der Heilung",
+                        "title": "Heile dein Z-Wave-Netzwerk",
+                        "traffic_warning": "Der Heilungsprozess erzeugt eine große Menge an Datenverkehr im Z-Wave-Netzwerk. Dies kann dazu führen, dass Geräte langsam (oder gar nicht) reagieren, während der Heilungsprozess läuft."
                     },
                     "logs": {
                         "log_level": "Protokollstufe",

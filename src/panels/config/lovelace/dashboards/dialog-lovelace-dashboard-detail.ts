@@ -285,7 +285,8 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       if (this._params!.dashboard) {
         await this._params!.updateDashboard(values);
       } else {
-        (values as LovelaceDashboardCreateParams).url_path = this._urlPath.trim();
+        (values as LovelaceDashboardCreateParams).url_path =
+          this._urlPath.trim();
         (values as LovelaceDashboardCreateParams).mode = "storage";
         await this._params!.createDashboard(
           values as LovelaceDashboardCreateParams

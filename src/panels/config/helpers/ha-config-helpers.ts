@@ -1,5 +1,4 @@
 import { mdiPlus } from "@mdi/js";
-import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -38,80 +37,75 @@ export class HaConfigHelpers extends LitElement {
 
   @state() private _stateItems: HassEntity[] = [];
 
-  private _columns = memoize(
-    (narrow, _language): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = {
-        icon: {
-          title: "",
-          type: "icon",
-          template: (icon, helper: any) => html`
-            <ha-icon .icon=${icon || domainIcon(helper.type)}></ha-icon>
-          `,
-        },
-        name: {
-          title: this.hass.localize(
-            "ui.panel.config.helpers.picker.headers.name"
-          ),
-          sortable: true,
-          filterable: true,
-          grows: true,
-          direction: "asc",
-          template: (name, item: any) =>
-            html`
-              ${name}
-              ${narrow
-                ? html` <div class="secondary">${item.entity_id}</div> `
-                : ""}
-            `,
-        },
-      };
-      if (!narrow) {
-        columns.entity_id = {
-          title: this.hass.localize(
-            "ui.panel.config.helpers.picker.headers.entity_id"
-          ),
-          sortable: true,
-          filterable: true,
-          width: "25%",
-        };
-      }
-      columns.type = {
-        title: this.hass.localize(
-          "ui.panel.config.helpers.picker.headers.type"
-        ),
-        sortable: true,
-        width: "25%",
-        filterable: true,
-        template: (type) =>
-          html`
-            ${this.hass.localize(`ui.panel.config.helpers.types.${type}`) ||
-            type}
-          `,
-      };
-      columns.editable = {
+  private _columns = memoize((narrow, _language): DataTableColumnContainer => {
+    const columns: DataTableColumnContainer = {
+      icon: {
         title: "",
         type: "icon",
-        template: (editable) => html`
-          ${!editable
-            ? html`
-                <div
-                  tabindex="0"
-                  style="display:inline-block; position: relative;"
-                >
-                  <ha-icon icon="hass:pencil-off"></ha-icon>
-                  <paper-tooltip animation-delay="0" position="left">
-                    ${this.hass.localize(
-                      "ui.panel.config.entities.picker.status.readonly"
-                    )}
-                  </paper-tooltip>
-                </div>
-              `
-            : ""}
+        template: (icon, helper: any) => html`
+          <ha-icon .icon=${icon || domainIcon(helper.type)}></ha-icon>
         `,
+      },
+      name: {
+        title: this.hass.localize(
+          "ui.panel.config.helpers.picker.headers.name"
+        ),
+        sortable: true,
+        filterable: true,
+        grows: true,
+        direction: "asc",
+        template: (name, item: any) =>
+          html`
+            ${name}
+            ${narrow
+              ? html` <div class="secondary">${item.entity_id}</div> `
+              : ""}
+          `,
+      },
+    };
+    if (!narrow) {
+      columns.entity_id = {
+        title: this.hass.localize(
+          "ui.panel.config.helpers.picker.headers.entity_id"
+        ),
+        sortable: true,
+        filterable: true,
+        width: "25%",
       };
-      return columns;
     }
-  );
+    columns.type = {
+      title: this.hass.localize("ui.panel.config.helpers.picker.headers.type"),
+      sortable: true,
+      width: "25%",
+      filterable: true,
+      template: (type) =>
+        html`
+          ${this.hass.localize(`ui.panel.config.helpers.types.${type}`) || type}
+        `,
+    };
+    columns.editable = {
+      title: "",
+      type: "icon",
+      template: (editable) => html`
+        ${!editable
+          ? html`
+              <div
+                tabindex="0"
+                style="display:inline-block; position: relative;"
+              >
+                <ha-icon icon="hass:pencil-off"></ha-icon>
+                <paper-tooltip animation-delay="0" position="left">
+                  ${this.hass.localize(
+                    "ui.panel.config.entities.picker.status.readonly"
+                  )}
+                </paper-tooltip>
+              </div>
+            `
+          : ""}
+      `,
+    };
+    return columns;
+  });
 
   private _getItems = memoize((stateItems: HassEntity[]) =>
     stateItems.map((entityState) => ({

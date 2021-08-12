@@ -2319,7 +2319,7 @@
                     "none": "尚未配置任何集成",
                     "none_found": "未找到集成",
                     "none_found_detail": "请调整搜索条件。",
-                    "note_about_integrations": "并非所有集成都可以通过 UI 进行配置。",
+                    "note_about_integrations": "未搜索到相关集成，可能是您要配置的集成还不支持通过 UI 配置。",
                     "note_about_website_reference": "更多可用信息，尽在 ",
                     "reconfigure": "重新配置",
                     "rename_dialog": "编辑此配置项的名称",
@@ -2962,9 +2962,11 @@
                     "common": {
                         "add_node": "添加节点",
                         "close": "关闭",
+                        "heal_network": "修复网络",
                         "home_id": "家庭 ID",
                         "network": "网络",
                         "node_id": "节点 ID",
+                        "reconfigure_server": "重新配置服务",
                         "remove_node": "删除节点"
                     },
                     "dashboard": {
@@ -2986,6 +2988,18 @@
                         "node_ready": "节点就绪",
                         "node_status": "节点状态",
                         "zwave_info": "Z-Wave 信息"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "网络修复已取消。",
+                        "healing_complete": "网络修复完成。",
+                        "healing_failed": "修复失败。日志中会有更多信息。",
+                        "in_progress": "正在修复网络。可能需要一段时间。",
+                        "introduction": "在此 Z-Wave 网络上启动网络修复。网络修复会使所有设备重新计算它们到控制器的路由。如果您最近挪动了设备或控制器，建议使用此功能。",
+                        "run_in_background": "您可以关闭此对话框，网络修复将在后台继续进行。",
+                        "start_heal": "开始修复",
+                        "stop_heal": "停止修复",
+                        "title": "修复 Z-Wave 网络",
+                        "traffic_warning": "修复过程会在 Z-Wave 网络上产生大量流量。修复期间，设备可能会响应缓慢或完全无响应。"
                     },
                     "logs": {
                         "log_level": "日志级别",

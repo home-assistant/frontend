@@ -24,7 +24,8 @@ const cardConfigStruct = object({
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: HistoryGraphCardConfig;
@@ -35,10 +36,6 @@ export class HuiHistoryGraphCardEditor
     assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
-  }
-
-  get _entity(): string {
-    return this._config!.entity || "";
   }
 
   get _title(): string {
@@ -79,6 +76,7 @@ export class HuiHistoryGraphCardEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value="${this._hours_to_show}"
+            min="1"
             .configValue=${"hours_to_show"}
             @value-changed="${this._valueChanged}"
           ></paper-input>

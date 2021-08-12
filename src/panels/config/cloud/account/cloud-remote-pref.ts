@@ -28,11 +28,8 @@ export class CloudRemotePref extends LitElement {
 
     const { remote_enabled } = this.cloudStatus.prefs;
 
-    const {
-      remote_connected,
-      remote_domain,
-      remote_certificate,
-    } = this.cloudStatus;
+    const { remote_connected, remote_domain, remote_certificate } =
+      this.cloudStatus;
 
     if (!remote_certificate) {
       return html`
@@ -59,7 +56,11 @@ export class CloudRemotePref extends LitElement {
         <div class="connection-status">
           ${this.hass.localize(
             `ui.panel.config.cloud.account.remote.${
-              remote_connected ? "connected" : "not_connected"
+              remote_connected
+                ? "connected"
+                : remote_enabled
+                ? "reconnecting"
+                : "not_connected"
             }`
           )}
         </div>

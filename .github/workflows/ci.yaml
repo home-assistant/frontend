@@ -10,26 +10,21 @@ on:
       - dev
       - master
 
+env:
+  NODE_VERSION: 14
+  NODE_OPTIONS: --max_old_space_size=4096
+
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v2
-      - name: Setting up Node.js
-        uses: actions/setup-node@v1
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
-      - name: Get yarn cache path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Fetching Yarn cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
       - name: Install dependencies
         run: yarn install
         env:
@@ -42,51 +37,35 @@ jobs:
         run: yarn run lint:types
       - name: Run prettier
         run: yarn run lint:prettier
+      - name: Check for duplicate dependencies
+        run: yarn dedupe --check
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v2
-      - name: Setting up Node.js
-        uses: actions/setup-node@v1
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
-      - name: Get yarn cache path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Fetching Yarn cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
       - name: Install dependencies
         run: yarn install
         env:
           CI: true
       - name: Run Mocha
-        run: npm run mocha
+        run: yarn run mocha
   build:
     runs-on: ubuntu-latest
     needs: [lint, test]
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v2
-      - name: Setting up Node.js
-        uses: actions/setup-node@v1
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
-      - name: Get yarn cache path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Fetching Yarn cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
       - name: Install dependencies
         run: yarn install
         env:
@@ -101,20 +80,11 @@ jobs:
     steps:
       - name: Check out files from GitHub
         uses: actions/checkout@v2
-      - name: Setting up Node.js
-        uses: actions/setup-node@v1
+      - name: Set up Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
-      - name: Get yarn cache path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-      - name: Fetching Yarn cache
-        uses: actions/cache@v1
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
       - name: Install dependencies
         run: yarn install
         env:

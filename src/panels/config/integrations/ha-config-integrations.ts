@@ -265,7 +265,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     if (!this._configEntries) {
-      return html`<hass-loading-screen></hass-loading-screen>`;
+      return html`<hass-loading-screen
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+      ></hass-loading-screen>`;
     }
     const [
       groupedConfigEntries,

@@ -12,7 +12,8 @@ import { HassioBackupUploadDialogParams } from "./show-dialog-backup-upload";
 @customElement("dialog-hassio-backup-upload")
 export class DialogHassioBackupUpload
   extends LitElement
-  implements HassDialog<HassioBackupUploadDialogParams> {
+  implements HassDialog<HassioBackupUploadDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _params?: HassioBackupUploadDialogParams;

@@ -7,6 +7,10 @@ import { compare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
+import {
+  EnergyPreferences,
+  GridSourceTypeEnergyPreference,
+} from "../../../data/energy";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
 import { domainToName } from "../../../data/integration";
 import { LovelaceCardConfig, LovelaceViewConfig } from "../../../data/lovelace";
@@ -240,10 +244,9 @@ export const generateViewConfig = (
   splitted.groups.forEach((groupEntity) => {
     cards = cards.concat(
       computeCards(
-        groupEntity.attributes.entity_id.map((entityId): [
-          string,
-          HassEntity
-        ] => [entityId, entities[entityId]]),
+        groupEntity.attributes.entity_id.map(
+          (entityId): [string, HassEntity] => [entityId, entities[entityId]]
+        ),
         {
           title: computeStateName(groupEntity),
           show_header_toggle: groupEntity.attributes.control !== "hidden",
@@ -293,7 +296,8 @@ export const generateDefaultViewConfig = (
   deviceEntries: DeviceRegistryEntry[],
   entityEntries: EntityRegistryEntry[],
   entities: HassEntities,
-  localize: LocalizeFunc
+  localize: LocalizeFunc,
+  energyPrefs?: EnergyPreferences
 ): LovelaceViewConfig => {
   const states = computeDefaultViewStates(entities, entityEntries);
   const path = "default_view";
@@ -337,6 +341,21 @@ export const generateDefaultViewConfig = (
       )
     );
   });
+
+  if (energyPrefs) {
+    // Distribution card requires the grid to be configured
+    const grid = energyPrefs.energy_sources.find(
+      (source) => source.type === "grid"
+    ) as GridSourceTypeEnergyPreference | undefined;
+
+    if (grid && grid.flow_from.length > 0) {
+      areaCards.push({
+        title: "Energy distribution today",
+        type: "energy-distribution",
+        link_dashboard: true,
+      });
+    }
+  }
 
   config.cards!.unshift(...areaCards);
 

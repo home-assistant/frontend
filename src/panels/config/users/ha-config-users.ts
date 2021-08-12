@@ -142,7 +142,7 @@ export class HaConfigUsers extends LitElement {
   private async _fetchUsers() {
     this._users = await fetchUsers(this.hass);
 
-    this._users.forEach(function (user) {
+    this._users.forEach((user) => {
       if (user.is_owner) {
         user.group_ids.unshift("owner");
       }

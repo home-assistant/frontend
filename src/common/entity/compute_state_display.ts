@@ -21,6 +21,16 @@ export const computeStateDisplay = (
   }
 
   if (stateObj.attributes.unit_of_measurement) {
+    if (stateObj.attributes.device_class === "monetary") {
+      try {
+        return formatNumber(compareState, locale, {
+          style: "currency",
+          currency: stateObj.attributes.unit_of_measurement,
+        });
+      } catch (_err) {
+        // fallback to default
+      }
+    }
     return `${formatNumber(compareState, locale)} ${
       stateObj.attributes.unit_of_measurement
     }`;
@@ -29,37 +39,61 @@ export const computeStateDisplay = (
   const domain = computeStateDomain(stateObj);
 
   if (domain === "input_datetime") {
-    let date: Date;
-    if (!stateObj.attributes.has_time) {
+    if (state) {
+      // If trying to display an explicit state, need to parse the explict state to `Date` then format.
+      // Attributes aren't available, we have to use `state`.
+      try {
+        const components = state.split(" ");
+        if (components.length === 2) {
+          // Date and time.
+          return formatDateTime(new Date(components.join("T")), locale);
+        }
+        if (components.length === 1) {
+          if (state.includes("-")) {
+            // Date only.
+            return formatDate(new Date(`${state}T00:00`), locale);
+          }
+          if (state.includes(":")) {
+            // Time only.
+            const now = new Date();
+            return formatTime(
+              new Date(`${now.toISOString().split("T")[0]}T${state}`),
+              locale
+            );
+          }
+        }
+        return state;
+      } catch {
+        // Formatting methods may throw error if date parsing doesn't go well,
+        // just return the state string in that case.
+        return state;
+      }
+    } else {
+      // If not trying to display an explicit state, create `Date` object from `stateObj`'s attributes then format.
+      let date: Date;
+      if (!stateObj.attributes.has_time) {
+        date = new Date(
+          stateObj.attributes.year,
+          stateObj.attributes.month - 1,
+          stateObj.attributes.day
+        );
+        return formatDate(date, locale);
+      }
+      if (!stateObj.attributes.has_date) {
+        date = new Date();
+        date.setHours(stateObj.attributes.hour, stateObj.attributes.minute);
+        return formatTime(date, locale);
+      }
+
       date = new Date(
         stateObj.attributes.year,
         stateObj.attributes.month - 1,
-        stateObj.attributes.day
-      );
-      return formatDate(date, locale);
-    }
-    if (!stateObj.attributes.has_date) {
-      const now = new Date();
-      date = new Date(
-        // Due to bugs.chromium.org/p/chromium/issues/detail?id=797548
-        // don't use artificial 1970 year.
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDay(),
+        stateObj.attributes.day,
         stateObj.attributes.hour,
         stateObj.attributes.minute
       );
-      return formatTime(date, locale);
+      return formatDateTime(date, locale);
     }
-
-    date = new Date(
-      stateObj.attributes.year,
-      stateObj.attributes.month - 1,
-      stateObj.attributes.day,
-      stateObj.attributes.hour,
-      stateObj.attributes.minute
-    );
-    return formatDateTime(date, locale);
   }
 
   if (domain === "humidifier") {

@@ -59,11 +59,12 @@ export class HuiCardOptions extends LitElement {
             )}</mwc-button
           >
           <div>
+            <slot name="buttons"></slot>
             <mwc-icon-button
               title="Move card down"
               class="move-arrow"
               @click=${this._cardDown}
-              ?disabled=${this.lovelace!.config.views[this.path![0]].cards!
+              .disabled=${this.lovelace!.config.views[this.path![0]].cards!
                 .length ===
               this.path![1] + 1}
             >
