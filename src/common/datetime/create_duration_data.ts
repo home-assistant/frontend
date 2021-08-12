@@ -23,9 +23,9 @@ export const createDurationData = (
   let hours = duration.hours || 0;
   hours = (hours || 0) + (days || 0) * 24;
   return {
-    hours: hours,
-    minutes: minutes,
-    seconds: seconds,
-    milliseconds: milliseconds,
+    hours,
+    minutes,
+    seconds,
+    milliseconds,
   };
 };

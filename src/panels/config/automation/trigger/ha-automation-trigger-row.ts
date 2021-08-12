@@ -125,9 +125,9 @@ export default class HaAutomationTriggerRow extends LitElement {
             ? html`<div class="warning">
                 ${this.hass.localize("ui.errors.config.editor_not_supported")}:
                 <br />
-                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
+                ${this._warnings.length && this._warnings[0] !== undefined
                   ? html` <ul>
-                      ${this._warnings!.map(
+                      ${this._warnings.map(
                         (warning) => html`<li>${warning}</li>`
                       )}
                     </ul>`
