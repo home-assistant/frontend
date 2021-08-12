@@ -10,6 +10,7 @@ import { configSections } from "../ha-panel-config";
 import "./components/ha-energy-device-settings";
 import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
+import "./components/ha-energy-battery-settings";
 
 const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],
@@ -81,6 +82,11 @@ class HaConfigEnergy extends LitElement {
             .preferences=${this._preferences!}
             @value-changed=${this._prefsChanged}
           ></ha-energy-solar-settings>
+          <ha-energy-battery-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences!}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-battery-settings>
           <ha-energy-device-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}

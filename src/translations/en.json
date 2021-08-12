@@ -1046,6 +1046,11 @@
             "stat_return_to_grid": "Solar energy returned to the grid",
             "stat_predicted_production": "Prediction of your solar energy production"
           },
+          "battery": {
+            "title": "Home Battery Storage",
+            "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
+            "learn_more": "More information on how to get started."
+          },
           "device_consumption": {
             "title": "Individual devices",
             "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",

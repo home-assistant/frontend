@@ -8,6 +8,7 @@ import { LovelaceCard, Lovelace } from "../../lovelace/types";
 import "@material/mwc-button/mwc-button";
 import "../../config/energy/components/ha-energy-grid-settings";
 import "../../config/energy/components/ha-energy-solar-settings";
+import "../../config/energy/components/ha-energy-battery-settings";
 import "../../config/energy/components/ha-energy-device-settings";
 import { haStyle } from "../../../resources/styles";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -43,18 +44,24 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
     return html`
       <p>Step ${this._step + 1} of 3</p>
       ${this._step === 0
-        ? html` <ha-energy-grid-settings
+        ? html`<ha-energy-grid-settings
             .hass=${this.hass}
             .preferences=${this._preferences}
             @value-changed=${this._prefsChanged}
           ></ha-energy-grid-settings>`
         : this._step === 1
-        ? html` <ha-energy-solar-settings
+        ? html`<ha-energy-solar-settings
             .hass=${this.hass}
             .preferences=${this._preferences}
             @value-changed=${this._prefsChanged}
           ></ha-energy-solar-settings>`
-        : html` <ha-energy-device-settings
+        : this._step === 2
+        ? html`<ha-energy-battery-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-battery-settings>`
+        : html`<ha-energy-device-settings
             .hass=${this.hass}
             .preferences=${this._preferences}
             @value-changed=${this._prefsChanged}
@@ -65,7 +72,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
               >${this.hass.localize("ui.panel.energy.setup.back")}</mwc-button
             >`
           : html`<div></div>`}
-        ${this._step < 2
+        ${this._step < 3
           ? html`<mwc-button unelevated @click=${this._next}
               >${this.hass.localize("ui.panel.energy.setup.next")}</mwc-button
             >`
