@@ -1,134 +1,78 @@
-import { html, LitElement, TemplateResult } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { html, LitElement } from "lit";
+import { customElement, property } from "lit/decorators";
+import { useAmPm } from "../common/datetime/use_am_pm";
 import { fireEvent } from "../common/dom/fire_event";
 import "./paper-time-input";
-
-export interface HaTimeData {
-  hours?: number;
-  minutes?: number;
-  seconds?: number;
-  milliseconds?: number;
-}
+import { FrontendLocaleData } from "../data/translation";
 
 @customElement("ha-time-input")
-class HaTimeInput extends LitElement {
-  @property() public data!: HaTimeData;
+export class HaTimeInput extends LitElement {
+  @property() public locale!: FrontendLocaleData;
+
+  @property() public value?: string;
 
   @property() public label?: string;
 
-  @property() public suffix?: string;
+  @property({ type: Boolean }) public disabled = false;
 
-  @property({ type: Boolean }) public required?: boolean;
+  @property({ type: Boolean, attribute: "hide-label" }) public hideLabel =
+    false;
 
-  @property({ type: Boolean }) public enableMillisecond?: boolean;
+  @property({ type: Boolean, attribute: "enable-second" })
+  public enableSecond = false;
 
-  @query("paper-time-input", true) private _input?: HTMLElement;
+  protected render() {
+    const useAMPM = useAmPm(this.locale);
 
-  public focus() {
-    if (this._input) {
-      this._input.focus();
+    const parts = this.value?.split(":") || [];
+    let hours = parts[0];
+    const numberHours = Number(parts[0]);
+    if (numberHours && useAMPM && numberHours > 12) {
+      hours = String(numberHours - 12).padStart(2, "0");
     }
-  }
+    if (useAMPM && numberHours === 0) {
+      hours = "12";
+    }
 
-  protected render(): TemplateResult {
     return html`
       <paper-time-input
         .label=${this.label}
-        .required=${this.required}
-        .autoValidate=${this.required}
-        error-message="Required"
-        enable-second
-        .enableMillisecond=${this.enableMillisecond}
-        format="24"
-        .hour=${this._parseDuration(this._hours)}
-        .min=${this._parseDuration(this._minutes)}
-        .sec=${this._parseDuration(this._seconds)}
-        .millisec=${this._parseDurationMillisec(this._milliseconds)}
-        @hour-changed=${this._hourChanged}
-        @min-changed=${this._minChanged}
-        @sec-changed=${this._secChanged}
-        @millisec-changed=${this._millisecChanged}
-        float-input-labels
-        no-hours-limit
-        always-float-input-labels
-        hour-label="hh"
-        min-label="mm"
-        sec-label="ss"
-        millisec-label="ms"
+        .hour=${hours}
+        .min=${parts[1]}
+        .sec=${parts[2]}
+        .format=${useAMPM ? 12 : 24}
+        .amPm=${useAMPM && (numberHours >= 12 ? "PM" : "AM")}
+        .disabled=${this.disabled}
+        @change=${this._timeChanged}
+        @am-pm-changed=${this._timeChanged}
+        .hideLabel=${this.hideLabel}
+        .enableSecond=${this.enableSecond}
       ></paper-time-input>
     `;
   }
 
-  private get _hours() {
-    return this.data && this.data.hours ? Number(this.data.hours) : 0;
-  }
-
-  private get _minutes() {
-    return this.data && this.data.minutes ? Number(this.data.minutes) : 0;
-  }
-
-  private get _seconds() {
-    return this.data && this.data.seconds ? Number(this.data.seconds) : 0;
-  }
-
-  private get _milliseconds() {
-    return this.data && this.data.milliseconds
-      ? Number(this.data.milliseconds)
-      : 0;
-  }
-
-  private _parseDuration(value) {
-    return value.toString().padStart(2, "0");
-  }
-
-  private _parseDurationMillisec(value) {
-    return value.toString().padStart(3, "0");
-  }
-
-  private _hourChanged(ev) {
-    this._durationChanged(ev, "hours");
-  }
-
-  private _minChanged(ev) {
-    this._durationChanged(ev, "minutes");
-  }
-
-  private _secChanged(ev) {
-    this._durationChanged(ev, "seconds");
-  }
-
-  private _millisecChanged(ev) {
-    this._durationChanged(ev, "milliseconds");
-  }
-
-  private _durationChanged(ev, unit) {
-    let value = Number(ev.detail.value);
-
-    if (value === this[`_${unit}`]) {
+  private _timeChanged(ev) {
+    let value = ev.target.value;
+    const useAMPM = useAmPm(this.locale);
+    let hours = Number(ev.target.hour || 0);
+    if (value && useAMPM) {
+      if (ev.target.amPm === "PM" && hours < 12) {
+        hours += 12;
+      }
+      if (ev.target.amPm === "AM" && hours === 12) {
+        hours = 0;
+      }
+      value = `${hours.toString().padStart(2, "0")}:${ev.target.min || "00"}:${
+        ev.target.sec || "00"
+      }`;
+    }
+    if (value === this.value) {
       return;
     }
-
-    let hours = this._hours;
-    let minutes = this._minutes;
-
-    if (unit === "seconds" && value > 59) {
-      minutes += Math.floor(value / 60);
-      value %= 60;
-    }
-
-    if (unit === "minutes" && value > 59) {
-      hours += Math.floor(value / 60);
-      value %= 60;
-    }
-
+    this.value = value;
+    fireEvent(this, "change");
     fireEvent(this, "value-changed", {
-      value: {
-        hours,
-        minutes,
-        seconds: this._seconds,
-        milliseconds: this._milliseconds,
-        ...{ [unit]: value },
-      },
+      value,
     });
   }
 }

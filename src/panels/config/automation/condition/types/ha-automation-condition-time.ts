@@ -1,5 +1,4 @@
 import { Radio } from "@material/mwc-radio";
-import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
@@ -13,6 +12,7 @@ import {
   ConditionElement,
   handleChangeEvent,
 } from "../ha-automation-condition-row";
+import "../../../../../components/ha-time-input";
 
 const includeDomains = ["input_datetime"];
 
@@ -89,14 +89,15 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
             .hass=${this.hass}
             allow-custom-entity
           ></ha-entity-picker>`
-        : html`<paper-input
+        : html`<ha-time-input
             .label=${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.type.time.after"
             )}
-            name="after"
+            .locale=${this.hass.locale}
+            .name=${"after"}
             .value=${after?.startsWith("input_datetime.") ? "" : after}
             @value-changed=${this._valueChanged}
-          ></paper-input>`}
+          ></ha-time-input>`}
 
       <ha-formfield
         .label=${this.hass!.localize(
@@ -134,14 +135,15 @@ export class HaTimeCondition extends LitElement implements ConditionElement {
             .hass=${this.hass}
             allow-custom-entity
           ></ha-entity-picker>`
-        : html`<paper-input
+        : html`<ha-time-input
             .label=${this.hass.localize(
               "ui.panel.config.automation.editor.conditions.type.time.before"
             )}
-            name="before"
+            .name=${"before"}
+            .locale=${this.hass.locale}
             .value=${before?.startsWith("input_datetime.") ? "" : before}
             @value-changed=${this._valueChanged}
-          ></paper-input>`}
+          ></ha-time-input>`}
       ${Object.keys(DAYS).map(
         (day) => html`
           <ha-formfield
