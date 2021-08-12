@@ -18,11 +18,12 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridGaugeCardConfig } from "../types";
+import { severityMap } from "../hui-gauge-card";
 
 const LEVELS: LevelDefinition[] = [
-  { level: -1, stroke: "var(--label-badge-red)" },
-  { level: -0.2, stroke: "var(--label-badge-yellow)" },
-  { level: 0, stroke: "var(--label-badge-green)" },
+  { level: -1, stroke: severityMap.red },
+  { level: -0.2, stroke: severityMap.yellow },
+  { level: 0, stroke: severityMap.green },
 ];
 
 @customElement("hui-energy-grid-neutrality-gauge-card")

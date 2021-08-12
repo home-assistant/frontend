@@ -297,7 +297,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       }
 
       round-slider {
-        --round-slider-path-color: var(--disabled-text-color);
+        --round-slider-path-color: var(--slider-track-color);
         --round-slider-bar-color: var(--primary-color);
         padding-bottom: 10%;
       }

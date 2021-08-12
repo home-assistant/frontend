@@ -513,7 +513,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       }
 
       round-slider {
-        --round-slider-path-color: var(--disabled-text-color);
+        --round-slider-path-color: var(--slider-track-color);
         --round-slider-bar-color: var(--mode-color);
         padding-bottom: 10%;
       }
