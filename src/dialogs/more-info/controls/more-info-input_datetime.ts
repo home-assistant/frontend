@@ -28,7 +28,6 @@ class MoreInfoInputDatetime extends LitElement {
                   @value-changed=${this._dateChanged}
                 >
                 </ha-date-input>
-                ${this.stateObj.attributes.has_time ? "," : ""}
               `
             : ``
         }
@@ -89,6 +88,9 @@ class MoreInfoInputDatetime extends LitElement {
         display: flex;
         align-items: center;
         justify-content: flex-end;
+      }
+      ha-date-input + ha-time-input {
+        margin-left: 4px;
       }
     `;
   }

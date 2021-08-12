@@ -1,4 +1,11 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-date-input";
 import { UNAVAILABLE_STATES, UNKNOWN } from "../../../data/entity";
@@ -52,7 +59,6 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                 @value-changed=${this._dateChanged}
               >
               </ha-date-input>
-              ${stateObj.attributes.has_time ? "," : ""}
             `
           : ``}
         ${stateObj.attributes.has_time
@@ -101,6 +107,14 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     );
 
     ev.target.blur();
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      ha-date-input + ha-time-input {
+        margin-left: 4px;
+      }
+    `;
   }
 }
 

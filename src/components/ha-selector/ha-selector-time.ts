@@ -19,7 +19,6 @@ export class HaTimeSelector extends LitElement {
   protected render() {
     return html`
       <ha-time-input
-        .label=${this.label}
         .value=${this.value}
         .locale=${this.hass.locale}
         .disabled=${this.disabled}
