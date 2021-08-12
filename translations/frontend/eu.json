@@ -16,6 +16,12 @@
         "shopping_list": "Erosketa zerrenda",
         "states": "Laburpena"
     },
+    "state": {
+        "default": {
+            "unavailable": "Ez dago erabilgarri",
+            "unknown": "Ezezaguna"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -37,12 +43,6 @@
         "person": {
             "home": "Etxean",
             "not_home": "Kanpoan"
-        }
-    },
-    "state": {
-        "default": {
-            "unavailable": "Ez dago erabilgarri",
-            "unknown": "Ezezaguna"
         }
     },
     "ui": {
@@ -210,7 +210,6 @@
                             "duplicate": "Bikoiztu",
                             "header": "Ekintzak",
                             "learn_more": "Ekintzei buruz gehiago ikasi",
-                            "type_select": "Ekintza mota",
                             "type": {
                                 "condition": {
                                     "label": "Baldintza"
@@ -227,6 +226,7 @@
                                     "wait_template": "Itxaron txantiloia"
                                 }
                             },
+                            "type_select": "Ekintza mota",
                             "unsupported_action": "Ekintza ez onartua: {action}"
                         },
                         "alias": "Izena",
@@ -236,7 +236,6 @@
                             "duplicate": "Bikoiztu",
                             "header": "Baldintzak",
                             "learn_more": "Baldintzei buruz gehiago ikasi",
-                            "type_select": "Baldintza mota",
                             "type": {
                                 "state": {
                                     "label": "Egoera",
@@ -257,7 +256,8 @@
                                         "mon": "Astelehena"
                                     }
                                 }
-                            }
+                            },
+                            "type_select": "Baldintza mota"
                         },
                         "default_name": "Automatizazio berria",
                         "load_error_not_editable": "Soilik automations.yaml fitxategian dauden automatizazioak dira editagarriak.",
@@ -269,7 +269,6 @@
                             "duplicate": "Bikoiztu",
                             "header": "Abiarazleak",
                             "learn_more": "Abiarazleei buruz gehiago ikasi",
-                            "type_select": "Abiarazle mota",
                             "type": {
                                 "event": {
                                     "event_type": "Gertaera mota",
@@ -309,15 +308,15 @@
                                     "label": "Txantiloia",
                                     "value_template": "Balio txantiloia"
                                 },
+                                "time": {
+                                    "at": "Noiz",
+                                    "label": "Ordua"
+                                },
                                 "time_pattern": {
                                     "hours": "Orduak",
                                     "label": "Denbora Eredua",
                                     "minutes": "Minutuak",
                                     "seconds": "Segunduak"
-                                },
-                                "time": {
-                                    "at": "Noiz",
-                                    "label": "Ordua"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -327,7 +326,8 @@
                                     "enter": "Sartu",
                                     "leave": "Utzi"
                                 }
-                            }
+                            },
+                            "type_select": "Abiarazle mota"
                         }
                     },
                     "picker": {
@@ -492,7 +492,6 @@
                         "unsaved_changes": "Gorde gabeko aldaketak"
                     },
                     "save_config": {
-                        "cancel": "Berdin dio",
                         "header": "Hartu zure Lovelace UI-aren kontrola",
                         "save": "Kontrola hartu"
                     }
@@ -621,14 +620,14 @@
                     "prompt_copy_token": "Zure sarbide tokena kopiatu. Ez da berriro erakutsiko.",
                     "prompt_name": "Izena?"
                 },
+                "mfa": {
+                    "confirm_disable": "{name} desgaitu nahi duzula ziur zaude?",
+                    "enable": "Gaitu"
+                },
                 "mfa_setup": {
                     "close": "Itxi",
                     "submit": "Bidali",
                     "title_success": "Arrakasta!"
-                },
-                "mfa": {
-                    "confirm_disable": "{name} desgaitu nahi duzula ziur zaude?",
-                    "enable": "Gaitu"
                 },
                 "push_notifications": {
                     "error_load_platform": "notify.html5 konfiguratu.",
