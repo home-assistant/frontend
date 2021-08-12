@@ -1159,10 +1159,10 @@ class HassioAddonInfo extends LitElement {
           display: flex;
         }
         ha-svg-icon.running {
-          color: var(--paper-green-400);
+          color: var(--success-color);
         }
         ha-svg-icon.stopped {
-          color: var(--google-red-300);
+          color: var(--error-color);
         }
         ha-call-api-button {
           font-weight: 500;

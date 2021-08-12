@@ -53,14 +53,12 @@ class MoreInfoHumidifier extends LitElement {
           <div class="single-row">
             <div class="target-humidity">${stateObj.attributes.humidity} %</div>
             <ha-slider
-              class="humidity"
               step="1"
               pin
               ignore-bar-touch
               dir=${rtlDirection}
               .min=${stateObj.attributes.min_humidity}
               .max=${stateObj.attributes.max_humidity}
-              .secondaryProgress=${stateObj.attributes.max_humidity}
               .value=${stateObj.attributes.humidity}
               @change=${this._targetHumiditySliderChanged}
             >
@@ -199,11 +197,6 @@ class MoreInfoHumidifier extends LitElement {
         font-size: 200%;
         margin: auto;
         direction: ltr;
-      }
-
-      .humidity {
-        --paper-slider-active-color: var(--paper-blue-400);
-        --paper-slider-secondary-color: var(--paper-blue-400);
       }
 
       .single-row {

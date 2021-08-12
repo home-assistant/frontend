@@ -257,7 +257,7 @@ export class HaStateLabelBadge extends LitElement {
       }
 
       .warning {
-        --ha-label-badge-color: var(--label-badge-yellow, #fce588);
+        --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
       }
     `;
   }
