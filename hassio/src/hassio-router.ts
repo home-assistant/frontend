@@ -23,6 +23,8 @@ class HassioRouter extends HassRouterPage {
   protected routerOptions: RouterOptions = {
     // Hass.io has a page with tabs, so we route all non-matching routes to it.
     defaultPage: "dashboard",
+    beforeRender: (page: string) =>
+      page === "snapshots" ? "backups" : undefined,
     initialLoad: () => this._redirectIngress(),
     showLoading: true,
     routes: {
@@ -30,7 +32,7 @@ class HassioRouter extends HassRouterPage {
         tag: "hassio-panel",
         cache: true,
       },
-      snapshots: "dashboard",
+      backups: "dashboard",
       store: "dashboard",
       system: "dashboard",
       addon: {

@@ -13,8 +13,8 @@ export const supervisorTabs: PageNavigation[] = [
     iconPath: mdiStore,
   },
   {
-    translationKey: "panel.snapshots",
-    path: `/hassio/snapshots`,
+    translationKey: "panel.backups",
+    path: `/hassio/backups`,
     iconPath: mdiBackupRestore,
   },
   {

@@ -127,8 +127,8 @@ export class ZwaveMigration extends LitElement {
                           </ol>
                           <p>
                             <b>
-                              Please take a backup or a snapshot of your
-                              environment before proceeding.
+                              Please take a backup of your environment before
+                              proceeding.
                             </b>
                           </p>
                         </div>

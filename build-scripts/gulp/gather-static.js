@@ -12,8 +12,10 @@ const polyPath = (...parts) => path.resolve(paths.polymer_dir, ...parts);
 const copyFileDir = (fromFile, toDir) =>
   fs.copySync(fromFile, path.join(toDir, path.basename(fromFile)));
 
-const genStaticPath = (staticDir) => (...parts) =>
-  path.resolve(staticDir, ...parts);
+const genStaticPath =
+  (staticDir) =>
+  (...parts) =>
+    path.resolve(staticDir, ...parts);
 
 function copyTranslations(staticDir) {
   const staticPath = genStaticPath(staticDir);

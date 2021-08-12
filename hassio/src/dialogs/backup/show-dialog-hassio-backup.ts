@@ -2,7 +2,7 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { LocalizeFunc } from "../../../../src/common/translations/localize";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 
-export interface HassioSnapshotDialogParams {
+export interface HassioBackupDialogParams {
   slug: string;
   onDelete?: () => void;
   onboarding?: boolean;
@@ -10,13 +10,13 @@ export interface HassioSnapshotDialogParams {
   localize?: LocalizeFunc;
 }
 
-export const showHassioSnapshotDialog = (
+export const showHassioBackupDialog = (
   element: HTMLElement,
-  dialogParams: HassioSnapshotDialogParams
+  dialogParams: HassioBackupDialogParams
 ): void => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-hassio-snapshot",
-    dialogImport: () => import("./dialog-hassio-snapshot"),
+    dialogTag: "dialog-hassio-backup",
+    dialogImport: () => import("./dialog-hassio-backup"),
     dialogParams,
   });
 };
