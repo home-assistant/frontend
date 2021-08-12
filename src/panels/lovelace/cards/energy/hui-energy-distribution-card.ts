@@ -241,8 +241,14 @@ class HuiEnergyDistrubutionCard
       }
     }
 
-    const totalOutput =
-      totalFromGrid + (totalSolarProduction || 0) + (totalBatteryOut || 0);
+    const totalLines =
+      gridConsumption +
+      (solarConsumption || 0) +
+      (returnedToGrid ? returnedToGrid - (batteryToGrid || 0) : 0) +
+      (solarToBattery || 0) +
+      (batteryConsumption || 0) +
+      (batteryFromGrid || 0) +
+      (batteryToGrid || 0);
 
     return html`
       <ha-card .header=${this._config.title}>
@@ -503,7 +509,11 @@ class HuiEnergyDistrubutionCard
                     vector-effect="non-scaling-stroke"
                   >
                     <animateMotion
-                      dur="${6 - (returnedToGrid / totalOutput) * 5}s"
+                      dur="${
+                        6 -
+                        ((returnedToGrid - (batteryToGrid || 0)) / totalLines) *
+                          6
+                      }s"
                       repeatCount="indefinite"
                       calcMode="linear"
                     >
@@ -518,7 +528,7 @@ class HuiEnergyDistrubutionCard
                     vector-effect="non-scaling-stroke"
                   >
                     <animateMotion
-                      dur="${6 - (solarConsumption / totalOutput) * 5}s"
+                      dur="${6 - (solarConsumption / totalLines) * 5}s"
                       repeatCount="indefinite"
                       calcMode="linear"
                     >
@@ -533,7 +543,7 @@ class HuiEnergyDistrubutionCard
                     vector-effect="non-scaling-stroke"
                   >
                     <animateMotion
-                      dur="${6 - (gridConsumption / totalOutput) * 5}s"
+                      dur="${6 - (gridConsumption / totalLines) * 5}s"
                       repeatCount="indefinite"
                       calcMode="linear"
                     >
@@ -548,7 +558,7 @@ class HuiEnergyDistrubutionCard
                     vector-effect="non-scaling-stroke"
                   >
                     <animateMotion
-                      dur="${6 - (solarToBattery / totalOutput) * 5}s"
+                      dur="${6 - (solarToBattery / totalLines) * 5}s"
                       repeatCount="indefinite"
                       calcMode="linear"
                     >
@@ -563,7 +573,7 @@ class HuiEnergyDistrubutionCard
                     vector-effect="non-scaling-stroke"
                   >
                     <animateMotion
-                      dur="${6 - (batteryConsumption / totalOutput) * 5}s"
+                      dur="${6 - (batteryConsumption / totalLines) * 5}s"
                       repeatCount="indefinite"
                       calcMode="linear"
                     >
@@ -578,7 +588,7 @@ class HuiEnergyDistrubutionCard
                     vector-effect="non-scaling-stroke"
                   >
                     <animateMotion
-                      dur="${6 - (batteryFromGrid / totalOutput) * 5}s"
+                      dur="${6 - (batteryFromGrid / totalLines) * 5}s"
                       repeatCount="indefinite"
                       keyPoints="1;0" keyTimes="0;1"
                       calcMode="linear"
@@ -594,7 +604,7 @@ class HuiEnergyDistrubutionCard
                     vector-effect="non-scaling-stroke"
                   >
                     <animateMotion
-                      dur="${6 - (batteryToGrid / totalOutput) * 5}s"
+                      dur="${6 - (batteryToGrid / totalLines) * 5}s"
                       repeatCount="indefinite"
                       calcMode="linear"
                     >
@@ -774,7 +784,8 @@ class HuiEnergyDistrubutionCard
     circle.battery-to-grid {
       stroke: var(--energy-grid-return-color);
     }
-    circle.return {
+    circle.return,
+    circle.battery-to-grid {
       stroke-width: 4;
       fill: var(--energy-grid-return-color);
     }
