@@ -134,18 +134,33 @@ class HuiEnergyDistrubutionCard
     let batteryFromGrid: null | number = null;
     let batteryToGrid: null | number = null;
     if (solarConsumption !== null && solarConsumption < 0) {
-      // What we returned to the grid and what went in to the battery is more than produced, so we have also used grid energy to fill the battery
+      // What we returned to the grid and what went in to the battery is more than produced,
+      // so we have used grid energy to fill the battery
+      // or returned battery energy to the grid
       if (hasBattery) {
         batteryFromGrid = solarConsumption * -1;
+        if (batteryFromGrid > totalFromGrid) {
+          batteryToGrid = Math.min(
+            returnedToGrid || 0,
+            batteryFromGrid - totalFromGrid
+          );
+          batteryFromGrid = totalFromGrid;
+        }
       }
       solarConsumption = 0;
     }
+
     let solarToBattery: null | number = null;
     if (hasSolarProduction && hasBattery) {
-      batteryToGrid = Math.max(
-        0,
-        (returnedToGrid || 0) - (totalSolarProduction || 0)
-      );
+      if (!batteryToGrid) {
+        batteryToGrid = Math.max(
+          0,
+          (returnedToGrid || 0) -
+            (totalSolarProduction || 0) -
+            (totalBatteryIn || 0) -
+            (batteryFromGrid || 0)
+        );
+      }
       solarToBattery = totalBatteryIn! - (batteryFromGrid || 0);
     } else if (!hasSolarProduction && hasBattery) {
       batteryToGrid = returnedToGrid;
