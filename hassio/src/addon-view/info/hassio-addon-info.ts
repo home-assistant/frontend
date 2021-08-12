@@ -987,7 +987,7 @@ class HassioAddonInfo extends LitElement {
       supervisor: this.supervisor,
       name: this.addon.name,
       version: this.addon.version_latest,
-      snapshotParams: {
+      backupParams: {
         name: `addon_${this.addon.slug}_${this.addon.version}`,
         addons: [this.addon.slug],
         homeassistant: false,

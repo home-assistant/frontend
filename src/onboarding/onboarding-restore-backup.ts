@@ -2,8 +2,8 @@ import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../hassio/src/components/hassio-ansi-to-html";
-import { showHassioSnapshotDialog } from "../../hassio/src/dialogs/snapshot/show-dialog-hassio-snapshot";
-import { showSnapshotUploadDialog } from "../../hassio/src/dialogs/snapshot/show-dialog-snapshot-upload";
+import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dialog-hassio-backup";
+import { showBackupUploadDialog } from "../../hassio/src/dialogs/backup/show-dialog-backup-upload";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
 import {
@@ -21,8 +21,8 @@ declare global {
   }
 }
 
-@customElement("onboarding-restore-snapshot")
-class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
+@customElement("onboarding-restore-backup")
+class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
   @property() public localize!: LocalizeFunc;
 
   @property() public language!: string;
@@ -42,15 +42,15 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
           <onboarding-loading></onboarding-loading>
         </ha-card>`
       : html`
-          <button class="link" @click=${this._uploadSnapshot}>
+          <button class="link" @click=${this._uploadBackup}>
             ${this.localize("ui.panel.page-onboarding.restore.description")}
           </button>
         `;
   }
 
-  private _uploadSnapshot(): void {
-    showSnapshotUploadDialog(this, {
-      showSnapshot: (slug: string) => this._showSnapshotDialog(slug),
+  private _uploadBackup(): void {
+    showBackupUploadDialog(this, {
+      showBackup: (slug: string) => this._showBackupDialog(slug),
       onboarding: true,
     });
   }
@@ -79,8 +79,8 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
     }
   }
 
-  private _showSnapshotDialog(slug: string): void {
-    showHassioSnapshotDialog(this, {
+  private _showBackupDialog(slug: string): void {
+    showHassioBackupDialog(this, {
       slug,
       onboarding: true,
       localize: this.localize,
@@ -118,6 +118,6 @@ class OnboardingRestoreSnapshot extends ProvideHassLitMixin(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "onboarding-restore-snapshot": OnboardingRestoreSnapshot;
+    "onboarding-restore-backup": OnboardingRestoreBackup;
   }
 }

@@ -11,10 +11,10 @@ import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-radio";
 import type { HaRadio } from "../../../src/components/ha-radio";
 import {
-  HassioFullSnapshotCreateParams,
-  HassioPartialSnapshotCreateParams,
-  HassioSnapshotDetail,
-} from "../../../src/data/hassio/snapshot";
+  HassioFullBackupCreateParams,
+  HassioPartialBackupCreateParams,
+  HassioBackupDetail,
+} from "../../../src/data/hassio/backup";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { HomeAssistant } from "../../../src/types";
@@ -64,17 +64,17 @@ const _computeAddons = (addons): AddonCheckboxItem[] =>
     }))
     .sort((a, b) => (a.name > b.name ? 1 : -1));
 
-@customElement("supervisor-snapshot-content")
-export class SupervisorSnapshotContent extends LitElement {
+@customElement("supervisor-backup-content")
+export class SupervisorBackupContent extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public localize?: LocalizeFunc;
 
   @property({ attribute: false }) public supervisor?: Supervisor;
 
-  @property({ attribute: false }) public snapshot?: HassioSnapshotDetail;
+  @property({ attribute: false }) public backup?: HassioBackupDetail;
 
-  @property() public snapshotType: HassioSnapshotDetail["type"] = "full";
+  @property() public backupType: HassioBackupDetail["type"] = "full";
 
   @property({ attribute: false }) public folders?: CheckboxItem[];
 
@@ -82,37 +82,35 @@ export class SupervisorSnapshotContent extends LitElement {
 
   @property({ type: Boolean }) public homeAssistant = false;
 
-  @property({ type: Boolean }) public snapshotHasPassword = false;
+  @property({ type: Boolean }) public backupHasPassword = false;
 
   @property({ type: Boolean }) public onboarding = false;
 
-  @property() public snapshotName = "";
+  @property() public backupName = "";
 
-  @property() public snapshotPassword = "";
+  @property() public backupPassword = "";
 
-  @property() public confirmSnapshotPassword = "";
+  @property() public confirmBackupPassword = "";
 
   public willUpdate(changedProps) {
     super.willUpdate(changedProps);
     if (!this.hasUpdated) {
       this.folders = _computeFolders(
-        this.snapshot
-          ? this.snapshot.folders
+        this.backup
+          ? this.backup.folders
           : ["homeassistant", "ssl", "share", "media", "addons/local"]
       );
       this.addons = _computeAddons(
-        this.snapshot
-          ? this.snapshot.addons
-          : this.supervisor?.supervisor.addons
+        this.backup ? this.backup.addons : this.supervisor?.supervisor.addons
       );
-      this.snapshotType = this.snapshot?.type || "full";
-      this.snapshotName = this.snapshot?.name || "";
-      this.snapshotHasPassword = this.snapshot?.protected || false;
+      this.backupType = this.backup?.type || "full";
+      this.backupName = this.backup?.name || "";
+      this.backupHasPassword = this.backup?.protected || false;
     }
   }
 
   private _localize = (string: string) =>
-    this.supervisor?.localize(`snapshot.${string}`) ||
+    this.supervisor?.localize(`backup.${string}`) ||
     this.localize!(`ui.panel.page-onboarding.restore.${string}`);
 
   protected render(): TemplateResult {
@@ -120,64 +118,64 @@ export class SupervisorSnapshotContent extends LitElement {
       return html``;
     }
     const foldersSection =
-      this.snapshotType === "partial" ? this._getSection("folders") : undefined;
+      this.backupType === "partial" ? this._getSection("folders") : undefined;
     const addonsSection =
-      this.snapshotType === "partial" ? this._getSection("addons") : undefined;
+      this.backupType === "partial" ? this._getSection("addons") : undefined;
 
     return html`
-      ${this.snapshot
+      ${this.backup
         ? html`<div class="details">
-            ${this.snapshot.type === "full"
-              ? this._localize("full_snapshot")
-              : this._localize("partial_snapshot")}
-            (${Math.ceil(this.snapshot.size * 10) / 10 + " MB"})<br />
+            ${this.backup.type === "full"
+              ? this._localize("full_backup")
+              : this._localize("partial_backup")}
+            (${Math.ceil(this.backup.size * 10) / 10 + " MB"})<br />
             ${this.hass
-              ? formatDateTime(new Date(this.snapshot.date), this.hass.locale)
-              : this.snapshot.date}
+              ? formatDateTime(new Date(this.backup.date), this.hass.locale)
+              : this.backup.date}
           </div>`
         : html`<paper-input
-            name="snapshotName"
-            .label=${this.supervisor?.localize("snapshot.name") || "Name"}
-            .value=${this.snapshotName}
+            name="backupName"
+            .label=${this._localize("name")}
+            .value=${this.backupName}
             @value-changed=${this._handleTextValueChanged}
           >
           </paper-input>`}
-      ${!this.snapshot || this.snapshot.type === "full"
+      ${!this.backup || this.backup.type === "full"
         ? html`<div class="sub-header">
-              ${!this.snapshot
+              ${!this.backup
                 ? this._localize("type")
                 : this._localize("select_type")}
             </div>
-            <div class="snapshot-types">
-              <ha-formfield .label=${this._localize("full_snapshot")}>
+            <div class="backup-types">
+              <ha-formfield .label=${this._localize("full_backup")}>
                 <ha-radio
                   @change=${this._handleRadioValueChanged}
                   value="full"
-                  name="snapshotType"
-                  .checked=${this.snapshotType === "full"}
+                  name="backupType"
+                  .checked=${this.backupType === "full"}
                 >
                 </ha-radio>
               </ha-formfield>
-              <ha-formfield .label=${this._localize("partial_snapshot")}>
+              <ha-formfield .label=${this._localize("partial_backup")}>
                 <ha-radio
                   @change=${this._handleRadioValueChanged}
                   value="partial"
-                  name="snapshotType"
-                  .checked=${this.snapshotType === "partial"}
+                  name="backupType"
+                  .checked=${this.backupType === "partial"}
                 >
                 </ha-radio>
               </ha-formfield>
             </div>`
         : ""}
-      ${this.snapshotType === "partial"
+      ${this.backupType === "partial"
         ? html`<div class="partial-picker">
-            ${this.snapshot && this.snapshot.homeassistant
+            ${this.backup && this.backup.homeassistant
               ? html`
                   <ha-formfield
                     .label=${html`<supervisor-formfield-label
                       label="Home Assistant"
                       .iconPath=${mdiHomeAssistant}
-                      .version=${this.snapshot.homeassistant}
+                      .version=${this.backup.homeassistant}
                     >
                     </supervisor-formfield-label>`}
                   >
@@ -233,38 +231,38 @@ export class SupervisorSnapshotContent extends LitElement {
               : ""}
           </div> `
         : ""}
-      ${this.snapshotType === "partial" &&
-      (!this.snapshot || this.snapshotHasPassword)
+      ${this.backupType === "partial" &&
+      (!this.backup || this.backupHasPassword)
         ? html`<hr />`
         : ""}
-      ${!this.snapshot
+      ${!this.backup
         ? html`<ha-formfield
             class="password"
             .label=${this._localize("password_protection")}
           >
             <ha-checkbox
-              .checked=${this.snapshotHasPassword}
+              .checked=${this.backupHasPassword}
               @change=${this._toggleHasPassword}
             >
             </ha-checkbox>
           </ha-formfield>`
         : ""}
-      ${this.snapshotHasPassword
+      ${this.backupHasPassword
         ? html`
             <paper-input
               .label=${this._localize("password")}
               type="password"
-              name="snapshotPassword"
-              .value=${this.snapshotPassword}
+              name="backupPassword"
+              .value=${this.backupPassword}
               @value-changed=${this._handleTextValueChanged}
             >
             </paper-input>
-            ${!this.snapshot
+            ${!this.backup
               ? html` <paper-input
-                  .label=${this.supervisor?.localize("confirm_password")}
+                  .label=${this._localize("confirm_password")}
                   type="password"
-                  name="confirmSnapshotPassword"
-                  .value=${this.confirmSnapshotPassword}
+                  name="confirmBackupPassword"
+                  .value=${this.confirmBackupPassword}
                   @value-changed=${this._handleTextValueChanged}
                 >
                 </paper-input>`
@@ -307,7 +305,7 @@ export class SupervisorSnapshotContent extends LitElement {
         display: block;
         margin: 0 -14px -16px;
       }
-      .snapshot-types {
+      .backup-types {
         display: flex;
         margin-left: -13px;
       }
@@ -317,23 +315,23 @@ export class SupervisorSnapshotContent extends LitElement {
     `;
   }
 
-  public snapshotDetails():
-    | HassioPartialSnapshotCreateParams
-    | HassioFullSnapshotCreateParams {
+  public backupDetails():
+    | HassioPartialBackupCreateParams
+    | HassioFullBackupCreateParams {
     const data: any = {};
 
-    if (!this.snapshot) {
-      data.name = this.snapshotName || formatDate(new Date(), this.hass.locale);
+    if (!this.backup) {
+      data.name = this.backupName || formatDate(new Date(), this.hass.locale);
     }
 
-    if (this.snapshotHasPassword) {
-      data.password = this.snapshotPassword;
-      if (!this.snapshot) {
-        data.confirm_password = this.confirmSnapshotPassword;
+    if (this.backupHasPassword) {
+      data.password = this.backupPassword;
+      if (!this.backup) {
+        data.confirm_password = this.confirmBackupPassword;
       }
     }
 
-    if (this.snapshotType === "full") {
+    if (this.backupType === "full") {
       return data;
     }
 
@@ -415,7 +413,7 @@ export class SupervisorSnapshotContent extends LitElement {
   }
 
   private _toggleHasPassword(): void {
-    this.snapshotHasPassword = !this.snapshotHasPassword;
+    this.backupHasPassword = !this.backupHasPassword;
   }
 
   private _toggleSection(ev): void {
@@ -445,6 +443,6 @@ export class SupervisorSnapshotContent extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "supervisor-snapshot-content": SupervisorSnapshotContent;
+    "supervisor-backup-content": SupervisorBackupContent;
   }
 }

@@ -165,7 +165,7 @@ class HassioCoreInfo extends LitElement {
       supervisor: this.supervisor,
       name: "Home Assistant Core",
       version: this.supervisor.core.version_latest,
-      snapshotParams: {
+      backupParams: {
         name: `core_${this.supervisor.core.version}`,
         folders: ["homeassistant"],
         homeassistant: true,

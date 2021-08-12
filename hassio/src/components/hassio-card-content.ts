@@ -87,7 +87,7 @@ class HassioCardContent extends LitElement {
         color: var(--paper-green-400);
       }
       ha-svg-icon.hassupdate,
-      ha-svg-icon.snapshot {
+      ha-svg-icon.backup {
         color: var(--paper-item-icon-color);
       }
       ha-svg-icon.not_available {
