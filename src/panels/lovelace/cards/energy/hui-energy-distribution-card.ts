@@ -4,6 +4,7 @@ import {
   mdiArrowRight,
   mdiArrowUp,
   mdiBatteryHigh,
+  mdiFire,
   mdiHome,
   mdiLeaf,
   mdiSolarPower,
@@ -79,6 +80,7 @@ class HuiEnergyDistrubutionCard
 
     const hasSolarProduction = types.solar !== undefined;
     const hasBattery = types.battery !== undefined;
+    const hasGas = types.gas !== undefined;
     const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
 
     const totalFromGrid =
@@ -86,6 +88,15 @@ class HuiEnergyDistrubutionCard
         this._data.stats,
         types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
       ) ?? 0;
+
+    let gasUsage: number | null = null;
+    if (hasGas) {
+      gasUsage =
+        calculateStatisticsSumGrowth(
+          this._data.stats,
+          types.gas!.map((source) => source.stat_energy_from)
+        ) ?? 0;
+    }
 
     let totalSolarProduction: number | null = null;
 
@@ -250,7 +261,7 @@ class HuiEnergyDistrubutionCard
     return html`
       <ha-card .header=${this._config.title}>
         <div class="card-content">
-          ${lowCarbonEnergy !== undefined || hasSolarProduction
+          ${lowCarbonEnergy !== undefined || hasSolarProduction || hasGas
             ? html`<div class="row">
                 ${lowCarbonEnergy === undefined
                   ? html`<div class="spacer"></div>`
@@ -287,8 +298,39 @@ class HuiEnergyDistrubutionCard
                         kWh
                       </div>
                     </div>`
+                  : hasGas
+                  ? html`<div class="spacer"></div>`
                   : ""}
-                <div class="spacer"></div>
+                ${hasGas
+                  ? html`<div class="circle-container gas">
+                      <span class="label">Gas</span>
+                      <div class="circle">
+                        <ha-svg-icon .path="${mdiFire}"></ha-svg-icon>
+                        ${formatNumber(gasUsage || 0, this.hass.locale, {
+                          maximumFractionDigits: 1,
+                        })}
+                        m³
+                      </div>
+                      <svg width="80" height="30">
+                        <path d="M40 0 v30" id="gas" />
+                        ${gasUsage
+                          ? svg`<circle
+                    r="1"
+                    class="gas"
+                    vector-effect="non-scaling-stroke"
+                  >
+                    <animateMotion
+                      dur="2s"
+                      repeatCount="indefinite"
+                      calcMode="linear"
+                    >
+                      <mpath xlink:href="#gas" />
+                    </animateMotion>
+                  </circle>`
+                          : ""}
+                      </svg>
+                    </div>`
+                  : html`<div class="spacer"></div>`}
               </div>`
             : ""}
           <div class="row">
@@ -667,6 +709,10 @@ class HuiEnergyDistrubutionCard
       margin-right: 4px;
     }
     .circle-container.solar {
+      margin: 0 4px;
+      height: 130px;
+    }
+    .circle-container.gas {
       margin-left: 4px;
       height: 130px;
     }
@@ -716,6 +762,17 @@ class HuiEnergyDistrubutionCard
       stroke-width: 4px;
       width: 100%;
       height: 100%;
+    }
+    .gas path,
+    .gas circle {
+      stroke: var(--energy-gas-color);
+    }
+    circle.gas {
+      stroke-width: 4;
+      fill: var(--energy-gas-color);
+    }
+    .gas .circle {
+      border-color: var(--energy-gas-color);
     }
     .low-carbon line {
       stroke: var(--energy-non-fossil-color);

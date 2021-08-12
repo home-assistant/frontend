@@ -1052,7 +1052,7 @@
             "learn_more": "More information on how to get started."
           },
           "gas": {
-            "title": "Gas Cosumption",
+            "title": "Gas Consumption",
             "sub": "Let Home Assistant monitor your gas usage.",
             "learn_more": "More information on how to get started.",
             "dialog": {

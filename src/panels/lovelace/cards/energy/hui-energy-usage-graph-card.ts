@@ -269,6 +269,10 @@ export class HuiEnergyUsageGraphCard
         continue;
       }
 
+      if (source.type !== "grid") {
+        continue;
+      }
+
       // grid source
       for (const flowFrom of source.flow_from) {
         if (statistics.from_grid) {

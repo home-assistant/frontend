@@ -172,7 +172,7 @@ export class HuiEnergyGasGraphCard
             type: "linear",
             title: {
               display: true,
-              text: "m3",
+              text: "m³",
             },
             ticks: {
               beginAtZero: true,
@@ -187,7 +187,7 @@ export class HuiEnergyGasGraphCard
                 `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
                   locale
-                )} kWh`,
+                )} m³`,
             },
           },
           filler: {
@@ -216,7 +216,7 @@ export class HuiEnergyGasGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
-    const GasSources: GasSourceTypeEnergyPreference[] =
+    const gasSources: GasSourceTypeEnergyPreference[] =
       energyData.prefs.energy_sources.filter(
         (source) => source.type === "gas"
       ) as GasSourceTypeEnergyPreference[];
@@ -247,7 +247,7 @@ export class HuiEnergyGasGraphCard
       energyData.start
     );
 
-    GasSources.forEach((source, idx) => {
+    gasSources.forEach((source, idx) => {
       const data: ChartDataset<"bar" | "line">[] = [];
       const entity = this.hass.states[source.stat_energy_from];
 

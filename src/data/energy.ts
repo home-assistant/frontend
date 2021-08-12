@@ -237,8 +237,20 @@ const getEnergyData = async (
   }
 
   for (const source of prefs.energy_sources) {
-    if (source.type === "solar" || source.type === "gas") {
+    if (source.type === "solar") {
       statIDs.push(source.stat_energy_from);
+      continue;
+    }
+
+    if (source.type === "gas") {
+      statIDs.push(source.stat_energy_from);
+      if (source.stat_cost) {
+        statIDs.push(source.stat_cost);
+      }
+      const costStatId = info.cost_sensors[source.stat_energy_from];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
       continue;
     }
 

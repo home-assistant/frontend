@@ -9,6 +9,7 @@ import "@material/mwc-button/mwc-button";
 import "../../config/energy/components/ha-energy-grid-settings";
 import "../../config/energy/components/ha-energy-solar-settings";
 import "../../config/energy/components/ha-energy-battery-settings";
+import "../../config/energy/components/ha-energy-gas-settings";
 import "../../config/energy/components/ha-energy-device-settings";
 import { haStyle } from "../../../resources/styles";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
@@ -61,6 +62,12 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
             .preferences=${this._preferences}
             @value-changed=${this._prefsChanged}
           ></ha-energy-battery-settings>`
+        : this._step === 3
+        ? html`<ha-energy-gas-settings
+            .hass=${this.hass}
+            .preferences=${this._preferences}
+            @value-changed=${this._prefsChanged}
+          ></ha-energy-gas-settings>`
         : html`<ha-energy-device-settings
             .hass=${this.hass}
             .preferences=${this._preferences}
@@ -72,7 +79,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
               >${this.hass.localize("ui.panel.energy.setup.back")}</mwc-button
             >`
           : html`<div></div>`}
-        ${this._step < 3
+        ${this._step < 4
           ? html`<mwc-button unelevated @click=${this._next}
               >${this.hass.localize("ui.panel.energy.setup.next")}</mwc-button
             >`
@@ -95,7 +102,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
   }
 
   private _next() {
-    if (this._step === 2) {
+    if (this._step === 4) {
       return;
     }
     this._step++;
