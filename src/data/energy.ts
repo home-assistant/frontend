@@ -47,6 +47,13 @@ export const emptySolarEnergyPreference =
     config_entry_solar_forecast: null,
   });
 
+export const emptyBatteryEnergyPreference =
+  (): BatterySourceTypeEnergyPreference => ({
+    type: "battery",
+    stat_energy_from: "",
+    stat_energy_to: "",
+  });
+
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
@@ -94,9 +101,16 @@ export interface SolarSourceTypeEnergyPreference {
   config_entry_solar_forecast: string[] | null;
 }
 
+export interface BatterySourceTypeEnergyPreference {
+  type: "battery";
+  stat_energy_from: string;
+  stat_energy_to: string;
+}
+
 type EnergySource =
   | SolarSourceTypeEnergyPreference
-  | GridSourceTypeEnergyPreference;
+  | GridSourceTypeEnergyPreference
+  | BatterySourceTypeEnergyPreference;
 
 export interface EnergyPreferences {
   energy_sources: EnergySource[];
@@ -132,6 +146,7 @@ export const saveEnergyPreferences = async (
 interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
+  battery?: BatterySourceTypeEnergyPreference[];
 }
 
 export const energySourcesByType = (prefs: EnergyPreferences) => {
@@ -200,6 +215,12 @@ const getEnergyData = async (
   for (const source of prefs.energy_sources) {
     if (source.type === "solar") {
       statIDs.push(source.stat_energy_from);
+      continue;
+    }
+
+    if (source.type === "battery") {
+      statIDs.push(source.stat_energy_from);
+      statIDs.push(source.stat_energy_to);
       continue;
     }
 

@@ -88,6 +88,8 @@ documentContainer.innerHTML = `<custom-style>
       --energy-grid-return-color: #673ab7;
       --energy-solar-color: #ff9800;
       --energy-non-fossil-color: #0f9d58;
+      --energy-battery-out-color: #4db6ac;
+      --energy-battery-in-color: #f06292;
 
       /* opacity for dark text on a light background */
       --dark-divider-opacity: 0.12;
