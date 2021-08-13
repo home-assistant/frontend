@@ -1,7 +1,8 @@
 import "@material/mwc-button/mwc-button";
+import type { Button } from "@material/mwc-button/mwc-button";
 import "@material/mwc-icon-button/mwc-icon-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, queryAll } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
@@ -16,6 +17,8 @@ export class HaButtonToggleGroup extends LitElement {
   @property({ type: Boolean }) public fullWidth = false;
 
   @property({ type: Boolean }) public dense = false;
+
+  @queryAll("mwc-button") private _buttons?: Button[];
 
   protected render(): TemplateResult {
     return html`
@@ -46,6 +49,15 @@ export class HaButtonToggleGroup extends LitElement {
         )}
       </div>
     `;
+  }
+
+  protected updated() {
+    this._buttons?.forEach(async (button) => {
+      await button.updateComplete;
+      (
+        button.shadowRoot!.querySelector("button") as HTMLButtonElement
+      ).style.margin = "0";
+    });
   }
 
   private _handleClick(ev): void {
