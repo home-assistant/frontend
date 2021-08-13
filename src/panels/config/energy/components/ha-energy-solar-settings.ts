@@ -6,6 +6,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
 import {
+  EnergyInfo,
   EnergyPreferences,
   EnergyPreferencesValidation,
   EnergyValidationIssue,
@@ -32,6 +33,9 @@ export class EnergySolarSettings extends LitElement {
 
   @property({ attribute: false })
   public validationResult?: EnergyPreferencesValidation;
+
+  @property({ attribute: false })
+  public info?: EnergyInfo;
 
   protected render(): TemplateResult {
     const solarSources: SolarSourceTypeEnergyPreference[] = [];
@@ -95,21 +99,29 @@ export class EnergySolarSettings extends LitElement {
                     ? computeStateName(entityState)
                     : source.stat_energy_from}</span
                 >
-                <mwc-icon-button @click=${this._editSource}>
-                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                </mwc-icon-button>
+                ${this.info
+                  ? html`
+                      <mwc-icon-button @click=${this._editSource}>
+                        <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+                      </mwc-icon-button>
+                    `
+                  : ""}
                 <mwc-icon-button @click=${this._deleteSource}>
                   <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
                 </mwc-icon-button>
               </div>
             `;
           })}
-          <div class="row border-bottom">
-            <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
-            <mwc-button @click=${this._addSource}
-              >Add solar production</mwc-button
-            >
-          </div>
+          ${this.info
+            ? html`
+                <div class="row border-bottom">
+                  <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
+                  <mwc-button @click=${this._addSource}>
+                    Add solar production
+                  </mwc-button>
+                </div>
+              `
+            : ""}
         </div>
       </ha-card>
     `;
@@ -117,6 +129,7 @@ export class EnergySolarSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsSolarDialog(this, {
+      info: this.info!,
       saveCallback: async (source) => {
         await this._savePreferences({
           ...this.preferences,
@@ -130,6 +143,7 @@ export class EnergySolarSettings extends LitElement {
     const origSource: SolarSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
     showEnergySettingsSolarDialog(this, {
+      info: this.info!,
       source: { ...origSource },
       saveCallback: async (newSource) => {
         await this._savePreferences({

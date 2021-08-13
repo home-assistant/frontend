@@ -2,6 +2,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   BatterySourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference,
+  EnergyInfo,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GasSourceTypeEnergyPreference,
@@ -31,6 +32,7 @@ export interface EnergySettingsGridFlowToDialogParams {
 }
 
 export interface EnergySettingsSolarDialogParams {
+  info: EnergyInfo;
   source?: SolarSourceTypeEnergyPreference;
   saveCallback: (source: SolarSourceTypeEnergyPreference) => Promise<void>;
 }
