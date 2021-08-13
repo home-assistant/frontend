@@ -15,7 +15,7 @@ import {
   NodeStatus,
   setDataCollectionPreference,
   ZWaveJSNetwork,
-  ZWaveJSNode,
+  ZWaveJSNodeStatus,
 } from "../../../../../data/zwave_js";
 import {
   ConfigEntry,
@@ -53,7 +53,7 @@ class ZWaveJSConfigDashboard extends LitElement {
 
   @state() private _network?: ZWaveJSNetwork;
 
-  @state() private _nodes?: ZWaveJSNode[];
+  @state() private _nodes?: ZWaveJSNodeStatus[];
 
   @state() private _status = "unknown";
 
