@@ -5,9 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../../common/entity/state_icon";
-import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-card";
-import "../../../../components/ha-settings-row";
 import {
   DeviceConsumptionEnergyPreference,
   EnergyPreferences,

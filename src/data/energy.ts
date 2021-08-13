@@ -53,6 +53,14 @@ export const emptyBatteryEnergyPreference =
     stat_energy_from: "",
     stat_energy_to: "",
   });
+export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
+  type: "gas",
+  stat_energy_from: "",
+  stat_cost: null,
+  entity_energy_from: null,
+  entity_energy_price: null,
+  number_energy_price: null,
+});
 
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
@@ -106,11 +114,26 @@ export interface BatterySourceTypeEnergyPreference {
   stat_energy_from: string;
   stat_energy_to: string;
 }
+export interface GasSourceTypeEnergyPreference {
+  type: "gas";
+
+  // kWh meter
+  stat_energy_from: string;
+
+  // $ meter
+  stat_cost: string | null;
+
+  // Can be used to generate costs if stat_cost omitted
+  entity_energy_from: string | null;
+  entity_energy_price: string | null;
+  number_energy_price: number | null;
+}
 
 type EnergySource =
   | SolarSourceTypeEnergyPreference
   | GridSourceTypeEnergyPreference
-  | BatterySourceTypeEnergyPreference;
+  | BatterySourceTypeEnergyPreference
+  | GasSourceTypeEnergyPreference;
 
 export interface EnergyPreferences {
   energy_sources: EnergySource[];
@@ -147,6 +170,7 @@ interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
   battery?: BatterySourceTypeEnergyPreference[];
+  gas?: GasSourceTypeEnergyPreference[];
 }
 
 export const energySourcesByType = (prefs: EnergyPreferences) => {
@@ -215,6 +239,18 @@ const getEnergyData = async (
   for (const source of prefs.energy_sources) {
     if (source.type === "solar") {
       statIDs.push(source.stat_energy_from);
+      continue;
+    }
+
+    if (source.type === "gas") {
+      statIDs.push(source.stat_energy_from);
+      if (source.stat_cost) {
+        statIDs.push(source.stat_cost);
+      }
+      const costStatId = info.cost_sensors[source.stat_energy_from];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
       continue;
     }
 
