@@ -48,7 +48,7 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
         type: "battery",
         stat_energy_from: "sensor.battery_output",
         stat_energy_to: "sensor.battery_input",
-      },
+      }, */
       {
         type: "gas",
         stat_energy_from: "sensor.energy_gas",
@@ -56,7 +56,7 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
         entity_energy_from: "sensor.energy_gas",
         entity_energy_price: null,
         number_energy_price: null,
-      }, */
+      },
     ],
     device_consumption: [
       {
