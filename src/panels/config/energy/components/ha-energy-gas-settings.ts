@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiDelete, mdiPencil, mdiSolarPower } from "@mdi/js";
+import { mdiDelete, mdiFire, mdiPencil } from "@mdi/js";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -9,7 +9,7 @@ import {
   EnergyPreferences,
   energySourcesByType,
   saveEnergyPreferences,
-  SolarSourceTypeEnergyPreference,
+  GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import {
   showConfirmationDialog,
@@ -18,11 +18,11 @@ import {
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
-import { showEnergySettingsSolarDialog } from "../dialogs/show-dialogs-energy";
+import { showEnergySettingsGasDialog } from "../dialogs/show-dialogs-energy";
 import { energyCardStyles } from "./styles";
 
-@customElement("ha-energy-solar-settings")
-export class EnergySolarSettings extends LitElement {
+@customElement("ha-energy-gas-settings")
+export class EnergyGasSettings extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false })
@@ -31,32 +31,27 @@ export class EnergySolarSettings extends LitElement {
   protected render(): TemplateResult {
     const types = energySourcesByType(this.preferences);
 
-    const solarSources = types.solar || [];
+    const gasSources = types.gas || [];
 
     return html`
       <ha-card>
         <h1 class="card-header">
-          <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
-          ${this.hass.localize("ui.panel.config.energy.solar.title")}
+          <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
+          ${this.hass.localize("ui.panel.config.energy.gas.title")}
         </h1>
 
         <div class="card-content">
           <p>
-            ${this.hass.localize("ui.panel.config.energy.solar.sub")}
+            ${this.hass.localize("ui.panel.config.energy.gas.sub")}
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="${documentationUrl(
-                this.hass,
-                "/docs/energy/solar-panels/"
-              )}"
-              >${this.hass.localize(
-                "ui.panel.config.energy.solar.learn_more"
-              )}</a
+              href="${documentationUrl(this.hass, "/docs/energy/gas/")}"
+              >${this.hass.localize("ui.panel.config.energy.gas.learn_more")}</a
             >
           </p>
-          <h3>Solar production</h3>
-          ${solarSources.map((source) => {
+          <h3>Gas consumption</h3>
+          ${gasSources.map((source) => {
             const entityState = this.hass.states[source.stat_energy_from];
             return html`
               <div class="row" .source=${source}>
@@ -64,7 +59,7 @@ export class EnergySolarSettings extends LitElement {
                   ? html`<ha-icon
                       .icon=${entityState.attributes.icon}
                     ></ha-icon>`
-                  : html`<ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>`}
+                  : html`<ha-svg-icon .path=${mdiFire}></ha-svg-icon>`}
                 <span class="content"
                   >${entityState
                     ? computeStateName(entityState)
@@ -80,10 +75,8 @@ export class EnergySolarSettings extends LitElement {
             `;
           })}
           <div class="row border-bottom">
-            <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
-            <mwc-button @click=${this._addSource}
-              >Add solar production</mwc-button
-            >
+            <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
+            <mwc-button @click=${this._addSource}>Add gas source</mwc-button>
           </div>
         </div>
       </ha-card>
@@ -91,7 +84,7 @@ export class EnergySolarSettings extends LitElement {
   }
 
   private _addSource() {
-    showEnergySettingsSolarDialog(this, {
+    showEnergySettingsGasDialog(this, {
       saveCallback: async (source) => {
         await this._savePreferences({
           ...this.preferences,
@@ -102,9 +95,9 @@ export class EnergySolarSettings extends LitElement {
   }
 
   private _editSource(ev) {
-    const origSource: SolarSourceTypeEnergyPreference =
+    const origSource: GasSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
-    showEnergySettingsSolarDialog(this, {
+    showEnergySettingsGasDialog(this, {
       source: { ...origSource },
       saveCallback: async (newSource) => {
         await this._savePreferences({
@@ -118,7 +111,7 @@ export class EnergySolarSettings extends LitElement {
   }
 
   private async _deleteSource(ev) {
-    const sourceToDelete: SolarSourceTypeEnergyPreference =
+    const sourceToDelete: GasSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
 
     if (
@@ -153,6 +146,6 @@ export class EnergySolarSettings extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-energy-solar-settings": EnergySolarSettings;
+    "ha-energy-gas-settings": EnergyGasSettings;
   }
 }
