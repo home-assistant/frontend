@@ -10,12 +10,7 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import {
-  differenceInDays,
-  endOfToday,
-  isToday,
-  startOfToday,
-} from "date-fns";
+import { differenceInDays, endOfToday, isToday, startOfToday } from "date-fns";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyGasGraphCardConfig } from "../types";
