@@ -139,8 +139,14 @@ class HaConfigEnergy extends LitElement {
     }
   }
 
-  private _prefsChanged(ev: CustomEvent) {
+  private async _prefsChanged(ev: CustomEvent) {
     this._preferences = ev.detail.value;
+    this._validationResult = undefined;
+    try {
+      this._validationResult = await getEnergyPreferenceValidation(this.hass);
+    } catch (e) {
+      this._error = e.message;
+    }
   }
 
   static get styles(): CSSResultGroup {
