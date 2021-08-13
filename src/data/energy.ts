@@ -144,9 +144,29 @@ export interface EnergyInfo {
   cost_sensors: Record<string, string>;
 }
 
+export interface EnergyValidationMessage {
+  message: string;
+  link: string | null;
+}
+
+export interface EnergyValidationResult {
+  errors: EnergyValidationMessage[];
+  warnings: EnergyValidationMessage[];
+}
+
+export interface EnergyPreferencesValidation extends EnergyValidationResult {
+  energy_sources: EnergyValidationResult[];
+  device_consumption: EnergyValidationResult[];
+}
+
 export const getEnergyInfo = (hass: HomeAssistant) =>
   hass.callWS<EnergyInfo>({
     type: "energy/info",
+  });
+
+export const getEnergyPreferenceValidation = (hass: HomeAssistant) =>
+  hass.callWS<EnergyPreferencesValidation>({
+    type: "energy/validate",
   });
 
 export const getEnergyPreferences = (hass: HomeAssistant) =>

@@ -1,7 +1,12 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-svg-icon";
-import { EnergyPreferences, getEnergyPreferences } from "../../../data/energy";
+import {
+  EnergyPreferences,
+  EnergyPreferencesValidation,
+  getEnergyPreferences,
+  getEnergyPreferenceValidation,
+} from "../../../data/energy";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -12,6 +17,7 @@ import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
 import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
+import { renderEnergyValidationMessage } from "./components/ha-energy-validation-message";
 
 const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],
@@ -33,6 +39,8 @@ class HaConfigEnergy extends LitElement {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _preferences?: EnergyPreferences;
+
+  @state() private _validationResult?: EnergyPreferencesValidation;
 
   @state() private _error?: string;
 
@@ -70,22 +78,31 @@ class HaConfigEnergy extends LitElement {
           <div class="card-content">
             After setting up a new device, it can take up to 2 hours for new
             data to arrive in your energy dashboard.
+            ${this._validationResult?.errors.map((msg) =>
+              renderEnergyValidationMessage("error", msg)
+            )}
+            ${this._validationResult?.warnings.map((msg) =>
+              renderEnergyValidationMessage("warning", msg)
+            )}
           </div>
         </ha-card>
         <div class="container">
           <ha-energy-grid-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
+            .validationResult=${this._validationResult!}
             @value-changed=${this._prefsChanged}
           ></ha-energy-grid-settings>
           <ha-energy-solar-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
+            .validationResult=${this._validationResult!}
             @value-changed=${this._prefsChanged}
           ></ha-energy-solar-settings>
           <ha-energy-battery-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
+            .validationResult=${this._validationResult!}
             @value-changed=${this._prefsChanged}
           ></ha-energy-battery-settings>
           <ha-energy-gas-settings
@@ -96,6 +113,7 @@ class HaConfigEnergy extends LitElement {
           <ha-energy-device-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
+            .validationResult=${this._validationResult!}
             @value-changed=${this._prefsChanged}
           ></ha-energy-device-settings>
         </div>
@@ -104,6 +122,7 @@ class HaConfigEnergy extends LitElement {
   }
 
   private async _fetchConfig() {
+    const validationPromise = getEnergyPreferenceValidation(this.hass);
     try {
       this._preferences = await getEnergyPreferences(this.hass);
     } catch (e) {
@@ -112,6 +131,11 @@ class HaConfigEnergy extends LitElement {
       } else {
         this._error = e.message;
       }
+    }
+    try {
+      this._validationResult = await validationPromise;
+    } catch (e) {
+      this._error = e.message;
     }
   }
 

@@ -10,7 +10,8 @@ import "../../../../components/ha-settings-row";
 import {
   BatterySourceTypeEnergyPreference,
   EnergyPreferences,
-  energySourcesByType,
+  EnergyPreferencesValidation,
+  EnergyValidationResult,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import {
@@ -21,6 +22,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsBatteryDialog } from "../dialogs/show-dialogs-energy";
+import { renderEnergyValidationMessage } from "./ha-energy-validation-message";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-battery-settings")
@@ -30,10 +32,23 @@ export class EnergyBatterySettings extends LitElement {
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
 
-  protected render(): TemplateResult {
-    const types = energySourcesByType(this.preferences);
+  @property({ attribute: false })
+  public validationResult?: EnergyPreferencesValidation;
 
-    const batterySources = types.battery || [];
+  protected render(): TemplateResult {
+    const batterySources: BatterySourceTypeEnergyPreference[] = [];
+    const batteryValidation: EnergyValidationResult[] = [];
+
+    this.preferences.energy_sources.forEach((source, idx) => {
+      if (source.type !== "battery") {
+        return;
+      }
+      batterySources.push(source);
+
+      if (this.validationResult) {
+        batteryValidation.push(this.validationResult.energy_sources[idx]);
+      }
+    });
 
     return html`
       <ha-card>
@@ -54,6 +69,16 @@ export class EnergyBatterySettings extends LitElement {
               )}</a
             >
           </p>
+          ${batteryValidation.map(
+            (result) => html`
+              ${result.errors.map((msg) =>
+                renderEnergyValidationMessage("error", msg)
+              )}
+              ${result.warnings.map((msg) =>
+                renderEnergyValidationMessage("warning", msg)
+              )}
+            `
+          )}
           <h3>Battery systems</h3>
           ${batterySources.map((source) => {
             const fromEntityState = this.hass.states[source.stat_energy_from];

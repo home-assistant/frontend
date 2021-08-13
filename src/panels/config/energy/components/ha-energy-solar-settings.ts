@@ -7,7 +7,8 @@ import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
 import {
   EnergyPreferences,
-  energySourcesByType,
+  EnergyPreferencesValidation,
+  EnergyValidationResult,
   saveEnergyPreferences,
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
@@ -19,6 +20,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsSolarDialog } from "../dialogs/show-dialogs-energy";
+import { renderEnergyValidationMessage } from "./ha-energy-validation-message";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-solar-settings")
@@ -28,10 +30,23 @@ export class EnergySolarSettings extends LitElement {
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
 
-  protected render(): TemplateResult {
-    const types = energySourcesByType(this.preferences);
+  @property({ attribute: false })
+  public validationResult?: EnergyPreferencesValidation;
 
-    const solarSources = types.solar || [];
+  protected render(): TemplateResult {
+    const solarSources: SolarSourceTypeEnergyPreference[] = [];
+    const solarValidation: EnergyValidationResult[] = [];
+
+    this.preferences.energy_sources.forEach((source, idx) => {
+      if (source.type !== "solar") {
+        return;
+      }
+      solarSources.push(source);
+
+      if (this.validationResult) {
+        solarValidation.push(this.validationResult.energy_sources[idx]);
+      }
+    });
 
     return html`
       <ha-card>
@@ -55,6 +70,17 @@ export class EnergySolarSettings extends LitElement {
               )}</a
             >
           </p>
+          ${solarValidation.map(
+            (result) => html`
+              ${result.errors.map((msg) =>
+                renderEnergyValidationMessage("error", msg)
+              )}
+              ${result.warnings.map((msg) =>
+                renderEnergyValidationMessage("warning", msg)
+              )}
+            `
+          )}
+
           <h3>Solar production</h3>
           ${solarSources.map((source) => {
             const entityState = this.hass.states[source.stat_energy_from];
