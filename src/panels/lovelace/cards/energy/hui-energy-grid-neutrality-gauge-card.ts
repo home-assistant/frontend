@@ -124,8 +124,8 @@ class HuiEnergyGridGaugeCard
               ></ha-gauge>
               <div class="name">
                 ${returnedToGrid! >= consumedFromGrid!
-                  ? "Netto returned to the grid"
-                  : "Netto consumed from the grid"}
+                  ? "Net returned to the grid"
+                  : "Net consumed from the grid"}
               </div>`
           : "Grid neutrality could not be calculated"}
       </ha-card>
