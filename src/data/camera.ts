@@ -41,7 +41,8 @@ export const fetchThumbnailUrlWithCache = (
   entityId: string,
   width: number,
   height: number
-) => timeCachePromiseFunc(
+) =>
+  timeCachePromiseFunc(
     "_cameraTmbUrl",
     9000,
     fetchThumbnailUrl,
