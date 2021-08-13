@@ -44,19 +44,19 @@ export const mockEnergy = (hass: MockHomeAssistant) => {
         stat_energy_from: "sensor.solar_production",
         config_entry_solar_forecast: ["solar_forecast"],
       },
-      {
-        type: "battery",
-        stat_energy_from: "sensor.battery_output",
-        stat_energy_to: "sensor.battery_input",
-      },
-      {
-        type: "gas",
-        stat_energy_from: "sensor.energy_gas",
-        stat_cost: "sensor.energy_gas_cost",
-        entity_energy_from: "sensor.energy_gas",
-        entity_energy_price: null,
-        number_energy_price: null,
-      },
+      // {
+      //   type: "battery",
+      //   stat_energy_from: "sensor.battery_output",
+      //   stat_energy_to: "sensor.battery_input",
+      // },
+      // {
+      //   type: "gas",
+      //   stat_energy_from: "sensor.energy_gas",
+      //   stat_cost: "sensor.energy_gas_cost",
+      //   entity_energy_from: "sensor.energy_gas",
+      //   entity_energy_price: null,
+      //   number_energy_price: null,
+      // },
     ],
     device_consumption: [
       {
