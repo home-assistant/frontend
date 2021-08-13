@@ -238,9 +238,19 @@ export default class HaChartBase extends LitElement {
     };
   }
 
-  public updateChart = (): void => {
+  public updateChart = (
+    mode:
+      | "resize"
+      | "reset"
+      | "none"
+      | "hide"
+      | "show"
+      | "normal"
+      | "active"
+      | undefined
+  ): void => {
     if (this.chart) {
-      this.chart.update();
+      this.chart.update(mode);
     }
   };
 
