@@ -283,7 +283,7 @@ export class HuiImage extends LitElement {
 
   private async _onImageLoad(): Promise<void> {
     this._loadState = LoadState.Loaded;
-    this._lastImageHeight = this._image?.offsetHeight;
+    this._lastImageHeight = this._image!.offsetHeight;
     await this.updateComplete;
   }
 
