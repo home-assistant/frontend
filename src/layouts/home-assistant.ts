@@ -211,6 +211,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     if (!this.hass!.connection.connected) {
       return;
     }
+    window.stop();
     this.hass!.connection.suspend();
   }
 

@@ -98,6 +98,11 @@ class HaHLSPlayer extends LitElement {
 
     const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.min"))
       .default;
+
+    if (!this.isConnected) {
+      return;
+    }
+
     let hlsSupported = Hls.isSupported();
 
     if (!hlsSupported) {
@@ -114,6 +119,10 @@ class HaHLSPlayer extends LitElement {
 
     const useExoPlayer = await useExoPlayerPromise;
     const masterPlaylist = await (await masterPlaylistPromise).text();
+
+    if (!this.isConnected) {
+      return;
+    }
 
     // Parse playlist assuming it is a master playlist. Match group 1 is whether hevc, match group 2 is regular playlist url
     // See https://tools.ietf.org/html/rfc8216 for HLS spec details
