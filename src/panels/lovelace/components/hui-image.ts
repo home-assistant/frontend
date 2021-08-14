@@ -330,7 +330,7 @@ export class HuiImage extends LitElement {
     const width = Math.ceil(element_width * SCALING_FACTOR);
     // If the image has not rendered yet we may have a zero height
     const height =
-      this._image && this._image.offsetHeight
+      this._image?.offsetHeight
         ? this._image.offsetHeight * SCALING_FACTOR
         : Math.ceil(element_width * SCALING_FACTOR * ASPECT_RATIO_DEFAULT);
 
