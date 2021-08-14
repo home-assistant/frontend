@@ -102,7 +102,6 @@ export class HuiImage extends LitElement {
         this._stopUpdateCameraInterval();
         this._stopIntersectionObserver();
       }
-      return;
     }
     if (changedProps.has("_imageVisible")) {
       if (this._imageVisible) {
