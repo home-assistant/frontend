@@ -36,19 +36,21 @@ export interface Stream {
 export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
   `/api/camera_proxy_stream/${entity.entity_id}?token=${entity.attributes.access_token}`;
 
-export const fetchThumbnailUrlWithCache = (
+export const fetchThumbnailUrlWithCache = async (
   hass: HomeAssistant,
   entityId: string,
   width: number,
   height: number
-) =>
-  timeCachePromiseFunc(
+) => {
+  const base_url = await timeCachePromiseFunc(
     "_cameraTmbUrl",
     9000,
     fetchThumbnailUrl,
     hass,
     entityId
-  ).then((base_url) => `${base_url}&width=${width}&height=${height}`);
+  );
+  return `${base_url}&width=${width}&height=${height}`;
+};
 
 export const fetchThumbnailUrl = async (
   hass: HomeAssistant,
