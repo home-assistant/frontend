@@ -65,7 +65,7 @@ export class HuiImage extends LitElement {
 
   private _intersectionObserver?: IntersectionObserver;
 
-  @query("img") private _image!: HTMLImageElement;
+  @query("img") private _image?: HTMLImageElement;
 
   private _lastImageHeight?: number;
 
