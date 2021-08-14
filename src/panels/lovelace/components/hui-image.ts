@@ -320,7 +320,7 @@ export class HuiImage extends LitElement {
 <<<<<<< HEAD
     // One the first render we will not know the width
     const element_width =
-      this._image && this._image.offsetWidth
+      this._image?.offsetWidth
         ? this._image.offsetWidth
         : MAX_IMAGE_WIDTH;
     // Because the aspect ratio might result in a smaller image,
