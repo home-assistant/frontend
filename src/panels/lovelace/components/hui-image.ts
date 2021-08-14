@@ -93,15 +93,25 @@ export class HuiImage extends LitElement {
   }
 
   public willUpdate(changedProps: PropertyValues): void {
-    if (!changedProps.has("_imageVisible")) {
+    if (changedProps.has("hass")) {
+      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+      if (this._shouldStartCameraUpdates(oldHass)) {
+        this._startIntersectionObserverOrUpdates();
+      } else if (!this.hass!.connected) {
+        this._stopUpdateCameraInterval();
+        this._stopIntersectionObserver();
+      }
       return;
     }
-    if (this._imageVisible) {
-      if (this._shouldStartCameraUpdates()) {
-        this._startUpdateCameraInterval();
+    if (changedProps.has("_imageVisible")) {
+      if (this._imageVisible) {
+        if (this._shouldStartCameraUpdates()) {
+          this._startUpdateCameraInterval();
+        }
+      } else {
+        this._stopUpdateCameraInterval();
       }
-    } else {
-      this._stopUpdateCameraInterval();
     }
   }
 
@@ -202,7 +212,8 @@ export class HuiImage extends LitElement {
                 height: `${this._lastImageHeight || "100"}px`,
               })}
             ></div>`
-          : imageSrc === undefined || this._loadState === LoadState.Loading
+          : this.cameraView !== "live" &&
+            (imageSrc === undefined || this._loadState === LoadState.Loading)
           ? html`<div
               style=${styleMap({
                 height: `${this._lastImageHeight || "100"}px`,
@@ -225,23 +236,6 @@ export class HuiImage extends LitElement {
       this.hass!.connected &&
       this.cameraView !== "live"
     );
-  }
-
-  protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-      if (this._shouldStartCameraUpdates(oldHass)) {
-        this._startIntersectionObserverOrUpdates();
-      } else if (!this.hass!.connected) {
-        this._stopUpdateCameraInterval();
-        // We used to set load error when stopping
-        // but that resulted in every image being broken
-        // when a phone is locked and unlocked
-      }
-    } else if (changedProps.has("cameraImage") && this.cameraView !== "live") {
-      this._startIntersectionObserverOrUpdates();
-    }
   }
 
   private _startIntersectionObserverOrUpdates(): void {
