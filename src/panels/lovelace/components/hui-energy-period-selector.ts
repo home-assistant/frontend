@@ -82,24 +82,24 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 this._endDate || new Date(),
                 this.hass.locale
               )}`}
+          <mwc-icon-button label="Previous" @click=${this._pickPrevious}>
+            <ha-svg-icon .path=${mdiChevronLeft}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-icon-button label="Next" @click=${this._pickNext}>
+            <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
+          </mwc-icon-button>
         </div>
-
-        <mwc-icon-button label="Previous" @click=${this._pickPrevious}>
-          <ha-svg-icon .path=${mdiChevronLeft}></ha-svg-icon>
-        </mwc-icon-button>
-        <mwc-icon-button label="Next" @click=${this._pickNext}>
-          <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
-        </mwc-icon-button>
-
-        <mwc-button dense outlined @click=${this._pickToday}>
-          Today
-        </mwc-button>
-        <ha-button-toggle-group
-          .buttons=${viewButtons}
-          .active=${this._period}
-          dense
-          @value-changed=${this._handleView}
-        ></ha-button-toggle-group>
+        <div class="controls">
+          <mwc-button dense outlined @click=${this._pickToday}>
+            Today
+          </mwc-button>
+          <ha-button-toggle-group
+            .buttons=${viewButtons}
+            .active=${this._period}
+            dense
+            @value-changed=${this._handleView}
+          ></ha-button-toggle-group>
+        </div>
       </div>
     `;
   }
@@ -200,13 +200,18 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     return css`
       .row {
         display: flex;
-        align-items: center;
         justify-content: flex-end;
+        flex-direction: column-reverse;
       }
       .label {
-        padding: 0 8px;
-        text-align: center;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
         font-size: 20px;
+      }
+      .controls {
+        display: flex;
+        justify-content: flex-end;
       }
       :host {
         --mdc-button-outline-color: currentColor;
