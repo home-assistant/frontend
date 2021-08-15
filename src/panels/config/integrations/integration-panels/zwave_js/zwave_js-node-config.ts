@@ -428,17 +428,10 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this._nodeMetadata = await fetchNodeMetadata(
-      this.hass,
-      this.configEntryId,
-      nodeId!
-    );
-
-    this._config = await fetchNodeConfigParameters(
-      this.hass,
-      this.configEntryId,
-      nodeId!
-    );
+    [this._nodeMetadata, this._config] = await Promise.all([
+      fetchNodeMetadata(this.hass, this.configEntryId, nodeId!),
+      fetchNodeConfigParameters(this.hass, this.configEntryId, nodeId!),
+    ]);
   }
 
   static get styles(): CSSResultGroup {
