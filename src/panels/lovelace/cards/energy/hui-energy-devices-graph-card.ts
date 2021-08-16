@@ -8,7 +8,7 @@ import { getRelativePosition } from "chart.js/helpers";
 import { addHours } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { getColorByIndex } from "../../../../common/color/colors";
@@ -19,6 +19,7 @@ import {
   numberFormatToLocale,
 } from "../../../../common/string/format_number";
 import "../../../../components/chart/ha-chart-base";
+import type HaChartBase from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
 import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
@@ -44,6 +45,8 @@ export class HuiEnergyDevicesGraphCard
   @state() private _data?: Statistics;
 
   @state() private _chartData: ChartData = { datasets: [] };
+
+  @query("ha-chart-base") private _chart?: HaChartBase;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -207,6 +210,8 @@ export class HuiEnergyDevicesGraphCard
     this._chartData = {
       datasets,
     };
+    await this.updateComplete;
+    this._chart?.updateChart("none");
   }
 
   static get styles(): CSSResultGroup {
