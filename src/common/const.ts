@@ -56,18 +56,27 @@ export const FIXED_DOMAIN_ICONS = {
 };
 
 export const FIXED_DEVICE_CLASS_ICONS = {
+  aqi: "hass:air-filter",
   current: "hass:current-ac",
   carbon_dioxide: "mdi:molecule-co2",
   carbon_monoxide: "mdi:molecule-co",
   energy: "hass:lightning-bolt",
   humidity: "hass:water-percent",
   illuminance: "hass:brightness-5",
+  nitrogen_dioxide: "mdi:molecule",
+  nitrogen_monoxide: "mdi:molecule",
+  nitrous_oxide: "mdi:molecule",
+  ozone: "mdi:molecule",
   temperature: "hass:thermometer",
   monetary: "mdi:cash",
+  pm25: "mdi:molecule",
+  pm1: "mdi:molecule",
+  pm10: "mdi:molecule",
   pressure: "hass:gauge",
   power: "hass:flash",
   power_factor: "hass:angle-acute",
   signal_strength: "hass:wifi",
+  sulphur_dioxide: "mdi:molecule",
   timestamp: "hass:clock",
   voltage: "hass:sine-wave",
 };
