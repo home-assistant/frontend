@@ -1,11 +1,5 @@
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import {
-  startOfToday,
-  endOfToday,
-  isToday,
-  differenceInDays,
-  addHours,
-} from "date-fns";
+import { startOfToday, endOfToday, isToday, differenceInDays } from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -115,14 +109,8 @@ export class HuiEnergyUsageGraphCard
         scales: {
           x: {
             type: "time",
-            suggestedMin: (dayDifference > 2
-              ? addHours(start, -11)
-              : start
-            ).getTime(),
-            suggestedMax: (dayDifference > 2
-              ? addHours(end, -11)
-              : end
-            ).getTime(),
+            suggestedMin: start.getTime(),
+            suggestedMax: end.getTime(),
             adapters: {
               date: {
                 locale: locale,
