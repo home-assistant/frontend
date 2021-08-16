@@ -53,6 +53,11 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   @state() private _period?: "day" | "week" | "month" | "year";
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this.toggleAttribute("narrow", this.offsetWidth < 600);
+  }
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       getEnergyDataCollection(this.hass, {
@@ -82,24 +87,24 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 this._endDate || new Date(),
                 this.hass.locale
               )}`}
+          <mwc-icon-button label="Previous" @click=${this._pickPrevious}>
+            <ha-svg-icon .path=${mdiChevronLeft}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-icon-button label="Next" @click=${this._pickNext}>
+            <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-button dense outlined @click=${this._pickToday}>
+            Today
+          </mwc-button>
         </div>
-
-        <mwc-icon-button label="Previous" @click=${this._pickPrevious}>
-          <ha-svg-icon .path=${mdiChevronLeft}></ha-svg-icon>
-        </mwc-icon-button>
-        <mwc-icon-button label="Next" @click=${this._pickNext}>
-          <ha-svg-icon .path=${mdiChevronRight}></ha-svg-icon>
-        </mwc-icon-button>
-
-        <mwc-button dense outlined @click=${this._pickToday}>
-          Today
-        </mwc-button>
-        <ha-button-toggle-group
-          .buttons=${viewButtons}
-          .active=${this._period}
-          dense
-          @value-changed=${this._handleView}
-        ></ha-button-toggle-group>
+        <div class="period">
+          <ha-button-toggle-group
+            .buttons=${viewButtons}
+            .active=${this._period}
+            dense
+            @value-changed=${this._handleView}
+          ></ha-button-toggle-group>
+        </div>
       </div>
     `;
   }
@@ -200,13 +205,23 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
     return css`
       .row {
         display: flex;
-        align-items: center;
         justify-content: flex-end;
       }
+      :host([narrow]) .row {
+        flex-direction: column-reverse;
+      }
+      :host([narrow]) .period {
+        margin-bottom: 8px;
+      }
       .label {
-        padding: 0 8px;
-        text-align: center;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
         font-size: 20px;
+      }
+      .period {
+        display: flex;
+        justify-content: flex-end;
       }
       :host {
         --mdc-button-outline-color: currentColor;
@@ -219,7 +234,6 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       mwc-icon-button {
         --mdc-icon-button-size: 28px;
       }
-      mwc-button,
       ha-button-toggle-group {
         padding-left: 8px;
       }
