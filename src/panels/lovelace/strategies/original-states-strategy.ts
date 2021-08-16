@@ -39,12 +39,7 @@ export class OriginalStatesStrategy {
       subscribeEntityRegistry(hass.connection, () => undefined);
     }
 
-    let energyPromise: Promise<EnergyPreferences> | undefined;
-
-    if (isComponentLoaded(hass, "energy")) {
-      energyPromise = getEnergyPreferences(hass);
-    }
-
+    let energyPrefs: EnergyPreferences | undefined;
     const [areaEntries, deviceEntries, entityEntries, localize] =
       await Promise.all([
         subscribeOne(hass.connection, subscribeAreaRegistry),
@@ -53,7 +48,13 @@ export class OriginalStatesStrategy {
         hass.loadBackendTranslation("title"),
       ]);
 
-    const energyPrefs = energyPromise ? await energyPromise : undefined;
+    if (isComponentLoaded(hass, "energy")) {
+      try {
+        energyPrefs = await getEnergyPreferences(hass);
+      } catch (_) {
+        // Nothing to do here
+      }
+    }
 
     // User can override default view. If they didn't, we will add one
     // that contains all entities.
