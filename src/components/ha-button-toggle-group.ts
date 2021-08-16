@@ -52,6 +52,7 @@ export class HaButtonToggleGroup extends LitElement {
   }
 
   protected updated() {
+    // Work around Safari default margin that is not reset in mwc-button as of aug 2021
     this._buttons?.forEach(async (button) => {
       await button.updateComplete;
       (
