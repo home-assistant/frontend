@@ -68,7 +68,6 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   power: "hass:flash",
   power_factor: "hass:angle-acute",
   signal_strength: "hass:wifi",
-  update: "mdi:arrow-up-bold-circle",
   timestamp: "hass:clock",
   voltage: "hass:sine-wave",
 };
