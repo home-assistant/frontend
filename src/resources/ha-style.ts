@@ -70,7 +70,7 @@ documentContainer.innerHTML = `<custom-style>
       --state-not_home-color: #ff0029;
       /* --state-unavailable-color: #a0a0a0; derived from disabled-text-color */
       --state-unknown-color: #606060;
-      --state-idle-color: #377eb8;
+      --state-idle-color: #7990a3;
 
       /* climate state colors */
       --state-climate-auto-color: #008000;
