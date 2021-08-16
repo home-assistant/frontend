@@ -10,13 +10,7 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import {
-  addHours,
-  differenceInDays,
-  endOfToday,
-  isToday,
-  startOfToday,
-} from "date-fns";
+import { differenceInDays, endOfToday, isToday, startOfToday } from "date-fns";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyGasGraphCardConfig } from "../types";
@@ -123,14 +117,8 @@ export class HuiEnergyGasGraphCard
         scales: {
           x: {
             type: "time",
-            suggestedMin: (dayDifference > 2
-              ? addHours(start, -11)
-              : start
-            ).getTime(),
-            suggestedMax: (dayDifference > 2
-              ? addHours(end, -11)
-              : end
-            ).getTime(),
+            suggestedMin: start.getTime(),
+            suggestedMax: end.getTime(),
             adapters: {
               date: {
                 locale: locale,
