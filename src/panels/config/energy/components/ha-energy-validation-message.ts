@@ -39,14 +39,14 @@ class EnergyValidationMessage extends LitElement {
             )}
             ${issueType === "entity_not_tracked"
               ? html`
-                  <a
+                  (<a
                     href="https://www.home-assistant.io/integrations/recorder#configure-filter"
                     target="_blank"
                     rel="noopener noreferrer"
                     >${this.hass.localize(
                       "ui.panel.config.common.learn_more"
                     )}</a
-                  >
+                  >)
                 `
               : ""}
 
@@ -86,9 +86,10 @@ class EnergyValidationMessage extends LitElement {
     .icon {
       margin: 4px 8px;
       width: 24px;
-    }
-    ha-svg-icon {
       color: var(--warning-color);
+    }
+    .content {
+      padding-right: 4px;
     }
     .title {
       font-weight: bold;
