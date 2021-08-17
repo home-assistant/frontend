@@ -17,7 +17,6 @@ import "./components/ha-energy-grid-settings";
 import "./components/ha-energy-solar-settings";
 import "./components/ha-energy-battery-settings";
 import "./components/ha-energy-gas-settings";
-import { renderEnergyValidationMessage } from "./components/ha-energy-validation-message";
 
 const INITIAL_CONFIG: EnergyPreferences = {
   energy_sources: [],
@@ -78,12 +77,6 @@ class HaConfigEnergy extends LitElement {
           <div class="card-content">
             After setting up a new device, it can take up to 2 hours for new
             data to arrive in your energy dashboard.
-            ${this._validationResult?.errors.map((msg) =>
-              renderEnergyValidationMessage("error", msg)
-            )}
-            ${this._validationResult?.warnings.map((msg) =>
-              renderEnergyValidationMessage("warning", msg)
-            )}
           </div>
         </ha-card>
         <div class="container">

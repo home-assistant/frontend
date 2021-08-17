@@ -934,7 +934,8 @@
         "common": {
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
-          }
+          },
+          "learn_more": "Learn more"
         },
         "areas": {
           "caption": "Areas",
@@ -1078,6 +1079,14 @@
             "selected_stat": "Tracking energy for",
             "dialog": {
               "selected_stat_intro": "Select the entity that represents the device energy usage."
+            }
+          },
+          "validation": {
+            "issues": {
+              "entity_not_defined": {
+                "title": "Entity not defined",
+                "description": "One of the configured entities is not currently defined in Home Assistant."
+              }
             }
           }
         },

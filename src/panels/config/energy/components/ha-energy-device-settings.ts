@@ -20,7 +20,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsDeviceDialog } from "../dialogs/show-dialogs-energy";
-import { renderEnergyValidationMessage } from "./ha-energy-validation-message";
+import "./ha-energy-validation-message";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-device-settings")
@@ -61,14 +61,13 @@ export class EnergyDeviceSettings extends LitElement {
             >
           </p>
           ${this.validationResult?.device_consumption.map(
-            (result) => html`
-              ${result.errors.map((msg) =>
-                renderEnergyValidationMessage("error", msg)
-              )}
-              ${result.warnings.map((msg) =>
-                renderEnergyValidationMessage("warning", msg)
-              )}
-            `
+            (result) =>
+              html`
+                <ha-energy-validation-result
+                  .hass=${this.hass}
+                  .issues=${result}
+                ></ha-energy-validation-result>
+              `
           )}
           <h3>Devices</h3>
           ${this.preferences.device_consumption.map((device) => {

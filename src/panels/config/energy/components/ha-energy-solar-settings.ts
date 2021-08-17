@@ -8,7 +8,7 @@ import "../../../../components/ha-card";
 import {
   EnergyPreferences,
   EnergyPreferencesValidation,
-  EnergyValidationResult,
+  EnergyValidationIssue,
   saveEnergyPreferences,
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
@@ -20,7 +20,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsSolarDialog } from "../dialogs/show-dialogs-energy";
-import { renderEnergyValidationMessage } from "./ha-energy-validation-message";
+import "./ha-energy-validation-message";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-solar-settings")
@@ -35,7 +35,7 @@ export class EnergySolarSettings extends LitElement {
 
   protected render(): TemplateResult {
     const solarSources: SolarSourceTypeEnergyPreference[] = [];
-    const solarValidation: EnergyValidationResult[] = [];
+    const solarValidation: EnergyValidationIssue[][] = [];
 
     this.preferences.energy_sources.forEach((source, idx) => {
       if (source.type !== "solar") {
@@ -71,14 +71,13 @@ export class EnergySolarSettings extends LitElement {
             >
           </p>
           ${solarValidation.map(
-            (result) => html`
-              ${result.errors.map((msg) =>
-                renderEnergyValidationMessage("error", msg)
-              )}
-              ${result.warnings.map((msg) =>
-                renderEnergyValidationMessage("warning", msg)
-              )}
-            `
+            (result) =>
+              html`
+                <ha-energy-validation-result
+                  .hass=${this.hass}
+                  .issues=${result}
+                ></ha-energy-validation-result>
+              `
           )}
 
           <h3>Solar production</h3>

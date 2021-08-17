@@ -10,7 +10,7 @@ import {
   saveEnergyPreferences,
   GasSourceTypeEnergyPreference,
   EnergyPreferencesValidation,
-  EnergyValidationResult,
+  EnergyValidationIssue,
 } from "../../../../data/energy";
 import {
   showConfirmationDialog,
@@ -20,7 +20,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsGasDialog } from "../dialogs/show-dialogs-energy";
-import { renderEnergyValidationMessage } from "./ha-energy-validation-message";
+import "./ha-energy-validation-message";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-gas-settings")
@@ -35,7 +35,7 @@ export class EnergyGasSettings extends LitElement {
 
   protected render(): TemplateResult {
     const gasSources: GasSourceTypeEnergyPreference[] = [];
-    const gasValidation: EnergyValidationResult[] = [];
+    const gasValidation: EnergyValidationIssue[][] = [];
 
     this.preferences.energy_sources.forEach((source, idx) => {
       if (source.type !== "gas") {
@@ -66,14 +66,13 @@ export class EnergyGasSettings extends LitElement {
             >
           </p>
           ${gasValidation.map(
-            (result) => html`
-              ${result.errors.map((msg) =>
-                renderEnergyValidationMessage("error", msg)
-              )}
-              ${result.warnings.map((msg) =>
-                renderEnergyValidationMessage("warning", msg)
-              )}
-            `
+            (result) =>
+              html`
+                <ha-energy-validation-result
+                  .hass=${this.hass}
+                  .issues=${result}
+                ></ha-energy-validation-result>
+              `
           )}
           <h3>Gas consumption</h3>
           ${gasSources.map((source) => {

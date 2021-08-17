@@ -21,7 +21,7 @@ import {
   EnergyPreferences,
   EnergyPreferencesValidation,
   energySourcesByType,
-  EnergyValidationResult,
+  EnergyValidationIssue,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GridSourceTypeEnergyPreference,
@@ -40,7 +40,7 @@ import {
   showEnergySettingsGridFlowFromDialog,
   showEnergySettingsGridFlowToDialog,
 } from "../dialogs/show-dialogs-energy";
-import { renderEnergyValidationMessage } from "./ha-energy-validation-message";
+import "./ha-energy-validation-message";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-grid-settings")
@@ -65,7 +65,7 @@ export class EnergyGridSettings extends LitElement {
     );
 
     let gridSource: GridSourceTypeEnergyPreference;
-    let gridValidation: EnergyValidationResult | undefined;
+    let gridValidation: EnergyValidationIssue[] | undefined;
 
     if (gridIdx === -1) {
       gridSource = emptyGridSourceEnergyPreference();
@@ -100,12 +100,14 @@ export class EnergyGridSettings extends LitElement {
               )}</a
             >
           </p>
-          ${gridValidation?.errors.map((msg) =>
-            renderEnergyValidationMessage("error", msg)
-          )}
-          ${gridValidation?.warnings.map((msg) =>
-            renderEnergyValidationMessage("warning", msg)
-          )}
+          ${gridValidation
+            ? html`
+                <ha-energy-validation-result
+                  .hass=${this.hass}
+                  .issues=${gridValidation}
+                ></ha-energy-validation-result>
+              `
+            : ""}
 
           <h3>Grid consumption</h3>
           ${gridSource.flow_from.map((flow) => {
