@@ -24,10 +24,16 @@ export class HaTextSelector extends LitElement {
     if (this.selector.text?.multiline) {
       return html`<paper-textarea
         .label=${this.label}
-        .placeholder=${this.placeholder}
+        .placeholder=${this.selector.text?.placeholder
+          ? this.selector.text.placeholder
+          : this.placeholder}
         .value=${this.value}
         .disabled=${this.disabled}
         @value-changed=${this._handleChange}
+        pattern=${this.selector.text?.pattern
+          ? this.selector.text.pattern
+          : this.pattern}
+        auto-validate=${!!this.selector.text?.pattern}
         autocapitalize="none"
         autocomplete="off"
         spellcheck="false"
@@ -36,9 +42,15 @@ export class HaTextSelector extends LitElement {
     return html`<paper-input
       required
       .value=${this.value}
-      .placeholder=${this.placeholder}
+      .placeholder=${this.selector.text?.placeholder
+        ? this.selector.text.placeholder
+        : this.placeholder}
       .disabled=${this.disabled}
       @value-changed=${this._handleChange}
+      pattern=${this.selector.text?.pattern
+        ? this.selector.text.pattern
+        : this.pattern}
+      auto-validate=${!!this.selector.text?.pattern}
       .label=${this.label}
     ></paper-input>`;
   }
