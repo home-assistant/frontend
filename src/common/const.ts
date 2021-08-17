@@ -61,6 +61,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   carbon_dioxide: "mdi:molecule-co2",
   carbon_monoxide: "mdi:molecule-co",
   energy: "hass:lightning-bolt",
+  gas: "hass:gas-cylinder",
   humidity: "hass:water-percent",
   illuminance: "hass:brightness-5",
   nitrogen_dioxide: "mdi:molecule",
