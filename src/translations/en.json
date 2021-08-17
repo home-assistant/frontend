@@ -1085,7 +1085,7 @@
             "issues": {
               "entity_not_defined": {
                 "title": "Entity not defined",
-                "description": "One of the configured entities is not currently defined in Home Assistant."
+                "description": "Check the integration or your configuration that provides:"
               }
             }
           }

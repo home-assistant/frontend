@@ -37,7 +37,7 @@ class EnergyValidationMessage extends LitElement {
             ${this.hass.localize(
               `ui.panel.config.energy.validation.issues.${issueType}.description`
             )}
-            ${issueType === "entity_not_tracked" || true
+            ${issueType === "entity_not_tracked"
               ? html`
                   <a
                     href="https://www.home-assistant.io/integrations/recorder#configure-filter"
