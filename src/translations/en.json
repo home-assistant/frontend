@@ -1103,9 +1103,17 @@
                 "title": "Entity has a negative state",
                 "description": "The following entities have a negative state while a positive state is expected:"
               },
-              "entity_unexpected_unit": {
+              "entity_unexpected_unit_energy": {
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have expected units of measurement kWh or Wh:"
+              },
+              "entity_unexpected_unit_price": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have expected units of measurement that ends with /kWh or /Wh:"
+              },
+              "entity_unexpected_state_class": {
+                "title": "Unexpected state class",
+                "description": "The following entities do not have expeted state class \"total_increasing\""
               }
             }
           }
