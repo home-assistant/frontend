@@ -1057,7 +1057,7 @@
             "learn_more": "More information on how to get started.",
             "dialog": {
               "header": "Configure gas consumption",
-              "paragraph": "Gas consumption is the volume of gas that flows from to your home.",
+              "paragraph": "Gas consumption is the volume of gas that flows from the gas grid to your home.",
               "energy_stat": "Consumed Energy (m³)",
               "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
               "no_cost": "Do not track costs",
