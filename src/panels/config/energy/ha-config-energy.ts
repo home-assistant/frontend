@@ -1,7 +1,12 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../components/ha-svg-icon";
-import { EnergyPreferences, getEnergyPreferences } from "../../../data/energy";
+import {
+  EnergyPreferences,
+  EnergyPreferencesValidation,
+  getEnergyPreferences,
+  getEnergyPreferenceValidation,
+} from "../../../data/energy";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
@@ -33,6 +38,8 @@ class HaConfigEnergy extends LitElement {
   @state() private _searchParms = new URLSearchParams(window.location.search);
 
   @state() private _preferences?: EnergyPreferences;
+
+  @state() private _validationResult?: EnergyPreferencesValidation;
 
   @state() private _error?: string;
 
@@ -76,16 +83,19 @@ class HaConfigEnergy extends LitElement {
           <ha-energy-grid-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
+            .validationResult=${this._validationResult!}
             @value-changed=${this._prefsChanged}
           ></ha-energy-grid-settings>
           <ha-energy-solar-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
+            .validationResult=${this._validationResult!}
             @value-changed=${this._prefsChanged}
           ></ha-energy-solar-settings>
           <ha-energy-battery-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
+            .validationResult=${this._validationResult!}
             @value-changed=${this._prefsChanged}
           ></ha-energy-battery-settings>
           <ha-energy-gas-settings
@@ -96,6 +106,7 @@ class HaConfigEnergy extends LitElement {
           <ha-energy-device-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
+            .validationResult=${this._validationResult!}
             @value-changed=${this._prefsChanged}
           ></ha-energy-device-settings>
         </div>
@@ -104,6 +115,7 @@ class HaConfigEnergy extends LitElement {
   }
 
   private async _fetchConfig() {
+    const validationPromise = getEnergyPreferenceValidation(this.hass);
     try {
       this._preferences = await getEnergyPreferences(this.hass);
     } catch (e) {
@@ -113,10 +125,21 @@ class HaConfigEnergy extends LitElement {
         this._error = e.message;
       }
     }
+    try {
+      this._validationResult = await validationPromise;
+    } catch (e) {
+      this._error = e.message;
+    }
   }
 
-  private _prefsChanged(ev: CustomEvent) {
+  private async _prefsChanged(ev: CustomEvent) {
     this._preferences = ev.detail.value;
+    this._validationResult = undefined;
+    try {
+      this._validationResult = await getEnergyPreferenceValidation(this.hass);
+    } catch (e) {
+      this._error = e.message;
+    }
   }
 
   static get styles(): CSSResultGroup {

@@ -6,6 +6,7 @@ import {
   startOfYesterday,
 } from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
+import { groupBy } from "../common/util/group-by";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
 import { ConfigEntry, getConfigEntries } from "./config_entries";
@@ -144,9 +145,25 @@ export interface EnergyInfo {
   cost_sensors: Record<string, string>;
 }
 
+export interface EnergyValidationIssue {
+  type: string;
+  identifier: string;
+  value?: unknown;
+}
+
+export interface EnergyPreferencesValidation {
+  energy_sources: EnergyValidationIssue[][];
+  device_consumption: EnergyValidationIssue[][];
+}
+
 export const getEnergyInfo = (hass: HomeAssistant) =>
   hass.callWS<EnergyInfo>({
     type: "energy/info",
+  });
+
+export const getEnergyPreferenceValidation = (hass: HomeAssistant) =>
+  hass.callWS<EnergyPreferencesValidation>({
+    type: "energy/validate",
   });
 
 export const getEnergyPreferences = (hass: HomeAssistant) =>
@@ -173,17 +190,8 @@ interface EnergySourceByType {
   gas?: GasSourceTypeEnergyPreference[];
 }
 
-export const energySourcesByType = (prefs: EnergyPreferences) => {
-  const types: EnergySourceByType = {};
-  for (const source of prefs.energy_sources) {
-    if (source.type in types) {
-      types[source.type]!.push(source as any);
-    } else {
-      types[source.type] = [source as any];
-    }
-  }
-  return types;
-};
+export const energySourcesByType = (prefs: EnergyPreferences) =>
+  groupBy(prefs.energy_sources, (item) => item.type) as EnergySourceByType;
 
 export interface EnergyData {
   start: Date;
