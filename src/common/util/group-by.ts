@@ -5,10 +5,11 @@ export const groupBy = <T>(
   const result = {};
   for (const item of list) {
     const key = keySelector(item);
-    if (!result[key]) {
-      result[key] = [];
+    if (key in result) {
+      result[key].push(item);
+    } else {
+      result[key] = [item];
     }
-    result[key].push(item);
   }
   return result;
 };
