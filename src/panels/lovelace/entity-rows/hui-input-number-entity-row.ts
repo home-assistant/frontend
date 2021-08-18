@@ -1,4 +1,5 @@
 import "@polymer/paper-input/paper-input";
+import { debounce } from "chart.js/helpers";
 import {
   css,
   CSSResultGroup,
@@ -15,6 +16,7 @@ import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
@@ -29,6 +31,8 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
 
   private _updated?: boolean;
 
+  private _resizeObserver?: ResizeObserver;
+
   public setConfig(config: EntityConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
@@ -41,6 +45,11 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     if (this._updated && !this._loaded) {
       this._initialLoad();
     }
+    this._attachObserver();
+  }
+
+  public disconnectedCallback(): void {
+    this._resizeObserver?.unobserve(this);
   }
 
   protected firstUpdated(): void {
@@ -48,6 +57,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     if (this.isConnected && !this._loaded) {
       this._initialLoad();
     }
+    this._attachObserver();
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -146,14 +156,28 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
   private async _initialLoad(): Promise<void> {
     this._loaded = true;
     await this.updateComplete;
-    const element = this.shadowRoot!.querySelector(".state") as HTMLElement;
+    this._measureCard();
+  }
 
+  private _measureCard() {
+    if (!this.isConnected) {
+      return;
+    }
+    const element = this.shadowRoot!.querySelector(".state") as HTMLElement;
     if (!element || !this.parentElement) {
       return;
     }
-
-    // TODO: This should update when resizeObserver detects a change.
     element.hidden = this.parentElement.clientWidth <= 300;
+  }
+
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
+    }
+    this._resizeObserver.observe(this);
   }
 
   private get _inputElement(): { value: string } {
