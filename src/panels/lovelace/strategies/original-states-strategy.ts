@@ -39,7 +39,12 @@ export class OriginalStatesStrategy {
       subscribeEntityRegistry(hass.connection, () => undefined);
     }
 
-    let energyPrefs: EnergyPreferences | undefined;
+    let energyPromise: Promise<EnergyPreferences> | undefined;
+
+    if (isComponentLoaded(hass, "energy")) {
+      energyPromise = getEnergyPreferences(hass);
+    }
+
     const [areaEntries, deviceEntries, entityEntries, localize] =
       await Promise.all([
         subscribeOne(hass.connection, subscribeAreaRegistry),
@@ -48,9 +53,11 @@ export class OriginalStatesStrategy {
         hass.loadBackendTranslation("title"),
       ]);
 
-    if (isComponentLoaded(hass, "energy")) {
+    let energyPrefs: EnergyPreferences | undefined;
+
+    if (energyPromise) {
       try {
-        energyPrefs = await getEnergyPreferences(hass);
+        energyPrefs = await energyPromise;
       } catch (_) {
         // Nothing to do here
       }
