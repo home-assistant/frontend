@@ -19,7 +19,9 @@ import {
 import {
   emptyGridSourceEnergyPreference,
   EnergyPreferences,
+  EnergyPreferencesValidation,
   energySourcesByType,
+  EnergyValidationIssue,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
   GridSourceTypeEnergyPreference,
@@ -38,6 +40,7 @@ import {
   showEnergySettingsGridFlowFromDialog,
   showEnergySettingsGridFlowToDialog,
 } from "../dialogs/show-dialogs-energy";
+import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-grid-settings")
@@ -47,6 +50,9 @@ export class EnergyGridSettings extends LitElement {
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
 
+  @property({ attribute: false })
+  public validationResult?: EnergyPreferencesValidation;
+
   @state() private _configEntries?: ConfigEntry[];
 
   protected firstUpdated() {
@@ -54,11 +60,23 @@ export class EnergyGridSettings extends LitElement {
   }
 
   protected render(): TemplateResult {
-    const types = energySourcesByType(this.preferences);
+    const gridIdx = this.preferences.energy_sources.findIndex(
+      (source) => source.type === "grid"
+    );
 
-    const gridSource = types.grid
-      ? types.grid[0]
-      : emptyGridSourceEnergyPreference();
+    let gridSource: GridSourceTypeEnergyPreference;
+    let gridValidation: EnergyValidationIssue[] | undefined;
+
+    if (gridIdx === -1) {
+      gridSource = emptyGridSourceEnergyPreference();
+    } else {
+      gridSource = this.preferences.energy_sources[
+        gridIdx
+      ] as GridSourceTypeEnergyPreference;
+      if (this.validationResult) {
+        gridValidation = this.validationResult.energy_sources[gridIdx];
+      }
+    }
 
     return html`
       <ha-card>
@@ -82,6 +100,15 @@ export class EnergyGridSettings extends LitElement {
               )}</a
             >
           </p>
+          ${gridValidation
+            ? html`
+                <ha-energy-validation-result
+                  .hass=${this.hass}
+                  .issues=${gridValidation}
+                ></ha-energy-validation-result>
+              `
+            : ""}
+
           <h3>Grid consumption</h3>
           ${gridSource.flow_from.map((flow) => {
             const entityState = this.hass.states[flow.stat_energy_from];

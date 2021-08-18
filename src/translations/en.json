@@ -934,7 +934,8 @@
         "common": {
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
-          }
+          },
+          "learn_more": "Learn more"
         },
         "areas": {
           "caption": "Areas",
@@ -1078,6 +1079,42 @@
             "selected_stat": "Tracking energy for",
             "dialog": {
               "selected_stat_intro": "Select the entity that represents the device energy usage."
+            }
+          },
+          "validation": {
+            "issues": {
+              "entity_not_defined": {
+                "title": "Entity not defined",
+                "description": "Check the integration or your configuration that provides:"
+              },
+              "recorder_untracked": {
+                "title": "Entity not tracked",
+                "description": "The recorder has been configured to exclude these configured entities:"
+              },
+              "entity_unavailable": {
+                "title": "Entity unavailable",
+                "description": "The state of these configured entities are currently not available:"
+              },
+              "entity_state_non_numeric": {
+                "title": "Entity has non-numeric state",
+                "description": "The following entities have a state that cannot be parsed as a number:"
+              },
+              "entity_negative_state": {
+                "title": "Entity has a negative state",
+                "description": "The following entities have a negative state while a positive state is expected:"
+              },
+              "entity_unexpected_unit_energy": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have expected units of measurement kWh or Wh:"
+              },
+              "entity_unexpected_unit_price": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have expected units of measurement that ends with /kWh or /Wh:"
+              },
+              "entity_unexpected_state_class_total_increasing": {
+                "title": "Unexpected state class",
+                "description": "The following entities do not have expected state class \"total_increasing\""
+              }
             }
           }
         },

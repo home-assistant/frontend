@@ -7,9 +7,10 @@ import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
 import {
   EnergyPreferences,
-  energySourcesByType,
   saveEnergyPreferences,
   GasSourceTypeEnergyPreference,
+  EnergyPreferencesValidation,
+  EnergyValidationIssue,
 } from "../../../../data/energy";
 import {
   showConfirmationDialog,
@@ -19,6 +20,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsGasDialog } from "../dialogs/show-dialogs-energy";
+import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-gas-settings")
@@ -28,10 +30,23 @@ export class EnergyGasSettings extends LitElement {
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
 
-  protected render(): TemplateResult {
-    const types = energySourcesByType(this.preferences);
+  @property({ attribute: false })
+  public validationResult?: EnergyPreferencesValidation;
 
-    const gasSources = types.gas || [];
+  protected render(): TemplateResult {
+    const gasSources: GasSourceTypeEnergyPreference[] = [];
+    const gasValidation: EnergyValidationIssue[][] = [];
+
+    this.preferences.energy_sources.forEach((source, idx) => {
+      if (source.type !== "gas") {
+        return;
+      }
+      gasSources.push(source);
+
+      if (this.validationResult) {
+        gasValidation.push(this.validationResult.energy_sources[idx]);
+      }
+    });
 
     return html`
       <ha-card>
@@ -50,6 +65,15 @@ export class EnergyGasSettings extends LitElement {
               >${this.hass.localize("ui.panel.config.energy.gas.learn_more")}</a
             >
           </p>
+          ${gasValidation.map(
+            (result) =>
+              html`
+                <ha-energy-validation-result
+                  .hass=${this.hass}
+                  .issues=${result}
+                ></ha-energy-validation-result>
+              `
+          )}
           <h3>Gas consumption</h3>
           ${gasSources.map((source) => {
             const entityState = this.hass.states[source.stat_energy_from];
