@@ -4,7 +4,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { array, assert, object, optional, string } from "superstruct";
+import { array, assert, object, optional, string, assign } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import { ActionConfig } from "../../../../data/lovelace";
@@ -20,20 +20,23 @@ import { actionConfigStruct } from "../structs/action-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  title: optional(string()),
-  entity: optional(string()),
-  image: optional(string()),
-  camera_image: optional(string()),
-  camera_view: optional(string()),
-  aspect_ratio: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  entities: array(entitiesConfigStruct),
-  theme: optional(string()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    title: optional(string()),
+    entity: optional(string()),
+    image: optional(string()),
+    camera_image: optional(string()),
+    camera_view: optional(string()),
+    aspect_ratio: optional(string()),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    entities: array(entitiesConfigStruct),
+    theme: optional(string()),
+  })
+);
 
 const includeDomains = ["camera"];
 

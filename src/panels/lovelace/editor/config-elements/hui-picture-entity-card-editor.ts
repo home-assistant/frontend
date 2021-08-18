@@ -4,7 +4,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, boolean, object, optional, string } from "superstruct";
+import { assert, boolean, object, optional, string, assign } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
@@ -19,21 +19,24 @@ import { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  entity: optional(string()),
-  image: optional(string()),
-  name: optional(string()),
-  camera_image: optional(string()),
-  camera_view: optional(string()),
-  aspect_ratio: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  show_name: optional(boolean()),
-  show_state: optional(boolean()),
-  theme: optional(string()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    image: optional(string()),
+    name: optional(string()),
+    camera_image: optional(string()),
+    camera_view: optional(string()),
+    aspect_ratio: optional(string()),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    show_name: optional(boolean()),
+    show_state: optional(boolean()),
+    theme: optional(string()),
+  })
+);
 
 const includeDomains = ["camera"];
 
