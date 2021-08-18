@@ -71,6 +71,7 @@ class EnergyValidationMessage extends LitElement {
       position: relative;
       padding: 4px;
       display: flex;
+      margin: 4px 0;
     }
     .issue-type::before {
       position: absolute;
@@ -82,6 +83,7 @@ class EnergyValidationMessage extends LitElement {
       opacity: 0.12;
       pointer-events: none;
       content: "";
+      border-radius: 4px;
     }
     .icon {
       margin: 4px 8px;
