@@ -1113,7 +1113,7 @@
               },
               "entity_unexpected_state_class_total_increasing": {
                 "title": "Unexpected state class",
-                "description": "The following entities do not have expeted state class \"total_increasing\""
+                "description": "The following entities do not have expected state class \"total_increasing\""
               }
             }
           }
