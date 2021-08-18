@@ -22,7 +22,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsBatteryDialog } from "../dialogs/show-dialogs-energy";
-import "./ha-energy-validation-message";
+import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-battery-settings")
