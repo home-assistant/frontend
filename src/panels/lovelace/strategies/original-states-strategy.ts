@@ -53,7 +53,15 @@ export class OriginalStatesStrategy {
         hass.loadBackendTranslation("title"),
       ]);
 
-    const energyPrefs = energyPromise ? await energyPromise : undefined;
+    let energyPrefs: EnergyPreferences | undefined;
+
+    if (energyPromise) {
+      try {
+        energyPrefs = await energyPromise;
+      } catch (_) {
+        // Nothing to do here
+      }
+    }
 
     // User can override default view. If they didn't, we will add one
     // that contains all entities.
