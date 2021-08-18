@@ -9,6 +9,7 @@ import {
   array,
   assert,
   boolean,
+  assign,
   literal,
   number,
   object,
@@ -44,10 +45,13 @@ import {
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const buttonEntitiesRowConfigStruct = object({
   type: literal("button"),
-  name: string(),
+  entity: optional(string()),
+  name: optional(string()),
+  icon: optional(string()),
   action_name: optional(string()),
   tap_action: actionConfigStruct,
   hold_action: optional(actionConfigStruct),
@@ -107,9 +111,14 @@ const buttonsEntitiesRowConfigStruct = object({
     union([
       object({
         entity: string(),
+        name: optional(string()),
         icon: optional(string()),
         image: optional(string()),
-        name: optional(string()),
+        show_name: optional(boolean()),
+        show_icon: optional(boolean()),
+        tap_action: optional(actionConfigStruct),
+        hold_action: optional(actionConfigStruct),
+        double_tap_action: optional(actionConfigStruct),
       }),
       string(),
     ])
@@ -151,18 +160,20 @@ const entitiesRowConfigStruct = union([
   customRowConfigStruct,
 ]);
 
-const cardConfigStruct = object({
-  type: string(),
-  title: optional(union([string(), boolean()])),
-  entity: optional(entityId()),
-  theme: optional(string()),
-  icon: optional(string()),
-  show_header_toggle: optional(boolean()),
-  state_color: optional(boolean()),
-  entities: array(entitiesRowConfigStruct),
-  header: optional(headerFooterConfigStructs),
-  footer: optional(headerFooterConfigStructs),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    title: optional(union([string(), boolean()])),
+    entity: optional(entityId()),
+    theme: optional(string()),
+    icon: optional(string()),
+    show_header_toggle: optional(boolean()),
+    state_color: optional(boolean()),
+    entities: array(entitiesRowConfigStruct),
+    header: optional(headerFooterConfigStructs),
+    footer: optional(headerFooterConfigStructs),
+  })
+);
 
 @customElement("hui-entities-card-editor")
 export class HuiEntitiesCardEditor
