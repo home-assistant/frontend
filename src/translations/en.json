@@ -2148,6 +2148,7 @@
               "entity_id": "Entity ID",
               "integration": "Integration",
               "area": "Area",
+              "disabled_by": "Disabled by",
               "status": "Status"
             },
             "selected": "{number} selected",
