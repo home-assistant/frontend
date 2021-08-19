@@ -15,6 +15,7 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { stateIcon } from "../../common/entity/state_icon";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import type { HomeAssistant } from "../../types";
+import { computeLightColor } from "../../data/light";
 import "../ha-icon";
 
 export class StateBadge extends LitElement {
@@ -99,8 +100,11 @@ export class StateBadge extends LitElement {
         hostStyle.backgroundImage = `url(${imageUrl})`;
         this._showIcon = false;
       } else if (stateObj.state === "on") {
-        if (this.stateColor !== false && stateObj.attributes.rgb_color) {
-          iconStyle.color = `rgb(${stateObj.attributes.rgb_color.join(",")})`;
+        if (stateObj) {
+          const color = computeLightColor(stateObj);
+          if (color) {
+            iconStyle.color = color;
+          }
         }
         if (stateObj.attributes.brightness && this.stateColor !== false) {
           const brightness = stateObj.attributes.brightness;

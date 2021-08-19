@@ -1,6 +1,7 @@
 import {
   HassEntityAttributeBase,
   HassEntityBase,
+  HassEntity,
 } from "home-assistant-js-websocket";
 
 export enum LightColorModes {
@@ -58,6 +59,64 @@ export const getLightCurrentModeRgbColor = (entity: LightEntity): number[] =>
     : entity.attributes.color_mode === LightColorModes.RGBW
     ? entity.attributes.rgbw_color
     : entity.attributes.rgb_color;
+
+export const computeLightColor = (entity: HassEntity) => {
+  if (entity.state === "off") {
+    return "";
+  }
+  if (entity.attributes.rgb_color) {
+    return `rgb(${entity.attributes.rgb_color.join(",")})`;
+  }
+  if (entity.attributes.color_temp) {
+    return `rgb(${colorTemperatureToRGB(entity.attributes.color_temp).join(
+      ","
+    )})`;
+  }
+  return "";
+};
+
+export const colorTemperatureToRGB = (
+  color_temperature_mireds: number
+): number[] => {
+  // Return an RGB color from a color temperature in mireds.
+  //
+  // This is a rough approximation based on the formula provided by T. Helland
+  // http://www.tannerhelland.com/4435/convert-temperature-rgb-algorithm-code/
+  const color_temp_kelvin = Math.floor(1000000 / color_temperature_mireds);
+  const internal = Math.min(40000, Math.max(1000, color_temp_kelvin)) / 100.0;
+  return [_getRed(internal), _getGreen(internal), _getBlue(internal)];
+};
+
+export const _clamp_rgb = (rgb: number) => Math.max(Math.min(rgb, 255), 0);
+
+export const _getRed = (temperature: number) => {
+  // Get the red component of the temperature in RGB space."""
+  if (temperature <= 66) {
+    return 255;
+  }
+  return _clamp_rgb(329.698727446 * (temperature - 60) ** -0.1332047592);
+};
+
+export const _getGreen = (temperature: number) => {
+  // Get the green component of the temperature in RGB space."""
+  if (temperature <= 66) {
+    return _clamp_rgb(99.4708025861 * Math.log(temperature) - 161.1195681661);
+  }
+  return _clamp_rgb(288.1221695283 * (temperature - 60) ** -0.0755148492);
+};
+
+export const _getBlue = (temperature: number) => {
+  // Get the blue component of the temperature in RGB space."""
+  if (temperature >= 66) {
+    return 255;
+  }
+  if (temperature <= 19) {
+    return 0;
+  }
+  return _clamp_rgb(
+    138.5177312231 * Math.log(temperature - 10) - 305.0447927307
+  );
+};
 
 interface LightEntityAttributes extends HassEntityAttributeBase {
   min_mireds: number;

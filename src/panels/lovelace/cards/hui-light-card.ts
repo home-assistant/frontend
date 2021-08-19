@@ -19,7 +19,11 @@ import { stateIcon } from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
-import { LightEntity, lightSupportsDimming } from "../../../data/light";
+import {
+  LightEntity,
+  lightSupportsDimming,
+  computeLightColor,
+} from "../../../data/light";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -133,7 +137,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 style=${styleMap({
                   filter: this._computeBrightness(stateObj),
-                  color: this._computeColor(stateObj),
+                  color: computeLightColor(stateObj),
                 })}
                 @action=${this._handleAction}
                 .actionHandler=${actionHandler({
@@ -231,15 +235,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
     const brightness = stateObj.attributes.brightness;
     return `brightness(${(brightness + 245) / 5}%)`;
-  }
-
-  private _computeColor(stateObj: LightEntity): string {
-    if (stateObj.state === "off") {
-      return "";
-    }
-    return stateObj.attributes.rgb_color
-      ? `rgb(${stateObj.attributes.rgb_color.join(",")})`
-      : "";
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
