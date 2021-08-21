@@ -182,7 +182,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
             `
           )}
         </div>
-        ${!stateObj.attributes.code_arm_required || !stateObj.attributes.code_format
+        ${!stateObj.attributes.code_arm_required ||
+        !stateObj.attributes.code_format
           ? html``
           : html`
               <paper-input
@@ -194,7 +195,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                   : "text"}
               ></paper-input>
             `}
-        ${!stateObj.attributes.code_arm_required || stateObj.attributes.code_format !== FORMAT_NUMBER
+        ${!stateObj.attributes.code_arm_required || 
+        stateObj.attributes.code_format !== FORMAT_NUMBER
           ? html``
           : html`
               <div id="keypad">
