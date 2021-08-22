@@ -317,7 +317,7 @@ export class HuiImage extends LitElement {
         ? parseAspectRatio(this.aspectRatio)
         : null;
       if (ratio && ratio.w > 0 && ratio.h > 0) {
-        height = Math.ceil(width * ((100 * ratio.h) / ratio.w));
+        height = Math.ceil(width * (ratio.h / ratio.w));
       } else {
         // If we don't have a ratio and we don't have a height
         // we ask for 200% of what we need because the aspect
