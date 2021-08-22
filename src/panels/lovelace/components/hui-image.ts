@@ -6,7 +6,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { STATES_OFF } from "../../../common/const";
@@ -15,13 +15,13 @@ import "../../../components/ha-camera-stream";
 import { CameraEntity, fetchThumbnailUrlWithCache } from "../../../data/camera";
 import { UNAVAILABLE } from "../../../data/entity";
 import { HomeAssistant } from "../../../types";
+import "../../../components/ha-circular-progress";
 
 const UPDATE_INTERVAL = 10000;
 const DEFAULT_FILTER = "grayscale(100%)";
 
 const MAX_IMAGE_WIDTH = 640;
 const ASPECT_RATIO_DEFAULT = 9 / 16;
-const SCALING_FACTOR = 2;
 
 enum LoadState {
   Loading = 1,
@@ -64,8 +64,6 @@ export class HuiImage extends LitElement {
   @state() private _cameraImageSrc?: string;
 
   private _intersectionObserver?: IntersectionObserver;
-
-  @query("img") private _image?: HTMLImageElement;
 
   private _lastImageHeight?: number;
 
@@ -283,8 +281,8 @@ export class HuiImage extends LitElement {
 
   private async _onImageLoad(ev: Event): Promise<void> {
     this._loadState = LoadState.Loaded;
-    this._lastImageHeight = (ev.target as HTMLElement).offsetHeight;
     await this.updateComplete;
+    this._lastImageHeight = (ev.target as HTMLElement).offsetHeight;
   }
 
   private async _updateCameraImageSrcAtInterval(): Promise<void> {
@@ -310,19 +308,26 @@ export class HuiImage extends LitElement {
       return;
     }
 
-    // One the first render we will not know the width
-    const element_width = this._image?.offsetWidth ?? MAX_IMAGE_WIDTH;
-    // Because the aspect ratio might result in a smaller image,
-    // we ask for 200% of what we need to make sure the image is
-    // still clear. In practice, for 4k sources, this is still
-    // an order of magnitude smaller.
-    const width = Math.ceil(element_width * SCALING_FACTOR);
-    // If the image has not rendered yet we may have a zero height
-    const imageHeight = this._lastImageHeight ?? this._image?.offsetHeight;
-    const height = imageHeight
-      ? imageHeight * SCALING_FACTOR
-      : Math.ceil(element_width * SCALING_FACTOR * ASPECT_RATIO_DEFAULT);
-
+    const element_width = this.clientWidth || MAX_IMAGE_WIDTH;
+    let width = Math.ceil(element_width * devicePixelRatio);
+    let height: number;
+    // If the image has not rendered yet we have no height
+    if (!this._lastImageHeight) {
+      const ratio = this.aspectRatio
+        ? parseAspectRatio(this.aspectRatio)
+        : null;
+      if (ratio && ratio.w > 0 && ratio.h > 0) {
+        height = Math.ceil(width * ((100 * ratio.h) / ratio.w));
+      } else {
+        // If we don't have a ratio and we don't have a height
+        // we ask for 200% of what we need because the aspect
+        // ratio might result in a smaller image
+        width *= 2;
+        height = Math.ceil(width * ASPECT_RATIO_DEFAULT);
+      }
+    } else {
+      height = Math.ceil(this._lastImageHeight * devicePixelRatio);
+    }
     this._cameraImageSrc = await fetchThumbnailUrlWithCache(
       this.hass,
       this.cameraImage,
@@ -336,6 +341,9 @@ export class HuiImage extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        display: block;
+      }
       img {
         display: block;
         height: auto;
