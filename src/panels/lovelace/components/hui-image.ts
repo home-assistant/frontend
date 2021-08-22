@@ -281,9 +281,9 @@ export class HuiImage extends LitElement {
     this._loadState = LoadState.Error;
   }
 
-  private async _onImageLoad(): Promise<void> {
+  private async _onImageLoad(ev: Event): Promise<void> {
     this._loadState = LoadState.Loaded;
-    this._lastImageHeight = this._image!.offsetHeight;
+    this._lastImageHeight = (ev.target as HTMLElement).offsetHeight;
     await this.updateComplete;
   }
 
@@ -310,7 +310,6 @@ export class HuiImage extends LitElement {
       return;
     }
 
-<<<<<<< HEAD
     // One the first render we will not know the width
     const element_width = this._image?.offsetWidth
       ? this._image.offsetWidth
