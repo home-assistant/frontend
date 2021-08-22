@@ -41,7 +41,7 @@ export class HuiImage extends LitElement {
 
   @property() public image?: string;
 
-  @property() public stateImage?: StateSpecificConfig;
+  @property({ attribute: false }) public stateImage?: StateSpecificConfig;
 
   @property() public cameraImage?: string;
 
@@ -51,7 +51,7 @@ export class HuiImage extends LitElement {
 
   @property() public filter?: string;
 
-  @property() public stateFilter?: StateSpecificConfig;
+  @property({ attribute: false }) public stateFilter?: StateSpecificConfig;
 
   @property() public darkModeImage?: string;
 
@@ -191,11 +191,14 @@ export class HuiImage extends LitElement {
             useRatio && this._loadedImageSrc
               ? `url(${this._loadedImageSrc})`
               : undefined,
-          filter: useRatio ? filter : undefined,
+          filter:
+            this._loadState === LoadState.Loaded || this.cameraView === "live"
+              ? filter
+              : undefined,
         })}
-        class=${classMap({
+        class="container ${classMap({
           ratio: useRatio,
-        })}
+        })}"
       >
         ${this.cameraImage && this.cameraView === "live"
           ? html`
@@ -214,7 +217,6 @@ export class HuiImage extends LitElement {
                 @error=${this._onImageError}
                 @load=${this._onImageLoad}
                 style=${styleMap({
-                  filter,
                   display:
                     useRatio || this._loadState === LoadState.Loaded
                       ? "block"
@@ -370,10 +372,14 @@ export class HuiImage extends LitElement {
       :host {
         display: block;
       }
+
+      .container {
+        transition: filter 0.2s linear;
+      }
+
       img {
         display: block;
         height: auto;
-        transition: filter 0.2s linear;
         width: 100%;
       }
 
@@ -401,7 +407,6 @@ export class HuiImage extends LitElement {
       }
 
       .ratio img {
-        filter: none;
         visibility: hidden;
       }
 
