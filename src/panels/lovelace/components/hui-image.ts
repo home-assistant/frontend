@@ -311,9 +311,7 @@ export class HuiImage extends LitElement {
     }
 
     // One the first render we will not know the width
-    const element_width = this._image?.offsetWidth
-      ? this._image.offsetWidth
-      : MAX_IMAGE_WIDTH;
+    const element_width = this._image?.offsetWidth ?? MAX_IMAGE_WIDTH;
     // Because the aspect ratio might result in a smaller image,
     // we ask for 200% of what we need to make sure the image is
     // still clear. In practice, for 4k sources, this is still
