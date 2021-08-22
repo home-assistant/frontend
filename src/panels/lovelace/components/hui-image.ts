@@ -318,8 +318,9 @@ export class HuiImage extends LitElement {
     // an order of magnitude smaller.
     const width = Math.ceil(element_width * SCALING_FACTOR);
     // If the image has not rendered yet we may have a zero height
-    const height = this._image?.offsetHeight
-      ? this._image.offsetHeight * SCALING_FACTOR
+    const imageHeight = this._lastImageHeight ?? this._image?.offsetHeight;
+    const height = imageHeight
+      ? imageHeight * SCALING_FACTOR
       : Math.ceil(element_width * SCALING_FACTOR * ASPECT_RATIO_DEFAULT);
 
     this._cameraImageSrc = await fetchThumbnailUrlWithCache(
