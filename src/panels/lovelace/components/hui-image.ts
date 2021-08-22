@@ -67,6 +67,8 @@ export class HuiImage extends LitElement {
 
   @query("img") private _image?: HTMLImageElement;
 
+  @query("div") private _container?: HTMLElement;
+
   private _lastImageHeight?: number;
 
   private _cameraUpdater?: number;
@@ -310,15 +312,20 @@ export class HuiImage extends LitElement {
       return;
     }
 
-    // One the first render we will not know the width
-    const element_width = this._image?.offsetWidth ?? MAX_IMAGE_WIDTH;
+    const element_width =
+      this._image?.offsetWidth ||
+      this._container?.offsetWidth ||
+      MAX_IMAGE_WIDTH;
     // Because the aspect ratio might result in a smaller image,
     // we ask for 200% of what we need to make sure the image is
     // still clear. In practice, for 4k sources, this is still
     // an order of magnitude smaller.
     const width = Math.ceil(element_width * SCALING_FACTOR);
     // If the image has not rendered yet we may have a zero height
-    const imageHeight = this._lastImageHeight ?? this._image?.offsetHeight;
+    const imageHeight =
+      this._lastImageHeight ||
+      this._image?.offsetHeight ||
+      this._container?.offsetHeight;
     const height = imageHeight
       ? imageHeight * SCALING_FACTOR
       : Math.ceil(element_width * SCALING_FACTOR * ASPECT_RATIO_DEFAULT);
