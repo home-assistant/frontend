@@ -26,6 +26,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
   getConfigFlowInProgressCollection,
@@ -47,6 +48,7 @@ import {
   fetchIntegrationManifests,
   IntegrationManifest,
 } from "../../../data/integration";
+import { scanUSBDevices } from "../../../data/usb";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
@@ -249,6 +251,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (this.route.path === "/add") {
       this._handleAdd(localizePromise);
     }
+    this._scanUSBDevices();
   }
 
   protected updated(changed: PropertyValues) {
@@ -498,6 +501,13 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           )
         );
     });
+  }
+
+  private async _scanUSBDevices() {
+    if (!isComponentLoaded(this.hass, "usb")) {
+      return;
+    }
+    await scanUSBDevices(this.hass);
   }
 
   private async _fetchManifests() {
