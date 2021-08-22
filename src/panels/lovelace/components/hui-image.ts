@@ -63,11 +63,18 @@ export class HuiImage extends LitElement {
 
   @state() private _cameraImageSrc?: string;
 
+  @state() private _loadedImageSrc?: string;
+
   private _intersectionObserver?: IntersectionObserver;
 
   private _lastImageHeight?: number;
 
   private _cameraUpdater?: number;
+
+  private _ratio: {
+    w: number;
+    h: number;
+  } | null = null;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -110,13 +117,20 @@ export class HuiImage extends LitElement {
         this._stopUpdateCameraInterval();
       }
     }
+    if (changedProps.has("aspectRatio")) {
+      this._ratio = this.aspectRatio
+        ? parseAspectRatio(this.aspectRatio)
+        : null;
+    }
   }
 
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
-    const ratio = this.aspectRatio ? parseAspectRatio(this.aspectRatio) : null;
+    const useRatio = Boolean(
+      this._ratio && this._ratio.w > 0 && this._ratio.h > 0
+    );
     const stateObj = this.entity ? this.hass.states[this.entity] : undefined;
     const entityState = stateObj ? stateObj.state : UNAVAILABLE;
 
@@ -170,13 +184,17 @@ export class HuiImage extends LitElement {
     return html`
       <div
         style=${styleMap({
-          paddingBottom:
-            ratio && ratio.w > 0 && ratio.h > 0
-              ? `${((100 * ratio.h) / ratio.w).toFixed(2)}%`
-              : "",
+          paddingBottom: useRatio
+            ? `${((100 * this._ratio!.h) / this._ratio!.w).toFixed(2)}%`
+            : undefined,
+          backgroundImage:
+            useRatio && this._loadedImageSrc
+              ? `url(${this._loadedImageSrc})`
+              : undefined,
+          filter: useRatio ? filter : undefined,
         })}
         class=${classMap({
-          ratio: Boolean(ratio && ratio.w > 0 && ratio.h > 0),
+          ratio: useRatio,
         })}
       >
         ${this.cameraImage && this.cameraView === "live"
@@ -198,7 +216,9 @@ export class HuiImage extends LitElement {
                 style=${styleMap({
                   filter,
                   display:
-                    this._loadState === LoadState.Loaded ? "block" : "none",
+                    useRatio || this._loadState === LoadState.Loaded
+                      ? "block"
+                      : "none",
                 })}
               />
             `}
@@ -206,14 +226,19 @@ export class HuiImage extends LitElement {
           ? html`<div
               id="brokenImage"
               style=${styleMap({
-                height: `${this._lastImageHeight || "100"}px`,
+                height: !useRatio
+                  ? `${this._lastImageHeight || "100"}px`
+                  : undefined,
               })}
             ></div>`
           : this.cameraView !== "live" &&
             (imageSrc === undefined || this._loadState === LoadState.Loading)
           ? html`<div
+              class="progress-container"
               style=${styleMap({
-                height: `${this._lastImageHeight || "100"}px`,
+                height: !useRatio
+                  ? `${this._lastImageHeight || "100"}px`
+                  : undefined,
               })}
             >
               <ha-circular-progress
@@ -281,8 +306,12 @@ export class HuiImage extends LitElement {
 
   private async _onImageLoad(ev: Event): Promise<void> {
     this._loadState = LoadState.Loaded;
+    const imgEl = ev.target as HTMLImageElement;
+    if (this._ratio && this._ratio.w > 0 && this._ratio.h > 0) {
+      this._loadedImageSrc = imgEl.src;
+    }
     await this.updateComplete;
-    this._lastImageHeight = (ev.target as HTMLElement).offsetHeight;
+    this._lastImageHeight = imgEl.offsetHeight;
   }
 
   private async _updateCameraImageSrcAtInterval(): Promise<void> {
@@ -313,11 +342,8 @@ export class HuiImage extends LitElement {
     let height: number;
     // If the image has not rendered yet we have no height
     if (!this._lastImageHeight) {
-      const ratio = this.aspectRatio
-        ? parseAspectRatio(this.aspectRatio)
-        : null;
-      if (ratio && ratio.w > 0 && ratio.h > 0) {
-        height = Math.ceil(width * (ratio.h / ratio.w));
+      if (this._ratio && this._ratio.w > 0 && this._ratio.h > 0) {
+        height = Math.ceil(width * (this._ratio.h / this._ratio.w));
       } else {
         // If we don't have a ratio and we don't have a height
         // we ask for 200% of what we need because the aspect
@@ -351,10 +377,18 @@ export class HuiImage extends LitElement {
         width: 100%;
       }
 
+      .progress-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
       .ratio {
         position: relative;
         width: 100%;
         height: 0;
+        background-position: center;
+        background-size: cover;
       }
 
       .ratio img,
@@ -364,6 +398,11 @@ export class HuiImage extends LitElement {
         left: 0;
         width: 100%;
         height: 100%;
+      }
+
+      .ratio img {
+        filter: none;
+        visibility: hidden;
       }
 
       #brokenImage {
