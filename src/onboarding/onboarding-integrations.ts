@@ -19,7 +19,8 @@ import {
   subscribeConfigFlowInProgress,
 } from "../data/config_flow";
 import { DataEntryFlowProgress } from "../data/data_entry_flow";
-import { domainToName, scanUSBDevices } from "../data/integration";
+import { domainToName } from "../data/integration";
+import { scanUSBDevices } from "../data/usb";
 import {
   loadConfigFlowDialog,
   showConfigFlowDialog,

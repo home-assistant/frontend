@@ -52,6 +52,3 @@ export const fetchIntegrationManifest = (
 
 export const fetchIntegrationSetups = (hass: HomeAssistant) =>
   hass.callWS<IntegrationSetup[]>({ type: "integration/setup_info" });
-
-export const scanUSBDevices = (hass: HomeAssistant) =>
-  hass.callWS({ type: "usb/scan" });
