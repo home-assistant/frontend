@@ -313,8 +313,8 @@ export class HuiImage extends LitElement {
     }
 
     const element_width =
-      this._image?.offsetWidth ??
-      this._container?.offsetWidth ??
+      this._image?.offsetWidth ||
+      this._container?.offsetWidth ||
       MAX_IMAGE_WIDTH;
     // Because the aspect ratio might result in a smaller image,
     // we ask for 200% of what we need to make sure the image is
@@ -323,8 +323,8 @@ export class HuiImage extends LitElement {
     const width = Math.ceil(element_width * SCALING_FACTOR);
     // If the image has not rendered yet we may have a zero height
     const imageHeight =
-      this._lastImageHeight ??
-      this._image?.offsetHeight ??
+      this._lastImageHeight ||
+      this._image?.offsetHeight ||
       this._container?.offsetHeight;
     const height = imageHeight
       ? imageHeight * SCALING_FACTOR
