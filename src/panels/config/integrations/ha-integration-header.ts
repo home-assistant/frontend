@@ -34,7 +34,10 @@ export class HaIntegrationHeader extends LitElement {
 
     if (this.label) {
       primary = this.label;
-      secondary = primary === domainName ? undefined : domainName;
+      secondary =
+        primary.toLowerCase() === domainName.toLowerCase()
+          ? undefined
+          : domainName;
     } else {
       primary = domainName;
     }
