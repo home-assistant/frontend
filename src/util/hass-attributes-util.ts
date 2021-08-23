@@ -73,6 +73,7 @@ const hassAttributeUtil = {
       "sulphur_dioxide",
       "temperature",
       "timestamp",
+      "volatile_organic_compounds",
       "voltage",
     ],
     switch: ["switch", "outlet"],

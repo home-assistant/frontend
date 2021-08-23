@@ -79,6 +79,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
   signal_strength: "hass:wifi",
   sulphur_dioxide: "mdi:molecule",
   timestamp: "hass:clock",
+  volatile_organic_compounds: "mdi:molecule",
   voltage: "hass:sine-wave",
 };
 
