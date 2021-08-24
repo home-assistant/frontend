@@ -34,7 +34,7 @@ class EnergyValidationMessage extends LitElement {
               `ui.panel.config.energy.validation.issues.${issueType}.description`
             )}
             ${
-              issueType === "entity_not_tracked"
+              issueType === "recorder_untracked"
                 ? html`(<a
                       href="https://www.home-assistant.io/integrations/recorder#configure-filter"
                       target="_blank"
