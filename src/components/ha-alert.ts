@@ -45,33 +45,17 @@ class HaAlert extends LitElement {
         class=${classMap({
           "issue-type": true,
           rtl: this.rtl,
-          info: this.alertType === "info",
-          warning: this.alertType === "warning",
-          error: this.alertType === "error",
-          success: this.alertType === "success",
+          [this.alertType]: true,
         })}
       >
-        <div
-          class=${classMap({
-            icon: true,
-            info: this.alertType === "info",
-            warning: this.alertType === "warning",
-            error: this.alertType === "error",
-            success: this.alertType === "success",
-          })}
-        >
+        <div class="icon">
           <ha-svg-icon .path=${ALERT_ICONS[this.alertType]}></ha-svg-icon>
         </div>
-        <div
-          class=${classMap({
-            content: true,
-            rtl: this.rtl,
-          })}
-        >
+        <div class="content">
           <div
             class=${classMap({
               "main-content": true,
-              no_title: !this.title,
+              "no-title": !this.title,
             })}
           >
             ${this.title ? html`<div class="title">${this.title}</div>` : ""}
@@ -81,10 +65,8 @@ class HaAlert extends LitElement {
             ${this.actionText
               ? html`<mwc-button
                   @click=${this._action_clicked}
-                  .aria-label=${this.actionText}
-                >
-                  ${this.actionText}
-                </mwc-button>`
+                  .label=${this.actionText}
+                ></mwc-button>`
               : this.dismissable
               ? html`<mwc-icon-button
                   @click=${this._dismiss_clicked}
@@ -113,7 +95,6 @@ class HaAlert extends LitElement {
       padding: 4px;
       display: flex;
       margin: 4px 0;
-      min-height: 56px;
     }
     .issue-type.rtl {
       flex-direction: row-reverse;
@@ -133,10 +114,10 @@ class HaAlert extends LitElement {
       margin: 4px 8px;
       width: 24px;
     }
-    .main-content.no_title {
+    .main-content.no-title {
       margin-top: 6px;
     }
-    .content.rtl {
+    .issue-type.rtl > .content {
       flex-direction: row-reverse;
       text-align: right;
     }
@@ -154,36 +135,36 @@ class HaAlert extends LitElement {
       --mdc-theme-primary: var(--primary-text-color);
     }
 
-    .icon.info {
+    .action {
+      align-self: center;
+    }
+
+    .issue-type.info > .icon {
       color: var(--info-color);
     }
     .issue-type.info::before {
       background-color: var(--info-color);
     }
 
-    .icon.warning {
+    .issue-type.warning > .icon {
       color: var(--warning-color);
     }
     .issue-type.warning::before {
       background-color: var(--warning-color);
     }
 
-    .icon.error {
+    .issue-type.error > .icon {
       color: var(--error-color);
     }
     .issue-type.error::before {
       background-color: var(--error-color);
     }
 
-    .icon.success {
+    .issue-type.success > .icon {
       color: var(--success-color);
     }
     .issue-type.success::before {
       background-color: var(--success-color);
-    }
-
-    .action {
-      align-self: center;
     }
   `;
 }
