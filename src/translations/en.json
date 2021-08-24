@@ -1087,7 +1087,7 @@
                 "title": "Entity not defined",
                 "description": "Check the integration or your configuration that provides:"
               },
-              "recorder_untracked": {
+              "entity_not_tracked": {
                 "title": "Entity not tracked",
                 "description": "The recorder has been configured to exclude these configured entities:"
               },
