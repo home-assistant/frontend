@@ -195,7 +195,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                   : "text"}
               ></paper-input>
             `}
-        ${!stateObj.attributes.code_arm_required || 
+        ${!stateObj.attributes.code_arm_required ||
         stateObj.attributes.code_format !== FORMAT_NUMBER
           ? html``
           : html`
