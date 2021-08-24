@@ -30,8 +30,11 @@ declare global {
 class HaAlert extends LitElement {
   @property() public title = "";
 
-  @property() public alertType: "info" | "warning" | "error" | "success" =
-    "info";
+  @property({ attribute: "alert-type" }) public alertType:
+    | "info"
+    | "warning"
+    | "error"
+    | "success" = "info";
 
   @property({ attribute: "action-text" }) public actionText = "";
 
