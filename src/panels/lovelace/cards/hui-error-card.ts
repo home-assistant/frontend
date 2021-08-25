@@ -1,6 +1,7 @@
 import { dump } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
+import "../../../components/ha-alert";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
 import { ErrorCardConfig } from "./types";
@@ -34,25 +35,17 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       }
     }
 
-    return html`
-      ${this._config.error}${dumped ? html`<pre>${dumped}</pre>` : ""}
-    `;
+    return html`<ha-alert alert-type="error" .title=${this._config.error}>
+      ${dumped ? html`<pre>${dumped}</pre>` : ""}
+    </ha-alert>`;
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      :host {
-        display: block;
-        background-color: var(--error-color);
-        color: var(--color-on-error, white);
-        padding: 8px;
-        font-weight: 500;
-        user-select: text;
-        cursor: default;
-      }
       pre {
         font-family: var(--code-font-family, monospace);
         text-overflow: ellipsis;
+        user-select: text;
         overflow: hidden;
       }
     `;
