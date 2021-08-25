@@ -24,10 +24,20 @@ export interface ZWaveJSController {
   is_heal_network_active: boolean;
 }
 
-export interface ZWaveJSNode {
+export interface ZWaveJSNodeStatus {
   node_id: number;
   ready: boolean;
   status: number;
+}
+
+export interface ZwaveJSNodeMetadata {
+  node_id: number;
+  exclusion: string;
+  inclusion: string;
+  manual: string;
+  wakeup: string;
+  reset: string;
+  device_database_url: string;
 }
 
 export interface ZWaveJSNodeConfigParams {
@@ -132,9 +142,20 @@ export const fetchNodeStatus = (
   hass: HomeAssistant,
   entry_id: string,
   node_id: number
-): Promise<ZWaveJSNode> =>
+): Promise<ZWaveJSNodeStatus> =>
   hass.callWS({
     type: "zwave_js/node_status",
+    entry_id,
+    node_id,
+  });
+
+export const fetchNodeMetadata = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number
+): Promise<ZwaveJSNodeMetadata> =>
+  hass.callWS({
+    type: "zwave_js/node_metadata",
     entry_id,
     node_id,
   });
