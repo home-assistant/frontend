@@ -23,14 +23,11 @@ import {
 import { labDarken } from "../../../../common/color/lab";
 import {
   EnergyData,
+  EnergySolarForecasts,
   getEnergyDataCollection,
+  getEnergySolarForecasts,
   SolarSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
-import {
-  ForecastSolarForecast,
-  getForecastSolarForecasts,
-} from "../../../../data/forecast_solar";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/chart/ha-chart-base";
 import {
@@ -218,13 +215,12 @@ export class HuiEnergySolarGraphCard
         (source) => source.type === "solar"
       ) as SolarSourceTypeEnergyPreference[];
 
-    let forecasts: Record<string, ForecastSolarForecast>;
+    let forecasts: EnergySolarForecasts | undefined;
     if (
-      isComponentLoaded(this.hass, "forecast_solar") &&
-      solarSources.some((source) => source.config_entry_solar_forecast)
+      solarSources.some((source) => source.config_entry_solar_forecast?.length)
     ) {
       try {
-        forecasts = await getForecastSolarForecasts(this.hass);
+        forecasts = await getEnergySolarForecasts(this.hass);
       } catch (_e) {
         // ignore
       }

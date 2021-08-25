@@ -63,6 +63,13 @@ export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
   number_energy_price: null,
 });
 
+interface EnergySolarForecast {
+  wh_hours: Record<string, number>;
+}
+export type EnergySolarForecasts = {
+  [config_entry_id: string]: EnergySolarForecast;
+};
+
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
   stat_consumption: string;
@@ -143,6 +150,7 @@ export interface EnergyPreferences {
 
 export interface EnergyInfo {
   cost_sensors: Record<string, string>;
+  solar_forecast_domains: string[];
 }
 
 export interface EnergyValidationIssue {
@@ -440,3 +448,8 @@ export const getEnergyDataCollection = (
   };
   return collection;
 };
+
+export const getEnergySolarForecasts = (hass: HomeAssistant) =>
+  hass.callWS<EnergySolarForecasts>({
+    type: "energy/solar_forecast",
+  });
