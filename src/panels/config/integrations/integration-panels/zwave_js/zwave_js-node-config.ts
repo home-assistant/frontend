@@ -167,6 +167,7 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                   "ui.panel.config.zwave_js.node_config.attribution",
                   "device_database",
                   html`<a
+                    rel="noreferrer noopener"
                     href="${this._nodeMetadata?.device_database_url ||
                     "https://devices.zwave-js.io"}"
                     target="_blank"
