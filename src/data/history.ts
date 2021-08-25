@@ -243,10 +243,16 @@ export const computeHistory = (
       (state) => state.attributes && "unit_of_measurement" in state.attributes
     );
 
+    const stateWithStateClass = stateInfo.find(
+      (state) => state.attributes && "state_class" in state.attributes
+    );
+
     let unit: string | undefined;
 
     if (stateWithUnit) {
       unit = stateWithUnit.attributes.unit_of_measurement;
+    } else if (stateWithStateClass) {
+      unit = " ";
     } else {
       unit = {
         climate: hass.config.unit_system.temperature,
