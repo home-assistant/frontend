@@ -62,6 +62,7 @@ export interface DataTableSortColumnData {
   sortable?: boolean;
   filterable?: boolean;
   filterKey?: string;
+  valueColumn?: string;
   direction?: SortingDirection;
 }
 
@@ -76,7 +77,7 @@ export interface DataTableColumnData extends DataTableSortColumnData {
   hidden?: boolean;
 }
 
-type ClonedDataTableColumnData = Omit<DataTableColumnData, "title"> & {
+export type ClonedDataTableColumnData = Omit<DataTableColumnData, "title"> & {
   title?: TemplateResult | string;
 };
 
@@ -455,7 +456,7 @@ export class HaDataTable extends LitElement {
     const prom = this._sortColumn
       ? sortData(
           filteredData,
-          this._sortColumns,
+          this._sortColumns[this._sortColumn],
           this._sortDirection,
           this._sortColumn
         )
