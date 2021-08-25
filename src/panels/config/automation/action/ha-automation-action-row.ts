@@ -253,7 +253,7 @@ export default class HaAutomationActionRow extends LitElement {
 
   private _handleUiModeNotAvailable(ev: CustomEvent) {
     // Prevent possible parent action-row from switching to yamlMode
-    ev.cancelBubble = true;
+    ev.stopPropagation();
 
     this._warnings = handleStructError(this.hass, ev.detail).warnings;
     if (!this._yamlMode) {

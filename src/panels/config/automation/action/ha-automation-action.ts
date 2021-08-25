@@ -54,7 +54,7 @@ export default class HaAutomationAction extends LitElement {
 
   private _move(ev: CustomEvent) {
     // Prevent possible parent action-row from also moving
-    ev.cancelBubble = true;
+    ev.stopPropagation();
 
     const index = (ev.target as any).index;
     const newIndex = ev.detail.direction === "up" ? index - 1 : index + 1;
