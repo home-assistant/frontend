@@ -74,6 +74,7 @@
       "armed_home": "[%key:state_badge::alarm_control_panel::armed%]",
       "armed_away": "[%key:state_badge::alarm_control_panel::armed%]",
       "armed_night": "[%key:state_badge::alarm_control_panel::armed%]",
+      "armed_vacation": "[%key:state_badge::alarm_control_panel::armed%]",
       "armed_custom_bypass": "[%key:state_badge::alarm_control_panel::armed%]",
       "pending": "Pend",
       "arming": "Arming",
@@ -117,6 +118,7 @@
         "arm_home": "Arm home",
         "arm_away": "Arm away",
         "arm_night": "Arm night",
+        "arm_vacation": "Arm vacation"
         "arm_custom_bypass": "Custom bypass"
       },
       "automation": {
