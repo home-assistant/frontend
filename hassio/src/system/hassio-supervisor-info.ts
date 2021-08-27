@@ -171,30 +171,24 @@ class HassioSupervisorInfo extends LitElement {
                     ></ha-switch>
                   </ha-settings-row>`
                 : ""
-              : html`<ha-alert alert-type="warning">
+              : html`<ha-alert
+                  alert-type="warning"
+                  .actionText=${this.supervisor.localize("common.learn_more")}
+                  @alert-action-clicked=${this._unsupportedDialog}
+                >
                   ${this.supervisor.localize(
                     "system.supervisor.unsupported_title"
                   )}
-                  <button
-                    class="link"
-                    .title=${this.supervisor.localize("common.learn_more")}
-                    @click=${this._unsupportedDialog}
-                  >
-                    ${this.supervisor.localize("common.learn_more")}
-                  </button>
                 </ha-alert>`}
             ${!this.supervisor.supervisor.healthy
-              ? html`<ha-alert alert-type="error">
+              ? html`<ha-alert
+                  alert-type="error"
+                  .actionText=${this.supervisor.localize("common.learn_more")}
+                  @alert-action-clicked=${this._unhealthyDialog}
+                >
                   ${this.supervisor.localize(
                     "system.supervisor.unhealthy_title"
                   )}
-                  <button
-                    class="link"
-                    .title=${this.supervisor.localize("common.learn_more")}
-                    @click=${this._unhealthyDialog}
-                  >
-                    ${this.supervisor.localize("common.learn_more")}
-                  </button>
                 </ha-alert>`
               : ""}
           </div>
