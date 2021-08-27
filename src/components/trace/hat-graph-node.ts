@@ -90,10 +90,12 @@ export class HatGraphNode extends LitElement {
         display: flex;
         flex-direction: column;
         width: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing));
-        height: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing) + 1);
+        height: calc(
+          var(--hat-graph-node-size) + var(--hat-graph-spacing) + 1px
+        );
       }
       :host([graphStart]) {
-        height: calc(var(--hat-graph-node-size) + 2);
+        height: calc(var(--hat-graph-node-size) + 2px);
       }
       :host([track]) {
         --stroke-clr: var(--track-clr);
