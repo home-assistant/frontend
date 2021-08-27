@@ -490,9 +490,12 @@ export class HaAutomationTrace extends LitElement {
           border-right: 1px solid var(--divider-color);
           overflow-x: auto;
           max-width: 50%;
+          padding-bottom: 16px;
         }
         :host([narrow]) .graph {
           max-width: 100%;
+          justify-content: center;
+          display: flex;
         }
 
         .info {

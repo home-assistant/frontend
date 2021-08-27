@@ -44,8 +44,8 @@ export class DialogEnergySolarSettings
   public async showDialog(
     params: EnergySettingsSolarDialogParams
   ): Promise<void> {
-    this._fetchForecastSolarConfigEntries();
     this._params = params;
+    this._fetchSolarForecastConfigEntries();
     this._source = params.source
       ? { ...params.source }
       : (this._source = emptySolarEnergyPreference());
@@ -118,7 +118,7 @@ export class DialogEnergySolarSettings
                       referrerpolicy="no-referrer"
                       style="height: 24px; margin-right: 16px;"
                       src=${brandsUrl({
-                        domain: "forecast_solar",
+                        domain: entry.domain,
                         type: "icon",
                         darkOptimized: this.hass.selectedTheme?.dark,
                       })}
@@ -155,9 +155,10 @@ export class DialogEnergySolarSettings
     `;
   }
 
-  private async _fetchForecastSolarConfigEntries() {
-    this._configEntries = (await getConfigEntries(this.hass)).filter(
-      (entry) => entry.domain === "forecast_solar"
+  private async _fetchSolarForecastConfigEntries() {
+    const domains = this._params!.info.solar_forecast_domains;
+    this._configEntries = (await getConfigEntries(this.hass)).filter((entry) =>
+      domains.includes(entry.domain)
     );
   }
 
@@ -192,7 +193,7 @@ export class DialogEnergySolarSettings
             this._source!.config_entry_solar_forecast = [];
           }
           this._source!.config_entry_solar_forecast.push(params.entryId);
-          this._fetchForecastSolarConfigEntries();
+          this._fetchSolarForecastConfigEntries();
         }
       },
     });
