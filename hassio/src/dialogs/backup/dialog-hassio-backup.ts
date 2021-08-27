@@ -280,9 +280,9 @@ class HassioBackupDialog
         atLeastVersion(this.hass.config.version, 2021, 9) ? "DELETE" : "POST",
         `hassio/${
           atLeastVersion(this.hass.config.version, 2021, 9)
-            ? "backups"
-            : "snapshots"
-        }/${this._backup!.slug}/remove`
+            ? `backups/${this._backup!.slug}`
+            : `snapshots/${this._backup!.slug}/remove`
+        }`
       )
       .then(
         () => {
