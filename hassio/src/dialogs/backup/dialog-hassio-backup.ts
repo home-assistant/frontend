@@ -6,6 +6,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { slugify } from "../../../../src/common/string/slugify";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-header-bar";
 import "../../../../src/components/ha-svg-icon";
@@ -89,7 +90,9 @@ class HassioBackupDialog
               .localize=${this._dialogParams.localize}
             >
             </supervisor-backup-content>`}
-        ${this._error ? html`<p class="error">Error: ${this._error}</p>` : ""}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
 
         <mwc-button
           .disabled=${this._restoringBackup}
