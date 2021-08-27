@@ -10,6 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import {
   HassioAddonDetails,
@@ -62,7 +63,9 @@ class HassioAddonNetwork extends LitElement {
         )}
       >
         <div class="card-content">
-          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
 
           <table>
             <tbody>
@@ -224,10 +227,6 @@ class HassioAddonNetwork extends LitElement {
         }
         ha-card {
           display: block;
-        }
-        .errors {
-          color: var(--error-color);
-          margin-bottom: 16px;
         }
         .card-actions {
           display: flex;

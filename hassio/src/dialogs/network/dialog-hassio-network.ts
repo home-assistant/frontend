@@ -10,6 +10,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
@@ -251,9 +252,9 @@ export class DialogHassioNetwork
             `
           : ""}
         ${this._dirty
-          ? html`<div class="warning">
+          ? html`<ha-alert alert-type="warning">
               ${this.supervisor.localize("dialog.network.warning")}
-            </div>`
+            </ha-alert> `
           : ""}
       </div>
       <div class="buttons">

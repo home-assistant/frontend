@@ -2,6 +2,7 @@ import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/buttons/ha-progress-button";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
@@ -62,7 +63,9 @@ class HassioCreateBackupDialog extends LitElement {
               .supervisor=${this._dialogParams.supervisor}
             >
             </supervisor-backup-content>`}
-        ${this._error ? html`<p class="error">Error: ${this._error}</p>` : ""}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
         <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
           ${this._dialogParams.supervisor.localize("common.close")}
         </mwc-button>
