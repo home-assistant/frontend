@@ -254,7 +254,7 @@ export class DialogHassioNetwork
         ${this._dirty
           ? html`<ha-alert alert-type="warning">
               ${this.supervisor.localize("dialog.network.warning")}
-            </ha-alert> `
+            </ha-alert>`
           : ""}
       </div>
       <div class="buttons">
