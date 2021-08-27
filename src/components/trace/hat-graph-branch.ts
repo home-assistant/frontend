@@ -153,7 +153,7 @@ export class HatGraphBranch extends LitElement {
         z-index: 1;
       }
       ::slotted([slot="head"]) {
-        margin-bottom: calc(var(--hat-graph-branch-height) / -2);
+        margin-bottom: calc(var(--hat-graph-branch-height) / -2px);
       }
       #lines {
         position: absolute;
