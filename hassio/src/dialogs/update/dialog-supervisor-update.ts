@@ -2,6 +2,7 @@ import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-settings-row";
@@ -128,7 +129,9 @@ class DialogSupervisorUpdate extends LitElement {
                       this._dialogParams.name
                     )}
               </p>`}
-        ${this._error ? html`<p class="error">${this._error}</p>` : ""}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
       </ha-dialog>
     `;
   }

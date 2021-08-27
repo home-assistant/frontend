@@ -23,6 +23,7 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
 import "../../../../src/components/buttons/ha-call-api-button";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-label-badge";
 import "../../../../src/components/ha-markdown";
@@ -143,14 +144,14 @@ class HassioAddonInfo extends LitElement {
                       this.addon.arch
                     )
                     ? html`
-                        <p class="warning">
+                        <ha-alert alert-type="warning">
                           ${this.supervisor.localize(
                             "addon.dashboard.not_available_arch"
                           )}
-                        </p>
+                        </ha-alert>
                       `
                     : html`
-                        <p class="warning">
+                        <ha-alert alert-type="warning">
                           ${this.supervisor.localize(
                             "addon.dashboard.not_available_arch",
                             "core_version_installed",
@@ -158,7 +159,7 @@ class HassioAddonInfo extends LitElement {
                             "core_version_needed",
                             addonStoreInfo.homeassistant
                           )}
-                        </p>
+                        </ha-alert>
                       `
                   : ""}
               </div>
@@ -569,21 +570,23 @@ class HassioAddonInfo extends LitElement {
                 : ""}
             </div>
           </div>
-          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           ${!this.addon.version && addonStoreInfo && !this.addon.available
             ? !addonArchIsSupported(
                 this.supervisor.info.supported_arch,
                 this.addon.arch
               )
               ? html`
-                  <p class="warning">
+                  <ha-alert alert-type="warning">
                     ${this.supervisor.localize(
                       "addon.dashboard.not_available_arch"
                     )}
-                  </p>
+                  </ha-alert>
                 `
               : html`
-                  <p class="warning">
+                  <ha-alert alert-type="warning">
                     ${this.supervisor.localize(
                       "addon.dashboard.not_available_version",
                       "core_version_installed",
@@ -591,7 +594,7 @@ class HassioAddonInfo extends LitElement {
                       "core_version_needed",
                       addonStoreInfo!.homeassistant
                     )}
-                  </p>
+                  </ha-alert>
                 `
             : ""}
         </div>

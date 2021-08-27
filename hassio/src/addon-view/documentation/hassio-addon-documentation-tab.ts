@@ -1,5 +1,6 @@
 import "../../../../src/components/ha-card";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-markdown";
 import { customElement, property, state } from "lit/decorators";
@@ -38,7 +39,9 @@ class HassioAddonDocumentationDashboard extends LitElement {
     return html`
       <div class="content">
         <ha-card>
-          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           <div class="card-content">
             ${this._content
               ? html`<ha-markdown .content=${this._content}></ha-markdown>`
