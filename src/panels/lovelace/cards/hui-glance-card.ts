@@ -192,6 +192,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         padding: 0 16px 4px;
         flex-wrap: wrap;
         box-sizing: border-box;
+        align-items: center;
         align-content: center;
       }
       .entities.no-header {
@@ -224,8 +225,30 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       .name {
         min-height: var(--paper-font-body1_-_line-height, 20px);
       }
+      .warning {
+        cursor: default;
+        position: relative;
+        padding: 8px;
+        width: calc(var(--glance-column-width, 20%) - 4px);
+        margin: 0 2px;
+      }
+      .warning::before {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        opacity: 0.12;
+        pointer-events: none;
+        content: "";
+        border-radius: 4px;
+        background-color: var(--warning-color);
+      }
       state-badge {
         margin: 8px 0;
+      }
+      hui-warning-element {
+        padding: 8px;
       }
     `;
   }
@@ -234,11 +257,24 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     const stateObj = this.hass!.states[entityConf.entity];
 
     if (!stateObj) {
-      return html`
-        <hui-warning-element
-          .label=${createEntityNotFoundWarning(this.hass!, entityConf.entity)}
-        ></hui-warning-element>
-      `;
+      return html`<div class="entity warning">
+        ${this._config!.show_name
+          ? html`
+              <div class="name">
+                ${createEntityNotFoundWarning(this.hass!, entityConf.entity)}
+              </div>
+            `
+          : ""}
+        ${this._config!.show_icon
+          ? html` <hui-warning-element
+              .label=${createEntityNotFoundWarning(
+                this.hass!,
+                entityConf.entity
+              )}
+            ></hui-warning-element>`
+          : ""}
+        <div>${this._config!.show_state ? entityConf.entity : ""}</div>
+      </div>`;
     }
 
     return html`
