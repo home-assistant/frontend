@@ -3,6 +3,7 @@ import { customElement, property, state } from "lit/decorators";
 import { atLeastVersion } from "../../../src/common/config/version";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-alert";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import "../../../src/components/ha-switch";
@@ -170,31 +171,25 @@ class HassioSupervisorInfo extends LitElement {
                     ></ha-switch>
                   </ha-settings-row>`
                 : ""
-              : html`<div class="error">
+              : html`<ha-alert
+                  alert-type="warning"
+                  .actionText=${this.supervisor.localize("common.learn_more")}
+                  @alert-action-clicked=${this._unsupportedDialog}
+                >
                   ${this.supervisor.localize(
                     "system.supervisor.unsupported_title"
                   )}
-                  <button
-                    class="link"
-                    .title=${this.supervisor.localize("common.learn_more")}
-                    @click=${this._unsupportedDialog}
-                  >
-                    Learn more
-                  </button>
-                </div>`}
+                </ha-alert>`}
             ${!this.supervisor.supervisor.healthy
-              ? html`<div class="error">
+              ? html`<ha-alert
+                  alert-type="error"
+                  .actionText=${this.supervisor.localize("common.learn_more")}
+                  @alert-action-clicked=${this._unhealthyDialog}
+                >
                   ${this.supervisor.localize(
                     "system.supervisor.unhealthy_title"
                   )}
-                  <button
-                    class="link"
-                    .title=${this.supervisor.localize("common.learn_more")}
-                    @click=${this._unhealthyDialog}
-                  >
-                    Learn more
-                  </button>
-                </div>`
+                </ha-alert>`
               : ""}
           </div>
           <div class="metrics-block">

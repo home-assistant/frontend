@@ -26,6 +26,14 @@
         "shopping_list": "Alışveriş listesi",
         "states": "Durumlar"
     },
+    "state": {
+        "default": {
+            "off": "Kapalı",
+            "on": "Açık",
+            "unavailable": "Mevcut değil",
+            "unknown": "Bilinmeyen"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -92,14 +100,6 @@
         "person": {
             "home": "Evde",
             "not_home": "Dışarıda"
-        }
-    },
-    "state": {
-        "default": {
-            "off": "Kapalı",
-            "on": "Açık",
-            "unavailable": "Mevcut değil",
-            "unknown": "Bilinmeyen"
         }
     },
     "supervisor": {
@@ -267,6 +267,18 @@
                 "not_installed": "Eklenti yüklü değil"
             }
         },
+        "backup": {
+            "addons": "Eklentiler",
+            "could_not_create": "Anlık görüntü oluşturulamadı",
+            "create": "Oluştur",
+            "create_blocked_not_running": "{state} durumunda olduğundan şu anda anlık görüntü oluşturmak mümkün değil.",
+            "enter_password": "Lütfen bir parola girin.",
+            "folders": "Klasörler",
+            "name": "Ad",
+            "password": "Parola",
+            "password_protection": "Parola koruması",
+            "type": "Tür"
+        },
         "common": {
             "cancel": "İptal",
             "close": "Kapat",
@@ -358,9 +370,6 @@
                 "text": "Eklentiyi değişikliklerinizle yeniden başlatmak istiyor musunuz?"
             },
             "update": {
-                "create_snapshot": "Güncellemeden önce {name} anlık görüntüsünü oluşturun",
-                "snapshot": "Anlık görüntü",
-                "snapshotting": "{name} anlık görüntüsü oluşturuluyor",
                 "updating": "{name} , {version} sürümüne güncelleniyor"
             }
         },
@@ -372,37 +381,8 @@
         },
         "panel": {
             "dashboard": "Gösterge Paneli",
-            "snapshots": "Anlık görüntüler",
             "store": "Eklenti Mağazası",
             "system": "Sistem"
-        },
-        "snapshot": {
-            "addons": "Eklentiler",
-            "available_snapshots": "Kullanılabilir Anlık Görüntüler",
-            "could_not_create": "Anlık görüntü oluşturulamadı",
-            "create": "Oluştur",
-            "create_blocked_not_running": "{state} durumunda olduğundan şu anda anlık görüntü oluşturmak mümkün değil.",
-            "create_snapshot": "Anlık görüntü oluştur",
-            "description": "Anlık görüntüler, Home Assistant örneğinizin tüm verilerini kolayca yedeklemenizi ve geri yüklemenizi sağlar.",
-            "enter_password": "Lütfen bir parola girin.",
-            "folder": {
-                "addons/local": "Yerel eklentiler",
-                "homeassistant": "Home Assistant yapılandırması",
-                "media": "Medya",
-                "share": "Paylaş",
-                "ssl": "SSL"
-            },
-            "folders": "Klasörler",
-            "full_snapshot": "Tam anlık görüntü",
-            "name": "Ad",
-            "no_snapshots": "Henüz anlık görüntünüz yok.",
-            "partial_snapshot": "Kısmi anlık görüntü",
-            "password": "Parola",
-            "password_protected": "parola korumalı",
-            "password_protection": "Parola koruması",
-            "security": "Güvenlik",
-            "type": "Tür",
-            "upload_snapshot": "Anlık görüntü yükle"
         },
         "store": {
             "missing_addons": "Eksik eklentiler mi var? Kullanıcı profili sayfanızda gelişmiş modu etkinleştirin",
@@ -821,10 +801,10 @@
                 "documentation": "dokümantasyon",
                 "learn_adding_local_media": "{documentation}'ye ortam ekleme hakkında daha fazla bilgi edinin.",
                 "local_media_files": "Tarayıcıda veya desteklenen medya oynatıcılarda göz atıp oynatabilmek için video, ses ve görüntü dosyalarınızı medya dizinine yerleştirin.",
+                "media-player-browser": "Media Player Tarayıcısı",
                 "media_browsing_error": "Medya Tarama Hatası",
                 "media_not_supported": "Tarayıcı Media Player bu tür medyayı desteklemiyor",
                 "media_player": "Medya Oynatıcı",
-                "media-player-browser": "Media Player Tarayıcısı",
                 "no_items": "Öğe yok",
                 "no_local_media_found": "Yerel medya bulunamadı",
                 "no_media_folder": "Görünüşe göre henüz bir medya dizini oluşturmadın.",
@@ -1095,7 +1075,6 @@
                         "integrations": "Entegrasyonlar",
                         "logs": "Günlükler",
                         "lovelace": "Lovelace Kontrol Paneli",
-                        "navigate_to": "{panel} gidin",
                         "person": "Kişiler",
                         "scene": "Sahneler",
                         "script": "Senaryolar",
@@ -1293,7 +1272,6 @@
                             "introduction": "İşlemler, otomasyon tetiklendiğinde Home Assistant'ın yapacağı işlemlerdir.",
                             "learn_more": "İşlemler hakkında daha fazla bilgi edinin",
                             "name": "Aksiyon",
-                            "type_select": "Aksiyon türü",
                             "type": {
                                 "choose": {
                                     "add_option": "Seçenek ekle",
@@ -1334,7 +1312,6 @@
                                 "repeat": {
                                     "label": "Tekrar",
                                     "sequence": "Aksiyonlar",
-                                    "type_select": "Tekrar tipi",
                                     "type": {
                                         "count": {
                                             "label": "Sayısı"
@@ -1347,7 +1324,8 @@
                                             "conditions": "Koşullara kadar",
                                             "label": "Süre"
                                         }
-                                    }
+                                    },
+                                    "type_select": "Tekrar tipi"
                                 },
                                 "scene": {
                                     "label": "Sahneyi etkinleştir"
@@ -1367,6 +1345,7 @@
                                     "wait_template": "Bekleme taslak"
                                 }
                             },
+                            "type_select": "Aksiyon türü",
                             "unsupported_action": "Eylem için görsel düzenleyici desteği yok: {action}"
                         },
                         "alias": "İsim",
@@ -1385,7 +1364,6 @@
                             "introduction": "Koşullar isteğe bağlıdır ve tüm koşullar yerine getirilmediği sürece otomasyonun çalışmasını engeller.",
                             "learn_more": "Koşullar hakkında daha fazla bilgi edinin",
                             "name": "Şart",
-                            "type_select": "Koşul türü",
                             "type": {
                                 "and": {
                                     "label": "Ve"
@@ -1452,6 +1430,7 @@
                                     "zone": "Bölge"
                                 }
                             },
+                            "type_select": "Koşul türü",
                             "unsupported_condition": "Koşul için görsel düzenleyici desteği yok: {condition}"
                         },
                         "copy_to_clipboard": "Panoya kopyala",
@@ -1492,7 +1471,6 @@
                             "introduction": "Tetikleyiciler, bir otomasyon kuralının işlenmesini başlatan şeydir. Aynı kural için birden çok tetikleyici belirtmek mümkündür. Bir tetikleyici başladıktan sonra, Home Assistant varsa koşulları doğrular ve eylemi çağırır.",
                             "learn_more": "Tetikleyiciler hakkında daha fazla bilgi edinin",
                             "name": "Tetik",
-                            "type_select": "Tetikleyici tipi",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1558,17 +1536,17 @@
                                     "label": "Taslak",
                                     "value_template": "Değer taslak"
                                 },
-                                "time_pattern": {
-                                    "hours": "Saat",
-                                    "label": "Zaman Deseni",
-                                    "minutes": "Dakika",
-                                    "seconds": "Saniye"
-                                },
                                 "time": {
                                     "at": "Saat",
                                     "label": "zaman",
                                     "type_input": "Tarih / saat yardımcısının değeri",
                                     "type_value": "Sabit zaman"
+                                },
+                                "time_pattern": {
+                                    "hours": "Saat",
+                                    "label": "Zaman Deseni",
+                                    "minutes": "Dakika",
+                                    "seconds": "Saniye"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1583,6 +1561,7 @@
                                     "zone": "Bölge"
                                 }
                             },
+                            "type_select": "Tetikleyici tipi",
                             "unsupported_platform": "Platform için görsel düzenleyici desteği yok: {platform}"
                         },
                         "unsaved_confirm": "Kaydedilmemiş değişiklikleriniz var. Çıkmak istediğinize emin misiniz?"
@@ -1738,9 +1717,9 @@
                             "loading": "Yükleniyor ...",
                             "manage": "Yönet",
                             "no_hooks_yet": "Görünüşe göre henüz webhooks'un yok. Bir tane yapılandırarak başlayın",
+                            "no_hooks_yet2": " veya bir oluşturarak ",
                             "no_hooks_yet_link_automation": "webhook otomasyonu",
                             "no_hooks_yet_link_integration": "webhook tabanlı entegrasyon",
-                            "no_hooks_yet2": " veya bir oluşturarak ",
                             "title": "Webhooks"
                         }
                     },
@@ -1855,35 +1834,6 @@
                     "description": "Birim sistemi, konum, saat dilimi ve diğer genel parametreler",
                     "section": {
                         "core": {
-                            "analytics": {
-                                "documentation": "Bunu etkinleştirmeden önce, ne gönderdiğinizi ve nasıl depolandığını anlamak için {link} analiz belgeleri sayfasını ziyaret ettiğinizden emin olun.",
-                                "header": "İstatistikler",
-                                "instance_id": "Örnek Kimliği: {huuid}",
-                                "introduction": "Örneğinizden analizleri paylaşın. {link} adresinde herkese açık olacak",
-                                "needs_base": "Bu seçeneğin kullanılabilir olması için temel analizleri etkinleştirmeniz gerekir",
-                                "preference": {
-                                    "base": {
-                                        "description": "Bu, örnek kimliği, sürüm ve yükleme türünü içerir",
-                                        "title": "Temel analiz"
-                                    },
-                                    "diagnostics": {
-                                        "description": "Kilitlenme raporlarını ve teşhis bilgilerini paylaşın",
-                                        "title": "Tanılama"
-                                    },
-                                    "statistics": {
-                                        "description": "Bu, belgelere tam listeyle bakmak için yüklemenizdeki öğelerin sayısını içerir",
-                                        "title": "Kullanım istatistikleri"
-                                    },
-                                    "usage_supervisor": {
-                                        "description": "Bu, entegrasyonlarınızın ve eklentilerinizin adlarını ve yeteneklerini içerir",
-                                        "title": "Kullanılan entegrasyonlar ve eklentiler"
-                                    },
-                                    "usage": {
-                                        "description": "Bu, entegrasyonlarınızın adlarını içerir",
-                                        "title": "Kullanılan entegrasyonlar"
-                                    }
-                                }
-                            },
                             "core_config": {
                                 "edit_requires_storage": "Konfigürasyon configuration.yaml'de depolandığı için düzenleyici devre dışı bırakıldı.",
                                 "elevation": "Yükseklik",
@@ -2066,11 +2016,6 @@
                         }
                     }
                 },
-                "filtering": {
-                    "clear": "Temizle",
-                    "filtering_by": "Filtreleme ölçütü",
-                    "show": "Göster"
-                },
                 "header": "Home Assistant'ı yapılandır",
                 "helpers": {
                     "caption": "Yardımcılar",
@@ -2119,16 +2064,11 @@
                     "path_configuration": "configuration.yaml lokasyonu: {path}",
                     "server": "sunucu",
                     "source": "Kaynak:",
-                    "system_health_error": "Sistem Sağlığı bileşeni yüklü değil. configuration.yaml içine 'system_health:' ekleyin",
                     "system_health": {
                         "manage": "Yönet",
                         "more_info": "daha fazla bilgi"
-                    }
-                },
-                "integration_panel_move": {
-                    "link_integration_page": "entegrasyonlar sayfası",
-                    "missing_zha": "ZHA yapılandırma paneli eksik mi? {integrations_page} üzerindeki ZHA girişine taşındı.",
-                    "missing_zwave": "Z-Wave yapılandırma paneli eksik mi? {integrations_page} üzerindeki Z-Wave girişine taşındı."
+                    },
+                    "system_health_error": "Sistem Sağlığı bileşeni yüklü değil. configuration.yaml içine 'system_health:' ekleyin"
                 },
                 "integrations": {
                     "add_integration": "Entegrasyon ekle",
@@ -2141,7 +2081,6 @@
                         "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
                         "device_unavailable": "Cihaz kullanılamıyor",
                         "devices": "{count} {count, plural,\n  one {cihaz}\n  other {cihazlar}\n}",
-                        "disable_restart_confirm": "Bu entegrasyonu devre dışı bırakmayı tamamlamak için Home Assistant'ı yeniden başlatın",
                         "disable": {
                             "disable_confirm": "Bu yapılandırma girişini devre dışı bırakmak istediğinizden emin misiniz? Cihazları ve varlıkları devre dışı bırakılacak.",
                             "disabled": "Devre dışı",
@@ -2152,17 +2091,16 @@
                             },
                             "disabled_cause": "{cause} tarafından devre dışı bırakıldı"
                         },
+                        "disable_restart_confirm": "Bu entegrasyonu devre dışı bırakmayı tamamlamak için Home Assistant'ı yeniden başlatın",
                         "documentation": "Dökümanlar",
                         "enable_restart_confirm": "Bu entegrasyonu etkinleştirmeyi tamamlamak için Home Assistant'ı yeniden başlatın",
                         "entities": "{count} {count, plural,\n  one {varlık}\n  other {varlıklar}\n}",
                         "entity_unavailable": "Varlık kullanılamıyor",
                         "firmware": "Aygıt yazılımı: {version}",
                         "hub": "Şununla bağlı:",
-                        "logs": "Günlükler",
                         "manuf": "üretici: {manufacturer}",
                         "no_area": "Alan Yok",
                         "not_loaded": "Yüklenmedi, {logs_link} öğesini denetleyin",
-                        "options": "Seçenekler",
                         "reload": "Tekrar yükle",
                         "reload_confirm": "Entegrasyon yeniden yüklendi",
                         "reload_restart_confirm": "Bu entegrasyonu yeniden yüklemeyi bitirmek için Home Assistant'ı yeniden başlatın",
@@ -2192,7 +2130,6 @@
                             "open_site": "Web sitesini aç"
                         },
                         "finish": "Bitir",
-                        "loading_first_time": "Lütfen entegrasyonun yüklenmesini bekleyin",
                         "not_all_required_fields": "Gerekli alanların tümü doldurulmamış.",
                         "not_loaded": "Bu entegrasyon yüklenemedi, Home Assistant'ı yeniden başlatmayı deneyin.",
                         "pick_flow_step": {
@@ -2208,7 +2145,6 @@
                     "details": "Entegrasyon detayları",
                     "disable": {
                         "disabled_integrations": "{number} devre dışı bırakıldı",
-                        "hide_disabled": "Devre dışı bırakılan entegrasyonları gizle",
                         "show": "Göster",
                         "show_disabled": "Devre dışı bırakılan entegrasyonları göster"
                     },
@@ -2219,7 +2155,6 @@
                         "confirm_delete_ignore_title": "{name} yoksaymayı bırak?",
                         "confirm_ignore": "Bu entegrasyonu ayarlamak istemediğinizden emin misiniz? Sağ üstteki taşma menüsünde 'Yok sayılan entegrasyonları göster'i tıklayarak bunu geri alabilirsiniz.",
                         "confirm_ignore_title": "{name} keşfini yoksay?",
-                        "hide_ignored": "Yok sayılan entegrasyonları gizle",
                         "ignore": "Yoksay",
                         "ignored": "Yok Sayılan",
                         "show_ignored": "Yok sayılan entegrasyonları göster",
@@ -2330,7 +2265,6 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Yapılandır",
                     "description_listen": "Bir konuyu dinle",
                     "description_publish": "Bir paket yayınla",
                     "listening_to": "Dinliyorum",
@@ -2344,7 +2278,6 @@
                     "topic": "konu"
                 },
                 "ozw": {
-                    "button": "Yapılandır",
                     "common": {
                         "controller": "Denetleyici",
                         "instance": "Örnek",
@@ -2369,6 +2302,11 @@
                         "nodes": "Düğümler",
                         "select_instance": "Örnek Seçin"
                     },
+                    "network": {
+                        "header": "Ağ yönetimi",
+                        "introduction": "Ağ genelindeki işlevleri yönetin.",
+                        "node_count": "{count} düğümleri"
+                    },
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "Tüm düğümler sorgulandı",
@@ -2389,10 +2327,9 @@
                         "starting": "Başlatılıyor",
                         "unknown": "Bilinmeyen"
                     },
-                    "network": {
-                        "header": "Ağ yönetimi",
-                        "introduction": "Ağ genelindeki işlevleri yönetin.",
-                        "node_count": "{count} düğümleri"
+                    "node": {
+                        "button": "Düğüm Ayrıntıları",
+                        "not_found": "Düğüm bulunamadı"
                     },
                     "node_config": {
                         "header": "Düğüm Yapılandırması",
@@ -2421,10 +2358,6 @@
                         "static": "Cihazdan statik değerler elde etme",
                         "versions": "Aygıt yazılımı ve komut sınıfı sürümleri hakkında bilgi edinme",
                         "wakeup": "Uyandırma kuyrukları ve iletileri için destek ayarlama"
-                    },
-                    "node": {
-                        "button": "Düğüm Ayrıntıları",
-                        "not_found": "Düğüm bulunamadı"
                     },
                     "nodes_table": {
                         "failed": "Başarısız oldu",
@@ -2726,7 +2659,6 @@
                         "search_again": "Yeniden Ara",
                         "spinner": "ZHA Zigbee cihazları aranıyor ..."
                     },
-                    "button": "Yapılandır",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Seçili kümenin öznitelikleri",
                         "get_zigbee_attribute": "Zigbee Özelliğini al",
@@ -2834,87 +2766,7 @@
                     "introduction": "Bölgeler, dünyadaki belirli bölgeleri belirtmenize izin verir. Bir kişi bir bölge içindeyse, durumunu bölgenin isminden alır. Bölgeler, otomasyon kurulumlarında tetikleyici veya koşul olarak da kullanılabilir.",
                     "no_zones_created_yet": "Görünüşe göre henüz herhangi bir bölge oluşturmadınız."
                 },
-                "zwave_js": {
-                    "add_node": {
-                        "cancel_inclusion": "Dahil Etmeyi İptal Et",
-                        "controller_in_inclusion_mode": "Z-Wave kontrol cihazınız artık dahil etme modunda.",
-                        "follow_device_instructions": "Cihazda eşleştirmeyi tetiklemek için cihazınızla birlikte gelen talimatları izleyin.",
-                        "inclusion_failed": "Düğüm eklenemedi. Daha fazla bilgi için lütfen günlükleri kontrol edin.",
-                        "inclusion_finished": "Düğüm eklendi. Düğümün arka planda kurulumunu tamamladığımızda tüm varlıkların görünmesi birkaç dakika sürebilir.",
-                        "introduction": "Bu sihirbaz, Z-Wave ağınıza bir düğüm eklerken size yol gösterecektir.",
-                        "secure_inclusion_warning": "Güvenli cihazlar ek bant genişliği gerektirir; çok fazla güvenli cihaz Z-Wave ağınızı yavaşlatabilir. Yalnızca kilitler veya garaj kapısı açıcılar gibi bunu gerektiren cihazlar için güvenli dahil etme kullanmanızı öneririz.",
-                        "start_inclusion": "Dahil Etmeye Başlayın",
-                        "start_secure_inclusion": "Güvenli Dahil Etmeyi Başlatın",
-                        "title": "Bir Z-Wave Düğümü Ekleyin",
-                        "use_secure_inclusion": "Güvenli dahil etme kullanın",
-                        "view_device": "Cihazı Görüntüle"
-                    },
-                    "button": "Yapılandır",
-                    "common": {
-                        "add_node": "Düğüm Ekle",
-                        "close": "Kapat",
-                        "home_id": "Ev kimliği",
-                        "network": "Ağ",
-                        "node_id": "Düğüm Kimliği",
-                        "remove_node": "Düğümü Kaldır"
-                    },
-                    "dashboard": {
-                        "driver_version": "Sürücü Sürümü",
-                        "dump_dead_nodes_text": "Düğümlerinizden bazıları yanıt vermedi ve öldüğü varsayılıyor. Bunlar tamamen ihraç edilmeyecek.",
-                        "dump_dead_nodes_title": "Düğümlerinizden bazıları öldü",
-                        "dump_debug": "Sorunları tanılamaya yardımcı olmak için ağınızın dökümünün karşıdan yükle",
-                        "dump_not_ready_confirm": "İndir",
-                        "dump_not_ready_text": "Tüm düğümler hazır değilken bir dışa aktarma oluşturursanız, gerekli verileri kaçırabilirsiniz. Ağınıza tüm düğümleri sorgulaması için biraz zaman tanıyın. Çöplükle devam etmek istiyor musun?",
-                        "dump_not_ready_title": "Henüz tüm düğümler hazır değil",
-                        "header": "Z-Wave Ağınızı Yönetin",
-                        "home_id": "Ev kimliği",
-                        "introduction": "Z-Wave ağınızı ve Z-Wave düğümlerinizi yönetin",
-                        "nodes_ready": "Düğümler hazır",
-                        "server_version": "Sunucu Sürümü"
-                    },
-                    "device_info": {
-                        "device_config": "Cihazı Yapılandır",
-                        "node_ready": "Düğüm Hazır",
-                        "node_status": "Düğüm Durumu",
-                        "zwave_info": "Z-Wave Bilgisi"
-                    },
-                    "navigation": {
-                        "network": "Ağ"
-                    },
-                    "network_status": {
-                        "connected": "Bağlı",
-                        "connecting": "Bağlanıyor",
-                        "unknown": "Bilinmeyen"
-                    },
-                    "node_config": {
-                        "attribution": "Cihaz yapılandırma parametreleri ve açıklamaları {device_database}",
-                        "battery_device_notice": "Yapılandırmalarını güncellemek için pil cihazlarının uyanık olması gerekir. Cihazı nasıl uyandıracağınıza ilişkin talimatlar için lütfen cihazınızın kılavuzuna bakın.",
-                        "error_device_not_found": "Cihaz bulunamadı",
-                        "header": "Z-Wave Cihaz Yapılandırması",
-                        "introduction": "Seçilen cihaz için cihaza (düğüm) özel yapılandırma parametrelerini yönetin ve ayarlayın",
-                        "parameter_is_read_only": "Bu parametre salt okunurdur.",
-                        "zwave_js_device_database": "Z-Wave JS Cihaz Veritabanı"
-                    },
-                    "node_status": {
-                        "alive": "Canlı",
-                        "asleep": "Uykuda",
-                        "awake": "Uyanık",
-                        "dead": "Ölü",
-                        "unknown": "Bilinmeyen"
-                    },
-                    "remove_node": {
-                        "cancel_exclusion": "Hariç Tutmayı İptal Et",
-                        "controller_in_exclusion_mode": "Z-Wave denetleyiciniz artık dışlama modunda.",
-                        "exclusion_failed": "Düğüm kaldırılamadı. Daha fazla bilgi için lütfen günlükleri kontrol edin.",
-                        "exclusion_finished": "{id} düğümü, Z-Wave ağınızdan kaldırıldı.",
-                        "follow_device_instructions": "Cihazda hariç tutmayı tetiklemek için cihazınızla birlikte gelen talimatları izleyin.",
-                        "introduction": "Z-Wave ağınızdan bir düğümü kaldırın ve ilişkili cihazı ve varlıkları Home Assistant'tan kaldırın.",
-                        "start_exclusion": "Hariç Tutmayı Başlat",
-                        "title": "Bir Z-Wave Düğümünü Kaldırma"
-                    }
-                },
                 "zwave": {
-                    "button": "Yapılandır",
                     "common": {
                         "index": "Indeks",
                         "instance": "Örnek",
@@ -3003,6 +2855,84 @@
                     "values": {
                         "header": "Düğüm Değerleri"
                     }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Dahil Etmeyi İptal Et",
+                        "controller_in_inclusion_mode": "Z-Wave kontrol cihazınız artık dahil etme modunda.",
+                        "follow_device_instructions": "Cihazda eşleştirmeyi tetiklemek için cihazınızla birlikte gelen talimatları izleyin.",
+                        "inclusion_failed": "Düğüm eklenemedi. Daha fazla bilgi için lütfen günlükleri kontrol edin.",
+                        "inclusion_finished": "Düğüm eklendi. Düğümün arka planda kurulumunu tamamladığımızda tüm varlıkların görünmesi birkaç dakika sürebilir.",
+                        "introduction": "Bu sihirbaz, Z-Wave ağınıza bir düğüm eklerken size yol gösterecektir.",
+                        "secure_inclusion_warning": "Güvenli cihazlar ek bant genişliği gerektirir; çok fazla güvenli cihaz Z-Wave ağınızı yavaşlatabilir. Yalnızca kilitler veya garaj kapısı açıcılar gibi bunu gerektiren cihazlar için güvenli dahil etme kullanmanızı öneririz.",
+                        "start_inclusion": "Dahil Etmeye Başlayın",
+                        "start_secure_inclusion": "Güvenli Dahil Etmeyi Başlatın",
+                        "title": "Bir Z-Wave Düğümü Ekleyin",
+                        "use_secure_inclusion": "Güvenli dahil etme kullanın",
+                        "view_device": "Cihazı Görüntüle"
+                    },
+                    "common": {
+                        "add_node": "Düğüm Ekle",
+                        "close": "Kapat",
+                        "home_id": "Ev kimliği",
+                        "network": "Ağ",
+                        "node_id": "Düğüm Kimliği",
+                        "remove_node": "Düğümü Kaldır"
+                    },
+                    "dashboard": {
+                        "driver_version": "Sürücü Sürümü",
+                        "dump_dead_nodes_text": "Düğümlerinizden bazıları yanıt vermedi ve öldüğü varsayılıyor. Bunlar tamamen ihraç edilmeyecek.",
+                        "dump_dead_nodes_title": "Düğümlerinizden bazıları öldü",
+                        "dump_debug": "Sorunları tanılamaya yardımcı olmak için ağınızın dökümünün karşıdan yükle",
+                        "dump_not_ready_confirm": "İndir",
+                        "dump_not_ready_text": "Tüm düğümler hazır değilken bir dışa aktarma oluşturursanız, gerekli verileri kaçırabilirsiniz. Ağınıza tüm düğümleri sorgulaması için biraz zaman tanıyın. Çöplükle devam etmek istiyor musun?",
+                        "dump_not_ready_title": "Henüz tüm düğümler hazır değil",
+                        "header": "Z-Wave Ağınızı Yönetin",
+                        "home_id": "Ev kimliği",
+                        "introduction": "Z-Wave ağınızı ve Z-Wave düğümlerinizi yönetin",
+                        "nodes_ready": "Düğümler hazır",
+                        "server_version": "Sunucu Sürümü"
+                    },
+                    "device_info": {
+                        "device_config": "Cihazı Yapılandır",
+                        "node_ready": "Düğüm Hazır",
+                        "node_status": "Düğüm Durumu",
+                        "zwave_info": "Z-Wave Bilgisi"
+                    },
+                    "navigation": {
+                        "network": "Ağ"
+                    },
+                    "network_status": {
+                        "connected": "Bağlı",
+                        "connecting": "Bağlanıyor",
+                        "unknown": "Bilinmeyen"
+                    },
+                    "node_config": {
+                        "attribution": "Cihaz yapılandırma parametreleri ve açıklamaları {device_database}",
+                        "battery_device_notice": "Yapılandırmalarını güncellemek için pil cihazlarının uyanık olması gerekir. Cihazı nasıl uyandıracağınıza ilişkin talimatlar için lütfen cihazınızın kılavuzuna bakın.",
+                        "error_device_not_found": "Cihaz bulunamadı",
+                        "header": "Z-Wave Cihaz Yapılandırması",
+                        "introduction": "Seçilen cihaz için cihaza (düğüm) özel yapılandırma parametrelerini yönetin ve ayarlayın",
+                        "parameter_is_read_only": "Bu parametre salt okunurdur.",
+                        "zwave_js_device_database": "Z-Wave JS Cihaz Veritabanı"
+                    },
+                    "node_status": {
+                        "alive": "Canlı",
+                        "asleep": "Uykuda",
+                        "awake": "Uyanık",
+                        "dead": "Ölü",
+                        "unknown": "Bilinmeyen"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Hariç Tutmayı İptal Et",
+                        "controller_in_exclusion_mode": "Z-Wave denetleyiciniz artık dışlama modunda.",
+                        "exclusion_failed": "Düğüm kaldırılamadı. Daha fazla bilgi için lütfen günlükleri kontrol edin.",
+                        "exclusion_finished": "{id} düğümü, Z-Wave ağınızdan kaldırıldı.",
+                        "follow_device_instructions": "Cihazda hariç tutmayı tetiklemek için cihazınızla birlikte gelen talimatları izleyin.",
+                        "introduction": "Z-Wave ağınızdan bir düğümü kaldırın ve ilişkili cihazı ve varlıkları Home Assistant'tan kaldırın.",
+                        "start_exclusion": "Hariç Tutmayı Başlat",
+                        "title": "Bir Z-Wave Düğümünü Kaldırma"
+                    }
                 }
             },
             "custom": {
@@ -3085,31 +3015,10 @@
                     }
                 }
             },
-            "error": {
-                "go_back": "Geri Git",
-                "supervisor": {
-                    "ask": "Yardım isteyin",
-                    "observer": "Gözlemciyi Kontrol Edin",
-                    "reboot": "Ana bilgisayarı yeniden başlatmayı deneyin",
-                    "system_health": "Sistem Sağlığını Kontrol Edin",
-                    "title": "Süpervizör paneli yüklenemedi!",
-                    "wait": "Yeni başladıysanız, süpervizöre başlaması için yeterince zaman verdiğinizden emin olun."
-                }
-            },
-            "history": {
-                "ranges": {
-                    "last_week": "Geçen hafta",
-                    "this_week": "Bu hafta",
-                    "today": "Bugün",
-                    "yesterday": "Dün"
-                }
-            },
-            "logbook": {
-                "ranges": {
-                    "last_week": "Geçen hafta",
-                    "this_week": "Bu hafta",
-                    "today": "Bugün",
-                    "yesterday": "Dün"
+            "energy": {
+                "setup": {
+                    "back": "Geri",
+                    "next": "Sonraki"
                 }
             },
             "lovelace": {
@@ -3223,7 +3132,6 @@
                         "entities": {
                             "description": "Varlıklar kartı en yaygın kart türüdür. Öğeleri listeler halinde gruplandırır.",
                             "edit_special_row": "Düzenle düğmesini tıklayarak bu satırın ayrıntılarını görüntüleyin",
-                            "entity_row_editor": "Varlık Satır Düzenleyicisi",
                             "entity_row": {
                                 "attribute": "Öznitelik",
                                 "button": "Düğme",
@@ -3235,6 +3143,7 @@
                                 "section": "Bölüm",
                                 "weblink": "Web Bağlantısı"
                             },
+                            "entity_row_editor": "Varlık Satır Düzenleyicisi",
                             "name": "Varlıklar",
                             "secondary_info_values": {
                                 "brightness": "Parlaklık",
@@ -3509,7 +3418,6 @@
                         "unsaved_changes": "Kaydedilmemiş değişiklikler"
                     },
                     "save_config": {
-                        "cancel": "Boşver",
                         "close": "Kapat",
                         "empty_config": "Boş bir gösterge tablosuyla başla",
                         "header": "Lovelace kullanıcı arayüzünü kontrolünüz altına alın",
@@ -3538,8 +3446,6 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Bu, ilk kartı tam genişlikte işler. Bu görünümdeki diğer kartlar ve rozetler işlenmeyecektir.",
-                            "title": "Panel Modu?",
                             "warning_multiple_cards": "Bu görünüm birden fazla kart içeriyor, ancak panel görünümü yalnızca 1 kart gösterebilir."
                         }
                     }
@@ -3742,8 +3648,7 @@
             },
             "page-onboarding": {
                 "analytics": {
-                    "finish": "Sonraki",
-                    "intro": "Örneğinizden analizleri paylaşın. {link} adresinde herkese açık olacak"
+                    "finish": "Sonraki"
                 },
                 "core-config": {
                     "button_detect": "Algıla",
@@ -3763,10 +3668,15 @@
                 "intro": "Evinizi uyandırmaya, gizliliğinizi geri almaya ve dünya çapında bir tamirci topluluğuna katılmaya hazır mısınız?",
                 "next": "Sonraki",
                 "restore": {
+                    "addons": "Eklentiler",
                     "description": "Alternatif olarak, önceki anlık görüntüden geri yükleyebilirsiniz.",
+                    "folders": "Klasörler",
                     "hide_log": "Tam günlüğü gizle",
                     "in_progress": "Geri yükleme devam ediyor",
-                    "show_log": "Tam günlüğü göster"
+                    "password": "Parola",
+                    "password_protection": "Parola koruması",
+                    "show_log": "Tam günlüğü göster",
+                    "type": "Tür"
                 },
                 "user": {
                     "create_account": "Hesap Oluştur",
@@ -3843,18 +3753,18 @@
                     "prompt_copy_token": "Erişim anahtarınızı kopyalayın. Bu anahtar bir daha görüntülenmeyecektir.",
                     "prompt_name": "Belirtece bir ad verin"
                 },
+                "mfa": {
+                    "confirm_disable": "{name} adlı öğeyi devre dışı bırakmak istediğinizden emin misiniz?",
+                    "disable": "Devre dışı bırak",
+                    "enable": "Etkinleştir",
+                    "header": "Çok Faktörlü Kimlik Doğrulama Modülleri"
+                },
                 "mfa_setup": {
                     "close": "Kapat",
                     "step_done": "Kurulumun {step} adımı tamamlandı",
                     "submit": "Gönder",
                     "title_aborted": "İptal edildi",
                     "title_success": "Başarılı!"
-                },
-                "mfa": {
-                    "confirm_disable": "{name} adlı öğeyi devre dışı bırakmak istediğinizden emin misiniz?",
-                    "disable": "Devre dışı bırak",
-                    "enable": "Etkinleştir",
-                    "header": "Çok Faktörlü Kimlik Doğrulama Modülleri"
                 },
                 "number_format": {
                     "description": "Sayıların nasıl biçimlendirileceğini seçin.",

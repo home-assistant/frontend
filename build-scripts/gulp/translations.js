@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+
 const crypto = require("crypto");
 const del = require("del");
 const path = require("path");
@@ -26,13 +28,6 @@ gulp.task("translations-enable-merge-backend", (done) => {
   done();
 });
 
-String.prototype.rsplit = function (sep, maxsplit) {
-  var split = this.split(sep);
-  return maxsplit
-    ? [split.slice(0, -maxsplit).join(sep)].concat(split.slice(-maxsplit))
-    : split;
-};
-
 // Panel translations which should be split from the core translations.
 const TRANSLATION_FRAGMENTS = Object.keys(
   require("../../src/translations/en.json").ui.panel
@@ -40,7 +35,7 @@ const TRANSLATION_FRAGMENTS = Object.keys(
 
 function recursiveFlatten(prefix, data) {
   let output = {};
-  Object.keys(data).forEach(function (key) {
+  Object.keys(data).forEach((key) => {
     if (typeof data[key] === "object") {
       output = {
         ...output,
@@ -101,15 +96,19 @@ function lokaliseTransform(data, original, file) {
     if (value instanceof Object) {
       output[key] = lokaliseTransform(value, original, file);
     } else {
-      output[key] = value.replace(re_key_reference, (match, key) => {
-        const replace = key.split("::").reduce((tr, k) => {
+      output[key] = value.replace(re_key_reference, (_match, lokalise_key) => {
+        const replace = lokalise_key.split("::").reduce((tr, k) => {
           if (!tr) {
-            throw Error(`Invalid key placeholder ${key} in ${file.path}`);
+            throw Error(
+              `Invalid key placeholder ${lokalise_key} in ${file.path}`
+            );
           }
           return tr[k];
         }, original);
         if (typeof replace !== "string") {
-          throw Error(`Invalid key placeholder ${key} in ${file.path}`);
+          throw Error(
+            `Invalid key placeholder ${lokalise_key} in ${file.path}`
+          );
         }
         return replace;
       });
@@ -118,9 +117,7 @@ function lokaliseTransform(data, original, file) {
   return output;
 }
 
-gulp.task("clean-translations", function () {
-  return del([workDir]);
-});
+gulp.task("clean-translations", () => del([workDir]));
 
 gulp.task("ensure-translations-build-dir", (done) => {
   if (!fs.existsSync(workDir)) {
@@ -129,7 +126,7 @@ gulp.task("ensure-translations-build-dir", (done) => {
   done();
 });
 
-gulp.task("create-test-metadata", function (cb) {
+gulp.task("create-test-metadata", (cb) => {
   fs.writeFile(
     workDir + "/testMetadata.json",
     JSON.stringify({
@@ -143,17 +140,13 @@ gulp.task("create-test-metadata", function (cb) {
 
 gulp.task(
   "create-test-translation",
-  gulp.series("create-test-metadata", function createTestTranslation() {
-    return gulp
+  gulp.series("create-test-metadata", () =>
+    gulp
       .src(path.join(paths.translations_src, "en.json"))
-      .pipe(
-        transform(function (data, file) {
-          return recursiveEmpty(data);
-        })
-      )
+      .pipe(transform((data, _file) => recursiveEmpty(data)))
       .pipe(rename("test.json"))
-      .pipe(gulp.dest(workDir));
-  })
+      .pipe(gulp.dest(workDir))
+  )
 );
 
 /**
@@ -165,7 +158,7 @@ gulp.task(
  * project is buildable immediately after merging new translation keys, since
  * the Lokalise update to translations/en.json will not happen immediately.
  */
-gulp.task("build-master-translation", function () {
+gulp.task("build-master-translation", () => {
   const src = [path.join(paths.translations_src, "en.json")];
 
   if (mergeBackend) {
@@ -174,11 +167,7 @@ gulp.task("build-master-translation", function () {
 
   return gulp
     .src(src)
-    .pipe(
-      transform(function (data, file) {
-        return lokaliseTransform(data, data, file);
-      })
-    )
+    .pipe(transform((data, file) => lokaliseTransform(data, data, file)))
     .pipe(
       merge({
         fileName: "translationMaster.json",
@@ -187,18 +176,14 @@ gulp.task("build-master-translation", function () {
     .pipe(gulp.dest(workDir));
 });
 
-gulp.task("build-merged-translations", function () {
-  return gulp
+gulp.task("build-merged-translations", () =>
+  gulp
     .src([inFrontendDir + "/*.json", workDir + "/test.json"], {
       allowEmpty: true,
     })
+    .pipe(transform((data, file) => lokaliseTransform(data, data, file)))
     .pipe(
-      transform(function (data, file) {
-        return lokaliseTransform(data, data, file);
-      })
-    )
-    .pipe(
-      foreach(function (stream, file) {
+      foreach((stream, file) => {
         // For each language generate a merged json file. It begins with the master
         // translation as a failsafe for untranslated strings, and merges all parent
         // tags into one file for each specific subtag
@@ -230,17 +215,17 @@ gulp.task("build-merged-translations", function () {
           )
           .pipe(gulp.dest(fullDir));
       })
-    );
-});
+    )
+);
 
-var taskName;
+let taskName;
 
 const splitTasks = [];
 TRANSLATION_FRAGMENTS.forEach((fragment) => {
   taskName = "build-translation-fragment-" + fragment;
-  gulp.task(taskName, function () {
+  gulp.task(taskName, () =>
     // Return only the translations for this fragment.
-    return gulp
+    gulp
       .src(fullDir + "/*.json")
       .pipe(
         transform((data) => ({
@@ -251,18 +236,18 @@ TRANSLATION_FRAGMENTS.forEach((fragment) => {
           },
         }))
       )
-      .pipe(gulp.dest(workDir + "/" + fragment));
-  });
+      .pipe(gulp.dest(workDir + "/" + fragment))
+  );
   splitTasks.push(taskName);
 });
 
 taskName = "build-translation-core";
-gulp.task(taskName, function () {
+gulp.task(taskName, () =>
   // Remove the fragment translations from the core translation.
-  return gulp
+  gulp
     .src(fullDir + "/*.json")
     .pipe(
-      transform((data, file) => {
+      transform((data, _file) => {
         TRANSLATION_FRAGMENTS.forEach((fragment) => {
           delete data.ui.panel[fragment];
         });
@@ -270,14 +255,14 @@ gulp.task(taskName, function () {
         return data;
       })
     )
-    .pipe(gulp.dest(coreDir));
-});
+    .pipe(gulp.dest(coreDir))
+);
 
 splitTasks.push(taskName);
 
-gulp.task("build-flattened-translations", function () {
+gulp.task("build-flattened-translations", () =>
   // Flatten the split versions of our translations, and move them into outDir
-  return gulp
+  gulp
     .src(
       TRANSLATION_FRAGMENTS.map(
         (fragment) => workDir + "/" + fragment + "/*.json"
@@ -285,41 +270,45 @@ gulp.task("build-flattened-translations", function () {
       { base: workDir }
     )
     .pipe(
-      transform(function (data) {
+      transform((data) =>
         // Polymer.AppLocalizeBehavior requires flattened json
-        return flatten(data);
-      })
+        flatten(data)
+      )
     )
     .pipe(
       rename((filePath) => {
         if (filePath.dirname === "core") {
           filePath.dirname = "";
         }
+        // In dev we create the file with the fake hash in the filename
+        if (!env.isProdBuild()) {
+          filePath.basename += "-dev";
+        }
       })
     )
-    .pipe(gulp.dest(outDir));
-});
+    .pipe(gulp.dest(outDir))
+);
 
 const fingerprints = {};
 
-gulp.task(
-  "build-translation-fingerprints",
-  function fingerprintTranslationFiles() {
-    // Fingerprint full file of each language
-    const files = fs.readdirSync(fullDir);
+gulp.task("build-translation-fingerprints", () => {
+  // Fingerprint full file of each language
+  const files = fs.readdirSync(fullDir);
 
-    for (let i = 0; i < files.length; i++) {
-      fingerprints[files[i].split(".")[0]] = {
-        // In dev we create fake hashes
-        hash: env.isProdBuild()
-          ? crypto
-              .createHash("md5")
-              .update(fs.readFileSync(path.join(fullDir, files[i]), "utf-8"))
-              .digest("hex")
-          : "dev",
-      };
-    }
+  for (let i = 0; i < files.length; i++) {
+    fingerprints[files[i].split(".")[0]] = {
+      // In dev we create fake hashes
+      hash: env.isProdBuild()
+        ? crypto
+            .createHash("md5")
+            .update(fs.readFileSync(path.join(fullDir, files[i]), "utf-8"))
+            .digest("hex")
+        : "dev",
+    };
+  }
 
+  // In dev we create the file with the fake hash in the filename
+  if (env.isProdBuild()) {
     mapFiles(outDir, ".json", (filename) => {
       const parsed = path.parse(filename);
 
@@ -335,35 +324,35 @@ gulp.task(
         }`
       );
     });
-
-    const stream = source("translationFingerprints.json");
-    stream.write(JSON.stringify(fingerprints));
-    process.nextTick(() => stream.end());
-    return stream.pipe(vinylBuffer()).pipe(gulp.dest(workDir));
   }
-);
 
-gulp.task("build-translation-fragment-supervisor", function () {
-  return gulp
+  const stream = source("translationFingerprints.json");
+  stream.write(JSON.stringify(fingerprints));
+  process.nextTick(() => stream.end());
+  return stream.pipe(vinylBuffer()).pipe(gulp.dest(workDir));
+});
+
+gulp.task("build-translation-fragment-supervisor", () =>
+  gulp
     .src(fullDir + "/*.json")
     .pipe(transform((data) => data.supervisor))
-    .pipe(gulp.dest(workDir + "/supervisor"));
-});
+    .pipe(gulp.dest(workDir + "/supervisor"))
+);
 
-gulp.task("build-translation-flatten-supervisor", function () {
-  return gulp
+gulp.task("build-translation-flatten-supervisor", () =>
+  gulp
     .src(workDir + "/supervisor/*.json")
     .pipe(
-      transform(function (data) {
+      transform((data) =>
         // Polymer.AppLocalizeBehavior requires flattened json
-        return flatten(data);
-      })
+        flatten(data)
+      )
     )
-    .pipe(gulp.dest(outDir));
-});
+    .pipe(gulp.dest(outDir))
+);
 
-gulp.task("build-translation-write-metadata", function writeMetadata() {
-  return gulp
+gulp.task("build-translation-write-metadata", () =>
+  gulp
     .src(
       [
         path.join(paths.translations_src, "translationMetadata.json"),
@@ -374,13 +363,14 @@ gulp.task("build-translation-write-metadata", function writeMetadata() {
     )
     .pipe(merge({}))
     .pipe(
-      transform(function (data) {
+      transform((data) => {
         const newData = {};
         Object.entries(data).forEach(([key, value]) => {
           // Filter out translations without native name.
           if (value.nativeName) {
             newData[key] = value;
           } else {
+            // eslint-disable-next-line no-console
             console.warn(
               `Skipping language ${key}. Native name was not translated.`
             );
@@ -396,19 +386,26 @@ gulp.task("build-translation-write-metadata", function writeMetadata() {
       }))
     )
     .pipe(rename("translationMetadata.json"))
-    .pipe(gulp.dest(workDir));
-});
+    .pipe(gulp.dest(workDir))
+);
+
+gulp.task(
+  "create-translations",
+  gulp.series(
+    env.isProdBuild() ? (done) => done() : "create-test-translation",
+    "build-master-translation",
+    "build-merged-translations",
+    gulp.parallel(...splitTasks),
+    "build-flattened-translations"
+  )
+);
 
 gulp.task(
   "build-translations",
   gulp.series(
     "clean-translations",
     "ensure-translations-build-dir",
-    env.isProdBuild() ? (done) => done() : "create-test-translation",
-    "build-master-translation",
-    "build-merged-translations",
-    gulp.parallel(...splitTasks),
-    "build-flattened-translations",
+    "create-translations",
     "build-translation-fingerprints",
     "build-translation-write-metadata"
   )

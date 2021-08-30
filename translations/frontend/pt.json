@@ -17,6 +17,7 @@
         "calendar": "Calendário",
         "config": "Configuração",
         "developer_tools": "Ferramentas de programação",
+        "energy": "Energia",
         "history": "Histórico",
         "logbook": "Diário de bordo",
         "mailbox": "Caixa de correio",
@@ -25,6 +26,14 @@
         "profile": "Perfil",
         "shopping_list": "Lista de compras",
         "states": "Visão Geral"
+    },
+    "state": {
+        "default": {
+            "off": "Desligado",
+            "on": "Ligado",
+            "unavailable": "Indisponível",
+            "unknown": "Desconhecido"
+        }
     },
     "state_attributes": {
         "climate": {
@@ -92,14 +101,6 @@
         "person": {
             "home": "Casa",
             "not_home": "Ausente"
-        }
-    },
-    "state": {
-        "default": {
-            "off": "Desligado",
-            "on": "Ligado",
-            "unavailable": "Indisponível",
-            "unknown": "Desconhecido"
         }
     },
     "supervisor": {
@@ -248,6 +249,20 @@
                 "not_installed": "Add-on não está instalado"
             }
         },
+        "backup": {
+            "addons": "Add-ons",
+            "could_not_create": "Não foi possível criar um backup",
+            "create": "Criar",
+            "create_blocked_not_running": "Não é possível criar um backup agora porque o sistema está {state}.",
+            "created": "Criado",
+            "enter_password": "Por favor introduza uma palavra-passe.",
+            "folders": "Pastas",
+            "name": "Nome",
+            "password": "Palavra-passe",
+            "password_protection": "Proteção por palavra-passe",
+            "select_type": "Selecione o que restaurar",
+            "type": "Tipo"
+        },
         "common": {
             "cancel": "Cancelar",
             "close": "Fechar",
@@ -338,9 +353,6 @@
                 "text": "Desejas reiniciar o add-on com as alterações?"
             },
             "update": {
-                "create_snapshot": "Criar um snapshot do {name} antes de atualizar",
-                "snapshot": "Snapshot",
-                "snapshotting": "A criar um snapshot de {name}",
                 "updating": "A actualizar {name} para a versão {version}"
             }
         },
@@ -352,39 +364,8 @@
         },
         "panel": {
             "dashboard": "Painel",
-            "snapshots": "Imagens do sistema",
             "store": "Loja de Add-ons",
             "system": "Sistema"
-        },
-        "snapshot": {
-            "addons": "Add-ons",
-            "available_snapshots": "Imagens de sistema disponíveis",
-            "could_not_create": "Não foi possível criar um snapshot",
-            "create": "Criar",
-            "create_blocked_not_running": "Não é possível criar um snapshot agora porque o sistema está {state}.",
-            "create_snapshot": "Criar snapshot",
-            "created": "Criado",
-            "description": "As imagens de sistema permitem facilmente criar uma cópia de segurança e restauro de todos os dados da sua instância do Home Assistant",
-            "enter_password": "Por favor introduza uma palavra-passe.",
-            "folder": {
-                "addons/local": "Add-ons locais",
-                "homeassistant": "Configuração do Home Assistant",
-                "media": "Média",
-                "share": "Partilhar",
-                "ssl": "SSL"
-            },
-            "folders": "Pastas",
-            "full_snapshot": "Snapshot completo",
-            "name": "Nome",
-            "no_snapshots": "Ainda não existem imagens de sistema.",
-            "partial_snapshot": "Snapshot parcial",
-            "password": "Palavra-passe",
-            "password_protected": "Protegido por Palavra-passe",
-            "password_protection": "Proteção por palavra-passe",
-            "security": "Segurança",
-            "select_type": "Selecione o que restaurar",
-            "type": "Tipo",
-            "upload_snapshot": "Upload  snapshot"
         },
         "store": {
             "missing_addons": "Complementos em falta? Active o modo avançado na sua pagina de perfil de utilizador",
@@ -718,6 +699,12 @@
             },
             "date-range-picker": {
                 "end_date": "Data de fim",
+                "ranges": {
+                    "last_week": "Semana passada",
+                    "this_week": "Esta semana",
+                    "today": "Hoje",
+                    "yesterday": "Ontem"
+                },
                 "select": "Selecione",
                 "start_date": "Data de início"
             },
@@ -808,10 +795,10 @@
                 "documentation": "Documentação",
                 "learn_adding_local_media": "Saiba mais sobre como adicionar ficheiros de média na {documentation} .",
                 "local_media_files": "Coloque seus ficheiros de vídeo, áudio e imagem no diretório de multimédia para poder navegar e reproduzi-los no navegador ou em reprodutores de média compatíveis.",
+                "media-player-browser": "Navegador do Media Player",
                 "media_browsing_error": "Erro de Navegação de Multimédia",
                 "media_not_supported": "O Browser Media Player não suporta este tipo de ficheiro",
                 "media_player": "Leitor multimédia",
-                "media-player-browser": "Navegador do Media Player",
                 "no_items": "Sem itens",
                 "no_local_media_found": "Não existem ficheiros de média",
                 "no_media_folder": "Parece que ainda não criou um diretório de multimédia.",
@@ -879,6 +866,12 @@
             },
             "service-picker": {
                 "service": "Serviço"
+            },
+            "statistic-picker": {
+                "learn_more": "Saiba mais sobre estatísticas",
+                "missing_entity": "Por que a minha entidade não está disponível?",
+                "no_statistics": "Não tem nenhuma estatística",
+                "statistic": "Estatística"
             },
             "target-picker": {
                 "add_area_id": "Escolha a área",
@@ -1077,13 +1070,13 @@
                         "core": "Geral",
                         "customize": "Personalização",
                         "devices": "Dispositivos",
+                        "energy": "Energia",
                         "entities": "Entidades",
                         "helpers": "Auxiliares",
                         "info": "Informação",
                         "integrations": "Integrações",
                         "logs": "Logs",
                         "lovelace": "Painéis Lovelace",
-                        "navigate_to": "Ir para {panel}",
                         "person": "Pessoas",
                         "scene": "Cenários",
                         "script": "Script",
@@ -1295,7 +1288,6 @@
                             "introduction": "As ações são o que o Home Assistant executará quando a automação for despoletada.",
                             "learn_more": "Saber mais sobre ações",
                             "name": "Ação",
-                            "type_select": "Tipo de ação",
                             "type": {
                                 "choose": {
                                     "add_option": "Adicionar opção",
@@ -1336,7 +1328,6 @@
                                 "repeat": {
                                     "label": "Repetir",
                                     "sequence": "Ações",
-                                    "type_select": "Tipo de repetição",
                                     "type": {
                                         "count": {
                                             "label": "Contagem"
@@ -1349,7 +1340,8 @@
                                             "conditions": "Enquanto as condições",
                                             "label": "Enquanto"
                                         }
-                                    }
+                                    },
+                                    "type_select": "Tipo de repetição"
                                 },
                                 "scene": {
                                     "label": "Ativar cena"
@@ -1369,6 +1361,7 @@
                                     "wait_template": "Template de espera"
                                 }
                             },
+                            "type_select": "Tipo de ação",
                             "unsupported_action": "Ação não suportada: {action}"
                         },
                         "alias": "Nome",
@@ -1387,7 +1380,6 @@
                             "introduction": "As condições são opcionais e impedem a execução a menos que todas as condições sejam satisfeitas.",
                             "learn_more": "Saber mais sobre condições",
                             "name": "Condição",
-                            "type_select": "Tipo de condição",
                             "type": {
                                 "and": {
                                     "label": "E"
@@ -1454,6 +1446,7 @@
                                     "zone": "Zona"
                                 }
                             },
+                            "type_select": "Tipo de condição",
                             "unsupported_condition": "Condição não suportada: {condition}"
                         },
                         "copy_to_clipboard": "Copiar para a Área de Transferência",
@@ -1493,7 +1486,6 @@
                             "introduction": "Os acionadores são o que iniciam o processamento de uma regra de automação. É possível especificar vários acionadores para a mesma regra. Uma vez iniciado um acionador, o Home Assistant irá validar as condições, e caso as mesmas ocorram, chamar a ação.\n\n[Saiba mais sobre acionadores.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Saber mais sobre acionadores",
                             "name": "Acionador",
-                            "type_select": "Tipo de acionador",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1559,17 +1551,17 @@
                                     "label": "Template",
                                     "value_template": "Template para o valor"
                                 },
-                                "time_pattern": {
-                                    "hours": "Horas",
-                                    "label": "Padrão de tempo",
-                                    "minutes": "Minutos",
-                                    "seconds": "Segundos"
-                                },
                                 "time": {
                                     "at": "Às",
                                     "label": "Tempo",
                                     "type_input": "Valor de um auxiliar de data/hora",
                                     "type_value": "Hora marcada"
+                                },
+                                "time_pattern": {
+                                    "hours": "Horas",
+                                    "label": "Padrão de tempo",
+                                    "minutes": "Minutos",
+                                    "seconds": "Segundos"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1584,6 +1576,7 @@
                                     "zone": "Zona"
                                 }
                             },
+                            "type_select": "Tipo de acionador",
                             "unsupported_platform": "Plataforma não suportada: {platform}"
                         },
                         "unsaved_confirm": "Existem alterações não guardadas. Tem a certeza de que quer sair?"
@@ -1741,9 +1734,9 @@
                             "loading": "A carregar...",
                             "manage": "Gerir",
                             "no_hooks_yet": "Parece que ainda não tem webhooks. Comece, por configurar um",
+                            "no_hooks_yet2": " ou criando um ",
                             "no_hooks_yet_link_automation": "automação de webhook",
                             "no_hooks_yet_link_integration": "integração baseada em webhook",
-                            "no_hooks_yet2": " ou criando um ",
                             "title": "Webhooks"
                         }
                     },
@@ -1990,6 +1983,26 @@
                     "unnamed_device": "Dispositivo sem nome",
                     "update": "Atualizar"
                 },
+                "energy": {
+                    "caption": "Energia",
+                    "device_consumption": {
+                        "dialog": {
+                            "selected_stat_intro": "Seleccione a entidade que representa a utilização de energia do dispositivo."
+                        }
+                    },
+                    "grid": {
+                        "flow_dialog": {
+                            "from": {
+                                "cost_number_input": "Preço por kWh",
+                                "energy_stat": "Energia consumida (kWh)"
+                            }
+                        }
+                    },
+                    "solar": {
+                        "stat_return_to_grid": "Energia solar devolvida à rede",
+                        "title": "Painéis Solares"
+                    }
+                },
                 "entities": {
                     "caption": "Entidades",
                     "description": "Gerir entidades conhecidas",
@@ -2040,14 +2053,6 @@
                         }
                     }
                 },
-                "filtering": {
-                    "clear": "Apagar",
-                    "filtering_by": "A filtrar por",
-                    "show": "Mostrar"
-                },
-                "hassio": {
-                    "button": "Configurar"
-                },
                 "header": "Configurar o Home Assistant",
                 "helpers": {
                     "caption": "Auxiliares",
@@ -2097,16 +2102,11 @@
                     "server": "servidor",
                     "setup_time": "Tempo de inicialização",
                     "source": "Fonte:",
-                    "system_health_error": "O componente System Health não está carregado. Adicione 'system_health:' ao configuration.yaml",
                     "system_health": {
                         "manage": "Gerir",
                         "more_info": "mais informações"
-                    }
-                },
-                "integration_panel_move": {
-                    "link_integration_page": "Página de Integrações",
-                    "missing_zha": "Falta o painel de configuração do Z-Wave? Foi movido para a entrada do Z-Wave na {integrations_page} .",
-                    "missing_zwave": "Falta o painel de configuração do Z-Wave? Foi movido para a entrada do Z-Wave na {integrations_page} ."
+                    },
+                    "system_health_error": "O componente System Health não está carregado. Adicione 'system_health:' ao configuration.yaml"
                 },
                 "integrations": {
                     "add_integration": "Adicionar integração",
@@ -2121,7 +2121,6 @@
                         "depends_on_cloud": "Depende da nuvem",
                         "device_unavailable": "Dispositivo indisponível",
                         "devices": "{count} {count, plural,\n one {dispositivo}\n other {dispositivos}\n}",
-                        "disable_restart_confirm": "Reinicie o Home Assistant para termina a desactivação desta integração",
                         "disable": {
                             "disable_confirm": "Tem certeza de que deseja desativar esta entrada de configuração? Os respectivos dispositivos e entidades serão desativados.",
                             "disabled": "Desativado",
@@ -2132,17 +2131,16 @@
                             },
                             "disabled_cause": "Desativado por {cause}."
                         },
+                        "disable_restart_confirm": "Reinicie o Home Assistant para termina a desactivação desta integração",
                         "documentation": "Documentação",
                         "enable_restart_confirm": "Reinicie o Home Assistant para terminar a ativação desta integração",
                         "entities": "{count} {count, plural,\n  one {entidade}\n  other {entidades}\n}",
                         "entity_unavailable": "Entidade indisponível",
                         "firmware": "Firmware: {version}",
                         "hub": "Conectado via",
-                        "logs": "Logs",
                         "manuf": "por {manufacturer}",
                         "no_area": "Nenhuma Área",
                         "not_loaded": "Não carregado",
-                        "options": "Opções",
                         "provided_by_custom_integration": "Fornecido por uma integração personalizada",
                         "reload": "Recarregar",
                         "reload_confirm": "A integração foi recarregada",
@@ -2173,7 +2171,6 @@
                             "open_site": "Abrir site"
                         },
                         "finish": "Terminar",
-                        "loading_first_time": "Por favor, aguarde enquanto a integração está a ser instalada",
                         "next": "Próximo",
                         "not_all_required_fields": "Nem todos os campos obrigatórios estão preenchidos.",
                         "pick_flow_step": {
@@ -2188,7 +2185,6 @@
                     "details": "Detalhes da integração",
                     "disable": {
                         "disabled_integrations": "{number} desativado",
-                        "hide_disabled": "Ocultar integrações desativadas",
                         "show": "Mostrar",
                         "show_disabled": "Mostrar integrações desativadas"
                     },
@@ -2199,7 +2195,6 @@
                         "confirm_delete_ignore_title": "Parar de ignorar {name} ?",
                         "confirm_ignore": "De certeza que não quer configurar esta integração? Pode desfazer isto clicando em \"Mostrar integrações ignoradas' no menu deslizante no canto superior direito.",
                         "confirm_ignore_title": "Ignorar a descoberta de {name} ?",
-                        "hide_ignored": "Esconder integrações ignoradas",
                         "ignore": "Ignorar",
                         "ignored": "Ignorado",
                         "show_ignored": "Mostrar integrações ignoradas",
@@ -2317,7 +2312,6 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Configurar",
                     "description_listen": "Ouvir um tópico",
                     "description_publish": "Publicar um pacote",
                     "listening_to": "A escutar",
@@ -2331,7 +2325,6 @@
                     "topic": "tópico"
                 },
                 "ozw": {
-                    "button": "Configurar",
                     "common": {
                         "controller": "Controlador",
                         "instance": "Instância",
@@ -2356,6 +2349,11 @@
                         "nodes": "Nós",
                         "select_instance": "Selecione a instância"
                     },
+                    "network": {
+                        "header": "Gestão de Rede",
+                        "introduction": "Gerir funções de rede.",
+                        "node_count": "{count} nós"
+                    },
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "Todos os nós foram inquiridos.",
@@ -2376,10 +2374,9 @@
                         "starting": "A iniciar",
                         "unknown": "Desconhecido"
                     },
-                    "network": {
-                        "header": "Gestão de Rede",
-                        "introduction": "Gerir funções de rede.",
-                        "node_count": "{count} nós"
+                    "node": {
+                        "button": "Detalhes do nó",
+                        "not_found": "Nó não encontrado"
                     },
                     "node_config": {
                         "header": "Configuração do Nó",
@@ -2408,10 +2405,6 @@
                         "static": "A obter valores estáticos do dispositivo",
                         "versions": "A obter informações sobre as versões de firmware e classe de comando",
                         "wakeup": "A configurar suporte para filas de ativação e mensagens"
-                    },
-                    "node": {
-                        "button": "Detalhes do nó",
-                        "not_found": "Nó não encontrado"
                     },
                     "nodes_table": {
                         "failed": "Falhou",
@@ -2715,7 +2708,6 @@
                         "search_again": "Pesquisar Novamente",
                         "spinner": "À procura de dispositivos ZHA Zigbee..."
                     },
-                    "button": "Configurar",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos do cluster selecionado",
                         "get_zigbee_attribute": "Obter atributo Zigbee",
@@ -2744,10 +2736,7 @@
                         "value": "Valor"
                     },
                     "configuration_page": {
-                        "shortcuts_title": "Atalhos",
-                        "zha_options": {
-                            "title": "Opções Globais"
-                        }
+                        "shortcuts_title": "Atalhos"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuração Completa",
@@ -2829,95 +2818,7 @@
                     "introduction": "As zonas permitem especificar determinadas regiões da Terra. Quando uma pessoa está dentro de uma zona, o estado assume o nome da zona. As zonas também podem ser usadas como gatilho ou condição nas configurações de automação.",
                     "no_zones_created_yet": "Parece que ainda não criou nenhuma zona."
                 },
-                "zwave_js": {
-                    "add_node": {
-                        "cancel_inclusion": "Cancelar Inclusão",
-                        "controller_in_inclusion_mode": "O seu controlador Z-Wave está agora em modo de inclusão.",
-                        "follow_device_instructions": "Siga as instruções do seu dispositivo para ativar o modo de emparelhamento",
-                        "inclusion_failed": "Não foi possível adicionar o nó. Por favor verifique os logs para mais informações.",
-                        "inclusion_finished": "O nó foi adicionado. Poderá demorar alguns minutos para que todas as entidades fiquem disponiveis, enquanto terminamos a configuração do nó em segundo plano.",
-                        "interview_failed": "A consulta do dispositivo falhou. Informações adicionais podem estar disponíveis nos logs.",
-                        "introduction": "Este assistente irá guiá-lo para adicionar um nó à sua rede Z-Wave.",
-                        "secure_inclusion_warning": "Dispositivos seguros requerem mais largura de banda; demasiados dispositivos seguros podem diminuir a performance da rede Z-Wave. Recomendamos que apenas sejam adicionados dispositivos seguros estritamente necessários, como fechaduras e aberturas de garagem.",
-                        "start_inclusion": "Iniciar Inclusão",
-                        "start_secure_inclusion": "Iniciar a Inclusão Segura",
-                        "title": "Adicionar um nó Z-Wave",
-                        "use_secure_inclusion": "Utilizar inclusão segura",
-                        "view_device": "Exibir dispositivo"
-                    },
-                    "button": "Configurar",
-                    "common": {
-                        "add_node": "Adicionar nó",
-                        "close": "Fechar",
-                        "home_id": "ID de Casa",
-                        "network": "Rede",
-                        "node_id": "ID de nó",
-                        "remove_node": "Remover nó"
-                    },
-                    "dashboard": {
-                        "driver_version": "Versão do driver",
-                        "dump_dead_nodes_title": "Alguns de seus nós estão desativados",
-                        "dump_not_ready_confirm": "Download",
-                        "dump_not_ready_title": "Nem todos os nós estão prontos",
-                        "header": "Gerir a sua rede Z-Wave",
-                        "home_id": "ID de Casa",
-                        "introduction": "Gerir a sua rede Z-Wave e respetivos nós",
-                        "nodes_ready": "Nós prontos",
-                        "server_version": "Versão do servidor"
-                    },
-                    "device_info": {
-                        "device_config": "Configurar Dispositivo",
-                        "node_ready": "Nó Pronto",
-                        "node_status": "Estado do Nó",
-                        "zwave_info": "Informações sobre Z-Wave"
-                    },
-                    "logs": {
-                        "log_level": "Nível de log",
-                        "log_level_changed": "Nível de log alterado para: {level}",
-                        "subscribed_to_logs": "Inscrito em mensagens de log do Z-Wave JS...",
-                        "title": "Z-Wave JS Logs"
-                    },
-                    "navigation": {
-                        "logs": "Logs",
-                        "network": "Rede"
-                    },
-                    "network_status": {
-                        "connected": "Conectado",
-                        "connecting": "A conectar",
-                        "unknown": "Desconhecido"
-                    },
-                    "node_config": {
-                        "error_device_not_found": "Dispositivo não encontrado",
-                        "parameter_is_read_only": "Este parâmetro é apenas de leitura.",
-                        "set_param_accepted": "O parâmetro foi atualizado.",
-                        "set_param_error": "Ocorreu um erro.",
-                        "set_param_queued": "A alteração do parâmetro foi colocada na fila e será atualizada quando o dispositivo for ativado."
-                    },
-                    "node_status": {
-                        "alive": "Ativo",
-                        "asleep": "Adormecido",
-                        "awake": "Acordado",
-                        "dead": "Inativo",
-                        "unknown": "Desconhecido"
-                    },
-                    "reinterview_node": {
-                        "in_progress": "A consultar dispositivo. Isto pode demorar algum tempo.",
-                        "interview_complete": "Consulta do dispositivo concluída.",
-                        "interview_failed": "A consulta do dispositivo falhou. Informações adicionais podem estar disponíveis nos logs.",
-                        "start_reinterview": "Iniciar nova consulta"
-                    },
-                    "remove_node": {
-                        "cancel_exclusion": "Cancelar Exclusão",
-                        "controller_in_exclusion_mode": "O seu controlador Z-Wave está agora em modo de exclusão.",
-                        "exclusion_failed": "Não foi possível remover o nó. Por favor verifique os logs para mais informações.",
-                        "exclusion_finished": "O nó {id} foi removido da sua rede Z-Wave.",
-                        "introduction": "Remova o nó da sua rede Z-Wave, e os dispositivos e entidades associadas do Home Assistant.",
-                        "start_exclusion": "Iniciar Exclusão",
-                        "title": "Remover um nó Z-Wave"
-                    }
-                },
                 "zwave": {
-                    "button": "Configurar UI",
                     "common": {
                         "index": "Índice",
                         "instance": "Instância",
@@ -3005,6 +2906,92 @@
                     "values": {
                         "header": "Valores do Nó"
                     }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Cancelar Inclusão",
+                        "controller_in_inclusion_mode": "O seu controlador Z-Wave está agora em modo de inclusão.",
+                        "follow_device_instructions": "Siga as instruções do seu dispositivo para ativar o modo de emparelhamento",
+                        "inclusion_failed": "Não foi possível adicionar o nó. Por favor verifique os logs para mais informações.",
+                        "inclusion_finished": "O nó foi adicionado. Poderá demorar alguns minutos para que todas as entidades fiquem disponiveis, enquanto terminamos a configuração do nó em segundo plano.",
+                        "interview_failed": "A consulta do dispositivo falhou. Informações adicionais podem estar disponíveis nos logs.",
+                        "introduction": "Este assistente irá guiá-lo para adicionar um nó à sua rede Z-Wave.",
+                        "secure_inclusion_warning": "Dispositivos seguros requerem mais largura de banda; demasiados dispositivos seguros podem diminuir a performance da rede Z-Wave. Recomendamos que apenas sejam adicionados dispositivos seguros estritamente necessários, como fechaduras e aberturas de garagem.",
+                        "start_inclusion": "Iniciar Inclusão",
+                        "start_secure_inclusion": "Iniciar a Inclusão Segura",
+                        "title": "Adicionar um nó Z-Wave",
+                        "use_secure_inclusion": "Utilizar inclusão segura",
+                        "view_device": "Exibir dispositivo"
+                    },
+                    "common": {
+                        "add_node": "Adicionar nó",
+                        "close": "Fechar",
+                        "home_id": "ID de Casa",
+                        "network": "Rede",
+                        "node_id": "ID de nó",
+                        "remove_node": "Remover nó"
+                    },
+                    "dashboard": {
+                        "driver_version": "Versão do driver",
+                        "dump_dead_nodes_title": "Alguns de seus nós estão desativados",
+                        "dump_not_ready_confirm": "Download",
+                        "dump_not_ready_title": "Nem todos os nós estão prontos",
+                        "header": "Gerir a sua rede Z-Wave",
+                        "home_id": "ID de Casa",
+                        "introduction": "Gerir a sua rede Z-Wave e respetivos nós",
+                        "nodes_ready": "Nós prontos",
+                        "server_version": "Versão do servidor"
+                    },
+                    "device_info": {
+                        "device_config": "Configurar Dispositivo",
+                        "node_ready": "Nó Pronto",
+                        "node_status": "Estado do Nó",
+                        "zwave_info": "Informações sobre Z-Wave"
+                    },
+                    "logs": {
+                        "log_level": "Nível de log",
+                        "log_level_changed": "Nível de log alterado para: {level}",
+                        "subscribed_to_logs": "Inscrito em mensagens de log do Z-Wave JS...",
+                        "title": "Z-Wave JS Logs"
+                    },
+                    "navigation": {
+                        "logs": "Logs",
+                        "network": "Rede"
+                    },
+                    "network_status": {
+                        "connected": "Conectado",
+                        "connecting": "A conectar",
+                        "unknown": "Desconhecido"
+                    },
+                    "node_config": {
+                        "error_device_not_found": "Dispositivo não encontrado",
+                        "parameter_is_read_only": "Este parâmetro é apenas de leitura.",
+                        "set_param_accepted": "O parâmetro foi atualizado.",
+                        "set_param_error": "Ocorreu um erro.",
+                        "set_param_queued": "A alteração do parâmetro foi colocada na fila e será atualizada quando o dispositivo for ativado."
+                    },
+                    "node_status": {
+                        "alive": "Ativo",
+                        "asleep": "Adormecido",
+                        "awake": "Acordado",
+                        "dead": "Inativo",
+                        "unknown": "Desconhecido"
+                    },
+                    "reinterview_node": {
+                        "in_progress": "A consultar dispositivo. Isto pode demorar algum tempo.",
+                        "interview_complete": "Consulta do dispositivo concluída.",
+                        "interview_failed": "A consulta do dispositivo falhou. Informações adicionais podem estar disponíveis nos logs.",
+                        "start_reinterview": "Iniciar nova consulta"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Cancelar Exclusão",
+                        "controller_in_exclusion_mode": "O seu controlador Z-Wave está agora em modo de exclusão.",
+                        "exclusion_failed": "Não foi possível remover o nó. Por favor verifique os logs para mais informações.",
+                        "exclusion_finished": "O nó {id} foi removido da sua rede Z-Wave.",
+                        "introduction": "Remova o nó da sua rede Z-Wave, e os dispositivos e entidades associadas do Home Assistant.",
+                        "start_exclusion": "Iniciar Exclusão",
+                        "title": "Remover um nó Z-Wave"
+                    }
                 }
             },
             "custom": {
@@ -3085,30 +3072,15 @@
                     }
                 }
             },
-            "error": {
-                "go_back": "Voltar",
-                "supervisor": {
-                    "ask": "Pedido de ajuda",
-                    "reboot": "Tente uma reinicialização do anfitrião",
-                    "system_health": "Integridade do Sistema",
-                    "title": "Impossível carregar o painel do Supervisor!",
-                    "wait": "Se acabou de começar, certifique-se de que deu tempo suficiente ao supervisor para iniciar."
-                }
-            },
-            "history": {
-                "ranges": {
-                    "last_week": "Semana passada",
-                    "this_week": "Esta semana",
-                    "today": "Hoje",
-                    "yesterday": "Ontem"
-                }
-            },
-            "logbook": {
-                "ranges": {
-                    "last_week": "Semana passada",
-                    "this_week": "Esta semana",
-                    "today": "Hoje",
-                    "yesterday": "Ontem"
+            "energy": {
+                "charts": {
+                    "by_device": "Consumo por dispositivo",
+                    "stat_house_energy_meter": "Consumo total de energia"
+                },
+                "setup": {
+                    "back": "Anterior",
+                    "done": "Apresentar o meu painel de energia!",
+                    "next": "Seguinte"
                 }
             },
             "lovelace": {
@@ -3221,7 +3193,6 @@
                         "entities": {
                             "description": "O cartão de entidades é o tipo mais comum de cartão. Ele agrupa itens em listas.",
                             "edit_special_row": "Visualize os detalhes desta linha pressionando o botão editar",
-                            "entity_row_editor": "Editor de Linha de Entidade",
                             "entity_row": {
                                 "attribute": "Atributo",
                                 "button": "Botão",
@@ -3233,6 +3204,7 @@
                                 "section": "Seção",
                                 "weblink": "Ligação Web"
                             },
+                            "entity_row_editor": "Editor de Linha de Entidade",
                             "name": "Entidades",
                             "secondary_info_values": {
                                 "brightness": "Brilho",
@@ -3507,7 +3479,6 @@
                         "unsaved_changes": "Alterações não guardadas"
                     },
                     "save_config": {
-                        "cancel": "Cancelar",
                         "close": "Fechar",
                         "empty_config": "Começar com um painel de instrumentos vazio",
                         "header": "Assumir controle sobre a interface do Lovelace",
@@ -3536,8 +3507,6 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Isto faz com que o primeiro cartão ocupe toda a vista, os outros cartões e crachás ficarão ocultos.",
-                            "title": "Modo Painel?",
                             "warning_multiple_cards": "Esta vista contém mais do que um cartão, mas a vista de painel só pode mostrar 1 cartão."
                         }
                     }
@@ -3757,10 +3726,16 @@
                 "intro": "Está pronto para despertar a sua casa, reclamar a sua privacidade e juntar-se a uma comunidade mundial de tecnólogos?",
                 "next": "Próximo",
                 "restore": {
-                    "description": "Em alternativa, pode restaurar a partir de um snapshot anterior.",
+                    "addons": "Add-ons",
+                    "description": "Em alternativa, pode restaurar a partir de um backup anterior.",
+                    "folders": "Pastas",
                     "hide_log": "Ocultar log completo",
                     "in_progress": "Restauração em curso",
-                    "show_log": "Mostrar log completo"
+                    "password": "Palavra-passe",
+                    "password_protection": "Proteção por palavra-passe",
+                    "select_type": "Selecione o que restaurar",
+                    "show_log": "Mostrar log completo",
+                    "type": "Tipo"
                 },
                 "user": {
                     "create_account": "Criar conta",
@@ -3837,18 +3812,18 @@
                     "prompt_copy_token": "Copie o seu token de acesso. Não será mostrado novamente.",
                     "prompt_name": "Nome?"
                 },
+                "mfa": {
+                    "confirm_disable": "Tem certeza de que deseja desativar {name} ?",
+                    "disable": "Desativar",
+                    "enable": "Ativar",
+                    "header": "Módulos de Autenticação por Multíplos-fatores"
+                },
                 "mfa_setup": {
                     "close": "Fechar",
                     "step_done": "Configuração concluída para {step}",
                     "submit": "Enviar",
                     "title_aborted": "Abortado",
                     "title_success": "Sucesso!"
-                },
-                "mfa": {
-                    "confirm_disable": "Tem certeza de que deseja desativar {name} ?",
-                    "disable": "Desativar",
-                    "enable": "Ativar",
-                    "header": "Módulos de Autenticação por Multíplos-fatores"
                 },
                 "number_format": {
                     "dropdown_label": "Formatação numérica",

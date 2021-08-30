@@ -74,6 +74,7 @@
       "armed_home": "[%key:state_badge::alarm_control_panel::armed%]",
       "armed_away": "[%key:state_badge::alarm_control_panel::armed%]",
       "armed_night": "[%key:state_badge::alarm_control_panel::armed%]",
+      "armed_vacation": "[%key:state_badge::alarm_control_panel::armed%]",
       "armed_custom_bypass": "[%key:state_badge::alarm_control_panel::armed%]",
       "pending": "Pend",
       "arming": "Arming",
@@ -117,6 +118,7 @@
         "arm_home": "Arm home",
         "arm_away": "Arm away",
         "arm_night": "Arm night",
+        "arm_vacation": "Arm vacation",
         "arm_custom_bypass": "Custom bypass"
       },
       "automation": {
@@ -934,7 +936,8 @@
         "common": {
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
-          }
+          },
+          "learn_more": "Learn more"
         },
         "areas": {
           "caption": "Areas",
@@ -1046,6 +1049,30 @@
             "stat_return_to_grid": "Solar energy returned to the grid",
             "stat_predicted_production": "Prediction of your solar energy production"
           },
+          "battery": {
+            "title": "Home Battery Storage",
+            "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
+            "learn_more": "More information on how to get started."
+          },
+          "gas": {
+            "title": "Gas Consumption",
+            "sub": "Let Home Assistant monitor your gas usage.",
+            "learn_more": "More information on how to get started.",
+            "dialog": {
+              "header": "Configure gas consumption",
+              "paragraph": "Gas consumption is the volume of gas that flows to your home.",
+              "energy_stat": "Consumed Energy (m³)",
+              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
+              "no_cost": "Do not track costs",
+              "cost_stat": "Use an entity tracking the total costs",
+              "cost_stat_input": "Total Costs Entity",
+              "cost_entity": "Use an entity with current price",
+              "cost_entity_input": "Entity with the current price",
+              "cost_number": "Use a static price",
+              "cost_number_input": "Price per m³",
+              "cost_number_suffix": "{currency}/m³"
+            }
+          },
           "device_consumption": {
             "title": "Individual devices",
             "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
@@ -1054,6 +1081,42 @@
             "selected_stat": "Tracking energy for",
             "dialog": {
               "selected_stat_intro": "Select the entity that represents the device energy usage."
+            }
+          },
+          "validation": {
+            "issues": {
+              "entity_not_defined": {
+                "title": "Entity not defined",
+                "description": "Check the integration or your configuration that provides:"
+              },
+              "recorder_untracked": {
+                "title": "Entity not tracked",
+                "description": "The recorder has been configured to exclude these configured entities:"
+              },
+              "entity_unavailable": {
+                "title": "Entity unavailable",
+                "description": "The state of these configured entities are currently not available:"
+              },
+              "entity_state_non_numeric": {
+                "title": "Entity has non-numeric state",
+                "description": "The following entities have a state that cannot be parsed as a number:"
+              },
+              "entity_negative_state": {
+                "title": "Entity has a negative state",
+                "description": "The following entities have a negative state while a positive state is expected:"
+              },
+              "entity_unexpected_unit_energy": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement 'kWh' or 'Wh':"
+              },
+              "entity_unexpected_unit_price": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'' or ''{currency}/Wh'':"
+              },
+              "entity_unexpected_state_class_total_increasing": {
+                "title": "Unexpected state class",
+                "description": "The following entities do not have the expected state class 'total_increasing'"
+              }
             }
           }
         },
@@ -2124,6 +2187,7 @@
               "entity_id": "Entity ID",
               "integration": "Integration",
               "area": "Area",
+              "disabled_by": "Disabled by",
               "status": "Status"
             },
             "selected": "{number} selected",
@@ -2255,7 +2319,7 @@
             "system_options": "System options",
             "documentation": "Documentation",
             "delete": "Delete",
-            "delete_confirm": "Are you sure you want to delete this integration?",
+            "delete_confirm": "Are you sure you want to delete the {title} integration?",
             "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "reload_confirm": "The integration was reloaded",
@@ -2713,7 +2777,7 @@
             "node_ready": "Node Ready",
             "device_config": "Configure Device",
             "reinterview_device": "Re-interview Device",
-            "heal_node": "Heal Node",
+            "heal_node": "Heal Device",
             "remove_failed": "Remove Failed Device"
           },
           "node_config": {
@@ -3700,19 +3764,19 @@
           "finish": "Next"
         },
         "restore": {
-          "description": "Alternatively you can restore from a previous snapshot.",
+          "description": "Alternatively you can restore from a previous backup.",
           "in_progress": "Restore in progress",
           "show_log": "Show full log",
           "hide_log": "Hide full log",
-          "full_snapshot": "[%key:supervisor::snapshot::full_snapshot%]",
-          "partial_snapshot": "[%key:supervisor::snapshot::partial_snapshot%]",
-          "type": "[%key:supervisor::snapshot::type%]",
-          "select_type": "[%key:supervisor::snapshot::select_type%]",
-          "folders": "[%key:supervisor::snapshot::folders%]",
-          "addons": "[%key:supervisor::snapshot::addons%]",
-          "password_protection": "[%key:supervisor::snapshot::password_protection%]",
-          "password": "[%key:supervisor::snapshot::password%]",
-          "confirm_password": "[%key:supervisor::snapshot::confirm_password%]"
+          "full_backup": "[%key:supervisor::backup::full_backup%]",
+          "partial_backup": "[%key:supervisor::backup::partial_backup%]",
+          "type": "[%key:supervisor::backup::type%]",
+          "select_type": "[%key:supervisor::backup::select_type%]",
+          "folders": "[%key:supervisor::backup::folders%]",
+          "addons": "[%key:supervisor::backup::addons%]",
+          "password_protection": "[%key:supervisor::backup::password_protection%]",
+          "password": "[%key:supervisor::backup::password%]",
+          "confirm_password": "[%key:supervisor::backup::confirm_password%]"
         }
       },
       "custom": {
@@ -3959,7 +4023,7 @@
     },
     "panel": {
       "dashboard": "Dashboard",
-      "snapshots": "Snapshots",
+      "backups": "Backups",
       "store": "Add-on Store",
       "system": "System"
     },
@@ -4054,43 +4118,32 @@
         "ram_usage": "Core RAM Usage"
       }
     },
-    "snapshot": {
-      "description": "Snapshots allow you to easily backup and restore all data of your Home Assistant instance.",
-      "available_snapshots": "Available Snapshots",
-      "no_snapshots": "You don't have any snapshots yet.",
-      "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
-      "delete_selected": "Delete selected snapshots",
-      "delete_snapshot_title": "Delete snapshot",
-      "delete_snapshot_text": "Do you want to delete {number} {number, plural,\n  one {snapshot}\n  other {snapshots}\n}?",
-      "delete_snapshot_confirm": "delete",
+    "backup": {
+      "no_backups": "You don't have any backups yet.",
+      "create_blocked_not_running": "Creating a backup is not possible right now because the system is in {state} state.",
+      "delete_selected": "Delete selected backups",
+      "delete_backup_title": "Delete backup",
+      "delete_backup_text": "Do you want to delete {number} {number, plural,\n  one {backup}\n  other {backups}\n}?",
+      "delete_backup_confirm": "delete",
       "selected": "{number} selected",
       "failed_to_delete": "Failed to delete",
-      "could_not_create": "Could not create snapshot",
-      "upload_snapshot": "Upload snapshot",
-      "create_snapshot": "Create snapshot",
+      "could_not_create": "Could not create backup",
+      "upload_backup": "Upload backup",
+      "create_backup": "Create backup",
       "create": "Create",
       "created": "Created",
-      "name": "Snapshot name",
-      "type": "Snapshot type",
+      "name": "Backup name",
+      "type": "Backup type",
       "select_type": "Select what to restore",
-      "security": "Security",
-      "full_snapshot": "Full snapshot",
-      "partial_snapshot": "Partial snapshot",
+      "full_backup": "Full backup",
+      "partial_backup": "Partial backup",
       "addons": "Add-ons",
       "folders": "Folders",
-      "password": "Snapshot password",
-      "confirm_password": "Confirm Snapshot password",
+      "password": "Backup password",
+      "confirm_password": "Confirm backup password",
       "password_protection": "Password protection",
-      "password_protected": "password protected",
       "enter_password": "Please enter a password.",
-      "passwords_not_matching": "The passwords does not match",
-      "folder": {
-        "homeassistant": "Home Assistant configuration",
-        "ssl": "SSL",
-        "share": "Share",
-        "media": "Media",
-        "addons/local": "Local add-ons"
-      }
+      "passwords_not_matching": "The passwords does not match"
     },
     "dialog": {
       "network": {
@@ -4133,10 +4186,10 @@
         "text": "Do you want to restart the add-on with your changes?"
       },
       "update": {
-        "snapshot": "Snapshot",
-        "create_snapshot": "Create a snapshot of {name} before updating",
+        "backup": "Backup",
+        "create_backup": "Create a backup of {name} before updating",
         "updating": "Updating {name} to version {version}",
-        "snapshotting": "Creating snapshot of {name}"
+        "creating_backup": "Creating backup of {name}"
       },
       "hardware": {
         "title": "Hardware",

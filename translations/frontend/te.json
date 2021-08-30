@@ -10,6 +10,12 @@
         "shopping_list": "షాపింగ్ జాబితా",
         "states": "టూకీగా"
     },
+    "state": {
+        "default": {
+            "unavailable": "అందుబాటులో లేదు",
+            "unknown": "తెలియదు"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -41,12 +47,6 @@
         },
         "person": {
             "home": "ఇంట"
-        }
-    },
-    "state": {
-        "default": {
-            "unavailable": "అందుబాటులో లేదు",
-            "unknown": "తెలియదు"
         }
     },
     "ui": {
@@ -143,7 +143,6 @@
                         "actions": {
                             "add": "అంశాన్ని జోడించు",
                             "header": "చర్యలు",
-                            "type_select": "యాక్షన్ రకం",
                             "type": {
                                 "condition": {
                                     "label": "కండిషన్"
@@ -159,6 +158,7 @@
                                     "timeout": "సమయం ముగిసింది (ఐచ్ఛికం)"
                                 }
                             },
+                            "type_select": "యాక్షన్ రకం",
                             "unsupported_action": "మద్దతు లేని చర్య: {action}"
                         },
                         "conditions": {
@@ -166,7 +166,6 @@
                             "delete": "తీసివేయి",
                             "delete_confirm": "ఇది మీరు delete చేయాలని అనుకుంటున్నారా?",
                             "duplicate": "నకిలీ",
-                            "type_select": "కండిషన్ రకం",
                             "type": {
                                 "numeric_state": {
                                     "above": "పైన",
@@ -188,7 +187,8 @@
                                         "mon": "సోమవారం"
                                     }
                                 }
-                            }
+                            },
+                            "type_select": "కండిషన్ రకం"
                         },
                         "default_name": "కొత్త ఆటోమేషన్",
                         "introduction": "ఆటోమేషన్ల ద్వారా మీ ఇంటికి ప్రాణం పోయండి",
@@ -198,7 +198,6 @@
                             "delete": "తొలగించు",
                             "delete_confirm": "ఖచ్చితంగా తొలగించాలనుకుంటున్నారా?",
                             "duplicate": "నకిలీ",
-                            "type_select": "ట్రిగ్గర్ రకం",
                             "type": {
                                 "event": {
                                     "event_data": "ఈవెంట్ డేటా",
@@ -239,7 +238,8 @@
                                 "zone": {
                                     "enter": "\nప్రవేశించు"
                                 }
-                            }
+                            },
+                            "type_select": "ట్రిగ్గర్ రకం"
                         }
                     },
                     "picker": {

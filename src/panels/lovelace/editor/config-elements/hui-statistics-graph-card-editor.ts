@@ -10,6 +10,7 @@ import {
   optional,
   string,
   union,
+  assign,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
@@ -25,6 +26,7 @@ import "../../../../components/ha-checkbox";
 import { StatisticType } from "../../../../data/history";
 import "../../../../components/ha-radio";
 import type { HaRadio } from "../../../../components/ha-radio";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const statTypeStruct = union([
   literal("sum"),
@@ -33,14 +35,16 @@ const statTypeStruct = union([
   literal("mean"),
 ]);
 
-const cardConfigStruct = object({
-  type: string(),
-  entities: array(entitiesConfigStruct),
-  title: optional(string()),
-  days_to_show: optional(number()),
-  chart_type: optional(union([literal("bar"), literal("line")])),
-  stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entities: array(entitiesConfigStruct),
+    title: optional(string()),
+    days_to_show: optional(number()),
+    chart_type: optional(union([literal("bar"), literal("line")])),
+    stat_types: optional(union([array(statTypeStruct), statTypeStruct])),
+  })
+);
 
 @customElement("hui-statistics-graph-card-editor")
 export class HuiStatisticsGraphCardEditor

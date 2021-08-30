@@ -5,7 +5,6 @@ import { classMap } from "lit/directives/class-map";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import "../ha-code-editor";
 import "../ha-icon-button";
-import type { NodeInfo } from "./hat-graph";
 import "./hat-logbook-note";
 import { LogbookEntry } from "../../data/logbook";
 import {
@@ -17,6 +16,7 @@ import {
 import "../../panels/logbook/ha-logbook";
 import { traceTabStyles } from "./trace-tab-styles";
 import { HomeAssistant } from "../../types";
+import type { NodeInfo } from "./hat-script-graph";
 
 @customElement("ha-trace-path-details")
 export class HaTracePathDetails extends LitElement {
@@ -30,7 +30,7 @@ export class HaTracePathDetails extends LitElement {
 
   @property({ attribute: false }) public selected!: NodeInfo;
 
-  @property() renderedNodes: Record<string, any> = {};
+  @property() public renderedNodes: Record<string, any> = {};
 
   @property() public trackedNodes!: Record<string, any>;
 

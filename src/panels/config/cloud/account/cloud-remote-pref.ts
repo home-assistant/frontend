@@ -59,7 +59,7 @@ export class CloudRemotePref extends LitElement {
               remote_connected
                 ? "connected"
                 : remote_enabled
-                ? "connecting"
+                ? "reconnecting"
                 : "not_connected"
             }`
           )}

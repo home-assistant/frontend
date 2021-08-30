@@ -26,6 +26,14 @@
         "shopping_list": "Akafslëscht",
         "states": "Iwwersiicht"
     },
+    "state": {
+        "default": {
+            "off": "Aus",
+            "on": "Un",
+            "unavailable": "Net erreechbar",
+            "unknown": "Onbekannt"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -92,14 +100,6 @@
         "person": {
             "home": "Doheem",
             "not_home": "Ënnerwee"
-        }
-    },
-    "state": {
-        "default": {
-            "off": "Aus",
-            "on": "Un",
-            "unavailable": "Net erreechbar",
-            "unknown": "Onbekannt"
         }
     },
     "supervisor": {
@@ -217,6 +217,18 @@
                 "get_logs": "Feeler beim liesen vun add-on logs, {error}"
             }
         },
+        "backup": {
+            "addons": "Add-ons",
+            "could_not_create": "Feeler beim erstellen vum Backup",
+            "create": "Erstellen",
+            "create_blocked_not_running": "Ee Backup erstellen ass fir de Moment net méiglech well de System an engem {state} Zoustand ass.",
+            "enter_password": "Gëff ee Passwuert an",
+            "folders": "Dossieren",
+            "name": "Numm",
+            "password": "Passwuert",
+            "password_protection": "Passwuert Protektioun",
+            "type": "Typ"
+        },
         "common": {
             "close": "Zoumaachen",
             "description": "Beschreiwung",
@@ -291,9 +303,6 @@
                 "text": "Soll den Add-on mat dengem Ännerungen frësch gestart ginn?"
             },
             "update": {
-                "create_snapshot": "Erstell ee Snapshot vun {name} virun der Aktualiséierung",
-                "snapshot": "Snapshot",
-                "snapshotting": "Snapshot vun {name} gëtt erstallt",
                 "updating": "Aktualiséiert {name} op Versioun {version}"
             }
         },
@@ -302,34 +311,6 @@
             "error_addon_not_found": "Add-on net fonnt",
             "faq_link": "Meng Home Assistant FAQ",
             "not_supported": "Dëse Redirect gëtt net vun  Denger Home Assistant Instanz ënnerstëtzt. Kuck de {link} fir déi ënnerstëtzte Redirects an d'Versioun fir déi se agefouert goufen."
-        },
-        "snapshot": {
-            "addons": "Add-ons",
-            "available_snapshots": "Verfügbar Snapshoten",
-            "could_not_create": "Feeler beim erstellen vum Snapshot",
-            "create": "Erstellen",
-            "create_blocked_not_running": "Ee Snapshot erstellen ass fir de Moment net méiglech well de System an engem {state} Zoustand ass.",
-            "create_snapshot": "Snapshot erstellen",
-            "description": "Snapshots erlaaben Dir all Home Assistant Instanz Donnéeën einfach ze backupen an ze restauréieren.",
-            "enter_password": "Gëff ee Passwuert an",
-            "folder": {
-                "addons/local": "Lokal Add-ons",
-                "homeassistant": "Home Assistant Konfiguratioun",
-                "media": "Medien",
-                "share": "Deelen",
-                "ssl": "SSL"
-            },
-            "folders": "Dossieren",
-            "full_snapshot": "Komplette Snapshot",
-            "name": "Numm",
-            "no_snapshots": "Du hues nach keng Snapshoten.",
-            "partial_snapshot": "Deelweise Snapshot",
-            "password": "Passwuert",
-            "password_protected": "Duerch ee Passwuert geschützt",
-            "password_protection": "Passwuert Protektioun",
-            "security": "Sëcherheet",
-            "type": "Typ",
-            "upload_snapshot": "Snapshot eroplueden"
         },
         "store": {
             "missing_addons": "Add-ons feelen ? Aktivéier den Avancéierte Modus an denger Benotzer Profil Säit",
@@ -730,10 +711,10 @@
                 "documentation": "Dokumentatioun",
                 "learn_adding_local_media": "Méi iwwert dobäisetze vun Medie an der {documentation} liesen.",
                 "local_media_files": "Placéier deng Video, Audio an Biller Dateien am Medie Dossier fir se kënnen duerch ze sichen an am Browser oder ënnerstëtzte Medie Spiller of ze spillen.",
+                "media-player-browser": "Media Player Browser",
                 "media_browsing_error": "Feeler beim duerchsiche vun de Medie",
                 "media_not_supported": "De Medie Spiller vum Browser ënnerstëtzt dëse typ vun Medie net",
                 "media_player": "Medie Spiller",
-                "media-player-browser": "Media Player Browser",
                 "no_items": "Keng Elementer",
                 "no_local_media_found": "Keng lokal Medie fonnt",
                 "no_media_folder": "Et gesäit sou aus wéi wann nach keen lokale Medie Dossier erstallt gouf.",
@@ -975,7 +956,6 @@
                         "integrations": "Integratioune",
                         "logs": "Logs",
                         "lovelace": "Lovelace Tableau de Bord",
-                        "navigate_to": "Navigéieren zu {panel}",
                         "person": "Persoune",
                         "scene": "Zeene",
                         "script": "Skripte",
@@ -1169,7 +1149,6 @@
                             "introduction": "Aktioune déi den Home Assistant ausféiert wann den Automatismus ausgeléist gouf.\n[Léier méi iwwert Aktiounen.](https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Méi iwwert Aktioune liesen",
                             "name": "Aktioun",
-                            "type_select": "Aktioun Typ",
                             "type": {
                                 "choose": {
                                     "add_option": "Optioun dobäisetzen",
@@ -1207,7 +1186,6 @@
                                 "repeat": {
                                     "label": "Widderhuelen",
                                     "sequence": "Aktiounen",
-                                    "type_select": "Widderhuelen Typ",
                                     "type": {
                                         "count": {
                                             "label": "Ziel"
@@ -1220,7 +1198,8 @@
                                             "conditions": "Während Konditiounen",
                                             "label": "Während"
                                         }
-                                    }
+                                    },
+                                    "type_select": "Widderhuelen Typ"
                                 },
                                 "scene": {
                                     "label": "Zeen aktivéieren"
@@ -1240,6 +1219,7 @@
                                     "wait_template": "Waardenzäit Modell"
                                 }
                             },
+                            "type_select": "Aktioun Typ",
                             "unsupported_action": "Keng UI Ënnerstëtzung fir Aktioun: {action}"
                         },
                         "alias": "Numm",
@@ -1258,7 +1238,6 @@
                             "introduction": "Konditioune sinn een optionalen Deel a kënne benotzt gi fir ze bestëmme wann eng Aktioun ausgeféiert gëtt. ",
                             "learn_more": "Méi iwwert Konditioune liesen",
                             "name": "Konditioun",
-                            "type_select": "Typ vun Konditioun",
                             "type": {
                                 "and": {
                                     "label": "An"
@@ -1325,6 +1304,7 @@
                                     "zone": "Zon"
                                 }
                             },
+                            "type_select": "Typ vun Konditioun",
                             "unsupported_condition": "Keng UI Ënnerstëtzung fir Konditioun: {condition}"
                         },
                         "copy_to_clipboard": "An de Tëschespäicher kopéieren",
@@ -1364,7 +1344,6 @@
                             "introduction": "Een Ausléiser start de Prozess vun engem Automatismus. Et ass méiglech méi wéi een Ausléiser fir een Automatismus unzeginn. Wann een Ausléiser start validéiert Home Assistant d'Konditiounen a féiert - de Fall gesat - eng Aktioun aus.\n\n[Léier méi iwwert Ausléiser.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Méi iwwert Ausléiser liesen",
                             "name": "Ausléiser",
-                            "type_select": "Typ vun Ausléiser",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1429,17 +1408,17 @@
                                     "label": "Modell",
                                     "value_template": "Wäerte Modell"
                                 },
-                                "time_pattern": {
-                                    "hours": "Stonnen",
-                                    "label": "Zäit Muster",
-                                    "minutes": "Minutten",
-                                    "seconds": "Sekonnen"
-                                },
                                 "time": {
                                     "at": "Um",
                                     "label": "Zäit",
                                     "type_input": "Wäert vun engem Datum/Zäit Helper",
                                     "type_value": "Fix Zäit"
+                                },
+                                "time_pattern": {
+                                    "hours": "Stonnen",
+                                    "label": "Zäit Muster",
+                                    "minutes": "Minutten",
+                                    "seconds": "Sekonnen"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1454,6 +1433,7 @@
                                     "zone": "Zon"
                                 }
                             },
+                            "type_select": "Typ vun Ausléiser",
                             "unsupported_platform": "Keng UI ënnerstëtzung fir Plattform: {platform}"
                         },
                         "unsaved_confirm": "Net gespäichert Ännerungen. Trotzdeem verloossen?"
@@ -1602,9 +1582,9 @@
                             "loading": "Lued ...",
                             "manage": "Verwalten",
                             "no_hooks_yet": "Et gesäit sou aus wéi wann nach keng webhooks benotzt ginn. Fänkt mam erstellen vun enger ",
+                            "no_hooks_yet2": " oder via erstellen vun ",
                             "no_hooks_yet_link_automation": "Webhook Automatisme",
                             "no_hooks_yet_link_integration": "webhook baséierter Integratioun",
-                            "no_hooks_yet2": " oder via erstellen vun ",
                             "title": "Webhooks"
                         }
                     },
@@ -1894,14 +1874,6 @@
                         }
                     }
                 },
-                "filtering": {
-                    "clear": "Läschen",
-                    "filtering_by": "Filteren anhand vun",
-                    "show": "Uweisen"
-                },
-                "hassio": {
-                    "button": "Astellen"
-                },
                 "header": "Home Assistant astellen",
                 "helpers": {
                     "caption": "Helper",
@@ -1950,16 +1922,11 @@
                     "path_configuration": "Pad zur configuration.yaml: {path}",
                     "server": "server",
                     "source": "Quell:",
-                    "system_health_error": "System Gesondheet Komponent net gelueden. Setz 'system_health:' zur configuration.yaml dobäi",
                     "system_health": {
                         "manage": "Verwalten",
                         "more_info": "Méi Informatiounen"
-                    }
-                },
-                "integration_panel_move": {
-                    "link_integration_page": "Integratiouns Säit",
-                    "missing_zha": "Vermëss du ZHA Konfig. Tableau? Et ass op ZHA Entrée op der {integrations_page} geplënnert.",
-                    "missing_zwave": "Vermëss du Z-Wave Konfig. Tableau? Et ass op Z-Wave Entrée op der {integrations_page} geplënnert."
+                    },
+                    "system_health_error": "System Gesondheet Komponent net gelueden. Setz 'system_health:' zur configuration.yaml dobäi"
                 },
                 "integrations": {
                     "add_integration": "Integratioun dobäisetzen",
@@ -1990,7 +1957,6 @@
                         "manuf": "vun {manufacturer}",
                         "no_area": "Kee Beräich",
                         "not_loaded": "Net gelueden",
-                        "options": "Optiounen",
                         "reload": "Nei lueden",
                         "reload_confirm": "Integratioun gouf frësch gelueden",
                         "reload_restart_confirm": "Start Home Assistant nei fir dës Integratioun fäerdeg ze lueden",
@@ -2019,7 +1985,6 @@
                             "open_site": "Internetsäit opmaachen"
                         },
                         "finish": "Ofschléissen",
-                        "loading_first_time": "Waart w.e.g. während der Installatioun vun der Integratioun",
                         "not_all_required_fields": "Net all erfuerderlech Felder sinn ausgefëllt.",
                         "submit": "Ofschécken"
                     },
@@ -2037,7 +2002,6 @@
                         "confirm_delete_ignore_title": "Ophale mam ignoréieren vun {name}?",
                         "confirm_ignore": "Bass du sécher, dass Du dës Integratioun net wëlls ariichten? Du kanns dëst annuléieren andeems Du op 'Ignoréiert Integratiounen uweisen' am Menü uewe riets klicks.",
                         "confirm_ignore_title": "Entdeckung vun {name} ignoréieren?",
-                        "hide_ignored": "Ignoréiert Integratiounen verstoppen",
                         "ignore": "Ignoréieren",
                         "ignored": "Ignoréiert",
                         "show_ignored": "Ignoréiert Integratiounen uweisen",
@@ -2153,7 +2117,6 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Astellen",
                     "description_listen": "Sujet lauschteren",
                     "description_publish": "Ee Pak publizéieren",
                     "listening_to": "Lauschtert op",
@@ -2167,7 +2130,6 @@
                     "topic": "Sujet"
                 },
                 "ozw": {
-                    "button": "Astellen",
                     "common": {
                         "controller": "Kontroller",
                         "instance": "Instanz",
@@ -2191,6 +2153,11 @@
                         "nodes": "Nodes",
                         "select_instance": "Instanz auswielen"
                     },
+                    "network": {
+                        "header": "Verwaltung vum Netzwierk",
+                        "introduction": "Netzwierk wäit Funktioune verwalten",
+                        "node_count": "{count} nodes"
+                    },
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "All Nodes goufen ofgefrot",
@@ -2211,10 +2178,9 @@
                         "starting": "Start",
                         "unknown": "Onbekannt"
                     },
-                    "network": {
-                        "header": "Verwaltung vum Netzwierk",
-                        "introduction": "Netzwierk wäit Funktioune verwalten",
-                        "node_count": "{count} nodes"
+                    "node": {
+                        "button": "Node Detailler",
+                        "not_found": "Node net fonnt"
                     },
                     "node_config": {
                         "header": "Konfiguratioun vum Node",
@@ -2240,10 +2206,6 @@
                         "static": "Statesch Wäerter vum Apparat kréien",
                         "versions": "Informatioun kréien iwwert Firmware a Kommando Klass Versiounen",
                         "wakeup": "Ënnerstëtzung fir Erwäche Waardeschlaangen an Noriichten astellen"
-                    },
-                    "node": {
-                        "button": "Node Detailler",
-                        "not_found": "Node net fonnt"
                     },
                     "nodes_table": {
                         "failed": "Feeler",
@@ -2544,7 +2506,6 @@
                         "search_again": "Nach emol sichen",
                         "spinner": "Sicht no ZHA Zigbee Apparater..."
                     },
-                    "button": "Astellen",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributer vum ausgewielten Cluster",
                         "get_zigbee_attribute": "Zigbee Attribut liesen",
@@ -2650,30 +2611,7 @@
                     "introduction": "Zonen erlaben Iech verschidde Regiounen op der Äerd ze spezifizéieren. Wann eng Persoun an enger Zone ass, hëlt de Status den Numm aus der Zone. Zonë kënnen och als Ausléiser oder als Konditioun an Automatisme benotzt ginn.",
                     "no_zones_created_yet": "Et gesäit sou aus wéi wann nach keng Zone erstallt goufen."
                 },
-                "zwave_js": {
-                    "dashboard": {
-                        "driver_version": "Driver Versioun",
-                        "dump_not_ready_confirm": "Eroflueden",
-                        "server_version": "Server Versioun"
-                    },
-                    "device_info": {
-                        "device_config": "Apparat ariichten"
-                    },
-                    "node_config": {
-                        "attribution": "Parameter fir d'Konfiguratioun vum Apparat a seng Beschréiwungen gin duerch {device_database} zur Verfügung gestallt.",
-                        "battery_device_notice": "Batterie bedriwwen Apparater mussen un sinn fir hier Konfiguratioun z'aktualiséieren. Kuck wegl d'Instruktiounen vum Hiersteller fir den Apparat unzeschalten.",
-                        "error_device_not_found": "Apparat net fonnt",
-                        "header": "Z-Wave Apparat Konfiguratioun",
-                        "introduction": "Verwalt a pass verschidde (node) spezifesch Konfiguratioun's Parameter vum Apparat un.",
-                        "parameter_is_read_only": "Dëse Parameter ass schréif geschützt",
-                        "zwave_js_device_database": "Z-Wave JS Apparat Datebank"
-                    },
-                    "node_status": {
-                        "unknown": "Onbekannt"
-                    }
-                },
                 "zwave": {
-                    "button": "Astellen",
                     "common": {
                         "index": "Index",
                         "instance": "Instanz",
@@ -2762,6 +2700,28 @@
                     "values": {
                         "header": "Wäerter vum Apparat"
                     }
+                },
+                "zwave_js": {
+                    "dashboard": {
+                        "driver_version": "Driver Versioun",
+                        "dump_not_ready_confirm": "Eroflueden",
+                        "server_version": "Server Versioun"
+                    },
+                    "device_info": {
+                        "device_config": "Apparat ariichten"
+                    },
+                    "node_config": {
+                        "attribution": "Parameter fir d'Konfiguratioun vum Apparat a seng Beschréiwungen gin duerch {device_database} zur Verfügung gestallt.",
+                        "battery_device_notice": "Batterie bedriwwen Apparater mussen un sinn fir hier Konfiguratioun z'aktualiséieren. Kuck wegl d'Instruktiounen vum Hiersteller fir den Apparat unzeschalten.",
+                        "error_device_not_found": "Apparat net fonnt",
+                        "header": "Z-Wave Apparat Konfiguratioun",
+                        "introduction": "Verwalt a pass verschidde (node) spezifesch Konfiguratioun's Parameter vum Apparat un.",
+                        "parameter_is_read_only": "Dëse Parameter ass schréif geschützt",
+                        "zwave_js_device_database": "Z-Wave JS Apparat Datebank"
+                    },
+                    "node_status": {
+                        "unknown": "Onbekannt"
+                    }
                 }
             },
             "custom": {
@@ -2836,33 +2796,6 @@
                         "title": "Modeller",
                         "unknown_error_template": "Onbekannte Feeler beim duerstelle vum Modell"
                     }
-                }
-            },
-            "error": {
-                "go_back": "Zeréck goen",
-                "supervisor": {
-                    "ask": "No Hëllef froen",
-                    "observer": "Observateur iwwerpréiwen",
-                    "reboot": "Probéier ee Reboot vum Host",
-                    "system_health": "System Zoustand iwwerpréiwen",
-                    "title": "Konnt den Supervisor Panneau net lueden!",
-                    "wait": "Wanns Du just gestart hues, stell sécher dass den Supervisor genuch Zäit huet fir ze starten."
-                }
-            },
-            "history": {
-                "ranges": {
-                    "last_week": "Läscht Woch",
-                    "this_week": "Dës Woch",
-                    "today": "Haut",
-                    "yesterday": "Gëschter"
-                }
-            },
-            "logbook": {
-                "ranges": {
-                    "last_week": "Läscht Woch",
-                    "this_week": "Dës Woch",
-                    "today": "Haut",
-                    "yesterday": "Gëschter"
                 }
             },
             "lovelace": {
@@ -2968,7 +2901,6 @@
                         "entities": {
                             "description": "D'Entitéite Kaart ass déi am meeschten allgemengen Zort Kaart. Si gruppéiert Entitéite gemeinsam a Lëschten.",
                             "edit_special_row": "Kuckt d'Detailer vun dëser Rei andeems Du op den Edit Knäppchen klicks",
-                            "entity_row_editor": "Entitéite Réih Editor",
                             "entity_row": {
                                 "attribute": "Attribut",
                                 "button": "Knäppchen",
@@ -2980,6 +2912,7 @@
                                 "section": "Sektioun",
                                 "weblink": "Web Link"
                             },
+                            "entity_row_editor": "Entitéite Réih Editor",
                             "name": "Entitéiten",
                             "secondary_info_values": {
                                 "brightness": "Hellegkeet",
@@ -3249,7 +3182,6 @@
                         "unsaved_changes": "Net gespäicherten Ännerungen"
                     },
                     "save_config": {
-                        "cancel": "Vergiess et",
                         "close": "Zoumaachen",
                         "empty_config": "Mat engem eidelen Tableau de Bord ufänken",
                         "header": "Kontroll iwwert Loveloce UI iwwerhuelen",
@@ -3278,8 +3210,6 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Dëst stellt déi éischt Kaart op voller Breet duer. Aner Kaarte oder Badge ginn net duergestallt.",
-                            "title": "Panel Modus?",
                             "warning_multiple_cards": "Dës Usiicht enthält méi wéi eng Kaart, mee eng Panneau Usiicht kann nëmmen 1 Kaart uweisen."
                         }
                     }
@@ -3497,10 +3427,15 @@
                 "intro": "Sidd Dir prett fir Äert Heem interessant ze maachen, Är Privatsphär ze garantéieren an enger weltwäiter Gemeinschaft bei ze trieden?",
                 "next": "Nächst",
                 "restore": {
-                    "description": "Alternativ kanns Du aus engem fréiere Snapshot restauréieren.",
+                    "addons": "Add-ons",
+                    "description": "Alternativ kanns Du aus engem fréiere Backup restauréieren.",
+                    "folders": "Dossieren",
                     "hide_log": "Komplette Log verstoppen",
                     "in_progress": "Restauratioun en cours",
-                    "show_log": "Komplette Log uweisen"
+                    "password": "Passwuert",
+                    "password_protection": "Passwuert Protektioun",
+                    "show_log": "Komplette Log uweisen",
+                    "type": "Typ"
                 },
                 "user": {
                     "create_account": "Kont erstellen",
@@ -3577,18 +3512,18 @@
                     "prompt_copy_token": "Kopéiert den Accèss Jeton. E gëtt nie méi ugewisen.",
                     "prompt_name": "Gëff dem Jeton ee Numm?"
                 },
+                "mfa": {
+                    "confirm_disable": "Sécher fir {name} ze desaktivéieren?",
+                    "disable": "Desaktivéieren",
+                    "enable": "Aktivéieren",
+                    "header": "Multi-Faktor Authentifikatioun's Module"
+                },
                 "mfa_setup": {
                     "close": "Zoumaachen",
                     "step_done": "Konfiguratioun ofgeschloss fir {step}",
                     "submit": "Ofschécken",
                     "title_aborted": "Ofgebrach",
                     "title_success": "Succès!"
-                },
-                "mfa": {
-                    "confirm_disable": "Sécher fir {name} ze desaktivéieren?",
-                    "disable": "Desaktivéieren",
-                    "enable": "Aktivéieren",
-                    "header": "Multi-Faktor Authentifikatioun's Module"
                 },
                 "push_notifications": {
                     "add_device_prompt": {

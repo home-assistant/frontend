@@ -23,6 +23,14 @@
         "shopping_list": "Handleliste",
         "states": "Oversikt"
     },
+    "state": {
+        "default": {
+            "off": "Av",
+            "on": "På",
+            "unavailable": "Utilgjengeleg",
+            "unknown": "Ukjent"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -78,14 +86,6 @@
             "not_home": "Borte "
         }
     },
-    "state": {
-        "default": {
-            "off": "Av",
-            "on": "På",
-            "unavailable": "Utilgjengeleg",
-            "unknown": "Ukjent"
-        }
-    },
     "supervisor": {
         "addon": {
             "panel": {
@@ -122,14 +122,10 @@
             },
             "restart_addon": {
                 "confirm_text": "Start tillegget på nytt"
-            },
-            "update": {
-                "snapshot": "Øyeblikksbilde"
             }
         },
         "panel": {
             "dashboard": "Skrivebord",
-            "snapshots": "Snapshots",
             "store": "Tillegsbutikk",
             "system": "System"
         }
@@ -311,6 +307,11 @@
             },
             "data-table": {
                 "no-data": "Ingen data"
+            },
+            "date-range-picker": {
+                "ranges": {
+                    "last_week": "Førre veke"
+                }
             },
             "device-picker": {
                 "device": "Enhet",
@@ -524,7 +525,6 @@
                             "introduction": "Handlinga Home Assistant vil gjennomføre når automasjonen vert utløyst.",
                             "learn_more": "Lær meir om handlingar",
                             "name": "Handling",
-                            "type_select": "Handlingstype",
                             "type": {
                                 "condition": {
                                     "label": "Føresetnad"
@@ -557,6 +557,7 @@
                                     "wait_template": "Ventemal"
                                 }
                             },
+                            "type_select": "Handlingstype",
                             "unsupported_action": "Ikkje støtta handling: {action}"
                         },
                         "alias": "Namn",
@@ -569,7 +570,6 @@
                             "introduction": "Føresetnadar er valfrie og vil hindre vidare framgang i automasjonen med mindre alle føresetnadene er møtt.",
                             "learn_more": "Lær meir om føresetnader",
                             "name": "Betingelse",
-                            "type_select": "Føresetnadstype",
                             "type": {
                                 "device": {
                                     "condition": "Føresetnad ",
@@ -619,6 +619,7 @@
                                     "zone": "Sone"
                                 }
                             },
+                            "type_select": "Føresetnadstype",
                             "unsupported_condition": "Ikkje støtta føresetnad: {condition}"
                         },
                         "default_name": "Ny automasjon",
@@ -641,7 +642,6 @@
                             "introduction": "Utløysarar er det som startar ein prosess i ein automasjonsregel. Det er mogleg å spesifisere fleire utløysarar for same regel. Når ein utløysar startar, vil Home Assistant validere føresetnadane, dersom der er nokon, og så setje i gang handlinga.",
                             "learn_more": "Lær meir om utløysarar",
                             "name": "Utløysar",
-                            "type_select": "Utløysartype",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -698,15 +698,15 @@
                                     "label": "Mal",
                                     "value_template": "Verdimal"
                                 },
+                                "time": {
+                                    "at": "Ved",
+                                    "label": "Tid"
+                                },
                                 "time_pattern": {
                                     "hours": "Timar",
                                     "label": "Tidsmønster",
                                     "minutes": "Minutt",
                                     "seconds": "Sekundar"
-                                },
-                                "time": {
-                                    "at": "Ved",
-                                    "label": "Tid"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -721,6 +721,7 @@
                                     "zone": "Sone"
                                 }
                             },
+                            "type_select": "Utløysartype",
                             "unsupported_platform": "Ikkje støtta plattform: {platform}"
                         },
                         "unsaved_confirm": "Du har endringar som ikkje er lagra. Er du sikker på at du vil forlate?"
@@ -859,11 +860,6 @@
                         "search": "Søk i oppføringar"
                     }
                 },
-                "filtering": {
-                    "clear": "Klarer",
-                    "filtering_by": "Filtrerer etter",
-                    "show": "Vis "
-                },
                 "header": "Konfigurer Home Assistant",
                 "info": {
                     "caption": "Info",
@@ -879,7 +875,6 @@
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "device_unavailable": "Eininga utilgjengeleg",
                         "devices": "{count} {count, plural,\n  one {eining}\n  other {einingar}\n}",
-                        "disable_restart_confirm": "Start Home Assistant på nytt for å fullføre deaktiveringa av denne integrasjonen",
                         "disable": {
                             "disable_confirm": "Er du sikker på at du vil deaktivere denne konfigurasjonsoppføringa? Einingane og oppføringane vil verte deaktivert.",
                             "disabled": "Deaktivert ",
@@ -890,6 +885,7 @@
                             },
                             "disabled_cause": "Deaktivert av {cause}"
                         },
+                        "disable_restart_confirm": "Start Home Assistant på nytt for å fullføre deaktiveringa av denne integrasjonen",
                         "enable_restart_confirm": "Start Home Assistant på nytt for å fullføre aktiveringa av denne integrasjonen",
                         "entities": "{count} {count, plural,\n  one {oppføring}\n  other {oppføringar}\n}",
                         "entity_unavailable": "Oppføringa utilgjengeleg",
@@ -897,7 +893,6 @@
                         "hub": "Tilkopla via",
                         "manuf": "av {manufacturer}",
                         "no_area": "Inga område",
-                        "options": "Val",
                         "rename": "Endre namn",
                         "restart_confirm": "Restart Home Assistant for å fjerne denne integrasjonen",
                         "system_options": "Systemval",
@@ -925,7 +920,6 @@
                     "description": "Administrer tilkopla einingar og tenester",
                     "disable": {
                         "disabled_integrations": "{number} deaktivert ",
-                        "hide_disabled": "Skjul deaktivert integrasjonar",
                         "show_disabled": "Vis deaktiverte integrasjonar"
                     },
                     "discovered": "Oppdaga",
@@ -1348,7 +1342,6 @@
                         "unsaved_changes": "Ikkje lagra endringar"
                     },
                     "save_config": {
-                        "cancel": "Gløym det",
                         "empty_config": "Start med eit tomt dashboard",
                         "header": "Ta kontroll over Lovelace-brukargrensesnittet",
                         "para": "Som standard kjem Home Assistant til å vedlikehalde brukargrensesnittet, og oppdatere det når nye oppføringar eller Lovelace-komponentar vert tilgjengelege. Dersom du tek kontroll, vil vi ikkje lenger kunne lage dette til automatisk for deg.",
@@ -1610,18 +1603,18 @@
                     "prompt_copy_token": "Kopier tilgangstoken. Den vil ikkje visast igjen.",
                     "prompt_name": "Namn?"
                 },
+                "mfa": {
+                    "confirm_disable": "Er du sikker på at du vil deaktivere {name}?",
+                    "disable": "Deaktiver",
+                    "enable": "Aktiver",
+                    "header": "Flerfaktorautentiseringsmoduler"
+                },
                 "mfa_setup": {
                     "close": "Lukk",
                     "step_done": "Oppsett ferdig for {step}",
                     "submit": "Send inn",
                     "title_aborted": "Avslutta",
                     "title_success": "Suksess!"
-                },
-                "mfa": {
-                    "confirm_disable": "Er du sikker på at du vil deaktivere {name}?",
-                    "disable": "Deaktiver",
-                    "enable": "Aktiver",
-                    "header": "Flerfaktorautentiseringsmoduler"
                 },
                 "push_notifications": {
                     "description": "Send varslar til denne einiga",

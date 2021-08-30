@@ -212,6 +212,10 @@ export class HaConfigDeviceDashboard extends LitElement {
           this._batteryEntity(device.id, deviceEntityLookup),
           this._batteryChargingEntity(device.id, deviceEntityLookup),
         ],
+        battery_level:
+          this.hass.states[
+            this._batteryEntity(device.id, deviceEntityLookup) || ""
+          ]?.state,
       }));
 
       this._numHiddenDevices = startLength - outputDevices.length;
@@ -286,9 +290,11 @@ export class HaConfigDeviceDashboard extends LitElement {
       columns.battery_entity = {
         title: this.hass.localize("ui.panel.config.devices.data_table.battery"),
         sortable: true,
+        filterable: true,
         type: "numeric",
         width: narrow ? "95px" : "15%",
         maxWidth: "95px",
+        valueColumn: "battery_level",
         template: (batteryEntityPair: DeviceRowData["battery_entity"]) => {
           const battery =
             batteryEntityPair && batteryEntityPair[0]

@@ -549,7 +549,8 @@ export class HaIntegrationCard extends LitElement {
 
     const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.delete_confirm"
+        "ui.panel.config.integrations.config_entry.delete_confirm",
+        { title: configEntry.title }
       ),
     });
 

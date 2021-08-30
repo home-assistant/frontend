@@ -5,12 +5,11 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../../common/entity/state_icon";
-import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-card";
-import "../../../../components/ha-settings-row";
 import {
   DeviceConsumptionEnergyPreference,
   EnergyPreferences,
+  EnergyPreferencesValidation,
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import {
@@ -21,6 +20,7 @@ import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { documentationUrl } from "../../../../util/documentation-url";
 import { showEnergySettingsDeviceDialog } from "../dialogs/show-dialogs-energy";
+import "./ha-energy-validation-result";
 import { energyCardStyles } from "./styles";
 
 @customElement("ha-energy-device-settings")
@@ -29,6 +29,9 @@ export class EnergyDeviceSettings extends LitElement {
 
   @property({ attribute: false })
   public preferences!: EnergyPreferences;
+
+  @property({ attribute: false })
+  public validationResult?: EnergyPreferencesValidation;
 
   protected render(): TemplateResult {
     return html`
@@ -57,6 +60,15 @@ export class EnergyDeviceSettings extends LitElement {
               )}</a
             >
           </p>
+          ${this.validationResult?.device_consumption.map(
+            (result) =>
+              html`
+                <ha-energy-validation-result
+                  .hass=${this.hass}
+                  .issues=${result}
+                ></ha-energy-validation-result>
+              `
+          )}
           <h3>Devices</h3>
           ${this.preferences.device_consumption.map((device) => {
             const entityState = this.hass.states[device.stat_consumption];
@@ -101,7 +113,7 @@ export class EnergyDeviceSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you wan't to delete this device?",
+        title: "Are you sure you want to delete this device?",
       }))
     ) {
       return;

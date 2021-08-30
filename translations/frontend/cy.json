@@ -14,6 +14,12 @@
         "shopping_list": "Rhestr siopa",
         "states": "Trosolwg"
     },
+    "state": {
+        "default": {
+            "unavailable": "Ddim ar gael",
+            "unknown": "Anhysbys"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -59,12 +65,6 @@
         "person": {
             "home": "Gartref",
             "not_home": "I ffwrdd"
-        }
-    },
-    "state": {
-        "default": {
-            "unavailable": "Ddim ar gael",
-            "unknown": "Anhysbys"
         }
     },
     "ui": {
@@ -314,7 +314,6 @@
                             "introduction": "Y camau gweithredu yw'r hyn mae Home Assistant yn gwneud pan mae'r awtomeiddio yn cael ei sbarduno\n\n[Dysgwch mwy am weithred.](https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Dysgu mwy am gamau gweithredu",
                             "name": "Gweithredu",
-                            "type_select": "Math weithrediad",
                             "type": {
                                 "condition": {
                                     "label": "Cyflwr"
@@ -337,6 +336,7 @@
                                     "wait_template": "Templed Aros"
                                 }
                             },
+                            "type_select": "Math weithrediad",
                             "unsupported_action": "Gweithredu heb gefnogaeth: {action}"
                         },
                         "alias": "Enw",
@@ -349,7 +349,6 @@
                             "introduction": "Mae'r amodau'n rhan ddewisol o reol awtomeiddio, a gellir eu defnyddio i atal camau rhag digwydd pan fyddant yn cael eu sbarduno. Mae'r amodau'n edrych yn debyg iawn i sbardunau ond maent yn wahanol iawn. Bydd sbardun yn edrych ar ddigwyddiadau sy'n digwydd yn y system tra bod amod yn edrych ar sut mae'r system yn edrych ar hyn o bryd. Gall sbarduno arsylwi bod switsh yn cael ei droi ymlaen. Dim ond os yw switsh ar neu i ffwrdd ar hyn o bryd y gall cyflwr weld. \n\n [Dysgwch fwy am amodau.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Dysgu mwy am amodau",
                             "name": "Cyflwr",
-                            "type_select": "Math o gyflwr",
                             "type": {
                                 "numeric_state": {
                                     "above": "Uwch",
@@ -388,6 +387,7 @@
                                     "zone": "Ardal"
                                 }
                             },
+                            "type_select": "Math o gyflwr",
                             "unsupported_condition": "Cyflwr heb gymorth: {condition}"
                         },
                         "copy_to_clipboard": "Copïo i'r Clipfwrdd",
@@ -407,7 +407,6 @@
                             "introduction": "Sbarduno yw'r hyn sy'n dechrau proses rheol awtomeiddio.  Mae'n bosib dewis nifer o sbardunau i'run rheol. Unwaith mae sbardun yn cychwyn, bydd Home Assistant yn dilysu'r amodau, os o gwbl, a galw'r gweithred. \n\n[dysgwch mwy am sbardunau.] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Dysgu mwy am sbardunau",
                             "name": "Sbardun",
-                            "type_select": "Math sbardun",
                             "type": {
                                 "event": {
                                     "context_user_pick": "Ychwanegu defnyddiwr",
@@ -458,15 +457,15 @@
                                     "label": "Templed",
                                     "value_template": "Templed gwerth"
                                 },
+                                "time": {
+                                    "at": "Ar",
+                                    "label": "Amser"
+                                },
                                 "time_pattern": {
                                     "hours": "Oriau",
                                     "label": "Patrwm Amser",
                                     "minutes": "Munudau",
                                     "seconds": "Eiliadau"
-                                },
-                                "time": {
-                                    "at": "Ar",
-                                    "label": "Amser"
                                 },
                                 "webhook": {
                                     "label": "Gwefachiad",
@@ -481,6 +480,7 @@
                                     "zone": "Parth"
                                 }
                             },
+                            "type_select": "Math sbardun",
                             "unsupported_platform": "Llwyfan heb gymorth: {platform}"
                         },
                         "unsaved_confirm": "Mae gennych newidiadau heb eu cadw. Ydych chi'n siŵr bod chi eisiau gadael?"
@@ -615,7 +615,6 @@
                             "open_site": "Gwefan agored"
                         },
                         "finish": "Gorffen",
-                        "loading_first_time": "Arhoswch tra bo'r integreiddiad yn cael ei osod",
                         "not_all_required_fields": "Nid yw pob maes gofynnol wedi'i lenwi.",
                         "submit": "Cyflwyno"
                     },
@@ -654,7 +653,6 @@
                     "title": "MQTT"
                 },
                 "ozw": {
-                    "button": "Ffurfweddu",
                     "common": {
                         "controller": "Rheolwr",
                         "instance": "Enghraifft",
@@ -670,6 +668,11 @@
                         },
                         "nodes": "Nodau",
                         "select_instance": "Dewis Enghraifft"
+                    },
+                    "network": {
+                        "header": "Rheolaeth Rhwydwaith",
+                        "introduction": "Rheoli swyddogaethau rhwydwaith-lydan",
+                        "node_count": "nodau {count}"
                     },
                     "network_status": {
                         "details": {
@@ -690,11 +693,6 @@
                         "online": "Ar-lein",
                         "starting": "Cychwyn",
                         "unknown": "Anhysbys"
-                    },
-                    "network": {
-                        "header": "Rheolaeth Rhwydwaith",
-                        "introduction": "Rheoli swyddogaethau rhwydwaith-lydan",
-                        "node_count": "nodau {count}"
                     },
                     "node_config": {
                         "header": "Ffurfweddu nod",
@@ -1115,7 +1113,6 @@
                         "unsaved_changes": "Newidiadau heb eu cadw"
                     },
                     "save_config": {
-                        "cancel": "Dim ots",
                         "empty_config": "Dechreuwch gyda dangosfwrdd gwag",
                         "header": "Cymerwch reolaeth ar eich rhyngwyneb defnyddiwr Lovelace",
                         "para": "Gwneith Home Assistant gynnal eich rhyngwyneb defnyddiwr yn ddiofyn, a'i diweddaru pan fydd endidau neu gydrannau Lovelace newydd yn dod ar gael. Os ydych yn cymryd rheolaeth nawn ddim gwneud newidiadau awtomatig pellach i chi.",
@@ -1125,7 +1122,6 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Mae hyn yn golygu bod y cerdyn cyntaf yn ei led llawn. Ni fydd cardiau eraill yn y gweddlun hon yn ogystal â bathodynnau yn cael ei rendro.",
                             "warning_multiple_cards": "Mae'r golwg yn cynnwys mwy nag un cerdyn, ond dim ond un cerdyn gall y golwg panel ei ddangos."
                         }
                     }

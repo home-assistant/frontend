@@ -50,6 +50,7 @@ export class EnergyStrategy {
     const hasSolar = prefs.energy_sources.some(
       (source) => source.type === "solar"
     );
+    const hasGas = prefs.energy_sources.some((source) => source.type === "gas");
 
     if (info.narrow) {
       view.cards!.push({
@@ -73,6 +74,15 @@ export class EnergyStrategy {
       view.cards!.push({
         title: "Solar production",
         type: "energy-solar-graph",
+        collection_key: "energy_dashboard",
+      });
+    }
+
+    // Only include if we have a gas source.
+    if (hasGas) {
+      view.cards!.push({
+        title: "Gas consumption",
+        type: "energy-gas-graph",
         collection_key: "energy_dashboard",
       });
     }

@@ -17,6 +17,7 @@
         "calendar": "Kalendář",
         "config": "Nastavení",
         "developer_tools": "Vývojářské nástroje",
+        "energy": "Energie",
         "history": "Historie",
         "logbook": "Záznamy",
         "mailbox": "Schránka",
@@ -25,6 +26,14 @@
         "profile": "Profil",
         "shopping_list": "Nákupní seznam",
         "states": "Přehled"
+    },
+    "state": {
+        "default": {
+            "off": "Vypnuto",
+            "on": "Zapnuto",
+            "unavailable": "Není k dispozici",
+            "unknown": "Nezjištěno"
+        }
     },
     "state_attributes": {
         "climate": {
@@ -92,14 +101,6 @@
         "person": {
             "home": "Doma",
             "not_home": "Pryč"
-        }
-    },
-    "state": {
-        "default": {
-            "off": "Vypnuto",
-            "on": "Zapnuto",
-            "unavailable": "Není k dispozici",
-            "unknown": "Nezjištěno"
         }
     },
     "supervisor": {
@@ -267,6 +268,26 @@
                 "not_installed": "Doplněk není nainstalován"
             }
         },
+        "backup": {
+            "addons": "Doplňky",
+            "confirm_password": "Potvrďte heslo zálohy",
+            "could_not_create": "Nelze vytvořit zálohu",
+            "create": "Vytvořit",
+            "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
+            "created": "Vytvořeno",
+            "delete_backup_confirm": "smazat",
+            "delete_selected": "Smazat vybrané zálohy",
+            "enter_password": "Prosím zadejte heslo.",
+            "failed_to_delete": "Smazání se nezdařilo",
+            "folders": "Složky",
+            "name": "Název zálohy",
+            "password": "Heslo zálohy",
+            "password_protection": "Ochrana heslem",
+            "passwords_not_matching": "Hesla se neshodují",
+            "select_type": "Vyberte, co chcete obnovit",
+            "selected": "{number} vybraných",
+            "type": "Typ zálohy"
+        },
         "common": {
             "cancel": "Zrušit",
             "close": "Zavřít",
@@ -366,9 +387,6 @@
                 "text": "Chcete doplněk restartovat se svými změnami?"
             },
             "update": {
-                "create_snapshot": "Vytvořit zálohu {name} před aktualizací",
-                "snapshot": "Záloha",
-                "snapshotting": "Vytváří se záloha {name}",
                 "updating": "Aktualizuje se {name} na verzi {version}"
             }
         },
@@ -383,47 +401,8 @@
         },
         "panel": {
             "dashboard": "Ovládací panel",
-            "snapshots": "Zálohy",
             "store": "Obchod s doplňky",
             "system": "Systém"
-        },
-        "snapshot": {
-            "addons": "Doplňky",
-            "available_snapshots": "Dostupné zálohy",
-            "confirm_password": "Potvrďte heslo zálohy",
-            "could_not_create": "Nelze vytvořit zálohu",
-            "create": "Vytvořit",
-            "create_blocked_not_running": "Vytvoření zálohy není momentálně možné, protože systém je ve \"{state}\".",
-            "create_snapshot": "Vytvořit zálohu",
-            "created": "Vytvořeno",
-            "delete_selected": "Smazat vybrané zálohy",
-            "delete_snapshot_confirm": "smazat",
-            "delete_snapshot_text": "Chcete smazat {number} {number, plural,\n  one {zálohu}\n  few {zálohy}\n  other {záloh}\n}?",
-            "delete_snapshot_title": "Smazat zálohu",
-            "description": "Zálohy umožňují snadno zálohovat a obnovovat všechna data vaší instance Home Assistant.",
-            "enter_password": "Prosím zadejte heslo.",
-            "failed_to_delete": "Smazání se nezdařilo",
-            "folder": {
-                "addons/local": "Místní doplňky",
-                "homeassistant": "Nastavení Home Asistent",
-                "media": "Média",
-                "share": "Sdílení",
-                "ssl": "SSL"
-            },
-            "folders": "Složky",
-            "full_snapshot": "Úplná záloha",
-            "name": "Název zálohy",
-            "no_snapshots": "Zatím nemáte žádné zálohy.",
-            "partial_snapshot": "Částečná záloha",
-            "password": "Heslo zálohy",
-            "password_protected": "chráněno heslem",
-            "password_protection": "Ochrana heslem",
-            "passwords_not_matching": "Hesla se neshodují",
-            "security": "Zabezpečení",
-            "select_type": "Vyberte, co chcete obnovit",
-            "selected": "{number} vybraných",
-            "type": "Typ zálohy",
-            "upload_snapshot": "Nahrát zálohu"
         },
         "store": {
             "missing_addons": "Chybí doplňky? Na stránce svého uživatelského profilu povolte pokročilý režim",
@@ -760,6 +739,12 @@
             },
             "date-range-picker": {
                 "end_date": "Koncové datum",
+                "ranges": {
+                    "last_week": "Minulý týden",
+                    "this_week": "Tento týden",
+                    "today": "Dnes",
+                    "yesterday": "Včera"
+                },
                 "select": "Vybrat",
                 "start_date": "Počáteční datum"
             },
@@ -851,10 +836,10 @@
                 "documentation": "dokumentace",
                 "learn_adding_local_media": "Další informace o přidávání médií naleznete v {documentation}.",
                 "local_media_files": "Umístěte svá videa, zvukové či obrazové soubory do adresáře médií, abyste je mohli procházet a přehrávat v prohlížeči nebo na podporovaných přehrávačích médií.",
+                "media-player-browser": "Prohlížeč přehrávače médií",
                 "media_browsing_error": "Chyba při procházení médií",
                 "media_not_supported": "Přehrávač médií v prohlížeči nepodporuje tento typ média",
                 "media_player": "Přehrávač médií",
-                "media-player-browser": "Prohlížeč přehrávače médií",
                 "no_items": "Žádné položky",
                 "no_local_media_found": "Nebyla nalezena žádná místní média",
                 "no_media_folder": "Vypadá to, že jste dosud nevytvořili adresář médií.",
@@ -923,6 +908,23 @@
             },
             "service-picker": {
                 "service": "Služba"
+            },
+            "statistic-picker": {
+                "learn_more": "Další informace o statistikách",
+                "missing_entity": "Proč není moje entita uvedena v seznamu?",
+                "no_match": "Nebyly nalezeny žádné odpovídající statistiky",
+                "no_statistics": "Nemáte žádné statistiky",
+                "statistic": "Statistika"
+            },
+            "statistics_charts": {
+                "loading_statistics": "Načítám statistiky...",
+                "no_statistics_found": "Nebyly nalezeny žádné statistiky.",
+                "statistic_types": {
+                    "max": "maximum",
+                    "mean": "průměr",
+                    "min": "minimum",
+                    "sum": "součet"
+                }
             },
             "target-picker": {
                 "add_area_id": "Vyberte oblast",
@@ -1112,6 +1114,10 @@
                 "form": {
                     "header": "Nastavení"
                 },
+                "loading": {
+                    "loading_flow": "Počkejte prosím, než se připraví možnosti pro {integration}.",
+                    "loading_step": "Načítání dalšího kroku pro {integraci}"
+                },
                 "success": {
                     "description": "Volby byly úspěšně uloženy."
                 }
@@ -1125,13 +1131,13 @@
                         "core": "Obecné",
                         "customize": "Přizpůsobení",
                         "devices": "Zařízení",
+                        "energy": "Energie",
                         "entities": "Entity",
                         "helpers": "Pomocníci",
                         "info": "Informace",
                         "integrations": "Integrace",
                         "logs": "Logy",
                         "lovelace": "Ovládací panely Lovelace",
-                        "navigate_to": "Přejít na {panel}",
                         "person": "Osoby",
                         "scene": "Scény",
                         "script": "Skripty",
@@ -1360,7 +1366,6 @@
                             "introduction": "Akce jsou to, co Home Assistant provede při spuštění automatizace.",
                             "learn_more": "Další informace o akcích",
                             "name": "Akce",
-                            "type_select": "Typ akce",
                             "type": {
                                 "choose": {
                                     "add_option": "Přidat volbu",
@@ -1401,7 +1406,6 @@
                                 "repeat": {
                                     "label": "Opakovaní",
                                     "sequence": "Akce",
-                                    "type_select": "Typ opakování",
                                     "type": {
                                         "count": {
                                             "label": "Počet"
@@ -1414,7 +1418,8 @@
                                             "conditions": "Podmínky \"Pokud platí\"",
                                             "label": "Pokud platí"
                                         }
-                                    }
+                                    },
+                                    "type_select": "Typ opakování"
                                 },
                                 "scene": {
                                     "label": "Aktivovat scénu"
@@ -1434,6 +1439,7 @@
                                     "wait_template": "Šablona pro čekání"
                                 }
                             },
+                            "type_select": "Typ akce",
                             "unsupported_action": "Akce {action} není podporována v uživatelském rozhraní"
                         },
                         "alias": "Název",
@@ -1452,7 +1458,6 @@
                             "introduction": "Podmínky jsou volitelné a pokud nejsou všechny splněny, zabrání dalšímu provádění automatizace.",
                             "learn_more": "Další informace o podmínkách",
                             "name": "Podmínka",
-                            "type_select": "Typ podmínky",
                             "type": {
                                 "and": {
                                     "label": "A"
@@ -1524,6 +1529,7 @@
                                     "zone": "Zóna"
                                 }
                             },
+                            "type_select": "Typ podmínky",
                             "unsupported_condition": "Podmínka {condition} není podporována v uživatelském rozhraní"
                         },
                         "copy_to_clipboard": "Zkopírovat do schránky",
@@ -1561,11 +1567,10 @@
                             "delete_confirm": "Opravdu smazat?",
                             "duplicate": "Duplikovat",
                             "header": "Spouštěče",
-                            "id": "ID spouštěče (použitého podmínkou \"spouštěč\")",
+                            "id": "ID spouštěče (pro podmínku \"spouštěč\")",
                             "introduction": "Spouštěče spouštějí automatizaci. Pro jednu automatizaci je možné zadat více spouštěčů. Po spuštění ověří Home Assistant případné podmínky a zavolá akci.",
                             "learn_more": "Další informace o spouštěčích",
                             "name": "Spouštěč",
-                            "type_select": "Typ spouštěče",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1631,17 +1636,17 @@
                                     "label": "Šablona",
                                     "value_template": "Šablona hodnoty"
                                 },
-                                "time_pattern": {
-                                    "hours": "Hodiny",
-                                    "label": "Časový vzorec",
-                                    "minutes": "Minuty",
-                                    "seconds": "Sekundy"
-                                },
                                 "time": {
                                     "at": "V",
                                     "label": "Čas",
                                     "type_input": "Hodnota pomocníka \"Datum a/nebo čas\"",
                                     "type_value": "Pevný čas"
+                                },
+                                "time_pattern": {
+                                    "hours": "Hodiny",
+                                    "label": "Časový vzorec",
+                                    "minutes": "Minuty",
+                                    "seconds": "Sekundy"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1656,6 +1661,7 @@
                                     "zone": "Zóna"
                                 }
                             },
+                            "type_select": "Typ spouštěče",
                             "unsupported_platform": "Platforma {platform} není podporována v uživatelském rozhraní"
                         },
                         "unsaved_confirm": "Máte neuložené změny. Opravdu chcete odejít?"
@@ -1788,6 +1794,7 @@
                             "instance_will_be_available": "Vaše instance bude k dispozici na",
                             "link_learn_how_it_works": "Zjistěte, jak to funguje",
                             "not_connected": "Nepřipojeno",
+                            "reconnecting": "Obnova připojení",
                             "remote_enabled": {
                                 "caption": "Automaticky se připojit",
                                 "description": "Povolením této možnosti zajistíte, aby byla vaše instance Home Assistant vždy vzdáleně přístupná."
@@ -1818,9 +1825,9 @@
                             "loading": "Načítání ...",
                             "manage": "Spravovat",
                             "no_hooks_yet": "Vypadá to, že ještě nemáte žádné webhooky. Začněte nastavením ",
+                            "no_hooks_yet2": "nebo vytvořením",
                             "no_hooks_yet_link_automation": "automatizace webhooků",
                             "no_hooks_yet_link_integration": "integrace založené na webhooku",
-                            "no_hooks_yet2": "nebo vytvořením",
                             "title": "Webhooky"
                         }
                     },
@@ -1837,7 +1844,7 @@
                         "not_exposed_entities": "Nevystavené entity",
                         "title": "Alexa"
                     },
-                    "description_features": "Ovládejte, i když nejste doma, a propojte s Alexou a Google Assistantem",
+                    "description_features": "Ovládejte domov, i když nejste doma, a propojte s Alexou a Google Assistantem",
                     "description_login": "Přihlášen jako {email}",
                     "description_not_login": "Nepřihlášen",
                     "dialog_certificate": {
@@ -1935,41 +1942,13 @@
                     "description": "Jednotkový systém, umístění, časové pásmo a další obecné parametry",
                     "section": {
                         "core": {
-                            "analytics": {
-                                "documentation": "Před povolením této možnosti se ujistěte, že jste navštívili stránku dokumentace analytiky {link}, abyste pochopili, co odesíláte za data a jak budou uložena.",
-                                "header": "Analytika",
-                                "instance_id": "ID instance: {huuid}",
-                                "introduction": "Sdílejte informace o instalaci, abyste pomohli vylepšit Home Assistant a pomohli nám přesvědčit výrobce, aby přidali funkce místního ovládání a ochrany soukromí.",
-                                "learn_more": "Jak budou vaše údaje zpracovány",
-                                "needs_base": "Aby byla tato možnost k dispozici, musíte povolit základní analytiku",
-                                "preference": {
-                                    "base": {
-                                        "description": "ID instance, verze a typ instalace.",
-                                        "title": "Základní analytika"
-                                    },
-                                    "diagnostics": {
-                                        "description": "Sdílejte zprávy o selhání, když dojde k neočekávané chybě.",
-                                        "title": "Diagnostika"
-                                    },
-                                    "statistics": {
-                                        "description": "Celkový počet entit, uživatelů a dalších prvků.",
-                                        "title": "Statistiky používání"
-                                    },
-                                    "usage_supervisor": {
-                                        "description": "Názvy, verze a funkce.",
-                                        "title": "Použité integrace a doplňky"
-                                    },
-                                    "usage": {
-                                        "description": "Informace o názvech a verzích.",
-                                        "title": "Použité integrace"
-                                    }
-                                }
-                            },
                             "core_config": {
+                                "currency": "Měna",
                                 "edit_requires_storage": "Editor je zakázán, protože nastavení je uloženo v configuration.yaml.",
                                 "elevation": "Nadmořská výška",
                                 "elevation_meters": "metrů",
                                 "external_url": "Externí adresa URL",
+                                "find_currency_value": "Najděte svou hodnotu",
                                 "imperial_example": "Stupně Fahrenheita, libry",
                                 "internal_url": "Interní adresa URL",
                                 "latitude": "Zeměpisná šířka",
@@ -2098,6 +2077,63 @@
                     "update": "Aktualizovat",
                     "update_device_error": "Aktualizace zařízení se nezdařila"
                 },
+                "energy": {
+                    "caption": "Energie",
+                    "description": "Sledujte svou výrobu a spotřebu energie",
+                    "device_consumption": {
+                        "add_stat": "Vyberte entitu pro sledování energie",
+                        "dialog": {
+                            "selected_stat_intro": "Vyberte entitu, která představuje spotřebu energie zařízení."
+                        },
+                        "learn_more": "Více informací jak začít.",
+                        "selected_stat": "Sledování energie pro",
+                        "sub": "Při sledování spotřeby energie jednotlivých zařízení může Home Assistant rozdělit spotřebu energie dle jednotlivých zařízení.",
+                        "title": "Jednotlivá zařízení"
+                    },
+                    "grid": {
+                        "flow_dialog": {
+                            "from": {
+                                "cost_entity": "Použít entitu s aktuální cenou",
+                                "cost_entity_input": "Entita s aktuální cenou",
+                                "cost_number": "Použít fixní cenu",
+                                "cost_number_input": "Cena za kWh",
+                                "cost_number_suffix": "{currency}/kWh",
+                                "cost_para": "Zvolte, jak má Home Assistant sledovat náklady na spotřebovanou energii.",
+                                "cost_stat": "Použít entitu sledující celkové náklady",
+                                "cost_stat_input": "Entita celkových nákladů",
+                                "energy_stat": "Spotřebovaná energie (kWh)",
+                                "header": "Nastavení spotřeby sítě",
+                                "no_cost": "Nesledovat náklady",
+                                "paragraph": "Spotřeba sítě je energie, která proudí z rozvodné sítě do vaší domácnosti."
+                            },
+                            "to": {
+                                "cost_entity": "Použít entitu s aktuální sazbou",
+                                "cost_entity_input": "Entita s aktuální sazbou",
+                                "cost_number": "Použít fixní sazbu",
+                                "cost_number_input": "Sazba za kWh",
+                                "cost_number_suffix": "{currency}/kWh",
+                                "cost_para": "Dostáváte peníze zpět, když vracíte energii do sítě?",
+                                "cost_stat": "Použít entitu sledující celkovou částku přijatých peněz",
+                                "cost_stat_input": "Entita celkové kompenzace",
+                                "energy_stat": "Energie vrácená do sítě (kWh)",
+                                "header": "Nastavení výroby sítě",
+                                "no_cost": "Nedostávám peníze zpět",
+                                "paragraph": "Výroba sítě je energie, která proudí ze solárních panelů do rozvodné sítě."
+                            }
+                        },
+                        "learn_more": "Více informací jak začít.",
+                        "sub": "Nastavte množství energie, kterou spotřebováváte z rozvodné sítě, a případně také množství energie, kterou do rozvodné sítě vracíte. Home Assistant tak bude moci sledovat spotřebu energie celé vaší domácnosti.",
+                        "title": "Rozvodná síť"
+                    },
+                    "solar": {
+                        "learn_more": "Více informací jak začít.",
+                        "stat_predicted_production": "Předpověď výroby solární energie",
+                        "stat_production": "Vaše výroba solární energie",
+                        "stat_return_to_grid": "Solární energie vrácená do sítě",
+                        "sub": "Nechte Home Assistant sledovat vaše solární panely a získejte přehled o jejich výkonu.",
+                        "title": "Solární panely"
+                    }
+                },
                 "entities": {
                     "caption": "Entity",
                     "description": "Správa známých entit",
@@ -2148,14 +2184,6 @@
                         }
                     }
                 },
-                "filtering": {
-                    "clear": "Vymazat",
-                    "filtering_by": "Filtrování podle",
-                    "show": "Zobrazit"
-                },
-                "hassio": {
-                    "button": "Nastavit"
-                },
                 "header": "Nastavení Home Assistant",
                 "helpers": {
                     "caption": "Pomocníci",
@@ -2205,16 +2233,11 @@
                     "server": "server",
                     "setup_time": "Doba nastavení",
                     "source": "Zdroj:",
-                    "system_health_error": "Součást System Health není načtena. Přidejte 'system_health:' do configuration.yaml",
                     "system_health": {
                         "manage": "Spravovat",
                         "more_info": "více informací"
-                    }
-                },
-                "integration_panel_move": {
-                    "link_integration_page": "stránka integrací",
-                    "missing_zha": "Hledáte nastavení ZHA? Bylo přesunuto do položky ZHA na {integrations_page}.",
-                    "missing_zwave": "Hledáte nastavení Z-Wave? Bylo přesunuto do položky Z-Wave na {integrations_page}."
+                    },
+                    "system_health_error": "Součást System Health není načtena. Přidejte 'system_health:' do configuration.yaml"
                 },
                 "integrations": {
                     "add_integration": "Přidat integraci",
@@ -2229,8 +2252,6 @@
                         "depends_on_cloud": "Závisí na cloudu",
                         "device_unavailable": "Zařízení není dostupné",
                         "devices": "{count} {count, plural,\n  one {zařízení}\n  other {zařízení}\n}",
-                        "disable_error": "Povolení nebo zakázání integrace se nezdařilo",
-                        "disable_restart_confirm": "Restartujte Home Assistant pro dokončení odstranění této integrace",
                         "disable": {
                             "disable_confirm": "Opravdu chcete zakázat tuto položku konfigurace? Její zařízení a entity budou zakázány.",
                             "disabled": "Zakázáno",
@@ -2241,6 +2262,8 @@
                             },
                             "disabled_cause": "Zakázáno {cause}"
                         },
+                        "disable_error": "Povolení nebo zakázání integrace se nezdařilo",
+                        "disable_restart_confirm": "Restartujte Home Assistant pro dokončení odstranění této integrace",
                         "disabled_polling": "Automatické dotazování na aktualizovaná data je zakázáno",
                         "documentation": "Dokumentace",
                         "enable_restart_confirm": "Restartujte Home Assistant pro dokončení přidání této integrace",
@@ -2248,11 +2271,9 @@
                         "entity_unavailable": "Entita není dostupná",
                         "firmware": "Firmware: {version}",
                         "hub": "Připojeno přes",
-                        "logs": "logy",
                         "manuf": "od {manufacturer}",
                         "no_area": "Žádná oblast",
                         "not_loaded": "Nenačteno",
-                        "options": "Možnosti",
                         "provided_by_custom_integration": "Poskytováno vlastní integrací",
                         "reload": "Nově načíst",
                         "reload_confirm": "Integrace byla nově načtena",
@@ -2284,7 +2305,11 @@
                             "open_site": "Otevřít webové stránky"
                         },
                         "finish": "Dokončit",
-                        "loading_first_time": "Počkejte prosím, než bude integrace nainstalována.",
+                        "loading": {
+                            "fallback_title": "integrace",
+                            "loading_flow": "Počkejte prosím, než se nastaví {integrace}.",
+                            "loading_step": "Načítání dalšího kroku pro {integraci}"
+                        },
                         "next": "Další",
                         "not_all_required_fields": "Nejsou vyplněna všechna povinná pole.",
                         "not_loaded": "Integraci se nepodařilo načíst, zkuste restartovat Home Assistant.",
@@ -2301,7 +2326,6 @@
                     "details": "Podrobnosti o integraci",
                     "disable": {
                         "disabled_integrations": "{number} zakázáno",
-                        "hide_disabled": "Skrýt zakázané integrace",
                         "show": "Zobrazit",
                         "show_disabled": "Zobrazit zakázané integrace"
                     },
@@ -2312,7 +2336,6 @@
                         "confirm_delete_ignore_title": "Přestat ignorovat {name}?",
                         "confirm_ignore": "Opravdu nechcete tuto integraci nastavit? Tuto akci můžete vrátit zpět klepnutím na \"Zobrazit ignorované integrace\" v nabídce vpravo nahoře.",
                         "confirm_ignore_title": "Ignorovat objevený {name}?",
-                        "hide_ignored": "Skrýt ignorované integrace",
                         "ignore": "Ignorovat",
                         "ignored": "Ignorováno",
                         "show_ignored": "Zobrazit ignorované integrace",
@@ -2432,7 +2455,6 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Nastavit",
                     "description_listen": "Naslouchat tématu",
                     "description_publish": "Publikovat paket",
                     "listening_to": "Naslouchám",
@@ -2446,7 +2468,6 @@
                     "topic": "téma"
                 },
                 "ozw": {
-                    "button": "Nastavit",
                     "common": {
                         "controller": "Ovladač",
                         "instance": "Instance",
@@ -2471,6 +2492,11 @@
                         "nodes": "Uzly",
                         "select_instance": "Vyberte instanci"
                     },
+                    "network": {
+                        "header": "Správa sítě",
+                        "introduction": "Správa funkcí pro celou síť",
+                        "node_count": "{count} uzlů"
+                    },
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "Všechny uzly byly zkontaktovány",
@@ -2491,10 +2517,9 @@
                         "starting": "Spouštění",
                         "unknown": "Nezjištěno"
                     },
-                    "network": {
-                        "header": "Správa sítě",
-                        "introduction": "Správa funkcí pro celou síť",
-                        "node_count": "{count} uzlů"
+                    "node": {
+                        "button": "Podrobnosti uzlu",
+                        "not_found": "Uzel nenalezen"
                     },
                     "node_config": {
                         "header": "Nastavení uzlu",
@@ -2523,10 +2548,6 @@
                         "static": "Získávám statické hodnoty ze zařízení",
                         "versions": "Získávám informace o verzích firmwaru a typech příkazů",
                         "wakeup": "Nastavuji podporu pro probouzecí fronty a zprávy"
-                    },
-                    "node": {
-                        "button": "Podrobnosti uzlu",
-                        "not_found": "Uzel nenalezen"
                     },
                     "nodes_table": {
                         "failed": "Selhalo",
@@ -2711,7 +2732,7 @@
                             "input_number": "Pomocníci - čísla",
                             "input_select": "Pomocníci - výběry",
                             "input_text": "Pomocníci - texty",
-                            "introduction": "Některé části Home Assistant lze nově načíst bez nutnosti restartování. Nové načtení zahodí jejich aktuální nastavení a načte nové.",
+                            "introduction": "Některé části Home Assistant lze nově načíst bez restartování. Kliknutím na jednu z níže uvedených možností se zruší jejich aktuální YAML konfigurace a načte se nová.",
                             "min_max": "Entity integrace Min/Max",
                             "mqtt": "Ručně nastavené entity integrace MQTT",
                             "person": "Osoby",
@@ -2753,7 +2774,7 @@
                     "confirm_remove": "Opravdu chcete odebrat štítek {tag}?",
                     "confirm_remove_title": "Odebrat štítek?",
                     "create_automation": "Vytvořit automatizaci se štítkem",
-                    "description": "Spusťte automatizaci skenováním NFC tagu, QR kódu atd.",
+                    "description": "Spusťte automatizaci skenováním NFC tagu, QR kódu atd",
                     "detail": {
                         "companion_apps": "doprovodné aplikace",
                         "create": "Vytvořit",
@@ -2832,7 +2853,6 @@
                         "search_again": "Hledat znovu",
                         "spinner": "Hledání zařízení ZHA Zigbee ..."
                     },
-                    "button": "Nastavit",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributy vybraného klastru",
                         "get_zigbee_attribute": "Získat atribut Zigbee",
@@ -2862,11 +2882,7 @@
                     },
                     "configuration_page": {
                         "shortcuts_title": "Zástupci",
-                        "update_button": "Aktualizovat nastavení",
-                        "zha_options": {
-                            "default_light_transition": "Výchozí doba přechodu světla (sekundy)",
-                            "title": "Globální možnosti"
-                        }
+                        "update_button": "Aktualizovat nastavení"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Nastavení dokončeno",
@@ -2948,105 +2964,7 @@
                     "introduction": "Zóny umožňují určit určité oblasti na zemi. Když je osoba v zóně, stav převezme název ze zóny. Zóny lze také použít jako aktivační událost nebo podmínku v nastavení automatizace.",
                     "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
-                "zwave_js": {
-                    "add_node": {
-                        "cancel_inclusion": "Zrušit začlenění",
-                        "controller_in_inclusion_mode": "Váš ovladač Z-Wave je nyní v režimu začlenění.",
-                        "follow_device_instructions": "Podle pokynů dodaných se zařízením aktivujte párování na zařízení.",
-                        "inclusion_failed": "Uzel nelze přidat. Další informace najdete v protokolech.",
-                        "inclusion_finished": "Uzel byl přidán.",
-                        "interview_failed": "Komunikace se zařízením se nezdařila. V logách mohou být k dispozici další informace.",
-                        "introduction": "Tento průvodce vás provede přidáním uzlu do vaší sítě Z-Wave.",
-                        "secure_inclusion_warning": "Zabezpečená zařízení vyžadují větší šířku pásma; příliš mnoho zabezpečených zařízení může zpomalit vaši síť Z-Wave. Bezpečné začlenění doporučujeme používat pouze u zařízení, která to vyžadují, jako jsou zámky nebo otvírače garážových vrat.",
-                        "start_inclusion": "Zahájit začlenění",
-                        "start_secure_inclusion": "Spusťte zabezpečené začlenění",
-                        "title": "Přidejte uzel Z-Wave",
-                        "use_secure_inclusion": "Použijte zabezpečené začlenění",
-                        "view_device": "Zobrazit zařízení"
-                    },
-                    "button": "Nastavit",
-                    "common": {
-                        "add_node": "Přidat uzel",
-                        "close": "Zavřít",
-                        "home_id": "ID domácnosti",
-                        "network": "Síť",
-                        "node_id": "ID uzlu",
-                        "remove_node": "Odebrat uzel"
-                    },
-                    "dashboard": {
-                        "driver_version": "Verze ovladače",
-                        "dump_dead_nodes_text": "Některé uzly neodpověděly a předpokládá se, že jsou mrtvé. Ty nebudou plně exportovány.",
-                        "dump_dead_nodes_title": "Některé uzly jsou mrtvé",
-                        "dump_debug": "Stáhněte si výpis své sítě a pomozte diagnostikovat problémy",
-                        "dump_not_ready_confirm": "Stáhnout",
-                        "dump_not_ready_text": "Pokud vytvoříte export, zatímco ne všechny uzly jsou připraveny, mohla by vám chybět potřebná data. Dejte své síti nějaký čas na dotazování všech uzlů. Chcete pokračovat s výpisem?",
-                        "dump_not_ready_title": "Ne všechny uzly jsou ještě připraveny",
-                        "header": "Spravujte svoji síť Z-Wave",
-                        "home_id": "ID domácnosti",
-                        "introduction": "Správa sítě Z-Wave a uzlů Z-Wave",
-                        "nodes_ready": "Uzly připraveny",
-                        "server_version": "Verze serveru"
-                    },
-                    "device_info": {
-                        "device_config": "Nakonfigurujte zařízení",
-                        "node_ready": "Uzel připraven",
-                        "node_status": "Stav uzlu",
-                        "zwave_info": "Z-Wave Info"
-                    },
-                    "logs": {
-                        "log_level": "Úroveň protokolu",
-                        "log_level_changed": "Úroveň protokolu změněna na: {level}",
-                        "title": "Z-Wave JS protokoly"
-                    },
-                    "navigation": {
-                        "logs": "Protokoly",
-                        "network": "Síť"
-                    },
-                    "network_status": {
-                        "connected": "Připojeno",
-                        "connecting": "Připojování",
-                        "unknown": "Nezjištěno"
-                    },
-                    "node_config": {
-                        "attribution": "Konfigurační parametry a popis zařízení poskytuje {device_database}",
-                        "battery_device_notice": "Aby bylo možné aktualizovat konfiguraci, musí být bateriová zařízení vzhůru. Pokyny k probuzení zařízení naleznete v příručce k zařízení.",
-                        "error_device_not_found": "Zařízení nenalezeno",
-                        "header": "Konfigurace zařízení Z-Wave",
-                        "introduction": "Spravujte a upravujte specifické konfigurační parametry zařízení (uzlu) pro vybrané zařízení",
-                        "parameter_is_read_only": "Tento parametr je jen pro čtení.",
-                        "set_param_accepted": "Parametr byl aktualizován.",
-                        "set_param_error": "Vyskytla se chyba.",
-                        "set_param_queued": "Změna parametru byla zařazena do fronty a bude aktualizována, jakmile se zařízení probudí.",
-                        "zwave_js_device_database": "Databáze zařízení Z-Wave JS"
-                    },
-                    "node_status": {
-                        "alive": "Naživu",
-                        "asleep": "Spící",
-                        "awake": "Probuzený",
-                        "dead": "Mrtvý",
-                        "unknown": "Nezjištěno"
-                    },
-                    "reinterview_node": {
-                        "battery_device_warning": "Před zahájením opakovaného rozhovoru je třeba probudit zařízení napájená z baterie. Pokyny k probuzení zařízení naleznete v příručce k zařízení.",
-                        "in_progress": "Zařízení je dotazováno. To může nějakou dobu trvat.",
-                        "interview_complete": "Pohovor se zařízením dokončen.",
-                        "interview_failed": "Dotazování zařízení se nezdařilo. Další informace mohou být k dispozici v protokolech.",
-                        "run_in_background": "Toto dialogové okno můžete zavřít a rozhovor bude pokračovat na pozadí.",
-                        "start_reinterview": "Zahájit opakovaný rozhovor"
-                    },
-                    "remove_node": {
-                        "cancel_exclusion": "Zrušit vyloučení",
-                        "controller_in_exclusion_mode": "Kontroler Z-Wave je nyní v režimu vyloučení.",
-                        "exclusion_failed": "Uzel nelze odstranit. Další informace najdete v protokolech.",
-                        "exclusion_finished": "Uzel {id} byl odebrán z vaší sítě Z-Wave.",
-                        "follow_device_instructions": "Postupujte podle pokynů dodanéch se zařízením a aktivujte vyloučení na zařízení.",
-                        "introduction": "Odeberte uzel ze sítě Z-Wave a odeberte přidružené zařízení a entity z Home Assistant.",
-                        "start_exclusion": "Zahájit vyloučení",
-                        "title": "Odebrání uzlu Z-Wave"
-                    }
-                },
                 "zwave": {
-                    "button": "Nastavit",
                     "common": {
                         "index": "Index",
                         "instance": "Instance",
@@ -3135,6 +3053,129 @@
                     "values": {
                         "header": "Hodnoty uzlu"
                     }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "cancel_inclusion": "Zrušit začlenění",
+                        "controller_in_inclusion_mode": "Váš ovladač Z-Wave je nyní v režimu začlenění.",
+                        "follow_device_instructions": "Podle pokynů dodaných se zařízením aktivujte párování na zařízení.",
+                        "inclusion_failed": "Uzel nelze přidat. Další informace najdete v protokolech.",
+                        "inclusion_finished": "Uzel byl přidán.",
+                        "interview_failed": "Komunikace se zařízením se nezdařila. V logách mohou být k dispozici další informace.",
+                        "introduction": "Tento průvodce vás provede přidáním uzlu do vaší sítě Z-Wave.",
+                        "secure_inclusion_warning": "Zabezpečená zařízení vyžadují větší šířku pásma; příliš mnoho zabezpečených zařízení může zpomalit vaši síť Z-Wave. Bezpečné začlenění doporučujeme používat pouze u zařízení, která to vyžadují, jako jsou zámky nebo otvírače garážových vrat.",
+                        "start_inclusion": "Zahájit začlenění",
+                        "start_secure_inclusion": "Spusťte zabezpečené začlenění",
+                        "title": "Přidejte uzel Z-Wave",
+                        "use_secure_inclusion": "Použijte zabezpečené začlenění",
+                        "view_device": "Zobrazit zařízení"
+                    },
+                    "common": {
+                        "add_node": "Přidat uzel",
+                        "close": "Zavřít",
+                        "heal_network": "Uzdravit síť",
+                        "home_id": "ID domácnosti",
+                        "network": "Síť",
+                        "node_id": "ID uzlu",
+                        "reconfigure_server": "Znovu nastavit server",
+                        "remove_node": "Odebrat uzel",
+                        "source": "Zdroj"
+                    },
+                    "dashboard": {
+                        "driver_version": "Verze ovladače",
+                        "dump_dead_nodes_text": "Některé uzly neodpověděly a předpokládá se, že jsou mrtvé. Ty nebudou plně exportovány.",
+                        "dump_dead_nodes_title": "Některé uzly jsou mrtvé",
+                        "dump_debug": "Stáhněte si výpis své sítě a pomozte diagnostikovat problémy",
+                        "dump_not_ready_confirm": "Stáhnout",
+                        "dump_not_ready_text": "Pokud vytvoříte export, zatímco ne všechny uzly jsou připraveny, mohla by vám chybět potřebná data. Dejte své síti nějaký čas na dotazování všech uzlů. Chcete pokračovat s výpisem?",
+                        "dump_not_ready_title": "Ne všechny uzly jsou ještě připraveny",
+                        "header": "Spravujte svoji síť Z-Wave",
+                        "home_id": "ID domácnosti",
+                        "introduction": "Správa sítě Z-Wave a uzlů Z-Wave",
+                        "nodes_ready": "Uzly připraveny",
+                        "server_version": "Verze serveru"
+                    },
+                    "device_info": {
+                        "device_config": "Nakonfigurujte zařízení",
+                        "heal_node": "Uzdravit uzel",
+                        "node_ready": "Uzel připraven",
+                        "node_status": "Stav uzlu",
+                        "zwave_info": "Z-Wave Info"
+                    },
+                    "heal_network": {
+                        "healing_cancelled": "Uzdravení sítě bylo zrušeno.",
+                        "healing_complete": "Uzdravení sítě je dokončeno.",
+                        "in_progress": "Probíhá uzdravování sítě. Bude to chvíli trvat.",
+                        "start_heal": "Spustit uzdravování",
+                        "stop_heal": "Zastavit uzdravování",
+                        "title": "Uzdravte svou síť Z-Wave"
+                    },
+                    "heal_node": {
+                        "healing_complete": "{device} bylo uzdraveno.",
+                        "healing_failed": "{device} nemohlo být uzdraveno.",
+                        "healing_failed_check_logs": "Další informace mohou být k dispozici v protokolech.",
+                        "in_progress": "Probíhá uzdravování {device}.",
+                        "start_heal": "Uzdravit zařízení",
+                        "title": "Uzdravit zařízení Z-Wave"
+                    },
+                    "logs": {
+                        "log_level": "Úroveň protokolu",
+                        "log_level_changed": "Úroveň protokolu změněna na: {level}",
+                        "title": "Z-Wave JS protokoly"
+                    },
+                    "navigation": {
+                        "logs": "Protokoly",
+                        "network": "Síť"
+                    },
+                    "network_status": {
+                        "connected": "Připojeno",
+                        "connecting": "Připojování",
+                        "unknown": "Nezjištěno"
+                    },
+                    "node_config": {
+                        "attribution": "Konfigurační parametry a popis zařízení poskytuje {device_database}",
+                        "battery_device_notice": "Aby bylo možné aktualizovat konfiguraci, musí být bateriová zařízení vzhůru. Pokyny k probuzení zařízení naleznete v příručce k zařízení.",
+                        "error_device_not_found": "Zařízení nenalezeno",
+                        "header": "Konfigurace zařízení Z-Wave",
+                        "introduction": "Spravujte a upravujte specifické konfigurační parametry zařízení (uzlu) pro vybrané zařízení",
+                        "parameter": "Parametr",
+                        "parameter_is_read_only": "Tento parametr je jen pro čtení.",
+                        "set_param_accepted": "Parametr byl aktualizován.",
+                        "set_param_error": "Vyskytla se chyba.",
+                        "set_param_queued": "Změna parametru byla zařazena do fronty a bude aktualizována, jakmile se zařízení probudí.",
+                        "zwave_js_device_database": "Databáze zařízení Z-Wave JS"
+                    },
+                    "node_status": {
+                        "alive": "Naživu",
+                        "asleep": "Spící",
+                        "awake": "Probuzený",
+                        "dead": "Mrtvý",
+                        "unknown": "Nezjištěno"
+                    },
+                    "reinterview_node": {
+                        "battery_device_warning": "Před zahájením opakovaného rozhovoru je třeba probudit zařízení napájená z baterie. Pokyny k probuzení zařízení naleznete v příručce k zařízení.",
+                        "in_progress": "Zařízení je dotazováno. To může nějakou dobu trvat.",
+                        "interview_complete": "Pohovor se zařízením dokončen.",
+                        "interview_failed": "Dotazování zařízení se nezdařilo. Další informace mohou být k dispozici v protokolech.",
+                        "run_in_background": "Toto dialogové okno můžete zavřít a rozhovor bude pokračovat na pozadí.",
+                        "start_reinterview": "Zahájit opakovaný rozhovor"
+                    },
+                    "remove_failed_node": {
+                        "in_progress": "Probíhá odstraňování zařízení.",
+                        "removal_failed": "Zařízení se nepodařilo odebrat z vaší sítě Z-Wave.",
+                        "removal_finished": "Uzel {id} byl odebrán z vaší sítě Z-Wave.",
+                        "remove_device": "Odebrat zařízení"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Zrušit vyloučení",
+                        "controller_in_exclusion_mode": "Kontroler Z-Wave je nyní v režimu vyloučení.",
+                        "exclusion_failed": "Uzel nelze odstranit. Další informace najdete v protokolech.",
+                        "exclusion_finished": "Uzel {id} byl odebrán z vaší sítě Z-Wave.",
+                        "follow_device_instructions": "Postupujte podle pokynů dodanéch se zařízením a aktivujte vyloučení na zařízení.",
+                        "introduction": "Odeberte uzel ze sítě Z-Wave a odeberte přidružené zařízení a entity z Home Assistant.",
+                        "start_exclusion": "Zahájit vyloučení",
+                        "title": "Odebrání uzlu Z-Wave"
+                    }
                 }
             },
             "custom": {
@@ -3217,31 +3258,16 @@
                     }
                 }
             },
-            "error": {
-                "go_back": "Vrátit se",
-                "supervisor": {
-                    "ask": "Požádat o pomoc",
-                    "observer": "Zkontrolujte pozorovatele",
-                    "reboot": "Zkuste restartovat hostitele",
-                    "system_health": "Kontrola stavu systému",
-                    "title": "Nelze načíst panel pro správu!",
-                    "wait": "Pokud jste právě začali, ujistěte se, že jste správci poskytli dostatek času k rozběhnutí."
-                }
-            },
-            "history": {
-                "ranges": {
-                    "last_week": "Minulý týden",
-                    "this_week": "Tento týden",
-                    "today": "Dnes",
-                    "yesterday": "Včera"
-                }
-            },
-            "logbook": {
-                "ranges": {
-                    "last_week": "Minulý týden",
-                    "this_week": "Tento týden",
-                    "today": "Dnes",
-                    "yesterday": "Včera"
+            "energy": {
+                "charts": {
+                    "by_device": "Spotřeba podle zařízení",
+                    "solar": "Solární",
+                    "stat_house_energy_meter": "Celková spotřeba energie"
+                },
+                "setup": {
+                    "back": "Zpět",
+                    "done": "Ukažte mi můj energetický panel!",
+                    "next": "Další"
                 }
             },
             "lovelace": {
@@ -3355,7 +3381,6 @@
                         "entities": {
                             "description": "Karta Entity je nejběžnějším typem karty. Seskupuje položky do seznamů.",
                             "edit_special_row": "Použijte tlačítko Upravit k zobrazení podrobností tohoto řádku",
-                            "entity_row_editor": "Editor řádku entity",
                             "entity_row": {
                                 "attribute": "Atribut",
                                 "button": "Tlačítko",
@@ -3367,6 +3392,7 @@
                                 "section": "Sekce",
                                 "weblink": "Webový odkaz"
                             },
+                            "entity_row_editor": "Editor řádku entity",
                             "name": "Entity",
                             "secondary_info_values": {
                                 "brightness": "Jas",
@@ -3393,6 +3419,7 @@
                         "gauge": {
                             "description": "Karta Ručičkový ukazatel je základní karta pro vizuální zobrazení hodnoty senzoru.",
                             "name": "Ručičkový ukazatel",
+                            "needle_gauge": "Zobrazit s ukazatelem?",
                             "severity": {
                                 "define": "Definovat závažnost?",
                                 "green": "Zelená",
@@ -3405,6 +3432,7 @@
                             "attribute": "Atribut",
                             "camera_image": "Entita kamery",
                             "camera_view": "Zobrazení kamery",
+                            "days_to_show": "Počet dní k zobrazení",
                             "double_tap_action": "Akce při dvojitém poklepání",
                             "entities": "Entity",
                             "entity": "Entita",
@@ -3518,6 +3546,10 @@
                             "integration_not_loaded": "Tato karta vyžaduje integraci `shopping_list`.",
                             "name": "Nákupní seznam"
                         },
+                        "statistics-graph": {
+                            "description": "Karta Statistický graf umožňuje zobrazit graf statistik pro každou z uvedených entit.",
+                            "name": "Statistický graf"
+                        },
                         "thermostat": {
                             "description": "Karta Termostat poskytuje kontrolu nad vaší klimatickou entitou. Umožňuje změnit teplotu a režim entity.",
                             "name": "Termostat"
@@ -3587,6 +3619,12 @@
                         "tab_badges": "Odznaky",
                         "tab_settings": "Nastavení",
                         "tab_visibility": "Viditelnost",
+                        "type": "Typ zobrazení",
+                        "types": {
+                            "masonry": "Zdivo (výchozí)",
+                            "panel": "Panel (1 karta)",
+                            "sidebar": "Postranní panel"
+                        },
                         "visibility": {
                             "select_users": "Vyberte, kteří uživatelé by měli vidět tento pohled v navigaci"
                         }
@@ -3641,7 +3679,6 @@
                         "unsaved_changes": "Neuložené změny"
                     },
                     "save_config": {
-                        "cancel": "Zahodit změnu",
                         "close": "Zavřít",
                         "empty_config": "Začít s prázdným ovládacím panel",
                         "header": "Převzít kontrolu nad vaší Lovelace UI",
@@ -3670,8 +3707,6 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "První karta bude zobrazena v plné šířce. Ostatní karty nebo odznaky nebudou v tomto pohledu vůbec zobrazeny.",
-                            "title": "Režim panelu?",
                             "warning_multiple_cards": "Toto zobrazení obsahuje více než jednu kartu, ale v panelovém zobrazení může zobrazovat pouze 1 kartu."
                         }
                     }
@@ -3874,8 +3909,7 @@
             },
             "page-onboarding": {
                 "analytics": {
-                    "finish": "Další",
-                    "intro": "Sdílejte analytiku ze své instance. Tato data budou veřejně dostupná na {link}"
+                    "finish": "Další"
                 },
                 "core-config": {
                     "button_detect": "Rozpoznat",
@@ -3899,10 +3933,8 @@
                     "confirm_password": "Potvrďte heslo zálohy",
                     "description": "Případně můžete Home Assistant obnovit z poslední zálohy.",
                     "folders": "Složky",
-                    "full_snapshot": "Úplná záloha",
                     "hide_log": "Skrýt celý log",
                     "in_progress": "Probíhá obnovení",
-                    "partial_snapshot": "Částečná záloha",
                     "password": "Heslo zálohy",
                     "password_protection": "Ochrana heslem",
                     "select_type": "Vyberte, co chcete obnovit",
@@ -3984,18 +4016,18 @@
                     "prompt_copy_token": "Zkopírujte přístupový token. Už nikdy nebude znovu zobrazen.",
                     "prompt_name": "Pojmenujte token"
                 },
+                "mfa": {
+                    "confirm_disable": "Opravdu chcete zakázat {name}?",
+                    "disable": "Zakázat",
+                    "enable": "Povolit",
+                    "header": "Multifaktorové autentizační moduly"
+                },
                 "mfa_setup": {
                     "close": "Zavřít",
                     "step_done": "Dokončen krok {step}",
                     "submit": "Odeslat",
                     "title_aborted": "Zrušeno",
                     "title_success": "Úspěch!"
-                },
-                "mfa": {
-                    "confirm_disable": "Opravdu chcete zakázat {name}?",
-                    "disable": "Zakázat",
-                    "enable": "Povolit",
-                    "header": "Multifaktorové autentizační moduly"
                 },
                 "number_format": {
                     "description": "Zvolte způsob formátování čísel.",

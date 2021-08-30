@@ -13,6 +13,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import "web-animations-js/web-animations-next-lite.min";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import {
   HassioAddonDetails,
@@ -53,7 +54,9 @@ class HassioAddonAudio extends LitElement {
         .header=${this.supervisor.localize("addon.configuration.audio.header")}
       >
         <div class="card-content">
-          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
 
           <paper-dropdown-menu
             .label=${this.supervisor.localize(
@@ -116,10 +119,6 @@ class HassioAddonAudio extends LitElement {
         ha-card,
         paper-dropdown-menu {
           display: block;
-        }
-        .errors {
-          color: var(--error-color);
-          margin-bottom: 16px;
         }
         paper-item {
           width: 450px;

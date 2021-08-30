@@ -1,10 +1,14 @@
 import "@polymer/paper-input/paper-input";
-import { html, LitElement } from "lit";
+import { html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
+import { createDurationData } from "../../../../../common/datetime/create_duration_data";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { hasTemplate } from "../../../../../common/string/has-template";
 import "../../../../../components/entity/ha-entity-attribute-picker";
 import "../../../../../components/entity/ha-entity-picker";
-import { ForDict, StateTrigger } from "../../../../../data/automation";
+import { StateTrigger } from "../../../../../data/automation";
 import { HomeAssistant } from "../../../../../types";
+import "../../../../../components/ha-duration-input";
 import {
   handleChangeEvent,
   TriggerElement,
@@ -20,25 +24,23 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
     return { entity_id: "" };
   }
 
+  public willUpdate(changedProperties: PropertyValues) {
+    if (!changedProperties.has("trigger")) {
+      return;
+    }
+    // Check for templates in trigger. If found, revert to YAML mode.
+    if (this.trigger && hasTemplate(this.trigger)) {
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(this.hass.localize("ui.errors.config.no_template_editor_support"))
+      );
+    }
+  }
+
   protected render() {
     const { entity_id, attribute, to, from } = this.trigger;
-    let trgFor = this.trigger.for;
-
-    if (
-      trgFor &&
-      ((trgFor as ForDict).hours ||
-        (trgFor as ForDict).minutes ||
-        (trgFor as ForDict).seconds)
-    ) {
-      // If the trigger was defined using the yaml dict syntax, convert it to
-      // the equivalent string format
-      let { hours = 0, minutes = 0, seconds = 0 } = trgFor as ForDict;
-      hours = hours.toString();
-      minutes = minutes.toString().padStart(2, "0");
-      seconds = seconds.toString().padStart(2, "0");
-
-      trgFor = `${hours}:${minutes}:${seconds}`;
-    }
+    const trgFor = createDurationData(this.trigger.for);
 
     return html`
       <ha-entity-picker
@@ -75,14 +77,14 @@ export class HaStateTrigger extends LitElement implements TriggerElement {
         .value=${to}
         @value-changed=${this._valueChanged}
       ></paper-input>
-      <paper-input
+      <ha-duration-input
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.triggers.type.state.for"
         )}
         .name=${"for"}
-        .value=${trgFor}
+        .data=${trgFor}
         @value-changed=${this._valueChanged}
-      ></paper-input>
+      ></ha-duration-input>
     `;
   }
 

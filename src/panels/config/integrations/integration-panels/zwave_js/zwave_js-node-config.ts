@@ -34,8 +34,10 @@ import {
 } from "../../../../../data/device_registry";
 import {
   fetchNodeConfigParameters,
+  fetchNodeMetadata,
   setNodeConfigParameter,
   ZWaveJSNodeConfigParams,
+  ZwaveJSNodeMetadata,
   ZWaveJSSetConfigParamResult,
 } from "../../../../../data/zwave_js";
 import "../../../../../layouts/hass-tabs-subpage";
@@ -88,6 +90,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
 
   @property({ type: Array })
   private _deviceRegistryEntries?: DeviceRegistryEntry[];
+
+  @state() private _nodeMetadata?: ZwaveJSNodeMetadata;
 
   @state() private _config?: ZWaveJSNodeConfigParams;
 
@@ -162,7 +166,11 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                 ${this.hass.localize(
                   "ui.panel.config.zwave_js.node_config.attribution",
                   "device_database",
-                  html`<a href="https://devices.zwave-js.io/" target="_blank"
+                  html`<a
+                    rel="noreferrer noopener"
+                    href="${this._nodeMetadata?.device_database_url ||
+                    "https://devices.zwave-js.io"}"
+                    target="_blank"
                     >${this.hass.localize(
                       "ui.panel.config.zwave_js.node_config.zwave_js_device_database"
                     )}</a
@@ -421,11 +429,10 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       return;
     }
 
-    this._config = await fetchNodeConfigParameters(
-      this.hass,
-      this.configEntryId,
-      nodeId!
-    );
+    [this._nodeMetadata, this._config] = await Promise.all([
+      fetchNodeMetadata(this.hass, this.configEntryId, nodeId!),
+      fetchNodeConfigParameters(this.hass, this.configEntryId, nodeId!),
+    ]);
   }
 
   static get styles(): CSSResultGroup {

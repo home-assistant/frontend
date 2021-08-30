@@ -72,8 +72,11 @@ export class HuiEnergySourcesTableCard
     }
 
     let totalGrid = 0;
+    let totalGridCost = 0;
     let totalSolar = 0;
-    let totalCost = 0;
+    let totalBattery = 0;
+    let totalGas = 0;
+    let totalGasCost = 0;
 
     const types = energySourcesByType(this._data.prefs);
 
@@ -81,11 +84,20 @@ export class HuiEnergySourcesTableCard
     const solarColor = computedStyles
       .getPropertyValue("--energy-solar-color")
       .trim();
+    const batteryFromColor = computedStyles
+      .getPropertyValue("--energy-battery-out-color")
+      .trim();
+    const batteryToColor = computedStyles
+      .getPropertyValue("--energy-battery-in-color")
+      .trim();
     const returnColor = computedStyles
       .getPropertyValue("--energy-grid-return-color")
       .trim();
     const consumptionColor = computedStyles
       .getPropertyValue("--energy-grid-consumption-color")
+      .trim();
+    const gasColor = computedStyles
+      .getPropertyValue("--energy-gas-color")
       .trim();
 
     const showCosts =
@@ -98,6 +110,10 @@ export class HuiEnergySourcesTableCard
           flow.stat_compensation ||
           flow.entity_energy_price ||
           flow.number_energy_price
+      ) ||
+      types.gas?.some(
+        (flow) =>
+          flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
       );
 
     return html` <ha-card>
@@ -106,7 +122,7 @@ export class HuiEnergySourcesTableCard
         : ""}
       <div class="mdc-data-table">
         <div class="mdc-data-table__table-container">
-          <table class="mdc-data-table__table" aria-label="Dessert calories">
+          <table class="mdc-data-table__table" aria-label="Energy sources">
             <thead>
               <tr class="mdc-data-table__header-row">
                 <th class="mdc-data-table__header-cell"></th>
@@ -190,6 +206,99 @@ export class HuiEnergySourcesTableCard
                       : ""}
                   </tr>`
                 : ""}
+              ${types.battery?.map((source, idx) => {
+                const entityFrom = this.hass.states[source.stat_energy_from];
+                const entityTo = this.hass.states[source.stat_energy_to];
+                const energyFrom =
+                  calculateStatisticSumGrowth(
+                    this._data!.stats[source.stat_energy_from]
+                  ) || 0;
+                const energyTo =
+                  calculateStatisticSumGrowth(
+                    this._data!.stats[source.stat_energy_to]
+                  ) || 0;
+                totalBattery += energyFrom - energyTo;
+                const fromColor =
+                  idx > 0
+                    ? rgb2hex(
+                        lab2rgb(
+                          labDarken(rgb2lab(hex2rgb(batteryFromColor)), idx)
+                        )
+                      )
+                    : batteryFromColor;
+                const toColor =
+                  idx > 0
+                    ? rgb2hex(
+                        lab2rgb(
+                          labDarken(rgb2lab(hex2rgb(batteryToColor)), idx)
+                        )
+                      )
+                    : batteryToColor;
+                return html`<tr class="mdc-data-table__row">
+                    <td class="mdc-data-table__cell cell-bullet">
+                      <div
+                        class="bullet"
+                        style=${styleMap({
+                          borderColor: fromColor,
+                          backgroundColor: fromColor + "7F",
+                        })}
+                      ></div>
+                    </td>
+                    <th class="mdc-data-table__cell" scope="row">
+                      ${entityFrom
+                        ? computeStateName(entityFrom)
+                        : source.stat_energy_from}
+                    </th>
+                    <td
+                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                    >
+                      ${formatNumber(energyFrom, this.hass.locale)} kWh
+                    </td>
+                    ${showCosts
+                      ? html`<td class="mdc-data-table__cell"></td>`
+                      : ""}
+                  </tr>
+                  <tr class="mdc-data-table__row">
+                    <td class="mdc-data-table__cell cell-bullet">
+                      <div
+                        class="bullet"
+                        style=${styleMap({
+                          borderColor: toColor,
+                          backgroundColor: toColor + "7F",
+                        })}
+                      ></div>
+                    </td>
+                    <th class="mdc-data-table__cell" scope="row">
+                      ${entityTo
+                        ? computeStateName(entityTo)
+                        : source.stat_energy_from}
+                    </th>
+                    <td
+                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                    >
+                      ${formatNumber(energyTo * -1, this.hass.locale)} kWh
+                    </td>
+                    ${showCosts
+                      ? html`<td class="mdc-data-table__cell"></td>`
+                      : ""}
+                  </tr>`;
+              })}
+              ${types.battery
+                ? html`<tr class="mdc-data-table__row total">
+                    <td class="mdc-data-table__cell"></td>
+                    <th class="mdc-data-table__cell" scope="row">
+                      Battery total
+                    </th>
+                    <td
+                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                    >
+                      ${formatNumber(totalBattery, this.hass.locale)} kWh
+                    </td>
+                    ${showCosts
+                      ? html`<td class="mdc-data-table__cell"></td>`
+                      : ""}
+                  </tr>`
+                : ""}
               ${types.grid?.map(
                 (source) => html`${source.flow_from.map((flow, idx) => {
                   const entity = this.hass.states[flow.stat_energy_from];
@@ -207,7 +316,7 @@ export class HuiEnergySourcesTableCard
                       ) || 0
                     : null;
                   if (cost !== null) {
-                    totalCost += cost;
+                    totalGridCost += cost;
                   }
                   const color =
                     idx > 0
@@ -267,7 +376,7 @@ export class HuiEnergySourcesTableCard
                       ) || 0) * -1
                     : null;
                   if (cost !== null) {
-                    totalCost += cost;
+                    totalGridCost += cost;
                   }
                   const color =
                     idx > 0
@@ -321,12 +430,111 @@ export class HuiEnergySourcesTableCard
                       ? html`<td
                           class="mdc-data-table__cell mdc-data-table__cell--numeric"
                         >
-                          ${formatNumber(totalCost, this.hass.locale, {
+                          ${formatNumber(totalGridCost, this.hass.locale, {
                             style: "currency",
                             currency: this.hass.config.currency!,
                           })}
                         </td>`
                       : ""}
+                  </tr>`
+                : ""}
+              ${types.gas?.map((source, idx) => {
+                const entity = this.hass.states[source.stat_energy_from];
+                const energy =
+                  calculateStatisticSumGrowth(
+                    this._data!.stats[source.stat_energy_from]
+                  ) || 0;
+                totalGas += energy;
+                const cost_stat =
+                  source.stat_cost ||
+                  this._data!.info.cost_sensors[source.stat_energy_from];
+                const cost = cost_stat
+                  ? calculateStatisticSumGrowth(this._data!.stats[cost_stat]) ||
+                    0
+                  : null;
+                if (cost !== null) {
+                  totalGasCost += cost;
+                }
+                const color =
+                  idx > 0
+                    ? rgb2hex(
+                        lab2rgb(labDarken(rgb2lab(hex2rgb(gasColor)), idx))
+                      )
+                    : gasColor;
+                return html`<tr class="mdc-data-table__row">
+                  <td class="mdc-data-table__cell cell-bullet">
+                    <div
+                      class="bullet"
+                      style=${styleMap({
+                        borderColor: color,
+                        backgroundColor: color + "7F",
+                      })}
+                    ></div>
+                  </td>
+                  <th class="mdc-data-table__cell" scope="row">
+                    ${entity
+                      ? computeStateName(entity)
+                      : source.stat_energy_from}
+                  </th>
+                  <td
+                    class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                  >
+                    ${formatNumber(energy, this.hass.locale)} m³
+                  </td>
+                  ${showCosts
+                    ? html`<td
+                        class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                      >
+                        ${cost !== null
+                          ? formatNumber(cost, this.hass.locale, {
+                              style: "currency",
+                              currency: this.hass.config.currency!,
+                            })
+                          : ""}
+                      </td>`
+                    : ""}
+                </tr>`;
+              })}
+              ${types.gas
+                ? html`<tr class="mdc-data-table__row total">
+                    <td class="mdc-data-table__cell"></td>
+                    <th class="mdc-data-table__cell" scope="row">Gas total</th>
+                    <td
+                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                    >
+                      ${formatNumber(totalGas, this.hass.locale)} m³
+                    </td>
+                    ${showCosts
+                      ? html`<td
+                          class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                        >
+                          ${formatNumber(totalGasCost, this.hass.locale, {
+                            style: "currency",
+                            currency: this.hass.config.currency!,
+                          })}
+                        </td>`
+                      : ""}
+                  </tr>`
+                : ""}
+              ${totalGasCost && totalGridCost
+                ? html`<tr class="mdc-data-table__row total">
+                    <td class="mdc-data-table__cell"></td>
+                    <th class="mdc-data-table__cell" scope="row">
+                      Total costs
+                    </th>
+                    <td class="mdc-data-table__cell"></td>
+                    <td
+                      class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                    >
+                      ${formatNumber(
+                        totalGasCost + totalGridCost,
+                        this.hass.locale,
+                        {
+                          style: "currency",
+                          currency: this.hass.config.currency!,
+                        }
+                      )}
+                    </td>
                   </tr>`
                 : ""}
             </tbody>

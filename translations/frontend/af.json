@@ -16,6 +16,14 @@
         "shopping_list": "Inkopielys",
         "states": "Oorsig"
     },
+    "state": {
+        "default": {
+            "off": "Af",
+            "on": "Aan",
+            "unavailable": "Nie beskikbaar nie",
+            "unknown": "Onbekend"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -71,20 +79,12 @@
             "not_home": "[%key:state_badge::person::not_home%]"
         }
     },
-    "state": {
-        "default": {
-            "off": "Af",
-            "on": "Aan",
-            "unavailable": "Nie beskikbaar nie",
-            "unknown": "Onbekend"
-        }
-    },
     "supervisor": {
+        "backup": {
+            "created": "Geskep"
+        },
         "my": {
             "error_addon_no_ingress": "Die aangevraagde byvoegsel ondersteun nie ingryping nie"
-        },
-        "snapshot": {
-            "created": "Geskep"
         },
         "system": {
             "supervisor": {
@@ -457,7 +457,6 @@
                             "introduction": "Die aksies is wat Home Assistant sal doen wanneer die outomatisering geaktiveer word.",
                             "learn_more": "Kom meer te wete oor aksies",
                             "name": "Aksie",
-                            "type_select": "Aksie tipe",
                             "type": {
                                 "condition": {
                                     "label": "Voorwaarde"
@@ -480,6 +479,7 @@
                                     "wait_template": "Wag Templaat"
                                 }
                             },
+                            "type_select": "Aksie tipe",
                             "unsupported_action": "Geen UI-ondersteuning vir aksie nie: {action}"
                         },
                         "alias": "Naam",
@@ -492,7 +492,6 @@
                             "introduction": "Voorwaardes is 'n opsionele deel van 'n outomatiseringsreël en kan gebruik word om te verhoed dat 'n aksie plaasvind wanneer dit geaktiveer word. Voorwaardes lyk baie soos snellers maar is baie anders. 'n Sneller sal kyk na gebeure wat in die stelsel gebeur terwyl 'n voorwaarde net kyk hoe die stelsel lyk. Byvoorbeeld: 'n Sneller kan sien dat 'n skakelaar aangeskakel word. 'n Voorwaarde kan net sien of 'n skakelaar tans aan of af is.",
                             "learn_more": "Kom meer te wete oor voorwaardes",
                             "name": "Voorwaarde",
-                            "type_select": "Voorwaarde tipe",
                             "type": {
                                 "numeric_state": {
                                     "above": "Bo",
@@ -531,6 +530,7 @@
                                     "zone": "Sone"
                                 }
                             },
+                            "type_select": "Voorwaarde tipe",
                             "unsupported_condition": "Ongesteunde voorwaarde: {condition}"
                         },
                         "default_name": "Nuwe outomatisering",
@@ -553,7 +553,6 @@
                             "introduction": "Snellers is wat die prosessering van 'n outomatiseringsreël afskop. Dit is moontlik om verskeie snellers vir dieselfde reël te spesifiseer. Sodra 'n sneller begin, sal Home Assistant die voorwaardes, indien enige, bevestig en die aksie roep.",
                             "learn_more": "Kom meer te wete oor snellers",
                             "name": "Sneller",
-                            "type_select": "Sneller tipe",
                             "type": {
                                 "event": {
                                     "context_user_pick": "Voeg gebruiker toe",
@@ -603,15 +602,15 @@
                                     "label": "Templaat",
                                     "value_template": "Waarde templaat"
                                 },
+                                "time": {
+                                    "at": "Om",
+                                    "label": "Tyd"
+                                },
                                 "time_pattern": {
                                     "hours": "Ure",
                                     "label": "Tydpatroon",
                                     "minutes": "Minute",
                                     "seconds": "Sekondes"
-                                },
-                                "time": {
-                                    "at": "Om",
-                                    "label": "Tyd"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -626,6 +625,7 @@
                                     "zone": "Sone"
                                 }
                             },
+                            "type_select": "Sneller tipe",
                             "unsupported_platform": "Ongesteunde platform: {platform}"
                         },
                         "unsaved_confirm": "U het ongestoorde veranderinge. Is u seker u wil die blad verlaat?"
@@ -823,7 +823,6 @@
                         "hub": "Gekonnekteer via",
                         "manuf": "deur {manufacturer}",
                         "no_area": "Geen Gebied",
-                        "options": "Opsies",
                         "rename": "Hernoem",
                         "restart_confirm": "Herbegin Home Assistant om hierdie integrasie te voltooi",
                         "system_options": "Stelselopsies"
@@ -853,7 +852,6 @@
                         "confirm_delete_ignore_title": "Hou op om {name} ignoreer?",
                         "confirm_ignore": "Is u seker dat u nie hierdie integrasie wil instel nie? U kan dit ongedaan maak deur op die 'Wys geïgnoreerde integrasies' in die oorloopmenu regs bo te klik.",
                         "confirm_ignore_title": "Ignoreer ontdekking van {name}?",
-                        "hide_ignored": "Verberg geïgnoreerde integrasies",
                         "ignore": "Ignoreer",
                         "ignored": "Geïgnoreer",
                         "show_ignored": "Toon geïgnoreerde integrasies",
@@ -1112,12 +1110,6 @@
                     "introduction": "Met sones kan u sekere streke op aarde spesifiseer. As 'n persoon binne 'n sone is, neem die toestand die sonenaam aan. Sones kan ook as 'n sneller of toestand gebruik word in outomatiseringsinstellings.",
                     "no_zones_created_yet": "Lyk asof jy nog geen sones geskep het nie."
                 },
-                "zwave_js": {
-                    "add_node": {
-                        "interview_failed": "Die toestelonderhoud het misluk. Bykomende inligting kan moontlik in die logboeke beskikbaar wees.",
-                        "interview_started": "Die toestel word ondervra. Dit kan 'n geruime tyd neem."
-                    }
-                },
                 "zwave": {
                     "common": {
                         "index": "Indeks",
@@ -1160,6 +1152,12 @@
                     },
                     "values": {
                         "header": "Knooppuntwaardes"
+                    }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "interview_failed": "Die toestelonderhoud het misluk. Bykomende inligting kan moontlik in die logboeke beskikbaar wees.",
+                        "interview_started": "Die toestel word ondervra. Dit kan 'n geruime tyd neem."
                     }
                 }
             },
@@ -1298,7 +1296,6 @@
                         "unsaved_changes": "Ongestoorde veranderinge"
                     },
                     "save_config": {
-                        "cancel": "Toemaar",
                         "close": "maak toe",
                         "header": "Neem beheer van u Lovelace gebruikerskoppelvlak",
                         "para": "Home Assistant sal outomaties u gebruikerskoppelvlak handhaaf, dit opdateer wanneer nuwe entiteite of Lovelace-komponente beskikbaar raak. Alhoewel, as u beheer neem, sal Home Assistant nie meer outomaties veranderings vir u doen nie.",
@@ -1546,18 +1543,18 @@
                     "prompt_copy_token": "Kopieer u toegangs-tekseenheid. Dit sal nie weer gewys word nie.",
                     "prompt_name": "Naam?"
                 },
+                "mfa": {
+                    "confirm_disable": "Is u seker u wil {name} deaktiveer?",
+                    "disable": "Deaktiveer",
+                    "enable": "Aktiveer",
+                    "header": "Multi-faktor Verifikasie Modules"
+                },
                 "mfa_setup": {
                     "close": "Toe",
                     "step_done": "Opstelling gedoen vir {step}",
                     "submit": "Dien in",
                     "title_aborted": "Gestaak",
                     "title_success": "Sukses!"
-                },
-                "mfa": {
-                    "confirm_disable": "Is u seker u wil {name} deaktiveer?",
-                    "disable": "Deaktiveer",
-                    "enable": "Aktiveer",
-                    "header": "Multi-faktor Verifikasie Modules"
                 },
                 "push_notifications": {
                     "description": "Stuur kennisgewings na hierdie toestel.",

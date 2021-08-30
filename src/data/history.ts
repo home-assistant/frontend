@@ -1,3 +1,4 @@
+import { addDays, addMonths, startOfDay, startOfMonth } from "date-fns";
 import { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeStateDomain } from "../common/entity/compute_state_domain";
@@ -238,14 +239,17 @@ export const computeHistory = (
       return;
     }
 
-    const stateWithUnit = stateInfo.find(
-      (state) => state.attributes && "unit_of_measurement" in state.attributes
+    const stateWithUnitorStateClass = stateInfo.find(
+      (state) =>
+        state.attributes &&
+        ("unit_of_measurement" in state.attributes ||
+          "state_class" in state.attributes)
     );
 
     let unit: string | undefined;
 
-    if (stateWithUnit) {
-      unit = stateWithUnit.attributes.unit_of_measurement;
+    if (stateWithUnitorStateClass) {
+      unit = stateWithUnitorStateClass.attributes.unit_of_measurement || " ";
     } else {
       unit = {
         climate: hass.config.unit_system.temperature,
@@ -405,4 +409,91 @@ export const calculateStatisticsSumGrowthWithPercentage = (
   });
 
   return sum;
+};
+
+export const reduceSumStatisticsByDay = (
+  values: StatisticValue[]
+): StatisticValue[] => {
+  if (!values?.length) {
+    return [];
+  }
+  const result: StatisticValue[] = [];
+  if (
+    values.length > 1 &&
+    new Date(values[0].start).getDate() === new Date(values[1].start).getDate()
+  ) {
+    // add init value if the first value isn't end of previous period
+    result.push({
+      ...values[0]!,
+      start: startOfMonth(addDays(new Date(values[0].start), -1)).toISOString(),
+    });
+  }
+  let lastValue: StatisticValue;
+  let prevDate: number | undefined;
+  for (const value of values) {
+    const date = new Date(value.start).getDate();
+    if (prevDate === undefined) {
+      prevDate = date;
+    }
+    if (prevDate !== date) {
+      // Last value of the day
+      result.push({
+        ...lastValue!,
+        start: startOfDay(new Date(lastValue!.start)).toISOString(),
+      });
+      prevDate = date;
+    }
+    lastValue = value;
+  }
+  // Add final value
+  result.push({
+    ...lastValue!,
+    start: startOfDay(new Date(lastValue!.start)).toISOString(),
+  });
+  return result;
+};
+
+export const reduceSumStatisticsByMonth = (
+  values: StatisticValue[]
+): StatisticValue[] => {
+  if (!values?.length) {
+    return [];
+  }
+  const result: StatisticValue[] = [];
+  if (
+    values.length > 1 &&
+    new Date(values[0].start).getMonth() ===
+      new Date(values[1].start).getMonth()
+  ) {
+    // add init value if the first value isn't end of previous period
+    result.push({
+      ...values[0]!,
+      start: startOfMonth(
+        addMonths(new Date(values[0].start), -1)
+      ).toISOString(),
+    });
+  }
+  let lastValue: StatisticValue;
+  let prevMonth: number | undefined;
+  for (const value of values) {
+    const month = new Date(value.start).getMonth();
+    if (prevMonth === undefined) {
+      prevMonth = month;
+    }
+    if (prevMonth !== month) {
+      // Last value of the day
+      result.push({
+        ...lastValue!,
+        start: startOfMonth(new Date(lastValue!.start)).toISOString(),
+      });
+      prevMonth = month;
+    }
+    lastValue = value;
+  }
+  // Add final value
+  result.push({
+    ...lastValue!,
+    start: startOfMonth(new Date(lastValue!.start)).toISOString(),
+  });
+  return result;
 };
