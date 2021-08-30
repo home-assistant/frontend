@@ -27,6 +27,12 @@ const alerts: {
     type: "error",
   },
   {
+    title: "Test warning with long string",
+    description:
+      "sensor.lorem_ipsum_lorem_ipsum_lorem_ipsum_lorem_ipsum_lorem_ipsum_lorem_ipsum_lorem_ipsum_lorem_ipsum_lorem_ipsum_lorem_ipsum_lorem_ipsum_lorem_ipsum",
+    type: "warning",
+  },
+  {
     title: "Test success alert",
     description: "This is a test success alert with a title and description",
     type: "success",

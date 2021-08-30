@@ -45,21 +45,19 @@ class HaAlert extends LitElement {
   public render() {
     return html`
       <div
-        class=${classMap({
-          "issue-type": true,
+        class="issue-type ${classMap({
           rtl: this.rtl,
           [this.alertType]: true,
-        })}
+        })}"
       >
         <div class="icon">
           <ha-svg-icon .path=${ALERT_ICONS[this.alertType]}></ha-svg-icon>
         </div>
         <div class="content">
           <div
-            class=${classMap({
-              "main-content": true,
+            class="main-content ${classMap({
               "no-title": !this.title,
-            })}
+            })}"
           >
             ${this.title ? html`<div class="title">${this.title}</div>` : ""}
             <slot></slot>
@@ -128,6 +126,9 @@ class HaAlert extends LitElement {
       display: flex;
       justify-content: space-between;
       width: 100%;
+    }
+    .main-content {
+      overflow-wrap: anywhere;
     }
     .title {
       font-weight: bold;
