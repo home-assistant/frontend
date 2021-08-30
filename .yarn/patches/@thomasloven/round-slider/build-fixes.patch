@@ -1,0 +1,24 @@
+diff --git a/package.json b/package.json
+index 12193567420b5c8e24fd975a1c12caf358678f33..551df5214cebfcb3c1df53191d687d339f85074d 100644
+--- a/package.json
++++ b/package.json
+@@ -4,7 +4,6 @@
+   "description": "",
+   "main": "round-slider.cjs",
+   "module": "round-slider.js",
+-  "browser": "round-slider.iife.js",
+   "typings": "round-slider.d.ts",
+   "dependencies": {
+     "lit": "^2.0.0-rc.2",
+diff --git a/round-slider.js b/round-slider.js
+index b998b96edf60f1fca0d53aa7f6b9bbc85dd440e9..b9991ad525c540421625b127e8afaa697ba51494 100644
+--- a/round-slider.js
++++ b/round-slider.js
+@@ -1,6 +1,6 @@
+ import { __decorate } from "tslib";
+ import { LitElement, html, css, svg, } from "lit";
+-import { property, state } from "lit/decorators";
++import { property, state } from "lit/decorators.js";
+ export class RoundSlider extends LitElement {
+     constructor() {
+         super();
