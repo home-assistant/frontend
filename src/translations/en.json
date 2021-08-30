@@ -1107,7 +1107,7 @@
               },
               "entity_unexpected_unit_energy": {
                 "title": "Unexpected unit of measurement",
-                "description": "The following entities do not have the expected units of measurement ''kWh'' or ''Wh'':"
+                "description": "The following entities do not have the expected units of measurement 'kWh' or 'Wh':"
               },
               "entity_unexpected_unit_price": {
                 "title": "Unexpected unit of measurement",
@@ -1115,7 +1115,7 @@
               },
               "entity_unexpected_state_class_total_increasing": {
                 "title": "Unexpected state class",
-                "description": "The following entities do not have the expected state class \"total_increasing\""
+                "description": "The following entities do not have the expected state class 'total_increasing'"
               }
             }
           }
