@@ -31,7 +31,10 @@ class EnergyValidationMessage extends LitElement {
             }
           >
             ${this.hass.localize(
-              `ui.panel.config.energy.validation.issues.${issueType}.description`
+              `ui.panel.config.energy.validation.issues.${issueType}.description`,
+              issueType === "entity_unexpected_unit_price"
+                ? { currency: this.hass.config.currency }
+                : undefined
             )}
             ${
               issueType === "recorder_untracked"
