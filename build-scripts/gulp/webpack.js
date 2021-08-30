@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // Tasks to run webpack.
 const fs = require("fs");
 const gulp = require("gulp");
@@ -44,7 +45,7 @@ const runDevServer = ({
     open: true,
     watchContentBase: true,
     contentBase,
-  }).listen(port, listenHost, function (err) {
+  }).listen(port, listenHost, (err) => {
     if (err) {
       throw err;
     }
@@ -65,6 +66,7 @@ const doneHandler = (done) => (err, stats) => {
   }
 
   if (stats.hasErrors() || stats.hasWarnings()) {
+    // eslint-disable-next-line no-console
     console.log(stats.toString("minimal"));
   }
 
@@ -90,16 +92,10 @@ gulp.task("webpack-watch-app", () => {
     process.env.ES5
       ? bothBuilds(createAppConfig, { isProdBuild: false })
       : createAppConfig({ isProdBuild: false, latestBuild: true })
-  ).watch(
-    {
-      ignored: /build-translations/,
-      poll: isWsl,
-    },
-    doneHandler()
-  );
+  ).watch({ poll: isWsl }, doneHandler());
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series("build-translations", "copy-translations-app")
+    gulp.series("create-translations", "copy-translations-app")
   );
 });
 
