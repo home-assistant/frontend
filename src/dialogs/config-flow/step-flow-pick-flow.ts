@@ -41,7 +41,12 @@ class StepFlowPickFlow extends LitElement {
             <img
               slot="item-icon"
               loading="lazy"
-              src=${brandsUrl(flow.handler, "icon", true)}
+              src=${brandsUrl({
+                domain: flow.handler,
+                type: "icon",
+                useFallback: true,
+                darkOptimized: this.hass.selectedTheme?.dark,
+              })}
               referrerpolicy="no-referrer"
             />
 

@@ -25,12 +25,12 @@ import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-fab";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import {
-  fetchHassioSnapshots,
+  fetchHassioBackups,
   friendlyFolderName,
-  HassioSnapshot,
-  reloadHassioSnapshots,
-  removeSnapshot,
-} from "../../../src/data/hassio/snapshot";
+  HassioBackup,
+  reloadHassioBackups,
+  removeBackup,
+} from "../../../src/data/hassio/backup";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
@@ -40,14 +40,14 @@ import "../../../src/layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../src/layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
-import { showHassioCreateSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-create-snapshot";
-import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
-import { showSnapshotUploadDialog } from "../dialogs/snapshot/show-dialog-snapshot-upload";
+import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hassio-create-backup";
+import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-backup";
+import { showBackupUploadDialog } from "../dialogs/backup/show-dialog-backup-upload";
 import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
 
-@customElement("hassio-snapshots")
-export class HassioSnapshots extends LitElement {
+@customElement("hassio-backups")
+export class HassioBackups extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
@@ -58,9 +58,9 @@ export class HassioSnapshots extends LitElement {
 
   @property({ type: Boolean }) public isWide!: boolean;
 
-  @state() private _selectedSnapshots: string[] = [];
+  @state() private _selectedBackups: string[] = [];
 
-  @state() private _snapshots?: HassioSnapshot[] = [];
+  @state() private _backups?: HassioBackup[] = [];
 
   @query("hass-tabs-subpage-data-table", true)
   private _dataTable!: HaTabsSubpageDataTable;
@@ -75,26 +75,26 @@ export class HassioSnapshots extends LitElement {
   }
 
   public async refreshData() {
-    await reloadHassioSnapshots(this.hass);
-    await this.fetchSnapshots();
+    await reloadHassioBackups(this.hass);
+    await this.fetchBackups();
   }
 
-  private _computeSnapshotContent = (snapshot: HassioSnapshot): string => {
-    if (snapshot.type === "full") {
-      return this.supervisor.localize("snapshot.full_snapshot");
+  private _computeBackupContent = (backup: HassioBackup): string => {
+    if (backup.type === "full") {
+      return this.supervisor.localize("backup.full_backup");
     }
     const content: string[] = [];
-    if (snapshot.content.homeassistant) {
+    if (backup.content.homeassistant) {
       content.push("Home Assistant");
     }
-    if (snapshot.content.folders.length !== 0) {
-      for (const folder of snapshot.content.folders) {
+    if (backup.content.folders.length !== 0) {
+      for (const folder of backup.content.folders) {
         content.push(friendlyFolderName[folder] || folder);
       }
     }
 
-    if (snapshot.content.addons.length !== 0) {
-      for (const addon of snapshot.content.addons) {
+    if (backup.content.addons.length !== 0) {
+      for (const addon of backup.content.addons) {
         content.push(
           this.supervisor.supervisor.addons.find(
             (entry) => entry.slug === addon
@@ -117,16 +117,16 @@ export class HassioSnapshots extends LitElement {
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer => ({
       name: {
-        title: this.supervisor?.localize("snapshot.name") || "",
+        title: this.supervisor?.localize("backup.name") || "",
         sortable: true,
         filterable: true,
         grows: true,
-        template: (entry: string, snapshot: any) =>
-          html`${entry || snapshot.slug}
-            <div class="secondary">${snapshot.secondary}</div>`,
+        template: (entry: string, backup: any) =>
+          html`${entry || backup.slug}
+            <div class="secondary">${backup.secondary}</div>`,
       },
       date: {
-        title: this.supervisor?.localize("snapshot.created") || "",
+        title: this.supervisor?.localize("backup.created") || "",
         width: "15%",
         direction: "desc",
         hidden: narrow,
@@ -143,10 +143,10 @@ export class HassioSnapshots extends LitElement {
     })
   );
 
-  private _snapshotData = memoizeOne((snapshots: HassioSnapshot[]) =>
-    snapshots.map((snapshot) => ({
-      ...snapshot,
-      secondary: this._computeSnapshotContent(snapshot),
+  private _backupData = memoizeOne((backups: HassioBackup[]) =>
+    backups.map((backup) => ({
+      ...backup,
+      secondary: this._computeBackupContent(backup),
     }))
   );
 
@@ -160,11 +160,11 @@ export class HassioSnapshots extends LitElement {
         .hass=${this.hass}
         .localizeFunc=${this.supervisor.localize}
         .searchLabel=${this.supervisor.localize("search")}
-        .noDataText=${this.supervisor.localize("snapshot.no_snapshots")}
+        .noDataText=${this.supervisor.localize("backup.no_backups")}
         .narrow=${this.narrow}
         .route=${this.route}
         .columns=${this._columns(this.narrow)}
-        .data=${this._snapshotData(this._snapshots || [])}
+        .data=${this._backupData(this._backups || [])}
         id="slug"
         @row-click=${this._handleRowClicked}
         @selection-changed=${this._handleSelectionChanged}
@@ -187,12 +187,12 @@ export class HassioSnapshots extends LitElement {
           </mwc-list-item>
           ${atLeastVersion(this.hass.config.version, 0, 116)
             ? html`<mwc-list-item>
-                ${this.supervisor?.localize("snapshot.upload_snapshot")}
+                ${this.supervisor?.localize("backup.upload_backup")}
               </mwc-list-item>`
             : ""}
         </ha-button-menu>
 
-        ${this._selectedSnapshots.length
+        ${this._selectedBackups.length
           ? html`<div
               class=${classMap({
                 "header-toolbar": this.narrow,
@@ -201,8 +201,8 @@ export class HassioSnapshots extends LitElement {
               slot="header"
             >
               <p class="selected-txt">
-                ${this.supervisor.localize("snapshot.selected", {
-                  number: this._selectedSnapshots.length,
+                ${this.supervisor.localize("backup.selected", {
+                  number: this._selectedBackups.length,
                 })}
               </p>
               <div class="header-btns">
@@ -212,7 +212,7 @@ export class HassioSnapshots extends LitElement {
                         @click=${this._deleteSelected}
                         class="warning"
                       >
-                        ${this.supervisor.localize("snapshot.delete_selected")}
+                        ${this.supervisor.localize("backup.delete_selected")}
                       </mwc-button>
                     `
                   : html`
@@ -224,7 +224,7 @@ export class HassioSnapshots extends LitElement {
                         <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
                       </mwc-icon-button>
                       <paper-tooltip animation-delay="0" for="delete-btn">
-                        ${this.supervisor.localize("snapshot.delete_selected")}
+                        ${this.supervisor.localize("backup.delete_selected")}
                       </paper-tooltip>
                     `}
               </div>
@@ -233,8 +233,8 @@ export class HassioSnapshots extends LitElement {
 
         <ha-fab
           slot="fab"
-          @click=${this._createSnapshot}
-          .label=${this.supervisor.localize("snapshot.create_snapshot")}
+          @click=${this._createBackup}
+          .label=${this.supervisor.localize("backup.create_backup")}
           extended
         >
           <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
@@ -249,7 +249,7 @@ export class HassioSnapshots extends LitElement {
         this.refreshData();
         break;
       case 1:
-        this._showUploadSnapshotDialog();
+        this._showUploadBackupDialog();
         break;
     }
   }
@@ -257,33 +257,33 @@ export class HassioSnapshots extends LitElement {
   private _handleSelectionChanged(
     ev: HASSDomEvent<SelectionChangedEvent>
   ): void {
-    this._selectedSnapshots = ev.detail.value;
+    this._selectedBackups = ev.detail.value;
   }
 
-  private _showUploadSnapshotDialog() {
-    showSnapshotUploadDialog(this, {
-      showSnapshot: (slug: string) =>
-        showHassioSnapshotDialog(this, {
+  private _showUploadBackupDialog() {
+    showBackupUploadDialog(this, {
+      showBackup: (slug: string) =>
+        showHassioBackupDialog(this, {
           slug,
           supervisor: this.supervisor,
-          onDelete: () => this.fetchSnapshots(),
+          onDelete: () => this.fetchBackups(),
         }),
-      reloadSnapshot: () => this.refreshData(),
+      reloadBackup: () => this.refreshData(),
     });
   }
 
-  private async fetchSnapshots() {
-    await reloadHassioSnapshots(this.hass);
-    this._snapshots = await fetchHassioSnapshots(this.hass);
+  private async fetchBackups() {
+    await reloadHassioBackups(this.hass);
+    this._backups = await fetchHassioBackups(this.hass);
   }
 
   private async _deleteSelected() {
     const confirm = await showConfirmationDialog(this, {
-      title: this.supervisor.localize("snapshot.delete_snapshot_title"),
-      text: this.supervisor.localize("snapshot.delete_snapshot_text", {
-        number: this._selectedSnapshots.length,
+      title: this.supervisor.localize("backup.delete_backup_title"),
+      text: this.supervisor.localize("backup.delete_backup_text", {
+        number: this._selectedBackups.length,
       }),
-      confirmText: this.supervisor.localize("snapshot.delete_snapshot_confirm"),
+      confirmText: this.supervisor.localize("backup.delete_backup_confirm"),
     });
 
     if (!confirm) {
@@ -292,44 +292,44 @@ export class HassioSnapshots extends LitElement {
 
     try {
       await Promise.all(
-        this._selectedSnapshots.map((slug) => removeSnapshot(this.hass, slug))
+        this._selectedBackups.map((slug) => removeBackup(this.hass, slug))
       );
     } catch (err) {
       showAlertDialog(this, {
-        title: this.supervisor.localize("snapshot.failed_to_delete"),
+        title: this.supervisor.localize("backup.failed_to_delete"),
         text: extractApiErrorMessage(err),
       });
       return;
     }
-    await reloadHassioSnapshots(this.hass);
-    this._snapshots = await fetchHassioSnapshots(this.hass);
+    await reloadHassioBackups(this.hass);
+    this._backups = await fetchHassioBackups(this.hass);
     this._dataTable.clearSelection();
   }
 
   private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
     const slug = ev.detail.id;
-    showHassioSnapshotDialog(this, {
+    showHassioBackupDialog(this, {
       slug,
       supervisor: this.supervisor,
-      onDelete: () => this.fetchSnapshots(),
+      onDelete: () => this.fetchBackups(),
     });
   }
 
-  private _createSnapshot() {
+  private _createBackup() {
     if (this.supervisor!.info.state !== "running") {
       showAlertDialog(this, {
-        title: this.supervisor!.localize("snapshot.could_not_create"),
+        title: this.supervisor!.localize("backup.could_not_create"),
         text: this.supervisor!.localize(
-          "snapshot.create_blocked_not_running",
+          "backup.create_blocked_not_running",
           "state",
           this.supervisor!.info.state
         ),
       });
       return;
     }
-    showHassioCreateSnapshotDialog(this, {
+    showHassioCreateBackupDialog(this, {
       supervisor: this.supervisor!,
-      onCreate: () => this.fetchSnapshots(),
+      onCreate: () => this.fetchBackups(),
     });
   }
 
@@ -378,6 +378,6 @@ export class HassioSnapshots extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hassio-snapshots": HassioSnapshots;
+    "hassio-backups": HassioBackups;
   }
 }

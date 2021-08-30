@@ -337,6 +337,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       ha-icon-button.state-on {
         color: var(--ha-picture-icon-button-on-color, white);
       }
+      hui-warning-element {
+        padding: 0 8px;
+      }
       .state {
         display: block;
         font-size: 12px;

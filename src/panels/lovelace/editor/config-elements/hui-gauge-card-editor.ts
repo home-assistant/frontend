@@ -1,7 +1,15 @@
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, boolean, number, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  boolean,
+  number,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
@@ -11,20 +19,23 @@ import { GaugeCardConfig, SeverityConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  name: optional(string()),
-  entity: optional(string()),
-  unit: optional(string()),
-  min: optional(number()),
-  max: optional(number()),
-  severity: optional(object()),
-  theme: optional(string()),
-  needle: optional(boolean()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    name: optional(string()),
+    entity: optional(string()),
+    unit: optional(string()),
+    min: optional(number()),
+    max: optional(number()),
+    severity: optional(object()),
+    theme: optional(string()),
+    needle: optional(boolean()),
+  })
+);
 
 const includeDomains = ["counter", "input_number", "number", "sensor"];
 

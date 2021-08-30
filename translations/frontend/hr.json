@@ -23,6 +23,12 @@
         "shopping_list": "Popis za kupovinu",
         "states": "Pregled"
     },
+    "state": {
+        "default": {
+            "unavailable": "Nedostupan",
+            "unknown": "Nepoznato"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -76,12 +82,6 @@
         "person": {
             "home": "Doma",
             "not_home": "Odsutan"
-        }
-    },
-    "state": {
-        "default": {
-            "unavailable": "Nedostupan",
-            "unknown": "Nepoznato"
         }
     },
     "ui": {
@@ -398,7 +398,6 @@
                             "introduction": "Radnje su ono što će Home Assistant učiniti kada se aktivira automatizacija. \n\n [Saznajte više o radnjama.] (Https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Saznajte više o akcijama",
                             "name": "Radnja",
-                            "type_select": "Vrsta akcije",
                             "type": {
                                 "condition": {
                                     "label": "Stanje"
@@ -427,6 +426,7 @@
                                     "wait_template": "Čekaj predložak"
                                 }
                             },
+                            "type_select": "Vrsta akcije",
                             "unsupported_action": "Nepodržana radnja: {action}"
                         },
                         "alias": "Ime",
@@ -439,7 +439,6 @@
                             "introduction": "Uvjeti su neobvezni dio pravila o automatizaciji i mogu se upotrebljavati kako bi se spriječilo da se neka akcija dogodi prilikom pokretanja. Uvjeti izgledaju vrlo slični pokretačima, ali su vrlo različiti. Okidač će pogledati događaje koji se događaju u sustavu, a stanje samo gleda kako sustav izgleda upravo sada. Okidač može primijetiti da je prekidač uključen. Stanje može vidjeti samo ako je uključen ili isključen prekidač. \n\n [Saznajte više o uvjetima.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Saznajte više o uvjetima",
                             "name": "Uvjet",
-                            "type_select": "Vrsta uvjeta",
                             "type": {
                                 "and": {
                                     "label": "I"
@@ -492,6 +491,7 @@
                                     "zone": "Zona"
                                 }
                             },
+                            "type_select": "Vrsta uvjeta",
                             "unsupported_condition": "Nepodržano stanje: {condition}"
                         },
                         "default_name": "Nova automatizacija",
@@ -512,7 +512,6 @@
                             "introduction": "Okidači su ono što pokreće obradu pravila o automatizaciji. Moguće je odrediti više okidača za isto pravilo. Kada pokrenete okidač, Home Assistant provjerit će uvjete, ako ih ima i pozvati akciju. \n\n [Saznajte više o pokretačima.] (Https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Saznajte više o okidačima",
                             "name": "Okidač",
-                            "type_select": "Tip okidača",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -569,15 +568,15 @@
                                     "label": "Predložak",
                                     "value_template": "Predložak vrijednosti"
                                 },
+                                "time": {
+                                    "at": "U",
+                                    "label": "Vrijeme"
+                                },
                                 "time_pattern": {
                                     "hours": "Sati",
                                     "label": "Vremenski uzorak",
                                     "minutes": "Minuta",
                                     "seconds": "Sekundi"
-                                },
-                                "time": {
-                                    "at": "U",
-                                    "label": "Vrijeme"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -592,6 +591,7 @@
                                     "zone": "Zona"
                                 }
                             },
+                            "type_select": "Tip okidača",
                             "unsupported_platform": "Nepodržana platforma: {platform}"
                         },
                         "unsaved_confirm": "Imate nespremljene izmjene. Jeste li sigurni da želite napustiti?"
@@ -1182,7 +1182,6 @@
                         "unsaved_changes": "Nespremljene promjene"
                     },
                     "save_config": {
-                        "cancel": "Nema veze",
                         "header": "Preuzmite kontrolu nad Lovelace UI",
                         "para": "Home Assistant će prema zadanim postavkama održavati vaše korisničko sučelje, ažurirati ga kada novi entiteti ili Lovelace komponente postanu dostupni. Ako preuzmete kontrolu, više nećemo automatski vršiti izmjene za vas.",
                         "para_sure": "Jeste li sigurni da želite preuzeti kontrolu nad svojim korisničkim sučeljem?",
@@ -1420,18 +1419,18 @@
                     "prompt_copy_token": "Kopirajte pristupni token. Neće se više prikazati.",
                     "prompt_name": "Ime?"
                 },
+                "mfa": {
+                    "confirm_disable": "Jeste li sigurni da želite onemogućiti {name} ?",
+                    "disable": "Onemogući",
+                    "enable": "Omogući",
+                    "header": "Višefaktorski moduli za provjeru autentičnosti"
+                },
                 "mfa_setup": {
                     "close": "Zatvoriti",
                     "step_done": "Postavka gotova za {step}",
                     "submit": "podnijeti",
                     "title_aborted": "Prekinut",
                     "title_success": "Uspješno!"
-                },
-                "mfa": {
-                    "confirm_disable": "Jeste li sigurni da želite onemogućiti {name} ?",
-                    "disable": "Onemogući",
-                    "enable": "Omogući",
-                    "header": "Višefaktorski moduli za provjeru autentičnosti"
                 },
                 "push_notifications": {
                     "description": "Slanje obavijesti na ovaj uređaj.",

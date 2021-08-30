@@ -18,6 +18,24 @@ export const energyEntities = () =>
         unit_of_measurement: "kWh",
       },
     },
+    "sensor.battery_input": {
+      entity_id: "sensor.battery_input",
+      state: "4",
+      attributes: {
+        last_reset: "1970-01-01T00:00:00:00+00",
+        friendly_name: "Battery Input",
+        unit_of_measurement: "kWh",
+      },
+    },
+    "sensor.battery_output": {
+      entity_id: "sensor.battery_output",
+      state: "3",
+      attributes: {
+        last_reset: "1970-01-01T00:00:00:00+00",
+        friendly_name: "Battery Output",
+        unit_of_measurement: "kWh",
+      },
+    },
     "sensor.energy_consumption_tarif_1": {
       entity_id: "sensor.energy_consumption_tarif_1	",
       state: "88.6",
@@ -84,6 +102,23 @@ export const energyEntities = () =>
       attributes: {
         last_reset: "1970-01-01T00:00:00:00+00",
         unit_of_measurement: "EUR",
+      },
+    },
+    "sensor.energy_gas_cost": {
+      entity_id: "sensor.energy_gas_cost",
+      state: "2",
+      attributes: {
+        last_reset: "1970-01-01T00:00:00:00+00",
+        unit_of_measurement: "EUR",
+      },
+    },
+    "sensor.energy_gas": {
+      entity_id: "sensor.energy_gas",
+      state: "4",
+      attributes: {
+        last_reset: "1970-01-01T00:00:00:00+00",
+        friendly_name: "Gas",
+        unit_of_measurement: "m³",
       },
     },
     "sensor.energy_car": {

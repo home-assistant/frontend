@@ -86,19 +86,20 @@ class HuiEnergySolarGaugeCard
 
     return html`
       <ha-card>
-        <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-        <paper-tooltip animation-delay="0" for="info" position="left">
-          <span>
-            This card represents how much of the solar energy was used by your
-            home and was not returned to the grid.
-            <br /><br />
-            If you frequently produce more than you consume, try to conserve
-            this energy by installing a battery or buying an electric car to
-            charge.
-          </span>
-        </paper-tooltip>
         ${value !== undefined
-          ? html`<ha-gauge
+          ? html`
+              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+              <paper-tooltip animation-delay="0" for="info" position="left">
+                <span>
+                  This card represents how much of the solar energy was used by
+                  your home and was not returned to the grid.
+                  <br /><br />
+                  If you frequently produce more than you consume, try to
+                  conserve this energy by installing a battery or buying an
+                  electric car to charge.
+                </span>
+              </paper-tooltip>
+              <ha-gauge
                 min="0"
                 max="100"
                 .value=${value}
@@ -108,7 +109,8 @@ class HuiEnergySolarGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <div class="name">Self consumed solar energy</div>`
+              <div class="name">Self consumed solar energy</div>
+            `
           : totalSolarProduction === 0
           ? "You have not produced any solar energy"
           : "Self consumed solar energy couldn't be calculated"}
@@ -140,7 +142,6 @@ class HuiEnergySolarGaugeCard
       }
 
       ha-gauge {
-        --gauge-color: var(--label-badge-blue);
         width: 100%;
         max-width: 250px;
       }

@@ -5,6 +5,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../src/components/buttons/ha-progress-button";
+import "../../../src/components/ha-alert";
 import "../../../src/components/ha-card";
 import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { fetchHassioLogs } from "../../../src/data/hassio/supervisor";
@@ -67,7 +68,9 @@ class HassioSupervisorLog extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <ha-card>
-        ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
         ${this.hass.userData?.showAdvanced
           ? html`
               <paper-dropdown-menu
@@ -153,10 +156,6 @@ class HassioSupervisorLog extends LitElement {
         paper-dropdown-menu {
           padding: 0 2%;
           width: 96%;
-        }
-        .errors {
-          color: var(--error-color);
-          margin-bottom: 16px;
         }
       `,
     ];
