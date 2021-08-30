@@ -88,7 +88,7 @@
     "@polymer/paper-toast": "^3.0.1",
     "@polymer/paper-tooltip": "^3.0.1",
     "@polymer/polymer": "3.4.1",
-    "@thomasloven/round-slider": "patch:@thomasloven/round-slider@0.5.3#./.yarn/patches/@thomasloven/round-slider/build-fixes.patch",
+    "@thomasloven/round-slider": "0.5.4",
     "@vaadin/vaadin-combo-box": "^20.0.1",
     "@vaadin/vaadin-date-picker": "^20.0.1",
     "@vibrant/color": "^3.2.1-alpha.1",
