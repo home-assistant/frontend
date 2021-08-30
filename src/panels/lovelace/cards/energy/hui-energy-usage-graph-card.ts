@@ -386,7 +386,7 @@ export class HuiEnergyUsageGraphCard
           if (stat.sum === null) {
             return;
           }
-          if (!prevValue) {
+          if (prevValue === undefined) {
             prevValue = stat.sum;
             return;
           }
