@@ -4,7 +4,7 @@ import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
-import { compare } from "../common/string/compare";
+import { stringCompare } from "../common/string/compare";
 import { HassioAddonInfo } from "../data/hassio/addon";
 import { fetchHassioSupervisorInfo } from "../data/hassio/supervisor";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
@@ -97,7 +97,7 @@ class HaAddonPicker extends LitElement {
       if (isComponentLoaded(this.hass, "hassio")) {
         const supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
         this._addons = supervisorInfo.addons.sort((a, b) =>
-          compare(a.name, b.name)
+          stringCompare(a.name, b.name)
         );
       } else {
         showAlertDialog(this, {

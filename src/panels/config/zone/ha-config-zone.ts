@@ -18,7 +18,7 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { navigate } from "../../../common/navigate";
-import { compare } from "../../../common/string/compare";
+import { stringCompare } from "../../../common/string/compare";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
@@ -289,7 +289,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   private async _fetchData() {
     this._storageItems = (await fetchZones(this.hass!)).sort((ent1, ent2) =>
-      compare(ent1.name, ent2.name)
+      stringCompare(ent1.name, ent2.name)
     );
     this._getStates();
   }
@@ -410,7 +410,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   private async _createEntry(values: ZoneMutableParams) {
     const created = await createZone(this.hass!, values);
     this._storageItems = this._storageItems!.concat(created).sort(
-      (ent1, ent2) => compare(ent1.name, ent2.name)
+      (ent1, ent2) => stringCompare(ent1.name, ent2.name)
     );
     if (this.narrow) {
       return;

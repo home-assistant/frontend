@@ -1,7 +1,7 @@
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { compare } from "../../../common/string/compare";
+import { stringCompare } from "../../../common/string/compare";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -104,7 +104,7 @@ class HaConfigAreas extends HassRouterPage {
   private _loadData() {
     getConfigEntries(this.hass).then((configEntries) => {
       this._configEntries = configEntries.sort((conf1, conf2) =>
-        compare(conf1.title, conf2.title)
+        stringCompare(conf1.title, conf2.title)
       );
     });
     if (this._unsubs) {

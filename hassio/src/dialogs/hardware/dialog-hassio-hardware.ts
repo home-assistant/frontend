@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/common/search/search-input";
-import { compare } from "../../../../src/common/string/compare";
+import { stringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
 import { HassioHardwareInfo } from "../../../../src/data/hassio/hardware";
@@ -27,7 +27,7 @@ const _filterDevices = memoizeOne(
               .toLocaleLowerCase()
               .includes(filter))
       )
-      .sort((a, b) => compare(a.name, b.name))
+      .sort((a, b) => stringCompare(a.name, b.name))
 );
 
 @customElement("dialog-hassio-hardware")

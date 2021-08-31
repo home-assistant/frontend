@@ -15,7 +15,7 @@ import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
 import { mdiCheck } from "@mdi/js";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { compare } from "../../common/string/compare";
+import { stringCompare } from "../../common/string/compare";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -242,7 +242,9 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       if (outputDevices.length === 1) {
         return outputDevices;
       }
-      return outputDevices.sort((a, b) => compare(a.name || "", b.name || ""));
+      return outputDevices.sort((a, b) =>
+        stringCompare(a.name || "", b.name || "")
+      );
     }
   );
 

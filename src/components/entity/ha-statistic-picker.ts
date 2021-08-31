@@ -18,7 +18,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { compare } from "../../common/string/compare";
+import { stringCompare } from "../../common/string/compare";
 import { getStatisticIds, StatisticsMetaData } from "../../data/history";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
@@ -165,7 +165,7 @@ export class HaStatisticPicker extends LitElement {
       }
 
       if (output.length > 1) {
-        output.sort((a, b) => compare(a.name || "", b.name || ""));
+        output.sort((a, b) => stringCompare(a.name || "", b.name || ""));
       }
 
       output.push({
