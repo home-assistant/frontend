@@ -13,6 +13,7 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import "../../../components/ha-alert";
 import { configSections } from "../ha-panel-config";
 import "./components/ha-energy-device-settings";
 import "./components/ha-energy-grid-settings";
@@ -77,12 +78,10 @@ class HaConfigEnergy extends LitElement {
         .route=${this.route}
         .tabs=${configSections.experiences}
       >
-        <ha-card>
-          <div class="card-content">
-            After setting up a new device, it can take up to 2 hours for new
-            data to arrive in your energy dashboard.
-          </div>
-        </ha-card>
+        <ha-alert>
+          After setting up a new device, it can take up to 2 hours for new data
+          to arrive in your energy dashboard.
+        </ha-alert>
         <div class="container">
           <ha-energy-grid-settings
             .hass=${this.hass}
@@ -156,7 +155,8 @@ class HaConfigEnergy extends LitElement {
     return [
       haStyle,
       css`
-        ha-card {
+        ha-alert {
+          display: block;
           margin: 8px;
         }
         .container {
