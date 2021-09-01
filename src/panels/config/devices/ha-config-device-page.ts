@@ -6,7 +6,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { compare } from "../../../common/string/compare";
+import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-next";
@@ -103,7 +103,7 @@ export class HaConfigDevicePage extends LitElement {
           stateName: this._computeEntityName(entity),
         }))
         .sort((ent1, ent2) =>
-          compare(
+          stringCompare(
             ent1.stateName || `zzz${ent1.entity_id}`,
             ent2.stateName || `zzz${ent2.entity_id}`
           )

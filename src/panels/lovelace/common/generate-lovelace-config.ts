@@ -3,7 +3,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { splitByGroups } from "../../../common/entity/split_by_groups";
-import { compare } from "../../../common/string/compare";
+import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
@@ -262,7 +262,7 @@ export const generateViewConfig = (
         computeCards(
           ungroupedEntitites[domain]
             .sort((a, b) =>
-              compare(
+              stringCompare(
                 computeStateName(entities[a]),
                 computeStateName(entities[b])
               )

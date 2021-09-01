@@ -5,7 +5,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
-import { compare } from "../../../../common/string/compare";
+import { stringCompare } from "../../../../common/string/compare";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -148,7 +148,7 @@ export class HaConfigLovelaceRescources extends LitElement {
       createResource: async (values) => {
         const created = await createResource(this.hass!, values);
         this._resources = this._resources!.concat(created).sort((res1, res2) =>
-          compare(res1.url, res2.url)
+          stringCompare(res1.url, res2.url)
         );
         loadLovelaceResources([created], this.hass!.auth.data.hassUrl);
       },
