@@ -700,7 +700,7 @@
         "control": "Control",
         "related": "Related",
         "dismiss": "Dismiss",
-        "no_unique_id": "This entity (\"{entity_id}\") does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
+        "no_unique_id": "This entity (''{entity_id}'') does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
         "faq": "documentation",
         "info_customize": "You can overwrite some attributes in the {customize_link} section.",
         "customize_link": "entity customizations",
@@ -873,12 +873,12 @@
       "config": {
         "no_type_provided": "No type provided.",
         "error_detected": "Configuration errors detected",
-        "editor_not_available": "No visual editor available for type \"{type}\".",
+        "editor_not_available": "No visual editor available for type ''{type}''.",
         "editor_not_supported": "Visual editor is not supported for this configuration",
         "edit_in_yaml_supported": "You can still edit your config in YAML.",
-        "key_missing": "Required key \"{key}\" is missing.",
-        "key_not_expected": "Key \"{key}\" is not expected or not supported by the visual editor.",
-        "key_wrong_type": "The provided value for \"{key}\" is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
+        "key_missing": "Required key ''{key}'' is missing.",
+        "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
+        "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
         "no_template_editor_support": "Templates not supported in visual editor"
       },
       "supervisor": {
@@ -1765,7 +1765,7 @@
           },
           "add": {
             "header": "Import a blueprint",
-            "import_header": "Blueprint \"{name}\"",
+            "import_header": "Blueprint ''{name}''",
             "import_introduction_link": "You can import blueprints of other users from Github and the {community_link}. Enter the URL of the blueprint below.",
             "community_forums": "community forums",
             "url": "URL of the blueprint",
@@ -2884,7 +2884,7 @@
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
           "actions": {
-            "action_confirmation": "Are you sure you want to run action \"{action}\"?",
+            "action_confirmation": "Are you sure you want to run action ''{action}''?",
             "no_entity_more_info": "No entity provided for more info dialog",
             "no_entity_toggle": "No entity provided to toggle",
             "no_navigation_path": "No navigation path specified",
@@ -3016,7 +3016,7 @@
             }
           },
           "edit_badges": {
-            "panel_mode": "These badges will not be displayed because this view is in \"Panel Mode\"."
+            "view_no_badges": "Badges are not be supported by the current view type."
           },
           "edit_card": {
             "header": "Card Configuration",
