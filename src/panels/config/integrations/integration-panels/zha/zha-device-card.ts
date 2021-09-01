@@ -23,7 +23,7 @@ import {
   updateEntityRegistryEntry,
 } from "../../../../../data/entity_registry";
 import { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
-import { compare } from "../../../../../common/string/compare";
+import { stringCompare } from "../../../../../common/string/compare";
 import { getIeeeTail } from "./functions";
 import { slugify } from "../../../../../common/string/slugify";
 
@@ -49,7 +49,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
           stateName: this._computeEntityName(entity),
         }))
         .sort((ent1, ent2) =>
-          compare(
+          stringCompare(
             ent1.stateName || `zzz${ent1.entity_id}`,
             ent2.stateName || `zzz${ent2.entity_id}`
           )

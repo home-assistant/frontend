@@ -9,7 +9,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { compare } from "../common/string/compare";
+import { stringCompare } from "../common/string/compare";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { LocalizeFunc } from "../common/translations/localize";
 import { ConfigEntry, getConfigEntries } from "../data/config_entries";
@@ -105,7 +105,7 @@ class OnboardingIntegrations extends LitElement {
       }
     );
     const content = [...entries, ...discovered]
-      .sort((a, b) => compare(a[0], b[0]))
+      .sort((a, b) => stringCompare(a[0], b[0]))
       .map((item) => item[1]);
 
     return html`

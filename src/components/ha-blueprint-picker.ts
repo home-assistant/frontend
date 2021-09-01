@@ -5,7 +5,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
-import { compare } from "../common/string/compare";
+import { stringCompare } from "../common/string/compare";
 import { Blueprint, Blueprints, fetchBlueprints } from "../data/blueprint";
 import { HomeAssistant } from "../types";
 
@@ -33,7 +33,7 @@ class HaBluePrintPicker extends LitElement {
         ...(blueprint as Blueprint).metadata,
         path,
       }));
-    return result.sort((a, b) => compare(a.name, b.name));
+    return result.sort((a, b) => stringCompare(a.name, b.name));
   });
 
   protected render(): TemplateResult {
