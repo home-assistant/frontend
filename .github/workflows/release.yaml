@@ -73,7 +73,6 @@ jobs:
       matrix:
         arch: ["aarch64", "armhf", "armv7", "amd64", "i386"]
         tag:
-          - "3.9-alpine3.13"
           - "3.9-alpine3.14"
     steps:
       - name: Download requirements.txt
