@@ -105,6 +105,7 @@ class HaConfigEnergy extends LitElement {
           <ha-energy-gas-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
+            .validationResult=${this._validationResult!}
             @value-changed=${this._prefsChanged}
           ></ha-energy-gas-settings>
           <ha-energy-device-settings
