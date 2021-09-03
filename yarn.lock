@@ -3661,9 +3661,9 @@ __metadata:
   linkType: hard
 
 "@types/geojson@npm:*":
-  version: 7946.0.7
-  resolution: "@types/geojson@npm:7946.0.7"
-  checksum: b0a614f58a169069d9978af24c4b816bc7140a722829d8786ad1ff22d8362b429c56170326c836ce661a0307f8e35820a055966c2eedc21b62671a56c472263e
+  version: 7946.0.8
+  resolution: "@types/geojson@npm:7946.0.8"
+  checksum: 2d9628afd0caac21dd927c90a5be0a361634a2d3b55c78752a9f1754874cf3802aa5cf2248489ace40e97b29a25d718b0d10689ca8e1b42df350222c282a8ef0
   languageName: node
   linkType: hard
 
@@ -3699,7 +3699,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/js-yaml@npm:^4.0.3":
+"@types/js-yaml@npm:^4":
   version: 4.0.3
   resolution: "@types/js-yaml@npm:4.0.3"
   checksum: 24c3afc2e9e656ccdabd3159a4d7fa6cc0ff54777627d29f699818938f791126d5e92f0bdd92ccffeed13c6f801c1cb2c60bb9adcf4b1d46c6843a3bf5abac1b
@@ -3752,7 +3752,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet-draw@npm:^1.0.5":
+"@types/leaflet-draw@npm:^1":
   version: 1.0.5
   resolution: "@types/leaflet-draw@npm:1.0.5"
   dependencies:
@@ -3761,16 +3761,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/leaflet@npm:*":
-  version: 1.7.0
-  resolution: "@types/leaflet@npm:1.7.0"
-  dependencies:
-    "@types/geojson": "*"
-  checksum: 83142a248a527fe787b3bb36d36335053cdaeb98e518f1b57f70b833d3a64642008872445964bf5d447d7c09f1375332e5851bbb15c1486242162b6d5e599161
-  languageName: node
-  linkType: hard
-
-"@types/leaflet@npm:^1.7.5":
+"@types/leaflet@npm:*, @types/leaflet@npm:^1":
   version: 1.7.5
   resolution: "@types/leaflet@npm:1.7.5"
   dependencies:
@@ -3779,10 +3770,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/marked@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "@types/marked@npm:2.0.3"
-  checksum: bbf1f0589871678e5e6dbb39a40d059a777968d588a59e4f87c83cd87d5b30c63a1b632201ae152565db05ca6ad565d92d3951d95740ce6aa3ca7f4d5e98dd09
+"@types/marked@npm:^2":
+  version: 2.0.5
+  resolution: "@types/marked@npm:2.0.5"
+  checksum: 2a868ab8cda3b750841345a0a9112804dc4786b342cc8f64792be8cc1c829b694338517e4304e45e4ce5135160102eb940bfa5bb306b5a867ad721b1ad84cd6b
   languageName: node
   linkType: hard
 
@@ -3800,10 +3791,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:^8.2.2":
-  version: 8.2.2
-  resolution: "@types/mocha@npm:8.2.2"
-  checksum: 3455211b134b0cfcfc71fee2d4f22a6ac3e313a93bf6c0cd3519c1e85653ffb8c9bb68dcff083b8e9e15b4ea3cb4f50d9916709946c082f072807aeba747575b
+"@types/mocha@npm:^8":
+  version: 8.2.3
+  resolution: "@types/mocha@npm:8.2.3"
+  checksum: 5cba26124eb9d6b9b2fab66111488a54e6254162bac855282cb46f1467c5c4debe78ddeba15ab2264d5e4669fbfd403e433b6363106d2dfbe122d660c1e298e2
   languageName: node
   linkType: hard
 
@@ -3877,7 +3868,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/sortablejs@npm:^1.10.7":
+"@types/sortablejs@npm:^1":
   version: 1.10.7
   resolution: "@types/sortablejs@npm:1.10.7"
   checksum: 82af7075118a111f7b3ec4c73fbdeacce31f88abf6d18a48e4700b555abe080d37feef7491e5274521cd8a58ef365df16f409fbd1ee81ebb86c25619c9ec8103
@@ -8923,12 +8914,12 @@ fsevents@~2.3.1:
     "@thomasloven/round-slider": 0.5.4
     "@types/chromecast-caf-receiver": 5.0.12
     "@types/chromecast-caf-sender": ^1.0.3
-    "@types/js-yaml": ^4.0.3
-    "@types/leaflet": ^1.7.5
-    "@types/leaflet-draw": ^1.0.5
-    "@types/marked": ^2.0.3
-    "@types/mocha": ^8.2.2
-    "@types/sortablejs": ^1.10.7
+    "@types/js-yaml": ^4
+    "@types/leaflet": ^1
+    "@types/leaflet-draw": ^1
+    "@types/marked": ^2
+    "@types/mocha": ^8
+    "@types/sortablejs": ^1
     "@types/webspeechapi": ^0.0.29
     "@typescript-eslint/eslint-plugin": ^4.28.3
     "@typescript-eslint/parser": ^4.28.3
