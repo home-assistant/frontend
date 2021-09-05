@@ -149,17 +149,21 @@ const customEntitiesRowConfigStruct = type({
   type: customType(),
 });
 
-const entitiesRowConfigStruct = dynamic((value) => {
+// Required for dynamic validation below
+type baseEntitiesRowConfigStruct = {
+  type: string;
+};
+
+const entitiesRowConfigStruct = dynamic<any>((value) => {
   if (
     typeof value === "object" &&
-    value !== null &&
     Object.prototype.hasOwnProperty.call(value, "type")
   ) {
-    if (isCustomType(value.type)) {
+    if (isCustomType((value as baseEntitiesRowConfigStruct).type)) {
       return customEntitiesRowConfigStruct;
     }
 
-    switch (value.type) {
+    switch ((value as baseEntitiesRowConfigStruct).type) {
       case "attribute": {
         return attributeEntitiesRowConfigStruct;
       }
@@ -193,6 +197,7 @@ const entitiesRowConfigStruct = dynamic((value) => {
     }
   }
 
+  // No "type" property => has to be the default entity row config struct
   return entitiesConfigStruct;
 });
 
