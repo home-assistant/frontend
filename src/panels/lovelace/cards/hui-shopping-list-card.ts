@@ -1,4 +1,11 @@
-import { mdiDrag, mdiNotificationClearAll, mdiPlus, mdiSort } from "@mdi/js";
+import {
+  mdiDrag,
+  mdiNotificationClearAll,
+  mdiPlus,
+  mdiSort,
+  mdiClipboardListOutline,
+  mdiFormatListBulleted,
+} from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -113,88 +120,108 @@ class HuiShoppingListCard
           "has-header": "title" in this._config,
         })}
       >
-        <div class="addRow">
-          <ha-svg-icon
-            class="addButton"
-            .path=${mdiPlus}
-            .title=${this.hass!.localize(
-              "ui.panel.lovelace.cards.shopping-list.add_item"
-            )}
-            @click=${this._addItem}
-          >
-          </ha-svg-icon>
-          <paper-input
-            no-label-float
-            class="addBox"
-            placeholder=${this.hass!.localize(
-              "ui.panel.lovelace.cards.shopping-list.add_item"
-            )}
-            @keydown=${this._addKeyPress}
-          ></paper-input>
-          <ha-svg-icon
-            class="reorderButton"
-            .path=${mdiSort}
-            .title=${this.hass!.localize(
-              "ui.panel.lovelace.cards.shopping-list.reorder_items"
-            )}
-            @click=${this._toggleReorder}
-          >
-          </ha-svg-icon>
-        </div>
-        ${this._reordering
-          ? html`
-              <div id="sortable">
-                ${guard([this._uncheckedItems, this._renderEmptySortable], () =>
-                  this._renderEmptySortable
-                    ? ""
-                    : this._renderItems(this._uncheckedItems!)
-                )}
-              </div>
-            `
-          : this._renderItems(this._uncheckedItems!)}
-        ${this._checkedItems!.length > 0
-          ? html`
-              <div class="divider"></div>
-              <div class="checked">
-                <span>
-                  ${this.hass!.localize(
-                    "ui.panel.lovelace.cards.shopping-list.checked_items"
-                  )}
-                </span>
-                <ha-svg-icon
-                  class="clearall"
-                  tabindex="0"
-                  .path=${mdiNotificationClearAll}
-                  .title=${this.hass!.localize(
-                    "ui.panel.lovelace.cards.shopping-list.clear_items"
-                  )}
-                  @click=${this._clearItems}
-                >
-                </ha-svg-icon>
-              </div>
-              ${repeat(
-                this._checkedItems!,
-                (item) => item.id,
-                (item) =>
-                  html`
-                    <div class="editRow">
-                      <paper-checkbox
-                        tabindex="0"
-                        ?checked=${item.complete}
-                        .itemId=${item.id}
-                        @click=${this._completeItem}
-                      ></paper-checkbox>
-                      <paper-input
-                        no-label-float
-                        .value=${item.name}
-                        .itemId=${item.id}
-                        @change=${this._saveEdit}
-                      ></paper-input>
-                    </div>
-                  `
+        <div class="card-content">
+          <div class="input-mode">
+            <div class="item active">
+              <ha-svg-icon
+                class="list-icon"
+                .path=${mdiFormatListBulleted}
+              ></ha-svg-icon
+              >Input single item
+            </div>
+            <div class="item">
+              <ha-svg-icon
+                class="paste-icon"
+                .path=${mdiClipboardListOutline}
+              ></ha-svg-icon
+              >Paste list
+            </div>
+          </div>
+          <div class="addRow">
+            <ha-svg-icon
+              class="addButton"
+              .path=${mdiPlus}
+              .title=${this.hass!.localize(
+                "ui.panel.lovelace.cards.shopping-list.add_item"
               )}
-            `
-          : ""}
+              @click=${this._addItem}
+            >
+            </ha-svg-icon>
+            <paper-input
+              no-label-float
+              class="addBox"
+              placeholder=${this.hass!.localize(
+                "ui.panel.lovelace.cards.shopping-list.add_item"
+              )}
+              @keydown=${this._addKeyPress}
+            ></paper-input>
+            <ha-svg-icon
+              class="reorderButton"
+              .path=${mdiSort}
+              .title=${this.hass!.localize(
+                "ui.panel.lovelace.cards.shopping-list.reorder_items"
+              )}
+              @click=${this._toggleReorder}
+            >
+            </ha-svg-icon>
+          </div>
+          ${this._reordering
+            ? html`
+                <div id="sortable">
+                  ${guard(
+                    [this._uncheckedItems, this._renderEmptySortable],
+                    () =>
+                      this._renderEmptySortable
+                        ? ""
+                        : this._renderItems(this._uncheckedItems!)
+                  )}
+                </div>
+              `
+            : this._renderItems(this._uncheckedItems!)}
+          ${this._checkedItems!.length > 0
+            ? html`
+                <div class="divider"></div>
+                <div class="checked">
+                  <span>
+                    ${this.hass!.localize(
+                      "ui.panel.lovelace.cards.shopping-list.checked_items"
+                    )}
+                  </span>
+                  <ha-svg-icon
+                    class="clearall"
+                    tabindex="0"
+                    .path=${mdiNotificationClearAll}
+                    .title=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.shopping-list.clear_items"
+                    )}
+                    @click=${this._clearItems}
+                  >
+                  </ha-svg-icon>
+                </div>
+                ${repeat(
+                  this._checkedItems!,
+                  (item) => item.id,
+                  (item) =>
+                    html`
+                      <div class="editRow">
+                        <paper-checkbox
+                          tabindex="0"
+                          ?checked=${item.complete}
+                          .itemId=${item.id}
+                          @click=${this._completeItem}
+                        ></paper-checkbox>
+                        <paper-input
+                          no-label-float
+                          .value=${item.name}
+                          .itemId=${item.id}
+                          @change=${this._saveEdit}
+                        ></paper-input>
+                      </div>
+                    `
+                )}
+              `
+            : ""}
+        </div>
       </ha-card>
     `;
   }
@@ -349,7 +376,6 @@ class HuiShoppingListCard
   static get styles(): CSSResultGroup {
     return css`
       ha-card {
-        padding: 16px;
         height: 100%;
         box-sizing: border-box;
       }
@@ -360,15 +386,33 @@ class HuiShoppingListCard
 
       .editRow,
       .addRow,
-      .checked {
+      .checked,
+      .input-mode,
+      .input-mode .item {
         display: flex;
-        flex-direction: row;
         align-items: center;
       }
 
-      .addRow ha-icon {
+      .input-mode .item {
+        cursor: pointer;
         color: var(--secondary-text-color);
-        --mdc-icon-size: 26px;
+      }
+
+      .input-mode .item:first-of-type {
+        margin: 0 28px 0 0;
+      }
+
+      .input-mode .item.active {
+        color: var(--primary-text-color);
+      }
+
+      .input-mode {
+        margin-bottom: 12px;
+      }
+
+      .input-mode ha-svg-icon {
+        --mdc-icon-size: 18px;
+        padding-right: 4px;
       }
 
       .addButton {
@@ -399,12 +443,6 @@ class HuiShoppingListCard
       .checked span {
         color: var(--primary-text-color);
         font-weight: 500;
-      }
-
-      .divider {
-        height: 1px;
-        background-color: var(--divider-color);
-        margin: 10px 0;
       }
 
       .clearall {
