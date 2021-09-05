@@ -32,17 +32,19 @@ export class HaFormFloat extends LitElement implements HaFormElement {
         .autoValidate=${this.schema.required}
         @value-changed=${this._valueChanged}
       >
-        <span suffix="" slot="suffix">${this.suffix}</span>
+        <span suffix slot="suffix">${this.suffix}</span>
       </paper-input>
     `;
   }
 
   private get _value() {
-    return this.data || 0;
+    return this.data;
   }
 
   private _valueChanged(ev: Event) {
-    const value = Number((ev.target as PaperInputElement).value);
+    const value: number | undefined = (ev.target as PaperInputElement).value
+      ? Number((ev.target as PaperInputElement).value)
+      : undefined;
     if (this._value === value) {
       return;
     }

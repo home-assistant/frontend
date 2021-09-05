@@ -1,9 +1,10 @@
+import { mdiCheck } from "@mdi/js";
 import { html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
 import { ComboBoxLitRenderer } from "lit-vaadin-helpers";
+import { customElement, property, query, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { fireEvent } from "../common/dom/fire_event";
-import { compare } from "../common/string/compare";
+import { stringCompare } from "../common/string/compare";
 import { HassioAddonInfo } from "../data/hassio/addon";
 import { fetchHassioSupervisorInfo } from "../data/hassio/supervisor";
 import { showAlertDialog } from "../dialogs/generic/show-dialog-box";
@@ -13,10 +14,30 @@ import { HaComboBox } from "./ha-combo-box";
 
 const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (item) => html`<style>
     paper-item {
-      margin: -10px 0;
       padding: 0;
+      margin: -10px;
+      margin-left: 0px;
+    }
+    #content {
+      display: flex;
+      align-items: center;
+    }
+    :host([selected]) paper-item {
+      margin-left: 0;
+    }
+    ha-svg-icon {
+      padding-left: 2px;
+      margin-right: -2px;
+      color: var(--secondary-text-color);
+    }
+    :host(:not([selected])) ha-svg-icon {
+      display: none;
+    }
+    :host([selected]) paper-icon-item {
+      margin-left: 0;
     }
   </style>
+  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
   <paper-item>
     <paper-item-body two-line>
       ${item.name}
@@ -76,7 +97,7 @@ class HaAddonPicker extends LitElement {
       if (isComponentLoaded(this.hass, "hassio")) {
         const supervisorInfo = await fetchHassioSupervisorInfo(this.hass);
         this._addons = supervisorInfo.addons.sort((a, b) =>
-          compare(a.name, b.name)
+          stringCompare(a.name, b.name)
         );
       } else {
         showAlertDialog(this, {

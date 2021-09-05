@@ -34,6 +34,10 @@ export const coreCards: Card[] = [
     showElement: true,
   },
   {
+    type: "statistics-graph",
+    showElement: false,
+  },
+  {
     type: "humidifier",
     showElement: true,
   },

@@ -26,6 +26,12 @@
         "shopping_list": "Iepirkumu saraksts",
         "states": "Pārskats"
     },
+    "state": {
+        "default": {
+            "unavailable": "Nepieejams",
+            "unknown": "Nezināms"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -79,12 +85,6 @@
         "person": {
             "home": "Mājās",
             "not_home": "Prombūtne"
-        }
-    },
-    "state": {
-        "default": {
-            "unavailable": "Nepieejams",
-            "unknown": "Nezināms"
         }
     },
     "ui": {
@@ -531,7 +531,6 @@
                             "introduction": "Darbības nosaka, ko Home Assistant darīs, kad tiks aktivizēta automatizācija.",
                             "learn_more": "Uzziniet vairāk par darbībām",
                             "name": "Darbība",
-                            "type_select": "Darbības tips",
                             "type": {
                                 "condition": {
                                     "label": "Nosacījums"
@@ -563,6 +562,7 @@
                                     "wait_template": "Gaidīšanas veidne"
                                 }
                             },
+                            "type_select": "Darbības tips",
                             "unsupported_action": "Neatbalstīta darbība: {action}"
                         },
                         "alias": "Nosaukums",
@@ -575,7 +575,6 @@
                             "introduction": "Nosacījumi nav obligāti, tos var izmantot, lai novērstu automatizācijas tālāku izpildi, ja vien nav izpildījušies visi priekšnosacījumi.",
                             "learn_more": "Uzziniet vairāk par nosacījumiem",
                             "name": "Nosacījums",
-                            "type_select": "Nosacījuma tips",
                             "type": {
                                 "and": {
                                     "label": "Un"
@@ -628,6 +627,7 @@
                                     "zone": "Zona"
                                 }
                             },
+                            "type_select": "Nosacījuma tips",
                             "unsupported_condition": "Neatbalstīts nosacījums: {condition}"
                         },
                         "default_name": "Jauna automatizācija",
@@ -651,7 +651,6 @@
                             "introduction": "Trigeri ir tas, kas sāk automatizācijas noteikuma apstrādi. Vienam noteikumam ir iespējams norādīt vairākus trigerus. Kad trigeris sāk, Home Assistant apstiprina nosacījumus, ja tādi ir, un izsauc darbību.",
                             "learn_more": "Uzziniet vairāk par trigeriem",
                             "name": "Izsaukt",
-                            "type_select": "Trigera veids",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -709,15 +708,15 @@
                                     "label": "Veidne",
                                     "value_template": "Vērtības veidne"
                                 },
+                                "time": {
+                                    "at": "plkst.",
+                                    "label": "Laiks"
+                                },
                                 "time_pattern": {
                                     "hours": "Stundas",
                                     "label": "Laika Modelis",
                                     "minutes": "Minūtes",
                                     "seconds": "Sekundes"
-                                },
-                                "time": {
-                                    "at": "plkst.",
-                                    "label": "Laiks"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -732,6 +731,7 @@
                                     "zone": "Zona"
                                 }
                             },
+                            "type_select": "Trigera veids",
                             "unsupported_platform": "Neatbalstīta platforma: {platform}"
                         },
                         "unsaved_confirm": "Jums ir nesaglabātas izmaiņas. Vai tiešām vēlaties pamest?"
@@ -948,10 +948,6 @@
                         }
                     }
                 },
-                "filtering": {
-                    "clear": "Notīrīt",
-                    "filtering_by": "Filtrēšana pēc"
-                },
                 "header": "Home Assistant konfigurēšana",
                 "helpers": {
                     "caption": "Palīgi",
@@ -1013,7 +1009,6 @@
                         "hub": "Savienots caur",
                         "manuf": "{manufacturer}",
                         "no_area": "Nav apgabala",
-                        "options": "Opcijas",
                         "reload": "Pārlādēt",
                         "reload_confirm": "Integrācija tika pārlādēta",
                         "reload_restart_confirm": "Restartējiet Home Assistant, lai pabeigtu šīs integrācijas pārlādēšanu",
@@ -1033,7 +1028,6 @@
                             "open_site": "Atvērt tīmekļa vietni"
                         },
                         "finish": "Pabeigt",
-                        "loading_first_time": "Lūdzu, uzgaidiet, kamēr tiek instalēta integrācija",
                         "not_all_required_fields": "Ne visi obligātie lauki ir aizpildīti.",
                         "submit": "Iesniegt"
                     },
@@ -1049,7 +1043,6 @@
                         "confirm_delete_ignore_title": "Pārtraukt ignorēt {name}?",
                         "confirm_ignore": "Vai tiešām nevēlaties iestatīt šo integrāciju? To varat atsaukt, augšējā labajā stūrī noklikšķinot uz “Rādīt ignorētās integrācijas” pārpildes izvēlnē.",
                         "confirm_ignore_title": "Ignorēt {name} atklāšanu?",
-                        "hide_ignored": "Slēpt ignorētās integrācijas",
                         "ignore": "Ignorēt",
                         "ignored": "Ignorētās",
                         "show_ignored": "Rādīt ignorētās integrācijas",
@@ -1412,30 +1405,6 @@
                     "introduction": "Zonas ļauj norādīt noteiktus reģionus uz zemes. Kad cilvēks atrodas zonā, vienības stāvoklim tiks izmantots zonas nosaukums. Zonas var izmantotas kā aktivators vai nosacījums automatizācijās.",
                     "no_zones_created_yet": "Izskatās, ka vēl neesat izveidojis nevienu zonu."
                 },
-                "zwave_js": {
-                    "add_node": {
-                        "view_device": "Skatīt Ierīci"
-                    },
-                    "common": {
-                        "close": "Aizvērt",
-                        "home_id": "Mājas ID",
-                        "network": "Tīkls"
-                    },
-                    "dashboard": {
-                        "driver_version": "Draivera versija",
-                        "dump_not_ready_confirm": "Lejupielādēt",
-                        "home_id": "Mājas ID",
-                        "server_version": "Servera versija"
-                    },
-                    "navigation": {
-                        "network": "Tīkls"
-                    },
-                    "network_status": {
-                        "connected": "Savienots",
-                        "connecting": "Savienojas",
-                        "unknown": "Nezināms"
-                    }
-                },
                 "zwave": {
                     "common": {
                         "index": "Indekss",
@@ -1482,6 +1451,30 @@
                     "values": {
                         "header": "Mezglu vērtības"
                     }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "view_device": "Skatīt Ierīci"
+                    },
+                    "common": {
+                        "close": "Aizvērt",
+                        "home_id": "Mājas ID",
+                        "network": "Tīkls"
+                    },
+                    "dashboard": {
+                        "driver_version": "Draivera versija",
+                        "dump_not_ready_confirm": "Lejupielādēt",
+                        "home_id": "Mājas ID",
+                        "server_version": "Servera versija"
+                    },
+                    "navigation": {
+                        "network": "Tīkls"
+                    },
+                    "network_status": {
+                        "connected": "Savienots",
+                        "connecting": "Savienojas",
+                        "unknown": "Nezināms"
+                    }
                 }
             },
             "custom": {
@@ -1505,14 +1498,6 @@
                         "attributes": "Atribūti",
                         "title": "Stāvokļi"
                     }
-                }
-            },
-            "logbook": {
-                "ranges": {
-                    "last_week": "Iepriekšējā nedēļā",
-                    "this_week": "Šonedēļ",
-                    "today": "Šodien",
-                    "yesterday": "Vakardien"
                 }
             },
             "lovelace": {
@@ -1665,7 +1650,6 @@
                         "unsaved_changes": "Nesaglabātās izmaiņas"
                     },
                     "save_config": {
-                        "cancel": "Atcelt",
                         "close": "Aizvērt",
                         "header": "Pārņemt kontroli pār savu Lovelace lietotāja saskarni",
                         "para": "Šo infopaneli pašlaik konktrolē Home Assistant, automātiski atjauninot, kad kļūst pieejamas jaunas vienības vai Lovelace UI komponenti. Ja pārņemsiet kontroli, šis informācijas panelis vairs netiks automātiski atjaunināts. Izmēģinājumiem jūs vienmēr varat izveidot jaunu infopaneli konfigurācijā.",
@@ -1880,13 +1864,15 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Dod piekļuvi papildu funcionalitātei",
+                    "description": "Atbloķē papildu funkcijas.",
                     "link_promo": "Uzziniet vairāk",
                     "title": "Detalizētais režīms"
                 },
                 "change_password": {
                     "confirm_new_password": "Apstipriniet jauno paroli",
                     "current_password": "Pašreizējā parole",
+                    "error_new_is_old": "Jaunajai parolei ir jāatšķiras no pašreizējās paroles",
+                    "error_new_mismatch": "Ievadītās jaunās paroles vērtības nesakrīt",
                     "error_required": "Obligāts",
                     "header": "Mainīt paroli",
                     "new_password": "Jauna parole",
@@ -1935,6 +1921,12 @@
                     "prompt_copy_token": "Kopējiet savu piekļuves pilnvaru. Tas vairs netiks rādīts.",
                     "prompt_name": "Pilnvaras nosaukums"
                 },
+                "mfa": {
+                    "confirm_disable": "Vai tiešām vēlaties atspējot {name}?",
+                    "disable": "Atspējot",
+                    "enable": "Iespējot",
+                    "header": "Daudzfaktoru autentifikācijas moduļi"
+                },
                 "mfa_setup": {
                     "close": "Aizvērt",
                     "step_done": "Iestatīšana ir pabeigta {step}",
@@ -1942,13 +1934,24 @@
                     "title_aborted": "Priekšlaikus pārtraukta",
                     "title_success": "Veiksmīgi!"
                 },
-                "mfa": {
-                    "confirm_disable": "Vai tiešām vēlaties atspējot {name}?",
-                    "disable": "Atspējot",
-                    "enable": "Iespējot",
-                    "header": "Daudzfaktoru autentifikācijas moduļi"
+                "number_format": {
+                    "description": "Izvēlieties skaitļu attēlošanas formātu.",
+                    "dropdown_label": "Skaitļu formāts",
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "language": "Auto (izmantot valodas iestatījumu)",
+                        "none": "Nav",
+                        "space_comma": "1 234 567,89",
+                        "system": "Izmantot sistēmas lokalizāciju"
+                    },
+                    "header": "Skaitļu formāts"
                 },
                 "push_notifications": {
+                    "add_device_prompt": {
+                        "input_label": "Ierīces nosaukums",
+                        "title": "Kā šo ierīci vajadzētu saukt?"
+                    },
                     "description": "Sūtīt paziņojumus uz šo ierīci.",
                     "error_load_platform": "Konfigurēt notify.html5.",
                     "error_use_https": "Nepieciešama SSL iespējošana priekšgalsistēmai.",
@@ -1968,7 +1971,7 @@
                     "token_title": "{clientId} atsvaidzināšanas pilnvara"
                 },
                 "suspend": {
-                    "description": "Vai pārtraukt savienojumu ar serveri pēc 5 neativitātes minūtēm?",
+                    "description": "Vai pārtraukt savienojumu ar serveri pēc 5 neaktivitātes minūtēm?",
                     "header": "Automātiski pārtraukt savienojumu"
                 },
                 "themes": {
@@ -1984,6 +1987,17 @@
                     "link_promo": "Uzziniet par tēmām",
                     "primary_color": "Galvenā krāsa",
                     "reset": "Atiestatīt"
+                },
+                "time_format": {
+                    "description": "Izvēlieties laika attēlošanas formātu.",
+                    "dropdown_label": "Laika formāts",
+                    "formats": {
+                        "12": "12 stundas (AM/PM)",
+                        "24": "24 stundas",
+                        "language": "Auto (izmantot valodas iestatījumu)",
+                        "system": "Izmantot sistēmas lokalizāciju"
+                    },
+                    "header": "Laika formāts"
                 },
                 "vibrate": {
                     "description": "Iespējot vai atspējot vibrāciju šajā ierīcē, kontrolējot ierīces.",

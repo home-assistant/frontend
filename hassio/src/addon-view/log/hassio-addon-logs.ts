@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import {
   fetchHassioAddonLogs,
@@ -34,7 +35,9 @@ class HassioAddonLogs extends LitElement {
     return html`
       <h1>${this.addon.name}</h1>
       <ha-card>
-        ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
         <div class="card-content">
           ${this._content
             ? html`<hassio-ansi-to-html
@@ -59,10 +62,6 @@ class HassioAddonLogs extends LitElement {
         :host,
         ha-card {
           display: block;
-        }
-        .errors {
-          color: var(--error-color);
-          margin-bottom: 16px;
         }
       `,
     ];

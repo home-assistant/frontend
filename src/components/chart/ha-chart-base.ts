@@ -23,15 +23,17 @@ export default class HaChartBase extends LitElement {
   @property({ attribute: "chart-type", reflect: true })
   public chartType: ChartType = "line";
 
-  @property({ attribute: false })
-  public data: ChartData = { datasets: [] };
+  @property({ attribute: false }) public data: ChartData = { datasets: [] };
 
-  @property({ attribute: false })
-  public options?: ChartOptions;
+  @property({ attribute: false }) public options?: ChartOptions;
+
+  @property({ attribute: false }) public plugins?: any[];
+
+  @property({ type: Number }) public height?: number;
+
+  @state() private _chartHeight?: number;
 
   @state() private _tooltip?: Tooltip;
-
-  @state() private _height?: string;
 
   @state() private _hiddenDatasets: Set<number> = new Set();
 
@@ -50,12 +52,20 @@ export default class HaChartBase extends LitElement {
     if (!this.hasUpdated || !this.chart) {
       return;
     }
-
-    if (changedProps.has("type")) {
+    if (changedProps.has("plugins")) {
+      this.chart.destroy();
+      this._setupChart();
+      return;
+    }
+    if (changedProps.has("chartType")) {
       this.chart.config.type = this.chartType;
     }
-
     if (changedProps.has("data")) {
+      if (this._hiddenDatasets.size) {
+        this.data.datasets.forEach((dataset, index) => {
+          dataset.hidden = this._hiddenDatasets.has(index);
+        });
+      }
       this.chart.data = this.data;
     }
     if (changedProps.has("options")) {
@@ -67,7 +77,7 @@ export default class HaChartBase extends LitElement {
   protected render() {
     return html`
       ${this.options?.plugins?.legend?.display === true
-        ? html` <div class="chartLegend">
+        ? html`<div class="chartLegend">
             <ul>
               ${this.data.datasets.map(
                 (dataset, index) => html`<li
@@ -93,11 +103,8 @@ export default class HaChartBase extends LitElement {
       <div
         class="chartContainer"
         style=${styleMap({
-          height:
-            this.chartType === "timeline"
-              ? `${this.data.datasets.length * 30 + 30}px`
-              : this._height,
-          overflow: this._height ? "initial" : "hidden",
+          height: `${this.height ?? this._chartHeight}px`,
+          overflow: this._chartHeight ? "initial" : "hidden",
         })}
       >
         <canvas></canvas>
@@ -133,6 +140,11 @@ export default class HaChartBase extends LitElement {
                   )}
                 </ul>
               </div>
+              ${this._tooltip.footer.length
+                ? html`<div class="footer">
+                    ${this._tooltip.footer.map((item) => html`${item}<br />`)}
+                  </div>`
+                : ""}
             </div>`
           : ""}
       </div>
@@ -144,18 +156,21 @@ export default class HaChartBase extends LitElement {
       .querySelector("canvas")!
       .getContext("2d")!;
 
-    this.chart = new (await import("../../resources/chartjs")).Chart(ctx, {
+    const ChartConstructor = (await import("../../resources/chartjs")).Chart;
+
+    const computedStyles = getComputedStyle(this);
+
+    ChartConstructor.defaults.borderColor =
+      computedStyles.getPropertyValue("--divider-color");
+    ChartConstructor.defaults.color = computedStyles.getPropertyValue(
+      "--secondary-text-color"
+    );
+
+    this.chart = new ChartConstructor(ctx, {
       type: this.chartType,
       data: this.data,
       options: this._createOptions(),
-      plugins: [
-        {
-          id: "afterRenderHook",
-          afterRender: (chart) => {
-            this._height = `${chart.height}px`;
-          },
-        },
-      ],
+      plugins: this._createPlugins(),
     });
   }
 
@@ -175,6 +190,22 @@ export default class HaChartBase extends LitElement {
         },
       },
     };
+  }
+
+  private _createPlugins() {
+    return [
+      ...(this.plugins || []),
+      {
+        id: "afterRenderHook",
+        afterRender: (chart) => {
+          this._chartHeight = chart.height;
+        },
+        legend: {
+          ...this.options?.plugins?.legend,
+          display: false,
+        },
+      },
+    ];
   }
 
   private _legendClick(ev) {
@@ -212,9 +243,19 @@ export default class HaChartBase extends LitElement {
     };
   }
 
-  public updateChart = (): void => {
+  public updateChart = (
+    mode:
+      | "resize"
+      | "reset"
+      | "none"
+      | "hide"
+      | "show"
+      | "normal"
+      | "active"
+      | undefined
+  ): void => {
     if (this.chart) {
-      this.chart.update();
+      this.chart.update(mode);
     }
   };
 
@@ -228,8 +269,8 @@ export default class HaChartBase extends LitElement {
         height: 0;
         transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
       }
-      :host(:not([chart-type="timeline"])) canvas {
-        max-height: 400px;
+      canvas {
+        max-height: var(--chart-max-height, 400px);
       }
       .chartLegend {
         text-align: center;
@@ -255,7 +296,7 @@ export default class HaChartBase extends LitElement {
         border-radius: 50%;
         display: inline-block;
         height: 16px;
-        margin-right: 4px;
+        margin-right: 6px;
         width: 16px;
         flex-shrink: 0;
         box-sizing: border-box;
@@ -263,9 +304,10 @@ export default class HaChartBase extends LitElement {
       .chartTooltip .bullet {
         align-self: baseline;
       }
+      :host([rtl]) .chartLegend .bullet,
       :host([rtl]) .chartTooltip .bullet {
         margin-right: inherit;
-        margin-left: 4px;
+        margin-left: 6px;
       }
       .chartTooltip {
         padding: 8px;
@@ -297,9 +339,13 @@ export default class HaChartBase extends LitElement {
         white-space: pre-line;
         align-items: center;
         line-height: 16px;
+        padding: 4px 0;
       }
       .chartTooltip .title {
         text-align: center;
+        font-weight: 500;
+      }
+      .chartTooltip .footer {
         font-weight: 500;
       }
       .chartTooltip .beforeBody {

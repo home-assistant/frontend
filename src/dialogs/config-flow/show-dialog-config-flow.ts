@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { caseInsensitiveCompare } from "../../common/string/compare";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
   createConfigFlow,
   deleteConfigFlow,
@@ -29,7 +29,7 @@ export const showConfigFlowDialog = (
       ]);
 
       return handlers.sort((handlerA, handlerB) =>
-        caseInsensitiveCompare(
+        caseInsensitiveStringCompare(
           domainToName(hass.localize, handlerA),
           domainToName(hass.localize, handlerB)
         )
@@ -39,6 +39,8 @@ export const showConfigFlowDialog = (
       const [step] = await Promise.all([
         createConfigFlow(hass, handler),
         hass.loadBackendTranslation("config", handler),
+        // Used as fallback if no header defined for step
+        hass.loadBackendTranslation("title", handler),
       ]);
       return step;
     },

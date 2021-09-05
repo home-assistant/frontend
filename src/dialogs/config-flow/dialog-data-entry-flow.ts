@@ -169,9 +169,11 @@ class DataEntryFlowDialog extends LitElement {
       this._params.flowConfig.deleteFlow(this.hass, this._step.flow_id);
     }
 
-    if (this._step !== null && this._params.dialogClosedCallback) {
+    if (this._step && this._params.dialogClosedCallback) {
       this._params.dialogClosedCallback({
         flowFinished,
+        entryId:
+          "result" in this._step ? this._step.result?.entry_id : undefined,
       });
     }
 

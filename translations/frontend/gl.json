@@ -164,6 +164,18 @@
                 "not_installed": "O complemento non está instalado"
             }
         },
+        "backup": {
+            "addons": "Complementos",
+            "could_not_create": "Non se puido crear unha instantánea",
+            "create": "Crear",
+            "create_blocked_not_running": "Non é posible crear unha instantánea neste momento porque o sistema está {state} .",
+            "enter_password": "Insira un contrasinal.",
+            "folders": "Carpetas",
+            "name": "Nome",
+            "password": "Contrasinal",
+            "password_protection": "Protección por contrasinal",
+            "type": "Tipo"
+        },
         "common": {
             "cancel": "Cancelar",
             "close": "Pechar",
@@ -255,9 +267,6 @@
                 "text": "¿Queres reiniciar o complemento cos teus cambios?"
             },
             "update": {
-                "create_snapshot": "Crea unha instantánea de {name} antes de actualizar",
-                "snapshot": "Instantánea",
-                "snapshotting": "Creando instantánea de {name}",
                 "updating": "Actualizando {name} á versión {version}"
             }
         },
@@ -269,37 +278,8 @@
         },
         "panel": {
             "dashboard": "Panel de control",
-            "snapshots": "Instantáneas",
             "store": "Tenda de complementos",
             "system": "Sistema"
-        },
-        "snapshot": {
-            "addons": "Complementos",
-            "available_snapshots": "Instantáneas dispoñibles",
-            "could_not_create": "Non se puido crear unha instantánea",
-            "create": "Crear",
-            "create_blocked_not_running": "Non é posible crear unha instantánea neste momento porque o sistema está {state} .",
-            "create_snapshot": "Crear instantánea",
-            "description": "As instantáneas permiten facer copias de seguridade e restaurar facilmente todos os datos da súa instancia de Home Assistant.",
-            "enter_password": "Insira un contrasinal.",
-            "folder": {
-                "addons/local": "Complementos locais",
-                "homeassistant": "Configuración de Home Assistant",
-                "media": "Medios",
-                "share": "Compartir",
-                "ssl": "SSL"
-            },
-            "folders": "Carpetas",
-            "full_snapshot": "Instantánea completa",
-            "name": "Nome",
-            "no_snapshots": "Aínda non tes instantáneas.",
-            "partial_snapshot": "Instantánea parcial",
-            "password": "Contrasinal",
-            "password_protected": "Protexido por contrasinal",
-            "password_protection": "Protección por contrasinal",
-            "security": "Seguridade",
-            "type": "Tipo",
-            "upload_snapshot": "Subir instantánea"
         },
         "store": {
             "missing_addons": "Faltan complementos? Activa o modo avanzado na páxina do teu perfil de usuario",
@@ -488,6 +468,9 @@
                 "required": "Este campo é necesario",
                 "service_data": "Datos do servizo",
                 "target": "Obxectivos"
+            },
+            "statistic-picker": {
+                "learn_more": "Leer mas sobre estatísticas"
             }
         },
         "dialogs": {
@@ -618,42 +601,6 @@
                         "email_address": "Enderezo electrónico"
                     }
                 },
-                "core": {
-                    "section": {
-                        "core": {
-                            "analytics": {
-                                "documentation": "Antes de habilitalo, asegúrese de visitar a páxina de documentación de análise {link} para comprender o que está a enviar e como se almacena.",
-                                "header": "Analítica",
-                                "instance_id": "ID de instancia: {huuid}",
-                                "introduction": "Comparte analítica desde a túa instancia. Estes datos estarán dispoñibles publicamente en {link}",
-                                "learn_more": "Máis información sobre como se procesarán os teus datos.",
-                                "needs_base": "Debe habilitar a analítica base para que esta opción estea dispoñible",
-                                "preference": {
-                                    "base": {
-                                        "description": "Isto inclúe o ID de instancia, a versión e o tipo de instalación",
-                                        "title": "Analítica básica"
-                                    },
-                                    "diagnostics": {
-                                        "description": "Comparte informes de fallos e información de diagnóstico",
-                                        "title": "Diagnóstico"
-                                    },
-                                    "statistics": {
-                                        "description": "Isto inclúe un reconto de elementos na súa instalación, para ver unha lista completa consulta a documentación",
-                                        "title": "Estatísticas de uso"
-                                    },
-                                    "usage_supervisor": {
-                                        "description": "Isto inclúe os nomes e as capacidades das súas integracións e complementos",
-                                        "title": "Integracións e complementos usados"
-                                    },
-                                    "usage": {
-                                        "description": "Isto inclúe os nomes das túas integracións",
-                                        "title": "Integracións usadas"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
                 "devices": {
                     "confirm_disable_config_entry": "Non hai máis dispositivos para a entrada de configuración {entry_name} . Queres deshabilitar a entrada de configuración?",
                     "enabled_description": "Os dispositivos desactivados non se amosarán e as entidades que pertencen ao dispositivo desactivaranse e non se engadirán ao Asistente doméstico.",
@@ -662,6 +609,11 @@
                             "show_all": "Amosar todo",
                             "show_disabled": "Amosar dispositivos deshabilitados"
                         }
+                    }
+                },
+                "energy": {
+                    "solar": {
+                        "sub": "Permita a Home Assistant monitorear sus paneles solares y obtener "
                     }
                 },
                 "entities": {
@@ -674,15 +626,8 @@
                         }
                     }
                 },
-                "filtering": {
-                    "show": "Amosar"
-                },
-                "hassio": {
-                    "button": "Configurar"
-                },
                 "integrations": {
                     "config_entry": {
-                        "disable_restart_confirm": "Reinicie o Home Assistant para rematar de desactivar esta integración",
                         "disable": {
                             "disable_confirm": "Seguro que queres desactivar esta entrada de configuración? Os seus dispositivos e entidades estarán desactivados.",
                             "disabled": "Desactivado",
@@ -693,8 +638,8 @@
                             },
                             "disabled_cause": "Desactivado por {cause}"
                         },
+                        "disable_restart_confirm": "Reinicie o Home Assistant para rematar de desactivar esta integración",
                         "enable_restart_confirm": "Reinicie o Home Assistant para rematar de habilitar esta integración",
-                        "logs": "rexistros",
                         "not_loaded": "Non cargado, comproba o {logs_link}"
                     },
                     "config_flow": {
@@ -709,7 +654,6 @@
                     "confirm_new": "¿Queres configurar {integration} ?",
                     "disable": {
                         "disabled_integrations": "{number} desactivado",
-                        "hide_disabled": "Ocultar integracións desactivadas",
                         "show": "Amosar",
                         "show_disabled": "Amosar as integracións desactivadas"
                     },
@@ -785,6 +729,17 @@
                         "refresh_topology": "Actualizar topoloxía"
                     }
                 },
+                "zwave": {
+                    "migration": {
+                        "ozw": {
+                            "header": "Migrar a OpenZWave",
+                            "introduction": "Este asistente axudarache a migrar da integración herdada de Z-Wave á integración OpenZWave que está actualmente en versión beta."
+                        }
+                    },
+                    "ozw_log": {
+                        "introduction": "Ver o rexistro. 0 é o mínimo (carga todo o rexistro) e 1000 é o máximo. Load amosará un rexistro estático e a cola actualizarase automaticamente co último número de liñas especificado no rexistro."
+                    }
+                },
                 "zwave_js": {
                     "device_info": {
                         "device_config": "Configurar dispositivo"
@@ -797,17 +752,6 @@
                         "introduction": "Xestione e axuste os parámetros de configuración específicos do dispositivo (nodo) para o dispositivo seleccionado",
                         "parameter_is_read_only": "Este parámetro é de só lectura.",
                         "zwave_js_device_database": "Base de datos de dispositivos Z-Wave JS"
-                    }
-                },
-                "zwave": {
-                    "migration": {
-                        "ozw": {
-                            "header": "Migrar a OpenZWave",
-                            "introduction": "Este asistente axudarache a migrar da integración herdada de Z-Wave á integración OpenZWave que está actualmente en versión beta."
-                        }
-                    },
-                    "ozw_log": {
-                        "introduction": "Ver o rexistro. 0 é o mínimo (carga todo o rexistro) e 1000 é o máximo. Load amosará un rexistro estático e a cola actualizarase automaticamente co último número de liñas especificado no rexistro."
                     }
                 }
             },
@@ -828,17 +772,6 @@
                         "no_listeners": "Este modelo non escoita ningún evento e non se actualizará automaticamente.",
                         "unknown_error_template": "Erro descoñecido ao amosar o modelo"
                     }
-                }
-            },
-            "error": {
-                "go_back": "Retornar",
-                "supervisor": {
-                    "ask": "Pide axuda",
-                    "observer": "Comprobe o observador",
-                    "reboot": "Tenta reiniciar o host",
-                    "system_health": "Comprobe a saúde do sistema",
-                    "title": "Non se puido cargar o panel de supervisores.",
-                    "wait": "Se estás principiando, asegúrate de terlle dado ao supervisor o tempo suficiente para comezar."
                 }
             },
             "lovelace": {
@@ -1000,7 +933,6 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Amosar a primeira tarxeta en ancho completo. Non se amosarán outras tarxetas nesta vista, nin insignias.",
                             "warning_multiple_cards": "Esta vista contén máis dunha tarxeta, pero unha vista de panel só pode amosar 1 tarxeta."
                         }
                     }
@@ -1023,8 +955,7 @@
             },
             "page-onboarding": {
                 "analytics": {
-                    "finish": "Seguinte",
-                    "intro": "Comparte análises desde a túa instancia. Estes datos estarán dispoñibles publicamente en {link}"
+                    "finish": "Seguinte"
                 },
                 "core-config": {
                     "intro_location": "Gustaríanos saber onde vives. Esta información axudará a amosar información e configurar automatismos baseados no sol. Estes datos nunca se comparten fóra da túa rede."
@@ -1032,7 +963,12 @@
                 "finish": "Rematar",
                 "next": "Seguinte",
                 "restore": {
-                    "show_log": "Amosar rexistro completo"
+                    "addons": "Complementos",
+                    "folders": "Carpetas",
+                    "password": "Contrasinal",
+                    "password_protection": "Protección por contrasinal",
+                    "show_log": "Amosar rexistro completo",
+                    "type": "Tipo"
                 }
             },
             "profile": {

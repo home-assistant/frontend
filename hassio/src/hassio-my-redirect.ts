@@ -26,7 +26,10 @@ const REDIRECTS: Redirects = {
     redirect: "/hassio/system",
   },
   supervisor_snapshots: {
-    redirect: "/hassio/snapshots",
+    redirect: "/hassio/backups",
+  },
+  supervisor_backups: {
+    redirect: "/hassio/backups",
   },
   supervisor_store: {
     redirect: "/hassio/store",

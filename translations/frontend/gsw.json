@@ -10,6 +10,14 @@
         "shopping_list": "Ichoufsliste",
         "states": "Übersicht"
     },
+    "state": {
+        "default": {
+            "off": "Aus",
+            "on": "An",
+            "unavailable": "Nid verfüägbar",
+            "unknown": "Unbekannt"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -41,14 +49,6 @@
         },
         "person": {
             "home": "Dahei"
-        }
-    },
-    "state": {
-        "default": {
-            "off": "Aus",
-            "on": "An",
-            "unavailable": "Nid verfüägbar",
-            "unknown": "Unbekannt"
         }
     },
     "ui": {
@@ -144,6 +144,14 @@
             "refresh": "Neu laden"
         },
         "components": {
+            "date-range-picker": {
+                "ranges": {
+                    "last_week": "Letschti Wuche",
+                    "this_week": "Die Wuche",
+                    "today": "Hüt",
+                    "yesterday": "Geschder"
+                }
+            },
             "device-picker": {
                 "clear": "Lösche"
             },
@@ -157,6 +165,13 @@
             },
             "service-picker": {
                 "service": "Service"
+            },
+            "statistic-picker": {
+                "learn_more": "Meh über Statistike lehre",
+                "missing_entity": "Wieso isch mini Entity nit ufglischdet?",
+                "no_match": "Kei passendi Statistik gfunde",
+                "no_statistics": "Du hesch keini Statistike",
+                "statistic": "Statistik"
             }
         },
         "login-form": {
@@ -257,9 +272,23 @@
                         }
                     }
                 },
+                "core": {
+                    "section": {
+                        "core": {
+                            "core_config": {
+                                "currency": "Währig"
+                            }
+                        }
+                    }
+                },
                 "devices": {
                     "device_info": "Geräteinformationen",
                     "scripts": "Scripts"
+                },
+                "energy": {
+                    "device_consumption": {
+                        "title": "Einzelne Devices"
+                    }
                 },
                 "integrations": {
                     "caption": "Integratione",

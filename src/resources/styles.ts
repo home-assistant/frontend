@@ -31,6 +31,7 @@ export const darkStyles = {
   "codemirror-property": "#C792EA",
   "codemirror-qualifier": "#DECB6B",
   "codemirror-type": "#DECB6B",
+  "energy-grid-return-color": "#b39bdb",
 };
 
 export const derivedStyles = {
@@ -51,8 +52,7 @@ export const derivedStyles = {
   "switch-unchecked-track-color": "var(--switch-unchecked-color, #000000)",
   "slider-color": "var(--primary-color)",
   "slider-secondary-color": "var(--light-primary-color)",
-  "slider-bar-color": "var(--disabled-text-color)",
-  "label-badge-grey": "var(--paper-grey-500)",
+  "slider-track-color": "var(--scrollbar-thumb-color)",
   "label-badge-background-color": "var(--card-background-color)",
   "label-badge-text-color": "rgba(var(--rgb-primary-text-color), 0.8)",
   "paper-listbox-background-color": "var(--card-background-color)",
@@ -66,7 +66,7 @@ export const derivedStyles = {
   "paper-slider-pin-start-color": "var(--slider-color)",
   "paper-slider-active-color": "var(--slider-color)",
   "paper-slider-secondary-color": "var(--slider-secondary-color)",
-  "paper-slider-container-color": "var(--slider-bar-color)",
+  "paper-slider-container-color": "var(--slider-track-color)",
   "data-table-background-color": "var(--card-background-color)",
   "markdown-code-background-color": "var(--primary-background-color)",
   "mdc-theme-primary": "var(--primary-color)",

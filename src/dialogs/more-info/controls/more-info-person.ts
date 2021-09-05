@@ -75,6 +75,7 @@ class MoreInfoPerson extends LitElement {
       }
       ha-map {
         margin-top: 16px;
+        margin-bottom: 16px;
       }
     `;
   }

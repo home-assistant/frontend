@@ -1,11 +1,11 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import type { NodeInfo } from "./hat-graph";
 import "./hat-logbook-note";
 import "./hat-trace-timeline";
 import type { LogbookEntry } from "../../data/logbook";
 import type { TraceExtended } from "../../data/trace";
 import type { HomeAssistant } from "../../types";
+import type { NodeInfo } from "./hat-script-graph";
 
 @customElement("ha-trace-timeline")
 export class HaTraceTimeline extends LitElement {
@@ -15,7 +15,7 @@ export class HaTraceTimeline extends LitElement {
 
   @property({ attribute: false }) public logbookEntries!: LogbookEntry[];
 
-  @property() public selected!: NodeInfo;
+  @property({ attribute: false }) public selected!: NodeInfo;
 
   protected render(): TemplateResult {
     return html`

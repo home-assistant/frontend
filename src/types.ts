@@ -130,7 +130,7 @@ export type FullCalendarView =
 
 export interface ToggleButton {
   label: string;
-  iconPath: string;
+  iconPath?: string;
   value: string;
 }
 
@@ -239,6 +239,7 @@ export interface HomeAssistant {
     integration?: Parameters<typeof getHassTranslations>[3],
     configFlow?: Parameters<typeof getHassTranslations>[4]
   ): Promise<LocalizeFunc>;
+  loadFragmentTranslation(fragment: string): Promise<LocalizeFunc | undefined>;
 }
 
 export interface Route {

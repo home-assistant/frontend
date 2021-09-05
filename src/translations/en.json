@@ -1,5 +1,6 @@
 {
   "panel": {
+    "energy": "Energy",
     "calendar": "Calendar",
     "config": "Configuration",
     "states": "Overview",
@@ -73,6 +74,7 @@
       "armed_home": "[%key:state_badge::alarm_control_panel::armed%]",
       "armed_away": "[%key:state_badge::alarm_control_panel::armed%]",
       "armed_night": "[%key:state_badge::alarm_control_panel::armed%]",
+      "armed_vacation": "[%key:state_badge::alarm_control_panel::armed%]",
       "armed_custom_bypass": "[%key:state_badge::alarm_control_panel::armed%]",
       "pending": "Pend",
       "arming": "Arming",
@@ -116,6 +118,7 @@
         "arm_home": "Arm home",
         "arm_away": "Arm away",
         "arm_night": "Arm night",
+        "arm_vacation": "Arm vacation",
         "arm_custom_bypass": "Custom bypass"
       },
       "automation": {
@@ -389,6 +392,13 @@
           "failed_create_area": "Failed to create area."
         }
       },
+      "statistic-picker": {
+        "statistic": "Statistic",
+        "no_statistics": "You don't have any statistics",
+        "no_match": "No matching statistics found",
+        "missing_entity": "Why is my entity not listed?",
+        "learn_more": "Learn more about statistics"
+      },
       "addon-picker": {
         "addon": "Add-on",
         "error": {
@@ -417,7 +427,13 @@
       "date-range-picker": {
         "start_date": "Start date",
         "end_date": "End date",
-        "select": "Select"
+        "select": "Select",
+        "ranges": {
+          "today": "Today",
+          "yesterday": "Yesterday",
+          "this_week": "This week",
+          "last_week": "Last week"
+        }
       },
       "relative_time": {
         "never": "Never",
@@ -448,6 +464,16 @@
         "history_disabled": "History integration disabled",
         "loading_history": "Loading state history...",
         "no_history_found": "No state history found."
+      },
+      "statistics_charts": {
+        "loading_statistics": "Loading statistics...",
+        "no_statistics_found": "No statistics found.",
+        "statistic_types": {
+          "min": "min",
+          "max": "max",
+          "mean": "mean",
+          "sum": "sum"
+        }
       },
       "service-picker": {
         "service": "Service"
@@ -586,6 +612,7 @@
             "person": "[%key:ui::panel::config::person::caption%]",
             "devices": "[%key:ui::panel::config::devices::caption%]",
             "entities": "[%key:ui::panel::config::entities::caption%]",
+            "energy": "[%key:ui::panel::config::energy::caption%]",
             "lovelace": "[%key:ui::panel::config::lovelace::caption%]",
             "core": "[%key:ui::panel::config::core::caption%]",
             "zone": "[%key:ui::panel::config::zone::caption%]",
@@ -673,7 +700,7 @@
         "control": "Control",
         "related": "Related",
         "dismiss": "Dismiss",
-        "no_unique_id": "This entity (\"{entity_id}\") does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
+        "no_unique_id": "This entity (''{entity_id}'') does not have a unique ID, therefore its settings cannot be managed from the UI. See the {faq_link} for more detail.",
         "faq": "documentation",
         "info_customize": "You can overwrite some attributes in the {customize_link} section.",
         "customize_link": "entity customizations",
@@ -846,12 +873,12 @@
       "config": {
         "no_type_provided": "No type provided.",
         "error_detected": "Configuration errors detected",
-        "editor_not_available": "No visual editor available for type \"{type}\".",
+        "editor_not_available": "No visual editor available for type ''{type}''.",
         "editor_not_supported": "Visual editor is not supported for this configuration",
         "edit_in_yaml_supported": "You can still edit your config in YAML.",
-        "key_missing": "Required key \"{key}\" is missing.",
-        "key_not_expected": "Key \"{key}\" is not expected or not supported by the visual editor.",
-        "key_wrong_type": "The provided value for \"{key}\" is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
+        "key_missing": "Required key ''{key}'' is missing.",
+        "key_not_expected": "Key ''{key}'' is not expected or not supported by the visual editor.",
+        "key_wrong_type": "The provided value for ''{key}'' is not supported by the visual editor. We support ({type_correct}) but received ({type_wrong}).",
         "no_template_editor_support": "Templates not supported in visual editor"
       },
       "supervisor": {
@@ -909,7 +936,8 @@
         "common": {
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
-          }
+          },
+          "learn_more": "Learn more"
         },
         "areas": {
           "caption": "Areas",
@@ -975,6 +1003,123 @@
             "companion_apps": "companion apps"
           }
         },
+        "energy": {
+          "caption": "Energy",
+          "description": "Monitor your energy production and consumption",
+          "grid": {
+            "title": "Electricity grid",
+            "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
+            "learn_more": "More information on how to get started.",
+            "flow_dialog": {
+              "from": {
+                "header": "Configure grid consumption",
+                "paragraph": "Grid consumption is the energy that flows from the energy grid to your home.",
+                "energy_stat": "Consumed Energy (kWh)",
+                "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
+                "no_cost": "Do not track costs",
+                "cost_stat": "Use an entity tracking the total costs",
+                "cost_stat_input": "Total Costs Entity",
+                "cost_entity": "Use an entity with current price",
+                "cost_entity_input": "Entity with the current price",
+                "cost_number": "Use a static price",
+                "cost_number_input": "Price per kWh",
+                "cost_number_suffix": "{currency}/kWh"
+              },
+              "to": {
+                "header": "Configure grid production",
+                "paragraph": "Grid production is the energy that flows from your solar panels to the grid.",
+                "energy_stat": "Energy returned to the grid (kWh)",
+                "cost_para": "Do you get money back when you return energy to the grid?",
+                "no_cost": "I do not get money back",
+                "cost_stat": "Use an entity tracking the total recieved money",
+                "cost_stat_input": "Total Compensation Entity",
+                "cost_entity": "Use an entity with current rate",
+                "cost_entity_input": "Entity with the current rate",
+                "cost_number": "Use a static rate",
+                "cost_number_input": "Rate per kWh",
+                "cost_number_suffix": "{currency}/kWh"
+              }
+            }
+          },
+          "solar": {
+            "title": "Solar Panels",
+            "sub": "Let Home Assistant monitor your solar panels and give you insight on their performance.",
+            "learn_more": "More information on how to get started.",
+            "stat_production": "Your solar energy production",
+            "stat_return_to_grid": "Solar energy returned to the grid",
+            "stat_predicted_production": "Prediction of your solar energy production"
+          },
+          "battery": {
+            "title": "Home Battery Storage",
+            "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
+            "learn_more": "More information on how to get started."
+          },
+          "gas": {
+            "title": "Gas Consumption",
+            "sub": "Let Home Assistant monitor your gas usage.",
+            "learn_more": "More information on how to get started.",
+            "dialog": {
+              "header": "Configure gas consumption",
+              "paragraph": "Gas consumption is the volume of gas that flows to your home.",
+              "energy_stat": "Consumed Energy (m³)",
+              "cost_para": "Select how Home Assistant should keep track of the costs of the consumed energy.",
+              "no_cost": "Do not track costs",
+              "cost_stat": "Use an entity tracking the total costs",
+              "cost_stat_input": "Total Costs Entity",
+              "cost_entity": "Use an entity with current price",
+              "cost_entity_input": "Entity with the current price",
+              "cost_number": "Use a static price",
+              "cost_number_input": "Price per m³",
+              "cost_number_suffix": "{currency}/m³"
+            }
+          },
+          "device_consumption": {
+            "title": "Individual devices",
+            "sub": "Tracking the energy usage of individual devices allows Home Assistant to break down your energy usage by device.",
+            "learn_more": "More information on how to get started.",
+            "add_stat": "Pick entity to track energy of",
+            "selected_stat": "Tracking energy for",
+            "dialog": {
+              "selected_stat_intro": "Select the entity that represents the device energy usage."
+            }
+          },
+          "validation": {
+            "issues": {
+              "entity_not_defined": {
+                "title": "Entity not defined",
+                "description": "Check the integration or your configuration that provides:"
+              },
+              "recorder_untracked": {
+                "title": "Entity not tracked",
+                "description": "The recorder has been configured to exclude these configured entities:"
+              },
+              "entity_unavailable": {
+                "title": "Entity unavailable",
+                "description": "The state of these configured entities are currently not available:"
+              },
+              "entity_state_non_numeric": {
+                "title": "Entity has non-numeric state",
+                "description": "The following entities have a state that cannot be parsed as a number:"
+              },
+              "entity_negative_state": {
+                "title": "Entity has a negative state",
+                "description": "The following entities have a negative state while a positive state is expected:"
+              },
+              "entity_unexpected_unit_energy": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement 'kWh' or 'Wh':"
+              },
+              "entity_unexpected_unit_price": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'' or ''{currency}/Wh'':"
+              },
+              "entity_unexpected_state_class_total_increasing": {
+                "title": "Unexpected state class",
+                "description": "The following entities do not have the expected state class 'total_increasing'"
+              }
+            }
+          }
+        },
         "helpers": {
           "caption": "Helpers",
           "description": "Elements that help build automations",
@@ -1023,9 +1168,11 @@
                 "unit_system_metric": "Metric",
                 "imperial_example": "Fahrenheit, pounds",
                 "metric_example": "Celsius, kilograms",
+                "find_currency_value": "Find your value",
                 "save_button": "Save",
                 "external_url": "External URL",
-                "internal_url": "Internal URL"
+                "internal_url": "Internal URL",
+                "currency": "Currency"
               }
             }
           }
@@ -1618,7 +1765,7 @@
           },
           "add": {
             "header": "Import a blueprint",
-            "import_header": "Blueprint \"{name}\"",
+            "import_header": "Blueprint ''{name}''",
             "import_introduction_link": "You can import blueprints of other users from Github and the {community_link}. Enter the URL of the blueprint below.",
             "community_forums": "community forums",
             "url": "URL of the blueprint",
@@ -1818,6 +1965,7 @@
               "title": "Remote Control",
               "connected": "Connected",
               "not_connected": "Not Connected",
+              "reconnecting": "Reconnecting",
               "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
               "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
               "instance_is_available": "Your instance is available at",
@@ -2039,6 +2187,7 @@
               "entity_id": "Entity ID",
               "integration": "Integration",
               "area": "Area",
+              "disabled_by": "Disabled by",
               "status": "Status"
             },
             "selected": "{number} selected",
@@ -2170,7 +2319,7 @@
             "system_options": "System options",
             "documentation": "Documentation",
             "delete": "Delete",
-            "delete_confirm": "Are you sure you want to delete this integration?",
+            "delete_confirm": "Are you sure you want to delete the {title} integration?",
             "reload": "Reload",
             "restart_confirm": "Restart Home Assistant to finish removing this integration",
             "reload_confirm": "The integration was reloaded",
@@ -2627,7 +2776,9 @@
             "node_status": "Node Status",
             "node_ready": "Node Ready",
             "device_config": "Configure Device",
-            "reinterview_device": "Re-interview Device"
+            "reinterview_device": "Re-interview Device",
+            "heal_node": "Heal Device",
+            "remove_failed": "Remove Failed Device"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
@@ -2680,6 +2831,14 @@
             "exclusion_failed": "The node could not be removed. Please check the logs for more information.",
             "exclusion_finished": "Node {id} has been removed from your Z-Wave network."
           },
+          "remove_failed_node": {
+            "title": "Remove a Failed Z-Wave Device",
+            "introduction": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
+            "remove_device": "Remove Device",
+            "in_progress": "The device removal is in progress.",
+            "removal_finished": "Node {id} has been removed from your Z-Wave network.",
+            "removal_failed": "The device could not be removed from your Z-Wave network."
+          },
           "reinterview_node": {
             "title": "Re-interview a Z-Wave Device",
             "introduction": "Re-interview a device on your Z-Wave network. Use this feature if your device has missing or incorrect functionality.",
@@ -2702,6 +2861,17 @@
             "healing_failed": "Healing failed. Additional information may be available in the logs.",
             "healing_cancelled": "Network healing has been cancelled."
           },
+          "heal_node": {
+            "title": "Heal a Z-Wave Device",
+            "introduction": "Tell {device} to update its routes back to the controller. This can help with communication issues if you have recently moved the device or your controller.",
+            "traffic_warning": "The healing process generates a large amount of traffic on the Z-Wave network. This may cause devices to respond slowly (or not at all) while the heal is in progress.",
+            "start_heal": "Heal Device",
+            "healing_failed": "{device} could not be healed.",
+            "healing_failed_check_logs": "Additional information may be available in the logs.",
+            "healing_complete": "{device} has been healed.",
+            "in_progress": "{device} healing is in progress.",
+            "network_heal_in_progress": "A Z-Wave network heal is already in progress. Please wait for it to finish before healing an individual device."
+          },
           "logs": {
             "title": "Z-Wave JS Logs",
             "log_level": "Log Level",
@@ -2710,27 +2880,11 @@
           }
         }
       },
-      "history": {
-        "ranges": {
-          "today": "Today",
-          "yesterday": "Yesterday",
-          "this_week": "This week",
-          "last_week": "Last week"
-        }
-      },
-      "logbook": {
-        "ranges": {
-          "today": "Today",
-          "yesterday": "Yesterday",
-          "this_week": "This week",
-          "last_week": "Last week"
-        }
-      },
       "lovelace": {
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
           "actions": {
-            "action_confirmation": "Are you sure you want to run action \"{action}\"?",
+            "action_confirmation": "Are you sure you want to run action ''{action}''?",
             "no_entity_more_info": "No entity provided for more info dialog",
             "no_entity_toggle": "No entity provided to toggle",
             "no_navigation_path": "No navigation path specified",
@@ -2853,10 +3007,16 @@
             "tab_visibility": "Visibility",
             "visibility": {
               "select_users": "Select which users should see this view in the navigation"
+            },
+            "type": "View type",
+            "types": {
+              "masonry": "Masonry (default)",
+              "sidebar": "Sidebar",
+              "panel": "Panel (1 card)"
             }
           },
           "edit_badges": {
-            "panel_mode": "These badges will not be displayed because this view is in \"Panel Mode\"."
+            "view_no_badges": "Badges are not be supported by the current view type."
           },
           "edit_card": {
             "header": "Card Configuration",
@@ -2998,6 +3158,7 @@
             },
             "gauge": {
               "name": "Gauge",
+              "needle_gauge": "Display as needle gauge?",
               "severity": {
                 "define": "Define Severity?",
                 "green": "Green",
@@ -3025,6 +3186,10 @@
               "name": "History Graph",
               "description": "The History Graph card allows you to display a graph for each of the entities listed."
             },
+            "statistics-graph": {
+              "name": "Statistics Graph",
+              "description": "The Statistics Graph card allows you to display a graph of the statistics for each of the entities listed."
+            },
             "horizontal-stack": {
               "name": "Horizontal Stack",
               "description": "The Horizontal Stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
@@ -3051,6 +3216,7 @@
               "entity": "Entity",
               "hold_action": "Hold Action",
               "hours_to_show": "Hours to Show",
+              "days_to_show": "Days to Show",
               "icon": "Icon",
               "icon_height": "Icon Height",
               "image": "Image Path",
@@ -3140,8 +3306,6 @@
           },
           "view": {
             "panel_mode": {
-              "title": "Panel Mode?",
-              "description": "This renders the first card at full width. Other cards in this view as well as badges will not be rendered.",
               "warning_multiple_cards": "This view contains more than one card, but a panel view can only show 1 card."
             }
           },
@@ -3600,19 +3764,19 @@
           "finish": "Next"
         },
         "restore": {
-          "description": "Alternatively you can restore from a previous snapshot.",
+          "description": "Alternatively you can restore from a previous backup.",
           "in_progress": "Restore in progress",
           "show_log": "Show full log",
           "hide_log": "Hide full log",
-          "full_snapshot": "[%key:supervisor::snapshot::full_snapshot%]",
-          "partial_snapshot": "[%key:supervisor::snapshot::partial_snapshot%]",
-          "type": "[%key:supervisor::snapshot::type%]",
-          "select_type": "[%key:supervisor::snapshot::select_type%]",
-          "folders": "[%key:supervisor::snapshot::folders%]",
-          "addons": "[%key:supervisor::snapshot::addons%]",
-          "password_protection": "[%key:supervisor::snapshot::password_protection%]",
-          "password": "[%key:supervisor::snapshot::password%]",
-          "confirm_password": "[%key:supervisor::snapshot::confirm_password%]"
+          "full_backup": "[%key:supervisor::backup::full_backup%]",
+          "partial_backup": "[%key:supervisor::backup::partial_backup%]",
+          "type": "[%key:supervisor::backup::type%]",
+          "select_type": "[%key:supervisor::backup::select_type%]",
+          "folders": "[%key:supervisor::backup::folders%]",
+          "addons": "[%key:supervisor::backup::addons%]",
+          "password_protection": "[%key:supervisor::backup::password_protection%]",
+          "password": "[%key:supervisor::backup::password%]",
+          "confirm_password": "[%key:supervisor::backup::confirm_password%]"
         }
       },
       "custom": {
@@ -3620,6 +3784,18 @@
           "question_trust": "Do you trust the external panel {name} at {link}?",
           "complete_access": "It will have access to all data in Home Assistant.",
           "hide_message": "Check docs for the panel_custom component to hide this message"
+        }
+      },
+      "energy": {
+        "setup": {
+          "next": "Next",
+          "back": "Back",
+          "done": "Show me my energy dashboard!"
+        },
+        "charts": {
+          "stat_house_energy_meter": "Total energy consumption",
+          "solar": "Solar",
+          "by_device": "Consumption by device"
         }
       }
     }
@@ -3847,7 +4023,7 @@
     },
     "panel": {
       "dashboard": "Dashboard",
-      "snapshots": "Snapshots",
+      "backups": "Backups",
       "store": "Add-on Store",
       "system": "System"
     },
@@ -3942,43 +4118,32 @@
         "ram_usage": "Core RAM Usage"
       }
     },
-    "snapshot": {
-      "description": "Snapshots allow you to easily backup and restore all data of your Home Assistant instance.",
-      "available_snapshots": "Available Snapshots",
-      "no_snapshots": "You don't have any snapshots yet.",
-      "create_blocked_not_running": "Creating a snapshot is not possible right now because the system is in {state} state.",
-      "delete_selected": "Delete selected snapshots",
-      "delete_snapshot_title": "Delete snapshot",
-      "delete_snapshot_text": "Do you want to delete {number} {number, plural,\n  one {snapshot}\n  other {snapshots}\n}?",
-      "delete_snapshot_confirm": "delete",
+    "backup": {
+      "no_backups": "You don't have any backups yet.",
+      "create_blocked_not_running": "Creating a backup is not possible right now because the system is in {state} state.",
+      "delete_selected": "Delete selected backups",
+      "delete_backup_title": "Delete backup",
+      "delete_backup_text": "Do you want to delete {number} {number, plural,\n  one {backup}\n  other {backups}\n}?",
+      "delete_backup_confirm": "delete",
       "selected": "{number} selected",
       "failed_to_delete": "Failed to delete",
-      "could_not_create": "Could not create snapshot",
-      "upload_snapshot": "Upload snapshot",
-      "create_snapshot": "Create snapshot",
+      "could_not_create": "Could not create backup",
+      "upload_backup": "Upload backup",
+      "create_backup": "Create backup",
       "create": "Create",
       "created": "Created",
-      "name": "Snapshot name",
-      "type": "Snapshot type",
+      "name": "Backup name",
+      "type": "Backup type",
       "select_type": "Select what to restore",
-      "security": "Security",
-      "full_snapshot": "Full snapshot",
-      "partial_snapshot": "Partial snapshot",
+      "full_backup": "Full backup",
+      "partial_backup": "Partial backup",
       "addons": "Add-ons",
       "folders": "Folders",
-      "password": "Snapshot password",
-      "confirm_password": "Confirm Snapshot password",
+      "password": "Backup password",
+      "confirm_password": "Confirm backup password",
       "password_protection": "Password protection",
-      "password_protected": "password protected",
       "enter_password": "Please enter a password.",
-      "passwords_not_matching": "The passwords does not match",
-      "folder": {
-        "homeassistant": "Home Assistant configuration",
-        "ssl": "SSL",
-        "share": "Share",
-        "media": "Media",
-        "addons/local": "Local add-ons"
-      }
+      "passwords_not_matching": "The passwords does not match"
     },
     "dialog": {
       "network": {
@@ -4021,10 +4186,10 @@
         "text": "Do you want to restart the add-on with your changes?"
       },
       "update": {
-        "snapshot": "Snapshot",
-        "create_snapshot": "Create a snapshot of {name} before updating",
+        "backup": "Backup",
+        "create_backup": "Create a backup of {name} before updating",
         "updating": "Updating {name} to version {version}",
-        "snapshotting": "Creating snapshot of {name}"
+        "creating_backup": "Creating backup of {name}"
       },
       "hardware": {
         "title": "Hardware",

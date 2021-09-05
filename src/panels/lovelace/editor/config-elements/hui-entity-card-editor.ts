@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, boolean, object, optional, string } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/entity/ha-entity-attribute-picker";
@@ -13,20 +13,23 @@ import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  entity: optional(string()),
-  name: optional(string()),
-  icon: optional(string()),
-  attribute: optional(string()),
-  unit: optional(string()),
-  theme: optional(string()),
-  state_color: optional(boolean()),
-  footer: optional(headerFooterConfigStructs),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    name: optional(string()),
+    icon: optional(string()),
+    attribute: optional(string()),
+    unit: optional(string()),
+    theme: optional(string()),
+    state_color: optional(boolean()),
+    footer: optional(headerFooterConfigStructs),
+  })
+);
 
 @customElement("hui-entity-card-editor")
 export class HuiEntityCardEditor

@@ -1,10 +1,11 @@
 import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { HassEntity } from "home-assistant-js-websocket";
-import { html, LitElement, PropertyValues } from "lit";
+import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../common/color/colors";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { computeDomain } from "../../common/entity/compute_domain";
+import { numberFormatToLocale } from "../../common/string/format_number";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { TimelineEntity } from "../../data/history";
 import { HomeAssistant } from "../../types";
@@ -98,6 +99,7 @@ export class StateHistoryChartTimeline extends LitElement {
       <ha-chart-base
         .data=${this._chartData}
         .options=${this._chartOptions}
+        .height=${this.data.length * 30 + 30}
         chart-type="timeline"
       ></ha-chart-base>
     `;
@@ -186,6 +188,8 @@ export class StateHistoryChartTimeline extends LitElement {
             propagate: true,
           },
         },
+        // @ts-expect-error
+        locale: numberFormatToLocale(this.hass.locale),
       };
     }
     if (changedProps.has("data")) {
@@ -300,6 +304,14 @@ export class StateHistoryChartTimeline extends LitElement {
       labels: labels,
       datasets: datasets,
     };
+  }
+
+  static get styles(): CSSResultGroup {
+    return css`
+      ha-chart-base {
+        --chart-max-height: none;
+      }
+    `;
   }
 }
 

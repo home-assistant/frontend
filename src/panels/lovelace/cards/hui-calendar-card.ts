@@ -7,7 +7,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import { HA_COLOR_PALETTE } from "../../../common/const";
+import { getColorByIndex } from "../../../common/color/colors";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
@@ -86,7 +86,7 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
 
     this._calendars = config!.entities.map((entity, idx) => ({
       entity_id: entity,
-      backgroundColor: `#${HA_COLOR_PALETTE[idx % HA_COLOR_PALETTE.length]}`,
+      backgroundColor: getColorByIndex(idx),
     }));
 
     if (this._config?.entities !== config.entities) {

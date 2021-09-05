@@ -16,6 +16,7 @@
         "calendar": "Dagatal",
         "config": "Stillingar",
         "developer_tools": "Þróunarverkfæri",
+        "energy": "Orka",
         "history": "Saga",
         "logbook": "Breytingarsaga",
         "mailbox": "Pósthólf",
@@ -23,6 +24,14 @@
         "profile": "Prófíll",
         "shopping_list": "Innkaupalisti",
         "states": "Yfirlit"
+    },
+    "state": {
+        "default": {
+            "off": "Slökkt",
+            "on": "Á",
+            "unavailable": "Ekki tiltækt",
+            "unknown": "Óþekkt"
+        }
     },
     "state_attributes": {
         "climate": {
@@ -85,16 +94,25 @@
             "not_home": "Fjarverandi"
         }
     },
-    "state": {
-        "default": {
-            "off": "Slökkt",
-            "on": "Á",
-            "unavailable": "Ekki tiltækt",
-            "unknown": "Óþekkt"
-        }
-    },
     "supervisor": {
+        "backup": {
+            "addons": "Viðbætur",
+            "could_not_create": "Ekki tókst að búa til skyndimynd",
+            "create": "Búa til",
+            "create_blocked_not_running": "Ekki er hægt að búa til skyndimynd núna þar sem kerfið er í {state} stöðu.",
+            "delete_backup_confirm": "eyða",
+            "enter_password": "Færðu inn lykilorð.",
+            "folders": "Möppur",
+            "name": "Heiti",
+            "password": "Lykilorð",
+            "password_protection": "Vörn með lykilorði",
+            "type": "Gerð"
+        },
         "dialog": {
+            "hardware": {
+                "search": "Leitaðu að vélbúnaði",
+                "title": "Vélbúnaður"
+            },
             "network": {
                 "connected_to": "Tengt við {ssid}",
                 "dhcp": "DHCP",
@@ -127,41 +145,11 @@
                 "text": "Á að endurræsa viðbótina með breytingum þínum?"
             },
             "update": {
-                "create_snapshot": "Stofna skyndimynd af {name} áður en uppfært er",
-                "snapshot": "Skyndimynd",
-                "snapshotting": "Bý til skyndimynd af {name}",
                 "updating": "Uppfæri {name} í útgáfu {version}"
             }
         },
         "my": {
             "error_addon_not_found": "Viðbót fannst ekki"
-        },
-        "snapshot": {
-            "addons": "Viðbætur",
-            "available_snapshots": "Tiltækar skyndimyndir",
-            "could_not_create": "Ekki tókst að búa til skyndimynd",
-            "create": "Búa til",
-            "create_blocked_not_running": "Ekki er hægt að búa til skyndimynd núna þar sem kerfið er í {state} stöðu.",
-            "create_snapshot": "Búa til skyndimynd",
-            "description": "Skyndimyndir gera þér kleift að vinna með öryggisafrit af gögnum þessa tilviks af Home Assistant.",
-            "enter_password": "Færðu inn lykilorð.",
-            "folder": {
-                "addons/local": "Staðbundnar viðbætur",
-                "homeassistant": "Home Assistant stillingar",
-                "media": "Efni",
-                "share": "Deila",
-                "ssl": "SSL"
-            },
-            "folders": "Möppur",
-            "full_snapshot": "Full skyndimynd",
-            "name": "Heiti",
-            "partial_snapshot": "Skyndimynd að hluta",
-            "password": "Lykilorð",
-            "password_protected": "varið með lykilorði",
-            "password_protection": "Vörn með lykilorði",
-            "security": "Öryggi",
-            "type": "Gerð",
-            "upload_snapshot": "Hlaða upp skyndimynd"
         },
         "system": {
             "core": {
@@ -192,6 +180,7 @@
                 "used_space": "Notað pláss"
             },
             "supervisor": {
+                "search": "Leita",
                 "unhealthy_reason": {
                     "docker": "Docker umhverfið virkar ekki rétt",
                     "privileged": "Umsjónarkerfi hefur ekki áskilin réttindi",
@@ -396,10 +385,17 @@
                 "today": "Í dag"
             },
             "data-table": {
+                "clear": "Hreinsa",
                 "search": "Leita"
             },
             "date-range-picker": {
                 "end_date": "Loka dagsetning",
+                "ranges": {
+                    "last_week": "Í síðustu viku",
+                    "this_week": "Í þessari viku",
+                    "today": "Í dag",
+                    "yesterday": "Í gær"
+                },
                 "select": "Velja",
                 "start_date": "Upphafs dagsetning"
             },
@@ -454,6 +450,13 @@
             },
             "service-picker": {
                 "service": "Þjónusta"
+            },
+            "statistic-picker": {
+                "learn_more": "Læra meira um tölfræði",
+                "statistic": "Tölfræði"
+            },
+            "statistics_charts": {
+                "loading_statistics": "Hleð tölfræði..."
             },
             "target-picker": {
                 "add_area_id": "Velja svæði",
@@ -579,6 +582,7 @@
                         "blueprint": "Uppdrættir",
                         "core": "Almennt",
                         "devices": "Tæki",
+                        "energy": "Orka",
                         "entities": "Einingar",
                         "helpers": "Hjálp",
                         "info": "Upplýsingar",
@@ -597,6 +601,9 @@
                     "server_control": {
                         "restart": "Endurræsa",
                         "stop": "Stöðva"
+                    },
+                    "types": {
+                        "reload": "Endurhlaða"
                     }
                 }
             },
@@ -622,6 +629,9 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Breyta nafni á tæki"
                 }
+            },
+            "zha_reconfigure_device": {
+                "cluster_header": "Klasi"
             }
         },
         "duration": {
@@ -670,6 +680,7 @@
                         "create": "STOFNA",
                         "default_name": "Nýtt svæði",
                         "delete": "EYÐA",
+                        "linked_entities_caption": "Einingar",
                         "name": "Nafn",
                         "name_required": "Nafn er skilyrt",
                         "unknown_error": "Óþekkt villa",
@@ -709,7 +720,6 @@
                             "introduction": "Aðgerðir er það sem Home Assistant mun gera þegar sjálfvirkni er ræst.",
                             "learn_more": "Læra meira um aðgerðir",
                             "name": "Aðgerð",
-                            "type_select": "Gerð aðgerðar",
                             "type": {
                                 "condition": {
                                     "label": "Skilyrði"
@@ -723,6 +733,7 @@
                                     "extra_fields": {
                                         "code": "Kóði",
                                         "message": "Skilaboð",
+                                        "mode": "Hamur",
                                         "title": "Titill"
                                     },
                                     "label": "Tæki"
@@ -744,6 +755,7 @@
                                     "wait_template": "Bið sniðmát"
                                 }
                             },
+                            "type_select": "Gerð aðgerðar",
                             "unsupported_action": "Óstudd aðgerð: {action}"
                         },
                         "alias": "Nafn",
@@ -761,7 +773,6 @@
                             "header": "Skilyrði",
                             "learn_more": "Læra meira um skilyrði",
                             "name": "Skilyrði",
-                            "type_select": "Gerð skilyrðis",
                             "type": {
                                 "and": {
                                     "label": "Og"
@@ -823,6 +834,7 @@
                                     "zone": "Öryggissvæði"
                                 }
                             },
+                            "type_select": "Gerð skilyrðis",
                             "unsupported_condition": "Skilyrði ekki stutt: {condition}"
                         },
                         "default_name": "Ný sjálfvirkni",
@@ -851,7 +863,6 @@
                             "header": "Kveikjur",
                             "introduction": "Kveikjur sjá um að ræsa sjálfvirkni reglur. Það er mögulegt að tilgreina margar kveikjur fyrir sömu regluna. Þegar kveikja er ræst þá mun Home Assistant sannreyna skilyrðin ef einhver og kalla á aðgerðina.",
                             "learn_more": "Læra meira um kveikjur",
-                            "type_select": "Gerð kveikju",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -906,15 +917,15 @@
                                     "label": "Sniðmát",
                                     "value_template": "Gildissniðmát"
                                 },
+                                "time": {
+                                    "at": "Þann",
+                                    "label": "Tími"
+                                },
                                 "time_pattern": {
                                     "hours": "Klukkustundir",
                                     "label": "Tímamynstur",
                                     "minutes": "Mínútur",
                                     "seconds": "Sekúndur"
-                                },
-                                "time": {
-                                    "at": "Þann",
-                                    "label": "Tími"
                                 },
                                 "webhook": {
                                     "label": "Vefkrókur",
@@ -929,6 +940,7 @@
                                     "zone": "Svæði"
                                 }
                             },
+                            "type_select": "Gerð kveikju",
                             "unsupported_platform": "Vettvangur ekki studdur: {platform}"
                         },
                         "unsaved_confirm": "Þú ert með óvistaðar breytingar. Ertu viss um að þú viljir fara?"
@@ -999,6 +1011,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Tengdur",
+                        "connecting": "Tengist...",
                         "connection_status": "Staða tengingar við skýið",
                         "fetching_subscription": "Sæki áskrift...",
                         "google": {
@@ -1096,6 +1109,7 @@
                     "section": {
                         "core": {
                             "core_config": {
+                                "currency": "Gjaldmiðill",
                                 "edit_requires_storage": "Ritill er óvirkur af því að stillingar eru vistaðar í configuration.yaml.",
                                 "elevation": "Hækkun",
                                 "elevation_meters": "metrar",
@@ -1193,6 +1207,20 @@
                     "unnamed_device": "Ónefnt tæki",
                     "update": "Uppfæra"
                 },
+                "energy": {
+                    "caption": "Orka",
+                    "grid": {
+                        "flow_dialog": {
+                            "from": {
+                                "cost_number_input": "verð á kWh",
+                                "cost_number_suffix": "{currency}/kWh"
+                            },
+                            "to": {
+                                "cost_number_suffix": "{currency}/kWh"
+                            }
+                        }
+                    }
+                },
                 "entities": {
                     "caption": "Einingarskrá",
                     "description": "Yfirlit yfir allar þekktar einingar.",
@@ -1229,10 +1257,6 @@
                         }
                     }
                 },
-                "filtering": {
-                    "clear": "Hreinsa",
-                    "filtering_by": "Sía eftir"
-                },
                 "header": "Stilla af Home Assistant",
                 "helpers": {
                     "dialog": {
@@ -1261,9 +1285,6 @@
                     "icons_by": "Smátákn eftir",
                     "integrations": "Samþættingar"
                 },
-                "integration_panel_move": {
-                    "link_integration_page": "Samþættingar síða"
-                },
                 "integrations": {
                     "add_integration": "Bæta við samþættingu",
                     "caption": "Samþættingar",
@@ -1280,7 +1301,6 @@
                         "hub": "Tengt gegnum",
                         "manuf": "eftir {manufacturer}",
                         "no_area": "Ekkert svæði",
-                        "options": "Valkostir",
                         "reload": "Endurhlaða",
                         "rename": "Endurnefna",
                         "restart_confirm": "Endurræsa Home Assitant til að klára að fjarlægja þessa samþættingu",
@@ -1302,7 +1322,6 @@
                     "discovered": "Uppgötvað",
                     "home_assistant_website": "Vefsíða Home Assistant",
                     "ignore": {
-                        "hide_ignored": "Fela hunsaðar samþættingar",
                         "ignore": "Hunsa",
                         "ignored": "Hunsað",
                         "show_ignored": "Sýna hunsaðar samþættingar"
@@ -1378,7 +1397,6 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Stilla",
                     "listening_to": "Hlusta á",
                     "title": "MQTT"
                 },
@@ -1443,6 +1461,7 @@
                         "add_scene": "Bæta við senu",
                         "delete_confirm": "Ertu viss um að þú viljir eyða þessari senu?",
                         "delete_scene": "Eyða senu",
+                        "duplicate": "Fjölfalda",
                         "edit_scene": "Breyta senu",
                         "header": "Senuritill",
                         "headers": {
@@ -1566,7 +1585,6 @@
                         "search_again": "Leita aftur",
                         "spinner": "Leitað að ZHA Zigbee tækjum..."
                     },
-                    "button": "Stilla",
                     "cluster_commands": {
                         "header": "Klasa skipanir"
                     },
@@ -1621,61 +1639,7 @@
                         "update": "Uppfæra"
                     }
                 },
-                "zwave_js": {
-                    "add_node": {
-                        "title": "Bæta við Z-Wave hnúti",
-                        "view_device": "Skoða tæki"
-                    },
-                    "button": "Stilla",
-                    "common": {
-                        "add_node": "Bæta við hnúti",
-                        "close": "Loka",
-                        "network": "Net",
-                        "node_id": "Hnútauðkenni",
-                        "remove_node": "Fjarlægja hnút"
-                    },
-                    "dashboard": {
-                        "driver_version": "Útgáfa rekils",
-                        "dump_dead_nodes_text": "Sumir hnútanna svöruðu ekki og er gert ráð fyrir að þeir séu dauðir. Þessir hnútar verða ekki fluttir út að fullu.",
-                        "dump_dead_nodes_title": "Sumir hnútanna eru dauðir",
-                        "dump_not_ready_confirm": "Sækja",
-                        "dump_not_ready_title": "Ekki eru allir hnútar tilbúnir ennþá",
-                        "nodes_ready": "Hnútar tilbúnir",
-                        "server_version": "Útgáfa miðlara"
-                    },
-                    "device_info": {
-                        "node_ready": "Hnútur tilbúinn",
-                        "node_status": "Staða hnúts",
-                        "zwave_info": "Z-Wave upplýsingar"
-                    },
-                    "navigation": {
-                        "network": "Net"
-                    },
-                    "network_status": {
-                        "connected": "Tengt",
-                        "connecting": "Tengist",
-                        "unknown": "Óþekkt"
-                    },
-                    "node_status": {
-                        "alive": "Á lífi",
-                        "asleep": "Sofandi",
-                        "awake": "Vakandi",
-                        "dead": "Dauður",
-                        "unknown": "Óþekkt"
-                    },
-                    "remove_node": {
-                        "cancel_exclusion": "Hætta við útilokun",
-                        "controller_in_exclusion_mode": "Z-Wave stjórinn þinn er nú í útilokunarham.",
-                        "exclusion_failed": "Ekki tókst að fjarlægja hnútinn. Vinsamlegast athugaðu atburðaskrár fyrir frekari upplýsingar.",
-                        "exclusion_finished": "Hnúturinn {id} hefur verið fjarlægður af Z-Wave netinu.",
-                        "follow_device_instructions": "Fylgdu leiðbeiningunum sem fylgdu tækinu þínu til að kveikja á útilokun í tækinu.",
-                        "introduction": "Fjarlægðu hnút af Z-Wave netinu þínu og fjarlægðu tengd tæki og einingar úr Home Assistant.",
-                        "start_exclusion": "Hefja útilokun",
-                        "title": "Fjarlægja Z-Wave hnút"
-                    }
-                },
                 "zwave": {
-                    "button": "Stilla",
                     "common": {
                         "unknown": "óþekkt",
                         "value": "Gildi"
@@ -1715,6 +1679,65 @@
                         "stop_network": "Stöðva net",
                         "test_network": "Prófa net"
                     }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "title": "Bæta við Z-Wave hnúti",
+                        "view_device": "Skoða tæki"
+                    },
+                    "common": {
+                        "add_node": "Bæta við hnúti",
+                        "close": "Loka",
+                        "network": "Net",
+                        "node_id": "Hnútauðkenni",
+                        "remove_node": "Fjarlægja hnút"
+                    },
+                    "dashboard": {
+                        "driver_version": "Útgáfa rekils",
+                        "dump_dead_nodes_text": "Sumir hnútanna svöruðu ekki og er gert ráð fyrir að þeir séu dauðir. Þessir hnútar verða ekki fluttir út að fullu.",
+                        "dump_dead_nodes_title": "Sumir hnútanna eru dauðir",
+                        "dump_not_ready_confirm": "Sækja",
+                        "dump_not_ready_title": "Ekki eru allir hnútar tilbúnir ennþá",
+                        "nodes_ready": "Hnútar tilbúnir",
+                        "server_version": "Útgáfa miðlara"
+                    },
+                    "device_info": {
+                        "node_ready": "Hnútur tilbúinn",
+                        "node_status": "Staða hnúts",
+                        "zwave_info": "Z-Wave upplýsingar"
+                    },
+                    "navigation": {
+                        "network": "Net"
+                    },
+                    "network_status": {
+                        "connected": "Tengt",
+                        "connecting": "Tengist",
+                        "unknown": "Óþekkt"
+                    },
+                    "node_config": {
+                        "error_device_not_found": "Tæki fannst ekki",
+                        "set_param_error": "Villa kom upp."
+                    },
+                    "node_status": {
+                        "alive": "Á lífi",
+                        "asleep": "Sofandi",
+                        "awake": "Vakandi",
+                        "dead": "Dauður",
+                        "unknown": "Óþekkt"
+                    },
+                    "remove_failed_node": {
+                        "remove_device": "Fjarlægja tæki"
+                    },
+                    "remove_node": {
+                        "cancel_exclusion": "Hætta við útilokun",
+                        "controller_in_exclusion_mode": "Z-Wave stjórinn þinn er nú í útilokunarham.",
+                        "exclusion_failed": "Ekki tókst að fjarlægja hnútinn. Vinsamlegast athugaðu atburðaskrár fyrir frekari upplýsingar.",
+                        "exclusion_finished": "Hnúturinn {id} hefur verið fjarlægður af Z-Wave netinu.",
+                        "follow_device_instructions": "Fylgdu leiðbeiningunum sem fylgdu tækinu þínu til að kveikja á útilokun í tækinu.",
+                        "introduction": "Fjarlægðu hnút af Z-Wave netinu þínu og fjarlægðu tengd tæki og einingar úr Home Assistant.",
+                        "start_exclusion": "Hefja útilokun",
+                        "title": "Fjarlægja Z-Wave hnút"
+                    }
                 }
             },
             "developer-tools": {
@@ -1751,20 +1774,15 @@
                     }
                 }
             },
-            "history": {
-                "ranges": {
-                    "last_week": "Í síðustu viku",
-                    "this_week": "Í þessari viku",
-                    "today": "Í dag",
-                    "yesterday": "Í gær"
-                }
-            },
-            "logbook": {
-                "ranges": {
-                    "last_week": "Í síðustu viku",
-                    "this_week": "Í þessari viku",
-                    "today": "Í dag",
-                    "yesterday": "Í gær"
+            "energy": {
+                "charts": {
+                    "by_device": "Orkunotkun eftir tæki",
+                    "solar": "Sólarorka",
+                    "stat_house_energy_meter": "Heildarorkunotkun"
+                },
+                "setup": {
+                    "back": "Til baka",
+                    "next": "Næsta"
                 }
             },
             "lovelace": {
@@ -1927,6 +1945,9 @@
                         "shopping-list": {
                             "name": "Innkaupalisti"
                         },
+                        "statistics-graph": {
+                            "name": "Tölfræðilínurit"
+                        },
                         "thermostat": {
                             "name": "Hitastillir"
                         },
@@ -1994,7 +2015,6 @@
                         "unsaved_changes": "Óvistaðar breytingar"
                     },
                     "save_config": {
-                        "cancel": "Gleymdu þessu",
                         "close": "Loka",
                         "header": "Taka yfir stjórn á Lovelace viðmótinu",
                         "para": "Home Assistant mun sjálfgefið halda utan um notendaviðmótið og uppfæra það þegar nýjar einingar eða Lovlace íhlutir verða aðgengilegir. Ef þú tekur yfir stjórn á viðmótinu þá mun þetta ekki gerast sjálfkrafa fyrir þig.",
@@ -2184,6 +2204,13 @@
                     "more_integrations": "Meira"
                 },
                 "intro": "Ertu tilbúinn að vekja heimilið þitt, endurheimta friðhelgi þína og gerast þáttakandi í  samfélagi grúskara á heimsvísu?",
+                "restore": {
+                    "addons": "Viðbætur",
+                    "folders": "Möppur",
+                    "password": "Lykilorð",
+                    "password_protection": "Vörn með lykilorði",
+                    "type": "Gerð"
+                },
                 "user": {
                     "create_account": "Stofna aðgang",
                     "data": {
@@ -2251,6 +2278,12 @@
                     "prompt_copy_token": "Afritaðu aðgangstókann þinn en hann verður ekki birtur aftur.",
                     "prompt_name": "Nafn?"
                 },
+                "mfa": {
+                    "confirm_disable": "Ertu viss um að þú viljir afvirkja {name} ?",
+                    "disable": "Afvirkja",
+                    "enable": "Virkja",
+                    "header": "Fjölþátta auðkenningareiningar"
+                },
                 "mfa_setup": {
                     "close": "Loka",
                     "step_done": "Uppsetningu lokið fyrir {step}",
@@ -2258,11 +2291,12 @@
                     "title_aborted": "Hætt var við",
                     "title_success": "Tókst!"
                 },
-                "mfa": {
-                    "confirm_disable": "Ertu viss um að þú viljir afvirkja {name} ?",
-                    "disable": "Afvirkja",
-                    "enable": "Virkja",
-                    "header": "Fjölþátta auðkenningareiningar"
+                "number_format": {
+                    "formats": {
+                        "comma_decimal": "1,234,567.89",
+                        "decimal_comma": "1.234.567,89",
+                        "space_comma": "1 234 567,89"
+                    }
                 },
                 "push_notifications": {
                     "description": "Senda tilkynningar í þetta tæki.",

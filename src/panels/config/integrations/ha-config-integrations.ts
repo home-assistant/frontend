@@ -18,7 +18,7 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import "../../../common/search/search-input";
-import { caseInsensitiveCompare } from "../../../common/string/compare";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
@@ -26,6 +26,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-checkbox";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
   getConfigFlowInProgressCollection,
@@ -47,6 +48,7 @@ import {
   fetchIntegrationManifests,
   IntegrationManifest,
 } from "../../../data/integration";
+import { scanUSBDevices } from "../../../data/usb";
 import { showConfigFlowDialog } from "../../../dialogs/config-flow/show-dialog-config-flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/hass-loading-screen";
@@ -249,6 +251,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
     if (this.route.path === "/add") {
       this._handleAdd(localizePromise);
     }
+    this._scanUSBDevices();
   }
 
   protected updated(changed: PropertyValues) {
@@ -265,7 +268,10 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     if (!this._configEntries) {
-      return html`<hass-loading-screen></hass-loading-screen>`;
+      return html`<hass-loading-screen
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+      ></hass-loading-screen>`;
     }
     const [
       groupedConfigEntries,
@@ -489,12 +495,19 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           })
         )
         .sort((conf1, conf2) =>
-          caseInsensitiveCompare(
+          caseInsensitiveStringCompare(
             conf1.localized_domain_name + conf1.title,
             conf2.localized_domain_name + conf2.title
           )
         );
     });
+  }
+
+  private async _scanUSBDevices() {
+    if (!isComponentLoaded(this.hass, "usb")) {
+      return;
+    }
+    await scanUSBDevices(this.hass);
   }
 
   private async _fetchManifests() {

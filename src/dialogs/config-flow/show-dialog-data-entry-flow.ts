@@ -97,7 +97,10 @@ export type LoadingReason =
 export interface DataEntryFlowDialogParams {
   startFlowHandler?: string;
   continueFlowId?: string;
-  dialogClosedCallback?: (params: { flowFinished: boolean }) => void;
+  dialogClosedCallback?: (params: {
+    flowFinished: boolean;
+    entryId?: string;
+  }) => void;
   flowConfig: FlowConfig;
   showAdvanced?: boolean;
 }

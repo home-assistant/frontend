@@ -16,7 +16,7 @@ import {
   fetchNodeStatus,
   getIdentifiersFromDevice,
   nodeStatus,
-  ZWaveJSNode,
+  ZWaveJSNodeStatus,
   ZWaveJSNodeIdentifiers,
 } from "../../../../../../data/zwave_js";
 import { haStyle } from "../../../../../../resources/styles";
@@ -36,7 +36,7 @@ export class HaDeviceInfoZWaveJS extends LitElement {
 
   @state() private _nodeId?: number;
 
-  @state() private _node?: ZWaveJSNode;
+  @state() private _node?: ZWaveJSNodeStatus;
 
   protected updated(changedProperties: PropertyValues) {
     if (changedProperties.has("device")) {

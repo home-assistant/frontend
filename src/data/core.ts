@@ -10,6 +10,7 @@ export interface ConfigUpdateValues {
   time_zone: string;
   external_url?: string | null;
   internal_url?: string | null;
+  currency?: string | null;
 }
 
 export interface CheckConfigResult {

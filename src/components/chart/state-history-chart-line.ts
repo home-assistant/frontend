@@ -2,6 +2,10 @@ import type { ChartData, ChartDataset, ChartOptions } from "chart.js";
 import { html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
 import { getColorByIndex } from "../../common/color/colors";
+import {
+  formatNumber,
+  numberFormatToLocale,
+} from "../../common/string/format_number";
 import { LineChartEntity, LineChartState } from "../../data/history";
 import { HomeAssistant } from "../../types";
 import "./ha-chart-base";
@@ -84,7 +88,10 @@ class StateHistoryChartLine extends LitElement {
             mode: "nearest",
             callbacks: {
               label: (context) =>
-                `${context.dataset.label}: ${context.parsed.y} ${this.unit}`,
+                `${context.dataset.label}: ${formatNumber(
+                  context.parsed.y,
+                  this.hass.locale
+                )} ${this.unit}`,
             },
           },
           filler: {
@@ -109,6 +116,8 @@ class StateHistoryChartLine extends LitElement {
             hitRadius: 5,
           },
         },
+        // @ts-expect-error
+        locale: numberFormatToLocale(this.hass.locale),
       };
     }
     if (changedProps.has("data")) {
@@ -119,11 +128,11 @@ class StateHistoryChartLine extends LitElement {
   private _generateData() {
     let colorIndex = 0;
     const computedStyles = getComputedStyle(this);
-    const deviceStates = this.data;
+    const entityStates = this.data;
     const datasets: ChartDataset<"line">[] = [];
     let endTime: Date;
 
-    if (deviceStates.length === 0) {
+    if (entityStates.length === 0) {
       return;
     }
 
@@ -132,7 +141,7 @@ class StateHistoryChartLine extends LitElement {
       // Get the highest date from the last date of each device
       new Date(
         Math.max(
-          ...deviceStates.map((devSts) =>
+          ...entityStates.map((devSts) =>
             new Date(
               devSts.states[devSts.states.length - 1].last_changed
             ).getTime()
@@ -144,7 +153,7 @@ class StateHistoryChartLine extends LitElement {
     }
 
     const names = this.names || {};
-    deviceStates.forEach((states) => {
+    entityStates.forEach((states) => {
       const domain = states.domain;
       const name = names[states.entity_id] || states.name;
       // array containing [value1, value2, etc]

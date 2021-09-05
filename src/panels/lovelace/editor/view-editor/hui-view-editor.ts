@@ -3,13 +3,17 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
-import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-input";
 import "../../../../components/ha-switch";
 import { LovelaceViewConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import "../../components/hui-theme-select-editor";
+import {
+  DEFAULT_VIEW_LAYOUT,
+  PANEL_VIEW_LAYOUT,
+  SIDEBAR_VIEW_LAYOUT,
+} from "../../views/const";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { EditorTarget } from "../types";
 
@@ -59,11 +63,13 @@ export class HuiViewEditor extends LitElement {
     return this._config.theme || "Backend-selected";
   }
 
-  get _panel(): boolean {
+  get _type(): string {
     if (!this._config) {
-      return false;
+      return DEFAULT_VIEW_LAYOUT;
     }
-    return this._config.panel || false;
+    return this._config.panel
+      ? PANEL_VIEW_LAYOUT
+      : this._config.type || DEFAULT_VIEW_LAYOUT;
   }
 
   set config(config: LovelaceViewConfig) {
@@ -115,23 +121,26 @@ export class HuiViewEditor extends LitElement {
           .configValue=${"theme"}
           @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
-        <ha-formfield
+        <paper-dropdown-menu
           .label=${this.hass.localize(
-            "ui.panel.lovelace.editor.view.panel_mode.title"
+            "ui.panel.lovelace.editor.edit_view.type"
           )}
-          .dir=${computeRTLDirection(this.hass)}
         >
-          <ha-switch
-            .checked=${this._panel !== false}
-            .configValue=${"panel"}
-            @change=${this._valueChanged}
-          ></ha-switch
-        ></ha-formfield>
-        <span class="panel">
-          ${this.hass.localize(
-            "ui.panel.lovelace.editor.view.panel_mode.description"
-          )}
-        </span>
+          <paper-listbox
+            slot="dropdown-content"
+            .selected=${this._type}
+            attr-for-selected="type"
+            @iron-select=${this._typeChanged}
+          >
+            ${[DEFAULT_VIEW_LAYOUT, SIDEBAR_VIEW_LAYOUT, PANEL_VIEW_LAYOUT].map(
+              (type) => html`<paper-item .type=${type}>
+                ${this.hass.localize(
+                  `ui.panel.lovelace.editor.edit_view.types.${type}`
+                )}
+              </paper-item>`
+            )}
+          </paper-listbox>
+        </paper-dropdown-menu>
       </div>
     `;
   }
@@ -153,6 +162,23 @@ export class HuiViewEditor extends LitElement {
       };
     }
 
+    fireEvent(this, "view-config-changed", { config: newConfig });
+  }
+
+  private _typeChanged(ev): void {
+    const selected = ev.target.selected;
+    if (selected === "") {
+      return;
+    }
+    const newConfig = {
+      ...this._config,
+    };
+    delete newConfig.panel;
+    if (selected === "masonry") {
+      delete newConfig.type;
+    } else {
+      newConfig.type = selected;
+    }
     fireEvent(this, "view-config-changed", { config: newConfig });
   }
 

@@ -1,27 +1,26 @@
-import { css, LitElement, svg } from "lit";
+import { css, LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators";
-import { NODE_SIZE, SPACING } from "./hat-graph";
+import { SPACING, NODE_SIZE } from "./hat-graph-const";
 
+/**
+ * @attribute active
+ * @attribute track
+ */
 @customElement("hat-graph-spacer")
 export class HatGraphSpacer extends LitElement {
   @property({ reflect: true, type: Boolean }) disabled?: boolean;
 
   render() {
-    return svg`
-    <svg
-    width="${SPACING}px"
-    height="${SPACING + NODE_SIZE + 1}px"
-    viewBox="-${SPACING / 2} 0 10 ${SPACING + NODE_SIZE + 1}"
-    >
-          <path
-            class="connector"
-            d="
+    return html`
+      <svg viewBox="-${SPACING / 2} 0 10 ${SPACING + NODE_SIZE + 1}">
+        <path
+          d="
               M 0 ${SPACING + NODE_SIZE + 1}
-              L 0 0
+              V 0
             "
-            line-caps="round"
-          />
-      }
+          line-caps="round"
+        />
+        }
       </svg>
     `;
   }
@@ -31,15 +30,21 @@ export class HatGraphSpacer extends LitElement {
       :host {
         display: flex;
         flex-direction: column;
+        align-items: center;
       }
-      :host(.track) {
+      svg {
+        width: var(--hat-graph-spacing);
+        height: calc(
+          var(--hat-graph-spacing) + var(--hat-graph-node-size) + 1px
+        );
+      }
+      :host([track]) {
         --stroke-clr: var(--track-clr);
-        --icon-clr: var(--default-icon-clr);
       }
       :host-context([disabled]) {
         --stroke-clr: var(--disabled-clr);
       }
-      path.connector {
+      path {
         stroke: var(--stroke-clr);
         stroke-width: 2;
         fill: none;

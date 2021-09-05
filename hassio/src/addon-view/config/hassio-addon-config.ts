@@ -17,6 +17,7 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-card";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../../src/components/ha-form/ha-form";
 import "../../../../src/components/ha-formfield";
@@ -135,17 +136,19 @@ class HassioAddonConfig extends LitElement {
                 @value-changed=${this._configChanged}
                 .yamlSchema=${ADDON_YAML_SCHEMA}
               ></ha-yaml-editor>`}
-          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           ${!this._yamlMode ||
           (this._canShowSchema && this.addon.schema) ||
           this._valid
             ? ""
             : html`
-                <div class="errors">
+                <ha-alert alert-type="error">
                   ${this.supervisor.localize(
                     "addon.configuration.options.invalid_yaml"
                   )}
-                </div>
+                </ha-alert>
               `}
         </div>
         ${hasHiddenOptions
@@ -324,13 +327,7 @@ class HassioAddonConfig extends LitElement {
           display: flex;
           justify-content: space-between;
         }
-        .errors {
-          color: var(--error-color);
-          margin-top: 16px;
-        }
-        .syntaxerror {
-          color: var(--error-color);
-        }
+
         .card-menu {
           float: right;
           z-index: 3;
