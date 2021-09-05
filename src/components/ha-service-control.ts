@@ -77,8 +77,20 @@ export class HaServiceControl extends LitElement {
       this.hass.services
     );
 
+    // Fetch the manifest if we have a service and either:
+    // a) no manifest yet
+    // b) the service domain changed
     if (this.value?.service) {
-      this._fetchManifest(computeDomain(this.value?.service));
+      if (
+        oldValue?.service
+          ? computeDomain(this.value?.service) !==
+            computeDomain(oldValue?.service)
+          : true
+      ) {
+        this._fetchManifest(computeDomain(this.value?.service));
+      }
+    } else {
+      this._manifest = undefined;
     }
 
     if (
@@ -311,7 +323,6 @@ export class HaServiceControl extends LitElement {
     if (ev.detail.value === this._value?.service) {
       return;
     }
-    this._manifest = undefined;
     fireEvent(this, "value-changed", {
       value: { service: ev.detail.value || "" },
     });
