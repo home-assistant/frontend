@@ -8,8 +8,9 @@ import {
   any,
   array,
   assert,
-  boolean,
   assign,
+  boolean,
+  enums,
   literal,
   number,
   object,
@@ -30,6 +31,7 @@ import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
 import type { EntitiesCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
+import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
 import type { LovelaceCardEditor } from "../../types";
@@ -38,6 +40,7 @@ import "../hui-entities-card-row-editor";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import {
   EditorTarget,
@@ -45,7 +48,6 @@ import {
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const buttonEntitiesRowConfigStruct = object({
   type: literal("button"),
@@ -132,6 +134,7 @@ const attributeEntitiesRowConfigStruct = object({
   prefix: optional(string()),
   suffix: optional(string()),
   name: optional(string()),
+  format: optional(enums(TIMESTAMP_RENDERING_FORMATS)),
 });
 
 const textEntitiesRowConfigStruct = object({
