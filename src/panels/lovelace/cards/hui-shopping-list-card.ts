@@ -408,6 +408,10 @@ class HuiShoppingListCard
         font-weight: 500;
       }
 
+      .input-mode .item.active:hover {
+        cursor: auto;
+      }
+
       .input-mode .item:first-of-type {
         margin: 0 28px 0 0;
       }
