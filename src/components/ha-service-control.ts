@@ -5,15 +5,18 @@ import {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
+import {
+  fetchIntegrationManifest,
+  IntegrationManifest,
+} from "../data/integration";
 import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
-import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import "./ha-selector/ha-selector";
 import "./ha-service-picker";
@@ -53,6 +56,8 @@ export class HaServiceControl extends LitElement {
 
   @state() private _checkedKeys = new Set();
 
+  @state() private _manifest?: IntegrationManifest;
+
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   protected updated(changedProperties: PropertyValues<this>) {
@@ -71,6 +76,10 @@ export class HaServiceControl extends LitElement {
       this.value?.service,
       this.hass.services
     );
+
+    if (this.value?.service) {
+      this._fetchManifest(computeDomain(this.value?.service));
+    }
 
     if (
       serviceData &&
@@ -177,12 +186,9 @@ export class HaServiceControl extends LitElement {
       ></ha-service-picker>
       <div class="description">
         <p>${serviceData?.description}</p>
-        ${this.value?.service
+        ${this._manifest
           ? html` <a
-              href="${documentationUrl(
-                this.hass,
-                "/integrations/" + computeDomain(this.value?.service)
-              )}"
+              href="${this._manifest.documentation}"
               title="${this.hass.localize(
                 "ui.components.service-control.integration_doc"
               )}"
@@ -305,6 +311,7 @@ export class HaServiceControl extends LitElement {
     if (ev.detail.value === this._value?.service) {
       return;
     }
+    this._manifest = undefined;
     fireEvent(this, "value-changed", {
       value: { service: ev.detail.value || "" },
     });
@@ -385,6 +392,14 @@ export class HaServiceControl extends LitElement {
         data: ev.detail.value,
       },
     });
+  }
+
+  private async _fetchManifest(integration: string) {
+    try {
+      this._manifest = await fetchIntegrationManifest(this.hass, integration);
+    } catch (err) {
+      // Ignore if loading manifest fails. Probably bad JSON in manifest
+    }
   }
 
   static get styles(): CSSResultGroup {
