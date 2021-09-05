@@ -393,21 +393,27 @@ class HuiShoppingListCard
         align-items: center;
       }
 
+      .card-content {
+        margin-top: 0;
+      }
+
       .input-mode .item {
         cursor: pointer;
         color: var(--secondary-text-color);
+      }
+
+      .input-mode .item.active,
+      .input-mode .item:hover {
+        color: var(--primary-text-color);
+        font-weight: 500;
       }
 
       .input-mode .item:first-of-type {
         margin: 0 28px 0 0;
       }
 
-      .input-mode .item.active {
-        color: var(--primary-text-color);
-      }
-
       .input-mode {
-        margin-bottom: 12px;
+        margin-bottom: 24px;
       }
 
       .input-mode ha-svg-icon {
