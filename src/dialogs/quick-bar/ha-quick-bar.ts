@@ -299,8 +299,10 @@ export class QuickBar extends LitElement {
 
   private _handleSelected(ev: SingleSelectedEvent) {
     const index = ev.detail.index;
-    const item = ((ev.target as List).items[index] as any).item;
-    this.processItemAndCloseDialog(item, index);
+    if (index >= 0) {
+      const item = ((ev.target as List).items[index] as any).item;
+      this.processItemAndCloseDialog(item, index);
+    }
   }
 
   private _handleInputKeyDown(ev: KeyboardEvent) {
