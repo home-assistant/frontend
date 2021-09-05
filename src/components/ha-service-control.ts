@@ -77,9 +77,8 @@ export class HaServiceControl extends LitElement {
       this.hass.services
     );
 
-    // Fetch the manifest if we have a service and either:
-    // a) no manifest yet
-    // b) the service domain changed
+    // Fetch the manifest if we have a service selected and the service domain changed.
+    // If no service is selected, clear the manifest.
     if (this.value?.service) {
       if (
         oldValue?.service
