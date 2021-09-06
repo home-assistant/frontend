@@ -201,58 +201,59 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        cursor: pointer;
-        outline: none;
-      }
+    return [
+      iconColorCSS,
+      css`
+        ha-card {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          cursor: pointer;
+          outline: none;
+        }
 
-      .header {
-        display: flex;
-        padding: 8px 16px 0;
-        justify-content: space-between;
-      }
+        .header {
+          display: flex;
+          padding: 8px 16px 0;
+          justify-content: space-between;
+        }
 
-      .name {
-        color: var(--secondary-text-color);
-        line-height: 40px;
-        font-weight: 500;
-        font-size: 16px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
+        .name {
+          color: var(--secondary-text-color);
+          line-height: 40px;
+          font-weight: 500;
+          font-size: 16px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
 
-      .icon {
-        color: var(--state-icon-color, #44739e);
-        line-height: 40px;
-      }
+        .icon {
+          color: var(--state-icon-color, #44739e);
+          line-height: 40px;
+        }
 
-      .info {
-        padding: 0px 16px 16px;
-        margin-top: -4px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        line-height: 28px;
-      }
+        .info {
+          padding: 0px 16px 16px;
+          margin-top: -4px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          line-height: 28px;
+        }
 
-      .value {
-        font-size: 28px;
-        margin-right: 4px;
-      }
+        .value {
+          font-size: 28px;
+          margin-right: 4px;
+        }
 
-      .measurement {
-        font-size: 18px;
-        color: var(--secondary-text-color);
-      }
-
-      ${iconColorCSS}
-    `;
+        .measurement {
+          font-size: 18px;
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 
