@@ -379,7 +379,7 @@ class HuiShoppingListCard
     for (const item of input) {
       const trimmed = item.trim();
       if (trimmed !== "") {
-        this._addPastedItem(item);
+        this._addPastedItem(trimmed);
       }
     }
   }
