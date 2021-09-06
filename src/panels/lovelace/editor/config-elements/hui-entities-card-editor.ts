@@ -132,6 +132,7 @@ const attributeEntitiesRowConfigStruct = object({
   prefix: optional(string()),
   suffix: optional(string()),
   name: optional(string()),
+  icon: optional(string()),
 });
 
 const textEntitiesRowConfigStruct = object({
