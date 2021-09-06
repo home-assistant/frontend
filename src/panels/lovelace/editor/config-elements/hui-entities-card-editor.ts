@@ -10,6 +10,7 @@ import {
   assert,
   assign,
   boolean,
+  dynamic,
   enums,
   literal,
   number,
@@ -20,7 +21,10 @@ import {
   union,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import { customType } from "../../../../common/structs/is-custom-type";
+import {
+  customType,
+  isCustomType,
+} from "../../../../common/structs/is-custom-type";
 import { entityId } from "../../../../common/structs/is-entity-id";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
@@ -134,6 +138,7 @@ const attributeEntitiesRowConfigStruct = object({
   prefix: optional(string()),
   suffix: optional(string()),
   name: optional(string()),
+  icon: optional(string()),
   format: optional(enums(TIMESTAMP_RENDERING_FORMATS)),
 });
 
@@ -144,24 +149,53 @@ const textEntitiesRowConfigStruct = object({
   icon: optional(string()),
 });
 
-const customRowConfigStruct = type({
+const customEntitiesRowConfigStruct = type({
   type: customType(),
 });
 
-const entitiesRowConfigStruct = union([
-  entitiesConfigStruct,
-  buttonEntitiesRowConfigStruct,
-  castEntitiesRowConfigStruct,
-  conditionalEntitiesRowConfigStruct,
-  dividerEntitiesRowConfigStruct,
-  sectionEntitiesRowConfigStruct,
-  webLinkEntitiesRowConfigStruct,
-  buttonsEntitiesRowConfigStruct,
-  attributeEntitiesRowConfigStruct,
-  callServiceEntitiesRowConfigStruct,
-  textEntitiesRowConfigStruct,
-  customRowConfigStruct,
-]);
+const entitiesRowConfigStruct = dynamic<any>((value) => {
+  if (value && typeof value === "object" && "type" in value) {
+    if (isCustomType((value as LovelaceRowConfig).type!)) {
+      return customEntitiesRowConfigStruct;
+    }
+
+    switch ((value as LovelaceRowConfig).type!) {
+      case "attribute": {
+        return attributeEntitiesRowConfigStruct;
+      }
+      case "button": {
+        return buttonEntitiesRowConfigStruct;
+      }
+      case "buttons": {
+        return buttonsEntitiesRowConfigStruct;
+      }
+      case "call-service": {
+        return callServiceEntitiesRowConfigStruct;
+      }
+      case "cast": {
+        return castEntitiesRowConfigStruct;
+      }
+      case "conditional": {
+        return conditionalEntitiesRowConfigStruct;
+      }
+      case "divider": {
+        return dividerEntitiesRowConfigStruct;
+      }
+      case "section": {
+        return sectionEntitiesRowConfigStruct;
+      }
+      case "text": {
+        return textEntitiesRowConfigStruct;
+      }
+      case "weblink": {
+        return webLinkEntitiesRowConfigStruct;
+      }
+    }
+  }
+
+  // No "type" property => has to be the default entity row config struct
+  return entitiesConfigStruct;
+});
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
