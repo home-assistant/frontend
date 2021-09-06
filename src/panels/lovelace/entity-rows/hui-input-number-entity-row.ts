@@ -49,7 +49,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
   }
 
   public disconnectedCallback(): void {
-    this._resizeObserver?.unobserve(this);
+    this._resizeObserver?.disconnect();
   }
 
   protected firstUpdated(): void {
@@ -177,7 +177,9 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
         debounce(() => this._measureCard(), 250, false)
       );
     }
-    this._resizeObserver.observe(this);
+    if (this.parentElement) {
+      this._resizeObserver.observe(this.parentElement);
+    }
   }
 
   private get _inputElement(): { value: string } {
