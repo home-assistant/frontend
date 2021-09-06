@@ -8,6 +8,7 @@ import {
 } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import "@polymer/paper-input/paper-textarea";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
@@ -64,6 +65,8 @@ class HuiShoppingListCard
   @state() private _reordering = false;
 
   @state() private _renderEmptySortable = false;
+
+  @state() private _singleInput = true;
 
   private _sortable?;
 
@@ -122,14 +125,26 @@ class HuiShoppingListCard
       >
         <div class="card-content">
           <div class="input-mode">
-            <div class="item active">
+            <div
+              class=${classMap({
+                item: true,
+                active: this._singleInput,
+              })}
+              @click=${!this._singleInput ? this._toggleInput : null}
+            >
               <ha-svg-icon
                 class="list-icon"
                 .path=${mdiFormatListBulleted}
               ></ha-svg-icon
               >Input single item
             </div>
-            <div class="item">
+            <div
+              class=${classMap({
+                item: true,
+                active: !this._singleInput,
+              })}
+              @click=${this._singleInput ? this._toggleInput : null}
+            >
               <ha-svg-icon
                 class="paste-icon"
                 .path=${mdiClipboardListOutline}
@@ -147,14 +162,23 @@ class HuiShoppingListCard
               @click=${this._addItem}
             >
             </ha-svg-icon>
-            <paper-input
-              no-label-float
-              class="addBox"
-              placeholder=${this.hass!.localize(
-                "ui.panel.lovelace.cards.shopping-list.add_item"
-              )}
-              @keydown=${this._addKeyPress}
-            ></paper-input>
+            ${this._singleInput
+              ? html`
+                  <paper-input
+                    no-label-float
+                    class="addBox"
+                    placeholder=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.shopping-list.add_item"
+                    )}
+                    @keydown=${this._addKeyPress}
+                  ></paper-input>
+                `
+              : html`<paper-textarea
+                  no-label-float
+                  class="addBox"
+                  placeholder="Paste a list of items (one per row)"
+                ></paper-textarea>`}
+
             <ha-svg-icon
               class="reorderButton"
               .path=${mdiSort}
@@ -342,6 +366,10 @@ class HuiShoppingListCard
     }
   }
 
+  private _toggleInput() {
+    this._singleInput = !this._singleInput;
+  }
+
   private _createSortable() {
     const sortableEl = this._sortableEl;
     this._sortable = new Sortable(sortableEl, {
@@ -400,12 +428,12 @@ class HuiShoppingListCard
       .input-mode .item {
         cursor: pointer;
         color: var(--secondary-text-color);
+        font-weight: 500;
       }
 
       .input-mode .item.active,
       .input-mode .item:hover {
         color: var(--primary-text-color);
-        font-weight: 500;
       }
 
       .input-mode .item.active:hover {
@@ -441,7 +469,8 @@ class HuiShoppingListCard
         --paper-checkbox-label-spacing: 0px;
       }
 
-      paper-input {
+      paper-input,
+      paper-textarea {
         flex-grow: 1;
       }
 
