@@ -302,9 +302,9 @@ export class QuickBar extends LitElement {
     if (index < 0) {
     	return;
     }
-      const item = ((ev.target as List).items[index] as any).item;
-      this.processItemAndCloseDialog(item, index);
-    }
+      
+    const item = ((ev.target as List).items[index] as any).item;
+    this.processItemAndCloseDialog(item, index);
   }
 
   private _handleInputKeyDown(ev: KeyboardEvent) {
