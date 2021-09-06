@@ -81,10 +81,8 @@ export class HaServiceControl extends LitElement {
     // If no service is selected, clear the manifest.
     if (this.value?.service) {
       if (
-        oldValue?.service
-          ? computeDomain(this.value?.service) !==
-            computeDomain(oldValue?.service)
-          : true
+        !oldValue?.service ||
+        computeDomain(this.value.service) !== computeDomain(oldValue.service)
       ) {
         this._fetchManifest(computeDomain(this.value?.service));
       }
@@ -405,6 +403,7 @@ export class HaServiceControl extends LitElement {
   }
 
   private async _fetchManifest(integration: string) {
+    this._manifest = undefined;
     try {
       this._manifest = await fetchIntegrationManifest(this.hass, integration);
     } catch (err) {
