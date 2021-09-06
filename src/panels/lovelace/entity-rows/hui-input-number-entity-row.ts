@@ -130,6 +130,9 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        display: block;
+      }
       .flex {
         display: flex;
         align-items: center;
@@ -164,10 +167,10 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
       return;
     }
     const element = this.shadowRoot!.querySelector(".state") as HTMLElement;
-    if (!element || !this.parentElement) {
+    if (!element) {
       return;
     }
-    element.hidden = this.parentElement.clientWidth <= 300;
+    element.hidden = this.clientWidth <= 300;
   }
 
   private async _attachObserver(): Promise<void> {
@@ -177,8 +180,8 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
         debounce(() => this._measureCard(), 250, false)
       );
     }
-    if (this.parentElement) {
-      this._resizeObserver.observe(this.parentElement);
+    if (this.isConnected) {
+      this._resizeObserver.observe(this);
     }
   }
 
