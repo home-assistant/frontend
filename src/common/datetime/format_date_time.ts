@@ -16,7 +16,7 @@ const formatDateTimeMem = memoizeOne(
       year: "numeric",
       month: "long",
       day: "numeric",
-      hour: "numeric",
+      hour: useAmPm(locale) ? "numeric" : "2-digit",
       minute: "2-digit",
       hour12: useAmPm(locale),
     })
@@ -34,7 +34,7 @@ const formatDateTimeWithSecondsMem = memoizeOne(
       year: "numeric",
       month: "long",
       day: "numeric",
-      hour: "numeric",
+      hour: useAmPm(locale) ? "numeric" : "2-digit",
       minute: "2-digit",
       second: "2-digit",
       hour12: useAmPm(locale),
