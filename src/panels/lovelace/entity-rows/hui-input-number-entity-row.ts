@@ -1,5 +1,4 @@
 import "@polymer/paper-input/paper-input";
-import { debounce } from "chart.js/helpers";
 import {
   css,
   CSSResultGroup,
@@ -11,6 +10,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
