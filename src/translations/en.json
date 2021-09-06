@@ -2903,6 +2903,10 @@
             "checked_items": "Checked items",
             "clear_items": "Clear checked items",
             "add_item": "Add item",
+            "add_items": "Add items",
+            "add_single_item": "Add single item",
+            "paste_list": "Paste list",
+            "textarea_placeholder": "Paste a list of items (one per row)",
             "reorder_items": "Reorder items",
             "drag_and_drop": "Drag and drop"
           },

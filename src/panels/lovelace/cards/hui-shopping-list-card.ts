@@ -135,8 +135,13 @@ class HuiShoppingListCard
               <ha-svg-icon
                 class="list-icon"
                 .path=${mdiFormatListBulleted}
+                .title=${this.hass!.localize(
+                  "ui.panel.lovelace.cards.shopping-list.add_single_item"
+                )}
               ></ha-svg-icon
-              >Input single item
+              >${this.hass!.localize(
+                "ui.panel.lovelace.cards.shopping-list.add_single_item"
+              )}
             </div>
             <div
               class=${classMap({
@@ -148,22 +153,33 @@ class HuiShoppingListCard
               <ha-svg-icon
                 class="paste-icon"
                 .path=${mdiClipboardListOutline}
+                .title=${this.hass!.localize(
+                  "ui.panel.lovelace.cards.shopping-list.paste_list"
+                )}
               ></ha-svg-icon
-              >Paste list
+              >${this.hass!.localize(
+                "ui.panel.lovelace.cards.shopping-list.paste_list"
+              )}
             </div>
           </div>
           <div class="addRow">
+            <ha-svg-icon
+              class="addButton"
+              .path=${mdiPlus}
+              .title=${this._singleInput
+                ? this.hass!.localize(
+                    "ui.panel.lovelace.cards.shopping-list.add_item"
+                  )
+                : this.hass!.localize(
+                    "ui.panel.lovelace.cards.shopping-list.add_items"
+                  )}
+              @click=${this._singleInput
+                ? this._addItem
+                : this._handleMultipleItemsInput}
+            >
+            </ha-svg-icon>
             ${this._singleInput
               ? html`
-                  <ha-svg-icon
-                    class="addButton"
-                    .path=${mdiPlus}
-                    .title=${this.hass!.localize(
-                      "ui.panel.lovelace.cards.shopping-list.add_item"
-                    )}
-                    @click=${this._addItem}
-                  >
-                  </ha-svg-icon>
                   <paper-input
                     no-label-float
                     class="addBox"
@@ -173,21 +189,14 @@ class HuiShoppingListCard
                     @keydown=${this._addKeyPress}
                   ></paper-input>
                 `
-              : html`<ha-svg-icon
-                    class="addButton"
-                    .path=${mdiPlus}
-                    .title=${this.hass!.localize(
-                      "ui.panel.lovelace.cards.shopping-list.add_item"
-                    )}
-                    @click=${this._handleMultipleItemsInput}
-                  >
-                  </ha-svg-icon>
-                  <paper-textarea
-                    no-label-float
-                    class="addBox"
-                    placeholder="Paste a list of items (one per row)"
-                    @paste=${this._handlePaste}
-                  ></paper-textarea>`}
+              : html`<paper-textarea
+                  no-label-float
+                  class="addBox"
+                  placeholder=${this.hass!.localize(
+                    "ui.panel.lovelace.cards.shopping-list.textarea_placeholder"
+                  )}
+                  @paste=${this._handlePaste}
+                ></paper-textarea>`}
 
             <ha-svg-icon
               class="reorderButton"
