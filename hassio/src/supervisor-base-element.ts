@@ -86,10 +86,8 @@ export class SupervisorBaseElement extends urlSyncMixin(
         const unsubs = Object.keys(this._unsubs);
         for (const collection of Object.keys(this._collections)) {
           if (!unsubs.includes(collection)) {
-            this._unsubs[collection] = this._collections[
-              collection
-            ].subscribe((data) =>
-              this._updateSupervisor({ [collection]: data })
+            this._unsubs[collection] = this._collections[collection].subscribe(
+              (data) => this._updateSupervisor({ [collection]: data })
             );
           }
         }

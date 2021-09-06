@@ -214,8 +214,24 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     }
 
     if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
-      this._setHum = this._getSetHum(stateObj);
       this._rescale_svg();
+    }
+  }
+
+  public willUpdate(changedProps: PropertyValues) {
+    if (!this.hass || !this._config || !changedProps.has("hass")) {
+      return;
+    }
+
+    const stateObj = this.hass.states[this._config.entity];
+    if (!stateObj) {
+      return;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+
+    if (!oldHass || oldHass.states[this._config.entity] !== stateObj) {
+      this._setHum = this._getSetHum(stateObj);
     }
   }
 
@@ -226,9 +242,9 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
     // This is not done to the SVG containing the current humidity, because
     // it should not be centered on the text, but only on the value
     if (this.shadowRoot && this.shadowRoot.querySelector("ha-card")) {
-      (this.shadowRoot.querySelector(
-        "ha-card"
-      ) as LitElement).updateComplete.then(() => {
+      (
+        this.shadowRoot.querySelector("ha-card") as LitElement
+      ).updateComplete.then(() => {
         const svgRoot = this.shadowRoot!.querySelector("#set-values");
         const box = svgRoot!.querySelector("g")!.getBBox();
         svgRoot!.setAttribute(
@@ -314,8 +330,8 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
       }
 
       round-slider {
-        --round-slider-path-color: var(--disabled-text-color);
-        --round-slider-bar-color: var(--mode-color);
+        --round-slider-path-color: var(--slider-track-color);
+        --round-slider-bar-color: var(--primary-color);
         padding-bottom: 10%;
       }
 
@@ -359,16 +375,6 @@ export class HuiHumidifierCard extends LitElement implements LovelaceCard {
         padding: 16px;
         margin-top: -60px;
         font-size: var(--name-font-size);
-      }
-
-      #modes > * {
-        color: var(--disabled-text-color);
-        cursor: pointer;
-        display: inline-block;
-      }
-
-      #modes .selected-icon {
-        color: var(--mode-color);
       }
 
       text {

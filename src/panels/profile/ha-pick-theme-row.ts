@@ -17,7 +17,6 @@ import "../../components/ha-paper-dropdown-menu";
 import "../../components/ha-radio";
 import type { HaRadio } from "../../components/ha-radio";
 import "../../components/ha-settings-row";
-import { Theme } from "../../data/ws-themes";
 import {
   DEFAULT_PRIMARY_COLOR,
   DEFAULT_ACCENT_COLOR,
@@ -33,17 +32,15 @@ export class HaPickThemeRow extends LitElement {
 
   @state() _themeNames: string[] = [];
 
-  @state() _selectedThemeIndex = 0;
-
-  @state() _selectedTheme?: Theme;
-
   protected render(): TemplateResult {
     const hasThemes =
       this.hass.themes.themes && Object.keys(this.hass.themes.themes).length;
     const curTheme =
-      this.hass.selectedThemeSettings?.theme || this.hass.themes.default_theme;
+      this.hass.selectedTheme?.theme || this.hass.themes.darkMode
+        ? this.hass.themes.default_dark_theme || this.hass.themes.default_theme
+        : this.hass.themes.default_theme;
 
-    const themeSettings = this.hass.selectedThemeSettings;
+    const themeSettings = this.hass.selectedTheme;
 
     return html`
       <ha-settings-row .narrow=${this.narrow}>
@@ -72,7 +69,8 @@ export class HaPickThemeRow extends LitElement {
         >
           <paper-listbox
             slot="dropdown-content"
-            .selected=${this._selectedThemeIndex}
+            .selected=${this.hass.selectedTheme?.theme || "Backend-selected"}
+            attr-for-selected="theme"
             @iron-select=${this._handleThemeSelection}
           >
             ${this._themeNames.map(
@@ -81,8 +79,7 @@ export class HaPickThemeRow extends LitElement {
           </paper-listbox>
         </ha-paper-dropdown-menu>
       </ha-settings-row>
-      ${curTheme === "default" ||
-      (this._selectedTheme && this._supportsModeSelection(this._selectedTheme))
+      ${curTheme === "default" || this._supportsModeSelection(curTheme)
         ? html` <div class="inputs">
             <ha-formfield
               .label=${this.hass.localize(
@@ -155,36 +152,16 @@ export class HaPickThemeRow extends LitElement {
     `;
   }
 
-  protected updated(changedProperties: PropertyValues) {
+  public willUpdate(changedProperties: PropertyValues) {
     const oldHass = changedProperties.get("hass") as undefined | HomeAssistant;
     const themesChanged =
       changedProperties.has("hass") &&
       (!oldHass || oldHass.themes.themes !== this.hass.themes.themes);
-    const selectedThemeChanged =
-      changedProperties.has("hass") &&
-      (!oldHass ||
-        oldHass.selectedThemeSettings !== this.hass.selectedThemeSettings);
 
     if (themesChanged) {
       this._themeNames = ["Backend-selected", "default"].concat(
         Object.keys(this.hass.themes.themes).sort()
       );
-    }
-
-    if (selectedThemeChanged) {
-      if (
-        this.hass.selectedThemeSettings &&
-        this._themeNames.indexOf(this.hass.selectedThemeSettings.theme) > 0
-      ) {
-        this._selectedThemeIndex = this._themeNames.indexOf(
-          this.hass.selectedThemeSettings.theme
-        );
-        this._selectedTheme = this.hass.themes.themes[
-          this.hass.selectedThemeSettings.theme
-        ];
-      } else if (!this.hass.selectedThemeSettings) {
-        this._selectedThemeIndex = 0;
-      }
     }
   }
 
@@ -200,8 +177,8 @@ export class HaPickThemeRow extends LitElement {
     });
   }
 
-  private _supportsModeSelection(theme: Theme): boolean {
-    return theme.modes?.light !== undefined && theme.modes?.dark !== undefined;
+  private _supportsModeSelection(themeName: string): boolean {
+    return "modes" in this.hass.themes.themes[themeName];
   }
 
   private _handleDarkMode(ev: CustomEvent) {
@@ -220,7 +197,7 @@ export class HaPickThemeRow extends LitElement {
   private _handleThemeSelection(ev: CustomEvent) {
     const theme = ev.detail.item.theme;
     if (theme === "Backend-selected") {
-      if (this.hass.selectedThemeSettings?.theme) {
+      if (this.hass.selectedTheme?.theme) {
         fireEvent(this, "settheme", {
           theme: "",
           primaryColor: undefined,

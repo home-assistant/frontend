@@ -178,8 +178,9 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
       });
       return;
     }
-    this.hass.callApi("POST", "events/" + this.eventType, this.parsedJSON).then(
-      function () {
+    this.hass
+      .callApi("POST", "events/" + this.eventType, this.parsedJSON)
+      .then(() => {
         this.fire("hass-notification", {
           message: this.hass.localize(
             "ui.panel.developer-tools.tabs.events.notification_event_fired",
@@ -187,8 +188,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
             this.eventType
           ),
         });
-      }.bind(this)
-    );
+      });
   }
 
   computeFormClasses(narrow) {

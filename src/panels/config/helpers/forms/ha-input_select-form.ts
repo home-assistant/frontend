@@ -44,9 +44,9 @@ class HaInputSelectForm extends LitElement {
 
   public focus() {
     this.updateComplete.then(() =>
-      (this.shadowRoot?.querySelector(
-        "[dialogInitialFocus]"
-      ) as HTMLElement)?.focus()
+      (
+        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+      )?.focus()
     );
   }
 
@@ -195,9 +195,6 @@ class HaInputSelectForm extends LitElement {
         }
         mwc-button {
           margin-left: 8px;
-        }
-        ha-paper-dropdown-menu {
-          display: block;
         }
       `,
     ];

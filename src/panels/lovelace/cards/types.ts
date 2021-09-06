@@ -1,3 +1,4 @@
+import { StatisticType } from "../../../data/history";
 import { ActionConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { FullCalendarView } from "../../../types";
 import { Condition } from "../common/validate-condition";
@@ -88,6 +89,66 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
   show_state?: boolean;
 }
 
+export interface EnergySummaryCardConfig extends LovelaceCardConfig {
+  type: "energy-summary";
+  title?: string;
+  collection_key?: string;
+}
+
+export interface EnergyDistributionCardConfig extends LovelaceCardConfig {
+  type: "energy-distribution";
+  title?: string;
+  link_dashboard?: boolean;
+  collection_key?: string;
+}
+export interface EnergyUsageGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-summary-graph";
+  title?: string;
+  collection_key?: string;
+}
+
+export interface EnergySolarGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-solar-graph";
+  title?: string;
+  collection_key?: string;
+}
+
+export interface EnergyGasGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-gas-graph";
+  title?: string;
+  collection_key?: string;
+}
+
+export interface EnergyDevicesGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-devices-graph";
+  title?: string;
+  collection_key?: string;
+}
+
+export interface EnergySourcesTableCardConfig extends LovelaceCardConfig {
+  type: "energy-sources-table";
+  title?: string;
+  collection_key?: string;
+}
+
+export interface EnergySolarGaugeCardConfig extends LovelaceCardConfig {
+  type: "energy-solar-consumed-gauge";
+  title?: string;
+  collection_key?: string;
+}
+
+export interface EnergyGridGaugeCardConfig extends LovelaceCardConfig {
+  type: "energy-grid-result-gauge";
+  title?: string;
+  collection_key?: string;
+}
+
+export interface EnergyCarbonGaugeCardConfig extends LovelaceCardConfig {
+  type: "energy-carbon-consumed-gauge";
+  title?: string;
+  collection_key?: string;
+}
+
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityFilterEntityConfig | string>;
@@ -115,6 +176,7 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
   max?: number;
   severity?: SeverityConfig;
   theme?: string;
+  needle?: boolean;
 }
 
 export interface ConfigEntity extends EntityConfig {
@@ -208,6 +270,14 @@ export interface HistoryGraphCardConfig extends LovelaceCardConfig {
   hours_to_show?: number;
   refresh_interval?: number;
   title?: string;
+}
+
+export interface StatisticsGraphCardConfig extends LovelaceCardConfig {
+  title?: string;
+  entities: Array<EntityConfig | string>;
+  days_to_show?: number;
+  stat_types?: StatisticType | StatisticType[];
+  chart_type?: "line" | "bar";
 }
 
 export interface PictureCardConfig extends LovelaceCardConfig {
@@ -319,6 +389,61 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   show_forecast?: boolean;
   secondary_info_attribute?: string;
   theme?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
+}
+
+export interface EnergyFlowCardConfig extends LovelaceCardConfig {
+  type: string;
+  name?: string;
+  show_header_toggle?: boolean;
+
+  show_warning?: boolean;
+  show_error?: boolean;
+  test_gui?: boolean;
+  show_w_not_kw?: any;
+  hide_inactive_lines?: boolean;
+  threshold_in_k?: number;
+  energy_flow_diagramm?: boolean;
+  energy_flow_diagramm_lines_factor?: number;
+  change_house_bubble_color_with_flow?: boolean;
+
+  grid_icon?: string;
+  generation_icon?: string;
+  house_icon?: string;
+  battery_icon?: string;
+  appliance1_icon?: string;
+  appliance2_icon?: string;
+
+  icon_entities?: Map<string, string>;
+  line_entities?: Map<string, string>;
+
+  house_entity?: string;
+  battery_entity?: string;
+  generation_entity?: string;
+  grid_entity?: string;
+
+  grid_to_house_entity?: string;
+  grid_to_battery_entity?: string;
+
+  generation_to_grid_entity?: string;
+  generation_to_battery_entity?: string;
+  generation_to_house_entity?: string;
+
+  battery_to_house_entity?: string;
+  battery_to_grid_entity?: string;
+
+  grid_extra_entity?: string;
+  generation_extra_entity?: string;
+  house_extra_entity?: string;
+  battery_extra_entity?: string;
+
+  appliance1_consumption_entity?: string;
+  appliance1_extra_entity?: string;
+  appliance2_consumption_entity?: string;
+  appliance2_extra_entity?: string;
+
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;

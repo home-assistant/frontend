@@ -7,6 +7,7 @@ import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { navigate } from "../../../../common/navigate";
 import "../../../../components/ha-circular-progress";
 import "../../../../components/ha-dialog";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-icon-button";
 import type {
   LovelaceBadgeConfig,
@@ -31,6 +32,11 @@ import {
 import "./hui-view-editor";
 import "./hui-view-visibility-editor";
 import { EditViewDialogParams } from "./show-edit-view-dialog";
+import {
+  DEFAULT_VIEW_LAYOUT,
+  PANEL_VIEW_LAYOUT,
+  VIEWS_NO_BADGE_SUPPORT,
+} from "../../views/const";
 
 @customElement("hui-dialog-edit-view")
 export class HuiDialogEditView extends LitElement {
@@ -50,6 +56,15 @@ export class HuiDialogEditView extends LitElement {
 
   private _curTabIndex = 0;
 
+  get _type(): string {
+    if (!this._config) {
+      return DEFAULT_VIEW_LAYOUT;
+    }
+    return this._config.panel
+      ? PANEL_VIEW_LAYOUT
+      : this._config.type || DEFAULT_VIEW_LAYOUT;
+  }
+
   public showDialog(params: EditViewDialogParams): void {
     this._params = params;
 
@@ -58,11 +73,8 @@ export class HuiDialogEditView extends LitElement {
       this._badges = [];
       this._cards = [];
     } else {
-      const {
-        cards,
-        badges,
-        ...viewConfig
-      } = this._params.lovelace!.config.views[this._params.viewIndex];
+      const { cards, badges, ...viewConfig } =
+        this._params.lovelace!.config.views[this._params.viewIndex];
       this._config = viewConfig;
       this._badges = badges ? processEditorEntities(badges) : [];
       this._cards = cards;
@@ -110,13 +122,13 @@ export class HuiDialogEditView extends LitElement {
         content = html`
           ${this._badges?.length
             ? html`
-                ${this._config?.panel
+                ${VIEWS_NO_BADGE_SUPPORT.includes(this._type)
                   ? html`
-                      <p class="warning">
+                      <ha-alert alert-type="warning">
                         ${this.hass!.localize(
-                          "ui.panel.lovelace.editor.edit_badges.panel_mode"
+                          "ui.panel.lovelace.editor.edit_badges.view_no_badges"
                         )}
-                      </p>
+                      </ha-alert>
                     `
                   : ""}
                 <div class="preview-badges">
@@ -410,10 +422,6 @@ export class HuiDialogEditView extends LitElement {
           justify-content: center;
           margin: 12px 16px;
           flex-wrap: wrap;
-        }
-        .warning {
-          color: var(--warning-color);
-          text-align: center;
         }
 
         @media all and (min-width: 600px) {

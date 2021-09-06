@@ -23,6 +23,7 @@ import {
 } from "lit";
 import { property, state } from "lit/decorators";
 import memoize from "memoize-one";
+import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button-toggle-group";
 import "../../components/ha-icon-button";
@@ -90,9 +91,9 @@ export class HAFullCalendar extends LitElement {
 
   @property() public initialView: FullCalendarView = "dayGridMonth";
 
-  @state() private calendar?: Calendar;
+  private calendar?: Calendar;
 
-  @state() private _activeView?: FullCalendarView;
+  @state() private _activeView = this.initialView;
 
   public updateSize(): void {
     this.calendar?.updateSize();
@@ -181,8 +182,8 @@ export class HAFullCalendar extends LitElement {
     `;
   }
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
 
     if (!this.calendar) {
       return;
@@ -214,9 +215,12 @@ export class HAFullCalendar extends LitElement {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
       initialView: this.initialView,
+      eventTimeFormat: {
+        hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
+        minute: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
+        hour12: useAmPm(this.hass.locale),
+      },
     };
-
-    this._activeView = this.initialView;
 
     config.dateClick = (info) => this._handleDateClick(info);
     config.eventClick = (info) => this._handleEventClick(info);
@@ -446,7 +450,7 @@ export class HAFullCalendar extends LitElement {
         }
 
         .fc-icon-x:before {
-          font-family: var(--material-font-family);
+          font-family: var(--paper-font-common-base_-_font-family);
           content: "X";
         }
 

@@ -4,7 +4,7 @@ import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { navigate } from "../../../../common/navigate";
-import { compare } from "../../../../common/string/compare";
+import { stringCompare } from "../../../../common/string/compare";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -168,8 +168,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
   );
 
   private _getItems = memoize((dashboards: LovelaceDashboard[]) => {
-    const defaultMode = (this.hass.panels?.lovelace
-      ?.config as LovelacePanelConfig).mode;
+    const defaultMode = (
+      this.hass.panels?.lovelace?.config as LovelacePanelConfig
+    ).mode;
     const defaultUrlPath = this.hass.defaultPanel;
     const isDefault = defaultUrlPath === "lovelace";
     return [
@@ -261,9 +262,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
       urlPath,
       createDashboard: async (values: LovelaceDashboardCreateParams) => {
         const created = await createDashboard(this.hass!, values);
-        this._dashboards = this._dashboards!.concat(
-          created
-        ).sort((res1, res2) => compare(res1.url_path, res2.url_path));
+        this._dashboards = this._dashboards!.concat(created).sort(
+          (res1, res2) => stringCompare(res1.url_path, res2.url_path)
+        );
       },
       updateDashboard: async (values) => {
         const updated = await updateDashboard(

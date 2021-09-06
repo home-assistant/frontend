@@ -1,4 +1,5 @@
 import { Connection, createCollection } from "home-assistant-js-websocket";
+import { Store } from "home-assistant-js-websocket/dist/store";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { debounce } from "../common/util/debounce";
 import { HomeAssistant } from "../types";
@@ -96,12 +97,15 @@ export const removeEntityRegistryEntry = (
     entity_id: entityId,
   });
 
-export const fetchEntityRegistry = (conn) =>
-  conn.sendMessagePromise({
+export const fetchEntityRegistry = (conn: Connection) =>
+  conn.sendMessagePromise<EntityRegistryEntry[]>({
     type: "config/entity_registry/list",
   });
 
-const subscribeEntityRegistryUpdates = (conn, store) =>
+const subscribeEntityRegistryUpdates = (
+  conn: Connection,
+  store: Store<EntityRegistryEntry[]>
+) =>
   conn.subscribeEvents(
     debounce(
       () =>

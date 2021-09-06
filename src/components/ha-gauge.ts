@@ -1,4 +1,4 @@
-import { css, LitElement, PropertyValues, svg } from "lit";
+import { css, LitElement, PropertyValues, svg, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
@@ -6,14 +6,17 @@ import { formatNumber } from "../common/string/format_number";
 import { afterNextRender } from "../common/util/render-status";
 import { FrontendLocaleData } from "../data/translation";
 import { getValueInPercentage, normalize } from "../util/calculate";
+import { isSafari } from "../util/is_safari";
 
 const getAngle = (value: number, min: number, max: number) => {
   const percentage = getValueInPercentage(normalize(value, min, max), min, max);
   return (percentage * 180) / 100;
 };
 
-// Workaround for https://github.com/home-assistant/frontend/issues/6467
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+export interface LevelDefinition {
+  level: number;
+  stroke: string;
+}
 
 @customElement("ha-gauge")
 export class Gauge extends LitElement {
@@ -23,7 +26,13 @@ export class Gauge extends LitElement {
 
   @property({ type: Number }) public value = 0;
 
+  @property({ type: String }) public valueText?: string;
+
   @property() public locale!: FrontendLocaleData;
+
+  @property({ type: Boolean }) public needle?: boolean;
+
+  @property() public levels?: LevelDefinition[];
 
   @property() public label = "";
 
@@ -53,23 +62,76 @@ export class Gauge extends LitElement {
   protected render() {
     return svg`
       <svg viewBox="0 0 100 50" class="gauge">
-        <path
+        ${
+          !this.needle || !this.levels
+            ? svg`<path
           class="dial"
           d="M 10 50 A 40 40 0 0 1 90 50"
-        ></path>
-        <path
-          class="value"
-          d="M 90 50.001 A 40 40 0 0 1 10 50"
-          style=${ifDefined(
-            !isSafari
-              ? styleMap({ transform: `rotate(${this._angle}deg)` })
-              : undefined
-          )}
-          transform=${ifDefined(
-            isSafari ? `rotate(${this._angle} 50 50)` : undefined
-          )}
-        >
+        ></path>`
+            : ""
+        }
+
         ${
+          this.levels
+            ? this.levels
+                .sort((a, b) => a.level - b.level)
+                .map((level, idx) => {
+                  let firstPath: TemplateResult | undefined;
+                  if (idx === 0 && level.level !== this.min) {
+                    const angle = getAngle(this.min, this.min, this.max);
+                    firstPath = svg`<path
+                        stroke="var(--info-color)"
+                        class="level"
+                        d="M
+                          ${50 - 40 * Math.cos((angle * Math.PI) / 180)}
+                          ${50 - 40 * Math.sin((angle * Math.PI) / 180)}
+                         A 40 40 0 0 1 90 50
+                        "
+                      ></path>`;
+                  }
+                  const angle = getAngle(level.level, this.min, this.max);
+                  return svg`${firstPath}<path
+                      stroke="${level.stroke}"
+                      class="level"
+                      d="M
+                        ${50 - 40 * Math.cos((angle * Math.PI) / 180)}
+                        ${50 - 40 * Math.sin((angle * Math.PI) / 180)}
+                       A 40 40 0 0 1 90 50
+                      "
+                    ></path>`;
+                })
+            : ""
+        }
+        ${
+          this.needle
+            ? svg`<path
+                class="needle"
+                d="M 25 47.5 L 2.5 50 L 25 52.5 z"
+                style=${ifDefined(
+                  !isSafari
+                    ? styleMap({ transform: `rotate(${this._angle}deg)` })
+                    : undefined
+                )}
+                transform=${ifDefined(
+                  isSafari ? `rotate(${this._angle} 50 50)` : undefined
+                )}
+              >
+              `
+            : svg`<path
+                class="value"
+                d="M 90 50.001 A 40 40 0 0 1 10 50"
+                style=${ifDefined(
+                  !isSafari
+                    ? styleMap({ transform: `rotate(${this._angle}deg)` })
+                    : undefined
+                )}
+                transform=${ifDefined(
+                  isSafari ? `rotate(${this._angle} 50 50)` : undefined
+                )}
+              >`
+        }
+        ${
+          // Workaround for https://github.com/home-assistant/frontend/issues/6467
           isSafari
             ? svg`<animateTransform
                 attributeName="transform"
@@ -84,7 +146,9 @@ export class Gauge extends LitElement {
       </svg>
       <svg class="text">
         <text class="value-text">
-          ${formatNumber(this.value, this.locale)} ${this.label}
+          ${this.valueText || formatNumber(this.value, this.locale)} ${
+      this.label
+    }
         </text>
       </svg>`;
   }
@@ -117,6 +181,15 @@ export class Gauge extends LitElement {
         stroke: var(--gauge-color);
         transform-origin: 50% 100%;
         transition: all 1s ease 0s;
+      }
+      .needle {
+        fill: var(--primary-text-color);
+        transform-origin: 50% 100%;
+        transition: all 1s ease 0s;
+      }
+      .level {
+        fill: none;
+        stroke-width: 15;
       }
       .gauge {
         display: block;

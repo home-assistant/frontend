@@ -161,9 +161,9 @@ class HassioRegistriesDialog extends LitElement {
 
   public focus(): void {
     this.updateComplete.then(() =>
-      (this.shadowRoot?.querySelector(
-        "[dialogInitialFocus]"
-      ) as HTMLElement)?.focus()
+      (
+        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+      )?.focus()
     );
   }
 
@@ -243,9 +243,6 @@ class HassioRegistriesDialog extends LitElement {
         }
         mwc-list-item span[slot="secondary"] {
           color: var(--secondary-text-color);
-        }
-        ha-paper-dropdown-menu {
-          display: block;
         }
       `,
     ];

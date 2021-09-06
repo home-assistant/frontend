@@ -2,6 +2,8 @@ import { html, css, LitElement, TemplateResult } from "lit";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
 
+import { classMap } from "lit/directives/class-map";
+import { customElement, property, state } from "lit/decorators";
 import { IntegrationManifest } from "../../../src/data/integration";
 
 import { provideHass } from "../../../src/fake_data/provide_hass";
@@ -15,8 +17,6 @@ import type {
 } from "../../../src/panels/config/integrations/ha-config-integrations";
 import { DeviceRegistryEntry } from "../../../src/data/device_registry";
 import { EntityRegistryEntry } from "../../../src/data/entity_registry";
-import { classMap } from "lit/directives/class-map";
-import { customElement, property, state } from "lit/decorators";
 
 const createConfigEntry = (
   title: string,
@@ -28,10 +28,11 @@ const createConfigEntry = (
   title,
   source: "zeroconf",
   state: "loaded",
-  connection_class: "local_push",
   supports_options: false,
   supports_unload: true,
   disabled_by: null,
+  pref_disable_new_entities: false,
+  pref_disable_polling: false,
   reason: null,
   ...override,
 });
@@ -63,6 +64,9 @@ const configPanelEntry = createConfigEntry("Config Panel", {
 });
 const optionsFlowEntry = createConfigEntry("Options Flow", {
   supports_options: true,
+});
+const disabledPollingEntry = createConfigEntry("Disabled Polling", {
+  pref_disable_polling: true,
 });
 const setupErrorEntry = createConfigEntry("Setup Error", {
   state: "setup_error",
@@ -136,6 +140,7 @@ const configEntries: Array<{
   { items: [loadedEntry] },
   { items: [configPanelEntry] },
   { items: [optionsFlowEntry] },
+  { items: [disabledPollingEntry] },
   { items: [nameAsDomainEntry] },
   { items: [longNameEntry] },
   { items: [longNonBreakingNameEntry] },

@@ -8,10 +8,8 @@ import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
-import {
-  GraphHeaderFooterConfig,
-  graphHeaderFooterConfigStruct,
-} from "../../header-footer/types";
+import { graphHeaderFooterConfigStruct } from "../../header-footer/structs";
+import { GraphHeaderFooterConfig } from "../../header-footer/types";
 import type { LovelaceCardEditor } from "../../types";
 import type { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
@@ -21,7 +19,8 @@ const includeDomains = ["sensor"];
 @customElement("hui-graph-footer-editor")
 export class HuiGraphFooterEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: GraphHeaderFooterConfig;
@@ -83,6 +82,7 @@ export class HuiGraphFooterEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._hours_to_show}
+            min="1"
             .configValue=${"hours_to_show"}
             @value-changed=${this._valueChanged}
           ></paper-input>

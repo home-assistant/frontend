@@ -1,5 +1,5 @@
 import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -28,10 +28,25 @@ export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
 const rowRenderer: ComboBoxLitRenderer<HassEntity> = (item) => html`<style>
     paper-icon-item {
-      margin: -10px;
       padding: 0;
+      margin: -8px;
+    }
+    #content {
+      display: flex;
+      align-items: center;
+    }
+    ha-svg-icon {
+      padding-left: 2px;
+      color: var(--secondary-text-color);
+    }
+    :host(:not([selected])) ha-svg-icon {
+      display: none;
+    }
+    :host([selected]) paper-icon-item {
+      margin-left: 0;
     }
   </style>
+  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
   <paper-icon-item>
     <state-badge slot="item-icon" .stateObj=${item}></state-badge>
     <paper-item-body two-line="">
@@ -42,14 +57,14 @@ const rowRenderer: ComboBoxLitRenderer<HassEntity> = (item) => html`<style>
 
 @customElement("ha-entity-picker")
 export class HaEntityPicker extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property({ type: Boolean }) public autofocus = false;
 
   @property({ type: Boolean }) public disabled?: boolean;
 
   @property({ type: Boolean, attribute: "allow-custom-entity" })
   public allowCustomEntity;
-
-  @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property() public label?: string;
 
@@ -78,6 +93,14 @@ export class HaEntityPicker extends LitElement {
    */
   @property({ type: Array, attribute: "include-device-classes" })
   public includeDeviceClasses?: string[];
+
+  /**
+   * Show only entities with these unit of measuments.
+   * @type {Array}
+   * @attr include-unit-of-measurement
+   */
+  @property({ type: Array, attribute: "include-unit-of-measurement" })
+  public includeUnitOfMeasurement?: string[];
 
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
 
@@ -110,7 +133,8 @@ export class HaEntityPicker extends LitElement {
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       entityFilter: this["entityFilter"],
-      includeDeviceClasses: this["includeDeviceClasses"]
+      includeDeviceClasses: this["includeDeviceClasses"],
+      includeUnitOfMeasurement: this["includeUnitOfMeasurement"]
     ) => {
       let states: HassEntity[] = [];
 
@@ -140,6 +164,18 @@ export class HaEntityPicker extends LitElement {
             stateObj.entity_id === this.value ||
             (stateObj.attributes.device_class &&
               includeDeviceClasses.includes(stateObj.attributes.device_class))
+        );
+      }
+
+      if (includeUnitOfMeasurement) {
+        states = states.filter(
+          (stateObj) =>
+            // We always want to include the entity of the current value
+            stateObj.entity_id === this.value ||
+            (stateObj.attributes.unit_of_measurement &&
+              includeUnitOfMeasurement.includes(
+                stateObj.attributes.unit_of_measurement
+              ))
         );
       }
 
@@ -184,7 +220,7 @@ export class HaEntityPicker extends LitElement {
     return !(!changedProps.has("_opened") && this._opened);
   }
 
-  protected updated(changedProps: PropertyValues) {
+  public willUpdate(changedProps: PropertyValues) {
     if (!this._initedStates || (changedProps.has("_opened") && this._opened)) {
       this._states = this._getStates(
         this._opened,
@@ -192,23 +228,24 @@ export class HaEntityPicker extends LitElement {
         this.includeDomains,
         this.excludeDomains,
         this.entityFilter,
-        this.includeDeviceClasses
+        this.includeDeviceClasses,
+        this.includeUnitOfMeasurement
       );
-      (this.comboBox as any).filteredItems = this._states;
+      if (this._initedStates) {
+        (this.comboBox as any).filteredItems = this._states;
+      }
       this._initedStates = true;
     }
   }
 
   protected render(): TemplateResult {
-    if (!this.hass) {
-      return html``;
-    }
     return html`
       <vaadin-combo-box-light
         item-value-path="entity_id"
         item-label-path="entity_id"
         .value=${this._value}
         .allowCustomValue=${this.allowCustomEntity}
+        .filteredItems=${this._states}
         ${comboBoxRenderer(rowRenderer)}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}

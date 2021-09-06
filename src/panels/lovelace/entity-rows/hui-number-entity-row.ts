@@ -11,7 +11,7 @@ import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
 import "../../../components/ha-slider";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { UNAVAILABLE } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -75,7 +75,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
           ? html`
               <div class="flex">
                 <ha-slider
-                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   .dir=${computeRTLDirection(this.hass)}
                   .step="${Number(stateObj.attributes.step)}"
                   .min="${Number(stateObj.attributes.min)}"
@@ -101,7 +101,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
                 <paper-input
                   no-label-float
                   auto-validate
-                  .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                   pattern="[0-9]+([\\.][0-9]+)?"
                   .step="${Number(stateObj.attributes.step)}"
                   .min="${Number(stateObj.attributes.min)}"
@@ -157,7 +157,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
 
   private get _inputElement(): { value: string } {
     // linter recommended the following syntax
-    return (this.shadowRoot!.getElementById("input") as unknown) as {
+    return this.shadowRoot!.getElementById("input") as unknown as {
       value: string;
     };
   }

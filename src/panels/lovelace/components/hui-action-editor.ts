@@ -33,18 +33,18 @@ export class HuiActionEditor extends LitElement {
   @property() protected hass?: HomeAssistant;
 
   get _navigation_path(): string {
-    const config = this.config as NavigateActionConfig;
-    return config.navigation_path || "";
+    const config = this.config as NavigateActionConfig | undefined;
+    return config?.navigation_path || "";
   }
 
   get _url_path(): string {
-    const config = this.config as UrlActionConfig;
-    return config.url_path || "";
+    const config = this.config as UrlActionConfig | undefined;
+    return config?.url_path || "";
   }
 
   get _service(): string {
     const config = this.config as CallServiceActionConfig;
-    return config.service || "";
+    return config?.service || "";
   }
 
   private _serviceAction = memoizeOne(
@@ -145,9 +145,9 @@ export class HuiActionEditor extends LitElement {
     if (value === "default") {
       fireEvent(this, "value-changed", { value: undefined });
       if (this.config?.action) {
-        (this.shadowRoot!.querySelector(
-          "paper-listbox"
-        ) as PaperListboxElement).select(this.config.action);
+        (
+          this.shadowRoot!.querySelector("paper-listbox") as PaperListboxElement
+        ).select(this.config.action);
       }
       return;
     }

@@ -65,8 +65,13 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     this._resizeObserver?.unobserve(this);
   }
 
+  public willUpdate(): void {
+    if (!this.hasUpdated) {
+      this._measureCard();
+    }
+  }
+
   protected firstUpdated(): void {
-    this._measureCard();
     this._attachObserver();
   }
 
@@ -283,8 +288,8 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   private _toggleMute() {
     this.hass!.callService("media_player", "volume_mute", {
       entity_id: this._config!.entity,
-      is_volume_muted: !this.hass!.states[this._config!.entity].attributes
-        .is_volume_muted,
+      is_volume_muted:
+        !this.hass!.states[this._config!.entity].attributes.is_volume_muted,
     });
   }
 

@@ -100,7 +100,6 @@ class HaLogbook extends LitElement {
           ? scroll({
               items: this.entries,
               layout: Layout1d,
-              // @ts-expect-error
               renderItem: (item: LogbookEntry, index) =>
                 this._renderLogbookItem(item, index),
             })
@@ -354,15 +353,7 @@ class HaLogbook extends LitElement {
         }
 
         :host([virtualize]) .container {
-          display: block;
-          position: relative;
-          contain: strict;
           height: 100%;
-          overflow: auto;
-        }
-
-        .container > * {
-          box-sizing: border-box;
         }
 
         .narrow .entry {

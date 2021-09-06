@@ -202,9 +202,11 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
                   : html`
                       <hui-entities-toggle
                         .hass=${this._hass}
-                        .entities=${(this._configEntities!.filter(
-                          (conf) => "entity" in conf
-                        ) as EntityConfig[]).map((conf) => conf.entity)}
+                        .entities=${(
+                          this._configEntities!.filter(
+                            (conf) => "entity" in conf
+                          ) as EntityConfig[]
+                        ).map((conf) => conf.entity)}
                       ></hui-entities-toggle>
                     `}
               </h1>

@@ -5,7 +5,7 @@ import { customElement, property, query } from "lit/decorators";
 import "../ha-circular-progress";
 
 @customElement("ha-progress-button")
-class HaProgressButton extends LitElement {
+export class HaProgressButton extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @property({ type: Boolean }) public progress = false;

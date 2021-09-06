@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // Tasks to run webpack.
+const fs = require("fs");
 const gulp = require("gulp");
 const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
@@ -18,6 +20,13 @@ const bothBuilds = (createConfigFunc, params) => [
   createConfigFunc({ ...params, latestBuild: false }),
 ];
 
+const isWsl =
+  fs.existsSync("/proc/version") &&
+  fs
+    .readFileSync("/proc/version", "utf-8")
+    .toLocaleLowerCase()
+    .includes("microsoft");
+
 /**
  * @param {{
  *   compiler: import("webpack").Compiler,
@@ -36,7 +45,7 @@ const runDevServer = ({
     open: true,
     watchContentBase: true,
     contentBase,
-  }).listen(port, listenHost, function (err) {
+  }).listen(port, listenHost, (err) => {
     if (err) {
       throw err;
     }
@@ -57,6 +66,7 @@ const doneHandler = (done) => (err, stats) => {
   }
 
   if (stats.hasErrors() || stats.hasWarnings()) {
+    // eslint-disable-next-line no-console
     console.log(stats.toString("minimal"));
   }
 
@@ -78,13 +88,14 @@ const prodBuild = (conf) =>
 
 gulp.task("webpack-watch-app", () => {
   // This command will run forever because we don't close compiler
-  webpack(createAppConfig({ isProdBuild: false, latestBuild: true })).watch(
-    { ignored: /build-translations/ },
-    doneHandler()
-  );
+  webpack(
+    process.env.ES5
+      ? bothBuilds(createAppConfig, { isProdBuild: false })
+      : createAppConfig({ isProdBuild: false, latestBuild: true })
+  ).watch({ poll: isWsl }, doneHandler());
   gulp.watch(
     path.join(paths.translations_src, "en.json"),
-    gulp.series("build-translations", "copy-translations-app")
+    gulp.series("create-translations", "copy-translations-app")
   );
 });
 
@@ -137,7 +148,7 @@ gulp.task("webpack-watch-hassio", () => {
       isProdBuild: false,
       latestBuild: true,
     })
-  ).watch({ ignored: /build-translations/ }, doneHandler());
+  ).watch({ ignored: /build-translations/, poll: isWsl }, doneHandler());
 
   gulp.watch(
     path.join(paths.translations_src, "en.json"),

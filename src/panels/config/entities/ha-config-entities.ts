@@ -164,7 +164,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   );
 
   private _columns = memoize(
-    (narrow, _language): DataTableColumnContainer => ({
+    (narrow, _language, showDisabled): DataTableColumnContainer => ({
       icon: {
         title: "",
         type: "icon",
@@ -220,6 +220,19 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         hidden: narrow,
         filterable: true,
         width: "15%",
+      },
+      disabled_by: {
+        title: this.hass.localize(
+          "ui.panel.config.entities.picker.headers.disabled_by"
+        ),
+        sortable: true,
+        hidden: narrow || !showDisabled,
+        filterable: true,
+        width: "15%",
+        template: (disabled_by) =>
+          this.hass.localize(
+            `ui.panel.config.devices.disabled_by.${disabled_by}`
+          ) || disabled_by,
       },
       status: {
         title: this.hass.localize(
@@ -442,20 +455,18 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       this._entries
     );
 
-    const {
-      filteredEntities,
-      filteredDomains,
-    } = this._filteredEntitiesAndDomains(
-      this._entities,
-      this._devices,
-      this._areas,
-      this._stateEntities,
-      this._searchParms,
-      this._showDisabled,
-      this._showUnavailable,
-      this._showReadOnly,
-      this._entries
-    );
+    const { filteredEntities, filteredDomains } =
+      this._filteredEntitiesAndDomains(
+        this._entities,
+        this._devices,
+        this._areas,
+        this._stateEntities,
+        this._searchParms,
+        this._showDisabled,
+        this._showUnavailable,
+        this._showReadOnly,
+        this._entries
+      );
 
     const includeZHAFab = filteredDomains.includes("zha");
 
@@ -468,7 +479,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           : "/config"}
         .route=${this.route}
         .tabs=${configSections.integrations}
-        .columns=${this._columns(this.narrow, this.hass.language)}
+        .columns=${this._columns(
+          this.narrow,
+          this.hass.language,
+          this._showDisabled
+        )}
         .data=${filteredEntities}
         .activeFilters=${activeFilters}
         .numHidden=${this._numHiddenEntities}

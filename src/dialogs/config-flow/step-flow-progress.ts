@@ -9,13 +9,14 @@ import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-progress")
 class StepFlowProgress extends LitElement {
+  @property({ attribute: false })
   public flowConfig!: FlowConfig;
 
   @property({ attribute: false })
   public hass!: HomeAssistant;
 
   @property({ attribute: false })
-  private step!: DataEntryFlowStepProgress;
+  public step!: DataEntryFlowStepProgress;
 
   protected render(): TemplateResult {
     return html`

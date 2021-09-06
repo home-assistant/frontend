@@ -10,10 +10,10 @@ import {
 } from "lit";
 import {
   customElement,
-  property,
-  state,
-  query,
   eventOptions,
+  property,
+  query,
+  state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -62,6 +62,7 @@ export interface DataTableSortColumnData {
   sortable?: boolean;
   filterable?: boolean;
   filterKey?: string;
+  valueColumn?: string;
   direction?: SortingDirection;
 }
 
@@ -76,7 +77,7 @@ export interface DataTableColumnData extends DataTableSortColumnData {
   hidden?: boolean;
 }
 
-type ClonedDataTableColumnData = Omit<DataTableColumnData, "title"> & {
+export type ClonedDataTableColumnData = Omit<DataTableColumnData, "title"> & {
   title?: TemplateResult | string;
 };
 
@@ -246,7 +247,7 @@ export class HaDataTable extends LitElement {
           aria-rowcount=${this._filteredData.length + 1}
           style=${styleMap({
             height: this.autoHeight
-              ? `${(this._filteredData.length || 1) * 53 + 57}px`
+              ? `${(this._filteredData.length || 1) * 53 + 53}px`
               : `calc(100% - ${this._headerHeight}px)`,
           })}
         >
@@ -340,11 +341,10 @@ export class HaDataTable extends LitElement {
                   ${scroll({
                     items: this._items,
                     layout: Layout1d,
-                    // @ts-expect-error
                     renderItem: (row: DataTableRowData, index) => {
                       // not sure how this happens...
                       if (!row) {
-                        return "";
+                        return html``;
                       }
                       if (row.append) {
                         return html`
@@ -361,9 +361,8 @@ export class HaDataTable extends LitElement {
                           .rowId=${row[this.id]}
                           @click=${this._handleRowClick}
                           class="mdc-data-table__row ${classMap({
-                            "mdc-data-table__row--selected": this._checkedRows.includes(
-                              String(row[this.id])
-                            ),
+                            "mdc-data-table__row--selected":
+                              this._checkedRows.includes(String(row[this.id])),
                             clickable: this.clickable,
                           })}"
                           aria-selected=${ifDefined(
@@ -407,17 +406,15 @@ export class HaDataTable extends LitElement {
                                     "mdc-data-table__cell--icon": Boolean(
                                       column.type === "icon"
                                     ),
-                                    "mdc-data-table__cell--icon-button": Boolean(
-                                      column.type === "icon-button"
-                                    ),
+                                    "mdc-data-table__cell--icon-button":
+                                      Boolean(column.type === "icon-button"),
                                     grows: Boolean(column.grows),
                                     forceLTR: Boolean(column.forceLTR),
                                   })}"
                                   style=${column.width
                                     ? styleMap({
-                                        [column.grows
-                                          ? "minWidth"
-                                          : "width"]: column.width,
+                                        [column.grows ? "minWidth" : "width"]:
+                                          column.width,
                                         maxWidth: column.maxWidth
                                           ? column.maxWidth
                                           : "",
@@ -459,7 +456,7 @@ export class HaDataTable extends LitElement {
     const prom = this._sortColumn
       ? sortData(
           filteredData,
-          this._sortColumns,
+          this._sortColumns[this._sortColumn],
           this._sortDirection,
           this._sortColumn
         )
@@ -920,13 +917,11 @@ export class HaDataTable extends LitElement {
           color: var(--secondary-text-color);
         }
         .scroller {
-          display: flex;
-          position: relative;
-          contain: strict;
           height: calc(100% - 57px);
         }
-        .mdc-data-table__table:not(.auto-height) .scroller {
-          overflow: auto;
+
+        .mdc-data-table__table.auto-height .scroller {
+          overflow-y: hidden !important;
         }
         .grows {
           flex-grow: 1;

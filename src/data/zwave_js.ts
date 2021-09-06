@@ -21,12 +21,23 @@ export interface ZWaveJSClient {
 export interface ZWaveJSController {
   home_id: string;
   nodes: number[];
+  is_heal_network_active: boolean;
 }
 
-export interface ZWaveJSNode {
+export interface ZWaveJSNodeStatus {
   node_id: number;
   ready: boolean;
   status: number;
+}
+
+export interface ZwaveJSNodeMetadata {
+  node_id: number;
+  exclusion: string;
+  inclusion: string;
+  manual: string;
+  wakeup: string;
+  reset: string;
+  device_database_url: string;
 }
 
 export interface ZWaveJSNodeConfigParams {
@@ -77,6 +88,17 @@ export interface ZWaveJSRefreshNodeStatusMessage {
   stage?: string;
 }
 
+export interface ZWaveJSHealNetworkStatusMessage {
+  event: string;
+  heal_node_status: { [key: number]: string };
+}
+
+export interface ZWaveJSRemovedNode {
+  node_id: number;
+  manufacturer: string;
+  label: string;
+}
+
 export enum NodeStatus {
   Unknown,
   Asleep,
@@ -120,9 +142,20 @@ export const fetchNodeStatus = (
   hass: HomeAssistant,
   entry_id: string,
   node_id: number
-): Promise<ZWaveJSNode> =>
+): Promise<ZWaveJSNodeStatus> =>
   hass.callWS({
     type: "zwave_js/node_status",
+    entry_id,
+    node_id,
+  });
+
+export const fetchNodeMetadata = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number
+): Promise<ZwaveJSNodeMetadata> =>
+  hass.callWS({
+    type: "zwave_js/node_metadata",
     entry_id,
     node_id,
   });
@@ -172,6 +205,63 @@ export const reinterviewNode = (
     }
   );
 
+export const healNode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number
+): Promise<boolean> =>
+  hass.callWS({
+    type: "zwave_js/heal_node",
+    entry_id: entry_id,
+    node_id: node_id,
+  });
+
+export const removeFailedNode = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number,
+  callbackFunction: (message: any) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/remove_failed_node",
+      entry_id: entry_id,
+      node_id: node_id,
+    }
+  );
+
+export const healNetwork = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<UnsubscribeFunc> =>
+  hass.callWS({
+    type: "zwave_js/begin_healing_network",
+    entry_id: entry_id,
+  });
+
+export const stopHealNetwork = (
+  hass: HomeAssistant,
+  entry_id: string
+): Promise<UnsubscribeFunc> =>
+  hass.callWS({
+    type: "zwave_js/stop_healing_network",
+    entry_id: entry_id,
+  });
+
+export const subscribeHealNetworkProgress = (
+  hass: HomeAssistant,
+  entry_id: string,
+  callbackFunction: (message: ZWaveJSHealNetworkStatusMessage) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/subscribe_heal_network_progress",
+      entry_id: entry_id,
+    }
+  );
+
 export const getIdentifiersFromDevice = (
   device: DeviceRegistryEntry
 ): ZWaveJSNodeIdentifiers | undefined => {
@@ -193,6 +283,18 @@ export const getIdentifiersFromDevice = (
   };
 };
 
+export type ZWaveJSLogUpdate = ZWaveJSLogMessageUpdate | ZWaveJSLogConfigUpdate;
+
+interface ZWaveJSLogMessageUpdate {
+  type: "log_message";
+  log_message: ZWaveJSLogMessage;
+}
+
+interface ZWaveJSLogConfigUpdate {
+  type: "log_config";
+  log_config: ZWaveJSLogConfig;
+}
+
 export interface ZWaveJSLogMessage {
   timestamp: string;
   level: string;
@@ -203,10 +305,10 @@ export interface ZWaveJSLogMessage {
 export const subscribeZWaveJSLogs = (
   hass: HomeAssistant,
   entry_id: string,
-  callback: (message: ZWaveJSLogMessage) => void
+  callback: (update: ZWaveJSLogUpdate) => void
 ) =>
-  hass.connection.subscribeMessage<ZWaveJSLogMessage>(callback, {
-    type: "zwave_js/subscribe_logs",
+  hass.connection.subscribeMessage<ZWaveJSLogUpdate>(callback, {
+    type: "zwave_js/subscribe_log_updates",
     entry_id,
   });
 

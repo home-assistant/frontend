@@ -121,9 +121,9 @@ export class HuiEntityPickerTable extends LitElement {
   }
 
   private _handleEntityClicked(ev: Event) {
-    const entityId = ((ev.target as HTMLElement).closest(
-      ".mdc-data-table__row"
-    ) as any).rowId;
+    const entityId = (
+      (ev.target as HTMLElement).closest(".mdc-data-table__row") as any
+    ).rowId;
     fireEvent(this, "hass-more-info", {
       entityId,
     });

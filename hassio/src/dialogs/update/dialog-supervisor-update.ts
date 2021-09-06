@@ -2,6 +2,7 @@ import "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-settings-row";
@@ -11,7 +12,7 @@ import {
   extractApiErrorMessage,
   ignoreSupervisorError,
 } from "../../../../src/data/hassio/common";
-import { createHassioPartialSnapshot } from "../../../../src/data/hassio/snapshot";
+import { createHassioPartialBackup } from "../../../../src/data/hassio/backup";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
 import type { HomeAssistant } from "../../../../src/types";
 import { SupervisorDialogSupervisorUpdateParams } from "./show-dialog-update";
@@ -22,9 +23,9 @@ class DialogSupervisorUpdate extends LitElement {
 
   @state() private _opened = false;
 
-  @state() private _createSnapshot = true;
+  @state() private _createBackup = true;
 
-  @state() private _action: "snapshot" | "update" | null = null;
+  @state() private _action: "backup" | "update" | null = null;
 
   @state() private _error?: string;
 
@@ -41,7 +42,7 @@ class DialogSupervisorUpdate extends LitElement {
 
   public closeDialog(): void {
     this._action = null;
-    this._createSnapshot = true;
+    this._createBackup = true;
     this._error = undefined;
     this._dialogParams = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
@@ -49,9 +50,9 @@ class DialogSupervisorUpdate extends LitElement {
 
   public focus(): void {
     this.updateComplete.then(() =>
-      (this.shadowRoot?.querySelector(
-        "[dialogInitialFocus]"
-      ) as HTMLElement)?.focus()
+      (
+        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+      )?.focus()
     );
   }
 
@@ -84,20 +85,20 @@ class DialogSupervisorUpdate extends LitElement {
               <ha-settings-row>
                 <span slot="heading">
                   ${this._dialogParams.supervisor.localize(
-                    "dialog.update.snapshot"
+                    "dialog.update.backup"
                   )}
                 </span>
                 <span slot="description">
                   ${this._dialogParams.supervisor.localize(
-                    "dialog.update.create_snapshot",
+                    "dialog.update.create_backup",
                     "name",
                     this._dialogParams.name
                   )}
                 </span>
                 <ha-switch
-                  .checked=${this._createSnapshot}
+                  .checked=${this._createBackup}
                   haptic
-                  @click=${this._toggleSnapshot}
+                  @click=${this._toggleBackup}
                 >
                 </ha-switch>
               </ha-settings-row>
@@ -123,27 +124,29 @@ class DialogSupervisorUpdate extends LitElement {
                       this._dialogParams.version
                     )
                   : this._dialogParams.supervisor.localize(
-                      "dialog.update.snapshotting",
+                      "dialog.update.creating_backup",
                       "name",
                       this._dialogParams.name
                     )}
               </p>`}
-        ${this._error ? html`<p class="error">${this._error}</p>` : ""}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
       </ha-dialog>
     `;
   }
 
-  private _toggleSnapshot() {
-    this._createSnapshot = !this._createSnapshot;
+  private _toggleBackup() {
+    this._createBackup = !this._createBackup;
   }
 
   private async _update() {
-    if (this._createSnapshot) {
-      this._action = "snapshot";
+    if (this._createBackup) {
+      this._action = "backup";
       try {
-        await createHassioPartialSnapshot(
+        await createHassioPartialBackup(
           this.hass,
-          this._dialogParams!.snapshotParams
+          this._dialogParams!.backupParams
         );
       } catch (err) {
         this._error = extractApiErrorMessage(err);
@@ -158,8 +161,8 @@ class DialogSupervisorUpdate extends LitElement {
     } catch (err) {
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         this._error = extractApiErrorMessage(err);
+        this._action = null;
       }
-      this._action = null;
       return;
     }
 

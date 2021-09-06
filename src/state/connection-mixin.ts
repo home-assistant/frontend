@@ -39,7 +39,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
         states: null as any,
         config: null as any,
         themes: null as any,
-        selectedThemeSettings: null,
+        selectedTheme: null,
         panels: null as any,
         services: null as any,
         user: null as any,
@@ -151,6 +151,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             integration,
             configFlow
           ),
+        loadFragmentTranslation: (fragment) =>
+          // @ts-ignore
+          this._loadFragmentTranslations(this.hass?.language, fragment),
         ...getState(),
         ...this._pendingHass,
       };

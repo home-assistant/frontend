@@ -9,6 +9,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-svg-icon";
@@ -75,7 +76,9 @@ class HassioRepositoriesDialog extends LitElement {
           this._dialogParams!.supervisor.localize("dialog.repositories.title")
         )}
       >
-        ${this._error ? html`<div class="error">${this._error}</div>` : ""}
+        ${this._error
+          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          : ""}
         <div class="form">
           ${repositories.length
             ? repositories.map(
@@ -150,9 +153,6 @@ class HassioRepositoriesDialog extends LitElement {
         mwc-button {
           margin-left: 8px;
         }
-        ha-paper-dropdown-menu {
-          display: block;
-        }
         ha-circular-progress {
           display: block;
           margin: 32px;
@@ -164,9 +164,9 @@ class HassioRepositoriesDialog extends LitElement {
 
   public focus() {
     this.updateComplete.then(() =>
-      (this.shadowRoot?.querySelector(
-        "[dialogInitialFocus]"
-      ) as HTMLElement)?.focus()
+      (
+        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+      )?.focus()
     );
   }
 

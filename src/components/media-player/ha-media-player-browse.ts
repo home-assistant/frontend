@@ -45,7 +45,6 @@ import "../ha-button-menu";
 import "../ha-card";
 import "../ha-circular-progress";
 import "../ha-fab";
-import "../ha-paper-dropdown-menu";
 import "../ha-svg-icon";
 
 declare global {
@@ -133,9 +132,8 @@ export class HaMediaPlayerBrowse extends LitElement {
       return html``;
     }
 
-    const currentItem = this._mediaPlayerItems[
-      this._mediaPlayerItems.length - 1
-    ];
+    const currentItem =
+      this._mediaPlayerItems[this._mediaPlayerItems.length - 1];
 
     const previousItem: MediaPlayerItem | undefined =
       this._mediaPlayerItems.length > 1

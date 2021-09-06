@@ -108,7 +108,7 @@ class MoreInfoWeather extends LitElement {
                   this.stateObj.attributes.pressure,
                   this.hass.locale
                 )}
-                ${getWeatherUnit(this.hass, "air_pressure")}
+                ${getWeatherUnit(this.hass, "pressure")}
               </div>
             </div>
           `

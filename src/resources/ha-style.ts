@@ -29,24 +29,20 @@ documentContainer.innerHTML = `<custom-style>
       --disabled-text-color: #bdbdbd;
 
       /* main interface colors */
-      --primary-color: #03a9f4;
+      --primary-color: ${DEFAULT_PRIMARY_COLOR};
       --dark-primary-color: #0288d1;
       --light-primary-color: #b3e5fC;
-      --accent-color: #ff9800;
+      --accent-color: ${DEFAULT_ACCENT_COLOR};
       --divider-color: rgba(0, 0, 0, .12);
 
       --scrollbar-thumb-color: rgb(194, 194, 194);
 
       --error-color: #db4437;
-      --warning-color: #FF9800;
-      --success-color: #0f9d58;
-      --info-color: #4285f4;
+      --warning-color: #ffa600;
+      --success-color: #43a047;
+      --info-color: #039be5;
 
-      /* states and badges */
-      --state-icon-color: #44739e;
-      --state-icon-active-color: #FDD835;
-
-      /* background and sidebar */
+      /* backgrounds */
       --card-background-color: #ffffff;
       --primary-background-color: #fafafa;
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
@@ -59,21 +55,42 @@ documentContainer.innerHTML = `<custom-style>
       --label-badge-blue: #039be5;
       --label-badge-green: #0DA035;
       --label-badge-yellow: #f4b400;
+      --label-badge-grey: #9e9e9e;
 
-      /*
-        Paper-styles color.html dependency is stripped on build.
-        When a default paper-style color is used, it needs to be copied
-        from paper-styles/color.html to here.
-      */
+      /* states */
+      --state-icon-color: #44739e;
+      /* an active state is anything that would require attention */ 
+      --state-icon-active-color: #FDD835;
+      /* an error state is anything that would be considered an error */
+      /* --state-icon-error-color: #db4437; derived from error-color */
 
-      --paper-grey-50: #fafafa; /* default for: --mwc-switch-unchecked-button-color */
-      --paper-grey-200: #eeeeee;  /* for ha-date-picker-style */
-      --paper-grey-500: #9e9e9e;  /* --label-badge-grey */
+      --state-on-color: #66a61e;
+      --state-off-color: #ff0029;
+      --state-home-color: #66a61e;
+      --state-not_home-color: #ff0029;
+      /* --state-unavailable-color: #a0a0a0; derived from disabled-text-color */
+      --state-unknown-color: #606060;
+      --state-idle-color: #7990a3;
 
-      /* for paper-slider */
-      --paper-green-400: #66bb6a;
-      --paper-blue-400: #42a5f5;
-      --paper-orange-400: #ffa726;
+      /* climate state colors */
+      --state-climate-auto-color: #008000;
+      --state-climate-eco-color: #00ff7f;
+      --state-climate-cool-color: #2b9af9;
+      --state-climate-heat-color: #ff8100;
+      --state-climate-manual-color: #44739e;
+      --state-climate-off-color: #8a8a8a;
+      --state-climate-fan_only-color: #8a8a8a;
+      --state-climate-dry-color: #efbd07;
+      --state-climate-idle-color: #8a8a8a;
+
+      /* energy */
+      --energy-grid-consumption-color: #126a9a;
+      --energy-grid-return-color: #673ab7;
+      --energy-solar-color: #ff9800;
+      --energy-non-fossil-color: #0f9d58;
+      --energy-battery-out-color: #4db6ac;
+      --energy-battery-in-color: #f06292;
+      --energy-gas-color: #8E021B;
 
       /* opacity for dark text on a light background */
       --dark-divider-opacity: 0.12;
@@ -87,9 +104,6 @@ documentContainer.innerHTML = `<custom-style>
       --light-secondary-opacity: 0.7;
       --light-primary-opacity: 1.0;
 
-      /* set our slider style */
-      --ha-slider-pin-font-size: 15px;
-
       /* rgb */
       --rgb-primary-color: 3, 169, 244;
       --rgb-accent-color: 255, 152, 0;
@@ -97,6 +111,12 @@ documentContainer.innerHTML = `<custom-style>
       --rgb-secondary-text-color: 114, 114, 114;
       --rgb-text-primary-color: 255, 255, 255;
       --rgb-card-background-color: 255, 255, 255;
+
+      /* Vaadin typography */
+      --material-h6-font-size: 1.25rem;
+      --material-small-font-size: 0.875rem;
+      --material-caption-font-size: 0.75rem;
+      --material-button-font-size: 0.875rem;
 
       ${Object.entries(derivedStyles)
         .map(([key, value]) => `--${key}: ${value};`)

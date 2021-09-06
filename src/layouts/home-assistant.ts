@@ -1,6 +1,6 @@
-import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { html, PropertyValues } from "lit";
 import { customElement, state } from "lit/decorators";
+import { isNavigationClick } from "../common/dom/is-navigation-click";
 import { navigate } from "../common/navigate";
 import { getStorageDefaultPanelUrlPath } from "../data/panel";
 import "../resources/custom-card-support";
@@ -211,6 +211,7 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     if (!this.hass!.connection.connected) {
       return;
     }
+    window.stop();
     this.hass!.connection.suspend();
   }
 

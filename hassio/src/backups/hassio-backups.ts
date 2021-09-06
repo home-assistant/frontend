@@ -1,0 +1,383 @@
+import "@material/mwc-button";
+import { ActionDetail } from "@material/mwc-list";
+import "@material/mwc-list/mwc-list-item";
+import { mdiDelete, mdiDotsVertical, mdiPlus } from "@mdi/js";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import memoizeOne from "memoize-one";
+import { atLeastVersion } from "../../../src/common/config/version";
+import relativeTime from "../../../src/common/datetime/relative_time";
+import { HASSDomEvent } from "../../../src/common/dom/fire_event";
+import {
+  DataTableColumnContainer,
+  RowClickedEvent,
+  SelectionChangedEvent,
+} from "../../../src/components/data-table/ha-data-table";
+import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-fab";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
+import {
+  fetchHassioBackups,
+  friendlyFolderName,
+  HassioBackup,
+  reloadHassioBackups,
+  removeBackup,
+} from "../../../src/data/hassio/backup";
+import { Supervisor } from "../../../src/data/supervisor/supervisor";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../src/dialogs/generic/show-dialog-box";
+import "../../../src/layouts/hass-tabs-subpage-data-table";
+import type { HaTabsSubpageDataTable } from "../../../src/layouts/hass-tabs-subpage-data-table";
+import { haStyle } from "../../../src/resources/styles";
+import { HomeAssistant, Route } from "../../../src/types";
+import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hassio-create-backup";
+import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-backup";
+import { showBackupUploadDialog } from "../dialogs/backup/show-dialog-backup-upload";
+import { supervisorTabs } from "../hassio-tabs";
+import { hassioStyle } from "../resources/hassio-style";
+
+@customElement("hassio-backups")
+export class HassioBackups extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @property({ attribute: false }) public supervisor!: Supervisor;
+
+  @property({ type: Object }) public route!: Route;
+
+  @property({ type: Boolean }) public narrow!: boolean;
+
+  @property({ type: Boolean }) public isWide!: boolean;
+
+  @state() private _selectedBackups: string[] = [];
+
+  @state() private _backups?: HassioBackup[] = [];
+
+  @query("hass-tabs-subpage-data-table", true)
+  private _dataTable!: HaTabsSubpageDataTable;
+
+  private _firstUpdatedCalled = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hass && this._firstUpdatedCalled) {
+      this.refreshData();
+    }
+  }
+
+  public async refreshData() {
+    await reloadHassioBackups(this.hass);
+    await this.fetchBackups();
+  }
+
+  private _computeBackupContent = (backup: HassioBackup): string => {
+    if (backup.type === "full") {
+      return this.supervisor.localize("backup.full_backup");
+    }
+    const content: string[] = [];
+    if (backup.content.homeassistant) {
+      content.push("Home Assistant");
+    }
+    if (backup.content.folders.length !== 0) {
+      for (const folder of backup.content.folders) {
+        content.push(friendlyFolderName[folder] || folder);
+      }
+    }
+
+    if (backup.content.addons.length !== 0) {
+      for (const addon of backup.content.addons) {
+        content.push(
+          this.supervisor.supervisor.addons.find(
+            (entry) => entry.slug === addon
+          )?.name || addon
+        );
+      }
+    }
+
+    return content.join(", ");
+  };
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    if (this.hass && this.isConnected) {
+      this.refreshData();
+    }
+    this._firstUpdatedCalled = true;
+  }
+
+  private _columns = memoizeOne(
+    (narrow: boolean): DataTableColumnContainer => ({
+      name: {
+        title: this.supervisor?.localize("backup.name") || "",
+        sortable: true,
+        filterable: true,
+        grows: true,
+        template: (entry: string, backup: any) =>
+          html`${entry || backup.slug}
+            <div class="secondary">${backup.secondary}</div>`,
+      },
+      date: {
+        title: this.supervisor?.localize("backup.created") || "",
+        width: "15%",
+        direction: "desc",
+        hidden: narrow,
+        filterable: true,
+        sortable: true,
+        template: (entry: string) =>
+          relativeTime(new Date(entry), this.hass.localize),
+      },
+      secondary: {
+        title: "",
+        hidden: true,
+        filterable: true,
+      },
+    })
+  );
+
+  private _backupData = memoizeOne((backups: HassioBackup[]) =>
+    backups.map((backup) => ({
+      ...backup,
+      secondary: this._computeBackupContent(backup),
+    }))
+  );
+
+  protected render(): TemplateResult {
+    if (!this.supervisor) {
+      return html``;
+    }
+    return html`
+      <hass-tabs-subpage-data-table
+        .tabs=${supervisorTabs}
+        .hass=${this.hass}
+        .localizeFunc=${this.supervisor.localize}
+        .searchLabel=${this.supervisor.localize("search")}
+        .noDataText=${this.supervisor.localize("backup.no_backups")}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        .columns=${this._columns(this.narrow)}
+        .data=${this._backupData(this._backups || [])}
+        id="slug"
+        @row-click=${this._handleRowClicked}
+        @selection-changed=${this._handleSelectionChanged}
+        clickable
+        selectable
+        hasFab
+        main-page
+        supervisor
+      >
+        <ha-button-menu
+          corner="BOTTOM_START"
+          slot="toolbar-icon"
+          @action=${this._handleAction}
+        >
+          <mwc-icon-button slot="trigger" alt="menu">
+            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+          </mwc-icon-button>
+          <mwc-list-item>
+            ${this.supervisor?.localize("common.reload")}
+          </mwc-list-item>
+          ${atLeastVersion(this.hass.config.version, 0, 116)
+            ? html`<mwc-list-item>
+                ${this.supervisor?.localize("backup.upload_backup")}
+              </mwc-list-item>`
+            : ""}
+        </ha-button-menu>
+
+        ${this._selectedBackups.length
+          ? html`<div
+              class=${classMap({
+                "header-toolbar": this.narrow,
+                "table-header": !this.narrow,
+              })}
+              slot="header"
+            >
+              <p class="selected-txt">
+                ${this.supervisor.localize("backup.selected", {
+                  number: this._selectedBackups.length,
+                })}
+              </p>
+              <div class="header-btns">
+                ${!this.narrow
+                  ? html`
+                      <mwc-button
+                        @click=${this._deleteSelected}
+                        class="warning"
+                      >
+                        ${this.supervisor.localize("backup.delete_selected")}
+                      </mwc-button>
+                    `
+                  : html`
+                      <mwc-icon-button
+                        id="delete-btn"
+                        class="warning"
+                        @click=${this._deleteSelected}
+                      >
+                        <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
+                      </mwc-icon-button>
+                      <paper-tooltip animation-delay="0" for="delete-btn">
+                        ${this.supervisor.localize("backup.delete_selected")}
+                      </paper-tooltip>
+                    `}
+              </div>
+            </div> `
+          : ""}
+
+        <ha-fab
+          slot="fab"
+          @click=${this._createBackup}
+          .label=${this.supervisor.localize("backup.create_backup")}
+          extended
+        >
+          <ha-svg-icon slot="icon" .path=${mdiPlus}></ha-svg-icon>
+        </ha-fab>
+      </hass-tabs-subpage-data-table>
+    `;
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this.refreshData();
+        break;
+      case 1:
+        this._showUploadBackupDialog();
+        break;
+    }
+  }
+
+  private _handleSelectionChanged(
+    ev: HASSDomEvent<SelectionChangedEvent>
+  ): void {
+    this._selectedBackups = ev.detail.value;
+  }
+
+  private _showUploadBackupDialog() {
+    showBackupUploadDialog(this, {
+      showBackup: (slug: string) =>
+        showHassioBackupDialog(this, {
+          slug,
+          supervisor: this.supervisor,
+          onDelete: () => this.fetchBackups(),
+        }),
+      reloadBackup: () => this.refreshData(),
+    });
+  }
+
+  private async fetchBackups() {
+    await reloadHassioBackups(this.hass);
+    this._backups = await fetchHassioBackups(this.hass);
+  }
+
+  private async _deleteSelected() {
+    const confirm = await showConfirmationDialog(this, {
+      title: this.supervisor.localize("backup.delete_backup_title"),
+      text: this.supervisor.localize("backup.delete_backup_text", {
+        number: this._selectedBackups.length,
+      }),
+      confirmText: this.supervisor.localize("backup.delete_backup_confirm"),
+    });
+
+    if (!confirm) {
+      return;
+    }
+
+    try {
+      await Promise.all(
+        this._selectedBackups.map((slug) => removeBackup(this.hass, slug))
+      );
+    } catch (err) {
+      showAlertDialog(this, {
+        title: this.supervisor.localize("backup.failed_to_delete"),
+        text: extractApiErrorMessage(err),
+      });
+      return;
+    }
+    await reloadHassioBackups(this.hass);
+    this._backups = await fetchHassioBackups(this.hass);
+    this._dataTable.clearSelection();
+  }
+
+  private _handleRowClicked(ev: HASSDomEvent<RowClickedEvent>) {
+    const slug = ev.detail.id;
+    showHassioBackupDialog(this, {
+      slug,
+      supervisor: this.supervisor,
+      onDelete: () => this.fetchBackups(),
+    });
+  }
+
+  private _createBackup() {
+    if (this.supervisor!.info.state !== "running") {
+      showAlertDialog(this, {
+        title: this.supervisor!.localize("backup.could_not_create"),
+        text: this.supervisor!.localize(
+          "backup.create_blocked_not_running",
+          "state",
+          this.supervisor!.info.state
+        ),
+      });
+      return;
+    }
+    showHassioCreateBackupDialog(this, {
+      supervisor: this.supervisor!,
+      onCreate: () => this.fetchBackups(),
+    });
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      hassioStyle,
+      css`
+        .table-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          height: 58px;
+          border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        }
+        .header-toolbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          color: var(--secondary-text-color);
+          position: relative;
+          top: -4px;
+        }
+        .selected-txt {
+          font-weight: bold;
+          padding-left: 16px;
+          color: var(--primary-text-color);
+        }
+        .table-header .selected-txt {
+          margin-top: 20px;
+        }
+        .header-toolbar .selected-txt {
+          font-size: 16px;
+        }
+        .header-toolbar .header-btns {
+          margin-right: -12px;
+        }
+        .header-btns > mwc-button,
+        .header-btns > mwc-icon-button {
+          margin: 8px;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "hassio-backups": HassioBackups;
+  }
+}

@@ -25,7 +25,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { navigate } from "../../common/navigate";
 import "../../common/search/search-input";
-import { compare } from "../../common/string/compare";
+import { stringCompare } from "../../common/string/compare";
 import {
   fuzzyFilterSort,
   ScorableTextItem,
@@ -188,7 +188,6 @@ export class QuickBar extends LitElement {
               ${scroll({
                 items,
                 layout: Layout1d,
-                // @ts-expect-error
                 renderItem: (item: QuickBarItem, index) =>
                   this._renderItem(item, index),
               })}
@@ -224,7 +223,7 @@ export class QuickBar extends LitElement {
 
   private _renderItem(item: QuickBarItem, index?: number) {
     if (!item) {
-      return undefined;
+      return html``;
     }
     return isCommandItem(item)
       ? this._renderCommandItem(item, index)
@@ -396,7 +395,7 @@ export class QuickBar extends LitElement {
         };
       })
       .sort((a, b) =>
-        compare(a.primaryText.toLowerCase(), b.primaryText.toLowerCase())
+        stringCompare(a.primaryText.toLowerCase(), b.primaryText.toLowerCase())
       );
   }
 
@@ -406,7 +405,7 @@ export class QuickBar extends LitElement {
       ...this._generateServerControlCommands(),
       ...this._generateNavigationCommands(),
     ].sort((a, b) =>
-      compare(
+      stringCompare(
         a.strings.join(" ").toLowerCase(),
         b.strings.join(" ").toLowerCase()
       )
@@ -637,18 +636,6 @@ export class QuickBar extends LitElement {
 
         span.command-text {
           margin-left: 8px;
-        }
-
-        .uni-virtualizer-host {
-          display: block;
-          position: relative;
-          contain: strict;
-          overflow: auto;
-          height: 100%;
-        }
-
-        .uni-virtualizer-host > * {
-          box-sizing: border-box;
         }
 
         mwc-list-item {

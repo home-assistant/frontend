@@ -1,6 +1,6 @@
 import { HassEntity } from "home-assistant-js-websocket/dist/types";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { customElement } from "lit/decorators";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { GraphHeaderFooterConfig } from "../header-footer/types";

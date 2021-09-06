@@ -1,8 +1,9 @@
-import { mdiCloud, mdiPackageVariant } from "@mdi/js";
+import { mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../components/ha-svg-icon";
+import { ConfigEntry } from "../../../data/config_entries";
 import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
@@ -21,6 +22,8 @@ export class HaIntegrationHeader extends LitElement {
 
   @property({ attribute: false }) public manifest?: IntegrationManifest;
 
+  @property({ attribute: false }) public configEntry?: ConfigEntry;
+
   protected render(): TemplateResult {
     let primary: string;
     let secondary: string | undefined;
@@ -31,7 +34,10 @@ export class HaIntegrationHeader extends LitElement {
 
     if (this.label) {
       primary = this.label;
-      secondary = primary === domainName ? undefined : domainName;
+      secondary =
+        primary.toLowerCase() === domainName.toLowerCase()
+          ? undefined
+          : domainName;
     } else {
       primary = domainName;
     }
@@ -59,6 +65,15 @@ export class HaIntegrationHeader extends LitElement {
           ),
         ]);
       }
+
+      if (this.configEntry?.pref_disable_polling) {
+        icons.push([
+          mdiSyncOff,
+          this.hass.localize(
+            "ui.panel.config.integrations.config_entry.disabled_polling"
+          ),
+        ]);
+      }
     }
 
     return html`
@@ -66,7 +81,11 @@ export class HaIntegrationHeader extends LitElement {
       <slot name="above-header"></slot>
       <div class="header">
         <img
-          src=${brandsUrl(this.domain, "icon")}
+          src=${brandsUrl({
+            domain: this.domain,
+            type: "icon",
+            darkOptimized: this.hass.selectedTheme?.dark,
+          })}
           referrerpolicy="no-referrer"
           @error=${this._onImageError}
           @load=${this._onImageLoad}

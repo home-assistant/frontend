@@ -61,11 +61,12 @@ class HaAutomationPicker extends LitElement {
       if (filteredAutomations === null) {
         return [];
       }
-      return (filteredAutomations
-        ? automations.filter((automation) =>
-            filteredAutomations!.includes(automation.entity_id)
-          )
-        : automations
+      return (
+        filteredAutomations
+          ? automations.filter((automation) =>
+              filteredAutomations!.includes(automation.entity_id)
+            )
+          : automations
       ).map((automation) => ({
         ...automation,
         name: computeStateName(automation),

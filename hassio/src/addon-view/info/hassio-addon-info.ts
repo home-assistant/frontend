@@ -23,6 +23,7 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
 import "../../../../src/components/buttons/ha-call-api-button";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-label-badge";
 import "../../../../src/components/ha-markdown";
@@ -143,14 +144,14 @@ class HassioAddonInfo extends LitElement {
                       this.addon.arch
                     )
                     ? html`
-                        <p class="warning">
+                        <ha-alert alert-type="warning">
                           ${this.supervisor.localize(
                             "addon.dashboard.not_available_arch"
                           )}
-                        </p>
+                        </ha-alert>
                       `
                     : html`
-                        <p class="warning">
+                        <ha-alert alert-type="warning">
                           ${this.supervisor.localize(
                             "addon.dashboard.not_available_arch",
                             "core_version_installed",
@@ -158,7 +159,7 @@ class HassioAddonInfo extends LitElement {
                             "core_version_needed",
                             addonStoreInfo.homeassistant
                           )}
-                        </p>
+                        </ha-alert>
                       `
                   : ""}
               </div>
@@ -569,21 +570,23 @@ class HassioAddonInfo extends LitElement {
                 : ""}
             </div>
           </div>
-          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           ${!this.addon.version && addonStoreInfo && !this.addon.available
             ? !addonArchIsSupported(
                 this.supervisor.info.supported_arch,
                 this.addon.arch
               )
               ? html`
-                  <p class="warning">
+                  <ha-alert alert-type="warning">
                     ${this.supervisor.localize(
                       "addon.dashboard.not_available_arch"
                     )}
-                  </p>
+                  </ha-alert>
                 `
               : html`
-                  <p class="warning">
+                  <ha-alert alert-type="warning">
                     ${this.supervisor.localize(
                       "addon.dashboard.not_available_version",
                       "core_version_installed",
@@ -591,7 +594,7 @@ class HassioAddonInfo extends LitElement {
                       "core_version_needed",
                       addonStoreInfo!.homeassistant
                     )}
-                  </p>
+                  </ha-alert>
                 `
             : ""}
         </div>
@@ -892,10 +895,19 @@ class HassioAddonInfo extends LitElement {
 
   private async _openChangelog(): Promise<void> {
     try {
-      const content = await fetchHassioAddonChangelog(
-        this.hass,
-        this.addon.slug
-      );
+      let content = await fetchHassioAddonChangelog(this.hass, this.addon.slug);
+      if (
+        content.includes(`# ${this.addon.version}`) &&
+        content.includes(`# ${this.addon.version_latest}`)
+      ) {
+        const newcontent = content.split(`# ${this.addon.version}`)[0];
+        if (newcontent.includes(`# ${this.addon.version_latest}`)) {
+          // Only change the content if the new version still exist
+          // if the changelog does not have the newests version on top
+          // this will not be true, and we don't modify the content
+          content = newcontent;
+        }
+      }
       showHassioMarkdownDialog(this, {
         title: this.supervisor.localize("addon.dashboard.changelog"),
         content,
@@ -978,7 +990,7 @@ class HassioAddonInfo extends LitElement {
       supervisor: this.supervisor,
       name: this.addon.name,
       version: this.addon.version_latest,
-      snapshotParams: {
+      backupParams: {
         name: `addon_${this.addon.slug}_${this.addon.version}`,
         addons: [this.addon.slug],
         homeassistant: false,
@@ -1140,6 +1152,7 @@ class HassioAddonInfo extends LitElement {
           margin-bottom: 16px;
         }
         img.logo {
+          max-width: 100%;
           max-height: 60px;
           margin: 16px 0;
           display: block;
@@ -1149,10 +1162,10 @@ class HassioAddonInfo extends LitElement {
           display: flex;
         }
         ha-svg-icon.running {
-          color: var(--paper-green-400);
+          color: var(--success-color);
         }
         ha-svg-icon.stopped {
-          color: var(--google-red-300);
+          color: var(--error-color);
         }
         ha-call-api-button {
           font-weight: 500;

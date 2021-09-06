@@ -53,9 +53,10 @@ class HaSceneDashboard extends LitElement {
       if (filteredScenes === null) {
         return [];
       }
-      return (filteredScenes
-        ? scenes.filter((scene) => filteredScenes!.includes(scene.entity_id))
-        : scenes
+      return (
+        filteredScenes
+          ? scenes.filter((scene) => filteredScenes!.includes(scene.entity_id))
+          : scenes
       ).map((scene) => ({
         ...scene,
         name: computeStateName(scene),

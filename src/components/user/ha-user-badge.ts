@@ -1,4 +1,11 @@
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
@@ -32,13 +39,13 @@ class UserBadge extends LitElement {
 
   private _personEntityId?: string;
 
-  protected updated(changedProps) {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues<this>) {
+    super.willUpdate(changedProps);
     if (changedProps.has("user")) {
       this._getPersonPicture();
       return;
     }
-    const oldHass = changedProps.get("hass");
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (
       this._personEntityId &&
       oldHass &&

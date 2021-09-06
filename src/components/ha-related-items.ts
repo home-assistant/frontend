@@ -153,9 +153,8 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             </h3>
             <ul>
               ${this._related.entity.map((entityId) => {
-                const entity: HassEntity | undefined = this.hass.states[
-                  entityId
-                ];
+                const entity: HassEntity | undefined =
+                  this.hass.states[entityId];
                 if (!entity) {
                   return "";
                 }
@@ -203,9 +202,8 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             <h3>${this.hass.localize("ui.components.related-items.scene")}:</h3>
             <ul>
               ${this._related.scene.map((sceneId) => {
-                const scene: SceneEntity | undefined = this.hass.states[
-                  sceneId
-                ];
+                const scene: SceneEntity | undefined =
+                  this.hass.states[sceneId];
                 if (!scene) {
                   return "";
                 }
@@ -231,9 +229,8 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             </h3>
             <ul>
               ${this._related.automation.map((automationId) => {
-                const automation: HassEntity | undefined = this.hass.states[
-                  automationId
-                ];
+                const automation: HassEntity | undefined =
+                  this.hass.states[automationId];
                 if (!automation) {
                   return "";
                 }
@@ -260,9 +257,8 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             </h3>
             <ul>
               ${this._related.script.map((scriptId) => {
-                const script: HassEntity | undefined = this.hass.states[
-                  scriptId
-                ];
+                const script: HassEntity | undefined =
+                  this.hass.states[scriptId];
                 if (!script) {
                   return "";
                 }

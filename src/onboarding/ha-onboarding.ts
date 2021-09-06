@@ -12,7 +12,10 @@ import { HASSDomEvent } from "../common/dom/fire_event";
 import { extractSearchParamsObject } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { AuthUrlSearchParams, hassUrl } from "../data/auth";
-import { fetchDiscoveryInformation } from "../data/discovery";
+import {
+  DiscoveryInformation,
+  fetchDiscoveryInformation,
+} from "../data/discovery";
 import {
   fetchOnboardingOverview,
   OnboardingResponses,
@@ -68,6 +71,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @state() private _steps?: OnboardingStep[];
 
+  @state() private _discoveryInformation?: DiscoveryInformation;
+
   protected render(): TemplateResult {
     const step = this._curStep()!;
 
@@ -84,12 +89,13 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
             </onboarding-create-user>`
           : ""}
         ${this._supervisor
-          ? html`<onboarding-restore-snapshot
+          ? html`<onboarding-restore-backup
               .localize=${this.localize}
               .restoring=${this._restoring}
-              @restoring=${this._restoringSnapshot}
+              .discoveryInformation=${this._discoveryInformation}
+              @restoring=${this._restoringBackup}
             >
-            </onboarding-restore-snapshot>`
+            </onboarding-restore-backup>`
           : ""}
       `;
     }
@@ -164,7 +170,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     return this._steps ? this._steps.find((stp) => !stp.done) : undefined;
   }
 
-  private _restoringSnapshot() {
+  private _restoringBackup() {
     this._restoring = true;
   }
 
@@ -177,12 +183,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       ].includes(response.installation_type);
       if (this._supervisor) {
         // Only load if we have supervisor
-        import("./onboarding-restore-snapshot");
+        import("./onboarding-restore-backup");
       }
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(
-        "Something went wrong loading onboarding-restore-snapshot",
+        "Something went wrong loading onboarding-restore-backup",
         err
       );
     }
@@ -248,7 +254,8 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       this._loading = true;
 
       // Determine if oauth redirect has been provided
-      const externalAuthParams = extractSearchParamsObject() as AuthUrlSearchParams;
+      const externalAuthParams =
+        extractSearchParamsObject() as AuthUrlSearchParams;
       const authParams =
         externalAuthParams.client_id && externalAuthParams.redirect_uri
           ? externalAuthParams

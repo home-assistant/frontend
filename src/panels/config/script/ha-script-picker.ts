@@ -1,6 +1,7 @@
 import "@material/mwc-icon-button";
 import {
   mdiHelpCircle,
+  mdiHistory,
   mdiInformationOutline,
   mdiPencil,
   mdiPlay,
@@ -51,11 +52,12 @@ class HaScriptPicker extends LitElement {
       if (filteredScripts === null) {
         return [];
       }
-      return (filteredScripts
-        ? scripts.filter((script) =>
-            filteredScripts!.includes(script.entity_id)
-          )
-        : scripts
+      return (
+        filteredScripts
+          ? scripts.filter((script) =>
+              filteredScripts!.includes(script.entity_id)
+            )
+          : scripts
       ).map((script) => ({
         ...script,
         name: computeStateName(script),
@@ -65,99 +67,110 @@ class HaScriptPicker extends LitElement {
     }
   );
 
-  private _columns = memoizeOne(
-    (narrow, _locale): DataTableColumnContainer => {
-      const columns: DataTableColumnContainer = {
-        activate: {
-          title: "",
-          type: "icon-button",
-          template: (_toggle, script) =>
-            html`
-              <mwc-icon-button
-                .script=${script}
-                title="${this.hass.localize(
-                  "ui.panel.config.script.picker.run_script"
-                )}"
-                @click=${(ev: Event) => this._runScript(ev)}
-              >
-                <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
-              </mwc-icon-button>
-            `,
-        },
-        icon: {
-          title: "",
-          type: "icon",
-          template: (icon) => html` <ha-icon .icon=${icon}></ha-icon> `,
-        },
-        name: {
-          title: this.hass.localize(
-            "ui.panel.config.script.picker.headers.name"
-          ),
-          sortable: true,
-          filterable: true,
-          direction: "asc",
-          grows: true,
-          template: narrow
-            ? (name, script: any) => html`
-                ${name}
-                <div class="secondary">
-                  ${this.hass.localize("ui.card.automation.last_triggered")}:
-                  ${script.attributes.last_triggered
-                    ? formatDateTime(
-                        new Date(script.attributes.last_triggered),
-                        this.hass.locale
-                      )
-                    : this.hass.localize("ui.components.relative_time.never")}
-                </div>
-              `
-            : undefined,
-        },
-      };
-      if (!narrow) {
-        columns.last_triggered = {
-          sortable: true,
-          width: "20%",
-          title: this.hass.localize("ui.card.automation.last_triggered"),
-          template: (last_triggered) => html`
-            ${last_triggered
-              ? formatDateTime(new Date(last_triggered), this.hass.locale)
-              : this.hass.localize("ui.components.relative_time.never")}
-          `,
-        };
-      }
-      columns.info = {
+  private _columns = memoizeOne((narrow, _locale): DataTableColumnContainer => {
+    const columns: DataTableColumnContainer = {
+      activate: {
         title: "",
         type: "icon-button",
-        template: (_info, script) => html`
+        template: (_toggle, script) =>
+          html`
+            <mwc-icon-button
+              .script=${script}
+              title="${this.hass.localize(
+                "ui.panel.config.script.picker.run_script"
+              )}"
+              @click=${(ev: Event) => this._runScript(ev)}
+            >
+              <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
+            </mwc-icon-button>
+          `,
+      },
+      icon: {
+        title: "",
+        type: "icon",
+        template: (icon) => html` <ha-icon .icon=${icon}></ha-icon> `,
+      },
+      name: {
+        title: this.hass.localize("ui.panel.config.script.picker.headers.name"),
+        sortable: true,
+        filterable: true,
+        direction: "asc",
+        grows: true,
+        template: narrow
+          ? (name, script: any) => html`
+              ${name}
+              <div class="secondary">
+                ${this.hass.localize("ui.card.automation.last_triggered")}:
+                ${script.attributes.last_triggered
+                  ? formatDateTime(
+                      new Date(script.attributes.last_triggered),
+                      this.hass.locale
+                    )
+                  : this.hass.localize("ui.components.relative_time.never")}
+              </div>
+            `
+          : undefined,
+      },
+    };
+    if (!narrow) {
+      columns.last_triggered = {
+        sortable: true,
+        width: "20%",
+        title: this.hass.localize("ui.card.automation.last_triggered"),
+        template: (last_triggered) => html`
+          ${last_triggered
+            ? formatDateTime(new Date(last_triggered), this.hass.locale)
+            : this.hass.localize("ui.components.relative_time.never")}
+        `,
+      };
+    }
+    columns.info = {
+      title: "",
+      type: "icon-button",
+      template: (_info, script) => html`
+        <mwc-icon-button
+          .script=${script}
+          @click=${this._showInfo}
+          title="${this.hass.localize(
+            "ui.panel.config.script.picker.show_info"
+          )}"
+        >
+          <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
+        </mwc-icon-button>
+      `,
+    };
+    columns.trace = {
+      title: "",
+      type: "icon-button",
+      template: (_info, script: any) => html`
+        <a href="/config/script/trace/${script.entity_id}">
           <mwc-icon-button
-            .script=${script}
-            @click=${this._showInfo}
+            .label=${this.hass.localize(
+              "ui.panel.config.script.picker.dev_script"
+            )}
+          >
+            <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
+          </mwc-icon-button>
+        </a>
+      `,
+    };
+    columns.edit = {
+      title: "",
+      type: "icon-button",
+      template: (_info, script: any) => html`
+        <a href="/config/script/edit/${script.entity_id}">
+          <mwc-icon-button
             title="${this.hass.localize(
-              "ui.panel.config.script.picker.show_info"
+              "ui.panel.config.script.picker.edit_script"
             )}"
           >
-            <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
+            <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
           </mwc-icon-button>
-        `,
-      };
-      columns.edit = {
-        title: "",
-        type: "icon-button",
-        template: (_info, script: any) => html`
-          <a href="/config/script/edit/${script.entity_id}">
-            <mwc-icon-button
-              title="${this.hass.localize(
-                "ui.panel.config.script.picker.edit_script"
-              )}"
-            >
-              <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-            </mwc-icon-button>
-          </a>
-        `,
-      };
-      return columns;
-    }
-  );
+        </a>
+      `,
+    };
+    return columns;
+  });
 
   protected render(): TemplateResult {
     return html`

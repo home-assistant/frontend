@@ -8,6 +8,7 @@ export enum LightColorModes {
   ONOFF = "onoff",
   BRIGHTNESS = "brightness",
   COLOR_TEMP = "color_temp",
+  WHITE = "white",
   HS = "hs",
   XY = "xy",
   RGB = "rgb",

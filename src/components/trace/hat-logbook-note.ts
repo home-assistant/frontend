@@ -1,11 +1,13 @@
 import { css, html, LitElement } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 
 @customElement("hat-logbook-note")
 class HatLogbookNote extends LitElement {
+  @property() public domain = "automation";
+
   render() {
     return html`
-      Not all shown logbook entries might be related to this automation.
+      Not all shown logbook entries might be related to this ${this.domain}.
     `;
   }
 

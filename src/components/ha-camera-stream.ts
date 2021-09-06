@@ -8,7 +8,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../common/config/is_component_loaded";
-import { fireEvent } from "../common/dom/fire_event";
 import { computeStateName } from "../common/entity/compute_state_name";
 import { supportsFeature } from "../common/entity/supports-feature";
 import {
@@ -41,6 +40,32 @@ class HaCameraStream extends LitElement {
 
   @state() private _url?: string;
 
+  @state() private _connected = false;
+
+  public willUpdate(changedProps: PropertyValues): void {
+    if (
+      changedProps.has("stateObj") &&
+      !this._shouldRenderMJPEG &&
+      this.stateObj &&
+      (changedProps.get("stateObj") as CameraEntity | undefined)?.entity_id !==
+        this.stateObj.entity_id
+    ) {
+      this._forceMJPEG = undefined;
+      this._url = undefined;
+      this._getStreamUrl();
+    }
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._connected = true;
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._connected = false;
+  }
+
   protected render(): TemplateResult {
     if (!this.stateObj) {
       return html``;
@@ -50,10 +75,11 @@ class HaCameraStream extends LitElement {
       ${__DEMO__ || this._shouldRenderMJPEG
         ? html`
             <img
-              @load=${this._elementResized}
               .src=${__DEMO__
-                ? this.stateObj!.attributes.entity_picture
-                : computeMJPEGStreamUrl(this.stateObj)}
+                ? this.stateObj!.attributes.entity_picture!
+                : this._connected
+                ? computeMJPEGStreamUrl(this.stateObj)
+                : ""}
               .alt=${`Preview of the ${computeStateName(
                 this.stateObj
               )} camera.`}
@@ -73,13 +99,6 @@ class HaCameraStream extends LitElement {
           `
         : ""}
     `;
-  }
-
-  protected updated(changedProps: PropertyValues): void {
-    if (changedProps.has("stateObj") && !this._shouldRenderMJPEG) {
-      this._forceMJPEG = undefined;
-      this._getStreamUrl();
-    }
   }
 
   private get _shouldRenderMJPEG() {
@@ -105,10 +124,6 @@ class HaCameraStream extends LitElement {
 
       this._forceMJPEG = this.stateObj!.entity_id;
     }
-  }
-
-  private _elementResized() {
-    fireEvent(this, "iron-resize");
   }
 
   static get styles(): CSSResultGroup {

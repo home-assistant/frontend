@@ -4,29 +4,25 @@
 // be triggered. The function will be called after it stops being called for
 // N milliseconds. If `immediate` is passed, trigger the function on the
 // leading edge, instead of the trailing.
-// eslint-disable-next-line: ban-types
-export const debounce = <T extends (...args) => unknown>(
-  func: T,
-  wait,
+
+export const debounce = <T extends any[]>(
+  func: (...args: T) => void,
+  wait: number,
   immediate = false
-): T => {
-  let timeout;
-  // @ts-ignore
-  return function (...args) {
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const context = this;
+) => {
+  let timeout: number | undefined;
+  return (...args: T): void => {
     const later = () => {
-      timeout = null;
+      timeout = undefined;
       if (!immediate) {
-        func.apply(context, args);
+        func(...args);
       }
     };
     const callNow = immediate && !timeout;
     clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
+    timeout = window.setTimeout(later, wait);
     if (callNow) {
-      func.apply(context, args);
+      func(...args);
     }
   };
 };

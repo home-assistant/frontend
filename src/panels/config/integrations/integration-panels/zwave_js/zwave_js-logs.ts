@@ -1,5 +1,6 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-listbox/paper-listbox";
+import { mdiDownload } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultArray, html, LitElement } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
@@ -13,6 +14,7 @@ import "../../../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../../../mixins/subscribe-mixin";
 import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
+import { fileDownload } from "../../../../../util/file_download";
 import { configTabs } from "./zwave_js-config-router";
 
 @customElement("zwave_js-logs")
@@ -31,16 +33,20 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
 
   public hassSubscribe(): Array<UnsubscribeFunc | Promise<UnsubscribeFunc>> {
     return [
-      subscribeZWaveJSLogs(this.hass, this.configEntryId, (log) => {
+      subscribeZWaveJSLogs(this.hass, this.configEntryId, (update) => {
         if (!this.hasUpdated) {
           return;
         }
-        if (Array.isArray(log.message)) {
-          for (const line of log.message) {
-            this._textarea!.value += `${line}\n`;
+        if (update.type === "log_message") {
+          if (Array.isArray(update.log_message.message)) {
+            for (const line of update.log_message.message) {
+              this._textarea!.value += `${line}\n`;
+            }
+          } else {
+            this._textarea!.value += `${update.log_message.message}\n`;
           }
         } else {
-          this._textarea!.value += `${log.message}\n`;
+          this._logConfig = update.log_config;
         }
       }).then((unsub) => {
         this._textarea!.value += `${this.hass.localize(
@@ -92,6 +98,14 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
                   `
                 : ""}
             </div>
+            <mwc-icon-button
+              .label=${this.hass.localize(
+                "ui.panel.config.zwave_js.logs.download_logs"
+              )}
+              @click=${this._downloadLogs}
+            >
+              <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
+            </mwc-icon-button>
           </ha-card>
           <textarea readonly></textarea>
         </div>
@@ -114,6 +128,16 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     );
   }
 
+  private _downloadLogs() {
+    fileDownload(
+      this,
+      `data:text/plain;charset=utf-8,${encodeURIComponent(
+        this._textarea!.value
+      )}`,
+      `zwave_js.log`
+    );
+  }
+
   private _dropdownSelected(ev) {
     if (ev.target === undefined || this._logConfig === undefined) {
       return;
@@ -123,7 +147,6 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
       return;
     }
     setZWaveJSLogLevel(this.hass!, this.configEntryId, selected);
-    this._logConfig.level = selected;
     this._textarea!.value += `${this.hass.localize(
       "ui.panel.config.zwave_js.logs.log_level_changed",
       { level: selected.charAt(0).toUpperCase() + selected.slice(1) }

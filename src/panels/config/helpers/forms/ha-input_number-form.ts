@@ -58,9 +58,9 @@ class HaInputNumberForm extends LitElement {
 
   public focus() {
     this.updateComplete.then(() =>
-      (this.shadowRoot?.querySelector(
-        "[dialogInitialFocus]"
-      ) as HTMLElement)?.focus()
+      (
+        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+      )?.focus()
     );
   }
 
@@ -192,9 +192,6 @@ class HaInputNumberForm extends LitElement {
       css`
         .form {
           color: var(--primary-text-color);
-        }
-        ha-paper-dropdown-menu {
-          display: block;
         }
       `,
     ];

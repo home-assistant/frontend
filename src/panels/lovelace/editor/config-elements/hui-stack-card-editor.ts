@@ -3,7 +3,15 @@ import "@polymer/paper-tabs";
 import "@polymer/paper-tabs/paper-tab";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import { any, array, assert, object, optional, string } from "superstruct";
+import {
+  any,
+  array,
+  assert,
+  assign,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -13,19 +21,23 @@ import "../card-editor/hui-card-element-editor";
 import type { HuiCardElementEditor } from "../card-editor/hui-card-element-editor";
 import "../card-editor/hui-card-picker";
 import type { ConfigChangedEvent } from "../hui-element-editor";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { GUIModeChangedEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  cards: array(any()),
-  title: optional(string()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    cards: array(any()),
+    title: optional(string()),
+  })
+);
 
 @customElement("hui-stack-card-editor")
 export class HuiStackCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: LovelaceConfig;

@@ -8,39 +8,35 @@ import {
   object,
   optional,
   string,
-  union,
+  assign,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { entityId } from "../../../../common/structs/is-entity-id";
 import { HomeAssistant } from "../../../../types";
 import { HistoryGraphCardConfig } from "../../cards/types";
 import "../../components/hui-entity-editor";
 import { EntityConfig } from "../../entity-rows/types";
 import { LovelaceCardEditor } from "../../types";
 import { processEditorEntities } from "../process-editor-entities";
+import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const entitiesConfigStruct = union([
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
   object({
-    entity: entityId(),
-    name: optional(string()),
-  }),
-  entityId(),
-]);
-
-const cardConfigStruct = object({
-  type: string(),
-  entities: array(entitiesConfigStruct),
-  title: optional(string()),
-  hours_to_show: optional(number()),
-  refresh_interval: optional(number()),
-});
+    entities: array(entitiesConfigStruct),
+    title: optional(string()),
+    hours_to_show: optional(number()),
+    refresh_interval: optional(number()),
+  })
+);
 
 @customElement("hui-history-graph-card-editor")
 export class HuiHistoryGraphCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: HistoryGraphCardConfig;
@@ -51,10 +47,6 @@ export class HuiHistoryGraphCardEditor
     assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = processEditorEntities(config.entities);
-  }
-
-  get _entity(): string {
-    return this._config!.entity || "";
   }
 
   get _title(): string {
@@ -95,6 +87,7 @@ export class HuiHistoryGraphCardEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value="${this._hours_to_show}"
+            min="1"
             .configValue=${"hours_to_show"}
             @value-changed="${this._valueChanged}"
           ></paper-input>

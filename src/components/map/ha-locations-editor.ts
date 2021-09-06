@@ -3,10 +3,8 @@ import {
   DivIcon,
   DragEndEvent,
   LatLng,
-  Map,
   Marker,
   MarkerOptions,
-  TileLayer,
 } from "leaflet";
 import {
   css,
@@ -16,15 +14,13 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
-import {
-  LeafletModuleType,
-  replaceTileLayer,
-  setupLeafletMap,
-} from "../../common/dom/setup-leaflet-map";
-import { defaultRadiusColor } from "../../data/zone";
-import { HomeAssistant } from "../../types";
+import type { LeafletModuleType } from "../../common/dom/setup-leaflet-map";
+import type { HomeAssistant } from "../../types";
+import "./ha-map";
+import type { HaMap } from "./ha-map";
 
 declare global {
   // for fire event
@@ -51,38 +47,40 @@ export interface MarkerLocation {
 export class HaLocationsEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public locations?: MarkerLocation[];
+  @property({ attribute: false }) public locations?: MarkerLocation[];
 
-  public fitZoom = 16;
+  @property({ type: Boolean }) public autoFit = false;
 
-  // eslint-disable-next-line
+  @property({ type: Number }) public zoom = 16;
+
+  @property({ type: Boolean }) public darkMode?: boolean;
+
+  @state() private _locationMarkers?: Record<string, Marker | Circle>;
+
+  @state() private _circles: Record<string, Circle> = {};
+
+  @query("ha-map", true) private map!: HaMap;
+
   private Leaflet?: LeafletModuleType;
 
-  // eslint-disable-next-line
-  private _leafletMap?: Map;
+  constructor() {
+    super();
 
-  private _tileLayer?: TileLayer;
-
-  private _locationMarkers?: { [key: string]: Marker | Circle };
-
-  private _circles: Record<string, Circle> = {};
+    import("leaflet").then((module) => {
+      import("leaflet-draw").then(() => {
+        this.Leaflet = module.default as LeafletModuleType;
+        this._updateMarkers();
+        this.updateComplete.then(() => this.fitMap());
+      });
+    });
+  }
 
   public fitMap(): void {
-    if (
-      !this._leafletMap ||
-      !this._locationMarkers ||
-      !Object.keys(this._locationMarkers).length
-    ) {
-      return;
-    }
-    const bounds = this.Leaflet!.latLngBounds(
-      Object.values(this._locationMarkers).map((item) => item.getLatLng())
-    );
-    this._leafletMap.fitBounds(bounds.pad(0.5));
+    this.map.fitMap();
   }
 
   public fitMarker(id: string): void {
-    if (!this._leafletMap || !this._locationMarkers) {
+    if (!this.map.leafletMap || !this._locationMarkers) {
       return;
     }
     const marker = this._locationMarkers[id];
@@ -90,29 +88,44 @@ export class HaLocationsEditor extends LitElement {
       return;
     }
     if ("getBounds" in marker) {
-      this._leafletMap.fitBounds(marker.getBounds());
+      this.map.leafletMap.fitBounds(marker.getBounds());
       (marker as Circle).bringToFront();
     } else {
       const circle = this._circles[id];
       if (circle) {
-        this._leafletMap.fitBounds(circle.getBounds());
+        this.map.leafletMap.fitBounds(circle.getBounds());
       } else {
-        this._leafletMap.setView(marker.getLatLng(), this.fitZoom);
+        this.map.leafletMap.setView(marker.getLatLng(), this.zoom);
       }
     }
   }
 
   protected render(): TemplateResult {
-    return html` <div id="map"></div> `;
+    return html`<ha-map
+      .hass=${this.hass}
+      .layers=${this._getLayers(this._circles, this._locationMarkers)}
+      .zoom=${this.zoom}
+      .autoFit=${this.autoFit}
+      .darkMode=${this.darkMode}
+    ></ha-map>`;
   }
 
-  protected firstUpdated(changedProps: PropertyValues): void {
-    super.firstUpdated(changedProps);
-    this._initMap();
-  }
+  private _getLayers = memoizeOne(
+    (
+      circles: Record<string, Circle>,
+      markers?: Record<string, Marker | Circle>
+    ): Array<Marker | Circle> => {
+      const layers: Array<Marker | Circle> = [];
+      Array.prototype.push.apply(layers, Object.values(circles));
+      if (markers) {
+        Array.prototype.push.apply(layers, Object.values(markers));
+      }
+      return layers;
+    }
+  );
 
-  protected updated(changedProps: PropertyValues): void {
-    super.updated(changedProps);
+  public willUpdate(changedProps: PropertyValues): void {
+    super.willUpdate(changedProps);
 
     // Still loading.
     if (!this.Leaflet) {
@@ -122,37 +135,6 @@ export class HaLocationsEditor extends LitElement {
     if (changedProps.has("locations")) {
       this._updateMarkers();
     }
-
-    if (changedProps.has("hass")) {
-      const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-      if (!oldHass || oldHass.themes.darkMode === this.hass.themes.darkMode) {
-        return;
-      }
-      if (!this._leafletMap || !this._tileLayer) {
-        return;
-      }
-      this._tileLayer = replaceTileLayer(
-        this.Leaflet,
-        this._leafletMap,
-        this._tileLayer,
-        this.hass.themes.darkMode
-      );
-    }
-  }
-
-  private get _mapEl(): HTMLDivElement {
-    return this.shadowRoot!.querySelector("div")!;
-  }
-
-  private async _initMap(): Promise<void> {
-    [this._leafletMap, this.Leaflet, this._tileLayer] = await setupLeafletMap(
-      this._mapEl,
-      this.hass.themes.darkMode,
-      true
-    );
-    this._updateMarkers();
-    this.fitMap();
-    this._leafletMap.invalidateSize();
   }
 
   private _updateLocation(ev: DragEndEvent) {
@@ -189,21 +171,17 @@ export class HaLocationsEditor extends LitElement {
   }
 
   private _updateMarkers(): void {
-    if (this._locationMarkers) {
-      Object.values(this._locationMarkers).forEach((marker) => {
-        marker.remove();
-      });
-      this._locationMarkers = undefined;
-
-      Object.values(this._circles).forEach((circle) => circle.remove());
-      this._circles = {};
-    }
-
     if (!this.locations || !this.locations.length) {
+      this._circles = {};
+      this._locationMarkers = undefined;
       return;
     }
 
-    this._locationMarkers = {};
+    const locationMarkers = {};
+    const circles = {};
+
+    const defaultZoneRadiusColor =
+      getComputedStyle(this).getPropertyValue("--accent-color");
 
     this.locations.forEach((location: MarkerLocation) => {
       let icon: DivIcon | undefined;
@@ -228,45 +206,46 @@ export class HaLocationsEditor extends LitElement {
         const circle = this.Leaflet!.circle(
           [location.latitude, location.longitude],
           {
-            color: location.radius_color || defaultRadiusColor,
+            color: location.radius_color || defaultZoneRadiusColor,
             radius: location.radius,
           }
         );
-        circle.addTo(this._leafletMap!);
         if (location.radius_editable || location.location_editable) {
           // @ts-ignore
           circle.editing.enable();
-          // @ts-ignore
-          const moveMarker = circle.editing._moveMarker;
-          // @ts-ignore
-          const resizeMarker = circle.editing._resizeMarkers[0];
-          if (icon) {
-            moveMarker.setIcon(icon);
-          }
-          resizeMarker.id = moveMarker.id = location.id;
-          moveMarker
-            .addEventListener(
-              "dragend",
-              // @ts-ignore
-              (ev: DragEndEvent) => this._updateLocation(ev)
-            )
-            .addEventListener(
-              "click",
-              // @ts-ignore
-              (ev: MouseEvent) => this._markerClicked(ev)
-            );
-          if (location.radius_editable) {
-            resizeMarker.addEventListener(
-              "dragend",
-              // @ts-ignore
-              (ev: DragEndEvent) => this._updateRadius(ev)
-            );
-          } else {
-            resizeMarker.remove();
-          }
-          this._locationMarkers![location.id] = circle;
+          circle.addEventListener("add", () => {
+            // @ts-ignore
+            const moveMarker = circle.editing._moveMarker;
+            // @ts-ignore
+            const resizeMarker = circle.editing._resizeMarkers[0];
+            if (icon) {
+              moveMarker.setIcon(icon);
+            }
+            resizeMarker.id = moveMarker.id = location.id;
+            moveMarker
+              .addEventListener(
+                "dragend",
+                // @ts-ignore
+                (ev: DragEndEvent) => this._updateLocation(ev)
+              )
+              .addEventListener(
+                "click",
+                // @ts-ignore
+                (ev: MouseEvent) => this._markerClicked(ev)
+              );
+            if (location.radius_editable) {
+              resizeMarker.addEventListener(
+                "dragend",
+                // @ts-ignore
+                (ev: DragEndEvent) => this._updateRadius(ev)
+              );
+            } else {
+              resizeMarker.remove();
+            }
+          });
+          locationMarkers[location.id] = circle;
         } else {
-          this._circles[location.id] = circle;
+          circles[location.id] = circle;
         }
       }
       if (
@@ -275,6 +254,7 @@ export class HaLocationsEditor extends LitElement {
       ) {
         const options: MarkerOptions = {
           title: location.name,
+          draggable: location.location_editable,
         };
 
         if (icon) {
@@ -293,13 +273,14 @@ export class HaLocationsEditor extends LitElement {
             "click",
             // @ts-ignore
             (ev: MouseEvent) => this._markerClicked(ev)
-          )
-          .addTo(this._leafletMap!);
+          );
         (marker as any).id = location.id;
 
-        this._locationMarkers![location.id] = marker;
+        locationMarkers[location.id] = marker;
       }
     });
+    this._circles = circles;
+    this._locationMarkers = locationMarkers;
   }
 
   static get styles(): CSSResultGroup {
@@ -308,22 +289,8 @@ export class HaLocationsEditor extends LitElement {
         display: block;
         height: 300px;
       }
-      #map {
+      ha-map {
         height: 100%;
-      }
-      .leaflet-marker-draggable {
-        cursor: move !important;
-      }
-      .leaflet-edit-resize {
-        border-radius: 50%;
-        cursor: nesw-resize !important;
-      }
-      .named-icon {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        text-align: center;
       }
     `;
   }

@@ -1,5 +1,6 @@
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 import { Lovelace } from "../../../src/panels/lovelace/types";
+import { energyEntities } from "../stubs/entities";
 import { DemoConfig } from "./types";
 
 export const demoConfigs: Array<() => Promise<DemoConfig>> = [
@@ -12,9 +13,8 @@ export const demoConfigs: Array<() => Promise<DemoConfig>> = [
 // eslint-disable-next-line import/no-mutable-exports
 export let selectedDemoConfigIndex = 0;
 // eslint-disable-next-line import/no-mutable-exports
-export let selectedDemoConfig: Promise<DemoConfig> = demoConfigs[
-  selectedDemoConfigIndex
-]();
+export let selectedDemoConfig: Promise<DemoConfig> =
+  demoConfigs[selectedDemoConfigIndex]();
 
 export const setDemoConfig = async (
   hass: MockHomeAssistant,
@@ -28,6 +28,7 @@ export const setDemoConfig = async (
   selectedDemoConfig = confProm;
 
   hass.addEntities(config.entities(hass.localize), true);
+  hass.addEntities(energyEntities());
   lovelace.saveConfig(config.lovelace(hass.localize));
   hass.mockTheme(config.theme());
 };

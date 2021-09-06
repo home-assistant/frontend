@@ -2,7 +2,6 @@ import "@material/mwc-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
-import { dump } from "js-yaml";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -41,8 +40,8 @@ import {
   roundWithOneDecimal,
 } from "../../../src/util/calculate";
 import "../components/supervisor-metric";
-import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
+import { showHassioHardwareDialog } from "../dialogs/hardware/show-dialog-hassio-hardware";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-host-info")
@@ -114,7 +113,7 @@ class HassioHostInfo extends LitElement {
                   `
                 : ""}
             </ha-settings-row>
-            ${!this.supervisor.host.features.includes("hassos")
+            ${!this.supervisor.host.features.includes("haos")
               ? html`<ha-settings-row>
                   <span slot="heading">
                     ${this.supervisor.localize("system.host.docker_version")}
@@ -191,7 +190,7 @@ class HassioHostInfo extends LitElement {
             <mwc-list-item>
               ${this.supervisor.localize("system.host.hardware")}
             </mwc-list-item>
-            ${this.supervisor.host.features.includes("hassos")
+            ${this.supervisor.host.features.includes("haos")
               ? html`<mwc-list-item>
                   ${this.supervisor.localize("system.host.import_from_usb")}
                 </mwc-list-item>`
@@ -229,20 +228,19 @@ class HassioHostInfo extends LitElement {
   }
 
   private async _showHardware(): Promise<void> {
+    let hardware;
     try {
-      const content = await fetchHassioHardwareInfo(this.hass);
-      showHassioMarkdownDialog(this, {
-        title: this.supervisor.localize("system.host.hardware"),
-        content: `<pre>${dump(content, { indent: 2 })}</pre>`,
-      });
+      hardware = await fetchHassioHardwareInfo(this.hass);
     } catch (err) {
-      showAlertDialog(this, {
+      await showAlertDialog(this, {
         title: this.supervisor.localize(
           "system.host.failed_to_get_hardware_list"
         ),
         text: extractApiErrorMessage(err),
       });
+      return;
     }
+    showHassioHardwareDialog(this, { supervisor: this.supervisor, hardware });
   }
 
   private async _hostReboot(ev: CustomEvent): Promise<void> {
