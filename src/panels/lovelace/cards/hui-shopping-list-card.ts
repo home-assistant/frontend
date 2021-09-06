@@ -177,6 +177,7 @@ class HuiShoppingListCard
                   no-label-float
                   class="addBox"
                   placeholder="Paste a list of items (one per row)"
+                  @paste=${this._handlePaste}
                 ></paper-textarea>`}
 
             <ha-svg-icon
@@ -343,9 +344,29 @@ class HuiShoppingListCard
     }
   }
 
+  private _addPastedItem(item): void {
+    const newItem = this._newItem;
+    if (item.length > 0) {
+      addItem(this.hass!, item!).catch(() => this._fetchData());
+    }
+
+    newItem.value = "";
+
+    newItem.focus();
+  }
+
   private _addKeyPress(ev): void {
     if (ev.keyCode === 13) {
       this._addItem(null);
+    }
+  }
+
+  private _handlePaste(ev): void {
+    const splittedOnLinebreaks = ev.clipboardData.getData("text").split("\n");
+    for (const item of splittedOnLinebreaks) {
+      if (item.trim() !== "") {
+        this._addPastedItem(item);
+      }
     }
   }
 
