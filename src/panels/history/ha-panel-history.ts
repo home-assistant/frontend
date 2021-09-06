@@ -155,7 +155,6 @@ class HaPanelHistory extends LitElement {
   }
 
   private _refreshHistory() {
-    this._stateHistory = [];
     this._getHistory();
   }
 
