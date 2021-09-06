@@ -7,13 +7,17 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { computeActiveState } from "../../../common/entity/compute_active_state";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/string/format_number";
+import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -106,6 +110,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const domain = computeStateDomain(stateObj);
     const showUnit = this._config.attribute
       ? this._config.attribute in stateObj.attributes
       : !UNAVAILABLE_STATES.includes(stateObj.state);
@@ -119,6 +124,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
           <div class="icon">
             <ha-icon
               .icon=${this._config.icon || stateIcon(stateObj)}
+              data-domain=${ifDefined(
+                this._config.state_color ||
+                  (domain === "light" && this._config.state_color !== false)
+                  ? domain
+                  : undefined
+              )}
+              data-state=${stateObj ? computeActiveState(stateObj) : ""}
             ></ha-icon>
           </div>
         </div>
@@ -189,56 +201,59 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        cursor: pointer;
-        outline: none;
-      }
+    return [
+      iconColorCSS,
+      css`
+        ha-card {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          cursor: pointer;
+          outline: none;
+        }
 
-      .header {
-        display: flex;
-        padding: 8px 16px 0;
-        justify-content: space-between;
-      }
+        .header {
+          display: flex;
+          padding: 8px 16px 0;
+          justify-content: space-between;
+        }
 
-      .name {
-        color: var(--secondary-text-color);
-        line-height: 40px;
-        font-weight: 500;
-        font-size: 16px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
+        .name {
+          color: var(--secondary-text-color);
+          line-height: 40px;
+          font-weight: 500;
+          font-size: 16px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+        }
 
-      .icon {
-        color: var(--state-icon-color, #44739e);
-        line-height: 40px;
-      }
+        .icon {
+          color: var(--state-icon-color, #44739e);
+          line-height: 40px;
+        }
 
-      .info {
-        padding: 0px 16px 16px;
-        margin-top: -4px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        line-height: 28px;
-      }
+        .info {
+          padding: 0px 16px 16px;
+          margin-top: -4px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          line-height: 28px;
+        }
 
-      .value {
-        font-size: 28px;
-        margin-right: 4px;
-      }
+        .value {
+          font-size: 28px;
+          margin-right: 4px;
+        }
 
-      .measurement {
-        font-size: 18px;
-        color: var(--secondary-text-color);
-      }
-    `;
+        .measurement {
+          font-size: 18px;
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 }
 

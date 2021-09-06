@@ -129,38 +129,39 @@ export class StateBadge extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      :host {
-        position: relative;
-        display: inline-block;
-        width: 40px;
-        color: var(--paper-item-icon-color, #44739e);
-        border-radius: 50%;
-        height: 40px;
-        text-align: center;
-        background-size: cover;
-        line-height: 40px;
-        vertical-align: middle;
-        box-sizing: border-box;
-      }
-      :host(:focus) {
-        outline: none;
-      }
-      :host(:not([icon]):focus) {
-        border: 2px solid var(--divider-color);
-      }
-      :host([icon]:focus) {
-        background: var(--divider-color);
-      }
-      ha-icon {
-        transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
-      }
-      .missing {
-        color: #fce588;
-      }
-
-      ${iconColorCSS}
-    `;
+    return [
+      iconColorCSS,
+      css`
+        :host {
+          position: relative;
+          display: inline-block;
+          width: 40px;
+          color: var(--paper-item-icon-color, #44739e);
+          border-radius: 50%;
+          height: 40px;
+          text-align: center;
+          background-size: cover;
+          line-height: 40px;
+          vertical-align: middle;
+          box-sizing: border-box;
+        }
+        :host(:focus) {
+          outline: none;
+        }
+        :host(:not([icon]):focus) {
+          border: 2px solid var(--divider-color);
+        }
+        :host([icon]:focus) {
+          background: var(--divider-color);
+        }
+        ha-icon {
+          transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
+        }
+        .missing {
+          color: #fce588;
+        }
+      `,
+    ];
   }
 }
 
