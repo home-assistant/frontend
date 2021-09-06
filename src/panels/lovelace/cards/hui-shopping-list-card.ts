@@ -153,17 +153,17 @@ class HuiShoppingListCard
             </div>
           </div>
           <div class="addRow">
-            <ha-svg-icon
-              class="addButton"
-              .path=${mdiPlus}
-              .title=${this.hass!.localize(
-                "ui.panel.lovelace.cards.shopping-list.add_item"
-              )}
-              @click=${this._addItem}
-            >
-            </ha-svg-icon>
             ${this._singleInput
               ? html`
+                  <ha-svg-icon
+                    class="addButton"
+                    .path=${mdiPlus}
+                    .title=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.shopping-list.add_item"
+                    )}
+                    @click=${this._addItem}
+                  >
+                  </ha-svg-icon>
                   <paper-input
                     no-label-float
                     class="addBox"
@@ -173,12 +173,21 @@ class HuiShoppingListCard
                     @keydown=${this._addKeyPress}
                   ></paper-input>
                 `
-              : html`<paper-textarea
-                  no-label-float
-                  class="addBox"
-                  placeholder="Paste a list of items (one per row)"
-                  @paste=${this._handlePaste}
-                ></paper-textarea>`}
+              : html`<ha-svg-icon
+                    class="addButton"
+                    .path=${mdiPlus}
+                    .title=${this.hass!.localize(
+                      "ui.panel.lovelace.cards.shopping-list.add_item"
+                    )}
+                    @click=${this._handleMultipleItemsInput}
+                  >
+                  </ha-svg-icon>
+                  <paper-textarea
+                    no-label-float
+                    class="addBox"
+                    placeholder="Paste a list of items (one per row)"
+                    @paste=${this._handlePaste}
+                  ></paper-textarea>`}
 
             <ha-svg-icon
               class="reorderButton"
@@ -335,7 +344,10 @@ class HuiShoppingListCard
     const newItem = this._newItem;
 
     if (newItem.value!.length > 0) {
-      addItem(this.hass!, newItem.value!).catch(() => this._fetchData());
+      const trimmed = newItem.value!.trim();
+      if (trimmed !== "") {
+        addItem(this.hass!, trimmed).catch(() => this._fetchData());
+      }
     }
 
     newItem.value = "";
@@ -344,29 +356,44 @@ class HuiShoppingListCard
     }
   }
 
-  private _addPastedItem(item): void {
+  private _addPastedItem(item: string): void {
     const newItem = this._newItem;
     if (item.length > 0) {
-      addItem(this.hass!, item!).catch(() => this._fetchData());
+      addItem(this.hass!, item).catch(() => this._fetchData());
     }
 
     newItem.value = "";
-
     newItem.focus();
   }
 
-  private _addKeyPress(ev): void {
-    if (ev.keyCode === 13) {
-      this._addItem(null);
+  private _setUpList(input: string[]): void {
+    for (const item of input) {
+      const trimmed = item.trim();
+      if (trimmed !== "") {
+        this._addPastedItem(item);
+      }
     }
   }
 
-  private _handlePaste(ev): void {
+  private _handlePaste(ev: {
+    clipboardData: { getData: (arg0: string) => string };
+  }): void {
     const splittedOnLinebreaks = ev.clipboardData.getData("text").split("\n");
-    for (const item of splittedOnLinebreaks) {
-      if (item.trim() !== "") {
-        this._addPastedItem(item);
-      }
+    this._setUpList(splittedOnLinebreaks);
+  }
+
+  private _handleMultipleItemsInput(): void {
+    const newItem = this._newItem;
+
+    if (newItem.value!.length > 0) {
+      const splittedOnLinebreaks = newItem.value!.split("\n");
+      this._setUpList(splittedOnLinebreaks);
+    }
+  }
+
+  private _addKeyPress(ev: { keyCode: number }): void {
+    if (ev.keyCode === 13) {
+      this._addItem(null);
     }
   }
 
