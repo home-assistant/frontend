@@ -149,21 +149,13 @@ const customEntitiesRowConfigStruct = type({
   type: customType(),
 });
 
-// Required for dynamic validation below
-type baseEntitiesRowConfigStruct = {
-  type: string;
-};
-
 const entitiesRowConfigStruct = dynamic<any>((value) => {
-  if (
-    typeof value === "object" &&
-    Object.prototype.hasOwnProperty.call(value, "type")
-  ) {
-    if (isCustomType((value as baseEntitiesRowConfigStruct).type)) {
+  if (value && typeof value === "object" && "type" in value) {
+    if (isCustomType((value as LovelaceRowConfig).type!)) {
       return customEntitiesRowConfigStruct;
     }
 
-    switch ((value as baseEntitiesRowConfigStruct).type) {
+    switch ((value as LovelaceRowConfig).type!) {
       case "attribute": {
         return attributeEntitiesRowConfigStruct;
       }
