@@ -8,8 +8,9 @@ import {
   any,
   array,
   assert,
-  boolean,
   assign,
+  boolean,
+  dynamic,
   literal,
   number,
   object,
@@ -19,7 +20,10 @@ import {
   union,
 } from "superstruct";
 import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
-import { customType } from "../../../../common/structs/is-custom-type";
+import {
+  customType,
+  isCustomType,
+} from "../../../../common/structs/is-custom-type";
 import { entityId } from "../../../../common/structs/is-entity-id";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/state-badge";
@@ -38,6 +42,7 @@ import "../hui-entities-card-row-editor";
 import "../hui-sub-element-editor";
 import { processEditorEntities } from "../process-editor-entities";
 import { actionConfigStruct } from "../structs/action-struct";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import {
   EditorTarget,
@@ -45,7 +50,6 @@ import {
   SubElementEditorConfig,
 } from "../types";
 import { configElementStyle } from "./config-elements-style";
-import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
 const buttonEntitiesRowConfigStruct = object({
   type: literal("button"),
@@ -142,24 +146,53 @@ const textEntitiesRowConfigStruct = object({
   icon: optional(string()),
 });
 
-const customRowConfigStruct = type({
+const customEntitiesRowConfigStruct = type({
   type: customType(),
 });
 
-const entitiesRowConfigStruct = union([
-  entitiesConfigStruct,
-  buttonEntitiesRowConfigStruct,
-  castEntitiesRowConfigStruct,
-  conditionalEntitiesRowConfigStruct,
-  dividerEntitiesRowConfigStruct,
-  sectionEntitiesRowConfigStruct,
-  webLinkEntitiesRowConfigStruct,
-  buttonsEntitiesRowConfigStruct,
-  attributeEntitiesRowConfigStruct,
-  callServiceEntitiesRowConfigStruct,
-  textEntitiesRowConfigStruct,
-  customRowConfigStruct,
-]);
+const entitiesRowConfigStruct = dynamic<any>((value) => {
+  if (value && typeof value === "object" && "type" in value) {
+    if (isCustomType((value as LovelaceRowConfig).type!)) {
+      return customEntitiesRowConfigStruct;
+    }
+
+    switch ((value as LovelaceRowConfig).type!) {
+      case "attribute": {
+        return attributeEntitiesRowConfigStruct;
+      }
+      case "button": {
+        return buttonEntitiesRowConfigStruct;
+      }
+      case "buttons": {
+        return buttonsEntitiesRowConfigStruct;
+      }
+      case "call-service": {
+        return callServiceEntitiesRowConfigStruct;
+      }
+      case "cast": {
+        return castEntitiesRowConfigStruct;
+      }
+      case "conditional": {
+        return conditionalEntitiesRowConfigStruct;
+      }
+      case "divider": {
+        return dividerEntitiesRowConfigStruct;
+      }
+      case "section": {
+        return sectionEntitiesRowConfigStruct;
+      }
+      case "text": {
+        return textEntitiesRowConfigStruct;
+      }
+      case "weblink": {
+        return webLinkEntitiesRowConfigStruct;
+      }
+    }
+  }
+
+  // No "type" property => has to be the default entity row config struct
+  return entitiesConfigStruct;
+});
 
 const cardConfigStruct = assign(
   baseLovelaceCardConfig,
