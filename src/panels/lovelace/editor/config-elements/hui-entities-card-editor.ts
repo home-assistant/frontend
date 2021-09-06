@@ -11,6 +11,7 @@ import {
   assign,
   boolean,
   dynamic,
+  enums,
   literal,
   number,
   object,
@@ -34,6 +35,7 @@ import "../../../../components/ha-switch";
 import type { HomeAssistant } from "../../../../types";
 import type { EntitiesCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
+import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 import type { LovelaceRowConfig } from "../../entity-rows/types";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
 import type { LovelaceCardEditor } from "../../types";
@@ -137,6 +139,7 @@ const attributeEntitiesRowConfigStruct = object({
   suffix: optional(string()),
   name: optional(string()),
   icon: optional(string()),
+  format: optional(enums(TIMESTAMP_RENDERING_FORMATS)),
 });
 
 const textEntitiesRowConfigStruct = object({

@@ -6,7 +6,7 @@ import { formatTime } from "../../../common/datetime/format_time";
 import relativeTime from "../../../common/datetime/relative_time";
 import { FrontendLocaleData } from "../../../data/translation";
 import { HomeAssistant } from "../../../types";
-import { TimestampRenderingFormats } from "./types";
+import { TimestampRenderingFormat } from "./types";
 
 const FORMATS: {
   [key: string]: (ts: Date, lang: FrontendLocaleData) => string;
@@ -23,7 +23,7 @@ class HuiTimestampDisplay extends LitElement {
 
   @property() public ts?: Date;
 
-  @property() public format?: TimestampRenderingFormats;
+  @property() public format?: TimestampRenderingFormat;
 
   @state() private _relative?: string;
 
