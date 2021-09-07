@@ -7,6 +7,7 @@ import "../../../components/ha-attributes";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-paper-dropdown-menu";
+import { UNAVAILABLE } from "../../../data/entity";
 import {
   VacuumEntity,
   VACUUM_SUPPORT_BATTERY,
@@ -98,31 +99,35 @@ class MoreInfoVacuum extends LitElement {
       "fan_speed,fan_speed_list,status,battery_level,battery_icon";
 
     return html`
-      <div class="flex-horizontal">
-        ${supportsFeature(stateObj, VACUUM_SUPPORT_STATUS)
-          ? html`
-              <div>
-                <span class="status-subtitle"
-                  >${this.hass!.localize(
-                    "ui.dialogs.more_info_control.vacuum.status"
-                  )}:
-                </span>
-                <span><strong>${stateObj.attributes.status}</strong></span>
-              </div>
-            `
-          : ""}
-        ${supportsFeature(stateObj, VACUUM_SUPPORT_BATTERY)
-          ? html`
-              <div>
-                <span>
-                  <ha-icon .icon=${stateObj.attributes.battery_icon}></ha-icon>
-                  ${stateObj.attributes.battery_level} %
-                </span>
-              </div>
-            `
-          : ""}
-      </div>
-
+      ${stateObj.state !== UNAVAILABLE
+        ? html` <div class="flex-horizontal">
+            ${supportsFeature(stateObj, VACUUM_SUPPORT_STATUS)
+              ? html`
+                  <div>
+                    <span class="status-subtitle"
+                      >${this.hass!.localize(
+                        "ui.dialogs.more_info_control.vacuum.status"
+                      )}:
+                    </span>
+                    <span><strong>${stateObj.attributes.status}</strong></span>
+                  </div>
+                `
+              : ""}
+            ${supportsFeature(stateObj, VACUUM_SUPPORT_BATTERY) &&
+            stateObj.attributes.battery_level
+              ? html`
+                  <div>
+                    <span>
+                      ${stateObj.attributes.battery_level} %
+                      <ha-icon
+                        .icon=${stateObj.attributes.battery_icon}
+                      ></ha-icon>
+                    </span>
+                  </div>
+                `
+              : ""}
+          </div>`
+        : ""}
       ${VACUUM_COMMANDS.some((item) => item.isVisible(stateObj))
         ? html`
             <div>
@@ -145,6 +150,7 @@ class MoreInfoVacuum extends LitElement {
                         .title=${this.hass!.localize(
                           `ui.dialogs.more_info_control.vacuum.${item.translationKey}`
                         )}
+                        .disabled=${stateObj.state === UNAVAILABLE}
                       ></ha-icon-button>
                     </div>
                   `
@@ -161,6 +167,7 @@ class MoreInfoVacuum extends LitElement {
                   .label=${this.hass!.localize(
                     "ui.dialogs.more_info_control.vacuum.fan_speed"
                   )}
+                  .disabled=${stateObj.state === UNAVAILABLE}
                 >
                   <paper-listbox
                     slot="dropdown-content"
