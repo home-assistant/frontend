@@ -55,6 +55,7 @@ const hassAttributeUtil = {
       "carbon_dioxide",
       "carbon_monoxide",
       "current",
+      "date",
       "energy",
       "humidity",
       "illuminance",
