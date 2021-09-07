@@ -31,7 +31,7 @@ const cardConfigStruct = assign(
   })
 );
 
-const views = ["dayGridMonth", "dayGridDay", "listWeek"];
+const views = ["dayGridMonth", "dayGridDay", "list"];
 
 @customElement("hui-calendar-card-editor")
 export class HuiCalendarCardEditor
