@@ -10,11 +10,13 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
+import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-slider";
 import { UNAVAILABLE } from "../../../data/entity";
 import { setValue } from "../../../data/input_text";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { installResizeObserver } from "../common/install-resize-observer";
 import "../components/hui-generic-entity-row";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import { EntityConfig, LovelaceRow } from "./types";
@@ -29,6 +31,8 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
 
   private _updated?: boolean;
 
+  private _resizeObserver?: ResizeObserver;
+
   public setConfig(config: EntityConfig): void {
     if (!config) {
       throw new Error("Invalid configuration");
@@ -41,6 +45,11 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     if (this._updated && !this._loaded) {
       this._initialLoad();
     }
+    this._attachObserver();
+  }
+
+  public disconnectedCallback(): void {
+    this._resizeObserver?.disconnect();
   }
 
   protected firstUpdated(): void {
@@ -48,6 +57,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
     if (this.isConnected && !this._loaded) {
       this._initialLoad();
     }
+    this._attachObserver();
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -120,6 +130,10 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host {
+        cursor: pointer;
+        display: block;
+      }
       .flex {
         display: flex;
         align-items: center;
@@ -137,22 +151,36 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
         width: 100%;
         max-width: 200px;
       }
-      :host {
-        cursor: pointer;
-      }
     `;
   }
 
   private async _initialLoad(): Promise<void> {
     this._loaded = true;
     await this.updateComplete;
-    const element = this.shadowRoot!.querySelector(".state") as HTMLElement;
+    this._measureCard();
+  }
 
-    if (!element || !this.parentElement) {
+  private _measureCard() {
+    if (!this.isConnected) {
       return;
     }
+    const element = this.shadowRoot!.querySelector(".state") as HTMLElement;
+    if (!element) {
+      return;
+    }
+    element.hidden = this.clientWidth <= 300;
+  }
 
-    element.hidden = this.parentElement.clientWidth <= 350;
+  private async _attachObserver(): Promise<void> {
+    if (!this._resizeObserver) {
+      await installResizeObserver();
+      this._resizeObserver = new ResizeObserver(
+        debounce(() => this._measureCard(), 250, false)
+      );
+    }
+    if (this.isConnected) {
+      this._resizeObserver.observe(this);
+    }
   }
 
   private get _inputElement(): { value: string } {
