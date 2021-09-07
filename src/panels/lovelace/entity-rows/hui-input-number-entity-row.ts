@@ -132,6 +132,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     return css`
       :host {
         display: block;
+        cursor: pointer;
       }
       .flex {
         display: flex;
@@ -149,9 +150,6 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
       ha-slider {
         width: 100%;
         max-width: 200px;
-      }
-      :host {
-        cursor: pointer;
       }
     `;
   }
