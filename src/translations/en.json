@@ -1109,6 +1109,10 @@
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have the expected units of measurement 'kWh' or 'Wh':"
               },
+              "entity_unexpected_unit_gas": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement 'kWh', 'm³' or 'ft³':"
+              },
               "entity_unexpected_unit_price": {
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'' or ''{currency}/Wh'':"
