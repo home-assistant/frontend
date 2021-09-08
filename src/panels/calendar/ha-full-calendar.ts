@@ -45,15 +45,6 @@ declare global {
   }
 }
 
-const getListWeekRange = (currentDate: Date): { start: Date; end: Date } => {
-  const startDate = new Date(currentDate.valueOf());
-  const endDate = new Date(currentDate.valueOf());
-
-  endDate.setDate(endDate.getDate() + 7);
-
-  return { start: startDate, end: endDate };
-};
-
 const defaultFullCalendarConfig: CalendarOptions = {
   headerToolbar: false,
   plugins: [dayGridPlugin, listPlugin, interactionPlugin],
@@ -63,8 +54,9 @@ const defaultFullCalendarConfig: CalendarOptions = {
   eventDisplay: "list-item",
   locales: allLocales,
   views: {
-    list: {
-      visibleRange: getListWeekRange,
+    listWeek: {
+      type: "list",
+      duration: { days: 7 },
     },
   },
 };
@@ -73,7 +65,7 @@ const viewButtons: ToggleButton[] = [
   { label: "Month View", value: "dayGridMonth", iconPath: mdiViewModule },
   { label: "Week View", value: "dayGridWeek", iconPath: mdiViewWeek },
   { label: "Day View", value: "dayGridDay", iconPath: mdiViewDay },
-  { label: "List View", value: "list", iconPath: mdiViewAgenda },
+  { label: "List View (7 days)", value: "listWeek", iconPath: mdiViewAgenda },
 ];
 
 export class HAFullCalendar extends LitElement {
@@ -87,6 +79,7 @@ export class HAFullCalendar extends LitElement {
     "dayGridMonth",
     "dayGridWeek",
     "dayGridDay",
+    "listWeek",
   ];
 
   @property() public initialView: FullCalendarView = "dayGridMonth";

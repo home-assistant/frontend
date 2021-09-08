@@ -3098,8 +3098,9 @@
               "calendar_entities": "Calendar Entities",
               "views": {
                 "dayGridMonth": "Month",
+                "dayGridWeek": "Week",
                 "dayGridDay": "Day",
-                "listWeek": "List"
+                "listWeek": "List (7 days)"
               }
             },
             "conditional": {

@@ -27,6 +27,7 @@ export class HaButtonToggleGroup extends LitElement {
           button.iconPath
             ? html`<mwc-icon-button
                 .label=${button.label}
+                .title=${button.label}
                 .value=${button.value}
                 ?active=${this.active === button.value}
                 @click=${this._handleClick}

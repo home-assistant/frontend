@@ -117,8 +117,8 @@ export class HuiCalendarCard extends LitElement implements LovelaceCard {
     }
 
     const views: FullCalendarView[] = this._veryNarrow
-      ? ["list"]
-      : ["list", "dayGridMonth", "dayGridDay"];
+      ? ["listWeek"]
+      : ["dayGridMonth", "dayGridDay", "listWeek"];
 
     return html`
       <ha-card>
