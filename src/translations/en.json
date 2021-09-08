@@ -3095,7 +3095,7 @@
               "views": {
                 "dayGridMonth": "Month",
                 "dayGridDay": "Day",
-                "listWeek": "List"
+                "list": "List"
               }
             },
             "conditional": {
