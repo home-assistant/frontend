@@ -3664,7 +3664,7 @@
             "data": "Event Data (YAML, optional)",
             "fire_event": "Fire Event",
             "event_fired": "Event {name} fired",
-            "current_listeners": "Current listeners",
+            "active_listeners": "Active listeners",
             "count_listeners": " ({count}  listeners)",
             "listen_to_events": "Listen to events",
             "listening_to": "Listening to",
