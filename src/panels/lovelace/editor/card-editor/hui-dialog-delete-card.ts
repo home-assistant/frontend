@@ -76,6 +76,9 @@ export class HuiDialogDeleteCard extends LitElement {
           display: block;
           width: 100%;
         }
+        ha-paper-dialog {
+          top: 0;
+        }
       `,
     ];
   }
