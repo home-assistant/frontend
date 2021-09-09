@@ -17,13 +17,15 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
   ActionHandlerEvent,
   CallServiceActionConfig,
   MoreInfoActionConfig,
 } from "../../../data/lovelace";
-import { SENSOR_DEVICE_CLASS_TIMESTAMP } from "../../../data/sensor";
+import {
+  SENSOR_DEVICE_CLASS_TIMESTAMP,
+  VALID_TIMESTAMP_STATES,
+} from "../../../data/sensor";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { findEntities } from "../common/find-entities";
@@ -319,7 +321,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                 ${computeDomain(entityConf.entity) === "sensor" &&
                 stateObj.attributes.device_class ===
                   SENSOR_DEVICE_CLASS_TIMESTAMP &&
-                !UNAVAILABLE_STATES.includes(stateObj.state)
+                !VALID_TIMESTAMP_STATES.includes(stateObj.state)
                   ? html`
                       <hui-timestamp-display
                         .hass=${this.hass}
