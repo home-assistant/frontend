@@ -61,13 +61,6 @@ const defaultFullCalendarConfig: CalendarOptions = {
   },
 };
 
-const viewButtons: ToggleButton[] = [
-  { label: "Month View", value: "dayGridMonth", iconPath: mdiViewModule },
-  { label: "Week View", value: "dayGridWeek", iconPath: mdiViewWeek },
-  { label: "Day View", value: "dayGridDay", iconPath: mdiViewDay },
-  { label: "List View (7 days)", value: "listWeek", iconPath: mdiViewAgenda },
-];
-
 export class HAFullCalendar extends LitElement {
   public hass!: HomeAssistant;
 
@@ -85,6 +78,8 @@ export class HAFullCalendar extends LitElement {
   @property() public initialView: FullCalendarView = "dayGridMonth";
 
   private calendar?: Calendar;
+
+  private _viewButtons?: ToggleButton[];
 
   @state() private _activeView = this.initialView;
 
@@ -275,11 +270,44 @@ export class HAFullCalendar extends LitElement {
     });
   }
 
-  private _viewToggleButtons = memoize((views) =>
-    viewButtons.filter((button) =>
+  private _viewToggleButtons = memoize((views) => {
+    if (!this._viewButtons) {
+      this._viewButtons = [
+        {
+          label: this.hass.localize(
+            "ui.panel.lovelace.editor.card.calendar.views.dayGridMonth"
+          ),
+          value: "dayGridMonth",
+          iconPath: mdiViewModule,
+        },
+        {
+          label: this.hass.localize(
+            "ui.panel.lovelace.editor.card.calendar.views.dayGridWeek"
+          ),
+          value: "dayGridWeek",
+          iconPath: mdiViewWeek,
+        },
+        {
+          label: this.hass.localize(
+            "ui.panel.lovelace.editor.card.calendar.views.dayGridDay"
+          ),
+          value: "dayGridDay",
+          iconPath: mdiViewDay,
+        },
+        {
+          label: this.hass.localize(
+            "ui.panel.lovelace.editor.card.calendar.views.listWeek"
+          ),
+          value: "listWeek",
+          iconPath: mdiViewAgenda,
+        },
+      ];
+    }
+
+    return this._viewButtons.filter((button) =>
       views.includes(button.value as FullCalendarView)
-    )
-  );
+    );
+  });
 
   static get styles(): CSSResultGroup {
     return [
