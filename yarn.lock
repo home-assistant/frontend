@@ -2704,17 +2704,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mdi/js@npm:5.9.55":
-  version: 5.9.55
-  resolution: "@mdi/js@npm:5.9.55"
-  checksum: e026acf4304675bd0892ee8306c1801144fb3ba7ba975ba786a48dfffa380122173d89b0893be0638d511a5e802e709507ab47030ff0fdb6902c275224433489
+"@mdi/js@npm:6.1.95":
+  version: 6.1.95
+  resolution: "@mdi/js@npm:6.1.95"
+  checksum: 42fe326895039c9057daf880ca80011eece5eae83462ff5b4216e6b48220d33560e68b69653d6d86f3bffa35c44d6aa3fc76f333fcc6edda7c994a405b771b1e
   languageName: node
   linkType: hard
 
-"@mdi/svg@npm:5.9.55":
-  version: 5.9.55
-  resolution: "@mdi/svg@npm:5.9.55"
-  checksum: 7ead0e695578b0c15dcca99e9f2e85fef45549c6fdc8db5829e90600da36379903b039a390a7eb6a1e850b30edcd585a785423e84c07c50c931e6b59e8045322
+"@mdi/svg@npm:6.1.95":
+  version: 6.1.95
+  resolution: "@mdi/svg@npm:6.1.95"
+  checksum: a649b7a822d94d60eddc9193f28765a20ed6a674301524ab4e6b0cc8a01d4336daeb01f325f46efeac313aaa6512d240e8085666c543f336d0f51d781549d986
   languageName: node
   linkType: hard
 
@@ -8878,8 +8878,8 @@ fsevents@~2.3.1:
     "@material/mwc-tab": 0.22.1
     "@material/mwc-tab-bar": 0.22.1
     "@material/top-app-bar": 12.0.0-canary.22d29cbb4.0
-    "@mdi/js": 5.9.55
-    "@mdi/svg": 5.9.55
+    "@mdi/js": 6.1.95
+    "@mdi/svg": 6.1.95
     "@open-wc/dev-server-hmr": ^0.0.2
     "@polymer/app-layout": ^3.1.0
     "@polymer/iron-flex-layout": ^3.0.1
