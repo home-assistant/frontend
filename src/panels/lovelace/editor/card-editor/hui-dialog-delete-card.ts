@@ -1,10 +1,9 @@
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import deepFreeze from "deep-freeze";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/dialog/ha-paper-dialog";
-import type { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import type { LovelaceCardConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";
@@ -19,16 +18,12 @@ export class HuiDialogDeleteCard extends LitElement {
 
   @state() private _cardConfig?: LovelaceCardConfig;
 
-  @query("ha-paper-dialog", true) private _dialog!: HaPaperDialog;
-
   public async showDialog(params: DeleteCardDialogParams): Promise<void> {
     this._params = params;
     this._cardConfig = params.cardConfig;
     if (!Object.isFrozen(this._cardConfig)) {
       this._cardConfig = deepFreeze(this._cardConfig);
     }
-    await this.updateComplete;
-    fireEvent(this._dialog as HTMLElement, "iron-resize");
   }
 
   protected render(): TemplateResult {
@@ -37,9 +32,12 @@ export class HuiDialogDeleteCard extends LitElement {
     }
 
     return html`
-      <ha-paper-dialog with-backdrop opened modal>
-        <h2>${this.hass.localize("ui.panel.lovelace.cards.confirm_delete")}</h2>
-        <paper-dialog-scrollable>
+      <ha-dialog
+        open
+        @closed=${this._close}
+        .heading=${this.hass.localize("ui.panel.lovelace.cards.confirm_delete")}
+      >
+        <div>
           ${this._cardConfig
             ? html`
                 <div class="element-preview">
@@ -50,16 +48,18 @@ export class HuiDialogDeleteCard extends LitElement {
                 </div>
               `
             : ""}
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          <mwc-button @click="${this._close}">
-            ${this.hass!.localize("ui.common.cancel")}
-          </mwc-button>
-          <mwc-button class="warning" @click="${this._delete}">
-            ${this.hass!.localize("ui.common.delete")}
-          </mwc-button>
         </div>
-      </ha-paper-dialog>
+        <mwc-button slot="secondaryAction" @click="${this._close}">
+          ${this.hass!.localize("ui.common.cancel")}
+        </mwc-button>
+        <mwc-button
+          slot="primaryAction"
+          class="warning"
+          @click="${this._delete}"
+        >
+          ${this.hass!.localize("ui.common.delete")}
+        </mwc-button>
+      </ha-dialog>
     `;
   }
 
@@ -76,9 +76,6 @@ export class HuiDialogDeleteCard extends LitElement {
           display: block;
           width: 100%;
         }
-        ha-paper-dialog {
-          top: 0;
-        }
       `,
     ];
   }
@@ -86,6 +83,7 @@ export class HuiDialogDeleteCard extends LitElement {
   private _close(): void {
     this._params = undefined;
     this._cardConfig = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private _delete(): void {
