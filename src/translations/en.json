@@ -381,7 +381,7 @@
         "clear": "Clear",
         "show_areas": "Show areas",
         "area": "Area",
-        "add_new": "Add new area...",
+        "add_new": "Add new area…",
         "no_areas": "You don't have any areas",
         "no_match": "No matching areas found",
         "add_dialog": {
@@ -462,11 +462,11 @@
       },
       "history_charts": {
         "history_disabled": "History integration disabled",
-        "loading_history": "Loading state history...",
+        "loading_history": "Loading state history…",
         "no_history_found": "No state history found."
       },
       "statistics_charts": {
-        "loading_statistics": "Loading statistics...",
+        "loading_statistics": "Loading statistics…",
         "no_statistics_found": "No statistics found.",
         "statistic_types": {
           "min": "min",
@@ -904,7 +904,7 @@
     },
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
-      "connection_lost": "Connection lost. Reconnecting...",
+      "connection_lost": "Connection lost. Reconnecting…",
       "started": "Home Assistant has started!",
       "starting": "Home Assistant is starting, not everything will be available until it is finished.",
       "wrapping_up_startup": "Wrapping up startup, not everything will be available until it is finished.",
@@ -1212,7 +1212,7 @@
           "description": "View the Home Assistant logs",
           "details": "Log Details ({level})",
           "load_full_log": "Load Full Home Assistant Log",
-          "loading_log": "Loading error log...",
+          "loading_log": "Loading error log…",
           "no_errors": "No errors have been reported",
           "no_issues": "There are no new issues!",
           "clear": "Clear",
@@ -1353,7 +1353,7 @@
             },
             "server_management": {
               "heading": "Server management",
-              "introduction": "Control your Home Assistant server... from Home Assistant.",
+              "introduction": "Control your Home Assistant server… from Home Assistant.",
               "restart": "Restart",
               "confirm_restart": "Are you sure you want to restart Home Assistant?",
               "stop": "Stop",
@@ -1774,9 +1774,9 @@
             "community_forums": "community forums",
             "url": "URL of the blueprint",
             "raw_blueprint": "Blueprint content",
-            "importing": "Loading blueprint...",
+            "importing": "Loading blueprint…",
             "import_btn": "Preview blueprint",
-            "saving": "Importing blueprint...",
+            "saving": "Importing blueprint…",
             "save_btn": "Import blueprint",
             "error_no_url": "Please enter the URL of the blueprint.",
             "unsupported_blueprint": "This blueprint is not supported",
@@ -1947,9 +1947,9 @@
             "integrations_introduction2": "Check the website for ",
             "integrations_link_all_features": " all available features",
             "connected": "Connected",
-            "connecting": "Connecting...",
+            "connecting": "Connecting…",
             "not_connected": "Not Connected",
-            "fetching_subscription": "Fetching subscription...",
+            "fetching_subscription": "Fetching subscription…",
             "tts": {
               "title": "Text to Speech",
               "info": "Bring personality to your home by having it speak to you by using our Text-to-Speech services. You can use this in automations and scripts by using the {service} service.",
@@ -2021,7 +2021,7 @@
               "no_hooks_yet2": " or by creating a ",
               "no_hooks_yet_link_automation": "webhook automation",
               "link_learn_more": "Learn more about creating webhook-powered automations.",
-              "loading": "Loading...",
+              "loading": "Loading…",
               "manage": "Manage",
               "disable_hook_error_msg": "Failed to disable webhook:"
             }
@@ -2098,17 +2098,17 @@
             "create": "Create automation with device",
             "create_disable": "Can't create automation with disabled device",
             "triggers": {
-              "caption": "Do something when...",
+              "caption": "Do something when…",
               "no_triggers": "No triggers",
               "unknown_trigger": "Unknown trigger"
             },
             "conditions": {
-              "caption": "Only do something if...",
+              "caption": "Only do something if…",
               "no_conditions": "No conditions",
               "unknown_condition": "Unknown condition"
             },
             "actions": {
-              "caption": "When something is triggered...",
+              "caption": "When something is triggered…",
               "no_actions": "No actions",
               "unknown_action": "Unknown action"
             },
@@ -2494,7 +2494,7 @@
             "wakeup_header": "Wake-up Instructions for",
             "wakeup_instructions_source": "Wake-up instructions are sourced from the OpenZWave community device database.",
             "start_refresh_button": "Start Refresh",
-            "refreshing_description": "Refreshing node information...",
+            "refreshing_description": "Refreshing node information…",
             "node_status": "Node Status",
             "step": "Step"
           },
@@ -2575,7 +2575,7 @@
             "update_button": "Update Configuration"
           },
           "add_device_page": {
-            "spinner": "Searching for ZHA Zigbee devices...",
+            "spinner": "Searching for ZHA Zigbee devices…",
             "pairing_mode": "Make sure your devices are in pairing mode. Check the instructions of your device on how to do this.",
             "discovered_text": "Devices will show up here once discovered.",
             "no_devices_found": "No devices were found, make sure they are in pairing mode and keep them awake while discovering is running.",
@@ -2705,7 +2705,7 @@
           },
           "network_status": {
             "network_stopped": "Z-Wave Network Stopped",
-            "network_starting": "Starting Z-Wave Network...",
+            "network_starting": "Starting Z-Wave Network…",
             "network_starting_note": "This may take a while depending on the size of your network.",
             "network_started": "Z-Wave Network Started",
             "network_started_note_some_queried": "Awake nodes have been queried. Sleeping nodes will be queried when they wake.",
@@ -2879,7 +2879,7 @@
           "logs": {
             "title": "Z-Wave JS Logs",
             "log_level": "Log Level",
-            "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages...",
+            "subscribed_to_logs": "Subscribed to Z-Wave JS Log Messages…",
             "log_level_changed": "Log Level changed to: {level}"
           }
         }
@@ -2924,7 +2924,7 @@
             "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."
           },
           "starting": {
-            "description": "Home Assistant is starting, please wait..."
+            "description": "Home Assistant is starting, please wait…"
           }
         },
         "unused_entities": {
@@ -3820,7 +3820,7 @@
         "log": "Log"
       },
       "configuration": {
-        "no_configuration": "This add-on does not expose configuration for you to mess with...",
+        "no_configuration": "This add-on does not expose configuration for you to mess with…",
         "audio": {
           "header": "Audio",
           "default": "Default",
