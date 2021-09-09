@@ -136,7 +136,7 @@ const mdiDeprecatedIcons: DeprecatedIcon = {
   "currency-usd-circle": {
     removeIn: "2021.12",
   },
-  "currency-usd": {
+  "currency-usd-circle-outline": {
     removeIn: "2021.12",
   },
   "do-not-disturb-off": {
@@ -348,6 +348,7 @@ const mdiDeprecatedIcons: DeprecatedIcon = {
     removeIn: "2021.12",
   },
   "xamarian-outline": {
+    newName: "xamarian",
     removeIn: "2021.12",
   },
   xing: {
