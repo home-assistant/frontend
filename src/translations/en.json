@@ -1498,7 +1498,7 @@
                 },
                 "state": {
                   "label": "State",
-                  "attribute": "Attribute (Optional)",
+                  "attribute": "Attribute (optional)",
                   "from": "From",
                   "for": "For",
                   "to": "To"
@@ -3114,8 +3114,8 @@
               "change_type": "Change type"
             },
             "config": {
-              "required": "Required",
-              "optional": "Optional"
+              "required": "required",
+              "optional": "optional"
             },
             "entities": {
               "name": "Entities",
