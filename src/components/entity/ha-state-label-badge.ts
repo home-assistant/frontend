@@ -13,7 +13,6 @@ import secondsToDuration from "../../common/datetime/seconds_to_duration";
 import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
 import { timerTimeRemaining } from "../../data/timer";
 import { formatNumber } from "../../common/string/format_number";
@@ -141,26 +140,6 @@ export class HaStateLabelBadge extends LitElement {
     }
     switch (domain) {
       case "alarm_control_panel":
-        if (entityState.state === "pending") {
-          return "hass:clock-fast";
-        }
-        if (entityState.state === "armed_away") {
-          return "hass:nature";
-        }
-        if (entityState.state === "armed_home") {
-          return "hass:home-variant";
-        }
-        if (entityState.state === "armed_night") {
-          return "hass:weather-night";
-        }
-        if (entityState.state === "armed_custom_bypass") {
-          return "hass:shield-home";
-        }
-        if (entityState.state === "triggered") {
-          return "hass:alert-circle";
-        }
-        // state == 'disarmed'
-        return domainIcon(domain, entityState);
       case "binary_sensor":
       case "device_tracker":
       case "updater":
