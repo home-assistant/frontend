@@ -28,7 +28,7 @@ const ICONS = {
   armed_away: "hass:shield-lock",
   armed_custom_bypass: "hass:security",
   armed_home: "hass:shield-home",
-  armed_night: "hass:shield-sun",
+  armed_night: "hass:shield-moon",
   armed_vacation: "hass:shield-lock",
   disarmed: "hass:shield-check",
   pending: "hass:shield-outline",
