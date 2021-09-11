@@ -106,19 +106,22 @@ export class HaStateLabelBadge extends LitElement {
 
   private _computeValue(domain: string, entityState: HassEntity) {
     switch (domain) {
+      case "alarm_control_panel":
       case "binary_sensor":
       case "device_tracker":
       case "person":
-      case "updater":
       case "sun":
-      case "alarm_control_panel":
       case "timer":
+      case "updater":
         return null;
+      // @ts-expect-error we don't break and go to default
       case "sensor":
+        if (entityState.attributes.device_class === "moon__phase") {
+          return null;
+        }
+      // eslint-disable-next-line: disable=no-fallthrough
       default:
-        return entityState.attributes.device_class === "moon__phase"
-          ? null
-          : entityState.state === UNKNOWN
+        return entityState.state === UNKNOWN
           ? "-"
           : entityState.attributes.unit_of_measurement
           ? formatNumber(entityState.state, this.hass!.locale)
@@ -166,10 +169,12 @@ export class HaStateLabelBadge extends LitElement {
         return entityState.state === "active"
           ? "hass:timer-outline"
           : "hass:timer-off-outline";
-      default:
-        return entityState?.attributes.device_class === "moon__phase"
+      case "sensor":
+        return entityState.attributes.device_class === "moon__phase"
           ? stateIcon(entityState)
           : null;
+      default:
+        return null;
     }
   }
 
