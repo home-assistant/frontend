@@ -9,6 +9,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
+import checkValidDate from "../../../common/datetime/check_valid_date";
 import relativeTime from "../../../common/datetime/relative_time";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -17,7 +18,6 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
   ActionHandlerEvent,
   CallServiceActionConfig,
@@ -319,7 +319,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                 ${computeDomain(entityConf.entity) === "sensor" &&
                 stateObj.attributes.device_class ===
                   SENSOR_DEVICE_CLASS_TIMESTAMP &&
-                !UNAVAILABLE_STATES.includes(stateObj.state)
+                checkValidDate(new Date(stateObj.state))
                   ? html`
                       <hui-timestamp-display
                         .hass=${this.hass}
