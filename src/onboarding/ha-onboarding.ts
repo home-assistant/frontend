@@ -13,14 +13,12 @@ import { extractSearchParamsObject } from "../common/url/search-params";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { AuthUrlSearchParams, hassUrl } from "../data/auth";
 import {
-  DiscoveryInformation,
-  fetchDiscoveryInformation,
-} from "../data/discovery";
-import {
+  InstallationType,
   fetchOnboardingOverview,
   OnboardingResponses,
   OnboardingStep,
   onboardIntegrationStep,
+  fetchInstallationType,
 } from "../data/onboarding";
 import { subscribeUser } from "../data/ws-user";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
@@ -71,7 +69,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
   @state() private _steps?: OnboardingStep[];
 
-  @state() private _discoveryInformation?: DiscoveryInformation;
+  @state() private _installation_type?: InstallationType;
 
   protected render(): TemplateResult {
     const step = this._curStep()!;
@@ -92,7 +90,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           ? html`<onboarding-restore-backup
               .localize=${this.localize}
               .restoring=${this._restoring}
-              .discoveryInformation=${this._discoveryInformation}
+              .installtionType=${this._installation_type}
               @restoring=${this._restoringBackup}
             >
             </onboarding-restore-backup>`
@@ -130,7 +128,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._fetchOnboardingSteps();
-    this._fetchDiscoveryInformation();
+    this._fetchInstallationType();
     import("./onboarding-integrations");
     import("./onboarding-core-config");
     registerServiceWorker(this, false);
@@ -174,9 +172,9 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
     this._restoring = true;
   }
 
-  private async _fetchDiscoveryInformation(): Promise<void> {
+  private async _fetchInstallationType(): Promise<void> {
     try {
-      const response = await fetchDiscoveryInformation();
+      const response = await fetchInstallationType();
       this._supervisor = [
         "Home Assistant OS",
         "Home Assistant Supervised",

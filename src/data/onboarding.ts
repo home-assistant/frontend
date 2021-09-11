@@ -1,6 +1,15 @@
 import { HomeAssistant } from "../types";
 import { handleFetchPromise } from "../util/hass-call-api";
 
+export interface InstallationType {
+  installation_type:
+    | "Home Assistant Operating System"
+    | "Home Assistant Container"
+    | "Home Assistant Supervised"
+    | "Home Assistant Core"
+    | "Unknown";
+}
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface OnboardingCoreConfigStepResponse {}
 
@@ -65,3 +74,15 @@ export const onboardIntegrationStep = (
     "onboarding/integration",
     params
   );
+
+export const fetchInstallationType = async (): Promise<InstallationType> => {
+  const response = await fetch("/api/onboarding/installation_type", {
+    method: "GET",
+  });
+
+  if (response.status === 401) {
+    throw Error("unauthorized");
+  }
+
+  return response.json();
+};
