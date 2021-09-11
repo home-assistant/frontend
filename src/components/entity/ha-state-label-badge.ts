@@ -122,7 +122,8 @@ export class HaStateLabelBadge extends LitElement {
         }
       // eslint-disable-next-line: disable=no-fallthrough
       default:
-        return entityState.state === UNKNOWN
+        return entityState.state === UNKNOWN ||
+          entityState.state === UNAVAILABLE
           ? "-"
           : entityState.attributes.unit_of_measurement
           ? formatNumber(entityState.state, this.hass!.locale)
