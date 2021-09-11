@@ -110,6 +110,7 @@ export class HaStateLabelBadge extends LitElement {
       case "binary_sensor":
       case "device_tracker":
       case "person":
+      case "scene":
       case "sun":
       case "timer":
       case "updater":
@@ -163,6 +164,7 @@ export class HaStateLabelBadge extends LitElement {
       case "device_tracker":
       case "updater":
       case "person":
+      case "scene":
       case "sun":
         return stateIcon(entityState);
       case "timer":
