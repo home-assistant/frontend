@@ -115,6 +115,10 @@ export class HatScriptGraph extends LitElement {
   };
 
   private render_action_node(node: Action, path: string, graphStart = false) {
+    if (node === null) {
+      return html``;
+    }
+
     const type =
       Object.keys(this.typeRenderers).find((key) => key in node) || "other";
     this.renderedNodes[path] = { config: node, path };
