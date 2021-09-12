@@ -40,7 +40,7 @@ export const computeStateDisplay = (
 
   if (domain === "input_datetime") {
     if (state) {
-      // If trying to display an explicit state, need to parse the explict state to `Date` then format.
+      // If trying to display an explicit state, need to parse the explicit state to `Date` then format.
       // Attributes aren't available, we have to use `state`.
       try {
         const components = state.split(" ");

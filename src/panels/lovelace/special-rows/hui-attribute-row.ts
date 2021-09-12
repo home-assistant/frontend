@@ -7,10 +7,16 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
+import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import checkValidDate from "../../../common/datetime/check_valid_date";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { formatNumber } from "../../../common/string/format_number";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { formatAttributeValue } from "../../../util/hass-attributes-util";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { handleAction } from "../common/handle-action";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import "../components/hui-generic-entity-row";
 import "../components/hui-timestamp-display";
@@ -55,6 +61,10 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const pointer =
+      this._config.entity &&
+      !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity));
+
     const attribute = stateObj.attributes[this._config.attribute];
     let date: Date | undefined;
     if (this._config.format) {
@@ -63,7 +73,13 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
-        <div>
+        <div
+          class="text-content ${classMap({
+            pointer,
+          })}"
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler()}
+        >
           ${this._config.prefix}
           ${this._config.format && checkValidDate(date)
             ? html` <hui-timestamp-display
@@ -82,10 +98,17 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
     `;
   }
 
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
   static get styles(): CSSResultGroup {
     return css`
       div {
         text-align: right;
+      }
+      .pointer {
+        cursor: pointer;
       }
     `;
   }

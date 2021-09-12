@@ -104,7 +104,16 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       >
         ${this._config.name || computeStateName(stateObj)}
       </div>
-      <div class="attributes">
+      <div
+        class="attributes ${classMap({
+          pointer,
+        })}"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
+      >
         <div>
           ${UNAVAILABLE_STATES.includes(stateObj.state)
             ? computeStateDisplay(
