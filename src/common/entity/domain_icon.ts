@@ -28,9 +28,14 @@ export const domainIcon = (
       return coverIcon(compareState, stateObj);
 
     case "humidifier":
-      return state && state === "off"
+      return compareState === "off"
         ? "hass:air-humidifier-off"
         : "hass:air-humidifier";
+
+    case "light":
+      return compareState === "off"
+        ? "hass:lightbulb-outline"
+        : "hass:lightbulb";
 
     case "lock":
       switch (compareState) {
@@ -47,6 +52,9 @@ export const domainIcon = (
 
     case "media_player":
       return compareState === "playing" ? "hass:cast-connected" : "hass:cast";
+
+    case "switch":
+      return compareState === "off" ? "hass:flash-outline" : "hass:flash";
 
     case "zwave":
       switch (compareState) {
