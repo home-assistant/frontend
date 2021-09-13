@@ -34,7 +34,7 @@ export class HuiDialogDeleteCard extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this._close}
+        @closed=${this.close}
         .heading=${this.hass.localize("ui.panel.lovelace.cards.confirm_delete")}
       >
         <div>
@@ -49,7 +49,7 @@ export class HuiDialogDeleteCard extends LitElement {
               `
             : ""}
         </div>
-        <mwc-button slot="secondaryAction" @click="${this._close}">
+        <mwc-button slot="secondaryAction" @click="${this.close}">
           ${this.hass!.localize("ui.common.cancel")}
         </mwc-button>
         <mwc-button
@@ -91,7 +91,7 @@ export class HuiDialogDeleteCard extends LitElement {
       return;
     }
     this._params.deleteCard();
-    this._close();
+    this.close();
   }
 }
 
