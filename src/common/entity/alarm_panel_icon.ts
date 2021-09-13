@@ -17,6 +17,7 @@ export const alarmPanelIcon = (state?: string) => {
     case "triggered":
       return "hass:bell-ring";
     case "disarmed":
+      return "hass:shield-off";
     default:
       return "hass:shield-check";
   }
