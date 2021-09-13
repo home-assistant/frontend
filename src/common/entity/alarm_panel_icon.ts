@@ -19,6 +19,6 @@ export const alarmPanelIcon = (state?: string) => {
     case "disarmed":
       return "hass:shield-off";
     default:
-      return "hass:shield-check";
+      return "hass:shield";
   }
 };
