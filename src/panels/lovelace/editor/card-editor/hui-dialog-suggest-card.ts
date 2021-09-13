@@ -161,7 +161,7 @@ export class HuiDialogSuggestCard extends LitElement {
     ];
   }
 
-  private _close(): void {
+  public close(): void {
     this._params = undefined;
     this._cardConfig = undefined;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
