@@ -3,8 +3,9 @@
 export const alarmPanelIcon = (state?: string) => {
   switch (state) {
     case "armed_away":
-    case "armed_vacation":
       return "hass:shield-lock";
+    case "armed_vacation":
+      return "hass:shield-airplane";
     case "armed_home":
       return "hass:shield-home";
     case "armed_night":
