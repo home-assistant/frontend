@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -19,6 +18,7 @@ import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
   changeHostOptions,
   configSyncOS,
+  dataDiskMove,
   rebootHost,
   shutdownHost,
   updateOS,
@@ -180,19 +180,25 @@ class HassioHostInfo extends LitElement {
               `
             : ""}
 
-          <ha-button-menu
-            corner="BOTTOM_START"
-            @action=${this._handleMenuAction}
-          >
+          <ha-button-menu corner="BOTTOM_START">
             <mwc-icon-button slot="trigger">
               <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
             </mwc-icon-button>
-            <mwc-list-item>
+            <mwc-list-item @click=${() => this._handleMenuAction("hardware")}>
               ${this.supervisor.localize("system.host.hardware")}
             </mwc-list-item>
             ${this.supervisor.host.features.includes("haos")
-              ? html`<mwc-list-item>
+              ? html`<mwc-list-item
+                  @click=${() => this._handleMenuAction("import_from_usb")}
+                >
                   ${this.supervisor.localize("system.host.import_from_usb")}
+                </mwc-list-item>`
+              : ""}
+            ${this.supervisor.host.features.includes("agent")
+              ? html`<mwc-list-item
+                  @click=${() => this._handleMenuAction("data_disk_move")}
+                >
+                  ${this.supervisor.localize("system.host.data_disk_move")}
                 </mwc-list-item>`
               : ""}
           </ha-button-menu>
@@ -216,13 +222,16 @@ class HassioHostInfo extends LitElement {
     return network_info.interfaces.find((a) => a.primary)?.ipv4?.address![0];
   });
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleMenuAction(action: string) {
+    switch (action) {
+      case "hardware":
         await this._showHardware();
         break;
-      case 1:
+      case "import_from_usb":
         await this._importFromUSB();
+        break;
+      case "data_disk_move":
+        await this._dataDiskMove();
         break;
     }
   }
@@ -392,6 +401,34 @@ class HassioHostInfo extends LitElement {
         ),
         text: extractApiErrorMessage(err),
       });
+    }
+  }
+
+  private async _dataDiskMove(): Promise<void> {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.supervisor.localize("system.host.data_disk_move"),
+      text: html`${this.supervisor.localize(
+          "dialog.data_disk_move.description",
+          { current_path: this.supervisor.os.data_disk }
+        )} <br /><br />${this.supervisor.localize(
+          "dialog.data_disk_move.confirm_text"
+        )}`,
+      confirmText: this.supervisor.localize("dialog.data_disk_move.move"),
+      dismissText: this.supervisor.localize("dialog.data_disk_move.cancel"),
+    });
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await dataDiskMove(this.hass);
+    } catch (err) {
+      if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
+        showAlertDialog(this, {
+          title: this.supervisor.localize("system.host.failed_to_move"),
+          text: extractApiErrorMessage(err),
+        });
+      }
     }
   }
 

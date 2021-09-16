@@ -22,6 +22,7 @@ export interface HassioHassOSInfo {
   update_available: boolean;
   version_latest: string | null;
   version: string | null;
+  data_disk: string;
 }
 
 export const fetchHassioHostInfo = async (
@@ -111,6 +112,19 @@ export const configSyncOS = async (hass: HomeAssistant) => {
   }
 
   return hass.callApi<HassioResponse<void>>("POST", "hassio/os/config/sync");
+};
+
+export const dataDiskMove = async (hass: HomeAssistant) => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    return hass.callWS({
+      type: "supervisor/api",
+      endpoint: "/os/datadisk/move",
+      method: "post",
+      timeout: null,
+    });
+  }
+
+  return hass.callApi<HassioResponse<void>>("POST", "hassio/os/datadisk/move");
 };
 
 export const changeHostOptions = async (hass: HomeAssistant, options: any) => {

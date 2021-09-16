@@ -4099,6 +4099,7 @@
         "failed_to_shutdown": "Failed to shutdown the host",
         "failed_to_set_hostname": "Setting hostname failed",
         "failed_to_import_from_usb": "Failed to import from USB",
+        "failed_to_move": "Failed to move data disk",
         "used_space": "Used space",
         "hostname": "Hostname",
         "change_hostname": "Change Hostname",
@@ -4114,7 +4115,8 @@
         "confirm_shutdown": "Are you sure you want to shutdown the host?",
         "shutdown_host": "Shutdown host",
         "hardware": "Hardware",
-        "import_from_usb": "Import from USB"
+        "import_from_usb": "Import from USB",
+        "data_disk_move": "Move to data disk"
       },
       "core": {
         "cpu_usage": "Core CPU Usage",
@@ -4201,6 +4203,12 @@
         "id": "ID",
         "attributes": "Attributes",
         "device_path": "Device path"
+      },
+      "data_disk_move": {
+        "description": "The current path to the data disk is ''{current_path}'', moving the disk will require a reboot of the host which will be done automatically.",
+        "confirm_text": "Do you want to move now?",
+        "cancel": "[%key:ui::common::cancel%]",
+        "move": "Move"
       }
     }
   }
