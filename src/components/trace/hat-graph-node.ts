@@ -40,6 +40,8 @@ export class HatGraphNode extends LitElement {
     const width = SPACING + NODE_SIZE;
     return html`
       <svg
+        width="${width}px"
+        height="${height}px"
         viewBox="-${Math.ceil(width / 2)} -${this.graphStart
           ? Math.ceil(height / 2)
           : Math.ceil((NODE_SIZE + SPACING * 2) / 2)} ${width} ${height}"
@@ -128,7 +130,6 @@ export class HatGraphNode extends LitElement {
       circle {
         fill: var(--background-clr);
         stroke: var(--circle-clr, var(--stroke-clr));
-        width: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing));
       }
       .number circle {
         fill: var(--track-clr);
