@@ -89,7 +89,7 @@ export class HatGraphNode extends LitElement {
       :host {
         display: flex;
         flex-direction: column;
-        width: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing));
+        min-width: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing));
         height: calc(
           var(--hat-graph-node-size) + var(--hat-graph-spacing) + 1px
         );
@@ -128,6 +128,7 @@ export class HatGraphNode extends LitElement {
       circle {
         fill: var(--background-clr);
         stroke: var(--circle-clr, var(--stroke-clr));
+        width: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing));
       }
       .number circle {
         fill: var(--track-clr);
