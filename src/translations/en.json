@@ -4209,7 +4209,6 @@
         "description": "You are currently using ''{current_path}'' as datadisk, moving it will reboot your device.",
         "select_device": "Select new datadisk",
         "no_devices": "No suitable attached devices found",
-        "confirm_text": "Do you want to move it?",
         "cancel": "[%key:ui::common::cancel%]",
         "move": "Move"
       }
