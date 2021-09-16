@@ -1123,7 +1123,7 @@
               },
               "entity_state_class_measurement_no_last_reset": {
                 "title": "Last reset missing",
-                "description": "The following entities have state class 'measurement' but 'last_reset' is missing"
+                "description": "The following entities have state class 'measurement' but 'last_reset' is missing:"
               }
             }
           }
