@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -40,8 +39,9 @@ import {
   roundWithOneDecimal,
 } from "../../../src/util/calculate";
 import "../components/supervisor-metric";
-import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
+import { showHassioDatadiskDialog } from "../dialogs/datadisk/show-dialog-hassio-datadisk";
 import { showHassioHardwareDialog } from "../dialogs/hardware/show-dialog-hassio-hardware";
+import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-host-info")
@@ -180,19 +180,25 @@ class HassioHostInfo extends LitElement {
               `
             : ""}
 
-          <ha-button-menu
-            corner="BOTTOM_START"
-            @action=${this._handleMenuAction}
-          >
+          <ha-button-menu corner="BOTTOM_START">
             <mwc-icon-button slot="trigger">
               <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
             </mwc-icon-button>
-            <mwc-list-item>
+            <mwc-list-item @click=${() => this._handleMenuAction("hardware")}>
               ${this.supervisor.localize("system.host.hardware")}
             </mwc-list-item>
             ${this.supervisor.host.features.includes("haos")
-              ? html`<mwc-list-item>
+              ? html`<mwc-list-item
+                  @click=${() => this._handleMenuAction("import_from_usb")}
+                >
                   ${this.supervisor.localize("system.host.import_from_usb")}
+                </mwc-list-item>`
+              : ""}
+            ${this.supervisor.host.features.includes("haos")
+              ? html`<mwc-list-item
+                  @click=${() => this._handleMenuAction("move_datadisk")}
+                >
+                  ${this.supervisor.localize("system.host.move_datadisk")}
                 </mwc-list-item>`
               : ""}
           </ha-button-menu>
@@ -216,15 +222,37 @@ class HassioHostInfo extends LitElement {
     return network_info.interfaces.find((a) => a.primary)?.ipv4?.address![0];
   });
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleMenuAction(action: string) {
+    switch (action) {
+      case "hardware":
         await this._showHardware();
         break;
-      case 1:
+      case "import_from_usb":
         await this._importFromUSB();
         break;
+      case "move_datadisk":
+        await this._moveDatadisk();
+        break;
     }
+  }
+
+  private async _moveDatadisk(): Promise<void> {
+    let hardware;
+    try {
+      hardware = await fetchHassioHardwareInfo(this.hass);
+    } catch (err) {
+      await showAlertDialog(this, {
+        title: this.supervisor.localize(
+          "system.host.failed_to_get_hardware_list"
+        ),
+        text: extractApiErrorMessage(err),
+      });
+      return;
+    }
+    showHassioDatadiskDialog(this, {
+      supervisor: this.supervisor,
+      hardware,
+    });
   }
 
   private async _showHardware(): Promise<void> {
