@@ -294,14 +294,15 @@ export const fetchStatistics = (
   hass: HomeAssistant,
   startTime: Date,
   endTime?: Date,
-  statistic_ids?: string[]
+  statistic_ids?: string[],
+  period: string = "hour"
 ) =>
   hass.callWS<Statistics>({
     type: "history/statistics_during_period",
     start_time: startTime.toISOString(),
     end_time: endTime?.toISOString(),
     statistic_ids,
-    period: "hour",
+    period,
   });
 
 export const calculateStatisticSumGrowth = (
