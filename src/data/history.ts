@@ -301,6 +301,7 @@ export const fetchStatistics = (
     start_time: startTime.toISOString(),
     end_time: endTime?.toISOString(),
     statistic_ids,
+    period: "hour",
   });
 
 export const calculateStatisticSumGrowth = (
