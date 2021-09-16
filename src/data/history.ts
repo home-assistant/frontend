@@ -295,7 +295,7 @@ export const fetchStatistics = (
   startTime: Date,
   endTime?: Date,
   statistic_ids?: string[],
-  period: string = "hour"
+  period: "hour" | "5minute" = "hour"
 ) =>
   hass.callWS<Statistics>({
     type: "history/statistics_during_period",
