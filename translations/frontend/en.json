@@ -2398,7 +2398,8 @@
                             "storage": "UI controlled",
                             "yaml": "YAML file"
                         },
-                        "confirm_delete": "Are you sure you want to delete this dashboard?",
+                        "confirm_delete_title": "Delete dashboard?",
+                        "confirm_delete_text": "Are you sure you want to delete the dashboard {dashboard_title}?",
                         "default_dashboard": "This is the default dashboard",
                         "detail": {
                             "create": "Create",

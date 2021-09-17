@@ -279,8 +279,13 @@ export class HaConfigLovelaceDashboards extends LitElement {
       removeDashboard: async () => {
         if (
           !(await showConfirmationDialog(this, {
+            title: this.hass!.localize(
+              "ui.panel.config.lovelace.dashboards.confirm_delete_title"
+            ),
             text: this.hass!.localize(
-              "ui.panel.config.lovelace.dashboards.confirm_delete"
+              "ui.panel.config.lovelace.dashboards.confirm_delete_text",
+              "dashboard_title",
+              dashboard!.title
             ),
             confirmText: this.hass!.localize("ui.common.delete"),
           }))

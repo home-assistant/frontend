@@ -1250,7 +1250,8 @@
               "open": "Open",
               "add_dashboard": "Add dashboard"
             },
-            "confirm_delete": "Are you sure you want to delete this dashboard?",
+            "confirm_delete_title": "Delete dashboard?",
+            "confirm_delete_text": "Are you sure you want to delete the dashboard {dashboard_title}?",
             "cant_edit_yaml": "Dashboards defined in YAML cannot be edited from the UI. Change them in configuration.yaml.",
             "cant_edit_default": "The standard Lovelace dashboard cannot be edited from the UI. You can hide it by setting another dashboard as default.",
             "detail": {
