@@ -77,11 +77,11 @@ class HuiEnergySolarGaugeCard
     let value: number | undefined;
 
     if (productionReturnedToGrid !== null && totalSolarProduction) {
-      const cosumedSolar = Math.max(
+      const consumedSolar = Math.max(
         0,
         totalSolarProduction - productionReturnedToGrid
       );
-      value = (cosumedSolar / totalSolarProduction) * 100;
+      value = (consumedSolar / totalSolarProduction) * 100;
     }
 
     return html`
