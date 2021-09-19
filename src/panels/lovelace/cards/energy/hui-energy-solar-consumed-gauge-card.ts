@@ -110,11 +110,11 @@ class HuiEnergySolarGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <div class="name">Self consumed solar energy</div>
+              <div class="name">Self-consumed solar energy</div>
             `
           : totalSolarProduction === 0
           ? "You have not produced any solar energy"
-          : "Self consumed solar energy couldn't be calculated"}
+          : "Self-consumed solar energy couldn't be calculated"}
       </ha-card>
     `;
   }
