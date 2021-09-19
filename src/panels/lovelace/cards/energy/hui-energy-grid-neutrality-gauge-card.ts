@@ -22,7 +22,6 @@ import { severityMap } from "../hui-gauge-card";
 
 const LEVELS: LevelDefinition[] = [
   { level: -1, stroke: severityMap.red },
-  { level: -0.2, stroke: severityMap.yellow },
   { level: 0, stroke: severityMap.green },
 ];
 
@@ -104,9 +103,9 @@ class HuiEnergyGridGaugeCard
                 <span>
                   This card indicates your net energy usage.
                   <br /><br />
-                  If the needle is in the green, you returned
-                  more energy to the grid than you consumed from it.
-                  If it's in the red, you consumed more energy than you returned. 
+                  If the needle is in the green, you returned more energy to the
+                  grid than you consumed from it. If it's in the red, you
+                  consumed more energy than you returned.
                 </span>
               </paper-tooltip>
 
