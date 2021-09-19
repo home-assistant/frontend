@@ -91,12 +91,13 @@ class HuiEnergySolarGaugeCard
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
-                  This card represents how much of the solar energy was used by
-                  your home and was not returned to the grid.
+                  This card indicates how much of the solar energy you produced
+                  was used by your home instead of being returned to the grid.
                   <br /><br />
-                  If you frequently produce more than you consume, try to
-                  conserve this energy by installing a battery or buying an
-                  electric car to charge.
+                  If this number is typically very low, indicating excess solar
+                  production, you might want to consider charging a home battery
+                  or electric car from your solar panels at times of high solar
+                  production.
                 </span>
               </paper-tooltip>
               <ha-gauge
