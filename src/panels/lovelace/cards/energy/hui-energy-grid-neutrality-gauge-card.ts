@@ -102,11 +102,11 @@ class HuiEnergyGridGaugeCard
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
-                  This card represents your energy dependency.
+                  This card indicates your net energy usage.
                   <br /><br />
-                  If it's green, it means you produced more energy than that you
-                  consumed from the grid. If it's in the red, it means that you
-                  relied on the grid for part of your home's energy consumption.
+                  If the needle is in the green, you returned
+                  more energy to the grid than you consumed from it.
+                  If it's in the red, you consumed more energy than you returned. 
                 </span>
               </paper-tooltip>
 
