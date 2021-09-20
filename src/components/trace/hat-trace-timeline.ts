@@ -325,13 +325,15 @@ class ActionRenderer {
     if (defaultExecuted) {
       this._renderEntry(choosePath, `${name}: Default action executed`);
     } else if (chooseTrace.result) {
+      const choiceNumeric =
+        chooseTrace.result.choice !== "default"
+          ? chooseTrace.result.choice + 1
+          : undefined;
       const choiceConfig = this._getDataFromPath(
         `${this.keys[index]}/choose/${chooseTrace.result.choice}`
       ) as ChooseActionChoice | undefined;
       const choiceName = choiceConfig
-        ? `${
-            choiceConfig.alias || `Choice ${chooseTrace.result.choice}`
-          } executed`
+        ? `${choiceConfig.alias || `Option ${choiceNumeric}`} executed`
         : `Error: ${chooseTrace.error}`;
       this._renderEntry(choosePath, `${name}: ${choiceName}`);
     } else {
