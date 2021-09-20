@@ -281,7 +281,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           !(await showConfirmationDialog(this, {
             title: this.hass!.localize(
               "ui.panel.config.lovelace.dashboards.confirm_delete_title",
-              {dashboard_title: dashboard!.title}
+              { dashboard_title: dashboard!.title }
             ),
             text: this.hass!.localize(
               "ui.panel.config.lovelace.dashboards.confirm_delete_text"
