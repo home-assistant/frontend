@@ -129,9 +129,9 @@ class HuiEnergyCarbonGaugeCard
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
-                  This card represents how much of the energy consumed by your
+                  This card indicates how much of the energy consumed by your
                   home was generated using non-fossil fuels like solar, wind and
-                  nuclear.
+                  nuclear. The higher, the better!
                 </span>
               </paper-tooltip>
               <ha-gauge
