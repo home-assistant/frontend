@@ -12,6 +12,7 @@ import { customElement, property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { alarmPanelIcon } from "../../../common/entity/alarm_panel_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-label-badge";
 import {
@@ -23,17 +24,6 @@ import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
 import { AlarmPanelCardConfig } from "./types";
-
-const ICONS = {
-  armed_away: "hass:shield-lock",
-  armed_custom_bypass: "hass:security",
-  armed_home: "hass:shield-home",
-  armed_night: "hass:shield-moon",
-  armed_vacation: "hass:shield-lock",
-  disarmed: "hass:shield-check",
-  pending: "hass:shield-outline",
-  triggered: "hass:bell-ring",
-};
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
 
@@ -162,7 +152,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       >
         <ha-label-badge
           class="${classMap({ [stateObj.state]: true })}"
-          .icon="${ICONS[stateObj.state] || "hass:shield-outline"}"
+          .icon="${alarmPanelIcon(stateObj.state)}"
           .label="${this._stateIconLabel(stateObj.state)}"
           @click=${this._handleMoreInfo}
         ></ha-label-badge>
