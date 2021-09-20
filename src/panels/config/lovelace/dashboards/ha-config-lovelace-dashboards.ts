@@ -280,12 +280,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
         if (
           !(await showConfirmationDialog(this, {
             title: this.hass!.localize(
-              "ui.panel.config.lovelace.dashboards.confirm_delete_title"
-            ),
-            text: this.hass!.localize(
-              "ui.panel.config.lovelace.dashboards.confirm_delete_text",
+              "ui.panel.config.lovelace.dashboards.confirm_delete_title",
               "dashboard_title",
               dashboard!.title
+            ),
+            text: this.hass!.localize(
+              "ui.panel.config.lovelace.dashboards.confirm_delete_text"
             ),
             confirmText: this.hass!.localize("ui.common.delete"),
           }))
