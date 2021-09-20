@@ -26,6 +26,12 @@ export class HuiDialogDeleteCard extends LitElement {
     }
   }
 
+  public closeDialog(): void {
+    this._params = undefined;
+    this._cardConfig = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
@@ -34,7 +40,7 @@ export class HuiDialogDeleteCard extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed=${this.close}
+        @closed=${this.closeDialog}
         .heading=${this.hass.localize("ui.panel.lovelace.cards.confirm_delete")}
       >
         <div>
@@ -49,7 +55,7 @@ export class HuiDialogDeleteCard extends LitElement {
               `
             : ""}
         </div>
-        <mwc-button slot="secondaryAction" @click="${this.close}">
+        <mwc-button slot="secondaryAction" @click="${this.closeDialog}">
           ${this.hass!.localize("ui.common.cancel")}
         </mwc-button>
         <mwc-button
@@ -80,18 +86,12 @@ export class HuiDialogDeleteCard extends LitElement {
     ];
   }
 
-  public close(): void {
-    this._params = undefined;
-    this._cardConfig = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
   private _delete(): void {
     if (!this._params?.deleteCard) {
       return;
     }
     this._params.deleteCard();
-    this.close();
+    this.closeDialog();
   }
 }
 
