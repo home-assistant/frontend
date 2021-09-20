@@ -106,7 +106,7 @@ export class HuiDialogSuggestCard extends LitElement {
               >
               <mwc-button
                 slot="primaryAction"
-                ?disabled="${this._saving}"
+                .disabled="${this._saving}"
                 @click="${this._save}"
               >
                 ${this._saving
