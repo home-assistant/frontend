@@ -48,6 +48,12 @@ export class HuiDialogSuggestCard extends LitElement {
     }
   }
 
+  public closeDialog(): void {
+    this._params = undefined;
+    this._cardConfig = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
   protected render(): TemplateResult {
     if (!this._params) {
       return html``;
@@ -56,7 +62,7 @@ export class HuiDialogSuggestCard extends LitElement {
       <ha-dialog
         open
         scrimClickAction
-        @closed=${this.close}
+        @closed=${this.closeDialog}
         .heading=${this.hass!.localize(
           "ui.panel.lovelace.editor.suggest_card.header"
         )}
@@ -86,7 +92,7 @@ export class HuiDialogSuggestCard extends LitElement {
               `
             : ""}
         </div>
-        <mwc-button slot="secondaryAction" @click="${this.close}">
+        <mwc-button slot="secondaryAction" @click="${this.closeDialog}">
           ${this._params.yaml
             ? this.hass!.localize("ui.common.close")
             : this.hass!.localize("ui.common.cancel")}
@@ -161,12 +167,6 @@ export class HuiDialogSuggestCard extends LitElement {
     ];
   }
 
-  public close(): void {
-    this._params = undefined;
-    this._cardConfig = undefined;
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
   private _pickCard(): void {
     if (
       !this._params?.lovelaceConfig ||
@@ -182,7 +182,7 @@ export class HuiDialogSuggestCard extends LitElement {
       path: this._params!.path,
       entities: this._params!.entities,
     });
-    this.close();
+    this.closeDialog();
   }
 
   private async _save(): Promise<void> {
@@ -204,7 +204,7 @@ export class HuiDialogSuggestCard extends LitElement {
     );
     this._saving = false;
     showSaveSuccessToast(this, this.hass);
-    this.close();
+    this.closeDialog();
   }
 }
 
