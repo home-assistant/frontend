@@ -15,6 +15,7 @@ import "../../../../components/ha-formfield";
 import "../../../../components/entity/ha-entity-picker";
 
 const energyUnits = ["kWh"];
+const energyDeviceClasses = ["energy"];
 
 @customElement("dialog-energy-device-settings")
 export class DialogEnergyDeviceSettings
@@ -67,6 +68,7 @@ export class DialogEnergyDeviceSettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitOfMeasurement=${energyUnits}
+          .includeDeviceClasses=${energyDeviceClasses}
           .label=${`Device consumption energy (kWh)`}
           entities-only
           @value-changed=${this._statisticChanged}

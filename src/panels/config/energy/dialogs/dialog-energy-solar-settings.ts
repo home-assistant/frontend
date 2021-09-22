@@ -23,6 +23,7 @@ import { ConfigEntry, getConfigEntries } from "../../../../data/config_entries";
 import { brandsUrl } from "../../../../util/brands-url";
 
 const energyUnits = ["kWh"];
+const energyDeviceClasses = ["energy"];
 
 @customElement("dialog-energy-solar-settings")
 export class DialogEnergySolarSettings
@@ -79,6 +80,7 @@ export class DialogEnergySolarSettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitOfMeasurement=${energyUnits}
+          .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source.stat_energy_from}
           .label=${`Solar production energy (kWh)`}
           entities-only
