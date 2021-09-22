@@ -181,20 +181,6 @@ export class CloudRemotePref extends LitElement {
       .spacer {
         flex-grow: 1;
       }
-      .remote-enabled {
-        display: flex;
-        margin-top: 1.5em;
-      }
-      .remote-enabled + p {
-        margin-top: 0.5em;
-      }
-      h3 {
-        margin: 0 0 8px 0;
-      }
-      .remote-enabled h3 {
-        flex-grow: 1;
-        margin: 0;
-      }
     `;
   }
 }
