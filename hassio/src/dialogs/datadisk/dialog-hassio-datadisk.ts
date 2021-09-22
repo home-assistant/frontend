@@ -51,6 +51,7 @@ class HassioDatadiskDialog extends LitElement {
   public closeDialog(): void {
     this.dialogParams = undefined;
     this.selectedDevice = undefined;
+    this.devices = undefined;
     this.moving = false;
     fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
