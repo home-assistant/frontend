@@ -3,6 +3,7 @@ import { HomeAssistant } from "../../types";
 import { hassioApiResultExtractor, HassioResponse } from "./common";
 
 export type HassioHostInfo = {
+  agent_version: string;
   chassis: string;
   cpe: string;
   deployment: string;

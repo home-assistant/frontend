@@ -193,11 +193,13 @@ class HassioHostInfo extends LitElement {
                   >
                     ${this.supervisor.localize("system.host.import_from_usb")}
                   </mwc-list-item>
-                  <mwc-list-item
-                    @click=${() => this._handleMenuAction("move_datadisk")}
-                  >
-                    ${this.supervisor.localize("system.host.move_datadisk")}
-                  </mwc-list-item>`
+                  ${atLeastVersion(this.supervisor.host.agent_version, 1, 2, 0)
+                    ? html`<mwc-list-item
+                        @click=${() => this._handleMenuAction("move_datadisk")}
+                      >
+                        ${this.supervisor.localize("system.host.move_datadisk")}
+                      </mwc-list-item>`
+                    : ""} `
               : ""}
           </ha-button-menu>
         </div>
