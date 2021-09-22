@@ -14,6 +14,8 @@ export type HassioHostInfo = {
   hostname: string;
   kernel: string;
   operating_system: string;
+  boot_timestamp: number;
+  startup_time: number;
 };
 
 export interface HassioHassOSInfo {
@@ -23,6 +25,10 @@ export interface HassioHassOSInfo {
   version_latest: string | null;
   version: string | null;
   data_disk: string;
+}
+
+export interface DatadiskList {
+  devices: string[];
 }
 
 export const fetchHassioHostInfo = async (
@@ -143,4 +149,21 @@ export const moveDatadisk = async (hass: HomeAssistant, device: string) => {
   }
 
   return hass.callApi<HassioResponse<void>>("POST", "hassio/os/datadisk/move");
+};
+
+export const listDatadisks = async (
+  hass: HomeAssistant
+): Promise<DatadiskList> => {
+  if (atLeastVersion(hass.config.version, 2021, 2, 4)) {
+    return hass.callWS<DatadiskList>({
+      type: "supervisor/api",
+      endpoint: "/os/datadisk/list",
+      method: "get",
+      timeout: null,
+    });
+  }
+
+  return hassioApiResultExtractor(
+    await hass.callApi<HassioResponse<DatadiskList>>("GET", "/os/datadisk/list")
+  );
 };

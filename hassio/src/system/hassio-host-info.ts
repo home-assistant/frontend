@@ -189,17 +189,15 @@ class HassioHostInfo extends LitElement {
             </mwc-list-item>
             ${this.supervisor.host.features.includes("haos")
               ? html`<mwc-list-item
-                  @click=${() => this._handleMenuAction("import_from_usb")}
-                >
-                  ${this.supervisor.localize("system.host.import_from_usb")}
-                </mwc-list-item>`
-              : ""}
-            ${this.supervisor.host.features.includes("haos")
-              ? html`<mwc-list-item
-                  @click=${() => this._handleMenuAction("move_datadisk")}
-                >
-                  ${this.supervisor.localize("system.host.move_datadisk")}
-                </mwc-list-item>`
+                    @click=${() => this._handleMenuAction("import_from_usb")}
+                  >
+                    ${this.supervisor.localize("system.host.import_from_usb")}
+                  </mwc-list-item>
+                  <mwc-list-item
+                    @click=${() => this._handleMenuAction("move_datadisk")}
+                  >
+                    ${this.supervisor.localize("system.host.move_datadisk")}
+                  </mwc-list-item>`
               : ""}
           </ha-button-menu>
         </div>
@@ -236,22 +234,9 @@ class HassioHostInfo extends LitElement {
     }
   }
 
-  private async _moveDatadisk(): Promise<void> {
-    let hardware;
-    try {
-      hardware = await fetchHassioHardwareInfo(this.hass);
-    } catch (err) {
-      await showAlertDialog(this, {
-        title: this.supervisor.localize(
-          "system.host.failed_to_get_hardware_list"
-        ),
-        text: extractApiErrorMessage(err),
-      });
-      return;
-    }
+  private _moveDatadisk(): void {
     showHassioDatadiskDialog(this, {
       supervisor: this.supervisor,
-      hardware,
     });
   }
 

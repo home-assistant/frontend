@@ -1,10 +1,8 @@
 import { fireEvent } from "../../../../src/common/dom/fire_event";
-import { HassioHardwareInfo } from "../../../../src/data/hassio/hardware";
 import { Supervisor } from "../../../../src/data/supervisor/supervisor";
 
 export interface HassioDatatiskDialogParams {
   supervisor: Supervisor;
-  hardware: HassioHardwareInfo;
 }
 
 export const showHassioDatadiskDialog = (
