@@ -45,6 +45,7 @@ export const FIXED_DOMAIN_ICONS = {
   sensor: "hass:eye",
   simple_alarm: "hass:bell",
   sun: "hass:white-balance-sunny",
+  switch: "hass:flash",
   timer: "hass:timer-outline",
   updater: "hass:cloud-upload",
   vacuum: "hass:robot-vacuum",
