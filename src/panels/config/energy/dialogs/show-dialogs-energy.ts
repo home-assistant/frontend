@@ -44,6 +44,7 @@ export interface EnergySettingsBatteryDialogParams {
 
 export interface EnergySettingsGasDialogParams {
   source?: GasSourceTypeEnergyPreference;
+  unit?: "volume" | "energy";
   saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
 }
 

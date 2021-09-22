@@ -56,6 +56,8 @@ export class HuiEnergyGasGraphCard
 
   @state() private _end = endOfToday();
 
+  @state() private _unit?: string;
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       getEnergyDataCollection(this.hass, {
@@ -92,7 +94,8 @@ export class HuiEnergyGasGraphCard
             .options=${this._createOptions(
               this._start,
               this._end,
-              this.hass.locale
+              this.hass.locale,
+              this._unit
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -109,7 +112,12 @@ export class HuiEnergyGasGraphCard
   }
 
   private _createOptions = memoizeOne(
-    (start: Date, end: Date, locale: FrontendLocaleData): ChartOptions => {
+    (
+      start: Date,
+      end: Date,
+      locale: FrontendLocaleData,
+      unit?: string
+    ): ChartOptions => {
       const dayDifference = differenceInDays(end, start);
       return {
         parsing: false,
@@ -160,7 +168,7 @@ export class HuiEnergyGasGraphCard
             type: "linear",
             title: {
               display: true,
-              text: "m³",
+              text: unit,
             },
             ticks: {
               beginAtZero: true,
@@ -175,7 +183,7 @@ export class HuiEnergyGasGraphCard
                 `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
                   locale
-                )} m³`,
+                )} ${unit}`,
             },
           },
           filler: {
@@ -208,6 +216,15 @@ export class HuiEnergyGasGraphCard
       energyData.prefs.energy_sources.filter(
         (source) => source.type === "gas"
       ) as GasSourceTypeEnergyPreference[];
+
+    this._unit =
+      gasSources.length &&
+      ["Wh", "kWh"].includes(
+        this.hass.states[gasSources[0].stat_energy_from]?.attributes
+          .unit_of_measurement || ""
+      )
+        ? "kWh"
+        : "m³";
 
     const statisticsData = Object.values(energyData.stats);
     const datasets: ChartDataset<"bar">[] = [];

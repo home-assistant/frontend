@@ -90,12 +90,20 @@ class HuiEnergyDistrubutionCard
       ) ?? 0;
 
     let gasUsage: number | null = null;
+    let gasUnit = "m³";
     if (hasGas) {
       gasUsage =
         calculateStatisticsSumGrowth(
           this._data.stats,
           types.gas!.map((source) => source.stat_energy_from)
         ) ?? 0;
+
+      gasUnit = ["Wh", "kWh"].includes(
+        this.hass.states[types.gas![0].stat_energy_from]?.attributes
+          .unit_of_measurement || ""
+      )
+        ? "kWh"
+        : "m³";
     }
 
     let totalSolarProduction: number | null = null;
@@ -309,7 +317,7 @@ class HuiEnergyDistrubutionCard
                         ${formatNumber(gasUsage || 0, this.hass.locale, {
                           maximumFractionDigits: 1,
                         })}
-                        m³
+                        ${gasUnit}
                       </div>
                       <svg width="80" height="30">
                         <path d="M40 0 v30" id="gas" />

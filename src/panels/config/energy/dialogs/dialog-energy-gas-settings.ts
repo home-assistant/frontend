@@ -18,8 +18,9 @@ import "../../../../components/ha-radio";
 import "../../../../components/ha-formfield";
 import type { HaRadio } from "../../../../components/ha-radio";
 
-const energyUnits = ["m³"];
-
+const VOLUME_UNITS = ["m³"];
+const ENERGY_UNITS = ["kWh"];
+const GAS_UNITS = [...VOLUME_UNITS, ...ENERGY_UNITS];
 @customElement("dialog-energy-gas-settings")
 export class DialogEnergyGasSettings
   extends LitElement
@@ -77,9 +78,19 @@ export class DialogEnergyGasSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitOfMeasurement=${energyUnits}
+          .includeUnitOfMeasurement=${this._params.unit === undefined
+            ? GAS_UNITS
+            : this._params.unit === "energy"
+            ? ENERGY_UNITS
+            : VOLUME_UNITS}
           .value=${this._source.stat_energy_from}
-          .label=${`Gas usage (m³)`}
+          .label=${`Gas usage (${
+            this._params.unit === undefined
+              ? "m³ or kWh"
+              : this._params.unit === "energy"
+              ? "kWh"
+              : "m³"
+          })`}
           entities-only
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
