@@ -33,7 +33,7 @@ export const domainIcon = (
         : "hass:air-humidifier";
 
     case "light":
-      return compareState === "off" ? "hass:lightbulb" : "hass:lightbulb-on";
+      return compareState === "on" ? "hass:lightbulb-on" : "hass:lightbulb";
 
     case "lock":
       switch (compareState) {
