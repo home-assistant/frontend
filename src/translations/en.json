@@ -3731,6 +3731,23 @@
             "listeners": "This template listens for the following state changed events:",
             "entity": "Entity",
             "domain": "Domain"
+          },
+          "statistics": {
+            "title": "Statistics",
+            "entity": "Entity",
+            "issue": "Issue",
+            "issues": {
+              "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
+              "unsupported_unit": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''."
+            },
+            "fix_issue": {
+              "units_changed": {
+                "title": "The unit of this entity changed",
+                "update": "Update the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
+                "clear": "Delete all old statistic data for this entity",
+                "fix": "Fix issue"
+              }
+            }
           }
         }
       },

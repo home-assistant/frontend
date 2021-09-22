@@ -76,6 +76,22 @@ export interface StatisticsMetaData {
   statistic_id: string;
 }
 
+export type StatisticsValidationResult =
+  | StatisticsValidationResultUnspuportedUnit
+  | StatisticsValidationResultUnitsChanged;
+export interface StatisticsValidationResultUnspuportedUnit {
+  type: "unsupported_unit";
+  data: { statistic_id: string; state_unit: string; metadata_unit: string };
+}
+
+export interface StatisticsValidationResultUnitsChanged {
+  type: "units_changed";
+  data: { statistic_id: string; device_class: string; state_unit: string };
+}
+export interface StatisticsValidationResults {
+  [statisticId: string]: StatisticsValidationResult[];
+}
+
 export const fetchRecent = (
   hass: HomeAssistant,
   entityId: string,
@@ -303,6 +319,28 @@ export const fetchStatistics = (
     end_time: endTime?.toISOString(),
     statistic_ids,
     period,
+  });
+
+export const validateStatistics = (hass: HomeAssistant) =>
+  hass.callWS<StatisticsValidationResults>({
+    type: "recorder/validate_statistics",
+  });
+
+export const updateStatisticsMetadata = (
+  hass: HomeAssistant,
+  statistic_id: string,
+  unit_of_measurement: string | null
+) =>
+  hass.callWS<void>({
+    type: "recorder/update_statistics_metadata",
+    statistic_id,
+    unit_of_measurement,
+  });
+
+export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
+  hass.callWS<void>({
+    type: "recorder/clear_statistics",
+    statistic_ids,
   });
 
 export const calculateStatisticSumGrowth = (
