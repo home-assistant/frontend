@@ -4079,7 +4079,7 @@
         "unsupported_reason": {
           "apparmor": "AppArmor is not enabled on the host",
           "container": "Containers known to cause issues",
-          "content-trust": "Content-trust validation is disabled",
+          "content_trust": "Content-trust validation is disabled",
           "dbus": "DBUS",
           "docker_configuration": "Docker Configuration",
           "docker_version": "Docker Version",
@@ -4087,7 +4087,9 @@
           "lxc": "LXC",
           "network_manager": "Network Manager",
           "os": "Operating System",
+          "os_agent": "OS Agent",
           "privileged": "Supervisor is not privileged",
+          "source_mods": "Source modifications",
           "systemd": "Systemd"
         },
         "unhealthy_reason": {

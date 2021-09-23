@@ -34,16 +34,18 @@ import { hassioStyle } from "../resources/hassio-style";
 const UNSUPPORTED_REASON_URL = {
   apparmor: "/more-info/unsupported/apparmor",
   container: "/more-info/unsupported/container",
+  content_trust: "/more-info/unsupported/content_trust",
   dbus: "/more-info/unsupported/dbus",
   docker_configuration: "/more-info/unsupported/docker_configuration",
   docker_version: "/more-info/unsupported/docker_version",
   job_conditions: "/more-info/unsupported/job_conditions",
   lxc: "/more-info/unsupported/lxc",
   network_manager: "/more-info/unsupported/network_manager",
+  os_agent: "/more-info/unsupported/content_trust",
   os: "/more-info/unsupported/os",
   privileged: "/more-info/unsupported/privileged",
+  source_mods: "/more-info/unsupported/source_mods",
   systemd: "/more-info/unsupported/systemd",
-  content_trust: "/more-info/unsupported/content_trust",
 };
 
 const UNHEALTHY_REASON_URL = {
