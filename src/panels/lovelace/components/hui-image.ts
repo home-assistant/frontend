@@ -161,6 +161,10 @@ export class HuiImage extends LitElement {
       imageSrc = this.image;
     }
 
+    if (this._loadState === LoadState.Loading && !imageSrc.startsWith("http")) {
+      this._loadState = LoadState.Loaded;
+    }
+
     if (imageSrc) {
       imageSrc = this.hass.hassUrl(imageSrc);
     }
