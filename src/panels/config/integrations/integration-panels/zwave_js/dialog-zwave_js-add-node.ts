@@ -413,7 +413,7 @@ class DialogZWaveJSAddNode extends LitElement {
   }
 
   private _handlePinKeyUp(ev: KeyboardEvent) {
-    if (ev.keyCode === 13) {
+    if (ev.key === "Enter") {
       this._validateDskAndEnterPin();
     }
   }
