@@ -7,23 +7,21 @@ import { haStyle, haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import {
   clearStatistics,
-  StatisticsValidationResultUnitsChanged,
   updateStatisticsMetadata,
 } from "../../../data/history";
 import "../../../components/ha-formfield";
 import "../../../components/ha-radio";
+import { DialogStatisticsUnitsChangedParams } from "./show-dialog-statistics-fix-units-changed";
 
 @customElement("dialog-statistics-fix-units-changed")
 export class DialogStatisticsFixUnitsChanged extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @state() private _params?: StatisticsValidationResultUnitsChanged["data"];
+  @state() private _params?: DialogStatisticsUnitsChangedParams;
 
   @state() private _action?: "update" | "clear";
 
-  public showDialog(
-    params: StatisticsValidationResultUnitsChanged["data"]
-  ): void {
+  public showDialog(params: DialogStatisticsUnitsChangedParams): void {
     this._params = params;
     this._action = "update";
   }
@@ -59,7 +57,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
         <ha-formfield
           .label=${this.hass.localize(
             "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.update",
-            this._params
+            this._params.issue.data
           )}
         >
           <ha-radio
@@ -100,14 +98,15 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
 
   private async _fixIssue(): Promise<void> {
     if (this._action === "clear") {
-      await clearStatistics(this.hass, [this._params!.statistic_id]);
-      return;
+      await clearStatistics(this.hass, [this._params!.issue.data.statistic_id]);
+    } else {
+      await updateStatisticsMetadata(
+        this.hass,
+        this._params!.issue.data.statistic_id,
+        this._params!.issue.data.state_unit
+      );
     }
-    await updateStatisticsMetadata(
-      this.hass,
-      this._params!.statistic_id,
-      this._params!.state_unit
-    );
+    this._params?.fixedCallback();
     this.closeDialog();
   }
 

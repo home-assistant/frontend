@@ -81,12 +81,12 @@ export type StatisticsValidationResult =
   | StatisticsValidationResultUnitsChanged;
 export interface StatisticsValidationResultUnspuportedUnit {
   type: "unsupported_unit";
-  data: { statistic_id: string; state_unit: string; metadata_unit: string };
+  data: { statistic_id: string; device_class: string; state_unit: string };
 }
 
 export interface StatisticsValidationResultUnitsChanged {
   type: "units_changed";
-  data: { statistic_id: string; device_class: string; state_unit: string };
+  data: { statistic_id: string; state_unit: string; metadata_unit: string };
 }
 export interface StatisticsValidationResults {
   [statisticId: string]: StatisticsValidationResult[];
