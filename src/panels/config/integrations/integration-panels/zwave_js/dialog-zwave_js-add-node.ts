@@ -124,8 +124,8 @@ class DialogZWaveJSAddNode extends LitElement {
                     <div class="secondary">
                       Requires user interaction during inclusion. Uses the older
                       S0 security that is secure, but slow due to a lot of
-                      overhead. Allows securly inclusing S2 capable devices
-                      which fail to be includes with S2.
+                      overhead. Allows securely including S2 capable devices
+                      which fail to be included with S2.
                     </div>`}
                 >
                   <ha-radio
