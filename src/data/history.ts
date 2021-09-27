@@ -77,7 +77,7 @@ export interface StatisticsMetaData {
 }
 
 export type StatisticsValidationResult =
-  | StatisticsValidationResultUnspuportedUnit
+  | StatisticsValidationResultUnsupportedUnit
   | StatisticsValidationResultUnitsChanged;
 export interface StatisticsValidationResultUnspuportedUnit {
   type: "unsupported_unit";
