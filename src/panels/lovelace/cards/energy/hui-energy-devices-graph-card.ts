@@ -21,7 +21,11 @@ import {
 import "../../../../components/chart/ha-chart-base";
 import type HaChartBase from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
+import {
+  DeviceConsumptionEnergyPreference,
+  EnergyData,
+  getEnergyDataCollection,
+} from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   fetchStatistics,
@@ -47,6 +51,8 @@ export class HuiEnergyDevicesGraphCard
   @state() private _chartData: ChartData = { datasets: [] };
 
   @query("ha-chart-base") private _chart?: HaChartBase;
+
+  private _deviceConsumptionPrefs: DeviceConsumptionEnergyPreference[] = [];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -101,7 +107,16 @@ export class HuiEnergyDevicesGraphCard
       scales: {
         y: {
           type: "category",
-          ticks: { autoSkip: false },
+          ticks: {
+            autoSkip: false,
+            callback: (index) => {
+              const devicePref = this._deviceConsumptionPrefs[index];
+              const entity = this.hass.states[devicePref.stat_consumption];
+              return entity
+                ? computeStateName(entity)
+                : devicePref.stat_consumption;
+            },
+          },
         },
         x: {
           title: {
@@ -134,13 +149,15 @@ export class HuiEnergyDevicesGraphCard
         );
         fireEvent(this, "hass-more-info", {
           // @ts-ignore
-          entityId: this._chartData?.datasets[0]?.data[index]?.entity_id,
+          entityId: this._chartData?.datasets[0]?.data[index]?.label,
         });
       },
     })
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    this._deviceConsumptionPrefs = energyData.prefs.device_consumption;
+
     this._data = await fetchStatistics(
       this.hass,
       addHours(energyData.start, -1),
@@ -180,9 +197,6 @@ export class HuiEnergyDevicesGraphCard
     ];
 
     energyData.prefs.device_consumption.forEach((device, idx) => {
-      const entity = this.hass.states[device.stat_consumption];
-      const label = entity ? computeStateName(entity) : device.stat_consumption;
-
       const value =
         device.stat_consumption in this._data!
           ? calculateStatisticSumGrowth(this._data![device.stat_consumption]) ||
@@ -191,9 +205,8 @@ export class HuiEnergyDevicesGraphCard
 
       data.push({
         // @ts-expect-error
-        y: label,
+        y: device.stat_consumption,
         x: value,
-        entity_id: device.stat_consumption,
         idx,
       });
     });
