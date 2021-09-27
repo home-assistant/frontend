@@ -19,11 +19,12 @@ import {
   subscribeAddNode,
   validateDskAndEnterPin,
 } from "../../../../../data/zwave_js";
-import { haStyleDialog } from "../../../../../resources/styles";
+import { haStyle, haStyleDialog } from "../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../types";
 import { ZWaveJSAddNodeDialogParams } from "./show-dialog-zwave_js-add-node";
 import "../../../../../components/ha-radio";
 import { HaCheckbox } from "../../../../../components/ha-checkbox";
+import "../../../../../components/ha-alert";
 
 export interface ZWaveJSAddNodeDevice {
   id: string;
@@ -54,6 +55,8 @@ class DialogZWaveJSAddNode extends LitElement {
   @state() private _inclusionStrategy?: InclusionStrategy;
 
   @state() private _dsk?: string;
+
+  @state() private _error?: string;
 
   @state() private _requestedGrant?: RequestedGrant;
 
@@ -96,7 +99,7 @@ class DialogZWaveJSAddNode extends LitElement {
             </div>`
           : ""}
         ${this._status === "choose_strategy"
-          ? html` Choose strategy
+          ? html`<h3>Choose strategy</h3>
               <div class="flex-column">
                 <ha-formfield
                   .label=${html`<b>Secure</b>
@@ -157,9 +160,27 @@ class DialogZWaveJSAddNode extends LitElement {
           : ``}
         ${this._status === "validate_dsk_enter_pin"
           ? html`
-              <div class="flex-container">
-                validate_dsk_enter_pin: DSK: ${this._dsk}
-                <paper-input label="Pin" id="pin-input"></paper-input>
+                <p>
+                  Please enter the 5-digit PIN for your device and verify that
+                  the rest of the device-specific key matches the one that can
+                  be found on your device or the manual.
+                </p>
+                ${
+                  this._error
+                    ? html`<ha-alert alert-type="error"
+                        >${this._error}</ha-alert
+                      >`
+                    : ""
+                }
+                <div class="flex-container">
+                <paper-input
+                  label="PIN"
+                  id="pin-input"
+                  @keyup=${this._handlePinKeyUp}
+                  no-label-float
+                ></paper-input>
+                ${this._dsk}
+                </div>
                 <mwc-button
                   slot="primaryAction"
                   @click=${this._validateDskAndEnterPin}
@@ -172,28 +193,36 @@ class DialogZWaveJSAddNode extends LitElement {
         ${this._status === "grant_security_classes"
           ? html`
               <h3>The device has requested the following security classes:</h3>
+              ${this._error
+                ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+                : ""}
               <div class="flex-column">
-                ${this._requestedGrant?.securityClasses.map(
-                  (securityClass) => html`<ha-formfield
-                    .label=${html`<b
-                        >${this.hass.localize(
-                          `ui.panel.config.zwave_js.add_node.security_classes.${SecurityClass[securityClass]}.title`
-                        )}</b
-                      >
-                      <div class="secondary">
-                        ${this.hass.localize(
-                          `ui.panel.config.zwave_js.add_node.security_classes.${SecurityClass[securityClass]}.description`
-                        )}
-                      </div>`}
-                  >
-                    <ha-checkbox
-                      @change=${this._handleSecurityClassChange}
-                      .value=${securityClass}
-                      .checked=${this._securityClasses.includes(securityClass)}
+                ${this._requestedGrant?.securityClasses
+                  .sort()
+                  .reverse()
+                  .map(
+                    (securityClass) => html`<ha-formfield
+                      .label=${html`<b
+                          >${this.hass.localize(
+                            `ui.panel.config.zwave_js.add_node.security_classes.${SecurityClass[securityClass]}.title`
+                          )}</b
+                        >
+                        <div class="secondary">
+                          ${this.hass.localize(
+                            `ui.panel.config.zwave_js.add_node.security_classes.${SecurityClass[securityClass]}.description`
+                          )}
+                        </div>`}
                     >
-                    </ha-checkbox>
-                  </ha-formfield>`
-                )}
+                      <ha-checkbox
+                        @change=${this._handleSecurityClassChange}
+                        .value=${securityClass}
+                        .checked=${this._securityClasses.includes(
+                          securityClass
+                        )}
+                      >
+                      </ha-checkbox>
+                    </ha-formfield>`
+                  )}
               </div>
               <mwc-button
                 slot="primaryAction"
@@ -383,8 +412,15 @@ class DialogZWaveJSAddNode extends LitElement {
     }
   }
 
+  private _handlePinKeyUp(ev: KeyboardEvent) {
+    if (ev.keyCode === 13) {
+      this._validateDskAndEnterPin();
+    }
+  }
+
   private async _validateDskAndEnterPin(): Promise<void> {
     this._status = "loading";
+    this._error = undefined;
     try {
       await validateDskAndEnterPin(
         this.hass,
@@ -392,15 +428,22 @@ class DialogZWaveJSAddNode extends LitElement {
         this._pinInput!.value as string
       );
     } catch (err) {
+      this._error = err.message;
       this._status = "validate_dsk_enter_pin";
     }
   }
 
   private async _grantSecurityClasses(): Promise<void> {
     this._status = "loading";
+    this._error = undefined;
     try {
-      grantSecurityClasses(this.hass, this._entryId!, this._securityClasses);
+      await grantSecurityClasses(
+        this.hass,
+        this._entryId!,
+        this._securityClasses
+      );
     } catch (err) {
+      this._error = err.message;
       this._status = "grant_security_classes";
     }
   }
@@ -514,9 +557,10 @@ class DialogZWaveJSAddNode extends LitElement {
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
+      haStyle,
       css`
-        .secure_inclusion_field {
-          margin-top: 48px;
+        h3 {
+          margin-top: 0;
         }
 
         .success {

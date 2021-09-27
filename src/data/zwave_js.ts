@@ -226,26 +226,24 @@ export const grantSecurityClasses = (
   entry_id: string,
   security_classes: SecurityClass[],
   client_side_auth?: boolean
-) => {
+) =>
   hass.callWS({
     type: "zwave_js/grant_security_classes",
     entry_id,
     security_classes,
     client_side_auth,
   });
-};
 
 export const validateDskAndEnterPin = (
   hass: HomeAssistant,
   entry_id: string,
   pin: string
-) => {
+) =>
   hass.callWS({
     type: "zwave_js/validate_dsk_and_enter_pin",
     entry_id,
     pin,
   });
-};
 
 export const fetchNodeStatus = (
   hass: HomeAssistant,
