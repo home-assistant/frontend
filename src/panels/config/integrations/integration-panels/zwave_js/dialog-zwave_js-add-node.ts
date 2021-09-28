@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
+import { mdiAlertCircle, mdiCheckCircle, mdiCloseCircle } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -61,6 +61,8 @@ class DialogZWaveJSAddNode extends LitElement {
   @state() private _requestedGrant?: RequestedGrant;
 
   @state() private _securityClasses: SecurityClass[] = [];
+
+  @state() private _lowSecurity = false;
 
   private _addNodeTimeoutHandle?: number;
 
@@ -343,8 +345,8 @@ class DialogZWaveJSAddNode extends LitElement {
           ? html`
               <div class="flex-container">
                 <ha-svg-icon
-                  .path=${mdiCheckCircle}
-                  class="success"
+                  .path=${this._lowSecurity ? mdiAlertCircle : mdiCheckCircle}
+                  class=${this._lowSecurity ? "warning" : "success"}
                 ></ha-svg-icon>
                 <div class="status">
                   <p>
@@ -352,6 +354,15 @@ class DialogZWaveJSAddNode extends LitElement {
                       "ui.panel.config.zwave_js.add_node.inclusion_finished"
                     )}
                   </p>
+                  ${this._lowSecurity
+                    ? html`<ha-alert
+                        alert-type="warning"
+                        title="The device was added insecurely"
+                      >
+                        There was and error during secure inclusion. You can try
+                        again by excluding the device and adding it again.
+                      </ha-alert>`
+                    : ""}
                   <a href="${`/config/devices/device/${this._device!.id}`}">
                     <mwc-button>
                       ${this.hass.localize(
@@ -453,6 +464,7 @@ class DialogZWaveJSAddNode extends LitElement {
     if (!this.hass) {
       return;
     }
+    this._lowSecurity = false;
     this._subscribed = subscribeAddNode(
       this.hass,
       this._entryId!,
@@ -497,6 +509,7 @@ class DialogZWaveJSAddNode extends LitElement {
         }
         if (message.event === "node added") {
           this._status = "interviewing";
+          this._lowSecurity = message.node.low_security;
         }
 
         if (message.event === "interview completed") {
@@ -559,6 +572,10 @@ class DialogZWaveJSAddNode extends LitElement {
 
         .success {
           color: var(--success-color);
+        }
+
+        .warning {
+          color: var(--warning-color);
         }
 
         .failed {
