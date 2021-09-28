@@ -52,6 +52,14 @@ export class HaStatisticPicker extends LitElement {
   public includeUnitOfMeasurement?: string[];
 
   /**
+   * Show only statistics with these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
+
+  /**
    * Show only statistics on entities.
    * @type {Boolean}
    * @attr entities-only
@@ -116,6 +124,7 @@ export class HaStatisticPicker extends LitElement {
     (
       statisticIds: StatisticsMetaData[],
       includeUnitOfMeasurement?: string[],
+      includeDeviceClasses?: string[],
       entitiesOnly?: boolean
     ): Array<{ id: string; name: string; state?: HassEntity }> => {
       if (!statisticIds.length) {
@@ -148,11 +157,18 @@ export class HaStatisticPicker extends LitElement {
           }
           return;
         }
-        output.push({
-          id: meta.statistic_id,
-          name: computeStateName(entityState),
-          state: entityState,
-        });
+        if (
+          !includeDeviceClasses ||
+          includeDeviceClasses.includes(
+            entityState!.attributes.device_class || ""
+          )
+        ) {
+          output.push({
+            id: meta.statistic_id,
+            name: computeStateName(entityState),
+            state: entityState,
+          });
+        }
       });
 
       if (!output.length) {
@@ -203,6 +219,7 @@ export class HaStatisticPicker extends LitElement {
         (this.comboBox as any).items = this._getStatistics(
           this.statisticIds!,
           this.includeUnitOfMeasurement,
+          this.includeDeviceClasses,
           this.entitiesOnly
         );
       } else {
@@ -210,6 +227,7 @@ export class HaStatisticPicker extends LitElement {
           (this.comboBox as any).items = this._getStatistics(
             this.statisticIds!,
             this.includeUnitOfMeasurement,
+            this.includeDeviceClasses,
             this.entitiesOnly
           );
         });

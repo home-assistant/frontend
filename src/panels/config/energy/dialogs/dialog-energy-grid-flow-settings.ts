@@ -21,6 +21,7 @@ import type { HaRadio } from "../../../../components/ha-radio";
 import "../../../../components/entity/ha-entity-picker";
 
 const energyUnits = ["kWh"];
+const energyDeviceClasses = ["energy"];
 
 @customElement("dialog-energy-grid-flow-settings")
 export class DialogEnergyGridFlowSettings
@@ -94,6 +95,7 @@ export class DialogEnergyGridFlowSettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitOfMeasurement=${energyUnits}
+          .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source[
             this._params.direction === "from"
               ? "stat_energy_from"
