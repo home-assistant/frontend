@@ -5,6 +5,9 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
 import {
   emptyGasEnergyPreference,
+  ENERGY_GAS_ENERGY_UNITS,
+  ENERGY_GAS_UNITS,
+  ENERGY_GAS_VOLUME_UNITS,
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -18,9 +21,6 @@ import "../../../../components/ha-radio";
 import "../../../../components/ha-formfield";
 import type { HaRadio } from "../../../../components/ha-radio";
 
-const VOLUME_UNITS = ["m³"];
-const ENERGY_UNITS = ["kWh"];
-const GAS_UNITS = [...VOLUME_UNITS, ...ENERGY_UNITS];
 @customElement("dialog-energy-gas-settings")
 export class DialogEnergyGasSettings
   extends LitElement
@@ -79,10 +79,10 @@ export class DialogEnergyGasSettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitOfMeasurement=${this._params.unit === undefined
-            ? GAS_UNITS
+            ? ENERGY_GAS_UNITS
             : this._params.unit === "energy"
-            ? ENERGY_UNITS
-            : VOLUME_UNITS}
+            ? ENERGY_GAS_ENERGY_UNITS
+            : ENERGY_GAS_VOLUME_UNITS}
           .value=${this._source.stat_energy_from}
           .label=${`Gas usage (${
             this._params.unit === undefined

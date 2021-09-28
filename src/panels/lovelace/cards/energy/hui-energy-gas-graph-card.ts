@@ -24,6 +24,7 @@ import { labDarken } from "../../../../common/color/lab";
 import {
   EnergyData,
   getEnergyDataCollection,
+  getEnergyGasUnit,
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
@@ -217,14 +218,7 @@ export class HuiEnergyGasGraphCard
         (source) => source.type === "gas"
       ) as GasSourceTypeEnergyPreference[];
 
-    this._unit =
-      gasSources.length &&
-      ["Wh", "kWh"].includes(
-        this.hass.states[gasSources[0].stat_energy_from]?.attributes
-          .unit_of_measurement || ""
-      )
-        ? "kWh"
-        : "m³";
+    this._unit = getEnergyGasUnit(this.hass, energyData.prefs) || "m³";
 
     const statisticsData = Object.values(energyData.stats);
     const datasets: ChartDataset<"bar">[] = [];

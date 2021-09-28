@@ -11,6 +11,7 @@ import {
   GasSourceTypeEnergyPreference,
   EnergyPreferencesValidation,
   EnergyValidationIssue,
+  getEnergyGasUnit,
 } from "../../../../data/energy";
 import {
   showConfirmationDialog,
@@ -108,26 +109,8 @@ export class EnergyGasSettings extends LitElement {
   }
 
   private _addSource() {
-    const currentGasSources = this.preferences.energy_sources.filter(
-      (source) => source.type === "gas"
-    );
-    let unit: "volume" | "energy" | undefined;
-    if (currentGasSources.length) {
-      const entity =
-        this.hass.states[
-          (currentGasSources[0] as GasSourceTypeEnergyPreference)
-            .stat_energy_from
-        ];
-      if (entity) {
-        unit =
-          entity.attributes.unit_of_measurement === "m³" ||
-          entity.attributes.unit_of_measurement === "ft³"
-            ? "volume"
-            : "energy";
-      }
-    }
     showEnergySettingsGasDialog(this, {
-      unit,
+      unit: getEnergyGasUnit(this.hass, this.preferences),
       saveCallback: async (source) => {
         await this._savePreferences({
           ...this.preferences,
@@ -138,25 +121,11 @@ export class EnergyGasSettings extends LitElement {
   }
 
   private _editSource(ev) {
-    const currentGasSources = this.preferences.energy_sources.filter(
-      (source) => source.type === "gas"
-    );
-    let unit: "volume" | "energy" | undefined;
     const origSource: GasSourceTypeEnergyPreference =
       ev.currentTarget.closest(".row").source;
-    if (currentGasSources.length > 1) {
-      const entity = this.hass.states[origSource.stat_energy_from];
-      if (entity) {
-        unit =
-          entity.attributes.unit_of_measurement === "m³" ||
-          entity.attributes.unit_of_measurement === "ft³"
-            ? "volume"
-            : "energy";
-      }
-    }
     showEnergySettingsGasDialog(this, {
       source: { ...origSource },
-      unit,
+      unit: getEnergyGasUnit(this.hass, this.preferences),
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,

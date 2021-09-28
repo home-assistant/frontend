@@ -26,6 +26,7 @@ import {
   EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
+  getEnergyGasUnit,
 } from "../../../../data/energy";
 import { calculateStatisticSumGrowth } from "../../../../data/history";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -116,15 +117,7 @@ export class HuiEnergySourcesTableCard
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
       );
 
-    let gasUnit = "";
-    if (types.gas) {
-      gasUnit = ["Wh", "kWh"].includes(
-        this.hass.states[types.gas[0].stat_energy_from]?.attributes
-          .unit_of_measurement || ""
-      )
-        ? "kWh"
-        : "m³";
-    }
+    const gasUnit = getEnergyGasUnit(this.hass, this._data.prefs) || "";
 
     return html` <ha-card>
       ${this._config.title
