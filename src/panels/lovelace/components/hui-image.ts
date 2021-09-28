@@ -164,8 +164,7 @@ export class HuiImage extends LitElement {
     if (
       this._loadState === LoadState.Loading &&
       !this.cameraImage &&
-      imageSrc &&
-      !imageSrc.startsWith("http")
+      imageSrc
     ) {
       this._loadState = LoadState.Loaded;
     }
