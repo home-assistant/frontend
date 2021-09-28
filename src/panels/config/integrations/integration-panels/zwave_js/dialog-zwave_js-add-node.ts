@@ -97,12 +97,11 @@ class DialogZWaveJSAddNode extends LitElement {
           ? html`<div style="display: flex; justify-content: center;">
               <ha-circular-progress size="large" active></ha-circular-progress>
             </div>`
-          : ""}
-        ${this._status === "choose_strategy"
+          : this._status === "choose_strategy"
           ? html`<h3>Choose strategy</h3>
               <div class="flex-column">
                 <ha-formfield
-                  .label=${html`<b>Secure</b>
+                  .label=${html`<b>Secure if possible</b>
                     <div class="secondary">
                       Requires user interaction during inclusion. Fast and
                       secure with S2 when supported. Fallback to legacy S0 or no
@@ -122,10 +121,9 @@ class DialogZWaveJSAddNode extends LitElement {
                 <ha-formfield
                   .label=${html`<b>Legacy Secure</b>
                     <div class="secondary">
-                      Requires user interaction during inclusion. Uses the older
-                      S0 security that is secure, but slow due to a lot of
-                      overhead. Allows securely including S2 capable devices
-                      which fail to be included with S2.
+                      Uses the older S0 security that is secure, but slow due to
+                      a lot of overhead. Allows securely including S2 capable
+                      devices which fail to be included with S2.
                     </div>`}
                 >
                   <ha-radio
@@ -157,8 +155,7 @@ class DialogZWaveJSAddNode extends LitElement {
               >
                 Search device
               </mwc-button>`
-          : ``}
-        ${this._status === "validate_dsk_enter_pin"
+          : this._status === "validate_dsk_enter_pin"
           ? html`
                 <p>
                   Please enter the 5-digit PIN for your device and verify that
@@ -189,8 +186,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 </mwc-button>
               </div>
             `
-          : ``}
-        ${this._status === "grant_security_classes"
+          : this._status === "grant_security_classes"
           ? html`
               <h3>The device has requested the following security classes:</h3>
               ${this._error
@@ -232,8 +228,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 Submit
               </mwc-button>
             `
-          : ``}
-        ${this._status === "timed_out"
+          : this._status === "timed_out"
           ? html`
               <h3>Timed out!</h3>
               <p>
@@ -244,8 +239,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 Retry
               </mwc-button>
             `
-          : ``}
-        ${this._status === "started"
+          : this._status === "started"
           ? html`
               <div class="flex-container">
                 <ha-circular-progress active></ha-circular-progress>
@@ -263,9 +257,12 @@ class DialogZWaveJSAddNode extends LitElement {
                     )}
                   </p>
                   <p>
-                    <a href="#" @click=${this._chooseInclusionStrategy}
-                      >Choose inclusion strategy</a
+                    <button
+                      class="link"
+                      @click=${this._chooseInclusionStrategy}
                     >
+                      Advanced inclusion
+                    </button>
                   </p>
                 </div>
               </div>
@@ -275,8 +272,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 )}
               </mwc-button>
             `
-          : ``}
-        ${this._status === "interviewing"
+          : this._status === "interviewing"
           ? html`
               <div class="flex-container">
                 <ha-circular-progress active></ha-circular-progress>
@@ -309,8 +305,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
               </mwc-button>
             `
-          : ``}
-        ${this._status === "failed"
+          : this._status === "failed"
           ? html`
               <div class="flex-container">
                 <ha-svg-icon
@@ -344,8 +339,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
               </mwc-button>
             `
-          : ``}
-        ${this._status === "finished"
+          : this._status === "finished"
           ? html`
               <div class="flex-container">
                 <ha-svg-icon
@@ -386,7 +380,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 ${this.hass.localize("ui.panel.config.zwave_js.common.close")}
               </mwc-button>
             `
-          : ``}
+          : ""}
       </ha-dialog>
     `;
   }
