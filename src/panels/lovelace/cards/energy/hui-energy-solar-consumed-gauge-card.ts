@@ -11,6 +11,7 @@ import {
   EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
+  getTotalGridReturn,
 } from "../../../../data/energy";
 import { calculateStatisticsSumGrowth } from "../../../../data/history";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -69,9 +70,9 @@ class HuiEnergySolarGaugeCard
       types.solar.map((source) => source.stat_energy_from)
     );
 
-    const productionReturnedToGrid = calculateStatisticsSumGrowth(
+    const productionReturnedToGrid = getTotalGridReturn(
       this._data.stats,
-      types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
+      types.grid![0]
     );
 
     let value: number | undefined;

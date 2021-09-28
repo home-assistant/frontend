@@ -68,6 +68,8 @@ export interface StatisticValue {
   mean: number | null;
   min: number | null;
   sum: number | null;
+  sum_decrease?: number;
+  sum_increase?: number;
   state: number | null;
 }
 
@@ -306,17 +308,18 @@ export const fetchStatistics = (
   });
 
 export const calculateStatisticSumGrowth = (
-  values: StatisticValue[]
+  values: StatisticValue[],
+  sumKey: "sum" | "sum_increase" | "sum_decrease" = "sum"
 ): number | null => {
   if (!values || values.length < 2) {
     return null;
   }
-  const endSum = values[values.length - 1].sum;
-  if (endSum === null) {
+  const endSum = values[values.length - 1][sumKey];
+  if (endSum === null || endSum === undefined) {
     return null;
   }
-  const startSum = values[0].sum;
-  if (startSum === null) {
+  const startSum = values[0][sumKey];
+  if (startSum === null || startSum === undefined) {
     return endSum;
   }
   return endSum - startSum;
@@ -324,7 +327,8 @@ export const calculateStatisticSumGrowth = (
 
 export const calculateStatisticsSumGrowth = (
   data: Statistics,
-  stats: string[]
+  stats: string[],
+  sumKey: "sum" | "sum_increase" | "sum_decrease" = "sum"
 ): number | null => {
   let totalGrowth: number | null = null;
 
@@ -332,7 +336,7 @@ export const calculateStatisticsSumGrowth = (
     if (!(stat in data)) {
       continue;
     }
-    const statGrowth = calculateStatisticSumGrowth(data[stat]);
+    const statGrowth = calculateStatisticSumGrowth(data[stat], sumKey);
 
     if (statGrowth === null) {
       continue;
@@ -346,6 +350,16 @@ export const calculateStatisticsSumGrowth = (
 
   return totalGrowth;
 };
+
+export const calculateStatisticsSumIncreaseGrowth = (
+  data: Statistics,
+  stats: string[]
+): number | null => calculateStatisticsSumGrowth(data, stats, "sum_increase");
+
+export const calculateStatisticsSumDecreaseGrowth = (
+  data: Statistics,
+  stats: string[]
+): number | null => calculateStatisticsSumGrowth(data, stats, "sum_decrease");
 
 export const statisticsHaveType = (
   stats: StatisticValue[],

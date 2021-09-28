@@ -3,6 +3,7 @@ import {
   mdiDelete,
   mdiHomeExportOutline,
   mdiHomeImportOutline,
+  mdiHomePlusOutline,
   mdiPencil,
   mdiTransmissionTower,
 } from "@mdi/js";
@@ -171,6 +172,41 @@ export class EnergyGridSettings extends LitElement {
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiHomeExportOutline}></ha-svg-icon>
             <mwc-button @click=${this._addToSource}>Add return</mwc-button>
+          </div>
+
+          <p>
+            If your meter goes down when your return to the grid, add a net
+            source.
+          </p>
+          <h3>Combined consumption and return</h3>
+          ${gridSource.flow_net?.map((flow) => {
+            const entityState = this.hass.states[flow.stat_energy_net];
+            return html`
+              <div class="row" .source=${flow}>
+                ${entityState?.attributes.icon
+                  ? html`<ha-icon
+                      .icon=${entityState.attributes.icon}
+                    ></ha-icon>`
+                  : html`<ha-svg-icon
+                      .path=${mdiHomePlusOutline}
+                    ></ha-svg-icon>`}
+                <span class="content"
+                  >${entityState
+                    ? computeStateName(entityState)
+                    : flow.stat_energy_net}</span
+                >
+                <mwc-icon-button @click=${this._editToSource}>
+                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
+                </mwc-icon-button>
+                <mwc-icon-button @click=${this._deleteToSource}>
+                  <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
+                </mwc-icon-button>
+              </div>
+            `;
+          })}
+          <div class="row border-bottom">
+            <ha-svg-icon .path=${mdiHomePlusOutline}></ha-svg-icon>
+            <mwc-button @click=${this._addToSource}>Add net</mwc-button>
           </div>
 
           <h3>Grid carbon footprint</h3>

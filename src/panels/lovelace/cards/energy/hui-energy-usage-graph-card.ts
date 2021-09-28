@@ -231,6 +231,7 @@ export class HuiEnergyUsageGraphCard
     const statistics: {
       to_grid?: string[];
       from_grid?: string[];
+      net_grid?: string[];
       solar?: string[];
       to_battery?: string[];
       from_battery?: string[];
@@ -274,6 +275,15 @@ export class HuiEnergyUsageGraphCard
           statistics.to_grid.push(flowTo.stat_energy_to);
         } else {
           statistics.to_grid = [flowTo.stat_energy_to];
+        }
+      }
+      if (source.flow_net) {
+        for (const flowNet of source.flow_net) {
+          if (statistics.net_grid) {
+            statistics.net_grid.push(flowNet.stat_energy_net);
+          } else {
+            statistics.net_grid = [flowNet.stat_energy_net];
+          }
         }
       }
     }
@@ -325,6 +335,8 @@ export class HuiEnergyUsageGraphCard
       to_battery?: { [start: string]: number };
       from_battery?: { [start: string]: number };
       solar?: { [start: string]: number };
+      net_grid_increased?: { [start: string]: number };
+      net_grid_decreased?: { [start: string]: number };
     } = {};
 
     const computedStyles = getComputedStyle(this);
@@ -366,9 +378,15 @@ export class HuiEnergyUsageGraphCard
         "to_battery",
         "from_battery",
       ].includes(key);
-      const add = !["solar", "from_battery"].includes(key);
+      const add = !["solar", "from_battery", "net_grid"].includes(key);
       const totalStats: { [start: string]: number } = {};
+      const totalStatsInc: { [start: string]: number } = {};
+      const totalStatsDec: { [start: string]: number } = {};
       const sets: { [statId: string]: { [start: string]: number } } = {};
+      const setsNet: {
+        setInc: { [statId: string]: { [start: string]: number } };
+        setDec: { [statId: string]: { [start: string]: number } };
+      } = { setInc: {}, setDec: {} };
       statIds!.forEach((id) => {
         const stats =
           dayDifference > 35
@@ -380,39 +398,111 @@ export class HuiEnergyUsageGraphCard
           return;
         }
 
-        const set = {};
-        let prevValue: number;
-        stats.forEach((stat) => {
-          if (stat.sum === null) {
-            return;
-          }
-          if (prevValue === undefined) {
+        if (key === "net_grid") {
+          const setInc = {};
+          const setDec = {};
+          let prevValueInc: number;
+          let prevValueDec: number;
+          stats.forEach((stat) => {
+            if (
+              stat.sum_decrease === null ||
+              stat.sum_decrease === undefined ||
+              stat.sum_increase === null ||
+              stat.sum_increase === undefined
+            ) {
+              return;
+            }
+            if (prevValueInc === undefined) {
+              prevValueInc = stat.sum_increase;
+              prevValueDec = stat.sum_decrease;
+              return;
+            }
+            const valIncrease = stat.sum_increase - prevValueInc;
+            const valDecrease = stat.sum_decrease - prevValueDec;
+            totalStatsInc[stat.start] =
+              stat.start in totalStatsInc
+                ? totalStatsInc[stat.start] + valIncrease
+                : valIncrease;
+            totalStatsDec[stat.start] =
+              stat.start in totalStatsDec
+                ? totalStatsDec[stat.start] + valDecrease
+                : valDecrease;
+            if (!(stat.start in setInc)) {
+              setInc[stat.start] = valIncrease;
+              setDec[stat.start] = valDecrease;
+            }
+            prevValueInc = stat.sum_increase;
+            prevValueDec = stat.sum_decrease;
+          });
+          setsNet.setInc[id] = setInc;
+          setsNet.setDec[id] = setDec;
+        } else {
+          const set = {};
+          let prevValue: number;
+          stats.forEach((stat) => {
+            if (stat.sum === null) {
+              return;
+            }
+            if (prevValue === undefined) {
+              prevValue = stat.sum;
+              return;
+            }
+            const val = stat.sum - prevValue;
+            if (sum) {
+              totalStats[stat.start] =
+                stat.start in totalStats ? totalStats[stat.start] + val : val;
+            }
+            if (add && !(stat.start in set)) {
+              set[stat.start] = val;
+            }
             prevValue = stat.sum;
-            return;
-          }
-          const val = stat.sum - prevValue;
-          // Get total of solar and to grid to calculate the solar energy used
-          if (sum) {
-            totalStats[stat.start] =
-              stat.start in totalStats ? totalStats[stat.start] + val : val;
-          }
-          if (add && !(stat.start in set)) {
-            set[stat.start] = val;
-          }
-          prevValue = stat.sum;
-        });
-        sets[id] = set;
+          });
+          sets[id] = set;
+        }
       });
+      if (key === "net_grid") {
+        combinedData.from_grid = {
+          ...combinedData.from_grid,
+          ...setsNet.setInc,
+        };
+        combinedData.to_grid = { ...combinedData.to_grid, ...setsNet.setDec };
+        summedData.net_grid_increased = totalStatsInc;
+        summedData.net_grid_decreased = totalStatsDec;
+        return;
+      }
       if (sum) {
         summedData[key] = totalStats;
       }
       if (add) {
-        combinedData[key] = sets;
+        combinedData[key] = { ...combinedData[key], ...sets };
       }
     });
 
+    if (summedData.net_grid_increased && summedData.net_grid_decreased) {
+      if (!summedData.to_grid && !summedData.from_grid) {
+        summedData.to_grid = summedData.net_grid_increased;
+        summedData.from_grid = summedData.net_grid_decreased;
+      } else {
+        if (!summedData.to_grid) {
+          summedData.to_grid = {};
+        }
+        if (!summedData.from_grid) {
+          summedData.from_grid = {};
+        }
+        for (const start of Object.keys(summedData.net_grid_increased)) {
+          summedData.to_grid[start] =
+            (summedData.to_grid[start] || 0) +
+            summedData.net_grid_increased[start];
+          summedData.from_grid[start] =
+            (summedData.from_grid[start] || 0) +
+            summedData.net_grid_decreased[start];
+        }
+      }
+    }
+
     const grid_to_battery = {};
     const battery_to_grid = {};
+
     if ((summedData.to_grid || summedData.to_battery) && summedData.solar) {
       const used_solar = {};
       for (const start of Object.keys(summedData.solar)) {

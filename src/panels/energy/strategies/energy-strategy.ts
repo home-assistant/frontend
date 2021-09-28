@@ -46,7 +46,8 @@ export class EnergyStrategy {
     const hasGrid = prefs.energy_sources.find(
       (source) => source.type === "grid"
     ) as GridSourceTypeEnergyPreference;
-    const hasReturn = hasGrid && hasGrid.flow_to.length;
+    const hasReturn =
+      hasGrid && (hasGrid.flow_to.length || hasGrid.flow_net?.length);
     const hasSolar = prefs.energy_sources.some(
       (source) => source.type === "solar"
     );

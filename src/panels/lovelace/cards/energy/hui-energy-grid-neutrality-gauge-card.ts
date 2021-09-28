@@ -11,9 +11,11 @@ import type { LevelDefinition } from "../../../../components/ha-gauge";
 import {
   EnergyData,
   getEnergyDataCollection,
+  getTotalGridConsumption,
+  getTotalGridReturn,
   GridSourceTypeEnergyPreference,
 } from "../../../../data/energy";
-import { calculateStatisticsSumGrowth } from "../../../../data/history";
+
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
@@ -75,15 +77,12 @@ class HuiEnergyGridGaugeCard
       return html``;
     }
 
-    const consumedFromGrid = calculateStatisticsSumGrowth(
+    const consumedFromGrid = getTotalGridConsumption(
       this._data.stats,
-      gridSource.flow_from.map((flow) => flow.stat_energy_from)
+      gridSource
     );
 
-    const returnedToGrid = calculateStatisticsSumGrowth(
-      this._data.stats,
-      gridSource.flow_to.map((flow) => flow.stat_energy_to)
-    );
+    const returnedToGrid = getTotalGridReturn(this._data.stats, gridSource);
 
     if (consumedFromGrid !== null && returnedToGrid !== null) {
       if (returnedToGrid > consumedFromGrid) {

@@ -1,3 +1,4 @@
+import "@material/mwc-button";
 import {
   mdiArrowDown,
   mdiArrowLeft,
@@ -14,7 +15,6 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, html, LitElement, svg } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "@material/mwc-button";
 import { formatNumber } from "../../../../common/string/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
@@ -22,6 +22,8 @@ import {
   EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
+  getTotalGridConsumption,
+  getTotalGridReturn,
 } from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
@@ -81,13 +83,12 @@ class HuiEnergyDistrubutionCard
     const hasSolarProduction = types.solar !== undefined;
     const hasBattery = types.battery !== undefined;
     const hasGas = types.gas !== undefined;
-    const hasReturnToGrid = hasConsumption && types.grid![0].flow_to.length > 0;
+    const hasReturnToGrid =
+      hasConsumption &&
+      (types.grid![0].flow_to.length || types.grid![0].flow_net?.length);
 
     const totalFromGrid =
-      calculateStatisticsSumGrowth(
-        this._data.stats,
-        types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
-      ) ?? 0;
+      getTotalGridConsumption(this._data.stats, types.grid![0]) ?? 0;
 
     let gasUsage: number | null = null;
     if (hasGas) {
@@ -128,10 +129,7 @@ class HuiEnergyDistrubutionCard
 
     if (hasReturnToGrid) {
       returnedToGrid =
-        calculateStatisticsSumGrowth(
-          this._data.stats,
-          types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
-        ) || 0;
+        getTotalGridReturn(this._data.stats, types.grid![0]) ?? 0;
     }
 
     let solarConsumption: number | null = null;
@@ -216,6 +214,11 @@ class HuiEnergyDistrubutionCard
         types
           .grid![0].flow_from.map(
             (flow) => this._data!.stats[flow.stat_energy_from]
+          )
+          .concat(
+            types.grid![0].flow_net?.map(
+              (flow) => this._data!.stats[flow.stat_energy_net]
+            ) || []
           )
           .filter(Boolean)
       );

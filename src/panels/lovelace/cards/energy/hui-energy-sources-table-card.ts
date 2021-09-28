@@ -111,12 +111,20 @@ export class HuiEnergySourcesTableCard
           flow.entity_energy_price ||
           flow.number_energy_price
       ) ||
+      types.grid?.[0].flow_net?.some(
+        (flow) =>
+          flow.stat_cost ||
+          flow.entity_energy_price_from ||
+          flow.number_energy_price_from ||
+          flow.entity_energy_price_to ||
+          flow.number_energy_price_to
+      ) ||
       types.gas?.some(
         (flow) =>
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
       );
 
-    return html` <ha-card>
+    return html`<ha-card>
       ${this._config.title
         ? html`<h1 class="card-header">${this._config.title}</h1>`
         : ""}
@@ -309,7 +317,7 @@ export class HuiEnergySourcesTableCard
                   totalGrid += energy;
                   const cost_stat =
                     flow.stat_cost ||
-                    this._data!.info.cost_sensors[flow.stat_energy_from];
+                    this._data!.info.cost_sensors[flow.stat_energy_from].none;
                   const cost = cost_stat
                     ? calculateStatisticSumGrowth(
                         this._data!.stats[cost_stat]
@@ -369,7 +377,7 @@ export class HuiEnergySourcesTableCard
                   totalGrid += energy;
                   const cost_stat =
                     flow.stat_compensation ||
-                    this._data!.info.cost_sensors[flow.stat_energy_to];
+                    this._data!.info.cost_sensors[flow.stat_energy_to].none;
                   const cost = cost_stat
                     ? (calculateStatisticSumGrowth(
                         this._data!.stats[cost_stat]
@@ -415,6 +423,145 @@ export class HuiEnergySourcesTableCard
                         </td>`
                       : ""}
                   </tr>`;
+                })}
+                ${source.flow_net?.map((flow, idx) => {
+                  const entity = this.hass.states[flow.stat_energy_net];
+                  const energy_from =
+                    calculateStatisticSumGrowth(
+                      this._data!.stats[flow.stat_energy_net],
+                      "sum_increase"
+                    ) || 0;
+                  const energy_to =
+                    (calculateStatisticSumGrowth(
+                      this._data!.stats[flow.stat_energy_net],
+                      "sum_decrease"
+                    ) || 0) * -1;
+                  totalGrid += energy_from + energy_to;
+                  let costIncrease: number | null = null;
+                  let costDecrease: number | null = null;
+                  if (flow.stat_cost) {
+                    costIncrease =
+                      calculateStatisticSumGrowth(
+                        this._data!.stats[flow.stat_cost],
+                        "sum_increase"
+                      ) || 0;
+                    costDecrease =
+                      (calculateStatisticSumGrowth(
+                        this._data!.stats[flow.stat_cost],
+                        "sum_decrease"
+                      ) || 0) * 1;
+                  } else {
+                    const cost_stat_increase =
+                      this._data!.info.cost_sensors[flow.stat_energy_net]
+                        .increase;
+                    const cost_stat_decrease =
+                      this._data!.info.cost_sensors[flow.stat_energy_net]
+                        .decrease;
+                    costIncrease = cost_stat_increase
+                      ? calculateStatisticSumGrowth(
+                          this._data!.stats[cost_stat_increase]
+                        ) || 0
+                      : null;
+                    costDecrease = cost_stat_decrease
+                      ? (calculateStatisticSumGrowth(
+                          this._data!.stats[cost_stat_decrease]
+                        ) || 0) * -1
+                      : null;
+                  }
+                  if (costIncrease !== null) {
+                    totalGridCost += costIncrease;
+                  }
+                  if (costDecrease !== null) {
+                    totalGridCost += costDecrease;
+                  }
+                  const colorFrom =
+                    idx > 0
+                      ? rgb2hex(
+                          lab2rgb(
+                            labDarken(
+                              rgb2lab(hex2rgb(consumptionColor)),
+                              source.flow_from.length + idx
+                            )
+                          )
+                        )
+                      : returnColor;
+                  const colorTo =
+                    idx > 0
+                      ? rgb2hex(
+                          lab2rgb(
+                            labDarken(
+                              rgb2lab(hex2rgb(returnColor)),
+                              source.flow_to.length + idx
+                            )
+                          )
+                        )
+                      : returnColor;
+                  return html`<tr class="mdc-data-table__row">
+                      <td class="mdc-data-table__cell cell-bullet">
+                        <div
+                          class="bullet"
+                          style=${styleMap({
+                            borderColor: colorFrom,
+                            backgroundColor: colorFrom + "7F",
+                          })}
+                        ></div>
+                      </td>
+                      <th class="mdc-data-table__cell" scope="row">
+                        ${entity
+                          ? computeStateName(entity)
+                          : flow.stat_energy_net}
+                      </th>
+                      <td
+                        class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                      >
+                        ${formatNumber(energy_from, this.hass.locale)} kWh
+                      </td>
+                      ${showCosts
+                        ? html` <td
+                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                          >
+                            ${costIncrease !== null
+                              ? formatNumber(costIncrease, this.hass.locale, {
+                                  style: "currency",
+                                  currency: this.hass.config.currency!,
+                                })
+                              : ""}
+                          </td>`
+                        : ""}
+                    </tr>
+                    <tr class="mdc-data-table__row">
+                      <td class="mdc-data-table__cell cell-bullet">
+                        <div
+                          class="bullet"
+                          style=${styleMap({
+                            borderColor: colorTo,
+                            backgroundColor: colorTo + "7F",
+                          })}
+                        ></div>
+                      </td>
+                      <th class="mdc-data-table__cell" scope="row">
+                        ${entity
+                          ? computeStateName(entity)
+                          : flow.stat_energy_net}
+                      </th>
+                      <td
+                        class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                      >
+                        ${formatNumber(energy_to, this.hass.locale)} kWh
+                      </td>
+                      ${showCosts
+                        ? html` <td
+                            class="mdc-data-table__cell mdc-data-table__cell--numeric"
+                          >
+                            ${costDecrease !== null
+                              ? formatNumber(costDecrease, this.hass.locale, {
+                                  style: "currency",
+                                  currency: this.hass.config.currency!,
+                                })
+                              : ""}
+                          </td>`
+                        : ""}
+                    </tr>`;
                 })}`
               )}
               ${types.grid
@@ -447,7 +594,7 @@ export class HuiEnergySourcesTableCard
                 totalGas += energy;
                 const cost_stat =
                   source.stat_cost ||
-                  this._data!.info.cost_sensors[source.stat_energy_from];
+                  this._data!.info.cost_sensors[source.stat_energy_from].none;
                 const cost = cost_stat
                   ? calculateStatisticSumGrowth(this._data!.stats[cost_stat]) ||
                     0

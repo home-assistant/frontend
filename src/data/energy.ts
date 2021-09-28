@@ -11,7 +11,13 @@ import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
 import { ConfigEntry, getConfigEntries } from "./config_entries";
 import { subscribeEntityRegistry } from "./entity_registry";
-import { fetchStatistics, Statistics } from "./history";
+import {
+  calculateStatisticsSumDecreaseGrowth,
+  calculateStatisticsSumGrowth,
+  calculateStatisticsSumIncreaseGrowth,
+  fetchStatistics,
+  Statistics,
+} from "./history";
 
 const energyCollectionKeys: (string | undefined)[] = [];
 
@@ -38,6 +44,7 @@ export const emptyGridSourceEnergyPreference =
     type: "grid",
     flow_from: [],
     flow_to: [],
+    flow_net: [],
     cost_adjustment_day: 0,
   });
 
@@ -78,12 +85,12 @@ export interface DeviceConsumptionEnergyPreference {
 export interface FlowFromGridSourceEnergyPreference {
   // kWh meter
   stat_energy_from: string;
+  entity_energy_from: string | null;
 
   // $ meter
   stat_cost: string | null;
 
   // Can be used to generate costs if stat_cost omitted
-  entity_energy_from: string | null;
   entity_energy_price: string | null;
   number_energy_price: number | null;
 }
@@ -91,14 +98,31 @@ export interface FlowFromGridSourceEnergyPreference {
 export interface FlowToGridSourceEnergyPreference {
   // kWh meter
   stat_energy_to: string;
+  entity_energy_to: string | null;
 
   // $ meter
   stat_compensation: string | null;
 
   // Can be used to generate costs if stat_cost omitted
-  entity_energy_to: string | null;
   entity_energy_price: string | null;
   number_energy_price: number | null;
+}
+
+export interface FlowNetGridSourceEnergyPreference {
+  // kWh meter
+  stat_energy_net: string;
+  entity_energy_net: string | null;
+
+  // $ meter to
+  stat_cost: string | null;
+
+  // Can be used to generate to costs if stat_cost omitted
+  entity_energy_price_to: string | null;
+  number_energy_price_to: number | null;
+
+  // Can be used to generate from costs if stat_cost omitted
+  entity_energy_price_from: string | null;
+  number_energy_price_from: number | null;
 }
 
 export interface GridSourceTypeEnergyPreference {
@@ -106,6 +130,7 @@ export interface GridSourceTypeEnergyPreference {
 
   flow_from: FlowFromGridSourceEnergyPreference[];
   flow_to: FlowToGridSourceEnergyPreference[];
+  flow_net?: FlowNetGridSourceEnergyPreference[];
 
   cost_adjustment_day: number;
 }
@@ -149,7 +174,7 @@ export interface EnergyPreferences {
 }
 
 export interface EnergyInfo {
-  cost_sensors: Record<string, string>;
+  cost_sensors: Record<string, Record<string, string>>;
   solar_forecast_domains: string[];
 }
 
@@ -263,7 +288,7 @@ const getEnergyData = async (
       if (source.stat_cost) {
         statIDs.push(source.stat_cost);
       }
-      const costStatId = info.cost_sensors[source.stat_energy_from];
+      const costStatId = info.cost_sensors[source.stat_energy_from].none;
       if (costStatId) {
         statIDs.push(costStatId);
       }
@@ -282,7 +307,7 @@ const getEnergyData = async (
       if (flowFrom.stat_cost) {
         statIDs.push(flowFrom.stat_cost);
       }
-      const costStatId = info.cost_sensors[flowFrom.stat_energy_from];
+      const costStatId = info.cost_sensors[flowFrom.stat_energy_from].none;
       if (costStatId) {
         statIDs.push(costStatId);
       }
@@ -292,9 +317,27 @@ const getEnergyData = async (
       if (flowTo.stat_compensation) {
         statIDs.push(flowTo.stat_compensation);
       }
-      const costStatId = info.cost_sensors[flowTo.stat_energy_to];
+      const costStatId = info.cost_sensors[flowTo.stat_energy_to].none;
       if (costStatId) {
         statIDs.push(costStatId);
+      }
+    }
+    if (source.flow_net) {
+      for (const flowTo of source.flow_net) {
+        statIDs.push(flowTo.stat_energy_net);
+        if (flowTo.stat_cost) {
+          statIDs.push(flowTo.stat_cost);
+        }
+        const costStatIdInc =
+          info.cost_sensors[flowTo.stat_energy_net].increase;
+        if (costStatIdInc) {
+          statIDs.push(costStatIdInc);
+        }
+        const costStatIdDec =
+          info.cost_sensors[flowTo.stat_energy_net].decrease;
+        if (costStatIdDec) {
+          statIDs.push(costStatIdDec);
+        }
       }
     }
   }
@@ -453,3 +496,49 @@ export const getEnergySolarForecasts = (hass: HomeAssistant) =>
   hass.callWS<EnergySolarForecasts>({
     type: "energy/solar_forecast",
   });
+
+export const getTotalGridConsumption = (
+  stats: Statistics,
+  gridSource: GridSourceTypeEnergyPreference
+) => {
+  const consumedFromGrid = calculateStatisticsSumGrowth(
+    stats,
+    gridSource.flow_from.map((flow) => flow.stat_energy_from)
+  );
+
+  const consumedFromGridNetto = gridSource.flow_net
+    ? calculateStatisticsSumIncreaseGrowth(
+        stats,
+        gridSource.flow_net.map((flow) => flow.stat_energy_net)
+      ) ?? 0
+    : null;
+
+  if (consumedFromGrid === null && consumedFromGridNetto === null) {
+    return null;
+  }
+
+  return (consumedFromGrid || 0) + (consumedFromGridNetto || 0);
+};
+
+export const getTotalGridReturn = (
+  stats: Statistics,
+  gridSource: GridSourceTypeEnergyPreference
+) => {
+  const returnedToGrid = calculateStatisticsSumGrowth(
+    stats,
+    gridSource.flow_to.map((flow) => flow.stat_energy_to)
+  );
+
+  const returnedToGridNetto = gridSource.flow_net
+    ? calculateStatisticsSumDecreaseGrowth(
+        stats,
+        gridSource.flow_net.map((flow) => flow.stat_energy_net)
+      ) ?? 0
+    : null;
+
+  if (returnedToGrid === null && returnedToGridNetto === null) {
+    return null;
+  }
+
+  return (returnedToGrid || 0) + (returnedToGridNetto || 0);
+};

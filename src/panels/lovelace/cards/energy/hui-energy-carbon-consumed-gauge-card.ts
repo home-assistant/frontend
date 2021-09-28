@@ -12,6 +12,7 @@ import {
   EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
+  getTotalGridConsumption,
 } from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
@@ -77,9 +78,9 @@ class HuiEnergyCarbonGaugeCard
     const prefs = this._data.prefs;
     const types = energySourcesByType(prefs);
 
-    const totalGridConsumption = calculateStatisticsSumGrowth(
+    const totalGridConsumption = getTotalGridConsumption(
       this._data.stats,
-      types.grid![0].flow_from.map((flow) => flow.stat_energy_from)
+      types.grid![0]
     );
 
     let value: number | undefined;
