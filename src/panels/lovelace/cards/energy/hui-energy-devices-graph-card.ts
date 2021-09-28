@@ -130,6 +130,10 @@ export class HuiEnergyDevicesGraphCard
         tooltip: {
           mode: "nearest",
           callbacks: {
+            title: (item) => {
+              const entity = this.hass.states[item[0].label];
+              return entity ? computeStateName(entity) : item[0].label;
+            },
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
                 context.parsed.x,
@@ -149,7 +153,7 @@ export class HuiEnergyDevicesGraphCard
         );
         fireEvent(this, "hass-more-info", {
           // @ts-ignore
-          entityId: this._chartData?.datasets[0]?.data[index]?.label,
+          entityId: this._chartData?.datasets[0]?.data[index]?.y,
         });
       },
     })
