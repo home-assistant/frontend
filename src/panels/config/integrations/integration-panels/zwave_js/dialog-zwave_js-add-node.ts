@@ -359,7 +359,7 @@ class DialogZWaveJSAddNode extends LitElement {
                         alert-type="warning"
                         title="The device was added insecurely"
                       >
-                        There was and error during secure inclusion. You can try
+                        There was an error during secure inclusion. You can try
                         again by excluding the device and adding it again.
                       </ha-alert>`
                     : ""}
