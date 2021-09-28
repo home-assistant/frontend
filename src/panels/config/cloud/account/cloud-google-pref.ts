@@ -6,6 +6,7 @@ import { property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-alert";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import { showAlertDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -44,41 +45,40 @@ export class CloudGooglePref extends LitElement {
           </p>
           ${google_enabled && !this.cloudStatus.google_registered
             ? html`
-                <h3 class="warning">
-                  ${this.hass.localize(
+                <ha-alert
+                  .title=${this.hass.localize(
                     "ui.panel.config.cloud.account.google.not_configured_title"
                   )}
-                </h3>
-                <p>
+                >
                   ${this.hass.localize(
                     "ui.panel.config.cloud.account.google.not_configured_text"
                   )}
-                </p>
 
-                <ul>
-                  <li>
-                    <a
-                      href="https://assistant.google.com/services/a/uid/00000091fd5fb875?hl=en-US"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.cloud.account.google.enable_ha_skill"
-                      )}
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="https://www.nabucasa.com/config/google_assistant/"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      ${this.hass.localize(
-                        "ui.panel.config.cloud.account.google.config_documentation"
-                      )}
-                    </a>
-                  </li>
-                </ul>
+                  <ul>
+                    <li>
+                      <a
+                        href="https://assistant.google.com/services/a/uid/00000091fd5fb875?hl=en-US"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.account.google.enable_ha_skill"
+                        )}
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href="https://www.nabucasa.com/config/google_assistant/"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        ${this.hass.localize(
+                          "ui.panel.config.cloud.account.google.config_documentation"
+                        )}
+                      </a>
+                    </li>
+                  </ul>
+                </ha-alert>
               `
             : ""}
           ${google_enabled

@@ -4,7 +4,6 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-card";
 import "../../../../components/ha-settings-row";
 import {
