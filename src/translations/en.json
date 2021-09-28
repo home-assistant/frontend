@@ -2753,33 +2753,33 @@
           },
           "common": {
             "network": "Network",
-            "node_id": "Node ID",
+            "node_id": "Device ID",
             "home_id": "Home ID",
             "source": "Source",
             "close": "Close",
-            "add_node": "Add Node",
-            "remove_node": "Remove Node",
+            "add_node": "Add device",
+            "remove_node": "Remove device",
             "reconfigure_server": "Re-configure Server",
             "heal_network": "Heal Network"
           },
           "dashboard": {
             "header": "Manage your Z-Wave Network",
-            "introduction": "Manage your Z-Wave network and Z-Wave nodes",
+            "introduction": "Manage your Z-Wave network and Z-Wave devices",
             "driver_version": "Driver Version",
             "server_version": "Server Version",
             "home_id": "Home ID",
-            "nodes_ready": "Nodes ready",
+            "nodes_ready": "Devices ready",
             "dump_debug": "Download a dump of your network to help diagnose issues",
-            "dump_dead_nodes_title": "Some of your nodes are dead",
-            "dump_dead_nodes_text": "Some of your nodes didn't respond and are assumed dead. These will not be fully exported.",
-            "dump_not_ready_title": "Not all nodes are ready yet",
-            "dump_not_ready_text": "If you create an export while not all nodes are ready, you could miss needed data. Give your network some time to query all nodes. Do you want to continue with the dump?",
+            "dump_dead_nodes_title": "Some of your devices are dead",
+            "dump_dead_nodes_text": "Some of your devices didn't respond and are assumed dead. These will not be fully exported.",
+            "dump_not_ready_title": "Not all devices are ready yet",
+            "dump_not_ready_text": "If you create an export while not all devices are ready, you could miss needed data. Give your network some time to query all devices. Do you want to continue with the dump?",
             "dump_not_ready_confirm": "Download"
           },
           "device_info": {
             "zwave_info": "Z-Wave Info",
-            "node_status": "Node Status",
-            "node_ready": "Node Ready",
+            "node_status": "Device Status",
+            "node_ready": "Device Ready",
             "device_config": "Configure Device",
             "reinterview_device": "Re-interview Device",
             "heal_node": "Heal Device",
@@ -2787,7 +2787,7 @@
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
-            "introduction": "Manage and adjust device (node) specific configuration parameters for the selected device",
+            "introduction": "Manage and adjust device specific configuration parameters for the selected device",
             "attribution": "Device configuration parameters and descriptions are provided by the {device_database}",
             "zwave_js_device_database": "Z-Wave JS Device Database",
             "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device.",
@@ -2811,37 +2811,50 @@
             "unknown": "Unknown"
           },
           "add_node": {
-            "title": "Add a Z-Wave Node",
-            "introduction": "This wizard will guide you through adding a node to your Z-Wave network.",
-            "use_secure_inclusion": "Use secure inclusion",
-            "secure_inclusion_warning": "Secure devices require additional bandwidth; too many secure devices can slow down your Z-Wave network. We recommend only using secure inclusion for devices that require it, like locks or garage door openers.",
-            "start_inclusion": "Start Inclusion",
-            "start_secure_inclusion": "Start Secure Inclusion",
+            "title": "Add a Z-Wave Device",
             "cancel_inclusion": "Cancel Inclusion",
             "controller_in_inclusion_mode": "Your Z-Wave controller is now in inclusion mode.",
             "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
-            "inclusion_failed": "The node could not be added. Please check the logs for more information.",
-            "inclusion_finished": "The node has been added.",
+            "inclusion_failed": "The device could not be added. Please check the logs for more information.",
+            "inclusion_finished": "The device has been added.",
             "view_device": "View Device",
             "interview_started": "The device is being interviewed. This may take some time.",
-            "interview_failed": "The device interview failed. Additional information may be available in the logs."
+            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
+            "security_classes": {
+              "S2_Unauthenticated": {
+                "title": "S2 Unauthenticated",
+                "description": "Like S2 Authenticated, but without verification that the correct device is included"
+              },
+              "S2_Authenticated": {
+                "title": "S2 Authenticated",
+                "description": "Example: Lighting, Sensors and Security Systems"
+              },
+              "S2_AccessControl": {
+                "title": "S2 Access Control",
+                "description": "Example: Door Locks and Garage Doors"
+              },
+              "S0_Legacy": {
+                "title": "S0 Legacy",
+                "description": "Example: Legacy Door Locks without S2 support"
+              }
+            }
           },
           "remove_node": {
-            "title": "Remove a Z-Wave Node",
-            "introduction": "Remove a node from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
+            "title": "Remove a Z-Wave device",
+            "introduction": "Remove a device from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
             "start_exclusion": "Start Exclusion",
             "cancel_exclusion": "Cancel Exclusion",
             "controller_in_exclusion_mode": "Your Z-Wave controller is now in exclusion mode.",
             "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
-            "exclusion_failed": "The node could not be removed. Please check the logs for more information.",
-            "exclusion_finished": "Node {id} has been removed from your Z-Wave network."
+            "exclusion_failed": "The device could not be removed. Please check the logs for more information.",
+            "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
           },
           "remove_failed_node": {
             "title": "Remove a Failed Z-Wave Device",
             "introduction": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
             "remove_device": "Remove Device",
             "in_progress": "The device removal is in progress.",
-            "removal_finished": "Node {id} has been removed from your Z-Wave network.",
+            "removal_finished": "Device {id} has been removed from your Z-Wave network.",
             "removal_failed": "The device could not be removed from your Z-Wave network."
           },
           "reinterview_node": {
