@@ -11,7 +11,7 @@ import {
   GasSourceTypeEnergyPreference,
   EnergyPreferencesValidation,
   EnergyValidationIssue,
-  getEnergyGasUnit,
+  getEnergyGasUnitCategory,
 } from "../../../../data/energy";
 import {
   showConfirmationDialog,
@@ -110,7 +110,7 @@ export class EnergyGasSettings extends LitElement {
 
   private _addSource() {
     showEnergySettingsGasDialog(this, {
-      unit: getEnergyGasUnit(this.hass, this.preferences),
+      unit: getEnergyGasUnitCategory(this.hass, this.preferences),
       saveCallback: async (source) => {
         await this._savePreferences({
           ...this.preferences,
@@ -125,7 +125,7 @@ export class EnergyGasSettings extends LitElement {
       ev.currentTarget.closest(".row").source;
     showEnergySettingsGasDialog(this, {
       source: { ...origSource },
-      unit: getEnergyGasUnit(this.hass, this.preferences),
+      unit: getEnergyGasUnitCategory(this.hass, this.preferences),
       saveCallback: async (newSource) => {
         await this._savePreferences({
           ...this.preferences,
