@@ -41,7 +41,7 @@ const UNSUPPORTED_REASON_URL = {
   job_conditions: "/more-info/unsupported/job_conditions",
   lxc: "/more-info/unsupported/lxc",
   network_manager: "/more-info/unsupported/network_manager",
-  os_agent: "/more-info/unsupported/content_trust",
+  os_agent: "/more-info/unsupported/os_agent",
   os: "/more-info/unsupported/os",
   privileged: "/more-info/unsupported/privileged",
   source_mods: "/more-info/unsupported/source_mods",
