@@ -4749,7 +4749,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aggregate-error@npm:^3.0.0":
+"aggregate-error@npm:^3.0.0, aggregate-error@npm:^3.1.0":
   version: 3.1.0
   resolution: "aggregate-error@npm:3.1.0"
   dependencies:
@@ -4845,7 +4845,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ansi-escapes@npm:^4.3.0":
+"ansi-escapes@npm:^4.3.0, ansi-escapes@npm:^4.3.2":
   version: 4.3.2
   resolution: "ansi-escapes@npm:4.3.2"
   dependencies:
@@ -5619,7 +5619,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"buffer-from@npm:^1.0.0, buffer-from@npm:^1.1.0, buffer-from@npm:^1.1.1":
+"buffer-from@npm:^1.0.0, buffer-from@npm:^1.1.1":
   version: 1.1.1
   resolution: "buffer-from@npm:1.1.1"
   checksum: ccc53b69736008bff764497367c4d24879ba7122bc619ee499ff47eef3a5b885ca496e87272e7ebffa0bec3804c83f84041c616f6e3318f40624e27c1d80f045
@@ -8276,6 +8276,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fs-monkey@npm:1.0.3":
+  version: 1.0.3
+  resolution: "fs-monkey@npm:1.0.3"
+  checksum: 0b5e16f147d3e1b28e2fc7ae8f4a6bf061587a03dbee817ee869fadbb1f5f9e038062bf9646161c7576918ac084bbd0b38bd819aa7856d4fd850a440b201f83e
+  languageName: node
+  linkType: hard
+
+"fs-require@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "fs-require@npm:1.1.0"
+  checksum: e668e8797c7db3487d367bafa8b38f7055c2b8fd7f1765f205c04b776b4e1d39d0ff51009a064115ae19a4b5d480ea5a553cf9e17229e42374304e77155d1337
+  languageName: node
+  linkType: hard
+
 "fs.realpath@npm:^1.0.0":
   version: 1.0.0
   resolution: "fs.realpath@npm:1.0.0"
@@ -9062,6 +9076,7 @@ fsevents@~2.3.1:
     html-minifier: ^4.0.0
     husky: ^1.3.1
     idb-keyval: ^5.1.3
+    instant-mocha: ^1.3.1
     intl-messageformat: ^9.9.1
     js-yaml: ^4.1.0
     leaflet: ^1.7.1
@@ -9101,7 +9116,6 @@ fsevents@~2.3.1:
     terser-webpack-plugin: ^5.1.4
     tinykeys: ^1.1.3
     ts-lit-plugin: ^1.2.1
-    ts-mocha: ^8.0.0
     tsparticles: ^1.34.0
     typescript: ^4.3.5
     unfetch: ^4.1.0
@@ -9514,6 +9528,26 @@ fsevents@~2.3.1:
   version: 1.3.7
   resolution: "ini@npm:1.3.7"
   checksum: f8f3801e8eb039f9e03cdc27ceb494a7ac6e6ca7b2dd8394a9ef97ed5ae66930fadefd5ec908e41e4b103d3c9063b5788d47de5e8e892083c7a67b489f3b962d
+  languageName: node
+  linkType: hard
+
+"instant-mocha@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "instant-mocha@npm:1.3.1"
+  dependencies:
+    aggregate-error: ^3.1.0
+    ansi-escapes: ^4.3.2
+    fs-require: ^1.1.0
+    memfs: ^3.2.2
+    minimist: ^1.2.5
+    source-map-support: ^0.5.19
+    yargs: ^16.2.0
+  peerDependencies:
+    mocha: ^6.1.4 || ^8.3.2
+    webpack: ^4.40.0 || ^5.0.0
+  bin:
+    instant-mocha: bin/instant-mocha.js
+  checksum: a37636e5592cb6c2076c534c8e2852b00859681c0ff600c21b11061958e92916b803b68a9c5a7826ee5df5a392bcae70f3d15af357616de952f031f2b4ce8d10
   languageName: node
   linkType: hard
 
@@ -11199,6 +11233,15 @@ fsevents@~2.3.1:
   version: 0.3.0
   resolution: "media-typer@npm:0.3.0"
   checksum: af1b38516c28ec95d6b0826f6c8f276c58aec391f76be42aa07646b4e39d317723e869700933ca6995b056db4b09a78c92d5440dc23657e6764be5d28874bba1
+  languageName: node
+  linkType: hard
+
+"memfs@npm:^3.2.2":
+  version: 3.3.0
+  resolution: "memfs@npm:3.3.0"
+  dependencies:
+    fs-monkey: 1.0.3
+  checksum: 52214c1af399f2cd95cd768be66a9c68b1d0c03c544fa42b105901eb9af4543a93fe073e58a61e4b85cef6bec0ae60f79dca5ecd47a9c1e8c3e5168be0d83f8d
   languageName: node
   linkType: hard
 
@@ -14188,13 +14231,13 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.5.6, source-map-support@npm:~0.5.12, source-map-support@npm:~0.5.19":
-  version: 0.5.19
-  resolution: "source-map-support@npm:0.5.19"
+"source-map-support@npm:^0.5.19, source-map-support@npm:~0.5.12, source-map-support@npm:~0.5.19":
+  version: 0.5.20
+  resolution: "source-map-support@npm:0.5.20"
   dependencies:
     buffer-from: ^1.0.0
     source-map: ^0.6.0
-  checksum: c72802fdba9cb62b92baef18cc14cc4047608b77f0353e6c36dd993444149a466a2845332c5540d4a6630957254f0f68f4ef5a0120c33d2e83974c51a05afbac
+  checksum: 2c5821ee94732b2ddbb1e1d9e61ed76ef00f72415fa686ab96d5f5c711789d55424866fa7d6c493beea380e44418053d86ec490b82c101008eac311463da84a9
   languageName: node
   linkType: hard
 
@@ -15084,7 +15127,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"tsconfig-paths@npm:^3.5.0, tsconfig-paths@npm:^3.9.0":
+"tsconfig-paths@npm:^3.9.0":
   version: 3.9.0
   resolution: "tsconfig-paths@npm:3.9.0"
   dependencies:
@@ -16558,7 +16601,7 @@ typescript@^4.3.5:
   languageName: node
   linkType: hard
 
-"yargs@npm:16.2.0":
+"yargs@npm:16.2.0, yargs@npm:^16.2.0":
   version: 16.2.0
   resolution: "yargs@npm:16.2.0"
   dependencies:
