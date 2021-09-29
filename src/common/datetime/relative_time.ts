@@ -3,7 +3,9 @@ import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
 import { polyfillsLoaded } from "../translations/localize";
 
-await polyfillsLoaded;
+if (__BUILD__ === "latest") {
+  await polyfillsLoaded;
+}
 
 const formatRelTimeMem = memoizeOne(
   (locale: FrontendLocaleData) =>

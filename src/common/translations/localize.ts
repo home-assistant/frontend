@@ -22,17 +22,19 @@ const polyfillRelativeTime = shouldPolyfillRelativeTime();
 const polyfillDateTime = shouldPolyfillDateTime();
 
 const polyfills: Promise<any>[] = [];
-if (shouldPolyfillLocale()) {
-  polyfills.push(import("@formatjs/intl-locale/polyfill"));
-}
-if (polyfillPluralRules) {
-  polyfills.push(import("@formatjs/intl-pluralrules/polyfill"));
-}
-if (polyfillRelativeTime) {
-  polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill"));
-}
-if (polyfillDateTime) {
-  polyfills.push(import("@formatjs/intl-datetimeformat/polyfill"));
+if (__BUILD__ === "latest") {
+  if (shouldPolyfillLocale()) {
+    polyfills.push(import("@formatjs/intl-locale/polyfill"));
+  }
+  if (polyfillPluralRules) {
+    polyfills.push(import("@formatjs/intl-pluralrules/polyfill"));
+  }
+  if (polyfillRelativeTime) {
+    polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill"));
+  }
+  if (polyfillDateTime) {
+    polyfills.push(import("@formatjs/intl-datetimeformat/polyfill"));
+  }
 }
 
 let polyfillLoaded = polyfills.length === 0;
