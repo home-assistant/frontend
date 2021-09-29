@@ -172,14 +172,14 @@ describe("computeStateDisplay", () => {
     it("Uses am/pm time format", () => {
       assert.strictEqual(
         computeStateDisplay(localize, stateObj, localeData),
-        "November 18, 2017, 11:12 PM"
+        "November 18, 2017 at 11:12 PM"
       );
     });
     it("Uses 24h time format", () => {
       localeData.time_format = TimeFormat.twenty_four;
       assert.strictEqual(
         computeStateDisplay(localize, stateObj, localeData),
-        "November 18, 2017, 23:12"
+        "November 18, 2017 at 23:12"
       );
     });
   });
@@ -259,7 +259,7 @@ describe("computeStateDisplay", () => {
           localeData,
           "2021-07-04 15:40:03"
         ),
-        "July 4, 2021, 3:40 PM"
+        "July 4, 2021 at 3:40 PM"
       );
     });
     it("Uses 24h time format", () => {
@@ -271,7 +271,7 @@ describe("computeStateDisplay", () => {
           localeData,
           "2021-07-04 15:40:03"
         ),
-        "July 4, 2021, 15:40"
+        "July 4, 2021 at 15:40"
       );
     });
   });

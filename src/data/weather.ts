@@ -11,7 +11,7 @@ import {
 } from "home-assistant-js-websocket";
 import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit";
 import { styleMap } from "lit/directives/style-map";
-import { formatNumber } from "../common/string/format_number";
+import { formatNumber } from "../common/number/format_number";
 import "../components/ha-icon";
 import "../components/ha-svg-icon";
 import type { HomeAssistant } from "../types";

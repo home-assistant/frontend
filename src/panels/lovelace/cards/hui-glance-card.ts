@@ -9,7 +9,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
-import relativeTime from "../../../common/datetime/relative_time";
+import { relativeTime } from "../../../common/datetime/relative_time";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
@@ -330,7 +330,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                   : entityConf.show_last_changed
                   ? relativeTime(
                       new Date(stateObj.last_changed),
-                      this.hass!.localize
+                      this.hass!.locale
                     )
                   : computeStateDisplay(
                       this.hass!.localize,

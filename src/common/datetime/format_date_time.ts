@@ -1,15 +1,16 @@
-import { format } from "fecha";
 import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
-import { toLocaleStringSupportsOptions } from "./check_options_support";
 import { useAmPm } from "./use_am_pm";
+import { polyfillsLoaded } from "../translations/localize";
+
+if (__BUILD__ === "latest" && polyfillsLoaded) {
+  await polyfillsLoaded;
+}
 
 // August 9, 2021, 8:23 AM
-export const formatDateTime = toLocaleStringSupportsOptions
-  ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateTimeMem(locale).format(dateObj)
-  : (dateObj: Date, locale: FrontendLocaleData) =>
-      format(dateObj, "MMMM D, YYYY, HH:mm" + useAmPm(locale) ? " A" : "");
+export const formatDateTime = (dateObj: Date, locale: FrontendLocaleData) =>
+  formatDateTimeMem(locale).format(dateObj);
+
 const formatDateTimeMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
@@ -23,11 +24,11 @@ const formatDateTimeMem = memoizeOne(
 );
 
 // August 9, 2021, 8:23:15 AM
-export const formatDateTimeWithSeconds = toLocaleStringSupportsOptions
-  ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateTimeWithSecondsMem(locale).format(dateObj)
-  : (dateObj: Date, locale: FrontendLocaleData) =>
-      format(dateObj, "MMMM D, YYYY, HH:mm:ss" + useAmPm(locale) ? " A" : "");
+export const formatDateTimeWithSeconds = (
+  dateObj: Date,
+  locale: FrontendLocaleData
+) => formatDateTimeWithSecondsMem(locale).format(dateObj);
+
 const formatDateTimeWithSecondsMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
@@ -42,11 +43,11 @@ const formatDateTimeWithSecondsMem = memoizeOne(
 );
 
 // 9/8/2021, 8:23 AM
-export const formatDateTimeNumeric = toLocaleStringSupportsOptions
-  ? (dateObj: Date, locale: FrontendLocaleData) =>
-      formatDateTimeNumericMem(locale).format(dateObj)
-  : (dateObj: Date, locale: FrontendLocaleData) =>
-      format(dateObj, "M/D/YYYY, HH:mm" + useAmPm(locale) ? " A" : "");
+export const formatDateTimeNumeric = (
+  dateObj: Date,
+  locale: FrontendLocaleData
+) => formatDateTimeNumericMem(locale).format(dateObj);
+
 const formatDateTimeNumericMem = memoizeOne(
   (locale: FrontendLocaleData) =>
     new Intl.DateTimeFormat(locale.language, {
