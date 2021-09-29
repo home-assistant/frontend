@@ -104,28 +104,14 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <ha-config-section is-wide="[[isWide]]">
           <ha-card
             class="content"
-            header="[[localize('ui.panel.config.zwave.migration.ozw.header')]]"
+            header="[[localize('ui.panel.config.zwave.migration.zwave_js.header')]]"
           >
             <div class="card-content">
-              <p>
-                If you are experiencing problems with your Z-Wave devices, you
-                can migrate to the newer OZW integration, that is currently in
-                beta.
-              </p>
-              <p>
-                Be aware that the future of OZW is not guaranteed, as the
-                development has stopped.
-              </p>
-              <p>
-                If you are currently not experiencing issues with your Z-Wave
-                devices, we recommend you to wait for the successor of the OZW
-                integration, Z-Wave JS, that is in active development at the
-                moment.
-              </p>
+              [[localize('ui.panel.config.zwave.migration.zwave_js.introduction')]]
             </div>
             <div class="card-actions">
               <a href="/config/zwave/migration"
-                ><mwc-button>Start Migration to OZW</mwc-button></a
+                ><mwc-button>Start Migration to Z-Wave JS</mwc-button></a
               >
             </div>
           </ha-card>
