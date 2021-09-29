@@ -2667,9 +2667,9 @@
             "wakeup_interval": "Wake-up Interval"
           },
           "migration": {
-            "ozw": {
-              "header": "Migrate to OpenZWave",
-              "introduction": "This wizard will help you migrate from the legacy Z-Wave integration to the OpenZWave integration that is currently in beta."
+            "zwave_js": {
+              "header": "Migrate to Z-Wave JS",
+              "introduction": "This integration is no longer maintained, and we advise you to move to the new Z-Wave JS integration. This wizard will help you migrate from the legacy Z-Wave integration to the new Z-Wave JS integration."
             }
           },
           "network_management": {
