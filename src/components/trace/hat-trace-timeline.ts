@@ -17,7 +17,7 @@ import {
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import relativeTime from "../../common/datetime/relative_time";
+import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import { toggleAttribute } from "../../common/dom/toggle_attribute";
 import { LogbookEntry } from "../../data/logbook";
@@ -66,11 +66,7 @@ class RenderedTimeTracker {
   renderTime(from: Date, to: Date): void {
     this.entries.push(html`
       <ha-timeline label>
-        ${relativeTime(from, this.hass.localize, {
-          compareTime: to,
-          includeTense: false,
-        })}
-        later
+        ${relativeTime(from, this.hass.locale, to, false)} later
       </ha-timeline>
     `);
     this.lastReportedTime = to;
