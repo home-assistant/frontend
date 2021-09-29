@@ -16,7 +16,7 @@
     "lint:lit": "lit-analyzer \"**/src/**/*.ts\" --format markdown --outFile result.md",
     "lint": "yarn run lint:eslint && yarn run lint:prettier && yarn run lint:types",
     "format": "yarn run format:eslint && yarn run format:prettier",
-    "test": "instant-mocha --webpack-config ./test-mocha/webpack.config.js \"test-mocha/**/*.ts\""
+    "test": "instant-mocha --webpack-config ./test/webpack.config.js --require ./test/setup.js \"test/**/*.ts\""
   },
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",

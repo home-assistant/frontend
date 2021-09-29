@@ -53,8 +53,8 @@ jobs:
         run: yarn install
         env:
           CI: true
-      - name: Run Mocha
-        run: yarn run mocha
+      - name: Run Tests
+        run: yarn run test
   build:
     runs-on: ubuntu-latest
     needs: [lint, test]
