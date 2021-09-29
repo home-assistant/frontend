@@ -174,6 +174,25 @@ export interface RequestedGrant {
 
 export const nodeStatus = ["unknown", "asleep", "awake", "dead", "alive"];
 
+export interface ZWaveJsMigrationData {
+  migration_device_map: Record<string, string>;
+  zwave_entity_ids: string[];
+  zwave_js_entity_ids: string[];
+  migration_entity_map: Record<string, string>;
+  migrated: boolean;
+}
+
+export const migrateZwave = (
+  hass: HomeAssistant,
+  entry_id: string,
+  dry_run = true
+): Promise<ZWaveJsMigrationData> =>
+  hass.callWS({
+    type: "zwave_js/migrate_zwave",
+    entry_id,
+    dry_run,
+  });
+
 export const fetchNetworkStatus = (
   hass: HomeAssistant,
   entry_id: string
@@ -307,8 +326,8 @@ export const reinterviewNode = (
     (message: any) => callbackFunction(message),
     {
       type: "zwave_js/refresh_node_info",
-      entry_id: entry_id,
-      node_id: node_id,
+      entry_id,
+      node_id,
     }
   );
 
@@ -319,8 +338,8 @@ export const healNode = (
 ): Promise<boolean> =>
   hass.callWS({
     type: "zwave_js/heal_node",
-    entry_id: entry_id,
-    node_id: node_id,
+    entry_id,
+    node_id,
   });
 
 export const removeFailedNode = (
@@ -333,8 +352,8 @@ export const removeFailedNode = (
     (message: any) => callbackFunction(message),
     {
       type: "zwave_js/remove_failed_node",
-      entry_id: entry_id,
-      node_id: node_id,
+      entry_id,
+      node_id,
     }
   );
 
@@ -344,7 +363,7 @@ export const healNetwork = (
 ): Promise<UnsubscribeFunc> =>
   hass.callWS({
     type: "zwave_js/begin_healing_network",
-    entry_id: entry_id,
+    entry_id,
   });
 
 export const stopHealNetwork = (
@@ -353,8 +372,23 @@ export const stopHealNetwork = (
 ): Promise<UnsubscribeFunc> =>
   hass.callWS({
     type: "zwave_js/stop_healing_network",
-    entry_id: entry_id,
+    entry_id,
   });
+
+export const subscribeNodeReady = (
+  hass: HomeAssistant,
+  entry_id: string,
+  node_id: number,
+  callbackFunction: (message) => void
+): Promise<UnsubscribeFunc> =>
+  hass.connection.subscribeMessage(
+    (message: any) => callbackFunction(message),
+    {
+      type: "zwave_js/node_ready",
+      entry_id,
+      node_id,
+    }
+  );
 
 export const subscribeHealNetworkProgress = (
   hass: HomeAssistant,
@@ -365,7 +399,7 @@ export const subscribeHealNetworkProgress = (
     (message: any) => callbackFunction(message),
     {
       type: "zwave_js/subscribe_heal_network_progress",
-      entry_id: entry_id,
+      entry_id,
     }
   );
 
