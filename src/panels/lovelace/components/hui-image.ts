@@ -122,6 +122,9 @@ export class HuiImage extends LitElement {
         ? parseAspectRatio(this.aspectRatio)
         : null;
     }
+    if (this._loadState === LoadState.Loading && !this.cameraImage) {
+      this._loadState = LoadState.Loaded;
+    }
   }
 
   protected render(): TemplateResult {
@@ -159,14 +162,6 @@ export class HuiImage extends LitElement {
       imageSrc = this.darkModeImage;
     } else {
       imageSrc = this.image;
-    }
-
-    if (
-      this._loadState === LoadState.Loading &&
-      !this.cameraImage &&
-      imageSrc
-    ) {
-      this._loadState = LoadState.Loaded;
     }
 
     if (imageSrc) {
