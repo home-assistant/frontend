@@ -22,6 +22,7 @@ import {
   EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
+  getEnergyGasUnit,
 } from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
@@ -309,7 +310,7 @@ class HuiEnergyDistrubutionCard
                         ${formatNumber(gasUsage || 0, this.hass.locale, {
                           maximumFractionDigits: 1,
                         })}
-                        m³
+                        ${getEnergyGasUnit(this.hass, prefs) || "m³"}
                       </div>
                       <svg width="80" height="30">
                         <path d="M40 0 v30" id="gas" />

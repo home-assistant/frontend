@@ -24,6 +24,7 @@ import { labDarken } from "../../../../common/color/lab";
 import {
   EnergyData,
   getEnergyDataCollection,
+  getEnergyGasUnit,
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
@@ -55,6 +56,8 @@ export class HuiEnergyGasGraphCard
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
+
+  @state() private _unit?: string;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -92,7 +95,8 @@ export class HuiEnergyGasGraphCard
             .options=${this._createOptions(
               this._start,
               this._end,
-              this.hass.locale
+              this.hass.locale,
+              this._unit
             )}
             chart-type="bar"
           ></ha-chart-base>
@@ -109,7 +113,12 @@ export class HuiEnergyGasGraphCard
   }
 
   private _createOptions = memoizeOne(
-    (start: Date, end: Date, locale: FrontendLocaleData): ChartOptions => {
+    (
+      start: Date,
+      end: Date,
+      locale: FrontendLocaleData,
+      unit?: string
+    ): ChartOptions => {
       const dayDifference = differenceInDays(end, start);
       return {
         parsing: false,
@@ -160,7 +169,7 @@ export class HuiEnergyGasGraphCard
             type: "linear",
             title: {
               display: true,
-              text: "m³",
+              text: unit,
             },
             ticks: {
               beginAtZero: true,
@@ -175,7 +184,7 @@ export class HuiEnergyGasGraphCard
                 `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
                   locale
-                )} m³`,
+                )} ${unit}`,
             },
           },
           filler: {
@@ -208,6 +217,8 @@ export class HuiEnergyGasGraphCard
       energyData.prefs.energy_sources.filter(
         (source) => source.type === "gas"
       ) as GasSourceTypeEnergyPreference[];
+
+    this._unit = getEnergyGasUnit(this.hass, energyData.prefs) || "m³";
 
     const statisticsData = Object.values(energyData.stats);
     const datasets: ChartDataset<"bar">[] = [];
