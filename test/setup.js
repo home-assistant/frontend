@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 process.env.TZ = "Etc/UTC";
+process.env.IS_TEST = "true";
 
 const MDI_OUTPUT_DIR = path.resolve(__dirname, "../build/mdi");
 
