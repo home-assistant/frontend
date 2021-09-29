@@ -91,7 +91,7 @@ if (__DEV__) {
   // Remove adoptedStyleSheets so style inspector works on shadow DOM.
   // @ts-ignore
   delete Document.prototype.adoptedStyleSheets;
-  // performance.mark("hass-start");
+  performance.mark("hass-start");
 }
 window.hassConnection = (authProm() as Promise<Auth | ExternalAuth>).then(
   connProm
