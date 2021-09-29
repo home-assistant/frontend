@@ -117,7 +117,7 @@ export class ZwaveMigration extends LitElement {
                       <ol>
                         <li>Stop the Z-Wave network</li>
                         ${!isComponentLoaded(this.hass, "hassio")
-                          ? html` <li>Configure and start Z-Wave JS</li> `
+                          ? html`<li>Configure and start Z-Wave JS</li>`
                           : ""}
                         <li>Set up the Z-Wave JS integration</li>
                         <li>
@@ -128,11 +128,10 @@ export class ZwaveMigration extends LitElement {
                       <p>
                         <b>
                           ${isComponentLoaded(this.hass, "hassio")
-                            ? html`<a href="/hassio/backups">
-                                Please take a backup of your environment before
-                                proceeding.
-                              </a>`
-                            : "Please take a backup of your environment before proceeding."}
+                            ? html`Please
+                                <a href="/hassio/backups">make a backup</a>
+                                before proceeding.`
+                            : "Please make a backup of your installation before proceeding."}
                         </b>
                       </p>
                     </div>
