@@ -3,7 +3,7 @@ import { FrontendLocaleData } from "../../data/translation";
 import { useAmPm } from "./use_am_pm";
 import { polyfillsLoaded } from "../translations/localize";
 
-if (__BUILD__ === "latest") {
+if (__BUILD__ === "latest" && polyfillsLoaded) {
   await polyfillsLoaded;
 }
 

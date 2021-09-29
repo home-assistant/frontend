@@ -2,7 +2,7 @@ import memoizeOne from "memoize-one";
 import { FrontendLocaleData } from "../../data/translation";
 import { polyfillsLoaded } from "../translations/localize";
 
-if (__BUILD__ === "latest") {
+if (__BUILD__ === "latest" && polyfillsLoaded) {
   await polyfillsLoaded;
 }
 
