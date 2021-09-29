@@ -116,13 +116,9 @@ export class ZwaveMigration extends LitElement {
                       </p>
                       <ol>
                         <li>Stop the Z-Wave network</li>
-                        <li>
-                          <i
-                            >If running Home Assistant Core in Docker or in
-                            Python venv:</i
-                          >
-                          Configure and start Z-Wave JS
-                        </li>
+                        ${!isComponentLoaded(this.hass, "hassio")
+                          ? html` <li>Configure and start Z-Wave JS</li> `
+                          : ""}
                         <li>Set up the Z-Wave JS integration</li>
                         <li>
                           Migrate entities and devices to the new integration
@@ -131,8 +127,12 @@ export class ZwaveMigration extends LitElement {
                       </ol>
                       <p>
                         <b>
-                          Please take a backup of your environment before
-                          proceeding.
+                          ${isComponentLoaded(this.hass, "hassio")
+                            ? html`<a href="/hassio/backups">
+                                Please take a backup of your environment before
+                                proceeding.
+                              </a>`
+                            : "Please take a backup of your environment before proceeding."}
                         </b>
                       </p>
                     </div>
@@ -143,8 +143,7 @@ export class ZwaveMigration extends LitElement {
                     </div>
                   </ha-card>
                 `
-              : ``}
-            ${this._step === 1
+              : this._step === 1
               ? html`
                   <ha-card class="content" header="Stop Z-Wave Network">
                     <div class="card-content">
@@ -187,8 +186,7 @@ export class ZwaveMigration extends LitElement {
                     </div>
                   </ha-card>
                 `
-              : ``}
-            ${this._step === 2
+              : this._step === 2
               ? html`
                   <ha-card class="content" header="Set up Z-Wave JS">
                     <div class="card-content">
@@ -196,22 +194,24 @@ export class ZwaveMigration extends LitElement {
                       ${isComponentLoaded(this.hass, "hassio")
                         ? html`
                             <p>
-                              Z-Wave JS runs in a Home Assistant addon that will
-                              be setup next. Make sure to check the checkbox for
-                              the addon.
+                              Z-Wave JS runs as a Home Assistant add-on that
+                              will be setup next. Make sure to check the
+                              checkbox to use the add-on.
                             </p>
                           `
                         : html`
                             <p>
-                              If you do not run Home Assistant OS (the default
+                              You are not running Home Assistant OS (the default
                               installation type) or Home Assistant Supervised,
-                              please see the
+                              so we can not setup Z-Wave JS automaticaly. Follow
+                              the
                               <a
                                 href="https://www.home-assistant.io/integrations/zwave_js/#advanced-installation-instructions"
                                 target="_blank"
                                 rel="noreferrer"
                                 >advanced installation instructions</a
-                              >.
+                              >
+                              to install Z-Wave JS.
                             </p>
                             <p>
                               Here's the current Z-Wave configuration. You'll
@@ -238,8 +238,7 @@ export class ZwaveMigration extends LitElement {
                     </div>
                   </ha-card>
                 `
-              : ``}
-            ${this._step === 3
+              : this._step === 3
               ? html`
                   <ha-card
                     class="content"
@@ -341,8 +340,7 @@ export class ZwaveMigration extends LitElement {
                     </div>
                   </ha-card>
                 `
-              : ``}
-            ${this._step === 4
+              : this._step === 4
               ? html`<ha-card class="content" header="Done!">
                   <div class="card-content">
                     That was all! You are now migrated to the new Z-Wave JS
@@ -401,16 +399,6 @@ export class ZwaveMigration extends LitElement {
 
   private async _setupZwaveJs() {
     const zwaveJsConfigFlow = await startZwaveJsConfigFlow(this.hass);
-    /*     if (isComponentLoaded(this.hass, "zwave_js")) {
-      const configEntries = (await getConfigEntries(this.hass)).filter(
-        (entry) => entry.domain === "zwave_js"
-      );
-      if (configEntries.length) {
-        this._getMigrationData(configEntries[0].entry_id);
-        this._step = 3;
-        return;
-      }
-    } */
     showConfigFlowDialog(this, {
       continueFlowId: zwaveJsConfigFlow.flow_id,
       dialogClosedCallback: (params) => {
