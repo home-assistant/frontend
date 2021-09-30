@@ -122,6 +122,9 @@ export class HuiImage extends LitElement {
         ? parseAspectRatio(this.aspectRatio)
         : null;
     }
+    if (this._loadState === LoadState.Loading && !this.cameraImage) {
+      this._loadState = LoadState.Loaded;
+    }
   }
 
   protected render(): TemplateResult {
