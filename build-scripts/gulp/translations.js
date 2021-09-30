@@ -17,7 +17,7 @@ const paths = require("../paths");
 
 const inFrontendDir = "translations/frontend";
 const inBackendDir = "translations/backend";
-const workDir = "build-translations";
+const workDir = "build/translations";
 const fullDir = workDir + "/full";
 const coreDir = workDir + "/core";
 const outDir = workDir + "/output";
@@ -121,7 +121,7 @@ gulp.task("clean-translations", () => del([workDir]));
 
 gulp.task("ensure-translations-build-dir", (done) => {
   if (!fs.existsSync(workDir)) {
-    fs.mkdirSync(workDir);
+    fs.mkdirSync(workDir, { recursive: true });
   }
   done();
 });
