@@ -4,7 +4,7 @@ import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoize from "memoize-one";
 import { navigate } from "../../../../common/navigate";
-import { compare } from "../../../../common/string/compare";
+import { stringCompare } from "../../../../common/string/compare";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -263,7 +263,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       createDashboard: async (values: LovelaceDashboardCreateParams) => {
         const created = await createDashboard(this.hass!, values);
         this._dashboards = this._dashboards!.concat(created).sort(
-          (res1, res2) => compare(res1.url_path, res2.url_path)
+          (res1, res2) => stringCompare(res1.url_path, res2.url_path)
         );
       },
       updateDashboard: async (values) => {
@@ -279,9 +279,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
       removeDashboard: async () => {
         if (
           !(await showConfirmationDialog(this, {
-            text: this.hass!.localize(
-              "ui.panel.config.lovelace.dashboards.confirm_delete"
+            title: this.hass!.localize(
+              "ui.panel.config.lovelace.dashboards.confirm_delete_title",
+              { dashboard_title: dashboard!.title }
             ),
+            text: this.hass!.localize(
+              "ui.panel.config.lovelace.dashboards.confirm_delete_text"
+            ),
+            confirmText: this.hass!.localize("ui.common.delete"),
           }))
         ) {
           return false;
@@ -293,7 +298,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
             (res) => res !== dashboard
           );
           return true;
-        } catch (err) {
+        } catch (err: any) {
           return false;
         }
       },

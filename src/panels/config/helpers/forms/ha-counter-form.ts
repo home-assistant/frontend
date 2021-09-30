@@ -75,9 +75,9 @@ class HaCounterForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          .errorMessage="${this.hass!.localize(
+          .errorMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
-          )}"
+          )}
           .invalid=${nameInvalid}
           dialogInitialFocus
         ></paper-input>

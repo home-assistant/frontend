@@ -75,7 +75,7 @@ class ConfigNameForm extends LitElement {
       await saveCoreConfig(this.hass, {
         location_name: this._nameValue,
       });
-    } catch (err) {
+    } catch (err: any) {
       alert("FAIL");
     } finally {
       this._working = false;

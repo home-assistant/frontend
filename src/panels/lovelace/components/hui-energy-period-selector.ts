@@ -33,6 +33,7 @@ import "@material/mwc-icon-button/mwc-icon-button";
 import "../../../components/ha-svg-icon";
 import "@material/mwc-button/mwc-button";
 import "../../../components/ha-button-toggle-group";
+import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 
 const viewButtons: ToggleButton[] = [
   { label: "Day", value: "day" },
@@ -55,7 +56,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
 
   public connectedCallback() {
     super.connectedCallback();
-    this.toggleAttribute("narrow", this.offsetWidth < 600);
+    toggleAttribute(this, "narrow", this.offsetWidth < 600);
   }
 
   public hassSubscribe(): UnsubscribeFunc[] {

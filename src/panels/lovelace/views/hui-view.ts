@@ -20,9 +20,7 @@ import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog"
 import { confDeleteCard } from "../editor/delete-card";
 import { generateLovelaceViewStrategy } from "../strategies/get-strategy";
 import type { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
-
-const DEFAULT_VIEW_LAYOUT = "masonry";
-const PANEL_VIEW_LAYOUT = "panel";
+import { PANEL_VIEW_LAYOUT, DEFAULT_VIEW_LAYOUT } from "./const";
 
 declare global {
   // for fire event
@@ -131,6 +129,18 @@ export class HUIView extends ReactiveElement {
         });
 
         this._layoutElement.hass = this.hass;
+
+        const oldHass = changedProperties.get("hass") as
+          | this["hass"]
+          | undefined;
+
+        if (
+          !oldHass ||
+          this.hass.themes !== oldHass.themes ||
+          this.hass.selectedTheme !== oldHass.selectedTheme
+        ) {
+          applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
+        }
       }
       if (changedProperties.has("narrow")) {
         this._layoutElement.narrow = this.narrow;
@@ -144,17 +154,6 @@ export class HUIView extends ReactiveElement {
       if (changedProperties.has("_badges")) {
         this._layoutElement.badges = this._badges;
       }
-    }
-
-    const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
-
-    if (
-      changedProperties.has("hass") &&
-      (!oldHass ||
-        this.hass.themes !== oldHass.themes ||
-        this.hass.selectedTheme !== oldHass.selectedTheme)
-    ) {
-      applyThemesOnElement(this, this.hass.themes, this._viewConfigTheme);
     }
   }
 

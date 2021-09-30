@@ -26,10 +26,10 @@ class HaLabelBadge extends LitElement {
       <div class="badge-container">
         <div class="label-badge" id="badge">
           <div
-            class="${classMap({
+            class=${classMap({
               value: true,
               big: Boolean(this.value && this.value.length > 4),
-            })}"
+            })}
           >
             <slot>
               ${this.icon && !this.value && !this.image
@@ -43,10 +43,10 @@ class HaLabelBadge extends LitElement {
           ${this.label
             ? html`
                 <div
-                  class="${classMap({
+                  class=${classMap({
                     label: true,
                     big: this.label.length > 5,
-                  })}"
+                  })}
                 >
                   <span>${this.label}</span>
                 </div>

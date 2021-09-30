@@ -152,7 +152,7 @@ export class HuiStackCardEditor
                 <hui-card-picker
                   .hass=${this.hass}
                   .lovelace=${this.lovelace}
-                  @config-changed="${this._handleCardPicked}"
+                  @config-changed=${this._handleCardPicked}
                 ></hui-card-picker>
               `}
         </div>

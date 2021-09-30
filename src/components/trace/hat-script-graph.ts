@@ -5,7 +5,7 @@ import {
   mdiAsterisk,
   mdiCallSplit,
   mdiCheckboxBlankOutline,
-  mdiCheckBoxOutline,
+  mdiCheckboxOutline,
   mdiChevronDown,
   mdiChevronRight,
   mdiChevronUp,
@@ -167,27 +167,31 @@ export class HatScriptGraph extends LitElement {
                 <div class="graph-container" ?track=${track_this}>
                   <hat-graph-node
                     .iconPath=${!trace || track_this
-                      ? mdiCheckBoxOutline
+                      ? mdiCheckboxOutline
                       : mdiCheckboxBlankOutline}
                     @focus=${this.selectNode(config, branch_path)}
                     ?track=${track_this}
                     ?active=${this.selected === branch_path}
                   ></hat-graph-node>
-                  ${ensureArray(branch.sequence).map((action, j) =>
-                    this.render_action_node(
-                      action,
-                      `${branch_path}/sequence/${j}`
-                    )
-                  )}
+                  ${branch.sequence !== null
+                    ? ensureArray(branch.sequence).map((action, j) =>
+                        this.render_action_node(
+                          action,
+                          `${branch_path}/sequence/${j}`
+                        )
+                      )
+                    : ""}
                 </div>
               `;
             })
           : ""}
         <div ?track=${track_default}>
           <hat-graph-spacer ?track=${track_default}></hat-graph-spacer>
-          ${ensureArray(config.default)?.map((action, i) =>
-            this.render_action_node(action, `${path}/default/${i}`)
-          )}
+          ${config.default !== null
+            ? ensureArray(config.default)?.map((action, i) =>
+                this.render_action_node(action, `${path}/default/${i}`)
+              )
+            : ""}
         </div>
       </hat-graph-branch>
     `;
@@ -449,7 +453,7 @@ export class HatScriptGraph extends LitElement {
           </mwc-icon-button>
         </div>
       `;
-    } catch (err) {
+    } catch (err: any) {
       if (__DEV__) {
         // eslint-disable-next-line no-console
         console.log("Error creating script graph:", err);

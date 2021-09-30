@@ -93,15 +93,15 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
         tabindex=${ifDefined(
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
-        class="${classMap({
+        class=${classMap({
           clickable: Boolean(
             this._config.tap_action ||
               this._config.hold_action ||
               this._config.double_tap_action
           ),
-        })}"
+        })}
       >
-        <img src="${this.hass.hassUrl(this._config.image)}" />
+        <img src=${this.hass.hassUrl(this._config.image)} />
       </ha-card>
     `;
   }

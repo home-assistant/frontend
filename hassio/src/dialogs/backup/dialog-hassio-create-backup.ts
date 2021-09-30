@@ -127,7 +127,7 @@ class HassioCreateBackupDialog extends LitElement {
 
       this._dialogParams!.onCreate();
       this.closeDialog();
-    } catch (err) {
+    } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }
     this._creatingBackup = false;

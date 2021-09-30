@@ -9,6 +9,11 @@ import "../../../../components/ha-switch";
 import { LovelaceViewConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import "../../components/hui-theme-select-editor";
+import {
+  DEFAULT_VIEW_LAYOUT,
+  PANEL_VIEW_LAYOUT,
+  SIDEBAR_VIEW_LAYOUT,
+} from "../../views/const";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { EditorTarget } from "../types";
 
@@ -60,9 +65,11 @@ export class HuiViewEditor extends LitElement {
 
   get _type(): string {
     if (!this._config) {
-      return "masonry";
+      return DEFAULT_VIEW_LAYOUT;
     }
-    return this._config.panel ? "panel" : this._config.type || "masonry";
+    return this._config.panel
+      ? PANEL_VIEW_LAYOUT
+      : this._config.type || DEFAULT_VIEW_LAYOUT;
   }
 
   set config(config: LovelaceViewConfig) {
@@ -125,7 +132,7 @@ export class HuiViewEditor extends LitElement {
             attr-for-selected="type"
             @iron-select=${this._typeChanged}
           >
-            ${["masonry", "sidebar", "panel"].map(
+            ${[DEFAULT_VIEW_LAYOUT, SIDEBAR_VIEW_LAYOUT, PANEL_VIEW_LAYOUT].map(
               (type) => html`<paper-item .type=${type}>
                 ${this.hass.localize(
                   `ui.panel.lovelace.editor.edit_view.types.${type}`

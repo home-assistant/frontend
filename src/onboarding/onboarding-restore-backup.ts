@@ -6,14 +6,11 @@ import { showHassioBackupDialog } from "../../hassio/src/dialogs/backup/show-dia
 import { showBackupUploadDialog } from "../../hassio/src/dialogs/backup/show-dialog-backup-upload";
 import type { LocalizeFunc } from "../common/translations/localize";
 import "../components/ha-card";
-import {
-  DiscoveryInformation,
-  fetchDiscoveryInformation,
-} from "../data/discovery";
 import { makeDialogManager } from "../dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../mixins/provide-hass-lit-mixin";
 import { haStyle } from "../resources/styles";
 import "./onboarding-loading";
+import { fetchInstallationType, InstallationType } from "../data/onboarding";
 
 declare global {
   interface HASSDomEvents {
@@ -30,7 +27,7 @@ class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
   @property({ type: Boolean }) public restoring = false;
 
   @property({ attribute: false })
-  public discoveryInformation?: DiscoveryInformation;
+  public installationType?: InstallationType;
 
   protected render(): TemplateResult {
     return this.restoring
@@ -64,17 +61,11 @@ class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
   private async _checkRestoreStatus(): Promise<void> {
     if (this.restoring) {
       try {
-        const response = await fetchDiscoveryInformation();
-
-        if (
-          !this.discoveryInformation ||
-          this.discoveryInformation.uuid !== response.uuid
-        ) {
-          // When the UUID changes, the restore is complete
+        await fetchInstallationType();
+      } catch (err: any) {
+        if ((err as Error).message === "unauthorized") {
           window.location.replace("/");
         }
-      } catch (err) {
-        // We fully expected issues with fetching info untill restore is complete.
       }
     }
   }

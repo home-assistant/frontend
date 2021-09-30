@@ -13,6 +13,7 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import type { HomeAssistant, Route } from "../../../types";
+import "../../../components/ha-alert";
 import { configSections } from "../ha-panel-config";
 import "./components/ha-energy-device-settings";
 import "./components/ha-energy-grid-settings";
@@ -77,12 +78,10 @@ class HaConfigEnergy extends LitElement {
         .route=${this.route}
         .tabs=${configSections.experiences}
       >
-        <ha-card>
-          <div class="card-content">
-            After setting up a new device, it can take up to 2 hours for new
-            data to arrive in your energy dashboard.
-          </div>
-        </ha-card>
+        <ha-alert>
+          After setting up a new device, it can take up to 2 hours for new data
+          to arrive in your energy dashboard.
+        </ha-alert>
         <div class="container">
           <ha-energy-grid-settings
             .hass=${this.hass}
@@ -106,6 +105,7 @@ class HaConfigEnergy extends LitElement {
           <ha-energy-gas-settings
             .hass=${this.hass}
             .preferences=${this._preferences!}
+            .validationResult=${this._validationResult!}
             @value-changed=${this._prefsChanged}
           ></ha-energy-gas-settings>
           <ha-energy-device-settings
@@ -126,17 +126,17 @@ class HaConfigEnergy extends LitElement {
     const energyInfoPromise = await getEnergyInfo(this.hass);
     try {
       this._preferences = await getEnergyPreferences(this.hass);
-    } catch (e) {
-      if (e.code === "not_found") {
+    } catch (err: any) {
+      if (err.code === "not_found") {
         this._preferences = INITIAL_CONFIG;
       } else {
-        this._error = e.message;
+        this._error = err.message;
       }
     }
     try {
       this._validationResult = await validationPromise;
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
     this._info = await energyInfoPromise;
   }
@@ -146,8 +146,8 @@ class HaConfigEnergy extends LitElement {
     this._validationResult = undefined;
     try {
       this._validationResult = await getEnergyPreferenceValidation(this.hass);
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
     this._info = await getEnergyInfo(this.hass);
   }
@@ -156,7 +156,8 @@ class HaConfigEnergy extends LitElement {
     return [
       haStyle,
       css`
-        ha-card {
+        ha-alert {
+          display: block;
           margin: 8px;
         }
         .container {

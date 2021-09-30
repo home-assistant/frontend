@@ -29,7 +29,7 @@ class StateCardInputSelect extends LitElement {
       <state-badge .stateObj=${this.stateObj}></state-badge>
       <paper-dropdown-menu-light
         .label=${computeStateName(this.stateObj)}
-        .value="${this.stateObj.state}"
+        .value=${this.stateObj.state}
         @iron-select=${this._selectedOptionChanged}
         @click=${stopPropagation}
       >

@@ -5,6 +5,7 @@ import {
   mdiAlertOutline,
   mdiCheckboxMarkedCircleOutline,
   mdiClose,
+  mdiInformationOutline,
 } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -13,7 +14,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import "./ha-svg-icon";
 
 const ALERT_ICONS = {
-  info: mdiAlertCircleOutline,
+  info: mdiInformationOutline,
   warning: mdiAlertOutline,
   error: mdiAlertCircleOutline,
   success: mdiCheckboxMarkedCircleOutline,

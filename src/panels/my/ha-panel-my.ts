@@ -205,7 +205,7 @@ class HaPanelMy extends LitElement {
     let url: string;
     try {
       url = this._createRedirectUrl(redirect);
-    } catch (err) {
+    } catch (err: any) {
       this._error = "url_error";
       return;
     }
@@ -248,7 +248,7 @@ class HaPanelMy extends LitElement {
             html`<a
               target="_blank"
               rel="noreferrer noopener"
-              href="${documentationUrl(this.hass, "/installation")}"
+              href=${documentationUrl(this.hass, "/installation")}
               >${this.hass.localize("ui.panel.my.documentation")}</a
             >`
           );

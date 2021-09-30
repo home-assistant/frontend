@@ -115,7 +115,7 @@ class DataEntryFlowDialog extends LitElement {
           this.hass,
           params.continueFlowId
         );
-      } catch (err) {
+      } catch (err: any) {
         this._step = undefined;
         this._params = undefined;
         showAlertDialog(this, {
@@ -370,7 +370,7 @@ class DataEntryFlowDialog extends LitElement {
       let step: DataEntryFlowStep;
       try {
         step = await this._params!.flowConfig.createFlow(this.hass, handler);
-      } catch (err) {
+      } catch (err: any) {
         this._step = undefined;
         this._params = undefined;
         showAlertDialog(this, {

@@ -60,15 +60,15 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card .header=${this._config.title}>
         <div
           id="root"
-          style="${styleMap({
+          style=${styleMap({
             "padding-top": padding,
-          })}"
+          })}
         >
           <iframe
-            src="${this._config.url}"
+            src=${this._config.url}
             sandbox="allow-forms allow-modals allow-popups allow-pointer-lock allow-same-origin allow-scripts"
             allowfullscreen="true"
           ></iframe>

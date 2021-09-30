@@ -1,6 +1,6 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
-import relativeTime from "../common/datetime/relative_time";
+import { relativeTime } from "../common/datetime/relative_time";
 import type { HomeAssistant } from "../types";
 
 @customElement("ha-relative-time")
@@ -55,10 +55,7 @@ class HaRelativeTime extends ReactiveElement {
     if (!this.datetime) {
       this.innerHTML = this.hass.localize("ui.components.relative_time.never");
     } else {
-      this.innerHTML = relativeTime(
-        new Date(this.datetime),
-        this.hass.localize
-      );
+      this.innerHTML = relativeTime(new Date(this.datetime), this.hass.locale);
     }
   }
 }

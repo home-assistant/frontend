@@ -1,5 +1,5 @@
 import { html } from "lit";
-import { caseInsensitiveCompare } from "../../common/string/compare";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
   createConfigFlow,
   deleteConfigFlow,
@@ -29,7 +29,7 @@ export const showConfigFlowDialog = (
       ]);
 
       return handlers.sort((handlerA, handlerB) =>
-        caseInsensitiveCompare(
+        caseInsensitiveStringCompare(
           domainToName(hass.localize, handlerA),
           domainToName(hass.localize, handlerB)
         )

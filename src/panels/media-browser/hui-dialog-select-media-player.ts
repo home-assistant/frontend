@@ -6,7 +6,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateName } from "../../common/entity/compute_state_name";
-import { compare } from "../../common/string/compare";
+import { stringCompare } from "../../common/string/compare";
 import { createCloseHeading } from "../../components/ha-dialog";
 import { UNAVAILABLE_STATES } from "../../data/entity";
 import { BROWSER_PLAYER } from "../../data/media-player";
@@ -52,7 +52,9 @@ export class HuiDialogSelectMediaPlayer extends LitElement {
             )}</mwc-list-item
           >
           ${this._params.mediaSources
-            .sort((a, b) => compare(computeStateName(a), computeStateName(b)))
+            .sort((a, b) =>
+              stringCompare(computeStateName(a), computeStateName(b))
+            )
             .map(
               (source) => html`
                 <mwc-list-item

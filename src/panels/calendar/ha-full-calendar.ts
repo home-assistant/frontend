@@ -23,6 +23,7 @@ import {
 } from "lit";
 import { property, state } from "lit/decorators";
 import memoize from "memoize-one";
+import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button-toggle-group";
 import "../../components/ha-icon-button";
@@ -214,6 +215,11 @@ export class HAFullCalendar extends LitElement {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
       initialView: this.initialView,
+      eventTimeFormat: {
+        hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
+        minute: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
+        hour12: useAmPm(this.hass.locale),
+      },
     };
 
     config.dateClick = (info) => this._handleDateClick(info);

@@ -21,7 +21,7 @@ class HuiTextRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <ha-icon .icon="${this._config.icon}"></ha-icon>
+      <ha-icon .icon=${this._config.icon}></ha-icon>
       <div class="name">${this._config.name}</div>
       <div class="text">${this._config.text}</div>
     `;

@@ -50,11 +50,11 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
       <ha-dialog
         open
         @closed=${this._close}
-        .heading="${this.hass!.localize(
+        .heading=${this.hass!.localize(
           "ui.dialogs.mqtt_device_debug_info.title",
           "device",
           computeDeviceName(this._params.device, this.hass)
-        )}"
+        )}
       >
         <h4>
           ${this.hass!.localize(
@@ -138,7 +138,7 @@ class DialogMQTTDeviceDebugInfo extends LitElement {
       ${this._debugInfo!.entities.map(
         (entity) => html`
           <li class="entitylistitem">
-            '${computeStateName(this.hass.states[entity.entity_id])}'
+            ${computeStateName(this.hass.states[entity.entity_id])}
             (<code>${entity.entity_id}</code>)
             <br />MQTT discovery data:
             <ul class="discoverydata">

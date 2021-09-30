@@ -19,7 +19,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import {
   formatNumber,
   numberFormatToLocale,
-} from "../../common/string/format_number";
+} from "../../common/number/format_number";
 import {
   getStatisticIds,
   Statistics,

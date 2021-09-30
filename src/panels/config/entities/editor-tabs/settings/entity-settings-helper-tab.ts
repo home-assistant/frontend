@@ -203,7 +203,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
       }
       await this._registryEditor?.updateEntry();
       fireEvent(this, "close-dialog");
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {
       this._submitting = false;
