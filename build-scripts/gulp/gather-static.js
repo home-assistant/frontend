@@ -104,6 +104,10 @@ gulp.task("copy-translations-app", async () => {
 gulp.task("copy-translations-supervisor", async () => {
   const staticDir = paths.hassio_output_static;
   copyTranslations(staticDir);
+});
+
+gulp.task("copy-locale-data-supervisor", async () => {
+  const staticDir = paths.hassio_output_static;
   copyLocaleData(staticDir);
 });
 
