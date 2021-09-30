@@ -26,6 +26,7 @@ import "./state-badge";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
+// eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<HassEntity> = (item) => html`<style>
     paper-icon-item {
       padding: 0;

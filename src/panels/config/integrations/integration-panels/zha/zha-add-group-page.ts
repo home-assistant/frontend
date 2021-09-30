@@ -70,11 +70,11 @@ export class ZHAAddGroupPage extends LitElement {
           </p>
           <paper-input
             type="string"
-            .value="${this._groupName}"
+            .value=${this._groupName}
             @value-changed=${this._handleNameChange}
-            placeholder="${this.hass!.localize(
+            placeholder=${this.hass!.localize(
               "ui.panel.config.zha.groups.group_name_placeholder"
-            )}"
+            )}
           ></paper-input>
 
           <div class="header">
@@ -92,10 +92,10 @@ export class ZHAAddGroupPage extends LitElement {
 
           <div class="paper-dialog-buttons">
             <mwc-button
-              .disabled="${!this._groupName ||
+              .disabled=${!this._groupName ||
               this._groupName === "" ||
-              this._processingAdd}"
-              @click="${this._createGroup}"
+              this._processingAdd}
+              @click=${this._createGroup}
               class="button"
             >
               ${this._processingAdd

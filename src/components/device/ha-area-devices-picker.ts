@@ -20,7 +20,7 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { compare } from "../../common/string/compare";
+import { stringCompare } from "../../common/string/compare";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -50,6 +50,7 @@ interface AreaDevices {
   devices: string[];
 }
 
+// eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<AreaDevices> = (item) => html`<style>
     paper-item {
       padding: 0;
@@ -226,7 +227,10 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
 
       const sorted = Object.keys(devicesByArea)
         .sort((a, b) =>
-          compare(devicesByArea[a].name || "", devicesByArea[b].name || "")
+          stringCompare(
+            devicesByArea[a].name || "",
+            devicesByArea[b].name || ""
+          )
         )
         .map((key) => devicesByArea[key]);
 

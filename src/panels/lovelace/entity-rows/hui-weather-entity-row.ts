@@ -14,7 +14,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
-import { formatNumber } from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/entity/state-badge";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";

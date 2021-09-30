@@ -43,8 +43,8 @@ export default class HaNumericStateTrigger extends LitElement {
 
     return html`
       <ha-entity-picker
-        .value="${entity_id}"
-        @value-changed="${this._valueChanged}"
+        .value=${entity_id}
+        @value-changed=${this._valueChanged}
         .name=${"entity_id"}
         .hass=${this.hass}
         allow-custom-entity

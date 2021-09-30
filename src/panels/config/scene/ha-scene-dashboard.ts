@@ -74,9 +74,9 @@ class HaSceneDashboard extends LitElement {
           html`
             <mwc-icon-button
               .scene=${scene}
-              title="${this.hass.localize(
+              title=${this.hass.localize(
                 "ui.panel.config.scene.picker.activate_scene"
-              )}"
+              )}
               @click=${(ev: Event) => this._activateScene(ev)}
             >
               <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
@@ -102,9 +102,9 @@ class HaSceneDashboard extends LitElement {
           <mwc-icon-button
             .scene=${scene}
             @click=${this._showInfo}
-            title="${this.hass.localize(
+            title=${this.hass.localize(
               "ui.panel.config.scene.picker.show_info_scene"
-            )}"
+            )}
           >
             <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
           </mwc-icon-button>
@@ -123,9 +123,9 @@ class HaSceneDashboard extends LitElement {
           >
             <mwc-icon-button
               .disabled=${!scene.attributes.id}
-              title="${this.hass.localize(
+              title=${this.hass.localize(
                 "ui.panel.config.scene.picker.edit_scene"
-              )}"
+              )}
             >
               <ha-svg-icon
                 .path=${scene.attributes.id ? mdiPencil : mdiPencilOff}
@@ -234,7 +234,7 @@ class HaSceneDashboard extends LitElement {
         ${this.hass.localize("ui.panel.config.scene.picker.introduction")}
         <p>
           <a
-            href="${documentationUrl(this.hass, "/docs/scene/editor/")}"
+            href=${documentationUrl(this.hass, "/docs/scene/editor/")}
             target="_blank"
             rel="noreferrer"
           >

@@ -46,12 +46,12 @@ export class ZHADeviceBindingControl extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide="${this.isWide}">
+      <ha-config-section .isWide=${this.isWide}>
         <div class="header" slot="header">
           <span>Device Binding</span>
           <ha-icon-button
             class="toggle-help-icon"
-            @click="${this._onHelpTap}"
+            @click=${this._onHelpTap}
             icon="hass:help-circle"
           >
           </ha-icon-button>
@@ -63,8 +63,8 @@ export class ZHADeviceBindingControl extends LitElement {
             <paper-dropdown-menu label="Bindable Devices" class="menu">
               <paper-listbox
                 slot="dropdown-content"
-                .selected="${this._bindTargetIndex}"
-                @iron-select="${this._bindTargetIndexChanged}"
+                .selected=${this._bindTargetIndex}
+                @iron-select=${this._bindTargetIndexChanged}
               >
                 ${this.bindableDevices.map(
                   (device) => html`
@@ -87,16 +87,16 @@ export class ZHADeviceBindingControl extends LitElement {
             : ""}
           <div class="card-actions">
             <mwc-button
-              @click="${this._onBindDevicesClick}"
-              .disabled="${!(this._deviceToBind && this.selectedDevice)}"
+              @click=${this._onBindDevicesClick}
+              .disabled=${!(this._deviceToBind && this.selectedDevice)}
               >Bind</mwc-button
             >
             ${this._showHelp
               ? html` <div class="helpText">Bind devices.</div> `
               : ""}
             <mwc-button
-              @click="${this._onUnbindDevicesClick}"
-              .disabled="${!(this._deviceToBind && this.selectedDevice)}"
+              @click=${this._onUnbindDevicesClick}
+              .disabled=${!(this._deviceToBind && this.selectedDevice)}
               >Unbind</mwc-button
             >
             ${this._showHelp

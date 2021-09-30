@@ -18,7 +18,7 @@ import memoizeOne from "memoize-one";
 import type { HASSDomEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import "../../../common/search/search-input";
-import { caseInsensitiveCompare } from "../../../common/string/compare";
+import { caseInsensitiveStringCompare } from "../../../common/string/compare";
 import type { LocalizeFunc } from "../../../common/translations/localize";
 import { extractSearchParam } from "../../../common/url/search-params";
 import { nextRender } from "../../../common/util/render-status";
@@ -495,7 +495,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           })
         )
         .sort((conf1, conf2) =>
-          caseInsensitiveCompare(
+          caseInsensitiveStringCompare(
             conf1.localized_domain_name + conf1.title,
             conf2.localized_domain_name + conf2.title
           )

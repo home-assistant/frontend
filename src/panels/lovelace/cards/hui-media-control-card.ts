@@ -550,7 +550,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       const { foreground, background } = await extractColors(this._image);
       this._backgroundColor = background.hex;
       this._foregroundColor = foreground.hex;
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Error getting Image Colors", err);
       this._foregroundColor = undefined;

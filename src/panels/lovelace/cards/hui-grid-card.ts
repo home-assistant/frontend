@@ -61,7 +61,11 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
   setConfig(config: GridCardConfig) {
     super.setConfig(config);
     this.style.setProperty("--grid-card-column-count", String(this.columns));
-    this.toggleAttribute("square", this.square);
+    if (this.square) {
+      this.setAttribute("square", "");
+    } else {
+      this.removeAttribute("square");
+    }
   }
 
   static get styles(): CSSResultGroup {

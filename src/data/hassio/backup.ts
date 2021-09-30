@@ -159,9 +159,11 @@ export const removeBackup = async (hass: HomeAssistant, slug: string) => {
     await hass.callWS({
       type: "supervisor/api",
       endpoint: `/${
-        atLeastVersion(hass.config.version, 2021, 9) ? "backups" : "snapshots"
-      }/${slug}/remove`,
-      method: "post",
+        atLeastVersion(hass.config.version, 2021, 9)
+          ? `backups/${slug}`
+          : `snapshots/${slug}/remove`
+      }`,
+      method: atLeastVersion(hass.config.version, 2021, 9) ? "delete" : "post",
     });
     return;
   }

@@ -150,9 +150,9 @@ class HaAutomationPicker extends LitElement {
           <mwc-icon-button
             .automation=${automation}
             @click=${this._showInfo}
-            .label="${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.config.automation.picker.show_info_automation"
-            )}"
+            )}
           >
             <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
           </mwc-icon-button>
@@ -202,9 +202,9 @@ class HaAutomationPicker extends LitElement {
           >
             <mwc-icon-button
               .disabled=${!automation.attributes.id}
-              .label="${this.hass.localize(
+              .label=${this.hass.localize(
                 "ui.panel.config.automation.picker.edit_automation"
-              )}"
+              )}
             >
               <ha-svg-icon
                 .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
@@ -300,7 +300,7 @@ class HaAutomationPicker extends LitElement {
         ${this.hass.localize("ui.panel.config.automation.picker.introduction")}
         <p>
           <a
-            href="${documentationUrl(this.hass, "/docs/automation/editor/")}"
+            href=${documentationUrl(this.hass, "/docs/automation/editor/")}
             target="_blank"
             rel="noreferrer"
           >

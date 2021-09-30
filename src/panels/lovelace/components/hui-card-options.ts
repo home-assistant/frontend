@@ -83,9 +83,9 @@ export class HuiCardOptions extends LitElement {
                 aria-label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.options"
                 )}
-                title="${this.hass!.localize(
+                title=${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.options"
-                )}"
+                )}
               >
                 <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
               </mwc-icon-button>
@@ -229,7 +229,7 @@ export class HuiCardOptions extends LitElement {
             deleteCard(this.lovelace!.config, this.path!)
           );
           showSaveSuccessToast(this, this.hass!);
-        } catch (err) {
+        } catch (err: any) {
           showAlertDialog(this, {
             text: `Moving failed: ${err.message}`,
           });

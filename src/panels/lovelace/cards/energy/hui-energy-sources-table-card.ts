@@ -19,13 +19,14 @@ import {
 } from "../../../../common/color/convert-color";
 import { labDarken } from "../../../../common/color/lab";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { formatNumber } from "../../../../common/string/format_number";
+import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/statistics-chart";
 import "../../../../components/ha-card";
 import {
   EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
+  getEnergyGasUnit,
 } from "../../../../data/energy";
 import { calculateStatisticSumGrowth } from "../../../../data/history";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -115,6 +116,8 @@ export class HuiEnergySourcesTableCard
         (flow) =>
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
       );
+
+    const gasUnit = getEnergyGasUnit(this.hass, this._data.prefs) || "";
 
     return html` <ha-card>
       ${this._config.title
@@ -445,6 +448,7 @@ export class HuiEnergySourcesTableCard
                     this._data!.stats[source.stat_energy_from]
                   ) || 0;
                 totalGas += energy;
+
                 const cost_stat =
                   source.stat_cost ||
                   this._data!.info.cost_sensors[source.stat_energy_from];
@@ -479,7 +483,7 @@ export class HuiEnergySourcesTableCard
                   <td
                     class="mdc-data-table__cell mdc-data-table__cell--numeric"
                   >
-                    ${formatNumber(energy, this.hass.locale)} m³
+                    ${formatNumber(energy, this.hass.locale)} ${gasUnit}
                   </td>
                   ${showCosts
                     ? html`<td
@@ -502,7 +506,7 @@ export class HuiEnergySourcesTableCard
                     <td
                       class="mdc-data-table__cell mdc-data-table__cell--numeric"
                     >
-                      ${formatNumber(totalGas, this.hass.locale)} m³
+                      ${formatNumber(totalGas, this.hass.locale)} ${gasUnit}
                     </td>
                     ${showCosts
                       ? html`<td

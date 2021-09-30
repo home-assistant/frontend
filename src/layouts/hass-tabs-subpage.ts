@@ -178,7 +178,7 @@ class HassTabsSubpage extends LitElement {
       >
         <slot></slot>
       </div>
-      <div id="fab" class="${classMap({ tabs: showTabs })}">
+      <div id="fab" class=${classMap({ tabs: showTabs })}>
         <slot name="fab"></slot>
       </div>
     `;

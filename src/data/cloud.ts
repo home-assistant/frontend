@@ -3,8 +3,8 @@ import { PlaceholderContainer } from "../panels/config/automation/thingtalk/dial
 import { HomeAssistant } from "../types";
 import { AutomationConfig } from "./automation";
 
-interface CloudStatusBase {
-  logged_in: boolean;
+interface CloudStatusNotLoggedIn {
+  logged_in: false;
   cloud: "disconnected" | "connecting" | "connected";
 }
 
@@ -44,7 +44,9 @@ export interface CloudPreferences {
   tts_default_voice: [string, string];
 }
 
-export type CloudStatusLoggedIn = CloudStatusBase & {
+export interface CloudStatusLoggedIn {
+  logged_in: true;
+  cloud: "disconnected" | "connecting" | "connected";
   email: string;
   google_registered: boolean;
   google_entities: EntityFilter;
@@ -54,9 +56,9 @@ export type CloudStatusLoggedIn = CloudStatusBase & {
   remote_domain: string | undefined;
   remote_connected: boolean;
   remote_certificate: undefined | CertificateInformation;
-};
+}
 
-export type CloudStatus = CloudStatusBase | CloudStatusLoggedIn;
+export type CloudStatus = CloudStatusNotLoggedIn | CloudStatusLoggedIn;
 
 export interface SubscriptionInfo {
   human_description: string;

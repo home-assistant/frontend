@@ -237,14 +237,14 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
       <div class="buttons">
         <mwc-button
           class="warning"
-          @click="${this._confirmDeleteEntry}"
+          @click=${this._confirmDeleteEntry}
           .disabled=${this._submitting ||
           !(stateObj && stateObj.attributes.restored)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </mwc-button>
         <mwc-button
-          @click="${this._updateEntry}"
+          @click=${this._updateEntry}
           .disabled=${invalidDomainUpdate || this._submitting}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
@@ -324,7 +324,7 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
         });
       }
       fireEvent(this as HTMLElement, "close-dialog");
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message || "Unknown error";
     } finally {
       this._submitting = false;

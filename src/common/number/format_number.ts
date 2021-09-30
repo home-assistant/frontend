@@ -1,5 +1,5 @@
 import { FrontendLocaleData, NumberFormat } from "../../data/translation";
-import { round } from "../number/round";
+import { round } from "./round";
 
 export const numberFormatToLocale = (
   localeOptions: FrontendLocaleData
@@ -51,10 +51,10 @@ export const formatNumber = (
         locale,
         getDefaultFormatOptions(num, options)
       ).format(Number(num));
-    } catch (error) {
+    } catch (err: any) {
       // Don't fail when using "TEST" language
       // eslint-disable-next-line no-console
-      console.error(error);
+      console.error(err);
       return new Intl.NumberFormat(
         undefined,
         getDefaultFormatOptions(num, options)

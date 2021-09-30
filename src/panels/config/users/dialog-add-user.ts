@@ -135,9 +135,9 @@ export class DialogAddUser extends LitElement {
           ></paper-input>
 
           <paper-input
-            label="${this.hass.localize(
+            label=${this.hass.localize(
               "ui.panel.config.users.add_user.password_confirm"
-            )}"
+            )}
             name="passwordConfirm"
             .value=${this._passwordConfirm}
             @value-changed=${this._handleValueChanged}
@@ -146,9 +146,9 @@ export class DialogAddUser extends LitElement {
             .invalid=${this._password !== "" &&
             this._passwordConfirm !== "" &&
             this._passwordConfirm !== this._password}
-            .errorMessage="${this.hass.localize(
+            .errorMessage=${this.hass.localize(
               "ui.panel.config.users.add_user.password_not_match"
-            )}"
+            )}
           ></paper-input>
 
           <ha-formfield
@@ -169,7 +169,7 @@ export class DialogAddUser extends LitElement {
         </div>
         <mwc-button
           slot="secondaryAction"
-          @click="${this._close}"
+          @click=${this._close}
           .disabled=${this._loading}
         >
           ${this.hass!.localize("ui.common.cancel")}
@@ -237,7 +237,7 @@ export class DialogAddUser extends LitElement {
         this._isAdmin ? SYSTEM_GROUP_ID_ADMIN : SYSTEM_GROUP_ID_USER,
       ]);
       user = userResponse.user;
-    } catch (err) {
+    } catch (err: any) {
       this._loading = false;
       this._error = err.message;
       return;
@@ -250,7 +250,7 @@ export class DialogAddUser extends LitElement {
         this._username,
         this._password
       );
-    } catch (err) {
+    } catch (err: any) {
       await deleteUser(this.hass, user.id);
       this._loading = false;
       this._error = err.message;

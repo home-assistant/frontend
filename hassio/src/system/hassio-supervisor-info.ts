@@ -34,16 +34,18 @@ import { hassioStyle } from "../resources/hassio-style";
 const UNSUPPORTED_REASON_URL = {
   apparmor: "/more-info/unsupported/apparmor",
   container: "/more-info/unsupported/container",
+  content_trust: "/more-info/unsupported/content_trust",
   dbus: "/more-info/unsupported/dbus",
   docker_configuration: "/more-info/unsupported/docker_configuration",
   docker_version: "/more-info/unsupported/docker_version",
   job_conditions: "/more-info/unsupported/job_conditions",
   lxc: "/more-info/unsupported/lxc",
   network_manager: "/more-info/unsupported/network_manager",
+  os_agent: "/more-info/unsupported/os_agent",
   os: "/more-info/unsupported/os",
   privileged: "/more-info/unsupported/privileged",
+  source_mods: "/more-info/unsupported/source_mods",
   systemd: "/more-info/unsupported/systemd",
-  content_trust: "/more-info/unsupported/content_trust",
 };
 
 const UNHEALTHY_REASON_URL = {
@@ -280,7 +282,7 @@ class HassioSupervisorInfo extends LitElement {
       };
       await setSupervisorOption(this.hass, data);
       await this._reloadSupervisor();
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
           "system.supervisor.failed_to_set_option"
@@ -298,7 +300,7 @@ class HassioSupervisorInfo extends LitElement {
 
     try {
       await this._reloadSupervisor();
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("system.supervisor.failed_to_reload"),
         text: extractApiErrorMessage(err),
@@ -341,7 +343,7 @@ class HassioSupervisorInfo extends LitElement {
 
     try {
       await restartSupervisor(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
           "common.failed_to_restart_name",
@@ -386,7 +388,7 @@ class HassioSupervisorInfo extends LitElement {
       fireEvent(this, "supervisor-collection-refresh", {
         collection: "supervisor",
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
           "common.failed_to_update_name",
@@ -425,10 +427,10 @@ class HassioSupervisorInfo extends LitElement {
               <li>
                 ${UNSUPPORTED_REASON_URL[reason]
                   ? html`<a
-                      href="${documentationUrl(
+                      href=${documentationUrl(
                         this.hass,
                         UNSUPPORTED_REASON_URL[reason]
-                      )}"
+                      )}
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -456,10 +458,10 @@ class HassioSupervisorInfo extends LitElement {
               <li>
                 ${UNHEALTHY_REASON_URL[reason]
                   ? html`<a
-                      href="${documentationUrl(
+                      href=${documentationUrl(
                         this.hass,
                         UNHEALTHY_REASON_URL[reason]
-                      )}"
+                      )}
                       target="_blank"
                       rel="noreferrer"
                     >
@@ -481,7 +483,7 @@ class HassioSupervisorInfo extends LitElement {
         diagnostics: !this.supervisor.supervisor?.diagnostics,
       };
       await setSupervisorOption(this.hass, data);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
           "system.supervisor.failed_to_set_option"

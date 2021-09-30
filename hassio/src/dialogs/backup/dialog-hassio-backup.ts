@@ -311,7 +311,7 @@ class HassioBackupDialog
             : "snapshots"
         }/${this._backup!.slug}/download`
       );
-    } catch (err) {
+    } catch (err: any) {
       await showAlertDialog(this, {
         text: extractApiErrorMessage(err),
       });

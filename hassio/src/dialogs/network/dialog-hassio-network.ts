@@ -287,7 +287,7 @@ export class DialogHassioNetwork
         this.hass,
         this._interface.interface
       );
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: "Failed to scan for accesspoints",
         text: extractApiErrorMessage(err),
@@ -448,7 +448,7 @@ export class DialogHassioNetwork
         this._interface!.interface,
         interfaceOptions
       );
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("dialog.network.failed_to_change"),
         text: extractApiErrorMessage(err),
