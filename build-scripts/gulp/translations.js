@@ -336,6 +336,14 @@ gulp.task("build-translation-fragment-supervisor", () =>
   gulp
     .src(fullDir + "/*.json")
     .pipe(transform((data) => data.supervisor))
+    .pipe(
+      rename((filePath) => {
+        // In dev we create the file with the fake hash in the filename
+        if (!env.isProdBuild()) {
+          filePath.basename += "-dev";
+        }
+      })
+    )
     .pipe(gulp.dest(workDir + "/supervisor"))
 );
 
