@@ -57,11 +57,11 @@ export class HaStateLabelBadge extends LitElement {
       return html`
         <ha-label-badge
           class="warning"
-          label="${this.hass!.localize("state_badge.default.error")}"
+          label=${this.hass!.localize("state_badge.default.error")}
           icon="hass:alert"
-          description="${this.hass!.localize(
+          description=${this.hass!.localize(
             "state_badge.default.entity_not_found"
-          )}"
+          )}
         ></ha-label-badge>
       `;
     }
@@ -70,27 +70,25 @@ export class HaStateLabelBadge extends LitElement {
 
     return html`
       <ha-label-badge
-        class="${classMap({
+        class=${classMap({
           [domain]: true,
           "has-unit_of_measurement":
             "unit_of_measurement" in entityState.attributes,
-        })}"
-        .value="${this._computeValue(domain, entityState)}"
-        .icon="${this.icon
-          ? this.icon
-          : this._computeIcon(domain, entityState)}"
-        .image="${this.icon
+        })}
+        .value=${this._computeValue(domain, entityState)}
+        .icon=${this.icon ? this.icon : this._computeIcon(domain, entityState)}
+        .image=${this.icon
           ? ""
           : this.image
           ? this.image
           : entityState.attributes.entity_picture_local ||
-            entityState.attributes.entity_picture}"
-        .label="${this._computeLabel(
+            entityState.attributes.entity_picture}
+        .label=${this._computeLabel(
           domain,
           entityState,
           this._timerTimeRemaining
-        )}"
-        .description="${this.name ? this.name : computeStateName(entityState)}"
+        )}
+        .description=${this.name ? this.name : computeStateName(entityState)}
       ></ha-label-badge>
     `;
   }

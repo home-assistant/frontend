@@ -212,7 +212,7 @@ export class HcConnect extends LitElement {
     let url: URL;
     try {
       url = new URL(value);
-    } catch (err) {
+    } catch (err: any) {
       this.error = "Invalid URL";
       return;
     }
@@ -240,7 +240,7 @@ export class HcConnect extends LitElement {
     try {
       this.loading = true;
       auth = await getAuth(options);
-    } catch (err) {
+    } catch (err: any) {
       if (init === "saved-tokens" && err === ERR_CANNOT_CONNECT) {
         this.cannotConnect = true;
         return;
@@ -259,7 +259,7 @@ export class HcConnect extends LitElement {
 
     try {
       conn = await createConnection({ auth });
-    } catch (err) {
+    } catch (err: any) {
       // In case of saved tokens, silently solve problems.
       if (init === "saved-tokens") {
         if (err === ERR_CANNOT_CONNECT) {
@@ -285,7 +285,7 @@ export class HcConnect extends LitElement {
     try {
       saveTokens(null);
       location.reload();
-    } catch (err) {
+    } catch (err: any) {
       alert("Unable to log out!");
     }
   }

@@ -76,20 +76,20 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
       ${loggingInWith}
 
       <ha-auth-flow
-        .resources="${this.resources}"
-        .clientId="${this.clientId}"
-        .redirectUri="${this.redirectUri}"
-        .oauth2State="${this.oauth2State}"
-        .authProvider="${this._authProvider}"
+        .resources=${this.resources}
+        .clientId=${this.clientId}
+        .redirectUri=${this.redirectUri}
+        .oauth2State=${this.oauth2State}
+        .authProvider=${this._authProvider}
       ></ha-auth-flow>
 
       ${inactiveProviders.length > 0
         ? html`
             <ha-pick-auth-provider
-              .resources="${this.resources}"
-              .clientId="${this.clientId}"
-              .authProviders="${inactiveProviders}"
-              @pick-auth-provider="${this._handleAuthProviderPick}"
+              .resources=${this.resources}
+              .clientId=${this.clientId}
+              .authProviders=${inactiveProviders}
+              @pick-auth-provider=${this._handleAuthProviderPick}
             ></ha-pick-auth-provider>
           `
         : ""}
@@ -158,7 +158,7 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
 
       this._authProviders = authProviders;
       this._authProvider = authProviders[0];
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line
       console.error("Error loading auth providers", err);
     }

@@ -87,7 +87,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
     try {
       this._config = load(this.yaml) as any;
       this._errors = undefined;
-    } catch (err) {
+    } catch (err: any) {
       this._errors = [err.message];
     }
     this._setConfig();
@@ -111,7 +111,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
     if (!this._errors) {
       try {
         this._updateConfigElement();
-      } catch (err) {
+      } catch (err: any) {
         this._errors = [err.message];
       }
     }
@@ -321,7 +321,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
         // Setup GUI editor and check that it can handle the current config
         try {
           this._configElement.setConfig(this.value);
-        } catch (err) {
+        } catch (err: any) {
           const msgs = handleStructError(this.hass, err);
           throw new GUISupportError(
             "Config is not supported",
@@ -332,7 +332,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
       } else {
         this.GUImode = false;
       }
-    } catch (err) {
+    } catch (err: any) {
       if (err instanceof GUISupportError) {
         this._warnings = err.warnings ?? [err.message];
         this._errors = err.errors || undefined;

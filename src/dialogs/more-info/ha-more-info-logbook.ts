@@ -141,7 +141,7 @@ export class MoreInfoLogbook extends LitElement {
         this.hass.user?.is_admin ? loadTraceContexts(this.hass) : {},
         this._fetchUserPromise,
       ]);
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message;
     }
 

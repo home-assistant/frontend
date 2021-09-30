@@ -35,8 +35,8 @@ export class CloudGooglePref extends LitElement {
         <div class="switch">
           <ha-switch
             id="google_enabled"
-            .checked="${google_enabled}"
-            @change="${this._enableToggleChanged}"
+            .checked=${google_enabled}
+            @change=${this._enableToggleChanged}
           ></ha-switch>
         </div>
         <div class="card-content">
@@ -111,15 +111,15 @@ export class CloudGooglePref extends LitElement {
                     "ui.panel.config.cloud.account.google.enter_pin_info"
                   )}
                   <paper-input
-                    label="${this.hass.localize(
+                    label=${this.hass.localize(
                       "ui.panel.config.cloud.account.google.devices_pin"
-                    )}"
+                    )}
                     id="google_secure_devices_pin"
-                    placeholder="${this.hass.localize(
+                    placeholder=${this.hass.localize(
                       "ui.panel.config.cloud.account.google.enter_pin_hint"
-                    )}"
+                    )}
                     .value=${google_secure_devices_pin || ""}
-                    @change="${this._pinChanged}"
+                    @change=${this._pinChanged}
                   ></paper-input>
                 </div>
               `
@@ -171,7 +171,7 @@ export class CloudGooglePref extends LitElement {
     try {
       await updateCloudPref(this.hass, { [toggle.id]: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       toggle.checked = !toggle.checked;
     }
   }
@@ -183,7 +183,7 @@ export class CloudGooglePref extends LitElement {
         google_report_state: toggle.checked!,
       });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       alert(
         `Unable to ${toggle.checked ? "enable" : "disable"} report state. ${
           err.message
@@ -201,7 +201,7 @@ export class CloudGooglePref extends LitElement {
       });
       showSaveSuccessToast(this, this.hass);
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       alert(
         `${this.hass.localize(
           "ui.panel.config.cloud.account.google.enter_pin_error"

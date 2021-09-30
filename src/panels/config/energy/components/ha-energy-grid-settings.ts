@@ -91,10 +91,10 @@ export class EnergyGridSettings extends LitElement {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="${documentationUrl(
+              href=${documentationUrl(
                 this.hass,
                 "/docs/energy/electricity-grid/"
-              )}"
+              )}
               >${this.hass.localize(
                 "ui.panel.config.energy.grid.learn_more"
               )}</a
@@ -393,7 +393,7 @@ export class EnergyGridSettings extends LitElement {
 
     try {
       await this._savePreferences(preferences);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }
   }
@@ -423,7 +423,7 @@ export class EnergyGridSettings extends LitElement {
 
     try {
       await this._savePreferences(preferences);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }
   }

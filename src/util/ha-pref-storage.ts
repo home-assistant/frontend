@@ -17,7 +17,7 @@ export function storeState(hass: HomeAssistant) {
       const value = hass[key];
       STORAGE[key] = JSON.stringify(value === undefined ? null : value);
     });
-  } catch (err) {
+  } catch (err: any) {
     // Safari throws exception in private mode
   }
 }

@@ -93,9 +93,7 @@ class DialogUserDetail extends LitElement {
               .value=${this._name}
               .disabled=${user.system_generated}
               @value-changed=${this._nameChanged}
-              label="${this.hass!.localize(
-                "ui.panel.config.users.editor.name"
-              )}"
+              label=${this.hass!.localize("ui.panel.config.users.editor.name")}
             ></paper-input>
             <div class="row">
               <ha-formfield
@@ -219,7 +217,7 @@ class DialogUserDetail extends LitElement {
         ],
       });
       this._close();
-    } catch (err) {
+    } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;

@@ -108,7 +108,7 @@ export const computeLocalize = async (
           language,
           formats
         );
-      } catch (err) {
+      } catch (err: any) {
         return "Translation error: " + err.message;
       }
       cache._localizationCache[messageKey] = translatedMessage;
@@ -125,7 +125,7 @@ export const computeLocalize = async (
 
     try {
       return translatedMessage.format<string>(argObject) as string;
-    } catch (err) {
+    } catch (err: any) {
       return "Translation " + err;
     }
   };

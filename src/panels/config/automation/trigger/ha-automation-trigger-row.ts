@@ -241,7 +241,11 @@ export default class HaAutomationTriggerRow extends LitElement {
       return;
     }
 
-    const elClass = customElements.get(`ha-automation-trigger-${type}`);
+    const elClass = customElements.get(
+      `ha-automation-trigger-${type}`
+    ) as CustomElementConstructor & {
+      defaultConfig: Omit<Trigger, "platform">;
+    };
 
     if (type !== this.trigger.platform) {
       const value = {

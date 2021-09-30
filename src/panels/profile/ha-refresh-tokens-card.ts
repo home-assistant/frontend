@@ -127,7 +127,7 @@ class HaRefreshTokens extends LitElement {
         refresh_token_id: token.id,
       });
       fireEvent(this, "hass-refresh-tokens");
-    } catch (err) {
+    } catch (err: any) {
       await showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.profile.refresh_tokens.delete_failed"

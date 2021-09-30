@@ -70,7 +70,7 @@ export class HassioUploadBackup extends LitElement {
     try {
       const backup = await uploadBackup(this.hass, file);
       fireEvent(this, "backup-uploaded", { backup: backup.data });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: "Upload failed",
         text: extractApiErrorMessage(err),

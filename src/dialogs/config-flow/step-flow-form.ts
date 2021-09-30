@@ -159,7 +159,7 @@ class StepFlowForm extends LitElement {
       fireEvent(this, "flow-update", {
         step,
       });
-    } catch (err) {
+    } catch (err: any) {
       this._errorMsg =
         (err && err.body && err.body.message) || "Unknown error occurred";
     } finally {

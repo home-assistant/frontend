@@ -120,7 +120,7 @@ export class HuiDialogSelectView extends LitElement {
     this._urlPath = urlPath;
     try {
       this._config = await fetchConfig(this.hass.connection, urlPath, false);
-    } catch (e) {
+    } catch (err: any) {
       this._config = undefined;
     }
   }

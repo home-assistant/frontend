@@ -152,7 +152,7 @@ class ZHAAddDevicesPage extends LitElement {
               readonly
               max-rows="10"
               class="log"
-              value="${this._formattedEvents}"
+              value=${this._formattedEvents}
             >
             </paper-textarea>`
           : ""}

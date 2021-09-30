@@ -259,7 +259,7 @@ class HassioAddonConfig extends LitElement {
         path: "options",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.common.update_available",
         "error",
@@ -300,7 +300,7 @@ class HassioAddonConfig extends LitElement {
       if (this.addon?.state === "started") {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",

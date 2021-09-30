@@ -62,7 +62,7 @@ export class SystemLogCard extends LitElement {
                                 this.hass!.locale
                               )}
                               –
-                              ${html`(<span class="${item.level.toLowerCase()}"
+                              ${html`(<span class=${item.level.toLowerCase()}
                                   >${this.hass.localize(
                                     "ui.panel.config.logs.level." +
                                       item.level.toLowerCase()

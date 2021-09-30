@@ -44,7 +44,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                     (conf) => html`
                       ${conf.name}
                       <small>
-                        <a target="_blank" href="${conf.authorUrl}">
+                        <a target="_blank" href=${conf.authorUrl}>
                           ${this.hass.localize(
                             "ui.panel.page-demo.cards.demo.demo_by",
                             "name",
@@ -94,7 +94,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     this._switching = true;
     try {
       await setDemoConfig(this.hass, this.lovelace!, index);
-    } catch (err) {
+    } catch (err: any) {
       alert("Failed to switch config :-(");
     } finally {
       this._switching = false;

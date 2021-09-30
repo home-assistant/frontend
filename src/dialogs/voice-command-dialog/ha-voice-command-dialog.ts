@@ -1,3 +1,4 @@
+/* eslint-disable lit/prefer-static-styles */
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import type { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
@@ -114,7 +115,7 @@ export class HaVoiceCommandDialog extends LitElement {
                 <div class="side-by-side" @click=${this._completeOnboarding}>
                   <a
                     class="button"
-                    href="${this._agentInfo.onboarding.url}"
+                    href=${this._agentInfo.onboarding.url}
                     target="_blank"
                     rel="noreferrer"
                     ><mwc-button unelevated
@@ -138,7 +139,7 @@ export class HaVoiceCommandDialog extends LitElement {
         >
           ${this._conversation.map(
             (message) => html`
-              <div class="${this._computeMessageClasses(message)}">
+              <div class=${this._computeMessageClasses(message)}>
                 ${message.text}
               </div>
             `
@@ -159,11 +160,11 @@ export class HaVoiceCommandDialog extends LitElement {
         <div class="input">
           <paper-input
             @keyup=${this._handleKeyUp}
-            .label="${this.hass.localize(
+            .label=${this.hass.localize(
               `ui.dialogs.voice_command.${
                 SpeechRecognition ? "label_voice" : "label"
               }`
-            )}"
+            )}
             autofocus
           >
             ${SpeechRecognition

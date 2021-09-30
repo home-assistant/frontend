@@ -65,7 +65,7 @@ class StepFlowCreateEntry extends LitElement {
             `}
       </div>
       <div class="buttons">
-        <mwc-button @click="${this._flowDone}"
+        <mwc-button @click=${this._flowDone}
           >${localize(
             "ui.panel.config.integrations.config_flow.finish"
           )}</mwc-button
@@ -87,7 +87,7 @@ class StepFlowCreateEntry extends LitElement {
       await updateDeviceRegistryEntry(this.hass, device, {
         area_id: area,
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_flow.error_saving_area",

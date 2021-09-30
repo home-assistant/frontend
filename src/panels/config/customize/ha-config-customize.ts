@@ -3,6 +3,7 @@ import { property } from "lit/decorators";
 import "../../../components/ha-card";
 import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage";
+import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { documentationUrl } from "../../../util/documentation-url";
 import "../ha-config-section";
@@ -23,7 +24,6 @@ class HaConfigCustomize extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <style include="ha-style"></style>
       <hass-tabs-subpage
       .hass=${this.hass}
         .narrow=${this.narrow}
@@ -75,11 +75,14 @@ class HaConfigCustomize extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      a {
-        color: var(--primary-color);
-      }
-    `;
+    return [
+      haStyle,
+      css`
+        a {
+          color: var(--primary-color);
+        }
+      `,
+    ];
   }
 }
 customElements.define("ha-config-customize", HaConfigCustomize);
