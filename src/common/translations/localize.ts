@@ -129,6 +129,10 @@ export const computeLocalize = async (
 };
 
 export const loadPolyfillLocales = async (language: string) => {
+  if (!polyfillsLoaded) {
+    return;
+  }
+  await polyfillsLoaded;
   try {
     if (polyfillPluralRules) {
       await import(
