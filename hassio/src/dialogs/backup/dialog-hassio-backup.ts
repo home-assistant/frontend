@@ -28,6 +28,7 @@ import "../../components/supervisor-backup-content";
 import type { SupervisorBackupContent } from "../../components/supervisor-backup-content";
 import { HassioBackupDialogParams } from "./show-dialog-hassio-backup";
 import { atLeastVersion } from "../../../../src/common/config/version";
+import { stopPropagation } from "../../../../src/common/dom/stop_propagation";
 
 @customElement("dialog-hassio-backup")
 class HassioBackupDialog
@@ -107,7 +108,7 @@ class HassioBackupDialog
               fixed
               slot="primaryAction"
               @action=${this._handleMenuAction}
-              @closed=${(ev: Event) => ev.stopPropagation()}
+              @closed=${stopPropagation}
             >
               <mwc-icon-button slot="trigger" alt="menu">
                 <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
