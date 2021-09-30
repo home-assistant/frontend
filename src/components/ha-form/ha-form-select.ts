@@ -1,15 +1,12 @@
-import "@material/mwc-icon-button/mwc-icon-button";
-import { mdiClose, mdiMenuDown } from "@mdi/js";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-menu-button/paper-menu-button";
-import "@polymer/paper-ripple/paper-ripple";
+import "@material/mwc-select";
+import type { Select } from "@material/mwc-select";
+import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-svg-icon";
 import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./ha-form";
+import { stopPropagation } from "../../common/dom/stop_propagation";
 
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {
@@ -21,7 +18,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @query("ha-paper-dropdown-menu", true) private _input?: HTMLElement;
+  @query("mwc-select", true) private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {
@@ -31,52 +28,24 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-menu-button horizontal-align="right" vertical-offset="8">
-        <div class="dropdown-trigger" slot="dropdown-trigger">
-          <paper-ripple></paper-ripple>
-          <paper-input
-            id="input"
-            type="text"
-            readonly
-            value=${this.data}
-            label=${this.label}
-            input-role="button"
-            input-aria-haspopup="listbox"
-            autocomplete="off"
-          >
-            ${this.data && this.schema.optional
-              ? html`<mwc-icon-button
-                  slot="suffix"
-                  class="clear-button"
-                  @click=${this._clearValue}
-                >
-                  <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                </mwc-icon-button>`
-              : ""}
-            <mwc-icon-button slot="suffix">
-              <ha-svg-icon .path=${mdiMenuDown}></ha-svg-icon>
-            </mwc-icon-button>
-          </paper-input>
-        </div>
-        <paper-listbox
-          slot="dropdown-content"
-          attr-for-selected="item-value"
-          .selected=${this.data}
-          @selected-item-changed=${this._valueChanged}
-        >
-          ${
-            // TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
-            // @ts-ignore
-            this.schema.options!.map(
-              (item: string | [string, string]) => html`
-                <paper-item .itemValue=${this._optionValue(item)}>
-                  ${this._optionLabel(item)}
-                </paper-item>
-              `
-            )
-          }
-        </paper-listbox>
-      </paper-menu-button>
+      <mwc-select
+        fixedMenuPosition
+        .label=${this.label}
+        .value=${this.data}
+        @closed=${stopPropagation}
+        @selected=${this._valueChanged}
+      >
+        ${this.schema.optional
+          ? html`<mwc-list-item value=""></mwc-list-item>`
+          : ""}
+        ${this.schema.options!.map(
+          (item: string | [string, string]) => html`
+            <mwc-list-item .value=${this._optionValue(item)}>
+              ${this._optionLabel(item)}
+            </mwc-list-item>
+          `
+        )}
+      </mwc-select>
     `;
   }
 
@@ -88,32 +57,27 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     return Array.isArray(item) ? item[1] || item[0] : item;
   }
 
-  private _clearValue(ev: CustomEvent) {
-    ev.stopPropagation();
-    fireEvent(this, "value-changed", { value: undefined });
-  }
-
   private _valueChanged(ev: CustomEvent) {
-    if (!ev.detail.value) {
+    ev.stopPropagation();
+    let value: string | undefined = (ev.target as Select).value;
+
+    if (value === this.data) {
       return;
     }
+
+    if (value === "") {
+      value = undefined;
+    }
+
     fireEvent(this, "value-changed", {
-      value: ev.detail.value.itemValue,
+      value,
     });
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-menu-button {
+      mwc-select {
         display: block;
-        padding: 0;
-      }
-      paper-input > mwc-icon-button {
-        --mdc-icon-button-size: 24px;
-        padding: 2px;
-      }
-      .clear-button {
-        color: var(--secondary-text-color);
       }
     `;
   }

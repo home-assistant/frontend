@@ -1,6 +1,6 @@
-import "@polymer/paper-input/paper-input";
-import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import { html, LitElement, TemplateResult } from "lit";
+import "@material/mwc-textfield";
+import type { TextField } from "@material/mwc-textfield";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./ha-form";
@@ -15,7 +15,7 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   @property() public suffix!: string;
 
-  @query("paper-input", true) private _input?: HTMLElement;
+  @query("mwc-textfield") private _input?: HTMLElement;
 
   public focus() {
     if (this._input) {
@@ -25,33 +25,49 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-input
+      <mwc-textfield
         .label=${this.label}
-        .value=${this._value}
+        .value=${this.data !== undefined ? this.data : ""}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
-        @value-changed=${this._valueChanged}
-      >
-        <span suffix slot="suffix">${this.suffix}</span>
-      </paper-input>
+        .suffix=${this.suffix}
+        .validationMessage=${this.schema.required ? "Required" : undefined}
+        @change=${this._valueChanged}
+      ></mwc-textfield>
     `;
   }
 
-  private get _value() {
-    return this.data;
-  }
-
   private _valueChanged(ev: Event) {
-    const value: number | undefined = (ev.target as PaperInputElement).value
-      ? Number((ev.target as PaperInputElement).value)
-      : undefined;
-    if (this._value === value) {
+    const source = ev.target as TextField;
+    const rawValue = source.value;
+
+    let value: number | undefined;
+
+    if (rawValue !== "") {
+      value = parseFloat(rawValue);
+    }
+
+    // Detect anything changed
+    if (this.data === value) {
+      // parseFloat will drop invalid text at the end, in that case update textfield
+      const newRawValue = value === undefined ? "" : String(value);
+      if (source.value !== newRawValue) {
+        source.value = newRawValue;
+        return;
+      }
       return;
     }
+
     fireEvent(this, "value-changed", {
       value,
     });
   }
+
+  static styles = css`
+    mwc-textfield {
+      display: block;
+    }
+  `;
 }
 
 declare global {

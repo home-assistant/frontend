@@ -1,5 +1,6 @@
-import "@polymer/paper-checkbox/paper-checkbox";
-import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
+import "@material/mwc-formfield";
+import "@material/mwc-checkbox";
+import type { Checkbox } from "@material/mwc-checkbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -29,23 +30,25 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-checkbox .checked=${this.data} @change=${this._valueChanged}>
-        ${this.label}
-      </paper-checkbox>
+      <mwc-formfield .label=${this.label}>
+        <mwc-checkbox
+          .checked=${this.data}
+          @change=${this._valueChanged}
+        ></mwc-checkbox>
+      </mwc-formfield>
     `;
   }
 
   private _valueChanged(ev: Event) {
     fireEvent(this, "value-changed", {
-      value: (ev.target as PaperCheckboxElement).checked,
+      value: (ev.target as Checkbox).checked,
     });
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-checkbox {
-        display: block;
-        padding: 22px 0;
+      mwc-checkbox {
+        --mdc-theme-secondary: var(--primary-color);
       }
     `;
   }

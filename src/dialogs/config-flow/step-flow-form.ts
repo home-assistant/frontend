@@ -14,6 +14,7 @@ import "../../components/ha-circular-progress";
 import "../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
+import "../../components/ha-alert";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import type { HomeAssistant } from "../../types";
 import type { FlowConfig } from "./show-dialog-data-entry-flow";
@@ -37,24 +38,15 @@ class StepFlowForm extends LitElement {
     const step = this.step;
     const stepData = this._stepDataProcessed;
 
-    const allRequiredInfoFilledIn =
-      stepData === undefined
-        ? // If no data filled in, just check that any field is required
-          step.data_schema.find((field) => !field.optional) === undefined
-        : // If data is filled in, make sure all required fields are
-          stepData &&
-          step.data_schema.every(
-            (field) =>
-              field.optional || !["", undefined].includes(stepData![field.name])
-          );
-
     return html`
       <h2>${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}</h2>
       <div class="content">
-        ${this._errorMsg
-          ? html` <div class="error">${this._errorMsg}</div> `
-          : ""}
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
+        ${this._errorMsg
+          ? html`
+              <ha-alert alert-type="error" .title=${this._errorMsg}></ha-alert>
+            `
+          : ""}
         <ha-form
           .data=${stepData}
           @value-changed=${this._stepDataChanged}
@@ -73,25 +65,13 @@ class StepFlowForm extends LitElement {
             `
           : html`
               <div>
-                <mwc-button
-                  @click=${this._submitStep}
-                  .disabled=${!allRequiredInfoFilledIn}
-                  >${this.hass.localize(
+                <mwc-button @click=${this._submitStep}>
+                  ${this.hass.localize(
                     `ui.panel.config.integrations.config_flow.${
                       this.step.last_step === false ? "next" : "submit"
                     }`
                   )}
                 </mwc-button>
-
-                ${!allRequiredInfoFilledIn
-                  ? html`
-                      <paper-tooltip animation-delay="0" position="left"
-                        >${this.hass.localize(
-                          "ui.panel.config.integrations.config_flow.not_all_required_fields"
-                        )}
-                      </paper-tooltip>
-                    `
-                  : html``}
               </div>
             `}
       </div>
@@ -127,11 +107,30 @@ class StepFlowForm extends LitElement {
   }
 
   private async _submitStep(): Promise<void> {
+    const stepData = this._stepData || {};
+
+    const allRequiredInfoFilledIn =
+      stepData === undefined
+        ? // If no data filled in, just check that any field is required
+          this.step.data_schema.find((field) => !field.optional) === undefined
+        : // If data is filled in, make sure all required fields are
+          stepData &&
+          this.step.data_schema.every(
+            (field) =>
+              field.optional || !["", undefined].includes(stepData![field.name])
+          );
+
+    if (!allRequiredInfoFilledIn) {
+      this._errorMsg = this.hass.localize(
+        "ui.panel.config.integrations.config_flow.not_all_required_fields"
+      );
+      return;
+    }
+
     this._loading = true;
     this._errorMsg = undefined;
 
     const flowId = this.step.flow_id;
-    const stepData = this._stepData || {};
 
     const toSendData = {};
     Object.keys(stepData).forEach((key) => {
@@ -187,6 +186,12 @@ class StepFlowForm extends LitElement {
 
         .submit-spinner {
           margin-right: 16px;
+        }
+
+        ha-alert,
+        ha-form {
+          margin-top: 8px;
+          display: block;
         }
       `,
     ];

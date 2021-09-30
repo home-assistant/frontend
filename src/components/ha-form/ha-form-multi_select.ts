@@ -1,18 +1,26 @@
-import "@polymer/paper-checkbox/paper-checkbox";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-menu-button/paper-menu-button";
-import "@polymer/paper-ripple/paper-ripple";
+import "@material/mwc-textfield";
+import "@material/mwc-formfield";
+import "@material/mwc-checkbox";
+import type { Checkbox } from "@material/mwc-checkbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import { stopPropagation } from "../../common/dom/stop_propagation";
+import "../ha-button-menu";
 import "../ha-icon";
 import {
   HaFormElement,
   HaFormMultiSelectData,
   HaFormMultiSelectSchema,
 } from "./ha-form";
+
+function optionValue(item: string | string[]): string {
+  return Array.isArray(item) ? item[0] : item;
+}
+
+function optionLabel(item: string | string[]): string {
+  return Array.isArray(item) ? item[1] || item[0] : item;
+}
 
 @customElement("ha-form-multi_select")
 export class HaFormMultiSelect extends LitElement implements HaFormElement {
@@ -23,8 +31,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
   @property() public label!: string;
 
   @property() public suffix!: string;
-
-  @state() private _init = false;
 
   @query("paper-menu-button", true) private _input?: HTMLElement;
 
@@ -40,93 +46,70 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       : Object.entries(this.schema.options!);
 
     const data = this.data || [];
+
     return html`
-      <paper-menu-button horizontal-align="right" vertical-offset="8">
-        <div class="dropdown-trigger" slot="dropdown-trigger">
-          <paper-ripple></paper-ripple>
-          <paper-input
-            id="input"
-            type="text"
-            readonly
-            value=${data
-              .map((value) => this.schema.options![value] || value)
-              .join(", ")}
-            label=${this.label}
-            input-role="button"
-            input-aria-haspopup="listbox"
-            autocomplete="off"
-          >
-            <ha-icon
-              icon="paper-dropdown-menu:arrow-drop-down"
-              suffix
-              slot="suffix"
-            ></ha-icon>
-          </paper-input>
-        </div>
-        <paper-listbox
-          multi
-          slot="dropdown-content"
-          attr-for-selected="item-value"
-          .selectedValues=${data}
-          @selected-items-changed=${this._valueChanged}
-          @iron-select=${this._onSelect}
-        >
-          ${
-            // TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
-            // @ts-ignore
-            options.map((item: string | [string, string]) => {
-              const value = this._optionValue(item);
-              return html`
-                <paper-icon-item .itemValue=${value}>
-                  <paper-checkbox
-                    .checked=${data.includes(value)}
-                    slot="item-icon"
-                  ></paper-checkbox>
-                  ${this._optionLabel(item)}
-                </paper-icon-item>
-              `;
-            })
-          }
-        </paper-listbox>
-      </paper-menu-button>
+      <ha-button-menu fixed corner="BOTTOM_START" @closed=${stopPropagation}>
+        <mwc-textfield
+          slot="trigger"
+          .label=${this.label}
+          .value=${data
+            .map((value) => this.schema.options![value] || value)
+            .join(", ")}
+          tabindex="-1"
+        ></mwc-textfield>
+        ${options.map((item: string | [string, string]) => {
+          const value = optionValue(item);
+          return html`
+            <mwc-formfield .label=${optionLabel(item)}>
+              <mwc-checkbox
+                .checked=${data.includes(value)}
+                .value=${value}
+                @change=${this._valueChanged}
+              ></mwc-checkbox>
+            </mwc-formfield>
+          `;
+        })}
+      </ha-button-menu>
     `;
   }
 
   protected firstUpdated() {
     this.updateComplete.then(() => {
-      const input = (
-        this.shadowRoot?.querySelector("paper-input")?.inputElement as any
-      )?.inputElement;
+      const input =
+        // @ts-expect-error
+        this.shadowRoot?.querySelector("mwc-textfield")?.formElement;
       if (input) {
         input.style.textOverflow = "ellipsis";
+        input.setAttribute("readonly", "");
       }
     });
   }
 
-  private _optionValue(item: string | string[]): string {
-    return Array.isArray(item) ? item[0] : item;
-  }
-
-  private _optionLabel(item: string | string[]): string {
-    return Array.isArray(item) ? item[1] || item[0] : item;
-  }
-
-  private _onSelect(ev: Event) {
-    ev.stopPropagation();
-  }
-
   private _valueChanged(ev: CustomEvent): void {
-    if (!ev.detail.value || !this._init) {
-      // ignore first call because that is the init of the component
-      this._init = true;
-      return;
+    const { value, checked } = ev.target as Checkbox;
+
+    let newValue: string[];
+
+    if (checked) {
+      if (!this.data) {
+        newValue = [value];
+      } else if (this.data.includes(value)) {
+        return;
+      } else {
+        newValue = [...this.data, value];
+      }
+    } else {
+      if (!this.data.includes(value)) {
+        return;
+      }
+      newValue = this.data.filter((v) => v !== value);
     }
 
     fireEvent(
       this,
       "value-changed",
       {
-        value: ev.detail.value.map((element) => element.itemValue),
+        value: newValue,
       },
       { bubbles: false }
     );
@@ -134,19 +117,13 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-menu-button {
+      :host {
+        --mdc-theme-secondary: var(--primary-color);
+      }
+      ha-button-menu,
+      mwc-textfield,
+      mwc-formfield {
         display: block;
-        padding: 0;
-        --paper-item-icon-width: 34px;
-      }
-      paper-ripple {
-        top: 12px;
-        left: 0px;
-        bottom: 8px;
-        right: 0px;
-      }
-      paper-input {
-        text-overflow: ellipsis;
       }
     `;
   }

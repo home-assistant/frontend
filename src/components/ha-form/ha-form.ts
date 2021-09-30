@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaDurationData } from "../ha-duration-input";
+import "../ha-alert";
 import "./ha-form-boolean";
 import "./ha-form-constant";
 import "./ha-form-float";
@@ -111,6 +112,8 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public computeSuffix?: (schema: HaFormSchema) => string;
 
+  @property({ reflect: true, type: Boolean }) public root = true;
+
   public focus() {
     const input =
       this.shadowRoot!.getElementById("child-form") ||
@@ -126,14 +129,16 @@ export class HaForm extends LitElement implements HaFormElement {
       return html`
         ${this.error && this.error.base
           ? html`
-              <div class="error">
-                ${this._computeError(this.error.base, this.schema)}
-              </div>
+              <ha-alert
+                alert-type="error"
+                .title=${this._computeError(this.error.base, this.schema)}
+              ></ha-alert>
             `
           : ""}
         ${this.schema.map(
           (item) => html`
             <ha-form
+              .root=${false}
               .data=${this._getValue(this.data, item)}
               .schema=${item}
               .error=${this._getValue(this.error, item)}
@@ -203,6 +208,14 @@ export class HaForm extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      ha-alert {
+        display: block;
+        margin: 8px 0;
+      }
+      :host([root]) ha-form {
+        display: block;
+        margin-bottom: 20px;
+      }
       .error {
         color: var(--error-color);
       }
