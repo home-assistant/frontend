@@ -15,8 +15,6 @@ export interface FormatsType {
   time: FormatType;
 }
 
-let loadedPolyfillLocale: Set<string> | undefined;
-
 const polyfillPluralRules = shouldPolyfillPluralRules();
 const polyfillRelativeTime = shouldPolyfillRelativeTime();
 const polyfillDateTime = shouldPolyfillDateTime();
@@ -41,7 +39,6 @@ let polyfillLoaded = polyfills.length === 0;
 export const polyfillsLoaded = polyfillLoaded
   ? undefined
   : Promise.all(polyfills).then(() => {
-      loadedPolyfillLocale = new Set();
       polyfillLoaded = true;
       // Load English so it becomes the default
       return loadPolyfillLocales("en");
@@ -132,19 +129,28 @@ export const computeLocalize = async (
 };
 
 export const loadPolyfillLocales = async (language: string) => {
-  if (!loadedPolyfillLocale || loadedPolyfillLocale.has(language)) {
+  if (!polyfillsLoaded) {
     return;
   }
-  loadedPolyfillLocale.add(language);
+  await polyfillsLoaded;
   try {
     if (polyfillPluralRules) {
-      await import(`@formatjs/intl-pluralrules/locale-data/${language}`);
+      await import(
+        /* webpackExclude: /.+-.+\.js$/ */
+        `@formatjs/intl-pluralrules/locale-data/${language}`
+      );
     }
     if (polyfillRelativeTime) {
-      await import(`@formatjs/intl-relativetimeformat/locale-data/${language}`);
+      await import(
+        /* webpackExclude: /.+-.+\.js$/ */
+        `@formatjs/intl-relativetimeformat/locale-data/${language}`
+      );
     }
     if (polyfillDateTime) {
-      await import(`@formatjs/intl-datetimeformat/locale-data/${language}`);
+      await import(
+        /* webpackExclude: /.+-.+\.js$/ */
+        `@formatjs/intl-datetimeformat/locale-data/${language}`
+      );
     }
   } catch (_e) {
     // Ignore
