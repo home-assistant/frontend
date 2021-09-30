@@ -123,11 +123,11 @@ class HaPanelDevStatistics extends LitElement {
     if (issue.type === "unsupported_unit") {
       showAlertDialog(this, {
         title: "Unsupported unit",
-        text: html`The unit of your entity is not a suppported unit for the
+        text: html`The unit of your entity is not a supported unit for the
           device class of the entity, ${issue.data.device_class}.
           <br />Statistics can not be generated until this entity has a
-          supported unit. <br /><br />If this unit was provided by an
-          integration, this is a bug. Please report an issue. <br /><br />If you
+          supported unit.<br /><br />If this unit was provided by an
+          integration, this is a bug. Please report an issue.<br /><br />If you
           have set this unit yourself, and want to have statistics generated,
           make sure the unit matched the device class. The supported units are
           documented in the
