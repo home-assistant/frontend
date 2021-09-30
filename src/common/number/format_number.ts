@@ -1,5 +1,5 @@
 import { FrontendLocaleData, NumberFormat } from "../../data/translation";
-import { round } from "../number/round";
+import { round } from "./round";
 
 export const numberFormatToLocale = (
   localeOptions: FrontendLocaleData

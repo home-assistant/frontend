@@ -31,7 +31,7 @@ import {
 import { customElement, property } from "lit/decorators";
 import { formatDateWeekday } from "../../../common/datetime/format_date";
 import { formatTimeWeekday } from "../../../common/datetime/format_time";
-import { formatNumber } from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-svg-icon";
 import { getWeatherUnit, getWind } from "../../../data/weather";
 import { HomeAssistant } from "../../../types";
