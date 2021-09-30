@@ -53,6 +53,8 @@ jobs:
         run: yarn install
         env:
           CI: true
+      - name: Build resources
+        run: ./node_modules/.bin/gulp build-translations build-locale-data
       - name: Run Tests
         run: yarn run test
   build:
