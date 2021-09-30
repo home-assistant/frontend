@@ -60,6 +60,75 @@ class HassioDatadiskDialog extends LitElement {
     if (!this.dialogParams) {
       return html``;
     }
+    let heading: string;
+    let content: TemplateResult;
+
+    if (this.moving) {
+      heading = this.dialogParams.supervisor.localize(
+        "dialog.datadisk_move.moving"
+      );
+      content = html`
+        <ha-circular-progress alt="Moving" size="large" active>
+        </ha-circular-progress>
+        <p class="progress-text">
+          ${this.dialogParams.supervisor.localize(
+            "dialog.datadisk_move.moving_desc"
+          )}
+        </p>
+      `;
+    } else {
+      heading = this.dialogParams.supervisor.localize(
+        "dialog.datadisk_move.title"
+      );
+      content = html`
+        ${this.devices?.length
+          ? html`
+              ${this.dialogParams.supervisor.localize(
+                "dialog.datadisk_move.description",
+                {
+                  current_path: this.dialogParams.supervisor.os.data_disk,
+                  time: calculateMoveTime(this.dialogParams.supervisor),
+                }
+              )}
+              <br /><br />
+
+              <paper-dropdown-menu
+                .label=${this.dialogParams.supervisor.localize(
+                  "dialog.datadisk_move.select_device"
+                )}
+                @value-changed=${this._select_device}
+              >
+                <paper-listbox slot="dropdown-content">
+                  ${this.devices.map(
+                    (device) => html`<paper-item>${device}</paper-item>`
+                  )}
+                </paper-listbox>
+              </paper-dropdown-menu>
+            `
+          : this.devices === undefined
+          ? this.dialogParams.supervisor.localize(
+              "dialog.datadisk_move.loading_devices"
+            )
+          : this.dialogParams.supervisor.localize(
+              "dialog.datadisk_move.no_devices"
+            )}
+
+        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+          ${this.dialogParams.supervisor.localize(
+            "dialog.datadisk_move.cancel"
+          )}
+        </mwc-button>
+
+        <mwc-button
+          .disabled=${!this.selectedDevice}
+          slot="primaryAction"
+          @click=${this._moveDatadisk}
+        >
+          ${this.dialogParams.supervisor.localize("dialog.datadisk_move.move")}
+        </mwc-button>
+      `;
+    }
+
     return html`
       <ha-dialog
         open
@@ -67,76 +136,9 @@ class HassioDatadiskDialog extends LitElement {
         escapeKeyAction
         @closed=${this.closeDialog}
         ?hideActions=${this.moving}
+        .heading=${heading}
       >
-        ${this.moving
-          ? html`<slot name="heading">
-                <h2 id="title" class="header_title">
-                  ${this.dialogParams.supervisor.localize(
-                    "dialog.datadisk_move.moving"
-                  )}
-                </h2>
-              </slot>
-              <ha-circular-progress alt="Moving" size="large" active>
-              </ha-circular-progress>
-              <p class="progress-text">
-                ${this.dialogParams.supervisor.localize(
-                  "dialog.datadisk_move.moving_desc"
-                )}
-              </p>`
-          : html`<slot name="heading">
-                <h2 id="title" class="header_title">
-                  ${this.dialogParams.supervisor.localize(
-                    "dialog.datadisk_move.title"
-                  )}
-                </h2>
-              </slot>
-              ${this.devices?.length
-                ? html`
-                    ${this.dialogParams.supervisor.localize(
-                      "dialog.datadisk_move.description",
-                      {
-                        current_path: this.dialogParams.supervisor.os.data_disk,
-                        time: calculateMoveTime(this.dialogParams.supervisor),
-                      }
-                    )}
-                    <br /><br />
-
-                    <paper-dropdown-menu
-                      .label=${this.dialogParams.supervisor.localize(
-                        "dialog.datadisk_move.select_device"
-                      )}
-                      @value-changed=${this._select_device}
-                    >
-                      <paper-listbox slot="dropdown-content">
-                        ${this.devices.map(
-                          (device) => html`<paper-item>${device}</paper-item>`
-                        )}
-                      </paper-listbox>
-                    </paper-dropdown-menu>
-                  `
-                : this.devices === undefined
-                ? this.dialogParams.supervisor.localize(
-                    "dialog.datadisk_move.loading_devices"
-                  )
-                : this.dialogParams.supervisor.localize(
-                    "dialog.datadisk_move.no_devices"
-                  )}
-
-              <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
-                ${this.dialogParams.supervisor.localize(
-                  "dialog.datadisk_move.cancel"
-                )}
-              </mwc-button>
-
-              <mwc-button
-                .disabled=${!this.selectedDevice}
-                slot="primaryAction"
-                @click=${this._moveDatadisk}
-              >
-                ${this.dialogParams.supervisor.localize(
-                  "dialog.datadisk_move.move"
-                )}
-              </mwc-button>`}
+        ${content}
       </ha-dialog>
     `;
   }
