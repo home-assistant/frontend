@@ -279,7 +279,7 @@ class ConfigCoreForm extends LitElement {
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue,
       });
-    } catch (err) {
+    } catch (err: any) {
       alert(`Error saving config: ${err.message}`);
     } finally {
       this._working = false;

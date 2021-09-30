@@ -152,8 +152,8 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     const { title } = this._config;
 
     return html`
-      <ha-card .header="${title}">
-        <div class="${classMap({ entities: true, "no-header": !title })}">
+      <ha-card .header=${title}>
+        <div class=${classMap({ entities: true, "no-header": !title })}>
           ${this._configEntities!.map((entityConf) =>
             this.renderEntity(entityConf)
           )}
@@ -281,7 +281,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     return html`
       <div
         class="entity"
-        .config="${entityConf}"
+        .config=${entityConf}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(entityConf.hold_action),

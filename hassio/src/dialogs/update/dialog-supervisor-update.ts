@@ -148,7 +148,7 @@ class DialogSupervisorUpdate extends LitElement {
           this.hass,
           this._dialogParams!.backupParams
         );
-      } catch (err) {
+      } catch (err: any) {
         this._error = extractApiErrorMessage(err);
         this._action = null;
         return;
@@ -158,7 +158,7 @@ class DialogSupervisorUpdate extends LitElement {
     this._action = "update";
     try {
       await this._dialogParams!.updateHandler!();
-    } catch (err) {
+    } catch (err: any) {
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         this._error = extractApiErrorMessage(err);
         this._action = null;

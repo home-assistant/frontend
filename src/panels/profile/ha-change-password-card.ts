@@ -153,7 +153,7 @@ class HaChangePasswordCard extends LitElement {
         current_password: this._currentPassword,
         new_password: this._password,
       });
-    } catch (err) {
+    } catch (err: any) {
       this._errorMsg = err.message;
       return;
     } finally {

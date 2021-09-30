@@ -274,7 +274,7 @@ class HuiEnergyDistrubutionCard
                         target="_blank"
                         rel="noopener no referrer"
                       >
-                        <ha-svg-icon .path="${mdiLeaf}"></ha-svg-icon>
+                        <ha-svg-icon .path=${mdiLeaf}></ha-svg-icon>
                         ${lowCarbonEnergy
                           ? formatNumber(lowCarbonEnergy, this.hass.locale, {
                               maximumFractionDigits: 1,
@@ -290,7 +290,7 @@ class HuiEnergyDistrubutionCard
                   ? html`<div class="circle-container solar">
                       <span class="label">Solar</span>
                       <div class="circle">
-                        <ha-svg-icon .path="${mdiSolarPower}"></ha-svg-icon>
+                        <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
                         ${formatNumber(
                           totalSolarProduction || 0,
                           this.hass.locale,
@@ -306,7 +306,7 @@ class HuiEnergyDistrubutionCard
                   ? html`<div class="circle-container gas">
                       <span class="label">Gas</span>
                       <div class="circle">
-                        <ha-svg-icon .path="${mdiFire}"></ha-svg-icon>
+                        <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
                         ${formatNumber(gasUsage || 0, this.hass.locale, {
                           maximumFractionDigits: 1,
                         })}
@@ -337,7 +337,7 @@ class HuiEnergyDistrubutionCard
           <div class="row">
             <div class="circle-container grid">
               <div class="circle">
-                <ha-svg-icon .path="${mdiTransmissionTower}"></ha-svg-icon>
+                <ha-svg-icon .path=${mdiTransmissionTower}></ha-svg-icon>
                 ${returnedToGrid !== null
                   ? html`<span class="return">
                       <ha-svg-icon
@@ -372,7 +372,7 @@ class HuiEnergyDistrubutionCard
                     homeLowCarbonCircumference === undefined,
                 })}"
               >
-                <ha-svg-icon .path="${mdiHome}"></ha-svg-icon>
+                <ha-svg-icon .path=${mdiHome}></ha-svg-icon>
                 ${formatNumber(totalHomeConsumption, this.hass.locale, {
                   maximumFractionDigits: 1,
                 })}
@@ -457,7 +457,7 @@ class HuiEnergyDistrubutionCard
                 <div class="spacer"></div>
                 <div class="circle-container battery">
                   <div class="circle">
-                    <ha-svg-icon .path="${mdiBatteryHigh}"></ha-svg-icon>
+                    <ha-svg-icon .path=${mdiBatteryHigh}></ha-svg-icon>
                     <span class="battery-in">
                       <ha-svg-icon
                         class="small"

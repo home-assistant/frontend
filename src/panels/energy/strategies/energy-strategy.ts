@@ -30,13 +30,13 @@ export class EnergyStrategy {
 
     try {
       prefs = await getEnergyPreferences(hass);
-    } catch (e) {
-      if (e.code === "not_found") {
+    } catch (err: any) {
+      if (err.code === "not_found") {
         return setupWizard();
       }
       view.cards!.push({
         type: "markdown",
-        content: `An error occured while fetching your energy preferences: ${e.message}.`,
+        content: `An error occured while fetching your energy preferences: ${err.message}.`,
       });
       return view;
     }

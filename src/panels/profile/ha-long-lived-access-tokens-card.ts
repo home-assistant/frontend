@@ -119,7 +119,7 @@ class HaLongLivedTokens extends LitElement {
       showLongLivedAccessTokenDialog(this, { token, name });
 
       fireEvent(this, "hass-refresh-tokens");
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.profile.long_lived_access_tokens.create_failed"
@@ -148,7 +148,7 @@ class HaLongLivedTokens extends LitElement {
         refresh_token_id: token.id,
       });
       fireEvent(this, "hass-refresh-tokens");
-    } catch (err) {
+    } catch (err: any) {
       await showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.profile.long_lived_access_tokens.delete_failed"

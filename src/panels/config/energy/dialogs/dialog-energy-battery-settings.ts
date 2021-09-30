@@ -110,8 +110,8 @@ export class DialogEnergyBatterySettings
     try {
       await this._params!.saveCallback(this._source!);
       this.closeDialog();
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
   }
 

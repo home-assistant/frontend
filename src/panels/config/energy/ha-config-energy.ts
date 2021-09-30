@@ -126,17 +126,17 @@ class HaConfigEnergy extends LitElement {
     const energyInfoPromise = await getEnergyInfo(this.hass);
     try {
       this._preferences = await getEnergyPreferences(this.hass);
-    } catch (e) {
-      if (e.code === "not_found") {
+    } catch (err: any) {
+      if (err.code === "not_found") {
         this._preferences = INITIAL_CONFIG;
       } else {
-        this._error = e.message;
+        this._error = err.message;
       }
     }
     try {
       this._validationResult = await validationPromise;
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
     this._info = await energyInfoPromise;
   }
@@ -146,8 +146,8 @@ class HaConfigEnergy extends LitElement {
     this._validationResult = undefined;
     try {
       this._validationResult = await getEnergyPreferenceValidation(this.hass);
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
     this._info = await getEnergyInfo(this.hass);
   }

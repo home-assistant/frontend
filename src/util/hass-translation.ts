@@ -90,7 +90,7 @@ export function getLocalLanguage() {
           return language;
         }
       }
-    } catch (e) {
+    } catch (err: any) {
       // Ignore parsing error.
     }
   }
@@ -110,12 +110,8 @@ export function getLocalLanguage() {
   return "en";
 }
 
-export async function getTranslation(
-  fragment: string | null,
-  language: string
-) {
-  return commonGetTranslation(fragment, language);
-}
+export const getTranslation = (fragment: string | null, language: string) =>
+  commonGetTranslation(fragment, language);
 
 // Load selected translation into memory immediately so it is ready when Polymer
 // initializes.

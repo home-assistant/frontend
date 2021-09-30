@@ -239,7 +239,7 @@ class ActionRenderer {
     let data;
     try {
       data = getDataFromPath(this.trace.config, path);
-    } catch (err) {
+    } catch (err: any) {
       this._renderEntry(
         path,
         `Unable to extract path ${path}. Download trace and report as bug`

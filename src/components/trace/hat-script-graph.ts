@@ -453,7 +453,7 @@ export class HatScriptGraph extends LitElement {
           </mwc-icon-button>
         </div>
       `;
-    } catch (err) {
+    } catch (err: any) {
       if (__DEV__) {
         // eslint-disable-next-line no-console
         console.log("Error creating script graph:", err);

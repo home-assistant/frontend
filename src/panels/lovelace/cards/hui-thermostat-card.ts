@@ -412,9 +412,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
     return html`
       <ha-icon-button
-        class="${classMap({ "selected-icon": currentMode === mode })}"
-        .mode="${mode}"
-        .icon="${modeIcons[mode]}"
+        class=${classMap({ "selected-icon": currentMode === mode })}
+        .mode=${mode}
+        .icon=${modeIcons[mode]}
         @click=${this._handleAction}
         tabindex="0"
       ></ha-icon-button>

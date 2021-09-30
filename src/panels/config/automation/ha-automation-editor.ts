@@ -378,7 +378,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       }
       this._dirty = false;
       this._config = config;
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text:
           err.status_code === 404

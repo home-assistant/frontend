@@ -12,6 +12,7 @@ import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import { HaComboBox } from "./ha-combo-box";
 
+// eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<HassioAddonInfo> = (item) => html`<style>
     paper-item {
       padding: 0;
@@ -109,7 +110,7 @@ class HaAddonPicker extends LitElement {
           ),
         });
       }
-    } catch (error) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.componencts.addon-picker.error.fetch_addons.title"

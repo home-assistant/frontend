@@ -46,6 +46,7 @@ export type HaDevicePickerDeviceFilterFunc = (
   device: DeviceRegistryEntry
 ) => boolean;
 
+// eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<Device> = (item) => html`<style>
     paper-item {
       padding: 0;

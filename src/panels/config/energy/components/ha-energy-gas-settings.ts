@@ -62,7 +62,7 @@ export class EnergyGasSettings extends LitElement {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="${documentationUrl(this.hass, "/docs/energy/gas/")}"
+              href=${documentationUrl(this.hass, "/docs/energy/gas/")}
               >${this.hass.localize("ui.panel.config.energy.gas.learn_more")}</a
             >
           </p>
@@ -156,7 +156,7 @@ export class EnergyGasSettings extends LitElement {
           (source) => source !== sourceToDelete
         ),
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }
   }
