@@ -57,7 +57,7 @@ class DialogCloudCertificate extends LitElement {
         </div>
 
         <div class="paper-dialog-buttons">
-          <mwc-button @click="${this._closeDialog}"
+          <mwc-button @click=${this._closeDialog}
             >${this.hass!.localize(
               "ui.panel.config.cloud.dialog_certificate.close"
             )}</mwc-button

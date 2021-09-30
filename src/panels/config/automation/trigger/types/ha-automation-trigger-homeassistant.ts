@@ -30,7 +30,7 @@ export default class HaHassTrigger extends LitElement {
       <paper-radio-group
         .selected=${event}
         aria-labelledby="eventlabel"
-        @paper-radio-group-changed="${this._radioGroupPicked}"
+        @paper-radio-group-changed=${this._radioGroupPicked}
       >
         <paper-radio-button name="start">
           ${this.hass.localize(

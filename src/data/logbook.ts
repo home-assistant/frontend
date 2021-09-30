@@ -103,7 +103,7 @@ export const getLogbookDataCache = async (
     DATA_CACHE[cacheKey] = {};
   }
 
-  if (DATA_CACHE[cacheKey][entityId]) {
+  if (entityId in DATA_CACHE[cacheKey]) {
     return DATA_CACHE[cacheKey][entityId];
   }
 

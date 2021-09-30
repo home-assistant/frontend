@@ -117,7 +117,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
         this.hass,
         this._preferences
       );
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }
     fireEvent(this, "reload-energy-panel");

@@ -89,7 +89,7 @@ class DialogZWaveJSAddNode extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed="${this.closeDialog}"
+        @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize("ui.panel.config.zwave_js.add_node.title")
@@ -363,7 +363,7 @@ class DialogZWaveJSAddNode extends LitElement {
                         again by excluding the device and adding it again.
                       </ha-alert>`
                     : ""}
-                  <a href="${`/config/devices/device/${this._device!.id}`}">
+                  <a href=${`/config/devices/device/${this._device!.id}`}>
                     <mwc-button>
                       ${this.hass.localize(
                         "ui.panel.config.zwave_js.add_node.view_device"
@@ -432,7 +432,7 @@ class DialogZWaveJSAddNode extends LitElement {
         this._entryId!,
         this._pinInput!.value as string
       );
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message;
       this._status = "validate_dsk_enter_pin";
     }
@@ -447,7 +447,7 @@ class DialogZWaveJSAddNode extends LitElement {
         this._entryId!,
         this._securityClasses
       );
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message;
       this._status = "grant_security_classes";
     }

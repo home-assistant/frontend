@@ -453,7 +453,7 @@ export class ZwaveMigration extends LitElement {
         this._zwaveJsEntryId!,
         true
       );
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: "Failed to get migration data!",
         text:

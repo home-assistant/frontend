@@ -222,7 +222,7 @@ class HassioAddonDashboard extends LitElement {
     try {
       const addoninfo = await fetchHassioAddonInfo(this.hass, addon);
       this.addon = addoninfo;
-    } catch (err) {
+    } catch (err: any) {
       this._error = `Error fetching addon info: ${extractApiErrorMessage(err)}`;
       this.addon = undefined;
     }

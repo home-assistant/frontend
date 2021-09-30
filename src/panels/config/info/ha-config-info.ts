@@ -37,15 +37,15 @@ class HaConfigInfo extends LitElement {
       >
         <div class="about">
           <a
-            href="${documentationUrl(this.hass, "")}"
+            href=${documentationUrl(this.hass, "")}
             target="_blank"
             rel="noreferrer"
             ><img
               src="/static/icons/favicon-192x192.png"
               height="192"
-              alt="${this.hass.localize(
+              alt=${this.hass.localize(
                 "ui.panel.config.info.home_assistant_logo"
-              )}"
+              )}
           /></a>
           <br />
           <h2>Home Assistant ${hass.connection.haVersion}</h2>
@@ -58,7 +58,7 @@ class HaConfigInfo extends LitElement {
           </p>
           <p class="develop">
             <a
-              href="${documentationUrl(this.hass, "/developers/credits/")}"
+              href=${documentationUrl(this.hass, "/developers/credits/")}
               target="_blank"
               rel="noreferrer"
             >
@@ -122,8 +122,8 @@ class HaConfigInfo extends LitElement {
                     ${customUiList.map(
                       (item) => html`
                         <div>
-                          <a href="${item.url}" target="_blank"> ${item.name}</a
-                          >: ${item.version}
+                          <a href=${item.url} target="_blank"> ${item.name}</a>:
+                          ${item.version}
                         </div>
                       `
                     )}

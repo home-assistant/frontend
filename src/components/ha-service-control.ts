@@ -197,10 +197,10 @@ export class HaServiceControl extends LitElement {
         <p>${serviceData?.description}</p>
         ${this._manifest
           ? html` <a
-              href="${this._manifest.documentation}"
-              title="${this.hass.localize(
+              href=${this._manifest.documentation}
+              title=${this.hass.localize(
                 "ui.components.service-control.integration_doc"
-              )}"
+              )}
               target="_blank"
               rel="noreferrer"
             >
@@ -406,7 +406,7 @@ export class HaServiceControl extends LitElement {
     this._manifest = undefined;
     try {
       this._manifest = await fetchIntegrationManifest(this.hass, integration);
-    } catch (err) {
+    } catch (err: any) {
       // Ignore if loading manifest fails. Probably bad JSON in manifest
     }
   }

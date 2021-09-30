@@ -35,7 +35,7 @@ export default class HaGeolocationTrigger extends LitElement {
         )}
         name="source"
         .value=${source}
-        @value-changed="${this._valueChanged}"
+        @value-changed=${this._valueChanged}
       ></paper-input>
       <ha-entity-picker
         .label=${this.hass.localize(

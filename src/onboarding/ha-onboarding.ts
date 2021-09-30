@@ -183,7 +183,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         // Only load if we have supervisor
         import("./onboarding-restore-backup");
       }
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error(
         "Something went wrong loading onboarding-restore-backup",
@@ -220,7 +220,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
       }
 
       this._steps = steps;
-    } catch (err) {
+    } catch (err: any) {
       alert("Something went wrong loading onboarding, try refreshing");
     }
   }
@@ -240,7 +240,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           authCode: result.auth_code,
         });
         await this._connectHass(auth);
-      } catch (err) {
+      } catch (err: any) {
         alert("Ah snap, something went wrong!");
         location.reload();
       } finally {
@@ -275,7 +275,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
           client_id: authParams.client_id!,
           redirect_uri: authParams.redirect_uri!,
         });
-      } catch (err) {
+      } catch (err: any) {
         this.hass!.connection.close();
         await this.hass!.auth.revoke();
 

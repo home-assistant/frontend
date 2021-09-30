@@ -117,7 +117,7 @@ class HaCameraStream extends LitElement {
       );
 
       this._url = url;
-    } catch (err) {
+    } catch (err: any) {
       // Fails if we were unable to get a stream
       // eslint-disable-next-line
       console.error(err);

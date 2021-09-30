@@ -136,7 +136,7 @@ export const getRecentWithCache = (
         ),
       ]);
       fetchedHistory = results[1];
-    } catch (err) {
+    } catch (err: any) {
       delete stateHistoryCache[cacheKey];
       throw err;
     }

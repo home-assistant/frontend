@@ -149,7 +149,7 @@ class HassioDatadiskDialog extends LitElement {
     this.moving = true;
     try {
       await moveDatadisk(this.hass, this.selectedDevice!);
-    } catch (err) {
+    } catch (err: any) {
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
           title: this.dialogParams!.supervisor.localize(

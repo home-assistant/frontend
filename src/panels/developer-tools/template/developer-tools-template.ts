@@ -108,10 +108,10 @@ class HaPanelDevTemplate extends LitElement {
             </li>
             <li>
               <a
-                href="${documentationUrl(
+                href=${documentationUrl(
                   this.hass,
                   "/docs/configuration/templating/"
-                )}"
+                )}
                 target="_blank"
                 rel="noreferrer"
               >
@@ -323,7 +323,7 @@ class HaPanelDevTemplate extends LitElement {
         }
       );
       await this._unsubRenderTemplate;
-    } catch (err) {
+    } catch (err: any) {
       this._error = "Unknown error";
       if (err.message) {
         this._error = err.message;
@@ -344,11 +344,11 @@ class HaPanelDevTemplate extends LitElement {
       const unsub = await this._unsubRenderTemplate;
       unsub();
       this._unsubRenderTemplate = undefined;
-    } catch (e) {
-      if (e.code === "not_found") {
+    } catch (err: any) {
+      if (err.code === "not_found") {
         // If we get here, the connection was probably already closed. Ignore.
       } else {
-        throw e;
+        throw err;
       }
     }
   }

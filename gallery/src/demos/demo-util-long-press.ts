@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import { html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../src/components/ha-card";
 import { ActionHandlerEvent } from "../../../src/data/lovelace";
@@ -9,7 +9,6 @@ import { actionHandler } from "../../../src/panels/lovelace/common/directives/ac
 export class DemoUtilLongPress extends LitElement {
   protected render(): TemplateResult {
     return html`
-      ${this.renderStyle()}
       ${[1, 2, 3].map(
         () => html`
           <ha-card>
@@ -41,26 +40,22 @@ export class DemoUtilLongPress extends LitElement {
     area.scrollTop = area.scrollHeight;
   }
 
-  private renderStyle() {
-    return html`
-      <style>
-        ha-card {
-          width: 200px;
-          margin: calc(42vh - 140px) auto;
-          padding: 8px;
-          text-align: center;
-        }
-        ha-card:first-of-type {
-          margin-top: 16px;
-        }
-        ha-card:last-of-type {
-          margin-bottom: 16px;
-        }
+  static styles = css`
+    ha-card {
+      width: 200px;
+      margin: calc(42vh - 140px) auto;
+      padding: 8px;
+      text-align: center;
+    }
+    ha-card:first-of-type {
+      margin-top: 16px;
+    }
+    ha-card:last-of-type {
+      margin-bottom: 16px;
+    }
 
-        textarea {
-          height: 50px;
-        }
-      </style>
-    `;
-  }
+    textarea {
+      height: 50px;
+    }
+  `;
 }

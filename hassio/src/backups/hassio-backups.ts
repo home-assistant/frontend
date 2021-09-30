@@ -294,7 +294,7 @@ export class HassioBackups extends LitElement {
       await Promise.all(
         this._selectedBackups.map((slug) => removeBackup(this.hass, slug))
       );
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("backup.failed_to_delete"),
         text: extractApiErrorMessage(err),

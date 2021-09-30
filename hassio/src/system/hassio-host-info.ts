@@ -247,7 +247,7 @@ class HassioHostInfo extends LitElement {
     let hardware;
     try {
       hardware = await fetchHassioHardwareInfo(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       await showAlertDialog(this, {
         title: this.supervisor.localize(
           "system.host.failed_to_get_hardware_list"
@@ -277,7 +277,7 @@ class HassioHostInfo extends LitElement {
 
     try {
       await rebootHost(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       // Ignore connection errors, these are all expected
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
@@ -307,7 +307,7 @@ class HassioHostInfo extends LitElement {
 
     try {
       await shutdownHost(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       // Ignore connection errors, these are all expected
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
@@ -348,7 +348,7 @@ class HassioHostInfo extends LitElement {
     try {
       await updateOS(this.hass);
       fireEvent(this, "supervisor-collection-refresh", { collection: "os" });
-    } catch (err) {
+    } catch (err: any) {
       if (this.hass.connection.connected) {
         showAlertDialog(this, {
           title: this.supervisor.localize(
@@ -386,7 +386,7 @@ class HassioHostInfo extends LitElement {
         fireEvent(this, "supervisor-collection-refresh", {
           collection: "host",
         });
-      } catch (err) {
+      } catch (err: any) {
         showAlertDialog(this, {
           title: this.supervisor.localize("system.host.failed_to_set_hostname"),
           text: extractApiErrorMessage(err),
@@ -401,7 +401,7 @@ class HassioHostInfo extends LitElement {
       fireEvent(this, "supervisor-collection-refresh", {
         collection: "host",
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
           "system.host.failed_to_import_from_usb"

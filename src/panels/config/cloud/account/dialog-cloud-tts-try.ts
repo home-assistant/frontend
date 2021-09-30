@@ -159,7 +159,7 @@ export class DialogTryTts extends LitElement {
         options: { gender },
       });
       url = result.path;
-    } catch (err) {
+    } catch (err: any) {
       this._loadingExample = false;
       showAlertDialog(this, {
         text: `Unable to load example. ${err.error || err.body || err}`,

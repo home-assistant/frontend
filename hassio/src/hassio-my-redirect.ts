@@ -87,7 +87,7 @@ class HassioMyRedirect extends LitElement {
     let url: string;
     try {
       url = this._createRedirectUrl(redirect);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize("my.error");
       return;
     }

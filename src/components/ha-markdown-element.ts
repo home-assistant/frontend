@@ -38,9 +38,8 @@ class HaMarkdownElement extends ReactiveElement {
 
     const walker = document.createTreeWalker(
       this,
-      1 /* SHOW_ELEMENT */,
-      null,
-      false
+      NodeFilter.SHOW_ELEMENT,
+      null
     );
 
     while (walker.nextNode()) {

@@ -63,7 +63,7 @@ class DialogZWaveJSRemoveFailedNode extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed="${this.closeDialog}"
+        @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(

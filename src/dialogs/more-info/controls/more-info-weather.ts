@@ -175,7 +175,7 @@ class MoreInfoWeather extends LitElement {
                   ${item.condition
                     ? html`
                         <ha-svg-icon
-                          .path="${weatherIcons[item.condition]}"
+                          .path=${weatherIcons[item.condition]}
                         ></ha-svg-icon>
                       `
                     : ""}

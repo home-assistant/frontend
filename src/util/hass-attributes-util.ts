@@ -189,7 +189,7 @@ export function formatAttributeValue(
         // If invalid URL, exception will be raised
         const url = new URL(value);
         if (url.protocol === "http:" || url.protocol === "https:")
-          return html`<a target="_blank" rel="noreferrer" href="${value}"
+          return html`<a target="_blank" rel="noreferrer" href=${value}
             >${value}</a
           >`;
       } catch (_) {

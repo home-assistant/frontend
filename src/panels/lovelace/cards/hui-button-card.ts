@@ -146,13 +146,13 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         @action=${this._handleAction}
-        @focus="${this.handleRippleFocus}"
-        @blur="${this.handleRippleBlur}"
-        @mousedown="${this.handleRippleActivate}"
-        @mouseup="${this.handleRippleDeactivate}"
-        @touchstart="${this.handleRippleActivate}"
-        @touchend="${this.handleRippleDeactivate}"
-        @touchcancel="${this.handleRippleDeactivate}"
+        @focus=${this.handleRippleFocus}
+        @blur=${this.handleRippleBlur}
+        @mousedown=${this.handleRippleActivate}
+        @mouseup=${this.handleRippleDeactivate}
+        @touchstart=${this.handleRippleActivate}
+        @touchend=${this.handleRippleDeactivate}
+        @touchcancel=${this.handleRippleDeactivate}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),

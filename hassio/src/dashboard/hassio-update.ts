@@ -136,7 +136,7 @@ export class HassioUpdate extends LitElement {
           </ha-settings-row>
         </div>
         <div class="card-actions">
-          <a href="${releaseNotesUrl}" target="_blank" rel="noreferrer">
+          <a href=${releaseNotesUrl} target="_blank" rel="noreferrer">
             <mwc-button>
               ${this.supervisor.localize("common.release_notes")}
             </mwc-button>
@@ -206,7 +206,7 @@ export class HassioUpdate extends LitElement {
       fireEvent(this, "supervisor-collection-refresh", {
         collection: item.key,
       });
-    } catch (err) {
+    } catch (err: any) {
       // Only show an error if the status code was not expected (user behind proxy)
       // or no status at all(connection terminated)
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {

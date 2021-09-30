@@ -29,13 +29,13 @@ export class HuiNotificationItem extends LitElement {
       ? html`
           <configurator-notification-item
             .hass=${this.hass}
-            .notification="${this.notification}"
+            .notification=${this.notification}
           ></configurator-notification-item>
         `
       : html`
           <persistent-notification-item
             .hass=${this.hass}
-            .notification="${this.notification}"
+            .notification=${this.notification}
           ></persistent-notification-item>
         `;
   }

@@ -58,49 +58,49 @@ class OnboardingCreateUser extends LitElement {
     <form>
       <paper-input
         name="name"
-        label="${this.localize("ui.panel.page-onboarding.user.data.name")}"
+        label=${this.localize("ui.panel.page-onboarding.user.data.name")}
         .value=${this._name}
         @value-changed=${this._handleValueChanged}
         required
         auto-validate
         autocapitalize='on'
-        .errorMessage="${this.localize(
+        .errorMessage=${this.localize(
           "ui.panel.page-onboarding.user.required_field"
-        )}"
+        )}
         @blur=${this._maybePopulateUsername}
       ></paper-input>
 
       <paper-input
         name="username"
-        label="${this.localize("ui.panel.page-onboarding.user.data.username")}"
+        label=${this.localize("ui.panel.page-onboarding.user.data.username")}
         value=${this._username}
         @value-changed=${this._handleValueChanged}
         required
         auto-validate
         autocapitalize='none'
-        .errorMessage="${this.localize(
+        .errorMessage=${this.localize(
           "ui.panel.page-onboarding.user.required_field"
-        )}"
+        )}
       ></paper-input>
 
       <paper-input
         name="password"
-        label="${this.localize("ui.panel.page-onboarding.user.data.password")}"
+        label=${this.localize("ui.panel.page-onboarding.user.data.password")}
         value=${this._password}
         @value-changed=${this._handleValueChanged}
         required
         type='password'
         auto-validate
-        .errorMessage="${this.localize(
+        .errorMessage=${this.localize(
           "ui.panel.page-onboarding.user.required_field"
-        )}"
+        )}
       ></paper-input>
 
       <paper-input
         name="passwordConfirm"
-        label="${this.localize(
+        label=${this.localize(
           "ui.panel.page-onboarding.user.data.password_confirm"
-        )}"
+        )}
         value=${this._passwordConfirm}
         @value-changed=${this._handleValueChanged}
         required
@@ -110,9 +110,9 @@ class OnboardingCreateUser extends LitElement {
           this._passwordConfirm !== "" &&
           this._passwordConfirm !== this._password
         }
-        .errorMessage="${this.localize(
+        .errorMessage=${this.localize(
           "ui.panel.page-onboarding.user.error.password_not_match"
-        )}"
+        )}
       ></paper-input>
 
       <p class="action">
@@ -189,7 +189,7 @@ class OnboardingCreateUser extends LitElement {
         type: "user",
         result,
       });
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line
       console.error(err);
       this._loading = false;
