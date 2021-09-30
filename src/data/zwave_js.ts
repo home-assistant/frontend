@@ -2,7 +2,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
 import { DeviceRegistryEntry } from "./device_registry";
 
-export enum InclusionStrategy {
+export const enum InclusionStrategy {
   /**
    * Always uses Security S2 if supported, otherwise uses Security S0 for certain devices which don't work without encryption and uses no encryption otherwise.
    *
@@ -154,7 +154,7 @@ export interface ZWaveJSRemovedNode {
   label: string;
 }
 
-export enum NodeStatus {
+export const enum NodeStatus {
   Unknown,
   Asleep,
   Awake,
