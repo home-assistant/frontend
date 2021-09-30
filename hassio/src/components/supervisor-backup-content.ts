@@ -181,9 +181,7 @@ export class SupervisorBackupContent extends LitElement {
                   >
                     <ha-checkbox
                       .checked=${this.homeAssistant}
-                      @click=${() => {
-                        this.homeAssistant = !this.homeAssistant;
-                      }}
+                      @click=${this.toggleHomeAssistant}
                     >
                     </ha-checkbox>
                   </ha-formfield>
@@ -270,6 +268,10 @@ export class SupervisorBackupContent extends LitElement {
           `
         : ""}
     `;
+  }
+
+  private toggleHomeAssistant() {
+    this.homeAssistant = !this.homeAssistant;
   }
 
   static get styles(): CSSResultGroup {
