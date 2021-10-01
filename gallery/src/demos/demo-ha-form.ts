@@ -173,16 +173,6 @@ const SCHEMAS: {
         options: {
           default: "Default",
           other: "Other",
-        },
-        name: "multi optional",
-        optional: true,
-        default: ["default"],
-      },
-      {
-        type: "multi_select",
-        options: {
-          default: "Default",
-          other: "Other",
           uno: "mas",
           one: "more",
           and: "another_one",
