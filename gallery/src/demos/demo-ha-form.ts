@@ -117,6 +117,45 @@ const SCHEMAS: {
     ],
   },
   {
+    title: "select",
+    schema: [
+      {
+        type: "select",
+        options: [
+          ["default", "Default"],
+          ["other", "Other"],
+        ],
+        name: "select",
+        required: true,
+        default: ["default"],
+      },
+      {
+        type: "select",
+        options: [
+          ["default", "Default"],
+          ["other", "Other"],
+        ],
+        name: "select optional",
+        optional: true,
+        default: ["default"],
+      },
+      {
+        type: "select",
+        options: [
+          ["default", "Default"],
+          ["other", "Other"],
+          ["uno", "mas"],
+          ["one", "more"],
+          ["and", "another_one"],
+          ["option", "1000"],
+        ],
+        name: "select many otions",
+        optional: true,
+        default: ["default"],
+      },
+    ],
+  },
+  {
     title: "Multi select",
     schema: [
       {
@@ -126,6 +165,16 @@ const SCHEMAS: {
           other: "Other",
         },
         name: "multi",
+        required: true,
+        default: ["default"],
+      },
+      {
+        type: "multi_select",
+        options: {
+          default: "Default",
+          other: "Other",
+        },
+        name: "multi optional",
         optional: true,
         default: ["default"],
       },
