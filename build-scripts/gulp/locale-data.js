@@ -48,6 +48,8 @@ gulp.task("create-locale-data", (done) => {
             ""
           )
           .replace(/\)\s*}/im, "");
+        // make sure we have valid JSON
+        JSON.parse(localeData);
         if (!fs.existsSync(path.join(outDir, module))) {
           fs.mkdirSync(path.join(outDir, module), { recursive: true });
         }
@@ -56,7 +58,9 @@ gulp.task("create-locale-data", (done) => {
           localeData
         );
       } catch (e) {
-        // ignore
+        if (e.code !== "MODULE_NOT_FOUND") {
+          throw e;
+        }
       }
     });
     done();
