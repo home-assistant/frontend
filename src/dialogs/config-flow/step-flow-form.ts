@@ -11,7 +11,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
-import "../../components/ha-form/ha-form";
+import { computeInitialData } from "../../components/ha-form/ha-form";
 import type { HaFormSchema } from "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import "../../components/ha-alert";
@@ -93,17 +93,8 @@ class StepFlowForm extends LitElement {
       return this._stepData;
     }
 
-    const data = {};
-    this.step.data_schema.forEach((field) => {
-      if (field.description?.suggested_value) {
-        data[field.name] = field.description.suggested_value;
-      } else if ("default" in field) {
-        data[field.name] = field.default;
-      }
-    });
-
-    this._stepData = data;
-    return data;
+    this._stepData = computeInitialData(this.step.data_schema);
+    return this._stepData;
   }
 
   private async _submitStep(): Promise<void> {

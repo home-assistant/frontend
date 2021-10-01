@@ -1,7 +1,7 @@
 /* eslint-disable lit/no-template-arrow */
 import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement } from "lit/decorators";
-import "../../../src/components/ha-form/ha-form";
+import { computeInitialData } from "../../../src/components/ha-form/ha-form";
 import "../../../src/components/ha-card";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import type { HaFormSchema } from "../../../src/components/ha-form/ha-form";
@@ -86,6 +86,37 @@ const SCHEMAS: {
     ],
   },
   {
+    title: "Numbers",
+    schema: [
+      {
+        type: "integer",
+        name: "int",
+        required: true,
+      },
+      {
+        type: "integer",
+        name: "int with default",
+        optional: true,
+        default: 10,
+      },
+      {
+        type: "integer",
+        name: "int range",
+        required: true,
+        valueMin: 0,
+        valueMax: 10,
+      },
+      {
+        type: "integer",
+        name: "int range default",
+        optional: true,
+        default: 5,
+        valueMin: 0,
+        valueMax: 10,
+      },
+    ],
+  },
+  {
     title: "Multi select",
     schema: [
       {
@@ -108,7 +139,7 @@ const SCHEMAS: {
           and: "another_one",
           option: "1000",
         },
-        name: "multi",
+        name: "multi many otions",
         optional: true,
         default: ["default"],
       },
@@ -118,9 +149,13 @@ const SCHEMAS: {
 
 @customElement("demo-ha-form")
 class DemoHaForm extends LitElement {
-  private lightModeData: any = [];
+  private lightModeData = SCHEMAS.map(({ schema }) =>
+    computeInitialData(schema)
+  );
 
-  private darkModeData: any = [];
+  private darkModeData = SCHEMAS.map(({ schema }) =>
+    computeInitialData(schema)
+  );
 
   protected render(): TemplateResult {
     return html`
@@ -145,6 +180,7 @@ class DemoHaForm extends LitElement {
                     .computeError=${computeError}
                     .computeLabel=${computeLabel}
                     @value-changed=${(e) => {
+                      // @ts-ignore
                       data[idx] = e.detail.value;
                       this.requestUpdate();
                     }}

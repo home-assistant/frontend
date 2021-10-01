@@ -98,13 +98,27 @@ export interface HaFormElement extends LitElement {
   suffix?: string;
 }
 
+export const computeInitialData = (
+  schema: HaFormSchema[]
+): Record<string, any> => {
+  const data = {};
+  schema.forEach((field) => {
+    if (field.description?.suggested_value) {
+      data[field.name] = field.description.suggested_value;
+    } else if ("default" in field) {
+      data[field.name] = field.default;
+    }
+  });
+  return data;
+};
+
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
   @property() public data!: HaFormDataContainer | HaFormData;
 
   @property() public schema!: HaFormSchema | HaFormSchema[];
 
-  @property() public error;
+  @property() public error?: Record<string, string>;
 
   @property() public computeError?: (schema: HaFormSchema, error) => string;
 
@@ -127,28 +141,30 @@ export class HaForm extends LitElement implements HaFormElement {
   protected render() {
     if (Array.isArray(this.schema)) {
       return html`
-        ${this.error && this.error.base
-          ? html`
-              <ha-alert
-                alert-type="error"
-                .title=${this._computeError(this.error.base, this.schema)}
-              ></ha-alert>
+        <div class="root">
+          ${this.error && this.error.base
+            ? html`
+                <ha-alert
+                  alert-type="error"
+                  .title=${this._computeError(this.error.base, this.schema)}
+                ></ha-alert>
+              `
+            : ""}
+          ${this.schema.map(
+            (item) => html`
+              <ha-form
+                .root=${false}
+                .data=${this._getValue(this.data, item)}
+                .schema=${item}
+                .error=${this._getValue(this.error, item)}
+                @value-changed=${this._valueChanged}
+                .computeError=${this.computeError}
+                .computeLabel=${this.computeLabel}
+                .computeSuffix=${this.computeSuffix}
+              ></ha-form>
             `
-          : ""}
-        ${this.schema.map(
-          (item) => html`
-            <ha-form
-              .root=${false}
-              .data=${this._getValue(this.data, item)}
-              .schema=${item}
-              .error=${this._getValue(this.error, item)}
-              @value-changed=${this._valueChanged}
-              .computeError=${this.computeError}
-              .computeLabel=${this.computeLabel}
-              .computeSuffix=${this.computeSuffix}
-            ></ha-form>
-          `
-        )}
+          )}
+        </div>
       `;
     }
 
@@ -212,9 +228,12 @@ export class HaForm extends LitElement implements HaFormElement {
         display: block;
         margin: 8px 0;
       }
-      :host([root]) ha-form {
+      :host([root]) .root > * {
         display: block;
         margin-bottom: 20px;
+      }
+      :host([root]) .root > *:last-child {
+        margin-bottom: 0;
       }
       .error {
         color: var(--error-color);
