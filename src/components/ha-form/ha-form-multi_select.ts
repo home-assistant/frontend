@@ -70,10 +70,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
-    const options = Array.isArray(this.schema.options)
-      ? this.schema.options
-      : Object.entries(this.schema.options!);
-
+    const options = Object.entries(this.schema.options);
     const data = this.data || [];
 
     const renderedOptions = options.map((item: string | [string, string]) => {

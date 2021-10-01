@@ -10,12 +10,6 @@ import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./ha-form";
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { HaRadio } from "../ha-radio";
 
-const optionValue = (item: string | [string, string]) =>
-  Array.isArray(item) ? item[0] : item;
-
-const optionLabel = (item: string | [string, string]) =>
-  Array.isArray(item) ? item[1] || item[0] : item;
-
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {
   @property({ attribute: false }) public schema!: HaFormSelectSchema;
@@ -39,18 +33,17 @@ export class HaFormSelect extends LitElement implements HaFormElement {
       return html`
         <div>
           ${this.label}
-          ${this.schema.options!.map((item: string | [string, string]) => {
-            const value = optionValue(item);
-            return html`
-              <mwc-formfield .label=${optionLabel(item)}>
+          ${this.schema.options.map(
+            ([value, label]) => html`
+              <mwc-formfield .label=${label}>
                 <ha-radio
                   .checked=${value === this.data}
                   .value=${value}
                   @change=${this._valueChanged}
                 ></ha-radio>
               </mwc-formfield>
-            `;
-          })}
+            `
+          )}
         </div>
       `;
     }
@@ -67,10 +60,8 @@ export class HaFormSelect extends LitElement implements HaFormElement {
           ? html`<mwc-list-item value=""></mwc-list-item>`
           : ""}
         ${this.schema.options!.map(
-          (item: string | [string, string]) => html`
-            <mwc-list-item .value=${optionValue(item)}>
-              ${optionLabel(item)}
-            </mwc-list-item>
+          ([value, label]) => html`
+            <mwc-list-item .value=${value}>${label}</mwc-list-item>
           `
         )}
       </mwc-select>
