@@ -220,23 +220,25 @@ class DemoHaForm extends LitElement {
         ].map(
           ([data, type]) => html`
             <div class="row" data-type=${type}>
-              <ha-card .header=${info.title}>
-                <div class="card-content">
-                  <ha-form
-                    .data=${data[idx]}
-                    .schema=${info.schema}
-                    .error=${info.error}
-                    .computeError=${computeError}
-                    .computeLabel=${computeLabel}
-                    @value-changed=${(e) => {
-                      // @ts-ignore
-                      data[idx] = e.detail.value;
-                      this.requestUpdate();
-                    }}
-                  ></ha-form>
-                </div>
-              </ha-card>
-              <pre>${JSON.stringify(data[idx], undefined, 2)}</pre>
+              <div class="content">
+                <ha-card .header=${info.title}>
+                  <div class="card-content">
+                    <ha-form
+                      .data=${data[idx]}
+                      .schema=${info.schema}
+                      .error=${info.error}
+                      .computeError=${computeError}
+                      .computeLabel=${computeLabel}
+                      @value-changed=${(e) => {
+                        // @ts-ignore
+                        data[idx] = e.detail.value;
+                        this.requestUpdate();
+                      }}
+                    ></ha-form>
+                  </div>
+                </ha-card>
+                <pre>${JSON.stringify(data[idx], undefined, 2)}</pre>
+              </div>
             </div>
           `
         );
@@ -262,29 +264,54 @@ class DemoHaForm extends LitElement {
   }
 
   static styles = css`
-    .row {
-      margin: 0 auto;
-      max-width: 800px;
+    :host {
       display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+    .row {
       padding: 50px;
       background-color: var(--primary-background-color);
+      flex: 1;
+      min-width: 50vw;
+      box-sizing: border-box;
+    }
+    .content {
+      display: flex;
+    }
+    .row[data-type="light"] .content {
+      flex-direction: row-reverse;
     }
     ha-card {
       width: 100%;
       max-width: 384px;
     }
     pre {
-      width: 400px;
-      margin: 0 16px;
+      width: 300px;
+      margin: 0 16px 0;
       overflow: auto;
       color: var(--primary-text-color);
     }
-    @media only screen and (max-width: 800px) {
-      .row {
+    @media only screen and (max-width: 1500px) {
+      :host {
         flex-direction: column;
       }
+      .row[data-type="light"] .content {
+        flex-direction: row;
+      }
+    }
+    @media only screen and (max-width: 800px) {
+      .row {
+        padding: 16px 8px;
+      }
+      .content {
+        flex-direction: column !important;
+      }
+      ha-card {
+        margin: 0 auto;
+      }
       pre {
-        margin: 16px 0;
+        margin: 16px auto;
       }
     }
   `;
