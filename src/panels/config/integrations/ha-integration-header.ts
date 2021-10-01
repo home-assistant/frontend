@@ -1,4 +1,12 @@
-import { mdiCloud, mdiPackageVariant, mdiSyncOff } from "@mdi/js";
+import {
+  mdiCloud,
+  mdiHomeAssistant,
+  mdiHomeFloor1,
+  mdiHomeFloor2,
+  mdiPackageVariant,
+  mdiSyncOff,
+  mdiTrophy,
+} from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -7,6 +15,13 @@ import { ConfigEntry } from "../../../data/config_entries";
 import { domainToName, IntegrationManifest } from "../../../data/integration";
 import { HomeAssistant } from "../../../types";
 import { brandsUrl } from "../../../util/brands-url";
+
+const QUALITY_SCALE_ICONS = {
+  silver: mdiHomeFloor2,
+  gold: mdiHomeFloor1,
+  platinum: mdiTrophy,
+  internal: mdiHomeAssistant,
+};
 
 @customElement("ha-integration-header")
 export class HaIntegrationHeader extends LitElement {
@@ -73,6 +88,24 @@ export class HaIntegrationHeader extends LitElement {
             "ui.panel.config.integrations.config_entry.disabled_polling"
           ),
         ]);
+      }
+
+      if (this.manifest.quality_scale) {
+        const quality_scale_icon =
+          QUALITY_SCALE_ICONS[this.manifest.quality_scale];
+        if (quality_scale_icon) {
+          icons.push([
+            quality_scale_icon,
+            this.hass.localize(
+              "ui.panel.config.integrations.config_entry.quality_scale",
+              {
+                quality_scale: this.hass.localize(
+                  `ui.panel.config.integrations.config_entry.quality_scales.${this.manifest.quality_scale}`
+                ),
+              }
+            ),
+          ]);
+        }
       }
     }
 

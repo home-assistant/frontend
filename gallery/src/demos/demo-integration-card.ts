@@ -1,22 +1,23 @@
-import { html, css, LitElement, TemplateResult } from "lit";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import { css, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import "../../../src/components/ha-formfield";
 import "../../../src/components/ha-switch";
-
-import { classMap } from "lit/directives/class-map";
-import { customElement, property, state } from "lit/decorators";
+import { DeviceRegistryEntry } from "../../../src/data/device_registry";
+import { EntityRegistryEntry } from "../../../src/data/entity_registry";
 import { IntegrationManifest } from "../../../src/data/integration";
-
 import { provideHass } from "../../../src/fake_data/provide_hass";
-import { HomeAssistant } from "../../../src/types";
-import "../../../src/panels/config/integrations/ha-integration-card";
-import "../../../src/panels/config/integrations/ha-ignored-config-entry-card";
 import "../../../src/panels/config/integrations/ha-config-flow-card";
 import type {
   ConfigEntryExtended,
   DataEntryFlowProgressExtended,
 } from "../../../src/panels/config/integrations/ha-config-integrations";
-import { DeviceRegistryEntry } from "../../../src/data/device_registry";
-import { EntityRegistryEntry } from "../../../src/data/entity_registry";
+import "../../../src/panels/config/integrations/ha-ignored-config-entry-card";
+import "../../../src/panels/config/integrations/ha-integration-card";
+import { HomeAssistant } from "../../../src/types";
 
 const createConfigEntry = (
   title: string,
@@ -40,12 +41,14 @@ const createConfigEntry = (
 const createManifest = (
   isCustom: boolean,
   isCloud: boolean,
+  quality_scale: "gold" | "internal" | "platinum" | "silver" | undefined,
   name = "ESPHome"
 ): IntegrationManifest => ({
   name,
   domain: "esphome",
   is_built_in: !isCustom,
   config_flow: false,
+  quality_scale,
   documentation: "https://www.home-assistant.io/integrations/esphome/",
   iot_class: isCloud ? "cloud_polling" : "local_polling",
 });
@@ -222,6 +225,8 @@ export class DemoIntegrationCard extends LitElement {
 
   @state() isCloud = false;
 
+  @state() qualityScale?: "gold" | "internal" | "platinum" | "silver";
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -235,12 +240,30 @@ export class DemoIntegrationCard extends LitElement {
           <ha-formfield label="Relies on cloud">
             <ha-switch @change=${this._toggleCloud}></ha-switch>
           </ha-formfield>
+          <paper-dropdown-menu label="Quality scale" dynamic-align>
+            <paper-listbox
+              slot="dropdown-content"
+              .selected=${this.qualityScale}
+              attr-for-selected="qualityScale"
+              @iron-select=${this._qualityScaleChanged}
+            >
+              <paper-item qualityScale="">Not set</paper-item>
+              <paper-item qualityScale="silver">Silver</paper-item>
+              <paper-item qualityScale="gold">Gold</paper-item>
+              <paper-item qualityScale="platinum">Platinum</paper-item>
+              <paper-item qualityScale="internal">Internal</paper-item>
+            </paper-listbox>
+          </paper-dropdown-menu>
         </div>
 
         <ha-ignored-config-entry-card
           .hass=${this.hass}
           .entry=${createConfigEntry("Ignored Entry")}
-          .manifest=${createManifest(this.isCustomIntegration, this.isCloud)}
+          .manifest=${createManifest(
+            this.isCustomIntegration,
+            this.isCloud,
+            this.qualityScale
+          )}
         ></ha-ignored-config-entry-card>
 
         ${configFlows.map(
@@ -251,6 +274,7 @@ export class DemoIntegrationCard extends LitElement {
               .manifest=${createManifest(
                 this.isCustomIntegration,
                 this.isCloud,
+                this.qualityScale,
                 flow.handler === "roku" ? "Roku" : "Philips Hue"
               )}
             ></ha-config-flow-card>
@@ -267,7 +291,8 @@ export class DemoIntegrationCard extends LitElement {
               .items=${info.items}
               .manifest=${createManifest(
                 this.isCustomIntegration,
-                this.isCloud
+                this.isCloud,
+                this.qualityScale
               )}
               .entityRegistryEntries=${createEntityRegistryEntries(
                 info.items[0]
@@ -294,7 +319,11 @@ export class DemoIntegrationCard extends LitElement {
             setupRetryEntry,
             failedUnloadEntry,
           ]}
-          .manifest=${createManifest(this.isCustomIntegration, this.isCloud)}
+          .manifest=${createManifest(
+            this.isCustomIntegration,
+            this.isCloud,
+            this.qualityScale
+          )}
           .entityRegistryEntries=${createEntityRegistryEntries(loadedEntry)}
           .deviceRegistryEntries=${createDeviceRegistryEntries(loadedEntry)}
         ></ha-integration-card>
@@ -315,6 +344,20 @@ export class DemoIntegrationCard extends LitElement {
       },
       "en"
     );
+  }
+
+  private async _qualityScaleChanged(ev: CustomEvent) {
+    const qualityScale:
+      | "gold"
+      | "internal"
+      | "platinum"
+      | "silver"
+      | undefined = ev.detail.item.getAttribute("qualityScale") || undefined;
+    console.log(qualityScale);
+    if (qualityScale === this.qualityScale) {
+      return;
+    }
+    this.qualityScale = qualityScale;
   }
 
   private _toggleCustomIntegration() {
