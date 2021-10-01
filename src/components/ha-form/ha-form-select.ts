@@ -5,8 +5,16 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-svg-icon";
+import "../ha-radio";
 import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./ha-form";
 import { stopPropagation } from "../../common/dom/stop_propagation";
+import type { HaRadio } from "../ha-radio";
+
+const optionValue = (item: string | [string, string]) =>
+  Array.isArray(item) ? item[0] : item;
+
+const optionLabel = (item: string | [string, string]) =>
+  Array.isArray(item) ? item[1] || item[0] : item;
 
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {
@@ -27,6 +35,26 @@ export class HaFormSelect extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
+    if (!this.schema.optional && this.schema.options!.length < 6) {
+      return html`
+        <div>
+          ${this.label}
+          ${this.schema.options!.map((item: string | [string, string]) => {
+            const value = optionValue(item);
+            return html`
+              <mwc-formfield .label=${optionLabel(item)}>
+                <ha-radio
+                  .checked=${value === this.data}
+                  .value=${value}
+                  @change=${this._valueChanged}
+                ></ha-radio>
+              </mwc-formfield>
+            `;
+          })}
+        </div>
+      `;
+    }
+
     return html`
       <mwc-select
         fixedMenuPosition
@@ -40,8 +68,8 @@ export class HaFormSelect extends LitElement implements HaFormElement {
           : ""}
         ${this.schema.options!.map(
           (item: string | [string, string]) => html`
-            <mwc-list-item .value=${this._optionValue(item)}>
-              ${this._optionLabel(item)}
+            <mwc-list-item .value=${optionValue(item)}>
+              ${optionLabel(item)}
             </mwc-list-item>
           `
         )}
@@ -49,17 +77,9 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     `;
   }
 
-  private _optionValue(item: string | [string, string]) {
-    return Array.isArray(item) ? item[0] : item;
-  }
-
-  private _optionLabel(item: string | [string, string]) {
-    return Array.isArray(item) ? item[1] || item[0] : item;
-  }
-
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    let value: string | undefined = (ev.target as Select).value;
+    let value: string | undefined = (ev.target as Select | HaRadio).value;
 
     if (value === this.data) {
       return;
@@ -76,7 +96,8 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      mwc-select {
+      mwc-select,
+      mwc-formfield {
         display: block;
       }
     `;

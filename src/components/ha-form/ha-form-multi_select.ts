@@ -1,8 +1,6 @@
 import { mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@material/mwc-textfield";
 import "@material/mwc-formfield";
-import "@material/mwc-checkbox";
-import type { Checkbox } from "@material/mwc-checkbox";
 import {
   css,
   CSSResultGroup,
@@ -20,6 +18,8 @@ import {
   HaFormMultiSelectData,
   HaFormMultiSelectSchema,
 } from "./ha-form";
+import "../ha-checkbox";
+import type { HaCheckbox } from "../ha-checkbox";
 
 function optionValue(item: string | string[]): string {
   return Array.isArray(item) ? item[0] : item;
@@ -76,6 +76,24 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
     const data = this.data || [];
 
+    const renderedOptions = options.map((item: string | [string, string]) => {
+      const value = optionValue(item);
+      return html`
+        <mwc-formfield .label=${optionLabel(item)}>
+          <ha-checkbox
+            .checked=${data.includes(value)}
+            .value=${value}
+            @change=${this._valueChanged}
+          ></ha-checkbox>
+        </mwc-formfield>
+      `;
+    });
+
+    // We will just render all checkboxes.
+    if (options.length < 6) {
+      return html`<div>${this.label}${renderedOptions}</div> `;
+    }
+
     return html`
       <ha-button-menu
         fixed
@@ -96,18 +114,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
           slot="trigger"
           .path=${this._opened ? mdiMenuUp : mdiMenuDown}
         ></ha-svg-icon>
-        ${options.map((item: string | [string, string]) => {
-          const value = optionValue(item);
-          return html`
-            <mwc-formfield .label=${optionLabel(item)}>
-              <mwc-checkbox
-                .checked=${data.includes(value)}
-                .value=${value}
-                @change=${this._valueChanged}
-              ></mwc-checkbox>
-            </mwc-formfield>
-          `;
-        })}
+        ${renderedOptions}
       </ha-button-menu>
     `;
   }
@@ -128,7 +135,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
   }
 
   private _valueChanged(ev: CustomEvent): void {
-    const { value, checked } = ev.target as Checkbox;
+    const { value, checked } = ev.target as HaCheckbox;
 
     let newValue: string[];
 
@@ -171,9 +178,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      :host {
-        --mdc-theme-secondary: var(--primary-color);
-      }
       ha-button-menu,
       mwc-textfield,
       mwc-formfield {
