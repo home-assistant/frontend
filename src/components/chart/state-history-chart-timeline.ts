@@ -21,6 +21,7 @@ const BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED = new Set([
   "garage_door",
   "gas",
   "lock",
+  "motion",
   "opening",
   "problem",
   "safety",
