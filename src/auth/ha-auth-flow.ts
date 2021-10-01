@@ -333,6 +333,10 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         /* So we can set min-height to avoid jumping during loading */
         display: block;
       }
+      ha-form {
+        display: block;
+        margin-top: 12px;
+      }
       .action {
         margin: 24px 0 8px;
         text-align: center;
