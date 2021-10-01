@@ -32,6 +32,7 @@ class HaPanelDevStatistics extends LitElement {
     this._validateStatistics();
   }
 
+  /* eslint-disable lit/no-template-arrow */
   private _columns: DataTableColumnContainer = {
     state: {
       title: "Entity",
@@ -77,13 +78,17 @@ class HaPanelDevStatistics extends LitElement {
       title: "",
       template: (_, data: any) =>
         html`${data.issues
-          ? html`<mwc-button @click=${this._fixIssue} .data=${data.issues}
-              >Fix issue</mwc-button
-            >`
+          ? html`<mwc-button
+              @click=${(ev) => this._fixIssue(ev)}
+              .data=${data.issues}
+            >
+              Fix issue
+            </mwc-button>`
           : ""}`,
       width: "113px",
     },
   };
+  /* eslint-enable lit/no-template-arrow */
 
   protected render() {
     return html`
