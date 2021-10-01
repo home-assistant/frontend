@@ -53,46 +53,18 @@ export class HaFormInteger extends LitElement implements HaFormElement {
       `;
     }
 
-    return "valueMin" in this.schema && "valueMax" in this.schema
-      ? html`
-          <div>
-            ${this.label}
-            <div class="flex">
-              ${this.schema.optional && this.schema.default === undefined
-                ? html`
-                    <ha-checkbox
-                      @change=${this._handleCheckboxChange}
-                      .checked=${this.data !== undefined}
-                    ></ha-checkbox>
-                  `
-                : ""}
-              <ha-slider
-                pin
-                editable
-                .value=${this._value}
-                .min=${this.schema.valueMin}
-                .max=${this.schema.valueMax}
-                .disabled=${this.data === undefined &&
-                this.schema.optional &&
-                this.schema.default === undefined}
-                @value-changed=${this._valueChanged}
-              ></ha-slider>
-              ${this.suffix || ""}
-            </div>
-          </div>
-        `
-      : html`
-          <mwc-textfield
-            type="number"
-            .label=${this.label}
-            .value=${this.data !== undefined ? this.data : ""}
-            .required=${this.schema.required}
-            .autoValidate=${this.schema.required}
-            .suffix=${this.suffix}
-            .validationMessage=${this.schema.required ? "Required" : undefined}
-            @change=${this._valueChanged}
-          ></mwc-textfield>
-        `;
+    return html`
+      <mwc-textfield
+        type="number"
+        .label=${this.label}
+        .value=${this.data !== undefined ? this.data : ""}
+        .required=${this.schema.required}
+        .autoValidate=${this.schema.required}
+        .suffix=${this.suffix}
+        .validationMessage=${this.schema.required ? "Required" : undefined}
+        @change=${this._valueChanged}
+      ></mwc-textfield>
+    `;
   }
 
   private get _value() {

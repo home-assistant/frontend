@@ -84,6 +84,8 @@ export const derivedStyles = {
   "paper-slider-container-color": "var(--slider-track-color)",
   "data-table-background-color": "var(--card-background-color)",
   "markdown-code-background-color": "var(--primary-background-color)",
+
+  // https://github.com/material-components/material-web/blob/master/docs/theming.md
   "mdc-theme-primary": "var(--primary-color)",
   "mdc-theme-secondary": "var(--accent-color)",
   "mdc-theme-background": "var(--primary-background-color)",

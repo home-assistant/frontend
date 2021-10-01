@@ -1,7 +1,5 @@
 import "@material/mwc-formfield";
-import "@material/mwc-checkbox";
-import type { Checkbox } from "@material/mwc-checkbox";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import type {
@@ -9,6 +7,8 @@ import type {
   HaFormBooleanSchema,
   HaFormElement,
 } from "./ha-form";
+import type { HaCheckbox } from "../ha-checkbox";
+import "../ha-checkbox";
 
 @customElement("ha-form-boolean")
 export class HaFormBoolean extends LitElement implements HaFormElement {
@@ -31,26 +31,18 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
   protected render(): TemplateResult {
     return html`
       <mwc-formfield .label=${this.label}>
-        <mwc-checkbox
+        <ha-checkbox
           .checked=${this.data}
           @change=${this._valueChanged}
-        ></mwc-checkbox>
+        ></ha-checkbox>
       </mwc-formfield>
     `;
   }
 
   private _valueChanged(ev: Event) {
     fireEvent(this, "value-changed", {
-      value: (ev.target as Checkbox).checked,
+      value: (ev.target as HaCheckbox).checked,
     });
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      mwc-checkbox {
-        --mdc-theme-secondary: var(--primary-color);
-      }
-    `;
   }
 }
 
