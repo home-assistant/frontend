@@ -90,7 +90,7 @@ export class HaIntegrationHeader extends LitElement {
         ]);
       }
 
-      if (this.manifest.quality_scale) {
+      if (this.manifest.quality_scale && this.manifest.is_built_in) {
         const quality_scale_icon =
           QUALITY_SCALE_ICONS[this.manifest.quality_scale];
         if (quality_scale_icon) {
