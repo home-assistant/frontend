@@ -184,23 +184,34 @@ class HassioHostInfo extends LitElement {
             <mwc-icon-button slot="trigger">
               <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
             </mwc-icon-button>
-            <mwc-list-item @click=${() => this._handleMenuAction("hardware")}>
+            <mwc-list-item
+              .action=${"hardware"}
+              @click=${this._handleMenuAction}
+            >
               ${this.supervisor.localize("system.host.hardware")}
             </mwc-list-item>
             ${this.supervisor.host.features.includes("haos")
-              ? html`<mwc-list-item
-                    @click=${() => this._handleMenuAction("import_from_usb")}
+              ? html`
+                  <mwc-list-item
+                    .action=${"import_from_usb"}
+                    @click=${this._handleMenuAction}
                   >
                     ${this.supervisor.localize("system.host.import_from_usb")}
                   </mwc-list-item>
                   ${this.supervisor.host.features.includes("os_agent") &&
                   atLeastVersion(this.supervisor.host.agent_version, 1, 2, 0)
-                    ? html`<mwc-list-item
-                        @click=${() => this._handleMenuAction("move_datadisk")}
-                      >
-                        ${this.supervisor.localize("system.host.move_datadisk")}
-                      </mwc-list-item>`
-                    : ""} `
+                    ? html`
+                        <mwc-list-item
+                          .action=${"move_datadisk"}
+                          @click=${this._handleMenuAction}
+                        >
+                          ${this.supervisor.localize(
+                            "system.host.move_datadisk"
+                          )}
+                        </mwc-list-item>
+                      `
+                    : ""}
+                `
               : ""}
           </ha-button-menu>
         </div>
@@ -223,8 +234,8 @@ class HassioHostInfo extends LitElement {
     return network_info.interfaces.find((a) => a.primary)?.ipv4?.address![0];
   });
 
-  private async _handleMenuAction(action: string) {
-    switch (action) {
+  private async _handleMenuAction(ev) {
+    switch ((ev.target as any).action) {
       case "hardware":
         await this._showHardware();
         break;

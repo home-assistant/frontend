@@ -23,7 +23,7 @@ const DEFAULT_FILTER = "grayscale(100%)";
 const MAX_IMAGE_WIDTH = 640;
 const ASPECT_RATIO_DEFAULT = 9 / 16;
 
-enum LoadState {
+const enum LoadState {
   Loading = 1,
   Loaded = 2,
   Error = 3,

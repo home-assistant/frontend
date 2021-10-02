@@ -2,6 +2,7 @@ import "@material/mwc-button/mwc-button";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/data-table/ha-data-table";
@@ -32,63 +33,70 @@ class HaPanelDevStatistics extends LitElement {
     this._validateStatistics();
   }
 
-  private _columns: DataTableColumnContainer = {
-    state: {
-      title: "Entity",
-      sortable: true,
-      filterable: true,
-      grows: true,
-      template: (entityState, data: any) =>
-        html`${entityState
-          ? computeStateName(entityState)
-          : data.statistic_id}`,
-    },
-    statistic_id: {
-      title: "Statistic id",
-      sortable: true,
-      filterable: true,
-      hidden: this.narrow,
-      width: "30%",
-    },
-    unit_of_measurement: {
-      title: "Unit",
-      sortable: true,
-      filterable: true,
-      width: "10%",
-    },
-    issues: {
-      title: "Issue",
-      sortable: true,
-      filterable: true,
-      direction: "asc",
-      width: "30%",
-      template: (issues) =>
-        html`${issues
-          ? issues.map(
-              (issue) =>
-                this.hass.localize(
-                  `ui.panel.developer-tools.tabs.statistics.issues.${issue.type}`,
-                  issue.data
-                ) || issue.type
-            )
-          : ""}`,
-    },
-    fix: {
-      title: "",
-      template: (_, data: any) =>
-        html`${data.issues
-          ? html`<mwc-button @click=${this._fixIssue} .data=${data.issues}
-              >Fix issue</mwc-button
-            >`
-          : ""}`,
-      width: "113px",
-    },
-  };
+  /* eslint-disable lit/no-template-arrow */
+  private _columns = memoizeOne(
+    (localize): DataTableColumnContainer => ({
+      state: {
+        title: "Entity",
+        sortable: true,
+        filterable: true,
+        grows: true,
+        template: (entityState, data: any) =>
+          html`${entityState
+            ? computeStateName(entityState)
+            : data.statistic_id}`,
+      },
+      statistic_id: {
+        title: "Statistic id",
+        sortable: true,
+        filterable: true,
+        hidden: this.narrow,
+        width: "30%",
+      },
+      unit_of_measurement: {
+        title: "Unit",
+        sortable: true,
+        filterable: true,
+        width: "10%",
+      },
+      issues: {
+        title: "Issue",
+        sortable: true,
+        filterable: true,
+        direction: "asc",
+        width: "30%",
+        template: (issues) =>
+          html`${issues
+            ? issues.map(
+                (issue) =>
+                  localize(
+                    `ui.panel.developer-tools.tabs.statistics.issues.${issue.type}`,
+                    issue.data
+                  ) || issue.type
+              )
+            : ""}`,
+      },
+      fix: {
+        title: "",
+        template: (_, data: any) =>
+          html`${data.issues
+            ? html`<mwc-button
+                @click=${(ev) => this._fixIssue(ev)}
+                .data=${data.issues}
+              >
+                Fix issue
+              </mwc-button>`
+            : ""}`,
+        width: "113px",
+      },
+    })
+  );
+  /* eslint-enable lit/no-template-arrow */
 
   protected render() {
     return html`
       <ha-data-table
-        .columns=${this._columns}
+        .columns=${this._columns(this.hass.localize)}
         .data=${this._data}
         noDataText="No issues found!"
         id="statistic_id"
@@ -123,11 +131,11 @@ class HaPanelDevStatistics extends LitElement {
     if (issue.type === "unsupported_unit") {
       showAlertDialog(this, {
         title: "Unsupported unit",
-        text: html`The unit of your entity is not a suppported unit for the
+        text: html`The unit of your entity is not a supported unit for the
           device class of the entity, ${issue.data.device_class}.
           <br />Statistics can not be generated until this entity has a
-          supported unit. <br /><br />If this unit was provided by an
-          integration, this is a bug. Please report an issue. <br /><br />If you
+          supported unit.<br /><br />If this unit was provided by an
+          integration, this is a bug. Please report an issue.<br /><br />If you
           have set this unit yourself, and want to have statistics generated,
           make sure the unit matched the device class. The supported units are
           documented in the

@@ -1,3 +1,4 @@
+/* eslint-disable lit/no-template-arrow */
 import { html, css, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "../../../src/components/ha-card";
