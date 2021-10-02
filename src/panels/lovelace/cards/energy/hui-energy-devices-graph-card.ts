@@ -22,10 +22,7 @@ import {
 import "../../../../components/chart/ha-chart-base";
 import type HaChartBase from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import {
-  EnergyData,
-  getEnergyDataCollection,
-} from "../../../../data/energy";
+import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   fetchStatistics,
