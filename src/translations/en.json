@@ -2763,7 +2763,8 @@
             "heal_node": "Heal Device",
             "remove_failed": "Remove Failed Device",
             "is_secure": "Secure",
-            "unknown": "Unknown"
+            "unknown": "Unknown",
+            "zwave_plus": "Z-Wave Plus"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
