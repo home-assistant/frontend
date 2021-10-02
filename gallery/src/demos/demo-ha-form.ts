@@ -188,13 +188,7 @@ const SCHEMAS: {
 
 @customElement("demo-ha-form")
 class DemoHaForm extends LitElement {
-  private lightModeData = SCHEMAS.map(({ schema }) =>
-    computeInitialData(schema)
-  );
-
-  private darkModeData = SCHEMAS.map(({ schema }) =>
-    computeInitialData(schema)
-  );
+  private data = SCHEMAS.map(({ schema }) => computeInitialData(schema));
 
   protected render(): TemplateResult {
     return html`
@@ -204,41 +198,52 @@ class DemoHaForm extends LitElement {
           translations[schema.name] || schema.name;
         const computeError = (error) => translations[error] || error;
 
-        return [
-          [this.lightModeData, "light"],
-          [this.darkModeData, "dark"],
-        ].map(
-          ([data, type]) => html`
-            <div class="row" data-type=${type}>
-              <div class="content">
-                <ha-card .header=${info.title}>
-                  <div class="card-content">
-                    <ha-form
-                      .data=${data[idx]}
-                      .schema=${info.schema}
-                      .error=${info.error}
-                      .computeError=${computeError}
-                      .computeLabel=${computeLabel}
-                      @value-changed=${(e) => {
-                        // @ts-ignore
-                        data[idx] = e.detail.value;
-                        this.requestUpdate();
-                      }}
-                    ></ha-form>
-                  </div>
-                </ha-card>
-                <pre>${JSON.stringify(data[idx], undefined, 2)}</pre>
-              </div>
+        return html`
+          <div class="row">
+            <div class="content light">
+              <ha-card .header=${info.title}>
+                <div class="card-content">
+                  <ha-form
+                    .data=${this.data[idx]}
+                    .schema=${info.schema}
+                    .error=${info.error}
+                    .computeError=${computeError}
+                    .computeLabel=${computeLabel}
+                    @value-changed=${(e) => {
+                      this.data[idx] = e.detail.value;
+                      this.requestUpdate();
+                    }}
+                  ></ha-form>
+                </div>
+              </ha-card>
             </div>
-          `
-        );
+            <div class="content dark">
+              <ha-card .header=${info.title}>
+                <div class="card-content">
+                  <ha-form
+                    .data=${this.data[idx]}
+                    .schema=${info.schema}
+                    .error=${info.error}
+                    .computeError=${computeError}
+                    .computeLabel=${computeLabel}
+                    @value-changed=${(e) => {
+                      this.data[idx] = e.detail.value;
+                      this.requestUpdate();
+                    }}
+                  ></ha-form>
+                </div>
+              </ha-card>
+              <pre>${JSON.stringify(this.data[idx], undefined, 2)}</pre>
+            </div>
+          </div>
+        `;
       })}
     `;
   }
 
   firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this.shadowRoot!.querySelectorAll("[data-type=dark]").forEach((el) => {
+    this.shadowRoot!.querySelectorAll(".dark").forEach((el) => {
       applyThemesOnElement(
         el,
         {
@@ -254,27 +259,31 @@ class DemoHaForm extends LitElement {
   }
 
   static styles = css`
-    :host {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-    }
     .row {
-      padding: 50px;
-      background-color: var(--primary-background-color);
-      flex: 1;
-      min-width: 50vw;
-      box-sizing: border-box;
+      display: flex;
     }
     .content {
-      display: flex;
+      padding: 50px 0;
+      background-color: var(--primary-background-color);
     }
-    .row[data-type="light"] .content {
-      flex-direction: row-reverse;
+    .light {
+      flex: 1;
+      padding-left: 50px;
+      padding-right: 50px;
+      box-sizing: border-box;
+    }
+    .light ha-card {
+      margin-left: auto;
+    }
+    .dark {
+      display: flex;
+      flex: 1;
+      padding-left: 50px;
+      box-sizing: border-box;
+      flex-wrap: wrap;
     }
     ha-card {
-      width: 100%;
-      max-width: 384px;
+      width: 400px;
     }
     pre {
       width: 300px;
@@ -283,22 +292,23 @@ class DemoHaForm extends LitElement {
       color: var(--primary-text-color);
     }
     @media only screen and (max-width: 1500px) {
-      :host {
-        flex-direction: column;
-      }
-      .row[data-type="light"] .content {
-        flex-direction: row;
+      .light {
+        flex: initial;
       }
     }
-    @media only screen and (max-width: 800px) {
-      .row {
-        padding: 16px 8px;
+    @media only screen and (max-width: 1000px) {
+      .light,
+      .dark {
+        padding: 16px;
       }
-      .content {
-        flex-direction: column !important;
+      .row,
+      .dark {
+        flex-direction: column;
       }
       ha-card {
         margin: 0 auto;
+        width: 100%;
+        max-width: 400px;
       }
       pre {
         margin: 16px auto;
