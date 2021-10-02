@@ -31,6 +31,9 @@ const REDIRECTS: Redirects = {
   developer_events: {
     redirect: "/developer-tools/event",
   },
+  developer_statistics: {
+    redirect: "/developer-tools/statistics",
+  },
   config: {
     redirect: "/config",
   },
