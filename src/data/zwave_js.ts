@@ -83,6 +83,7 @@ export interface ZWaveJSNodeStatus {
   node_id: number;
   ready: boolean;
   status: number;
+  is_secure: boolean | string;
 }
 
 export interface ZwaveJSNodeMetadata {

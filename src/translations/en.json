@@ -2761,7 +2761,9 @@
             "device_config": "Configure Device",
             "reinterview_device": "Re-interview Device",
             "heal_node": "Heal Device",
-            "remove_failed": "Remove Failed Device"
+            "remove_failed": "Remove Failed Device",
+            "is_secure": "Secure",
+            "unknown": "Unknown"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
