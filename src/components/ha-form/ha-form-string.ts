@@ -1,7 +1,14 @@
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import "@material/mwc-textfield";
 import type { TextField } from "@material/mwc-textfield";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  PropertyValues,
+} from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-svg-icon";
@@ -69,6 +76,12 @@ export class HaFormString extends LitElement implements HaFormElement {
     `;
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("schema")) {
+      this.toggleAttribute("own-margin", !!this.schema.required);
+    }
+  }
+
   private _toggleUnmaskedPassword(): void {
     this._unmaskedPassword = !this._unmaskedPassword;
   }
@@ -100,6 +113,9 @@ export class HaFormString extends LitElement implements HaFormElement {
       :host {
         display: block;
         position: relative;
+      }
+      :host([own-margin]) {
+        margin-bottom: 5px;
       }
       mwc-textfield {
         display: block;

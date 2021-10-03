@@ -1,6 +1,6 @@
 import "@material/mwc-textfield";
 import type { TextField } from "@material/mwc-textfield";
-import { css, html, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult, PropertyValues } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./types";
@@ -35,6 +35,12 @@ export class HaFormFloat extends LitElement implements HaFormElement {
     `;
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("schema")) {
+      this.toggleAttribute("own-margin", !!this.schema.required);
+    }
+  }
+
   private _valueChanged(ev: Event) {
     const source = ev.target as TextField;
     const rawValue = source.value;
@@ -62,6 +68,9 @@ export class HaFormFloat extends LitElement implements HaFormElement {
   }
 
   static styles = css`
+    :host([own-margin]) {
+      margin-bottom: 5px;
+    }
     mwc-textfield {
       display: block;
     }

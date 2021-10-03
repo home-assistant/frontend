@@ -2,7 +2,14 @@ import "@material/mwc-textfield";
 import type { TextField } from "@material/mwc-textfield";
 import "@material/mwc-slider";
 import type { Slider } from "@material/mwc-slider";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  TemplateResult,
+  PropertyValues,
+} from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaCheckbox } from "../ha-checkbox";
@@ -65,6 +72,16 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     `;
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("schema")) {
+      this.toggleAttribute(
+        "own-margin",
+        !("valueMin" in this.schema && "valueMax" in this.schema) &&
+          !!this.schema.required
+      );
+    }
+  }
+
   private get _value() {
     if (this.data !== undefined) {
       return this.data;
@@ -112,6 +129,9 @@ export class HaFormInteger extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host([own-margin]) {
+        margin-bottom: 5px;
+      }
       .flex {
         display: flex;
       }

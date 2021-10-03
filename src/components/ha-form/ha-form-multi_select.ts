@@ -8,6 +8,7 @@ import {
   svg,
   LitElement,
   TemplateResult,
+  PropertyValues,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -28,6 +29,8 @@ function optionValue(item: string | string[]): string {
 function optionLabel(item: string | string[]): string {
   return Array.isArray(item) ? item[1] || item[0] : item;
 }
+
+const SHOW_ALL_ENTRIES_LIMIT = 6;
 
 const arrowDown = svg`
   <svg
@@ -85,7 +88,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     });
 
     // We will just render all checkboxes.
-    if (options.length < 6) {
+    if (options.length < SHOW_ALL_ENTRIES_LIMIT) {
       return html`<div>${this.label}${renderedOptions}</div> `;
     }
 
@@ -127,6 +130,16 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         mdcRoot.style.cursor = "pointer";
       }
     });
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    if (changedProps.has("schema")) {
+      this.toggleAttribute(
+        "own-margin",
+        Object.keys(this.schema.options).length >= SHOW_ALL_ENTRIES_LIMIT &&
+          !!this.schema.required
+      );
+    }
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -173,6 +186,9 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host([own-margin]) {
+        margin-bottom: 5px;
+      }
       ha-button-menu,
       mwc-textfield,
       mwc-formfield {
