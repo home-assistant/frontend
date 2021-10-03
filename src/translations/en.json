@@ -3231,6 +3231,10 @@
               "available_states": "Available States",
               "description": "The Alarm Panel card allows you to Arm and Disarm your alarm control panel integrations."
             },
+            "area": {
+              "name": "Area",
+              "description": "The Area card automatically displays entities is a specific area."
+            },
             "calendar": {
               "name": "Calendar",
               "description": "The Calendar card displays a calendar including day, week and list views",

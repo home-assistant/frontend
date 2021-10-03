@@ -76,6 +76,11 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   state_color?: boolean;
 }
 
+export interface AreaCardConfig extends LovelaceCardConfig {
+  area_id: string;
+  image: string;
+}
+
 export interface ButtonCardConfig extends LovelaceCardConfig {
   entity?: string;
   name?: string;
