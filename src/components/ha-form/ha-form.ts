@@ -125,7 +125,11 @@ export class HaForm extends LitElement implements HaFormElement {
   @property() public computeLabel?: (schema: HaFormSchema) => string;
 
   public focus() {
-    for (const child of this.renderRoot!.children) {
+    const root = this.shadowRoot?.querySelector(".root");
+    if (!root) {
+      return;
+    }
+    for (const child of root.children) {
       if (child.tagName !== "HA-ALERT") {
         (child as HTMLElement).focus();
         break;
@@ -205,13 +209,13 @@ export class HaForm extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      .root > *:not(ha-alert):not(:last-child) {
+        display: block;
+        margin-bottom: 20px;
+      }
       ha-alert {
         display: block;
         margin: 8px 0;
-      }
-      .root > *:not(:last-child) {
-        display: block;
-        margin-bottom: 20px;
       }
     `;
   }
