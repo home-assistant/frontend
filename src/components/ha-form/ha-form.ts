@@ -100,9 +100,11 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   static get styles(): CSSResultGroup {
+    // .root has overflow: auto to avoid margin collapse
     return css`
       .root {
         margin-bottom: -24px;
+        overflow: auto;
       }
       .root > * {
         display: block;
