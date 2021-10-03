@@ -135,7 +135,7 @@ const SCHEMAS: {
         ],
         name: "select",
         required: true,
-        default: ["default"],
+        default: "default",
       },
       {
         type: "select",
@@ -145,7 +145,6 @@ const SCHEMAS: {
         ],
         name: "select optional",
         optional: true,
-        default: ["default"],
       },
       {
         type: "select",
@@ -159,7 +158,7 @@ const SCHEMAS: {
         ],
         name: "select many otions",
         optional: true,
-        default: ["default"],
+        default: "default",
       },
     ],
   },
