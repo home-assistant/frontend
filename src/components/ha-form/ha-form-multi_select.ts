@@ -5,7 +5,6 @@ import {
   css,
   CSSResultGroup,
   html,
-  svg,
   LitElement,
   TemplateResult,
   PropertyValues,
@@ -31,26 +30,6 @@ function optionLabel(item: string | string[]): string {
 }
 
 const SHOW_ALL_ENTRIES_LIMIT = 6;
-
-const arrowDown = svg`
-  <svg
-      class="mdc-select__dropdown-icon-graphic"
-      viewBox="7 10 10 5"
-      focusable="false">
-    <polygon
-        class="mdc-select__dropdown-icon-inactive"
-        stroke="none"
-        fill-rule="evenodd"
-        points="7 10 12 15 17 10">
-    </polygon>
-    <polygon
-        class="mdc-select__dropdown-icon-active"
-        stroke="none"
-        fill-rule="evenodd"
-        points="7 15 12 10 17 15">
-    </polygon>
-  </svg>
-`;
 
 @customElement("ha-form-multi_select")
 export class HaFormMultiSelect extends LitElement implements HaFormElement {
@@ -105,7 +84,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
           .value=${data
             .map((value) => this.schema.options![value] || value)
             .join(", ")}
-          .suffix=${arrowDown}
           tabindex="-1"
         ></mwc-textfield>
         <ha-svg-icon
