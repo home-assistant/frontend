@@ -337,6 +337,7 @@ class DemoHaForm extends LitElement {
     .card-actions {
       display: flex;
       flex-direction: row-reverse;
+      border-top: none;
     }
     @media only screen and (max-width: 1500px) {
       .light {
