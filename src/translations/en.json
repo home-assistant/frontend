@@ -2764,7 +2764,8 @@
             "remove_failed": "Remove Failed Device",
             "is_secure": "Secure",
             "unknown": "Unknown",
-            "zwave_plus": "Z-Wave Plus"
+            "zwave_plus": "Z-Wave Plus",
+            "zwave_plus_version": "Version {version}"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",

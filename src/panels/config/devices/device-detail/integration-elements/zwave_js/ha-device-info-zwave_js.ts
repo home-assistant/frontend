@@ -129,7 +129,11 @@ export class HaDeviceInfoZWaveJS extends LitElement {
           "ui.panel.config.zwave_js.device_info.zwave_plus"
         )}:
         ${this._node.zwave_plus_version
-          ? this.hass.localize("ui.common.yes")
+          ? this.hass.localize(
+              "ui.panel.config.zwave_js.device_info.zwave_plus_version",
+              "version",
+              this._node.zwave_plus_version
+            )
           : this.hass.localize("ui.common.no")}
       </div>
     `;
