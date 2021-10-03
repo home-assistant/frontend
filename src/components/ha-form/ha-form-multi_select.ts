@@ -140,14 +140,9 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       newValue = this.data.filter((v) => v !== value);
     }
 
-    fireEvent(
-      this,
-      "value-changed",
-      {
-        value: newValue,
-      },
-      { bubbles: false }
-    );
+    fireEvent(this, "value-changed", {
+      value: newValue,
+    });
   }
 
   private _handleOpen(ev: Event): void {
