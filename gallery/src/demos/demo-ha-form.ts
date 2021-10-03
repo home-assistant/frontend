@@ -12,6 +12,7 @@ const SCHEMAS: {
   translations?: Record<string, string>;
   error?: Record<string, string>;
   schema: HaFormSchema[];
+  data?: Record<string, any>;
 }[] = [
   {
     title: "Authentication",
@@ -190,11 +191,40 @@ const SCHEMAS: {
       },
     ],
   },
+  {
+    title: "Field specific error",
+    data: {
+      new_password: "hello",
+      new_password_2: "bye",
+    },
+    translations: {
+      new_password: "New Password",
+      new_password_2: "Re-type Password",
+      not_match: "The passwords do not match",
+    },
+    error: {
+      new_password_2: "not_match",
+    },
+    schema: [
+      {
+        type: "string",
+        name: "new_password",
+        required: true,
+      },
+      {
+        type: "string",
+        name: "new_password_2",
+        required: true,
+      },
+    ],
+  },
 ];
 
 @customElement("demo-ha-form")
 class DemoHaForm extends LitElement {
-  private data = SCHEMAS.map(({ schema }) => computeInitialHaFormData(schema));
+  private data = SCHEMAS.map(
+    ({ schema, data }) => data || computeInitialHaFormData(schema)
+  );
 
   protected render(): TemplateResult {
     return html`

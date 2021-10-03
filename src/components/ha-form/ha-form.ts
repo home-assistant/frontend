@@ -57,6 +57,7 @@ export class HaForm extends LitElement implements HaFormElement {
             ${error
               ? html`
                   <ha-alert
+                    own-margin
                     alert-type="error"
                     .title=${this._computeError(error, item)}
                   ></ha-alert>
@@ -105,6 +106,9 @@ export class HaForm extends LitElement implements HaFormElement {
       }
       .root > *:not([own-margin]):not(:last-child) {
         margin-bottom: 24px;
+      }
+      ha-alert[own-margin] {
+        margin-bottom: 4px;
       }
     `;
   }
