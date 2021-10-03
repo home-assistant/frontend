@@ -370,7 +370,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           position: absolute;
           top: 5%;
           /* left: 2%; */
-          background: #2f2f2fb5;
+          background: rgba(47, 47, 47, 0.4);
           padding: 8px;
           border-bottom-right-radius: 20px;
           border-top-right-radius: 20px;
