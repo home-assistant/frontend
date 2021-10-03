@@ -30,10 +30,14 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         <div>
           ${this.label}
           <div class="flex">
-            <ha-checkbox
-              @change=${this._handleCheckboxChange}
-              .checked=${this.data !== undefined}
-            ></ha-checkbox>
+            ${this.schema.optional
+              ? html`
+                  <ha-checkbox
+                    @change=${this._handleCheckboxChange}
+                    .checked=${this.data !== undefined}
+                  ></ha-checkbox>
+                `
+              : ""}
             <mwc-slider
               discrete
               .value=${this._value}
