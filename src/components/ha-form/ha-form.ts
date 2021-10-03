@@ -101,10 +101,13 @@ export class HaForm extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      .root {
+        margin-bottom: -24px;
+      }
       .root > * {
         display: block;
       }
-      .root > *:not([own-margin]):not(:last-child) {
+      .root > *:not([own-margin]) {
         margin-bottom: 24px;
       }
       ha-alert[own-margin] {

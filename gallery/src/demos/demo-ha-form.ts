@@ -1,4 +1,5 @@
 /* eslint-disable lit/no-template-arrow */
+import "@material/mwc-button";
 import { LitElement, TemplateResult, css, html } from "lit";
 import { customElement } from "lit/decorators";
 import { computeInitialHaFormData } from "../../../src/components/ha-form/compute-initial-ha-form-data";
@@ -251,6 +252,9 @@ class DemoHaForm extends LitElement {
                     }}
                   ></ha-form>
                 </div>
+                <div class="card-actions">
+                  <mwc-button>Submit</mwc-button>
+                </div>
               </ha-card>
             </div>
             <div class="content dark">
@@ -267,6 +271,9 @@ class DemoHaForm extends LitElement {
                       this.requestUpdate();
                     }}
                   ></ha-form>
+                </div>
+                <div class="card-actions">
+                  <mwc-button>Submit</mwc-button>
                 </div>
               </ha-card>
               <pre>${JSON.stringify(this.data[idx], undefined, 2)}</pre>
@@ -326,6 +333,10 @@ class DemoHaForm extends LitElement {
       margin: 0 16px 0;
       overflow: auto;
       color: var(--primary-text-color);
+    }
+    .card-actions {
+      display: flex;
+      flex-direction: row-reverse;
     }
     @media only screen and (max-width: 1500px) {
       .light {
