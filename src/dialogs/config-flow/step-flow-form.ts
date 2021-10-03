@@ -182,7 +182,7 @@ class StepFlowForm extends LitElement {
 
         ha-alert,
         ha-form {
-          margin-top: 8px;
+          margin-top: 24px;
           display: block;
         }
       `,
