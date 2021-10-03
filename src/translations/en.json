@@ -2762,7 +2762,7 @@
             "reinterview_device": "Re-interview Device",
             "heal_node": "Heal Device",
             "remove_failed": "Remove Failed Device",
-            "is_secure": "Secure",
+            "highest_security": "Highest Security",
             "unknown": "Unknown",
             "zwave_plus": "Z-Wave Plus",
             "zwave_plus_version": "Version {version}"
@@ -2786,6 +2786,14 @@
             "awake": "Awake",
             "dead": "Dead",
             "alive": "Alive"
+          },
+          "highest_security": {
+            "temporary": "Temporary",
+            "none": "None",
+            "s2_unauthenticated": "S2 Unauthenticated",
+            "s2_authenticated": "S2 Authenticated",
+            "s2_access_control": "S2 Access Control",
+            "s0_legacy": "S0 (Legacy)"
           },
           "network_status": {
             "connected": "Connected",
