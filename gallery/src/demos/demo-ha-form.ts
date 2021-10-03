@@ -84,6 +84,11 @@ const SCHEMAS: {
         optional: true,
         default: ["default"],
       },
+      {
+        type: "positive_time_period_dict",
+        name: "time",
+        required: true,
+      },
     ],
   },
   {

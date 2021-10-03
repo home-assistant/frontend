@@ -21,8 +21,16 @@ export const computeInitialHaFormData = (
       data[field.name] = field.value;
     } else if (field.type === "float") {
       data[field.name] = 0.0;
-    } else if (field.type === "select" && field.options.length) {
-      data[field.name] = field.options[0][0];
+    } else if (field.type === "select") {
+      if (field.options.length) {
+        data[field.name] = field.options[0][0];
+      }
+    } else if (field.type === "positive_time_period_dict") {
+      data[field.name] = {
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+      };
     }
   });
   return data;
