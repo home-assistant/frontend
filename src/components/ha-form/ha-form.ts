@@ -228,12 +228,9 @@ export class HaForm extends LitElement implements HaFormElement {
         display: block;
         margin: 8px 0;
       }
-      :host([root]) .root > * {
+      :host([root]) .root > *:not(:last-child) {
         display: block;
         margin-bottom: 20px;
-      }
-      :host([root]) .root > *:last-child {
-        margin-bottom: 0;
       }
       .error {
         color: var(--error-color);
