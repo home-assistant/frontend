@@ -95,7 +95,6 @@ export interface HaFormElement extends LitElement {
   schema: HaFormSchema | HaFormSchema[];
   data?: HaFormDataContainer | HaFormData;
   label?: string;
-  suffix?: string;
 }
 
 export const computeInitialData = (
@@ -163,7 +162,6 @@ export class HaForm extends LitElement implements HaFormElement {
               schema: item,
               data: this._getValue(this.data, item),
               label: this._computeLabel(item),
-              suffix: this._computeSuffix(item),
             })}
           `;
         })}
@@ -190,10 +188,6 @@ export class HaForm extends LitElement implements HaFormElement {
       : schema
       ? schema.name
       : "";
-  }
-
-  private _computeSuffix(schema: HaFormSchema) {
-    return schema.description?.suffix;
   }
 
   private _computeError(error, schema: HaFormSchema | HaFormSchema[]) {

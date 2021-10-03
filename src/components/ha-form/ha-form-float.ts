@@ -13,8 +13,6 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
-  @property() public suffix!: string;
-
   @query("mwc-textfield") private _input?: HTMLElement;
 
   public focus() {
@@ -30,7 +28,7 @@ export class HaFormFloat extends LitElement implements HaFormElement {
         .value=${this.data !== undefined ? this.data : ""}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
-        .suffix=${this.suffix}
+        .suffix=${this.schema.description?.suffix}
         .validationMessage=${this.schema.required ? "Required" : undefined}
         @change=${this._valueChanged}
       ></mwc-textfield>

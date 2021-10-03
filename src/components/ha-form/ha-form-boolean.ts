@@ -18,8 +18,6 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
-  @property() public suffix!: string;
-
   @query("paper-checkbox", true) private _input?: HTMLElement;
 
   public focus() {

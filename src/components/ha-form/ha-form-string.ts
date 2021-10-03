@@ -21,8 +21,6 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
-  @property() public suffix!: string;
-
   @state() private _unmaskedPassword = false;
 
   @query("mwc-textfield") private _input?: HTMLElement;
@@ -51,7 +49,7 @@ export class HaFormString extends LitElement implements HaFormElement {
         .suffix=${isPassword
           ? // reserve some space for the icon.
             html`<div style="width: 24px"></div>`
-          : this.suffix}
+          : this.schema.description?.suffix}
         .validationMessage=${this.schema.required ? "Required" : undefined}
         @change=${this._valueChanged}
       ></mwc-textfield>

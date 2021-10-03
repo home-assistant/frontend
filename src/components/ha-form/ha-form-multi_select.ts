@@ -57,8 +57,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
-  @property() public suffix!: string;
-
   @state() private _opened = false;
 
   @query("paper-menu-button", true) private _input?: HTMLElement;

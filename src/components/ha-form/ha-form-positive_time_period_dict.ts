@@ -11,8 +11,6 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
-  @property() public suffix!: string;
-
   @query("ha-time-input", true) private _input?: HTMLElement;
 
   public focus() {

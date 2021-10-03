@@ -18,8 +18,6 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
-  @property() public suffix!: string;
-
   @query("mwc-select", true) private _input?: HTMLElement;
 
   public focus() {
