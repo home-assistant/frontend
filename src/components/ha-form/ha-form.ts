@@ -13,6 +13,8 @@ import "./ha-form-select";
 import "./ha-form-string";
 import { HaFormElement, HaFormDataContainer, HaFormSchema } from "./types";
 
+const getValue = (obj, item) => (obj ? obj[item.name] : null);
+
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
   @property() public data!: HaFormDataContainer;
@@ -50,7 +52,7 @@ export class HaForm extends LitElement implements HaFormElement {
             `
           : ""}
         ${this.schema.map((item) => {
-          const error = this._getValue(this.error, item);
+          const error = getValue(this.error, item);
           return html`
             ${error
               ? html`
@@ -62,7 +64,7 @@ export class HaForm extends LitElement implements HaFormElement {
               : ""}
             ${dynamicElement(`ha-form-${item.type}`, {
               schema: item,
-              data: this._getValue(this.data, item),
+              data: getValue(this.data, item),
               label: this._computeLabel(item),
             })}
           `;
@@ -94,13 +96,6 @@ export class HaForm extends LitElement implements HaFormElement {
 
   private _computeError(error, schema: HaFormSchema | HaFormSchema[]) {
     return this.computeError ? this.computeError(error, schema) : error;
-  }
-
-  private _getValue(obj, item) {
-    if (obj) {
-      return obj[item.name];
-    }
-    return null;
   }
 
   static get styles(): CSSResultGroup {
