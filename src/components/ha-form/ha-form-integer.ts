@@ -25,6 +25,8 @@ export class HaFormInteger extends LitElement implements HaFormElement {
 
   @query("paper-input ha-slider") private _input?: HTMLElement;
 
+  private _lastValue?: HaFormIntegerData;
+
   public focus() {
     if (this._input) {
       this._input.focus();
@@ -96,10 +98,26 @@ export class HaFormInteger extends LitElement implements HaFormElement {
 
   private _handleCheckboxChange(ev: Event) {
     const checked = (ev.target as HaCheckbox).checked;
+    let value: HaFormIntegerData | undefined;
+    if (checked) {
+      for (const candidate of [
+        this._lastValue,
+        this.schema.description?.suggested_value as HaFormIntegerData,
+        this.schema.default,
+        0,
+      ]) {
+        if (candidate !== undefined) {
+          value = candidate;
+          break;
+        }
+      }
+    } else {
+      // We track last value so user can disable and enable a field without losing
+      // their value.
+      this._lastValue = this.data;
+    }
     fireEvent(this, "value-changed", {
-      value: checked
-        ? this.schema.description?.suggested_value || this.schema.default || 0
-        : undefined,
+      value,
     });
   }
 
