@@ -127,11 +127,9 @@ export class HaDeviceInfoZWaveJS extends LitElement {
                 securityClass[this._node.highest_security_class]
               }`
             )
-          : this._node.is_secure === true
-          ? this.hass.localize("ui.panel.config.zwave_js.device_info.unknown")
-          : this.hass.localize(
-              "ui.panel.config.zwave_js.highest_security.none"
-            )}
+          : this._node.is_secure === false
+          ? this.hass.localize("ui.panel.config.zwave_js.highest_security.none")
+          : this.hass.localize("ui.panel.config.zwave_js.device_info.unknown")}
       </div>
       <div>
         ${this.hass.localize(
