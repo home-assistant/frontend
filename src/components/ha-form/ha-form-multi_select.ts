@@ -17,7 +17,7 @@ import {
   HaFormElement,
   HaFormMultiSelectData,
   HaFormMultiSelectSchema,
-} from "./ha-form";
+} from "./types";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 

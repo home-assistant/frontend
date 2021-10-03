@@ -6,11 +6,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import { HaCheckbox } from "../ha-checkbox";
-import {
-  HaFormElement,
-  HaFormIntegerData,
-  HaFormIntegerSchema,
-} from "./ha-form";
+import { HaFormElement, HaFormIntegerData, HaFormIntegerSchema } from "./types";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {

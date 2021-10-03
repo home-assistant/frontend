@@ -3,7 +3,7 @@ import type { TextField } from "@material/mwc-textfield";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./ha-form";
+import { HaFormElement, HaFormFloatData, HaFormFloatSchema } from "./types";
 
 @customElement("ha-form-float")
 export class HaFormFloat extends LitElement implements HaFormElement {

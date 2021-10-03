@@ -9,7 +9,7 @@ import type {
   HaFormElement,
   HaFormStringData,
   HaFormStringSchema,
-} from "./ha-form";
+} from "./types";
 
 const MASKED_FIELDS = ["password", "secret", "token"];
 

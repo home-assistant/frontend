@@ -11,8 +11,9 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
-import { computeInitialData } from "../../components/ha-form/ha-form";
-import type { HaFormSchema } from "../../components/ha-form/ha-form";
+import { computeInitialHaFormData } from "../../components/ha-form/compute-initial-ha-form-data";
+import type { HaFormSchema } from "../../components/ha-form/types";
+import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import "../../components/ha-alert";
 import type { DataEntryFlowStepForm } from "../../data/data_entry_flow";
@@ -93,7 +94,7 @@ class StepFlowForm extends LitElement {
       return this._stepData;
     }
 
-    this._stepData = computeInitialData(this.step.data_schema);
+    this._stepData = computeInitialHaFormData(this.step.data_schema);
     return this._stepData;
   }
 

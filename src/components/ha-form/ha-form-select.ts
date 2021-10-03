@@ -6,7 +6,8 @@ import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-svg-icon";
 import "../ha-radio";
-import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./ha-form";
+import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./types";
+
 import { stopPropagation } from "../../common/dom/stop_propagation";
 import type { HaRadio } from "../ha-radio";
 

@@ -6,7 +6,7 @@ import type {
   HaFormBooleanData,
   HaFormBooleanSchema,
   HaFormElement,
-} from "./ha-form";
+} from "./types";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-checkbox";
 
