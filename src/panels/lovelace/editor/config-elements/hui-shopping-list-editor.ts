@@ -51,7 +51,7 @@ export class HuiShoppingListEditor
       <div class="card-config">
         ${!isComponentLoaded(this.hass, "shopping_list")
           ? html`
-              <ha-alert .alertType=${"error"}>
+              <ha-alert alert-type="error">
                 ${this.hass.localize(
                   "ui.panel.lovelace.editor.card.shopping-list.integration_not_loaded"
                 )}
