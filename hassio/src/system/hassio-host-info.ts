@@ -40,8 +40,8 @@ import {
   roundWithOneDecimal,
 } from "../../../src/util/calculate";
 import "../components/supervisor-metric";
-import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
 import { showHassioHardwareDialog } from "../dialogs/hardware/show-dialog-hassio-hardware";
+import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-host-info")
