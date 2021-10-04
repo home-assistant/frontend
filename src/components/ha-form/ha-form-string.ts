@@ -58,7 +58,7 @@ export class HaFormString extends LitElement implements HaFormElement {
             html`<div style="width: 24px"></div>`
           : this.schema.description?.suffix}
         .validationMessage=${this.schema.required ? "Required" : undefined}
-        @change=${this._valueChanged}
+        @input=${this._valueChanged}
       ></mwc-textfield>
       ${isPassword
         ? html`
@@ -87,9 +87,12 @@ export class HaFormString extends LitElement implements HaFormElement {
   }
 
   private _valueChanged(ev: Event): void {
-    const value = (ev.target as TextField).value;
+    let value: string | undefined = (ev.target as TextField).value;
     if (this.data === value) {
       return;
+    }
+    if (value === "" && this.schema.optional) {
+      value = undefined;
     }
     fireEvent(this, "value-changed", {
       value,
