@@ -59,7 +59,7 @@ declare global {
 class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  public translationFragment = "page-onboarding";
+  @property() public translationFragment = "page-onboarding";
 
   @state() private _loading = false;
 
