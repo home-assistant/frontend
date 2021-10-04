@@ -211,7 +211,7 @@ class HaPanelDevStatistics extends LitElement {
             supported unit.<br /><br />If this unit was provided by an
             integration, this is a bug. Please report an issue.<br /><br />If
             you have set this unit yourself, and want to have statistics
-            generated, make sure the unit matched the device class. The
+            generated, make sure the unit matches the device class. The
             supported units are documented in the
             <a
               href="https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes"
