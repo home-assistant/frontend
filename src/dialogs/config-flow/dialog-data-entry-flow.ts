@@ -232,10 +232,10 @@ class DataEntryFlowDialog extends LitElement {
               ""
             : html`
                 <ha-icon-button
-                  aria-label=${this.hass.localize(
+                  .label=${this.hass.localize(
                     "ui.panel.config.integrations.config_flow.dismiss"
                   )}
-                  icon="hass:close"
+                  .path=${mdiClose}
                   dialogAction="close"
                   ?rtl=${computeRTL(this.hass)}
                 ></ha-icon-button>

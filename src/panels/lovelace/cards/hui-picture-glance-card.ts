@@ -253,7 +253,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             "state-on": !STATES_OFF.has(stateObj.state),
           })}
           .icon=${entityConf.icon || stateIcon(stateObj)}
-          title=${`${computeStateName(stateObj)} : ${computeStateDisplay(
+          .label=${`${computeStateName(stateObj)} : ${computeStateDisplay(
             this.hass!.localize,
             stateObj,
             this.hass!.locale

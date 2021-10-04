@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { mdiCog } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
@@ -136,9 +137,10 @@ class HaConfigAreaPage extends LitElement {
 
         <ha-icon-button
           slot="toolbar-icon"
-          icon="hass:cog"
+          .path=${mdiCog}
           .entry=${area}
           @click=${this._showSettings}
+          .label=${this.hass.localize("ui.panel.config.areas.edit_settings")}
         ></ha-icon-button>
 
         <div class="container">

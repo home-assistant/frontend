@@ -1,7 +1,12 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiAlertCircle, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
+import {
+  mdiAlertCircle,
+  mdiChevronLeft,
+  mdiDotsVertical,
+  mdiOpenInNew,
+} from "@mdi/js";
 import "@polymer/paper-item";
 import "@polymer/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
@@ -112,8 +117,9 @@ export class HaIntegrationCard extends LitElement {
             ? html`
                 <div class="back-btn" slot="above-header">
                   <ha-icon-button
-                    icon="hass:chevron-left"
+                    .path=${mdiChevronLeft}
                     @click=${this._back}
+                    .label=${this.hass.localize("ui.common.back")}
                   ></ha-icon-button>
                 </div>
               `

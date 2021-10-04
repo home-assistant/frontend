@@ -1,3 +1,10 @@
+import {
+  mdiPower,
+  mdiSkipNext,
+  mdiSkipPrevious,
+  mdiVolumeMinus,
+  mdiVolumePlus,
+} from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -102,7 +109,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
         ? html`
             <ha-icon-button
-              icon="hass:skip-previous"
+              .path=${mdiSkipPrevious}
               @click=${this._previousTrack}
             ></ha-icon-button>
           `
@@ -126,7 +133,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
         ? html`
             <ha-icon-button
-              icon="hass:skip-next"
+              .path=${mdiSkipNext}
               @click=${this._nextTrack}
             ></ha-icon-button>
           `
@@ -148,7 +155,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
           !UNAVAILABLE_STATES.includes(entityState)
             ? html`
                 <ha-icon-button
-                  icon="hass:power"
+                  .path=${mdiPower}
                   @click=${this._togglePower}
                 ></ha-icon-button>
               `
@@ -161,7 +168,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
           !UNAVAILABLE_STATES.includes(entityState)
             ? html`
                 <ha-icon-button
-                  icon="hass:power"
+                  .path=${mdiPower}
                   @click=${this._togglePower}
                 ></ha-icon-button>
               `
@@ -200,11 +207,11 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                     supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
                   ? html`
                       <ha-icon-button
-                        icon="hass:volume-minus"
+                        .path=${mdiVolumeMinus}
                         @click=${this._volumeDown}
                       ></ha-icon-button>
                       <ha-icon-button
-                        icon="hass:volume-plus"
+                        .path=${mdiVolumePlus}
                         @click=${this._volumeUp}
                       ></ha-icon-button>
                     `

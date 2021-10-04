@@ -310,8 +310,8 @@ export class HaSceneEditor extends SubscribeMixin(
                           <h1 class="card-header">
                             ${device.name}
                             <ha-icon-button
-                              icon="hass:delete"
-                              title=${this.hass.localize(
+                              .path=${mdiDelete}
+                              .label=${this.hass.localize(
                                 "ui.panel.config.scene.editor.devices.delete"
                               )}
                               .device=${device.id}
@@ -401,9 +401,9 @@ export class HaSceneEditor extends SubscribeMixin(
                                         ${computeStateName(entityStateObj)}
                                       </paper-item-body>
                                       <ha-icon-button
-                                        icon="hass:delete"
+                                        .path=${mdiDelete}
                                         .entityId=${entityId}
-                                        .title=${this.hass.localize(
+                                        .label=${this.hass.localize(
                                           "ui.panel.config.scene.editor.entities.delete"
                                         )}
                                         @click=${this._deleteEntity}

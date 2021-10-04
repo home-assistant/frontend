@@ -86,6 +86,7 @@ class ZWaveJSConfigDashboard extends LitElement {
           slot="toolbar-icon"
           @click=${this._fetchData}
           .path=${mdiRefresh}
+          .label=${this.hass!.localize("ui.common.refresh")}
         ></ha-icon-button>
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">

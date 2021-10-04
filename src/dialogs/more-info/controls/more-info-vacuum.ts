@@ -147,7 +147,7 @@ class MoreInfoVacuum extends LitElement {
                         .icon=${item.icon}
                         .entry=${item}
                         @click=${this.callService}
-                        .title=${this.hass!.localize(
+                        .label=${this.hass!.localize(
                           `ui.dialogs.more_info_control.vacuum.${item.translationKey}`
                         )}
                         .disabled=${stateObj.state === UNAVAILABLE}

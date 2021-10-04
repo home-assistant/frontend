@@ -235,7 +235,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       >
         <ha-icon-button
           class="more-info"
-          label=${this.hass!.localize("ui.panel.lovelace.cards.show_more_info")}
+          .label=${this.hass!.localize(
+            "ui.panel.lovelace.cards.show_more_info"
+          )}
           .path=${mdiDotsVertical}
           @click=${this._handleMoreInfo}
           tabindex="0"

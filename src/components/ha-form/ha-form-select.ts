@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMenuDown } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -45,17 +44,15 @@ export class HaFormSelect extends LitElement implements HaFormElement {
             autocomplete="off"
           >
             ${this.data && this.schema.optional
-              ? html`<mwc-icon-button
+              ? html`<ha-icon-button
                   slot="suffix"
                   class="clear-button"
                   @click=${this._clearValue}
-                >
-                  <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                </mwc-icon-button>`
+                  .path=${mdiClose}
+                  label="Clear"
+                ></ha-icon-button>`
               : ""}
-            <mwc-icon-button slot="suffix">
-              <ha-svg-icon .path=${mdiMenuDown}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button slot="suffix" .path=${mdiMenuDown}></ha-icon-button>
           </paper-input>
         </div>
         <paper-listbox

@@ -1,5 +1,12 @@
 import "@material/mwc-button/mwc-button";
-import { mdiPlayBoxMultiple } from "@mdi/js";
+import {
+  mdiPlayBoxMultiple,
+  mdiSend,
+  mdiVolumeHigh,
+  mdiVolumeMinus,
+  mdiVolumeOff,
+  mdiVolumePlus,
+} from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -82,9 +89,9 @@ class MoreInfoMediaPlayer extends LitElement {
               ${supportsFeature(stateObj, SUPPORT_VOLUME_MUTE)
                 ? html`
                     <ha-icon-button
-                      .icon=${stateObj.attributes.is_volume_muted
-                        ? "hass:volume-off"
-                        : "hass:volume-high"}
+                      .path=${stateObj.attributes.is_volume_muted
+                        ? mdiVolumeOff
+                        : mdiVolumeHigh}
                       @click=${this._toggleMute}
                     ></ha-icon-button>
                   `
@@ -93,12 +100,12 @@ class MoreInfoMediaPlayer extends LitElement {
                 ? html`
                     <ha-icon-button
                       action="volume_down"
-                      icon="hass:volume-minus"
+                      .path=${mdiVolumeMinus}
                       @click=${this._handleClick}
                     ></ha-icon-button>
                     <ha-icon-button
                       action="volume_up"
-                      icon="hass:volume-plus"
+                      .path=${mdiVolumePlus}
                       @click=${this._handleClick}
                     ></ha-icon-button>
                   `
@@ -183,7 +190,7 @@ class MoreInfoMediaPlayer extends LitElement {
                 @keydown=${this._ttsCheckForEnter}
               ></paper-input>
               <ha-icon-button
-                icon="hass:send"
+                .path=${mdiSend}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 @click=${this._sendTTS}
               ></ha-icon-button>

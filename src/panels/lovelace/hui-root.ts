@@ -432,9 +432,6 @@ class HUIRoot extends LitElement {
                             ? html`
                                 <ha-icon-button-arrow-prev
                                   .hass=${this.hass}
-                                  .title=${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.move_left"
-                                  )}
                                   .label=${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.move_left"
                                   )}
@@ -464,9 +461,6 @@ class HUIRoot extends LitElement {
                                 ></ha-svg-icon>
                                 <ha-icon-button-arrow-next
                                   .hass=${this.hass}
-                                  .title=${this.hass!.localize(
-                                    "ui.panel.lovelace.editor.edit_view.move_right"
-                                  )}
                                   .label=${this.hass!.localize(
                                     "ui.panel.lovelace.editor.edit_view.move_right"
                                   )}

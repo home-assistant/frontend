@@ -74,7 +74,7 @@ class HaLongLivedTokens extends LitElement {
                   <ha-icon-button
                     .token=${token}
                     .disabled=${token.is_current}
-                    .label=${this.hass.localize(`ui.common.delete`)}
+                    .label=${this.hass.localize("ui.common.delete")}
                     .path=${mdiDelete}
                     @click=${this._deleteToken}
                   ></ha-icon-button>

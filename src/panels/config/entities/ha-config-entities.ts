@@ -544,6 +544,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                         id="enable-btn"
                         @click=${this._enableSelected}
                         .path=${mdiUndo}
+                        .label=${this.hass.localize("ui.common.enable")}
                       ></ha-icon-button>
                       <paper-tooltip animation-delay="0" for="enable-btn">
                         ${this.hass.localize(
@@ -554,6 +555,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                         id="disable-btn"
                         @click=${this._disableSelected}
                         .path=${mdiCancel}
+                        .label=${this.hass.localize("ui.common.disable")}
                       ></ha-icon-button>
                       <paper-tooltip animation-delay="0" for="disable-btn">
                         ${this.hass.localize(
@@ -565,6 +567,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                         id="remove-btn"
                         @click=${this._removeSelected}
                         .path=${mdiDelete}
+                        .label=${this.hass.localize("ui.common.remove")}
                       ></ha-icon-button>
                       <paper-tooltip animation-delay="0" for="remove-btn">
                         ${this.hass.localize(

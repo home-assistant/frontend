@@ -926,6 +926,7 @@
         "areas": {
           "caption": "Areas",
           "description": "Group devices and entities into areas",
+          "edit_settings": "Area settings",
           "data_table": {
             "area": "Area",
             "devices": "Devices",
@@ -2072,6 +2073,7 @@
           "caption": "Devices",
           "description": "Manage configured devices",
           "device_info": "Device info",
+          "edit_settings": "Edit settings",
           "unnamed_device": "Unnamed device",
           "unknown_error": "Unknown error",
           "name": "Name",
@@ -2627,7 +2629,8 @@
             "group_name_placeholder": "Group Name",
             "create_group": "Zigbee Home Automation - Create Group",
             "create": "Create Group",
-            "creating_group": "Creating Group"
+            "creating_group": "Creating Group",
+            "delete": "Delete Group"
           },
           "visualization": {
             "header": "Network Visualization",

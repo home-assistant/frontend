@@ -1,3 +1,4 @@
+import { mdiPencil, mdiPlusCircle } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -184,8 +185,11 @@ export class HaConfigDevicePage extends LitElement {
                 </span>
                 <ha-icon-button
                   slot="toolbar-icon"
-                  icon="hass:pencil"
+                  .path=${mdiPencil}
                   @click=${this._showSettings}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.devices.edit_settings"
+                  )}
                 ></ha-icon-button>
               `
             : ""
@@ -216,8 +220,11 @@ export class HaConfigDevicePage extends LitElement {
                           : ""}
                       </div>
                       <ha-icon-button
-                        icon="hass:pencil"
+                        .path=${mdiPencil}
                         @click=${this._showSettings}
+                        .label=${this.hass.localize(
+                          "ui.panel.config.devices.edit_settings"
+                        )}
                       ></ha-icon-button>
                     </div>
                   `
@@ -315,14 +322,14 @@ export class HaConfigDevicePage extends LitElement {
                         <ha-icon-button
                           @click=${this._showAutomationDialog}
                           .disabled=${device.disabled_by}
-                          title=${device.disabled_by
+                          .label=${device.disabled_by
                             ? this.hass.localize(
                                 "ui.panel.config.devices.automation.create_disabled"
                               )
                             : this.hass.localize(
                                 "ui.panel.config.devices.automation.create"
                               )}
-                          icon="hass:plus-circle"
+                          .path=${mdiPlusCircle}
                         ></ha-icon-button>
                       </h1>
                       ${this._related?.automation?.length
@@ -387,20 +394,20 @@ export class HaConfigDevicePage extends LitElement {
                             "ui.panel.config.devices.scene.scenes"
                           )}
 
-                                  <ha-icon-button
-                                    @click=${this._createScene}
-                                    .disabled=${device.disabled_by}
-                                    title=${
-                                      device.disabled_by
-                                        ? this.hass.localize(
-                                            "ui.panel.config.devices.scene.create_disabled"
-                                          )
-                                        : this.hass.localize(
-                                            "ui.panel.config.devices.scene.create"
-                                          )
-                                    }
-                                    icon="hass:plus-circle"
-                                  ></ha-icon-button>
+                          <ha-icon-button @click=${
+                            this._createScene
+                          } .disabled=${device.disabled_by}
+                            .label=${
+                              device.disabled_by
+                                ? this.hass.localize(
+                                    "ui.panel.config.devices.scene.create_disabled"
+                                  )
+                                : this.hass.localize(
+                                    "ui.panel.config.devices.scene.create"
+                                  )
+                            }
+                            .path=${mdiPlusCircle}
+                          ></ha-icon-button>
                         </h1>
 
                         ${
@@ -471,14 +478,14 @@ export class HaConfigDevicePage extends LitElement {
                           <ha-icon-button
                             @click=${this._showScriptDialog}
                             .disabled=${device.disabled_by}
-                            title=${device.disabled_by
+                            .label=${device.disabled_by
                               ? this.hass.localize(
                                   "ui.panel.config.devices.script.create_disabled"
                                 )
                               : this.hass.localize(
                                   "ui.panel.config.devices.script.create"
                                 )}
-                            icon="hass:plus-circle"
+                            .path=${mdiPlusCircle}
                           ></ha-icon-button>
                         </h1>
                         ${this._related?.script?.length

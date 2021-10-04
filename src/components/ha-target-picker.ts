@@ -263,7 +263,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 tabindex="-1"
                 role="button"
                 .label=${this.hass.localize(
-                  `ui.components.target-picker.expand`
+                  "ui.components.target-picker.expand"
                 )}
                 .path=${mdiUnfoldMoreVertical}
                 hideTooltip
@@ -282,7 +282,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
             class="mdc-chip__icon mdc-chip__icon--trailing"
             tabindex="-1"
             role="button"
-            .label=${this.hass.localize(`ui.components.target-picker.expand`)}
+            .label=${this.hass.localize("ui.components.target-picker.expand")}
             .path=${mdiClose}
             hideTooltip
             .id=${id}

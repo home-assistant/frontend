@@ -236,7 +236,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             </div>
             <div>
               <ha-icon-button
-                icon="hass:dots-vertical"
+                .path=${mdiDotsVertical}
                 class="more-info"
                 @click=${this._handleMoreInfo}
               ></ha-icon-button>
@@ -270,7 +270,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                             ${controls!.map(
                               (control) => html`
                                 <ha-icon-button
-                                  .title=${this.hass.localize(
+                                  .label=${this.hass.localize(
                                     `ui.card.media_player.${control.action}`
                                   )}
                                   .icon=${control.icon}

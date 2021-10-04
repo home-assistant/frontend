@@ -188,6 +188,7 @@ class HaPanelDevService extends LitElement {
                           <ha-icon-button
                             class="help-icon"
                             .path=${mdiHelpCircle}
+                            .label=${this.hass!.localize("ui.common.help")}
                           ></ha-icon-button>
                         </a>`
                       : ""}

@@ -66,7 +66,10 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
             rel="noreferrer"
             dir=${computeRTLDirection(this.hass!)}
           >
-            <ha-icon-button .path=${mdiHelpCircle}></ha-icon-button>
+            <ha-icon-button
+              .path=${mdiHelpCircle}
+              .label=${this.hass!.localize("ui.common.help")}
+            ></ha-icon-button>
           </a>`}
       >
         <div>

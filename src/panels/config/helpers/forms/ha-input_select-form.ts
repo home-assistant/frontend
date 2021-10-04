@@ -89,11 +89,11 @@ class HaInputSelectForm extends LitElement {
                   <paper-item-body> ${option} </paper-item-body>
                   <ha-icon-button
                     .index=${index}
-                    .title=${this.hass.localize(
+                    .label=${this.hass.localize(
                       "ui.dialogs.helper_settings.input_select.remove_option"
                     )}
                     @click=${this._removeOption}
-                    icon="hass:delete"
+                    .path=${mdiDelete}
                   ></ha-icon-button>
                 </paper-item>
               `
