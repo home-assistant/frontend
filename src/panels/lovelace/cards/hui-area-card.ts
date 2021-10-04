@@ -196,14 +196,22 @@ export class HuiAreaCard
     const area = this._getArea(this._config.area, this._areas);
 
     if (this._config.area && !area) {
-      return html`<hui-warning>Area Not Found!</hui-warning>`; // Lokalise
+      return html`
+        <hui-warning>
+          ${this.hass.localize("ui.card.area.area_not_found")}
+        </hui-warning>
+      `;
     }
 
     if (
       this._entitiesDialog.length === 0 &&
       this._entitiesToggle.length === 0
     ) {
-      return html`<hui-warning>No Entities in Area!</hui-warning>`; // Lokalise
+      return html`
+        <hui-warning>
+          ${this.hass.localize("ui.card.area.no_entities")}
+        </hui-warning>
+      `;
     }
 
     const toggleEntities: EntitiesCardEntityConfig[] = processConfigEntities(
