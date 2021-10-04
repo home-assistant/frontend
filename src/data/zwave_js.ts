@@ -178,15 +178,6 @@ export interface RequestedGrant {
 
 export const nodeStatus = ["unknown", "asleep", "awake", "dead", "alive"];
 
-export const securityClass = {
-  "-2": "temporary",
-  "-1": "none",
-  "0": "s2_unauthenticated",
-  "1": "s2_authenticated",
-  "2": "s2_access_control",
-  "7": "s0_legacy",
-};
-
 export interface ZWaveJsMigrationData {
   migration_device_map: Record<string, string>;
   zwave_entity_ids: string[];

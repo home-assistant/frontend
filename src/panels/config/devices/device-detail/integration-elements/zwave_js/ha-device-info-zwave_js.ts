@@ -18,7 +18,7 @@ import {
   nodeStatus,
   ZWaveJSNodeStatus,
   ZWaveJSNodeIdentifiers,
-  securityClass,
+  SecurityClass,
 } from "../../../../../../data/zwave_js";
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
@@ -123,12 +123,14 @@ export class HaDeviceInfoZWaveJS extends LitElement {
         )}:
         ${this._node.highest_security_class !== null
           ? this.hass.localize(
-              `ui.panel.config.zwave_js.highest_security.${
-                securityClass[this._node.highest_security_class]
-              }`
+              `ui.panel.config.zwave_js.security_classes.${
+                SecurityClass[this._node.highest_security_class]
+              }.title`
             )
           : this._node.is_secure === false
-          ? this.hass.localize("ui.panel.config.zwave_js.highest_security.none")
+          ? this.hass.localize(
+              "ui.panel.config.zwave_js.security_classes.none.title"
+            )
           : this.hass.localize("ui.panel.config.zwave_js.device_info.unknown")}
       </div>
       <div>
