@@ -55,15 +55,11 @@ export class HuiAreaCard
     return document.createElement("hui-area-card-editor");
   }
 
-  // public static getStubConfig(
-  //   hass: HomeAssistant,
-  //   entities: string[],
-  //   entitiesFallback: string[]
-  // ): AreaCardConfig {
-  //   return {};
-  // }
+  public static getStubConfig(): AreaCardConfig {
+    return { type: "area", area: "", image: "" };
+  }
 
-  @property({ attribute: false }) public hass?: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ type: Array }) public areas!: AreaRegistryEntry[];
 
@@ -120,10 +116,6 @@ export class HuiAreaCard
   );
 
   public hassSubscribe(): UnsubscribeFunc[] {
-    if (!this.hass) {
-      return [];
-    }
-
     return [
       subscribeAreaRegistry(this.hass!.connection, (areas) => {
         this._areas = areas;
