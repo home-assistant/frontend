@@ -43,6 +43,8 @@ import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig, EntitiesCardEntityConfig } from "./types";
 
+const AREA_SENSOR_CLASSES = ["temperature", "humidity", "aqi"];
+
 @customElement("hui-area-card")
 export class HuiAreaCard
   extends SubscribeMixin(LitElement)
@@ -299,13 +301,19 @@ export class HuiAreaCard
     }
 
     entities.forEach((entity) => {
-      if (
-        !DOMAINS_TOGGLE.has(computeDomain(entity.entity_id)) &&
+      const domain = computeDomain(entity.entity_id);
+      const isToggle = DOMAINS_TOGGLE.has(domain);
+      const stateObj = this.hass!.states[entity.entity_id];
+
+      if (isToggle && this._entitiesToggle!.length < 3) {
+        this._entitiesToggle!.push(entity.entity_id);
+      } else if (
+        !isToggle &&
+        stateObj.attributes.device_class &&
+        AREA_SENSOR_CLASSES.includes(stateObj.attributes.device_class) &&
         this._entitiesDialog!.length < 3
       ) {
         this._entitiesDialog!.push(entity.entity_id);
-      } else if (this._entitiesToggle!.length < 3) {
-        this._entitiesToggle!.push(entity.entity_id);
       }
     });
   }
