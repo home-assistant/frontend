@@ -69,7 +69,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         .autoValidate=${this.schema.required}
         .suffix=${this.schema.description?.suffix}
         .validationMessage=${this.schema.required ? "Required" : undefined}
-        @change=${this._valueChanged}
+        @input=${this._valueChanged}
       ></mwc-textfield>
     `;
   }

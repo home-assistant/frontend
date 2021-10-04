@@ -61,6 +61,11 @@ const SCHEMAS: {
         default: 10,
       },
       {
+        type: "float",
+        name: "float",
+        required: true,
+      },
+      {
         type: "string",
         name: "string",
         optional: true,
