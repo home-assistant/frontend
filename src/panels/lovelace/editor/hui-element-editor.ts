@@ -234,7 +234,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
                 .title=${this.hass.localize(
                   "ui.errors.config.editor_not_supported"
                 )}
-                .alertType=${"warning"}
+                alert-type="warning"
               >
                 ${this._warnings!.length > 0 && this._warnings![0] !== undefined
                   ? html`
