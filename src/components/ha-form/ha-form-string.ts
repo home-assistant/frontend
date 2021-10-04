@@ -12,7 +12,7 @@ import type {
   HaFormStringSchema,
 } from "./ha-form";
 
-const SECRET_FIELDS = ["password", "client_secret", "access_secret", "secret"];
+const MASKED_FIELDS = ["password", "secret", "token"];
 
 @customElement("ha-form-string")
 export class HaFormString extends LitElement implements HaFormElement {
@@ -35,7 +35,7 @@ export class HaFormString extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
-    return SECRET_FIELDS.includes(this.schema.name)
+    return MASKED_FIELDS.some((field) => this.schema.name.includes(field))
       ? html`
           <paper-input
             .type=${this._unmaskedPassword ? "text" : "password"}
