@@ -51,15 +51,11 @@ class HaAlert extends LitElement {
           [this.alertType]: true,
         })}"
       >
-        <div class="icon">
+        <div class="icon ${this.title ? "" : "no-title"}">
           <ha-svg-icon .path=${ALERT_ICONS[this.alertType]}></ha-svg-icon>
         </div>
         <div class="content">
-          <div
-            class="main-content ${classMap({
-              "no-title": !this.title,
-            })}"
-          >
+          <div class="main-content">
             ${this.title ? html`<div class="title">${this.title}</div>` : ""}
             <slot></slot>
           </div>
@@ -94,7 +90,7 @@ class HaAlert extends LitElement {
   static styles = css`
     .issue-type {
       position: relative;
-      padding: 4px;
+      padding: 8px;
       display: flex;
       margin: 4px 0;
     }
@@ -113,11 +109,16 @@ class HaAlert extends LitElement {
       border-radius: 4px;
     }
     .icon {
-      margin: 4px 8px;
+      margin-right: 8px;
       width: 24px;
     }
-    .main-content.no-title {
-      margin-top: 6px;
+    .icon.no-title {
+      align-self: center;
+    }
+    .issue-type.rtl > .icon {
+      margin-right: 0px;
+      margin-left: 8px;
+      width: 24px;
     }
     .issue-type.rtl > .content {
       flex-direction: row-reverse;
@@ -126,24 +127,22 @@ class HaAlert extends LitElement {
     .content {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       width: 100%;
     }
     .main-content {
       overflow-wrap: anywhere;
     }
     .title {
+      margin-top: 2px;
       font-weight: bold;
-      margin-top: 6px;
     }
-
     mwc-button {
       --mdc-theme-primary: var(--primary-text-color);
     }
-
-    .action {
-      align-self: center;
+    mwc-icon-button {
+      --mdc-icon-button-size: 36px;
     }
-
     .issue-type.info > .icon {
       color: var(--info-color);
     }
