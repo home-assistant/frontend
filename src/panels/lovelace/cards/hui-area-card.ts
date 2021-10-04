@@ -16,7 +16,6 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { stateIcon } from "../../../common/entity/state_icon";
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -70,13 +69,13 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
   @state() private _devices?: DeviceRegistryEntry[];
 
+  private _entitiesDialog?: string[];
+
+  private _entitiesToggle?: string[];
+
   private _unsubs?: UnsubscribeFunc[];
 
-  private _entitiesDialog?: string[] = [];
-
-  private _entitiesToggle?: string[] = [];
-
-  private _area = memoizeOne(
+  private _getArea = memoizeOne(
     (
       areaId: string,
       areas: AreaRegistryEntry[]
@@ -121,8 +120,8 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: AreaCardConfig): void {
-    if (config.entity && !isValidEntityId(config.entity)) {
-      throw new Error("Invalid entity");
+    if (!config.area) {
+      throw new Error("Area Required");
     }
 
     this._config = {
@@ -149,65 +148,62 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
   }
 
-  // protected shouldUpdate(changedProps: PropertyValues): boolean {
-  //   if (changedProps.has("_config")) {
-  //     return true;
-  //   }
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("_config")) {
+      return true;
+    }
 
-  //   const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
-  //   if (
-  //     !oldHass ||
-  //     oldHass.themes !== this.hass!.themes ||
-  //     oldHass.locale !== this.hass!.locale
-  //   ) {
-  //     return true;
-  //   }
+    if (
+      !oldHass ||
+      oldHass.themes !== this.hass!.themes ||
+      oldHass.locale !== this.hass!.locale
+    ) {
+      return true;
+    }
 
-  //   return (
-  //     Boolean(this._config!.entity) &&
-  //     oldHass.states[this._config!.entity!] !==
-  //       this.hass!.states[this._config!.entity!]
-  //   );
-  // }
+    if (this._entitiesDialog) {
+      for (const entity of this._entitiesDialog) {
+        if (oldHass!.states[entity] !== this.hass!.states[entity]) {
+          return true;
+        }
+      }
+    }
+
+    if (this._entitiesToggle) {
+      for (const entity of this._entitiesToggle) {
+        if (oldHass!.states[entity] !== this.hass!.states[entity]) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 
   protected render(): TemplateResult {
     if (
       !this._config ||
       !this.hass ||
-      !this._areas ||
-      !this._entities ||
-      !this._devices
+      !this._entitiesDialog ||
+      !this._entitiesToggle
     ) {
       return html``;
     }
 
-    const area = this._area(this._config.area, this._areas);
+    const area = this._getArea(this._config.area, this._areas);
 
     if (this._config.area && !area) {
       return html`<hui-warning>Area Not Found!</hui-warning>`; // Lokalise
     }
 
-    const { entities } = this._memberships(
-      this._config.area,
-      this._devices,
-      this._entities
-    );
-
-    if (entities.length === 0) {
+    if (
+      this._entitiesDialog.length === 0 &&
+      this._entitiesToggle.length === 0
+    ) {
       return html`<hui-warning>No Entities in Area!</hui-warning>`; // Lokalise
     }
-
-    this._entitiesDialog = [];
-    this._entitiesToggle = [];
-
-    entities.forEach((entity) => {
-      if (!DOMAINS_TOGGLE.has(computeDomain(entity.entity_id))) {
-        this._entitiesDialog!.push(entity.entity_id);
-      } else {
-        this._entitiesToggle!.push(entity.entity_id);
-      }
-    });
 
     const toggleEntities: EntitiesCardEntityConfig[] = processConfigEntities(
       this._entitiesToggle!
@@ -298,7 +294,33 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     if (!this._unsubs && changedProps.has("hass")) {
       this._loadData();
+      return;
     }
+
+    if (!this._areas || !this._entities || !this._devices) {
+      return;
+    }
+
+    this._entitiesDialog = [];
+    this._entitiesToggle = [];
+
+    const { entities } = this._memberships(
+      this._config.area,
+      this._devices,
+      this._entities
+    );
+
+    if (entities.length === 0) {
+      return;
+    }
+
+    entities.forEach((entity) => {
+      if (!DOMAINS_TOGGLE.has(computeDomain(entity.entity_id))) {
+        this._entitiesDialog!.push(entity.entity_id);
+      } else {
+        this._entitiesToggle!.push(entity.entity_id);
+      }
+    });
   }
 
   private _loadData() {
