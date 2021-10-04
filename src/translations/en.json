@@ -3233,7 +3233,7 @@
             },
             "area": {
               "name": "Area",
-              "description": "The Area card automatically displays entities is a specific area."
+              "description": "The Area card automatically displays entities of a specific area."
             },
             "calendar": {
               "name": "Calendar",
