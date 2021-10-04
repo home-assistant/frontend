@@ -43,6 +43,8 @@ import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig, EntitiesCardEntityConfig } from "./types";
 
+const AREA_NON_TOGGLE_DOMAINS = ["sensor", "binary_sensor"];
+
 const AREA_SENSOR_CLASSES = [
   "temperature",
   "humidity",
@@ -106,6 +108,14 @@ export class HuiAreaCard
       const entities: EntityRegistryEntry[] = [];
 
       for (const entity of registryEntities) {
+        const domain = computeDomain(entity.entity_id);
+        if (
+          !DOMAINS_TOGGLE.has(domain) &&
+          !AREA_NON_TOGGLE_DOMAINS.includes(domain)
+        ) {
+          continue;
+        }
+
         if (entity.area_id) {
           if (entity.area_id === areaId) {
             entities.push(entity);
