@@ -1,4 +1,4 @@
-import { mdiPlayBoxMultiple } from "@mdi/js";
+import { mdiDotsVertical, mdiPlayBoxMultiple } from "@mdi/js";
 import "@polymer/paper-progress/paper-progress";
 import type { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
 import {
