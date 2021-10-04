@@ -33,6 +33,10 @@ const ENTITIES = [
   getEntity("fan", "second_office", "on", {
     friendly_name: "Second Office Fan",
   }),
+  getEntity("binary_sensor", "second_office_door", "on", {
+    friendly_name: "Office Door",
+    device_class: "door",
+  }),
 ];
 
 // TODO: Update image here
@@ -136,6 +140,10 @@ class DemoArea extends LitElement {
       {
         area_id: "second_office",
         entity_id: "fan.second_office",
+      },
+      {
+        area_id: "second_office",
+        entity_id: "binary_sensor.second_office_door",
       },
     ]);
   }
