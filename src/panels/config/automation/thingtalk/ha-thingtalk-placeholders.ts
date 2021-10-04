@@ -127,7 +127,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
         modal
         with-backdrop
         .opened=${this.opened}
-        @opened-changed="${this._openedChanged}"
+        @opened-changed=${this._openedChanged}
       >
         <h2>
           ${this.hass.localize(
@@ -197,9 +197,10 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                                     ])
                                   )}`}
                                   .entityFilter=${(entityState: HassEntity) => {
-                                    const devId = this._placeholderValues[type][
-                                      placeholder.index
-                                    ][idx].device_id;
+                                    const devId =
+                                      this._placeholderValues[type][
+                                        placeholder.index
+                                      ][idx].device_id;
                                     return this._deviceEntityLookup[
                                       devId
                                     ].includes(entityState.entity_id);
@@ -243,10 +244,10 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
           )}
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <mwc-button class="left" @click="${this.skip}">
+          <mwc-button class="left" @click=${this.skip}>
             ${this.hass.localize(`ui.common.skip`)}
           </mwc-button>
-          <mwc-button @click="${this._done}" .disabled=${!this._isDone}>
+          <mwc-button @click=${this._done} .disabled=${!this._isDone}>
             ${this.hass.localize(`ui.panel.config.automation.thingtalk.create`)}
           </mwc-button>
         </div>

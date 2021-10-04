@@ -68,8 +68,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         return;
       }
 
-      let themeSettings: Partial<HomeAssistant["selectedTheme"]> = this.hass!
-        .selectedTheme;
+      let themeSettings: Partial<HomeAssistant["selectedTheme"]> =
+        this.hass!.selectedTheme;
 
       const themeName =
         themeSettings?.theme ||
@@ -97,10 +97,6 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         themeSettings
       );
 
-      // Now determine value that should be stored in the local storage settings
-      darkMode =
-        darkMode || !!(darkPreferred && this.hass.themes.default_dark_theme);
-
       if (darkMode !== this.hass.themes.darkMode) {
         this._updateHass({
           themes: { ...this.hass.themes!, darkMode },
@@ -121,9 +117,8 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         "--app-header-background-color"
       );
 
-      document.documentElement.style.backgroundColor = computedStyles.getPropertyValue(
-        "--primary-background-color"
-      );
+      document.documentElement.style.backgroundColor =
+        computedStyles.getPropertyValue("--primary-background-color");
 
       if (themeMeta) {
         if (!themeMeta.hasAttribute("default-content")) {

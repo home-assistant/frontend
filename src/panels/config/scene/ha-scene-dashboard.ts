@@ -52,9 +52,10 @@ class HaSceneDashboard extends LitElement {
       if (filteredScenes === null) {
         return [];
       }
-      return (filteredScenes
-        ? scenes.filter((scene) => filteredScenes!.includes(scene.entity_id))
-        : scenes
+      return (
+        filteredScenes
+          ? scenes.filter((scene) => filteredScenes!.includes(scene.entity_id))
+          : scenes
       ).map((scene) => ({
         ...scene,
         name: computeStateName(scene),
@@ -72,9 +73,9 @@ class HaSceneDashboard extends LitElement {
           html`
             <ha-icon-button
               .scene=${scene}
-              .label="${this.hass.localize(
+              .label=${this.hass.localize(
                 "ui.panel.config.scene.picker.activate_scene"
-              )}"
+          )}
               .path=${mdiPlay}
               @click=${(ev: Event) => this._activateScene(ev)}
             ></ha-icon-button>
@@ -99,9 +100,9 @@ class HaSceneDashboard extends LitElement {
           <ha-icon-button
             .scene=${scene}
             @click=${this._showInfo}
-            .label="${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.config.scene.picker.show_info_scene"
-            )}"
+            )}
             .path=${mdiInformationOutline}
           ></ha-icon-button>
         `,
@@ -119,9 +120,9 @@ class HaSceneDashboard extends LitElement {
           >
             <ha-icon-button
               .disabled=${!scene.attributes.id}
-              .label="${this.hass.localize(
+              .label=${this.hass.localize(
                 "ui.panel.config.scene.picker.edit_scene"
-              )}"
+              )}
               .path=${scene.attributes.id ? mdiPencil : mdiPencilOff}
             ></ha-icon-button>
           </a>
@@ -230,7 +231,7 @@ class HaSceneDashboard extends LitElement {
         ${this.hass.localize("ui.panel.config.scene.picker.introduction")}
         <p>
           <a
-            href="${documentationUrl(this.hass, "/docs/scene/editor/")}"
+            href=${documentationUrl(this.hass, "/docs/scene/editor/")}
             target="_blank"
             rel="noreferrer"
           >

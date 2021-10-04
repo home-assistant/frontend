@@ -7,6 +7,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import "./ha-password-manager-polyfill";
 import { property, state } from "lit/decorators";
 import "../components/ha-form/ha-form";
 import "../components/ha-markdown";
@@ -20,7 +21,7 @@ import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 type State = "loading" | "error" | "step";
 
 class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
-  @property() public authProvider?: AuthProvider;
+  @property({ attribute: false }) public authProvider?: AuthProvider;
 
   @property() public clientId?: string;
 
@@ -37,7 +38,15 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   @state() private _errorMessage?: string;
 
   protected render() {
-    return html` <form>${this._renderForm()}</form> `;
+    return html`
+      <form>${this._renderForm()}</form>
+      <ha-password-manager-polyfill
+        .step=${this._step}
+        .stepData=${this._stepData}
+        @form-submitted=${this._handleSubmit}
+        @value-changed=${this._stepDataChanged}
+      ></ha-password-manager-polyfill>
+    `;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -185,7 +194,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         this._state = "error";
         this._errorMessage = data.message;
       }
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Error starting auth flow", err);
       this._state = "error";
@@ -231,11 +240,17 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     await this.updateComplete;
     // 100ms to give all the form elements time to initialize.
     setTimeout(() => {
-      const form = this.shadowRoot!.querySelector("ha-form");
+      const form = this.renderRoot.querySelector("ha-form");
       if (form) {
         (form as any).focus();
       }
     }, 100);
+
+    setTimeout(() => {
+      this.renderRoot.querySelector(
+        "ha-password-manager-polyfill"
+      )!.boundingRect = this.getBoundingClientRect();
+    }, 500);
   }
 
   private _stepDataChanged(ev: CustomEvent) {
@@ -302,7 +317,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         return;
       }
       await this._updateStep(newStep);
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Error submitting step", err);
       this._state = "error";
@@ -329,3 +344,9 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   }
 }
 customElements.define("ha-auth-flow", HaAuthFlow);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-auth-flow": HaAuthFlow;
+  }
+}

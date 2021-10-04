@@ -23,6 +23,7 @@ import { fireEvent } from "../../../../src/common/dom/fire_event";
 import { navigate } from "../../../../src/common/navigate";
 import "../../../../src/components/buttons/ha-call-api-button";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-label-badge";
 import "../../../../src/components/ha-markdown";
@@ -122,18 +123,18 @@ class HassioAddonInfo extends LitElement {
               <div class="card-content">
                 <hassio-card-content
                   .hass=${this.hass}
-                  .title="${this.supervisor.localize(
+                  .title=${this.supervisor.localize(
                     "addon.dashboard.new_update_available",
                     "name",
                     this.addon.name,
                     "version",
                     this.addon.version_latest
-                  )}"
-                  .description="${this.supervisor.localize(
+                  )}
+                  .description=${this.supervisor.localize(
                     "common.running_version",
                     "version",
                     this.addon.version
-                  )}"
+                  )}
                   icon=${mdiArrowUpBoldCircle}
                   iconClass="update"
                 ></hassio-card-content>
@@ -143,14 +144,14 @@ class HassioAddonInfo extends LitElement {
                       this.addon.arch
                     )
                     ? html`
-                        <p class="warning">
+                        <ha-alert alert-type="warning">
                           ${this.supervisor.localize(
                             "addon.dashboard.not_available_arch"
                           )}
-                        </p>
+                        </ha-alert>
                       `
                     : html`
-                        <p class="warning">
+                        <ha-alert alert-type="warning">
                           ${this.supervisor.localize(
                             "addon.dashboard.not_available_arch",
                             "core_version_installed",
@@ -158,7 +159,7 @@ class HassioAddonInfo extends LitElement {
                             "core_version_needed",
                             addonStoreInfo.homeassistant
                           )}
-                        </p>
+                        </ha-alert>
                       `
                   : ""}
               </div>
@@ -253,7 +254,7 @@ class HassioAddonInfo extends LitElement {
             ${this.supervisor.localize(
               "addon.dashboard.visit_addon_page",
               "name",
-              html`<a href="${this.addon.url!}" target="_blank" rel="noreferrer"
+              html`<a href=${this.addon.url!} target="_blank" rel="noreferrer"
                 >${this.addon.name}</a
               >`
             )}
@@ -363,9 +364,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="docker_api"
-                        .label=".${this.supervisor.localize(
+                        .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.docker"
-                        )}"
+      )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiDocker}></ha-svg-icon>
@@ -436,10 +437,10 @@ class HassioAddonInfo extends LitElement {
               ${this.addon.version
                 ? html`
                     <div
-                      class="${classMap({
+                      class=${classMap({
                         "addon-options": true,
                         started: this.addon.state === "started",
-                      })}"
+                      })}
                     >
                       <ha-settings-row ?three-line=${this.narrow}>
                         <span slot="heading">
@@ -569,21 +570,23 @@ class HassioAddonInfo extends LitElement {
                 : ""}
             </div>
           </div>
-          ${this._error ? html` <div class="errors">${this._error}</div> ` : ""}
+          ${this._error
+            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            : ""}
           ${!this.addon.version && addonStoreInfo && !this.addon.available
             ? !addonArchIsSupported(
                 this.supervisor.info.supported_arch,
                 this.addon.arch
               )
               ? html`
-                  <p class="warning">
+                  <ha-alert alert-type="warning">
                     ${this.supervisor.localize(
                       "addon.dashboard.not_available_arch"
                     )}
-                  </p>
+                  </ha-alert>
                 `
               : html`
-                  <p class="warning">
+                  <ha-alert alert-type="warning">
                     ${this.supervisor.localize(
                       "addon.dashboard.not_available_version",
                       "core_version_installed",
@@ -591,7 +594,7 @@ class HassioAddonInfo extends LitElement {
                       "core_version_needed",
                       addonStoreInfo!.homeassistant
                     )}
-                  </p>
+                  </ha-alert>
                 `
             : ""}
         </div>
@@ -793,7 +796,7 @@ class HassioAddonInfo extends LitElement {
         path: "option",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",
@@ -815,7 +818,7 @@ class HassioAddonInfo extends LitElement {
         path: "option",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",
@@ -837,7 +840,7 @@ class HassioAddonInfo extends LitElement {
         path: "option",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",
@@ -859,7 +862,7 @@ class HassioAddonInfo extends LitElement {
         path: "security",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",
@@ -881,7 +884,7 @@ class HassioAddonInfo extends LitElement {
         path: "option",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",
@@ -892,15 +895,24 @@ class HassioAddonInfo extends LitElement {
 
   private async _openChangelog(): Promise<void> {
     try {
-      const content = await fetchHassioAddonChangelog(
-        this.hass,
-        this.addon.slug
-      );
+      let content = await fetchHassioAddonChangelog(this.hass, this.addon.slug);
+      if (
+        content.includes(`# ${this.addon.version}`) &&
+        content.includes(`# ${this.addon.version_latest}`)
+      ) {
+        const newcontent = content.split(`# ${this.addon.version}`)[0];
+        if (newcontent.includes(`# ${this.addon.version_latest}`)) {
+          // Only change the content if the new version still exist
+          // if the changelog does not have the newests version on top
+          // this will not be true, and we don't modify the content
+          content = newcontent;
+        }
+      }
       showHassioMarkdownDialog(this, {
         title: this.supervisor.localize("addon.dashboard.changelog"),
         content,
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
           "addon.dashboard.action_error.get_changelog"
@@ -922,7 +934,7 @@ class HassioAddonInfo extends LitElement {
         path: "install",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("addon.dashboard.action_error.install"),
         text: extractApiErrorMessage(err),
@@ -943,7 +955,7 @@ class HassioAddonInfo extends LitElement {
         path: "stop",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("addon.dashboard.action_error.stop"),
         text: extractApiErrorMessage(err),
@@ -964,7 +976,7 @@ class HassioAddonInfo extends LitElement {
         path: "stop",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("addon.dashboard.action_error.restart"),
         text: extractApiErrorMessage(err),
@@ -978,7 +990,7 @@ class HassioAddonInfo extends LitElement {
       supervisor: this.supervisor,
       name: this.addon.name,
       version: this.addon.version_latest,
-      snapshotParams: {
+      backupParams: {
         name: `addon_${this.addon.slug}_${this.addon.version}`,
         addons: [this.addon.slug],
         homeassistant: false,
@@ -1023,7 +1035,7 @@ class HassioAddonInfo extends LitElement {
         button.progress = false;
         return;
       }
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: "Failed to validate addon configuration",
         text: extractApiErrorMessage(err),
@@ -1041,7 +1053,7 @@ class HassioAddonInfo extends LitElement {
         path: "start",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("addon.dashboard.action_error.start"),
         text: extractApiErrorMessage(err),
@@ -1079,7 +1091,7 @@ class HassioAddonInfo extends LitElement {
         path: "uninstall",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
           "addon.dashboard.action_error.uninstall"
@@ -1140,6 +1152,7 @@ class HassioAddonInfo extends LitElement {
           margin-bottom: 16px;
         }
         img.logo {
+          max-width: 100%;
           max-height: 60px;
           margin: 16px 0;
           display: block;
@@ -1149,10 +1162,10 @@ class HassioAddonInfo extends LitElement {
           display: flex;
         }
         ha-svg-icon.running {
-          color: var(--paper-green-400);
+          color: var(--success-color);
         }
         ha-svg-icon.stopped {
-          color: var(--google-red-300);
+          color: var(--error-color);
         }
         ha-call-api-button {
           font-weight: 500;

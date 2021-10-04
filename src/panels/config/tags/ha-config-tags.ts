@@ -180,7 +180,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections.experimental}
+        .tabs=${configSections.experiences}
         .columns=${this._columns(
           this.narrow,
           this._canWriteTags,
@@ -228,7 +228,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         </p>
         <p>
           <a
-            href="${documentationUrl(this.hass, "/integrations/tag/")}"
+            href=${documentationUrl(this.hass, "/integrations/tag/")}
             target="_blank"
             rel="noreferrer"
           >
@@ -317,7 +317,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       await deleteTag(this.hass, selectedTag.id);
       this._tags = this._tags.filter((tag) => tag.id !== selectedTag.id);
       return true;
-    } catch (err) {
+    } catch (err: any) {
       return false;
     }
   }

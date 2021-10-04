@@ -67,7 +67,7 @@ class DialogSystemLogDetail extends LitElement {
         !this._manifest.documentation.includes("www.home-assistant.io"));
 
     return html`
-      <ha-dialog open @closed=${this.closeDialog} hideActions heading=${true}>
+      <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${true}>
         <ha-header-bar slot="heading">
           <ha-icon-button
             slot="navigationIcon"
@@ -79,7 +79,7 @@ class DialogSystemLogDetail extends LitElement {
             ${this.hass.localize(
               "ui.panel.config.logs.details",
               "level",
-              html`<span class="${item.level.toLowerCase()}"
+              html`<span class=${item.level.toLowerCase()}
                 >${this.hass.localize(
                   "ui.panel.config.logs.level." + item.level.toLowerCase()
                 )}</span
@@ -169,7 +169,7 @@ class DialogSystemLogDetail extends LitElement {
   private async _fetchManifest(integration: string) {
     try {
       this._manifest = await fetchIntegrationManifest(this.hass, integration);
-    } catch (err) {
+    } catch (err: any) {
       // Ignore if loading manifest fails. Probably bad JSON in manifest
     }
   }

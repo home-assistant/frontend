@@ -22,8 +22,9 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
     case "gas":
     case "problem":
     case "safety":
-    case "smoke":
       return is_off ? "hass:check-circle" : "hass:alert-circle";
+    case "smoke":
+      return is_off ? "hass:check-circle" : "hass:smoke";
     case "heat":
       return is_off ? "hass:thermometer" : "hass:fire";
     case "light":
@@ -44,6 +45,8 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
       return is_off ? "hass:home-outline" : "hass:home";
     case "sound":
       return is_off ? "hass:music-note-off" : "hass:music-note";
+    case "update":
+      return is_off ? "mdi:package" : "mdi:package-up";
     case "vibration":
       return is_off ? "hass:crop-portrait" : "hass:vibrate";
     case "window":

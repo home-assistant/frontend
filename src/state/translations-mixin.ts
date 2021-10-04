@@ -126,7 +126,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this._applyTranslations(this.hass!);
     }
 
-    protected panelUrlChanged(newPanelUrl) {
+    protected panelUrlChanged(newPanelUrl: string) {
       super.panelUrlChanged(newPanelUrl);
       // this may be triggered before hassConnected
       this._loadFragmentTranslations(
@@ -276,8 +276,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       panelUrl: string
     ) {
       if (!panelUrl) {
-        return;
+        return undefined;
       }
+
       const panelComponent = this.hass?.panels?.[panelUrl]?.component_name;
 
       // If it's the first call we don't have panel info yet to check the component.
@@ -288,15 +289,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
         : undefined;
 
       if (!fragment) {
-        return;
+        return undefined;
       }
 
       if (this.__loadedFragmetTranslations.has(fragment)) {
-        return;
+        return this.hass!.localize;
       }
       this.__loadedFragmetTranslations.add(fragment);
       const result = await getTranslation(fragment, language);
       await this._updateResources(result.language, result.data);
+      return this.hass!.localize;
     }
 
     private async _loadCoreTranslations(language: string) {
@@ -339,13 +341,16 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
           ...data,
         },
       };
-      const changes: Partial<HomeAssistant> = {
-        resources,
-        localize: await computeLocalize(this, language, resources),
-      };
+
+      // Update resources immediately, so when a new update comes in we don't miss values
+      this._updateHass({ resources });
+
+      const localize = await computeLocalize(this, language, resources);
 
       if (language === (this.hass ?? this._pendingHass).language) {
-        this._updateHass(changes);
+        this._updateHass({
+          localize,
+        });
       }
     }
 

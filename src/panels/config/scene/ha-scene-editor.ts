@@ -253,9 +253,9 @@ export class HaSceneEditor extends SubscribeMixin(
         ${this.narrow ? html` <span slot="header">${name}</span> ` : ""}
         <div
           id="root"
-          class="${classMap({
+          class=${classMap({
             rtl: computeRTL(this.hass),
-          })}"
+          })}
         >
           ${this._config
             ? html`
@@ -311,9 +311,9 @@ export class HaSceneEditor extends SubscribeMixin(
                             ${device.name}
                             <ha-icon-button
                               icon="hass:delete"
-                              title="${this.hass.localize(
+                              title=${this.hass.localize(
                                 "ui.panel.config.scene.editor.devices.delete"
-                              )}"
+                              )}
                               .device=${device.id}
                               @click=${this._deleteDevice}
                             ></ha-icon-button>
@@ -382,9 +382,8 @@ export class HaSceneEditor extends SubscribeMixin(
                                 )}
                               >
                                 ${entities.map((entityId) => {
-                                  const entityStateObj = this.hass.states[
-                                    entityId
-                                  ];
+                                  const entityStateObj =
+                                    this.hass.states[entityId];
                                   if (!entityStateObj) {
                                     return html``;
                                   }
@@ -404,9 +403,9 @@ export class HaSceneEditor extends SubscribeMixin(
                                       <ha-icon-button
                                         icon="hass:delete"
                                         .entityId=${entityId}
-                                        .title="${this.hass.localize(
+                                        .title=${this.hass.localize(
                                           "ui.panel.config.scene.editor.entities.delete"
-                                        )}"
+                                        )}
                                         @click=${this._deleteEntity}
                                       ></ha-icon-button>
                                     </paper-icon-item>
@@ -538,10 +537,11 @@ export class HaSceneEditor extends SubscribeMixin(
     this._scene = scene;
     const { context } = await activateScene(this.hass, this._scene.entity_id);
     this._activateContextId = context.id;
-    this._unsubscribeEvents = await this.hass!.connection.subscribeEvents<HassEvent>(
-      (event) => this._stateChanged(event),
-      "state_changed"
-    );
+    this._unsubscribeEvents =
+      await this.hass!.connection.subscribeEvents<HassEvent>(
+        (event) => this._stateChanged(event),
+        "state_changed"
+      );
   }
 
   private _showMoreInfo(ev: Event) {
@@ -553,7 +553,7 @@ export class HaSceneEditor extends SubscribeMixin(
     let config: SceneConfig;
     try {
       config = await getSceneConfig(this.hass, this.sceneId!);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text:
           err.status_code === 404
@@ -797,7 +797,7 @@ export class HaSceneEditor extends SubscribeMixin(
       if (!this.sceneId) {
         navigate(`/config/scene/edit/${id}`, { replace: true });
       }
-    } catch (err) {
+    } catch (err: any) {
       this._errors = err.body.message || err.message;
       showToast(this, {
         message: err.body.message || err.message,

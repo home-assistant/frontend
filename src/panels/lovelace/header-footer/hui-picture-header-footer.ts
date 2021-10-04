@@ -21,7 +21,8 @@ import { PictureHeaderFooterConfig } from "./types";
 @customElement("hui-picture-header-footer")
 export class HuiPictureHeaderFooter
   extends LitElement
-  implements LovelaceHeaderFooter {
+  implements LovelaceHeaderFooter
+{
   public static getStubConfig(): Record<string, unknown> {
     return {
       image:
@@ -71,10 +72,10 @@ export class HuiPictureHeaderFooter
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         tabindex=${ifDefined(clickable ? 0 : undefined)}
-        class="${classMap({
+        class=${classMap({
           clickable,
-        })}"
-        src="${this.hass.hassUrl(this._config.image)}"
+        })}
+        src=${this.hass.hassUrl(this._config.image)}
       />
     `;
   }

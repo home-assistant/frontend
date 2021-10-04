@@ -1,6 +1,6 @@
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, boolean, object, optional, string } from "superstruct";
+import { assert, boolean, object, optional, string, assign } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/entity/ha-entity-attribute-picker";
@@ -14,25 +14,29 @@ import { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  entity: optional(string()),
-  name: optional(string()),
-  theme: optional(string()),
-  show_forecast: optional(boolean()),
-  secondary_info_attribute: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  double_tap_action: optional(actionConfigStruct),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    name: optional(string()),
+    theme: optional(string()),
+    show_forecast: optional(boolean()),
+    secondary_info_attribute: optional(string()),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
+  })
+);
 
 const includeDomains = ["weather"];
 
 @customElement("hui-weather-forecast-card-editor")
 export class HuiWeatherForecastCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: WeatherForecastCardConfig;

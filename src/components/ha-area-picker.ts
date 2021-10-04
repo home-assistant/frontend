@@ -1,4 +1,4 @@
-import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
+import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -45,15 +45,30 @@ import "./ha-svg-icon";
 
 const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (
   item
+  // eslint-disable-next-line lit/prefer-static-styles
 ) => html`<style>
     paper-item {
-      margin: -10px 0;
       padding: 0;
+      margin: -10px;
+      margin-left: 0;
     }
-    paper-item.add-new {
-      font-weight: 500;
+    #content {
+      display: flex;
+      align-items: center;
+    }
+    ha-svg-icon {
+      padding-left: 2px;
+      margin-right: -2px;
+      color: var(--secondary-text-color);
+    }
+    :host(:not([selected])) ha-svg-icon {
+      display: none;
+    }
+    :host([selected]) paper-item {
+      margin-left: 10px;
     }
   </style>
+  <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
   <paper-item class=${classMap({ "add-new": item.area_id === "add_new" })}>
     <paper-item-body two-line>${item.name}</paper-item-body>
   </paper-item>`;
@@ -416,7 +431,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           });
           this._areas = [...this._areas!, area];
           this._setValue(area.area_id);
-        } catch (err) {
+        } catch (err: any) {
           showAlertDialog(this, {
             text: this.hass.localize(
               "ui.components.area-picker.add_dialog.failed_create_area"

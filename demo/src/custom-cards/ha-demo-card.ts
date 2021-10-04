@@ -19,7 +19,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
 
   @property({ attribute: false }) public hass!: MockHomeAssistant;
 
-  @state() private _switching?: boolean;
+  @state() private _switching = false;
 
   private _hidden = localStorage.hide_demo_card;
 
@@ -27,12 +27,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     return this._hidden ? 0 : 2;
   }
 
-  public setConfig(
-    // @ts-ignore
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    config: LovelaceCardConfig
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-  ) {}
+  public setConfig(_config: LovelaceCardConfig) {}
 
   protected render(): TemplateResult {
     if (this._hidden) {
@@ -49,7 +44,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
                     (conf) => html`
                       ${conf.name}
                       <small>
-                        <a target="_blank" href="${conf.authorUrl}">
+                        <a target="_blank" href=${conf.authorUrl}>
                           ${this.hass.localize(
                             "ui.panel.page-demo.cards.demo.demo_by",
                             "name",
@@ -99,7 +94,7 @@ export class HADemoCard extends LitElement implements LovelaceCard {
     this._switching = true;
     try {
       await setDemoConfig(this.hass, this.lovelace!, index);
-    } catch (err) {
+    } catch (err: any) {
       alert("Failed to switch config :-(");
     } finally {
       this._switching = false;

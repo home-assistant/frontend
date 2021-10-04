@@ -11,7 +11,13 @@ export const demoConfig: HassConfig = {
     temperature: "°C",
     volume: "L",
   },
-  components: ["notify.html5", "history", "shopping_list"],
+  components: [
+    "notify.html5",
+    "history",
+    "shopping_list",
+    "forecast_solar",
+    "energy",
+  ],
   time_zone: "America/Los_Angeles",
   config_dir: "/config",
   version: "DEMO",
@@ -22,4 +28,5 @@ export const demoConfig: HassConfig = {
   state: STATE_RUNNING,
   internal_url: "http://homeassistant.local:8123",
   external_url: null,
+  currency: "USD",
 };

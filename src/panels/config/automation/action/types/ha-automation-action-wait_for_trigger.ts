@@ -12,7 +12,8 @@ import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 @customElement("ha-automation-action-wait_for_trigger")
 export class HaWaitForTriggerAction
   extends LitElement
-  implements ActionElement {
+  implements ActionElement
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public action!: WaitForTriggerAction;

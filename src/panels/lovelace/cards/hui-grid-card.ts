@@ -61,7 +61,11 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
   setConfig(config: GridCardConfig) {
     super.setConfig(config);
     this.style.setProperty("--grid-card-column-count", String(this.columns));
-    this.toggleAttribute("square", this.square);
+    if (this.square) {
+      this.setAttribute("square", "");
+    } else {
+      this.removeAttribute("square");
+    }
   }
 
   static get styles(): CSSResultGroup {
@@ -87,9 +91,17 @@ class HuiGridCard extends HuiStackCard<GridCardConfig> {
           grid-column: 1 / 1;
         }
 
-        :host([square]) #root > *:first-child {
+        :host([square]) #root > *:not([hidden]) {
           grid-row: 1 / 1;
           grid-column: 1 / 1;
+        }
+        :host([square]) #root > *:not([hidden]) ~ *:not([hidden]) {
+          /*
+	       * Remove grid-row and grid-column from every element that comes after
+	       * the first not-hidden element
+	       */
+          grid-row: unset;
+          grid-column: unset;
         }
       `,
     ];

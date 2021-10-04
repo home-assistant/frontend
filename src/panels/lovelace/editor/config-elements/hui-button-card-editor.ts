@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, boolean, object, optional, string } from "superstruct";
+import { assert, boolean, object, optional, string, assign } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -18,20 +18,23 @@ import { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  entity: optional(string()),
-  name: optional(string()),
-  show_name: optional(boolean()),
-  icon: optional(string()),
-  show_icon: optional(boolean()),
-  icon_height: optional(string()),
-  tap_action: optional(actionConfigStruct),
-  hold_action: optional(actionConfigStruct),
-  theme: optional(string()),
-  show_state: optional(boolean()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    name: optional(string()),
+    show_name: optional(boolean()),
+    icon: optional(string()),
+    show_icon: optional(boolean()),
+    icon_height: optional(string()),
+    tap_action: optional(actionConfigStruct),
+    hold_action: optional(actionConfigStruct),
+    theme: optional(string()),
+    show_state: optional(boolean()),
+  })
+);
 
 const actions = [
   "more-info",
@@ -45,7 +48,8 @@ const actions = [
 @customElement("hui-button-card-editor")
 export class HuiButtonCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: ButtonCardConfig;

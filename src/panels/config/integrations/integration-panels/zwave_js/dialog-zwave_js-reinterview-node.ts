@@ -213,7 +213,7 @@ class DialogZWaveJSReinterviewNode extends LitElement {
         }
 
         .failed {
-          color: var(--warning-color);
+          color: var(--error-color);
         }
 
         .flex-container {

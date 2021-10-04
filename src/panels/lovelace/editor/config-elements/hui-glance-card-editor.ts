@@ -12,6 +12,7 @@ import {
   optional,
   string,
   union,
+  assign,
 } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
@@ -29,23 +30,27 @@ import { processEditorEntities } from "../process-editor-entities";
 import { entitiesConfigStruct } from "../structs/entities-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  title: optional(union([string(), number()])),
-  theme: optional(string()),
-  columns: optional(number()),
-  show_name: optional(boolean()),
-  show_state: optional(boolean()),
-  show_icon: optional(boolean()),
-  state_color: optional(boolean()),
-  entities: array(entitiesConfigStruct),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    title: optional(union([string(), number()])),
+    theme: optional(string()),
+    columns: optional(number()),
+    show_name: optional(boolean()),
+    show_state: optional(boolean()),
+    show_icon: optional(boolean()),
+    state_color: optional(boolean()),
+    entities: array(entitiesConfigStruct),
+  })
+);
 
 @customElement("hui-glance-card-editor")
 export class HuiGlanceCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: GlanceCardConfig;

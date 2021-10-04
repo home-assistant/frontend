@@ -4,6 +4,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-switch";
 // eslint-disable-next-line
 import type { HaSwitch } from "../../../../components/ha-switch";
@@ -28,11 +29,8 @@ export class CloudRemotePref extends LitElement {
 
     const { remote_enabled } = this.cloudStatus.prefs;
 
-    const {
-      remote_connected,
-      remote_domain,
-      remote_certificate,
-    } = this.cloudStatus;
+    const { remote_connected, remote_domain, remote_certificate } =
+      this.cloudStatus;
 
     if (!remote_certificate) {
       return html`
@@ -56,14 +54,22 @@ export class CloudRemotePref extends LitElement {
           "ui.panel.config.cloud.account.remote.title"
         )}
       >
-        <div class="connection-status">
-          ${this.hass.localize(
-            `ui.panel.config.cloud.account.remote.${
-              remote_connected ? "connected" : "not_connected"
-            }`
-          )}
+        <div class="switch">
+          <ha-switch
+            .checked=${remote_enabled}
+            @change=${this._toggleChanged}
+          ></ha-switch>
         </div>
         <div class="card-content">
+          ${!remote_connected && remote_enabled
+            ? html`
+                <ha-alert
+                  .title=${this.hass.localize(
+                    `ui.panel.config.cloud.account.remote.reconnecting`
+                  )}
+                ></ha-alert>
+              `
+            : ""}
           ${this.hass.localize("ui.panel.config.cloud.account.remote.info")}
           ${this.hass.localize(
             `ui.panel.config.cloud.account.remote.${
@@ -80,25 +86,6 @@ export class CloudRemotePref extends LitElement {
           >
             https://${remote_domain}</a
           >.
-
-          <div class="remote-enabled">
-            <h3>
-              ${this.hass.localize(
-                "ui.panel.config.cloud.account.remote.remote_enabled.caption"
-              )}
-            </h3>
-            <div class="remote-enabled-switch">
-              <ha-switch
-                .checked="${remote_enabled}"
-                @change="${this._toggleChanged}"
-              ></ha-switch>
-            </div>
-          </div>
-          <p>
-            ${this.hass.localize(
-              "ui.panel.config.cloud.account.remote.remote_enabled.description"
-            )}
-          </p>
         </div>
         <div class="card-actions">
           <a
@@ -143,7 +130,7 @@ export class CloudRemotePref extends LitElement {
         await disconnectCloudRemote(this.hass);
       }
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       alert(err.message);
       toggle.checked = !toggle.checked;
     }
@@ -156,6 +143,22 @@ export class CloudRemotePref extends LitElement {
       }
       a {
         color: var(--primary-color);
+      }
+      .switch {
+        position: absolute;
+        right: 24px;
+        top: 24px;
+      }
+      :host([dir="rtl"]) .switch {
+        right: auto;
+        left: 24px;
+      }
+      .warning {
+        font-weight: bold;
+        margin-bottom: 1em;
+      }
+      .warning ha-svg-icon {
+        color: var(--warning-color);
       }
       .break-word {
         overflow-wrap: break-word;
@@ -177,25 +180,6 @@ export class CloudRemotePref extends LitElement {
       }
       .spacer {
         flex-grow: 1;
-      }
-      .remote-enabled {
-        display: flex;
-        margin-top: 1.5em;
-      }
-      .remote-enabled + p {
-        margin-top: 0.5em;
-      }
-      h3 {
-        margin: 0 0 8px 0;
-      }
-      .remote-enabled h3 {
-        flex-grow: 1;
-        margin: 0;
-      }
-      .remote-enabled-switch {
-        margin-top: 0.25em;
-        margin-right: 7px;
-        margin-left: 0.5em;
       }
     `;
   }

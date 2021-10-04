@@ -9,13 +9,11 @@ import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-abort")
 class StepFlowAbort extends LitElement {
-  public flowConfig!: FlowConfig;
+  @property({ attribute: false }) public flowConfig!: FlowConfig;
 
-  @property()
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property()
-  private step!: DataEntryFlowStepAbort;
+  @property({ attribute: false }) public step!: DataEntryFlowStepAbort;
 
   protected render(): TemplateResult {
     return html`
@@ -28,7 +26,7 @@ class StepFlowAbort extends LitElement {
         ${this.flowConfig.renderAbortDescription(this.hass, this.step)}
       </div>
       <div class="buttons">
-        <mwc-button @click="${this._flowDone}"
+        <mwc-button @click=${this._flowDone}
           >${this.hass.localize(
             "ui.panel.config.integrations.config_flow.close"
           )}</mwc-button

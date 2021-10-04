@@ -74,7 +74,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed="${this._close}"
+        @closed=${this._close}
         scrimClickAction
         escapeKeyAction
         .heading=${createCloseHeading(
@@ -205,7 +205,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
           : ""}
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateDashboard}"
+          @click=${this._updateDashboard}
           .disabled=${urlInvalid || titleInvalid || this._submitting}
         >
           ${this._params.urlPath
@@ -285,14 +285,15 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       if (this._params!.dashboard) {
         await this._params!.updateDashboard(values);
       } else {
-        (values as LovelaceDashboardCreateParams).url_path = this._urlPath.trim();
+        (values as LovelaceDashboardCreateParams).url_path =
+          this._urlPath.trim();
         (values as LovelaceDashboardCreateParams).mode = "storage";
         await this._params!.createDashboard(
           values as LovelaceDashboardCreateParams
         );
       }
       this._close();
-    } catch (err) {
+    } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;

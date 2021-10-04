@@ -4,7 +4,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, number, object, optional, string } from "superstruct";
+import { assert, assign, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/entity/ha-entity-picker";
@@ -15,27 +15,31 @@ import { HomeAssistant } from "../../../../types";
 import { SensorCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  entity: optional(string()),
-  name: optional(string()),
-  icon: optional(string()),
-  graph: optional(string()),
-  unit: optional(string()),
-  detail: optional(number()),
-  theme: optional(string()),
-  hours_to_show: optional(number()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    name: optional(string()),
+    icon: optional(string()),
+    graph: optional(string()),
+    unit: optional(string()),
+    detail: optional(number()),
+    theme: optional(string()),
+    hours_to_show: optional(number()),
+  })
+);
 
 const includeDomains = ["counter", "input_number", "number", "sensor"];
 
 @customElement("hui-sensor-card-editor")
 export class HuiSensorCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: SensorCardConfig;
@@ -177,6 +181,7 @@ export class HuiSensorCardEditor
             )})"
             type="number"
             .value=${this._hours_to_show}
+            min="1"
             .configValue=${"hours_to_show"}
             @value-changed=${this._valueChanged}
           ></paper-input>

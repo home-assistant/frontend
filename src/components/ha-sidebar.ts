@@ -28,7 +28,7 @@ import { LocalStorage } from "../common/decorators/local-storage";
 import { fireEvent } from "../common/dom/fire_event";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
 import { computeDomain } from "../common/entity/compute_domain";
-import { compare } from "../common/string/compare";
+import { stringCompare } from "../common/string/compare";
 import { computeRTL } from "../common/util/compute_rtl";
 import { ActionHandlerDetail } from "../data/lovelace";
 import {
@@ -52,9 +52,10 @@ const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
 const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
 
 const SORT_VALUE_URL_PATHS = {
-  map: 1,
-  logbook: 2,
-  history: 3,
+  energy: 1,
+  map: 2,
+  logbook: 3,
+  history: 4,
   "developer-tools": 9,
   hassio: 10,
   config: 11,
@@ -94,7 +95,7 @@ const defaultPanelSorter = (
   }
 
   if (aLovelace && bLovelace) {
-    return compare(a.title!, b.title!);
+    return stringCompare(a.title!, b.title!);
   }
   if (aLovelace && !bLovelace) {
     return -1;
@@ -116,7 +117,7 @@ const defaultPanelSorter = (
     return 1;
   }
   // both not built in, sort by title
-  return compare(a.title!, b.title!);
+  return stringCompare(a.title!, b.title!);
 };
 
 const computePanels = memoizeOne(

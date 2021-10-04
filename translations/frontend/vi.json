@@ -17,6 +17,14 @@
         "shopping_list": "Danh sách mua sắm",
         "states": "Tổng quan"
     },
+    "state": {
+        "default": {
+            "off": "Tắt",
+            "on": "Bật",
+            "unavailable": "Không có sẵn",
+            "unknown": "Chưa biết"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -83,14 +91,6 @@
         "person": {
             "home": "Ở nhà",
             "not_home": "Đi vắng"
-        }
-    },
-    "state": {
-        "default": {
-            "off": "Tắt",
-            "on": "Bật",
-            "unavailable": "Không có sẵn",
-            "unknown": "Chưa biết"
         }
     },
     "ui": {
@@ -365,10 +365,10 @@
                 "documentation": "tài liệu",
                 "learn_adding_local_media": "Tìm hiểu thêm về cách thêm nội dung đa phương tiện trong {documentation} .",
                 "local_media_files": "Đặt các tệp video, âm thanh và hình ảnh của bạn vào thư mục media để có thể duyệt và phát chúng trong trình duyệt hoặc trên các trình phát đa phương tiện được hỗ trợ.",
+                "media-player-browser": "Trình duyệt Đa phương tiện",
                 "media_browsing_error": "Lỗi trình Duyệt Đa phương tiện",
                 "media_not_supported": "Trình phát Đa phương tiện không hỗ trợ loại này",
                 "media_player": "Trình phát Đa phương tiện",
-                "media-player-browser": "Trình duyệt Đa phương tiện",
                 "no_items": "Không có mục nào",
                 "no_local_media_found": "Không tìm thấy nội dung đa phương tiện cục bộ nào",
                 "no_media_folder": "Có vẻ như bạn chưa tạo thư mục đa phương tiện.",
@@ -630,7 +630,6 @@
                             "introduction": "Hành động là những gì Home Assistant sẽ làm khi tự động hóa được kích hoạt.",
                             "learn_more": "Tìm hiểu thêm về Hành động",
                             "name": "Hành động",
-                            "type_select": "Loại hành động",
                             "type": {
                                 "choose": {
                                     "add_option": "Thêm tùy chọn",
@@ -662,7 +661,6 @@
                                 "repeat": {
                                     "label": "Lặp lại",
                                     "sequence": "Hành động",
-                                    "type_select": "Dạng lặp lại",
                                     "type": {
                                         "count": {
                                             "label": "Đếm"
@@ -675,7 +673,8 @@
                                             "conditions": "Trong khi còn thoả điều kiện",
                                             "label": "Trong khi"
                                         }
-                                    }
+                                    },
+                                    "type_select": "Dạng lặp lại"
                                 },
                                 "service": {
                                     "label": "Gọi dịch vụ"
@@ -692,6 +691,7 @@
                                     "wait_template": "Mẫu chờ"
                                 }
                             },
+                            "type_select": "Loại hành động",
                             "unsupported_action": "Hành động không được hỗ trợ: {action}"
                         },
                         "alias": "Tên",
@@ -704,7 +704,6 @@
                             "introduction": "Điều kiện là tùy chọn và sẽ ngăn chặn việc thực hiện các hành động tiếp theo trừ phi tất cả các điều kiện đều được thoả mãn.",
                             "learn_more": "Tìm hiểu thêm về Điều kiện",
                             "name": "Điều kiện",
-                            "type_select": "Loại điều kiện",
                             "type": {
                                 "device": {
                                     "condition": "Điều kiện"
@@ -757,6 +756,7 @@
                                     "zone": "Vùng"
                                 }
                             },
+                            "type_select": "Loại điều kiện",
                             "unsupported_condition": "Điều kiện không được hỗ trợ bởi Giao diện đồ hoạ: {condition}"
                         },
                         "default_name": "Thêm Tự động hóa",
@@ -791,7 +791,6 @@
                             "introduction": "Bộ khởi động là bất cứ điều gì kích hoạt quá trình xử lý một quy tắc tự động hoá. Có thể chỉ định nhiều Bộ khởi động cho cùng một quy tắc. Khi kích hoạt một bộ khởi động, Home Assistant  sẽ xác nhận các điều kiện, nếu có, và gọi hành động.",
                             "learn_more": "Tìm hiểu thêm về Kích hoạt",
                             "name": "Kích hoạt",
-                            "type_select": "Loại Bộ khởi động",
                             "type": {
                                 "device": {
                                     "trigger": "Kích hoạt"
@@ -847,17 +846,17 @@
                                     "label": "Mẫu",
                                     "value_template": "Mẫu giá trị (tùy chọn)"
                                 },
-                                "time_pattern": {
-                                    "hours": "Giờ",
-                                    "label": "Mẫu thời gian",
-                                    "minutes": "Phút",
-                                    "seconds": "Giây"
-                                },
                                 "time": {
                                     "at": "Lúc",
                                     "label": "Thời gian",
                                     "type_input": "Giá trị của một hỗ trợ dạng ngày/giờ",
                                     "type_value": "Thời gian cố định"
+                                },
+                                "time_pattern": {
+                                    "hours": "Giờ",
+                                    "label": "Mẫu thời gian",
+                                    "minutes": "Phút",
+                                    "seconds": "Giây"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -872,6 +871,7 @@
                                     "zone": "Vùng"
                                 }
                             },
+                            "type_select": "Loại Bộ khởi động",
                             "unsupported_platform": "Nền tảng không được hỗ trợ bởi Giao diện đồ hoạ: {platform}"
                         },
                         "unsaved_confirm": "Bạn đang có thay đổi chưa được lưu. Bạn có chắc muốn huỷ bỏ?"
@@ -1062,10 +1062,6 @@
                         }
                     }
                 },
-                "filtering": {
-                    "clear": "Xoá",
-                    "filtering_by": "Lọc bởi"
-                },
                 "header": "Cấu hình Home Assistant",
                 "helpers": {
                     "caption": "Người hỗ trợ",
@@ -1108,11 +1104,6 @@
                     "server": "máy chủ",
                     "source": "Nguồn:"
                 },
-                "integration_panel_move": {
-                    "link_integration_page": "trang các tích hợp",
-                    "missing_zha": "Thiếu bảng cấu hình ZHA? Nó đã được chuyển đến mục ZHA trong {integrations_page}.",
-                    "missing_zwave": "Thiếu bảng cấu hình Z-Wave? Nó đã được chuyển đến mục Z-Wave trên {integrations_page} ."
-                },
                 "integrations": {
                     "add_integration": "Thêm tích hợp",
                     "attention": "Cần chú ý",
@@ -1128,7 +1119,6 @@
                         "firmware": "Firmware: {version}",
                         "manuf": "bởi {manufacturer}",
                         "no_area": "Không có khu vực",
-                        "options": "Tùy Chọn",
                         "reload": "Tải lại",
                         "reload_confirm": "Tích hợp đã được tải lại",
                         "reload_restart_confirm": "Khởi động lại Home Assistant để hoàn tất tải lại tích hợp này",
@@ -1148,7 +1138,6 @@
                             "open_site": "Mở trang web"
                         },
                         "finish": "Hoàn thành",
-                        "loading_first_time": "Vui lòng chờ trong khi tích hợp đang được cài đặt",
                         "not_all_required_fields": "Không phải tất cả các trường bắt buộc đều đã được điền.",
                         "submit": "Gửi đi"
                     },
@@ -1160,7 +1149,6 @@
                     "ignore": {
                         "confirm_delete_ignore_title": "Ngừng bỏ qua {name}?",
                         "confirm_ignore_title": "Bỏ qua tự động phát hiện {name}?",
-                        "hide_ignored": "Ẩn các tích hợp bị bỏ qua",
                         "ignore": "Bỏ qua",
                         "ignored": "Đã bỏ qua",
                         "show_ignored": "Hiển thị các tích hợp bị bỏ qua",
@@ -1269,7 +1257,6 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Cấu hình",
                     "description_listen": "Nghe một chủ đề",
                     "description_publish": "Công bố một gói tin",
                     "listening_to": "Lắng nghe",
@@ -1286,12 +1273,12 @@
                     "navigation": {
                         "nodes": "Các nút"
                     },
-                    "network_status": {
-                        "unknown": "không xác định"
-                    },
                     "network": {
                         "header": "Quản lý Mạng lưới",
                         "node_count": "{count} nút"
+                    },
+                    "network_status": {
+                        "unknown": "không xác định"
                     },
                     "node": {
                         "button": "Chi tiết Nút",
@@ -1531,7 +1518,6 @@
                         "pairing_mode": "Đảm bảo các thiết bị của bạn đang ở chế độ ghép nối. Kiểm tra hướng dẫn đi kèm thiết bị về cách làm điều này.",
                         "spinner": "Tìm kiếm các thiết bị ZHA Zigbee ..."
                     },
-                    "button": "Cấu hình",
                     "clusters": {
                         "header": "Các Cụm"
                     },
@@ -1597,7 +1583,6 @@
                     "no_zones_created_yet": "Có vẻ như bạn chưa tạo ra bất kỳ khu vực nào."
                 },
                 "zwave": {
-                    "button": "Cấu hình",
                     "common": {
                         "index": "Mục lục",
                         "value": "Giá trị"
@@ -1701,22 +1686,6 @@
                     }
                 }
             },
-            "history": {
-                "ranges": {
-                    "last_week": "Tuần trước",
-                    "this_week": "Tuần này",
-                    "today": "Hôm nay",
-                    "yesterday": "Hôm qua"
-                }
-            },
-            "logbook": {
-                "ranges": {
-                    "last_week": "Tuần trước",
-                    "this_week": "Tuần này",
-                    "today": "Hôm nay",
-                    "yesterday": "Hôm qua"
-                }
-            },
             "lovelace": {
                 "add_entities": {
                     "generated_unsupported": "Bạn chỉ có thể sử dụng chức năng này khi bạn lấy quyền kiểm soát giao diện Lovelace.",
@@ -1806,7 +1775,6 @@
                         "entities": {
                             "description": "Thẻ Các Thực thể là loại thẻ phổ biến nhất. Nó nhóm các mục với nhau thành một danh sách.",
                             "edit_special_row": "Xem chi tiết của hàng này bằng cách bấm nút chỉnh sửa",
-                            "entity_row_editor": "Trình soạn thảo Thực thể",
                             "entity_row": {
                                 "attribute": "Thuộc tính",
                                 "button": "Nút",
@@ -1818,6 +1786,7 @@
                                 "section": "Phần",
                                 "weblink": "Liên kết Web"
                             },
+                            "entity_row_editor": "Trình soạn thảo Thực thể",
                             "name": "Các Thực thể",
                             "secondary_info_values": {
                                 "brightness": "Độ sáng",
@@ -2007,7 +1976,6 @@
                         "unsaved_changes": "Thay đổi chưa lưu"
                     },
                     "save_config": {
-                        "cancel": "Đừng bận tâm",
                         "close": "Đóng",
                         "empty_config": "Bắt đầu với một bảng điều khiển trống",
                         "header": "Kiểm soát giao diện Lovelace của bạn",
@@ -2025,8 +1993,6 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Chế độ này hiển thị thẻ đầu tiên với toàn bộ chiều rộng; các thẻ còn lại sẽ không được hiển thị.",
-                            "title": "Chế độ Bảng điều khiển?",
                             "warning_multiple_cards": "Chế độ xem này chứa nhiều thẻ, nhưng chế độ xem dạng bảng điều khiển chỉ có thể hiển thị 1 thẻ."
                         }
                     }
@@ -2285,18 +2251,18 @@
                     "prompt_copy_token": "Sao chép token truy cập của bạn. Nó sẽ không đươc hiển thị nữa.",
                     "prompt_name": "Tên?"
                 },
+                "mfa": {
+                    "confirm_disable": "Bạn có chắc chắn muốn tắt {name}?",
+                    "disable": "Vô hiệu hóa",
+                    "enable": "Kích hoạt",
+                    "header": "Các mô-đun đa xác thực"
+                },
                 "mfa_setup": {
                     "close": "Đóng",
                     "step_done": "Đã hoàn tất thiết lập cho {step}",
                     "submit": "Gửi đi",
                     "title_aborted": "Bị hủy bỏ",
                     "title_success": "Thành công!"
-                },
-                "mfa": {
-                    "confirm_disable": "Bạn có chắc chắn muốn tắt {name}?",
-                    "disable": "Vô hiệu hóa",
-                    "enable": "Kích hoạt",
-                    "header": "Các mô-đun đa xác thực"
                 },
                 "push_notifications": {
                     "description": "Gửi thông báo tới thiết bị này.",

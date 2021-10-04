@@ -90,7 +90,7 @@ class HassioIngressView extends LitElement {
       if (requestedAddon) {
         try {
           addonInfo = await fetchHassioAddonInfo(this.hass, requestedAddon);
-        } catch (err) {
+        } catch (err: any) {
           await showAlertDialog(this, {
             text: extractApiErrorMessage(err),
             title: requestedAddon,
@@ -144,7 +144,7 @@ class HassioIngressView extends LitElement {
 
     try {
       addon = await fetchHassioAddonInfo(this.hass, addonSlug);
-    } catch (err) {
+    } catch (err: any) {
       await showAlertDialog(this, {
         text: "Unable to fetch add-on info to start Ingress",
         title: "Supervisor",
@@ -178,7 +178,7 @@ class HassioIngressView extends LitElement {
 
     try {
       session = await createSessionPromise;
-    } catch (err) {
+    } catch (err: any) {
       await showAlertDialog(this, {
         text: "Unable to create an Ingress session",
         title: addon.name,
@@ -194,7 +194,7 @@ class HassioIngressView extends LitElement {
     this._sessionKeepAlive = window.setInterval(async () => {
       try {
         await validateHassioSession(this.hass, session);
-      } catch (err) {
+      } catch (err: any) {
         session = await createHassioSession(this.hass);
       }
     }, 60000);

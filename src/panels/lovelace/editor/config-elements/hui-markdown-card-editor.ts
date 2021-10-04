@@ -2,26 +2,30 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, object, optional, string } from "superstruct";
+import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { MarkdownCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  title: optional(string()),
-  content: string(),
-  theme: optional(string()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    title: optional(string()),
+    content: string(),
+    theme: optional(string()),
+  })
+);
 
 @customElement("hui-markdown-card-editor")
 export class HuiMarkdownCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: MarkdownCardConfig;
@@ -56,9 +60,9 @@ export class HuiMarkdownCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <paper-textarea
           .label="${this.hass.localize(
@@ -66,19 +70,19 @@ export class HuiMarkdownCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .value="${this._content}"
-          .configValue="${"content"}"
+          .value=${this._content}
+          .configValue=${"content"}
           @keydown=${this._ignoreKeydown}
-          @value-changed="${this._valueChanged}"
+          @value-changed=${this._valueChanged}
           autocapitalize="none"
           autocomplete="off"
           spellcheck="false"
         ></paper-textarea>
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
       </div>
     `;

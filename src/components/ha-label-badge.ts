@@ -26,27 +26,27 @@ class HaLabelBadge extends LitElement {
       <div class="badge-container">
         <div class="label-badge" id="badge">
           <div
-            class="${classMap({
+            class=${classMap({
               value: true,
               big: Boolean(this.value && this.value.length > 4),
-            })}"
+            })}
           >
             <slot>
               ${this.icon && !this.value && !this.image
-                ? html` <ha-icon .icon=${this.icon}></ha-icon> `
+                ? html`<ha-icon .icon=${this.icon}></ha-icon>`
                 : ""}
               ${this.value && !this.image
-                ? html` <span>${this.value}</span> `
+                ? html`<span>${this.value}</span>`
                 : ""}
             </slot>
           </div>
           ${this.label
             ? html`
                 <div
-                  class="${classMap({
+                  class=${classMap({
                     label: true,
                     big: this.label.length > 5,
-                  })}"
+                  })}
                 >
                   <span>${this.label}</span>
                 </div>

@@ -72,6 +72,13 @@ export const demoPanels: Panels = {
     config: null,
     url_path: "map",
   },
+  energy: {
+    component_name: "energy",
+    icon: "hass:lightning-bolt",
+    title: "energy",
+    config: null,
+    url_path: "energy",
+  },
   // config: {
   //   component_name: "config",
   //   icon: "hass:cog",

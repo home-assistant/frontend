@@ -153,9 +153,8 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             </h3>
             <ul>
               ${this._related.entity.map((entityId) => {
-                const entity: HassEntity | undefined = this.hass.states[
-                  entityId
-                ];
+                const entity: HassEntity | undefined =
+                  this.hass.states[entityId];
                 if (!entity) {
                   return "";
                 }
@@ -163,7 +162,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                   <li>
                     <button
                       @click=${this._openMoreInfo}
-                      .entityId="${entityId}"
+                      .entityId=${entityId}
                       class="link"
                     >
                       ${entity.attributes.friendly_name || entityId}
@@ -188,7 +187,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                     <button
                       class="link"
                       @click=${this._openMoreInfo}
-                      .entityId="${groupId}"
+                      .entityId=${groupId}
                     >
                       ${group.attributes.friendly_name || group.entity_id}
                     </button>
@@ -203,9 +202,8 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             <h3>${this.hass.localize("ui.components.related-items.scene")}:</h3>
             <ul>
               ${this._related.scene.map((sceneId) => {
-                const scene: SceneEntity | undefined = this.hass.states[
-                  sceneId
-                ];
+                const scene: SceneEntity | undefined =
+                  this.hass.states[sceneId];
                 if (!scene) {
                   return "";
                 }
@@ -214,7 +212,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                     <button
                       class="link"
                       @click=${this._openMoreInfo}
-                      .entityId="${sceneId}"
+                      .entityId=${sceneId}
                     >
                       ${scene.attributes.friendly_name || scene.entity_id}
                     </button>
@@ -231,9 +229,8 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             </h3>
             <ul>
               ${this._related.automation.map((automationId) => {
-                const automation: HassEntity | undefined = this.hass.states[
-                  automationId
-                ];
+                const automation: HassEntity | undefined =
+                  this.hass.states[automationId];
                 if (!automation) {
                   return "";
                 }
@@ -242,7 +239,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                     <button
                       class="link"
                       @click=${this._openMoreInfo}
-                      .entityId="${automationId}"
+                      .entityId=${automationId}
                     >
                       ${automation.attributes.friendly_name ||
                       automation.entity_id}
@@ -260,9 +257,8 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
             </h3>
             <ul>
               ${this._related.script.map((scriptId) => {
-                const script: HassEntity | undefined = this.hass.states[
-                  scriptId
-                ];
+                const script: HassEntity | undefined =
+                  this.hass.states[scriptId];
                 if (!script) {
                   return "";
                 }
@@ -271,7 +267,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
                     <button
                       class="link"
                       @click=${this._openMoreInfo}
-                      .entityId="${scriptId}"
+                      .entityId=${scriptId}
                     >
                       ${script.attributes.friendly_name || script.entity_id}
                     </button>

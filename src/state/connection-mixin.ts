@@ -81,7 +81,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               serviceData,
               target
             )) as ServiceCallResponse;
-          } catch (err) {
+          } catch (err: any) {
             if (
               err.error?.code === ERR_CONNECTION_LOST &&
               serviceCallWillDisconnect(domain, service)
@@ -151,6 +151,9 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             integration,
             configFlow
           ),
+        loadFragmentTranslation: (fragment) =>
+          // @ts-ignore
+          this._loadFragmentTranslations(this.hass?.language, fragment),
         ...getState(),
         ...this._pendingHass,
       };

@@ -26,7 +26,8 @@ const includeDomains = ["counter", "input_number", "number", "sensor"];
 @customElement("hui-graph-header-footer")
 export class HuiGraphHeaderFooter
   extends LitElement
-  implements LovelaceHeaderFooter {
+  implements LovelaceHeaderFooter
+{
   public static async getConfigElement(): Promise<LovelaceHeaderFooterEditor> {
     await import("../editor/config-elements/hui-graph-footer-editor");
     return document.createElement("hui-graph-footer-editor");

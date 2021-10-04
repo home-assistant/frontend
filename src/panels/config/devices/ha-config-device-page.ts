@@ -6,7 +6,7 @@ import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { compare } from "../../../common/string/compare";
+import { stringCompare } from "../../../common/string/compare";
 import { slugify } from "../../../common/string/slugify";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-next";
@@ -103,25 +103,26 @@ export class HaConfigDevicePage extends LitElement {
           stateName: this._computeEntityName(entity),
         }))
         .sort((ent1, ent2) =>
-          compare(
+          stringCompare(
             ent1.stateName || `zzz${ent1.entity_id}`,
             ent2.stateName || `zzz${ent2.entity_id}`
           )
         )
   );
 
-  private _computeArea = memoizeOne((areas, device):
-    | AreaRegistryEntry
-    | undefined => {
-    if (!areas || !device || !device.area_id) {
-      return undefined;
+  private _computeArea = memoizeOne(
+    (areas, device): AreaRegistryEntry | undefined => {
+      if (!areas || !device || !device.area_id) {
+        return undefined;
+      }
+      return areas.find((area) => area.area_id === device.area_id);
     }
-    return areas.find((area) => area.area_id === device.area_id);
-  });
+  );
 
-  private _batteryEntity = memoizeOne((entities: EntityRegistryEntry[]):
-    | EntityRegistryEntry
-    | undefined => findBatteryEntity(this.hass, entities));
+  private _batteryEntity = memoizeOne(
+    (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
+      findBatteryEntity(this.hass, entities)
+  );
 
   private _batteryChargingEntity = memoizeOne(
     (entities: EntityRegistryEntry[]): EntityRegistryEntry | undefined =>
@@ -240,7 +241,11 @@ export class HaConfigDevicePage extends LitElement {
                     integrations.length
                       ? html`
                           <img
-                            src=${brandsUrl(integrations[0], "logo")}
+                            src=${brandsUrl({
+                              domain: integrations[0],
+                              type: "logo",
+                              darkOptimized: this.hass.selectedTheme?.dark,
+                            })}
                             referrerpolicy="no-referrer"
                             @load=${this._onImageLoad}
                             @error=${this._onImageError}
@@ -682,7 +687,7 @@ export class HaConfigDevicePage extends LitElement {
                 try {
                   // eslint-disable-next-line no-await-in-loop
                   result = await disableConfigEntry(this.hass, cnfg_entry);
-                } catch (err) {
+                } catch (err: any) {
                   showAlertDialog(this, {
                     title: this.hass.localize(
                       "ui.panel.config.integrations.config_entry.disable_error"
@@ -705,7 +710,7 @@ export class HaConfigDevicePage extends LitElement {
         }
         try {
           await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
-        } catch (err) {
+        } catch (err: any) {
           showAlertDialog(this, {
             title: this.hass.localize(
               "ui.panel.config.devices.update_device_error"

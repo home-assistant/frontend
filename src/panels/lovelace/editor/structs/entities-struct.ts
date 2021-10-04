@@ -1,4 +1,5 @@
-import { union, object, string, optional, boolean } from "superstruct";
+import { union, object, string, optional, boolean, enums } from "superstruct";
+import { TIMESTAMP_RENDERING_FORMATS } from "../../components/types";
 import { actionConfigStruct } from "./action-struct";
 
 export const entitiesConfigStruct = union([
@@ -8,7 +9,7 @@ export const entitiesConfigStruct = union([
     icon: optional(string()),
     image: optional(string()),
     secondary_info: optional(string()),
-    format: optional(string()),
+    format: optional(enums(TIMESTAMP_RENDERING_FORMATS)),
     state_color: optional(boolean()),
     tap_action: optional(actionConfigStruct),
     hold_action: optional(actionConfigStruct),

@@ -4,6 +4,7 @@ import {
   any,
   array,
   assert,
+  assign,
   boolean,
   number,
   object,
@@ -13,15 +14,18 @@ import {
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { GridCardConfig } from "../../cards/types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { HuiStackCardEditor } from "./hui-stack-card-editor";
 
-const cardConfigStruct = object({
-  type: string(),
-  cards: array(any()),
-  title: optional(string()),
-  square: optional(boolean()),
-  columns: optional(number()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    cards: array(any()),
+    title: optional(string()),
+    square: optional(boolean()),
+    columns: optional(number()),
+  })
+);
 
 @customElement("hui-grid-card-editor")
 export class HuiGridCardEditor extends HuiStackCardEditor {

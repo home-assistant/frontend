@@ -66,6 +66,8 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
 
   private _fetchUserPromise?: Promise<void>;
 
+  private _error?: string;
+
   private _throttleGetLogbookEntries = throttle(() => {
     this._getLogBookData();
   }, 10000);
@@ -187,7 +189,15 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         class=${classMap({ "no-header": !this._config!.title })}
       >
         <div class="content">
-          ${!this._logbookEntries
+          ${this._error
+            ? html`
+                <div class="no-entries">
+                  ${`${this.hass.localize(
+                    "ui.components.logbook.retrieval_error"
+                  )}: ${this._error}`}
+                </div>
+              `
+            : !this._logbookEntries
             ? html`
                 <ha-circular-progress
                   active
@@ -231,17 +241,22 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
     );
     const lastDate = this._lastLogbookDate || hoursToShowDate;
     const now = new Date();
+    let newEntries;
 
-    const [newEntries] = await Promise.all([
-      getLogbookData(
-        this.hass,
-        lastDate.toISOString(),
-        now.toISOString(),
-        this._configEntities!.map((entity) => entity.entity).toString(),
-        true
-      ),
-      this._fetchUserPromise,
-    ]);
+    try {
+      [newEntries] = await Promise.all([
+        getLogbookData(
+          this.hass,
+          lastDate.toISOString(),
+          now.toISOString(),
+          this._configEntities!.map((entity) => entity.entity).toString(),
+          true
+        ),
+        this._fetchUserPromise,
+      ]);
+    } catch (err: any) {
+      this._error = err.message;
+    }
 
     const logbookEntries = this._logbookEntries
       ? [...newEntries, ...this._logbookEntries]

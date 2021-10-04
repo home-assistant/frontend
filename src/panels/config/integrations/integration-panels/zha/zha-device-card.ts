@@ -2,6 +2,8 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-listbox/paper-listbox";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import memoizeOne from "memoize-one";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../../common/entity/compute_state_name";
 import "../../../../../components/buttons/ha-call-service-button";
@@ -20,12 +22,10 @@ import {
   EntityRegistryEntry,
   updateEntityRegistryEntry,
 } from "../../../../../data/entity_registry";
-import memoizeOne from "memoize-one";
 import { EntityRegistryStateEntry } from "../../../devices/ha-config-device-page";
-import { compare } from "../../../../../common/string/compare";
+import { stringCompare } from "../../../../../common/string/compare";
 import { getIeeeTail } from "./functions";
 import { slugify } from "../../../../../common/string/slugify";
-import { customElement, property, state } from "lit/decorators";
 
 @customElement("zha-device-card")
 class ZHADeviceCard extends SubscribeMixin(LitElement) {
@@ -49,7 +49,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
           stateName: this._computeEntityName(entity),
         }))
         .sort((ent1, ent2) =>
-          compare(
+          stringCompare(
             ent1.stateName || `zzz${ent1.entity_id}`,
             ent2.stateName || `zzz${ent2.entity_id}`
           )
@@ -91,9 +91,9 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
             ${entities.map(
               (entity) => html`
                 <state-badge
-                  @click="${this._openMoreInfo}"
+                  @click=${this._openMoreInfo}
                   .title=${entity.stateName!}
-                  .stateObj="${this.hass!.states[entity.entity_id]}"
+                  .stateObj=${this.hass!.states[entity.entity_id]}
                   slot="item-icon"
                 ></state-badge>
               `
@@ -186,7 +186,7 @@ class ZHADeviceCard extends SubscribeMixin(LitElement) {
         area_id: area,
       });
       this.device!.area_id = area;
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.config.integrations.config_flow.error_saving_area",

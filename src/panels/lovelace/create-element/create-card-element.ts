@@ -5,7 +5,6 @@ import "../cards/hui-entities-card";
 import "../cards/hui-entity-button-card";
 import "../cards/hui-entity-card";
 import "../cards/hui-glance-card";
-import "../cards/hui-history-graph-card";
 import "../cards/hui-horizontal-stack-card";
 import "../cards/hui-light-card";
 import "../cards/hui-sensor-card";
@@ -24,7 +23,6 @@ const ALWAYS_LOADED_TYPES = new Set([
   "button",
   "entity-button",
   "glance",
-  "history-graph",
   "horizontal-stack",
   "light",
   "sensor",
@@ -37,6 +35,25 @@ const LAZY_LOAD_TYPES = {
   "alarm-panel": () => import("../cards/hui-alarm-panel-card"),
   error: () => import("../cards/hui-error-card"),
   "empty-state": () => import("../cards/hui-empty-state-card"),
+  "energy-usage-graph": () =>
+    import("../cards/energy/hui-energy-usage-graph-card"),
+  "energy-solar-graph": () =>
+    import("../cards/energy/hui-energy-solar-graph-card"),
+  "energy-gas-graph": () => import("../cards/energy/hui-energy-gas-graph-card"),
+  "energy-devices-graph": () =>
+    import("../cards/energy/hui-energy-devices-graph-card"),
+  "energy-sources-table": () =>
+    import("../cards/energy/hui-energy-sources-table-card"),
+  "energy-distribution": () =>
+    import("../cards/energy/hui-energy-distribution-card"),
+  "energy-solar-consumed-gauge": () =>
+    import("../cards/energy/hui-energy-solar-consumed-gauge-card"),
+  "energy-grid-neutrality-gauge": () =>
+    import("../cards/energy/hui-energy-grid-neutrality-gauge-card"),
+  "energy-carbon-consumed-gauge": () =>
+    import("../cards/energy/hui-energy-carbon-consumed-gauge-card"),
+  "energy-date-selection": () =>
+    import("../cards/energy/hui-energy-date-selection-card"),
   grid: () => import("../cards/hui-grid-card"),
   starting: () => import("../cards/hui-starting-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
@@ -50,6 +67,8 @@ const LAZY_LOAD_TYPES = {
   "shopping-list": () => import("../cards/hui-shopping-list-card"),
   conditional: () => import("../cards/hui-conditional-card"),
   gauge: () => import("../cards/hui-gauge-card"),
+  "history-graph": () => import("../cards/hui-history-graph-card"),
+  "statistics-graph": () => import("../cards/hui-statistics-graph-card"),
   iframe: () => import("../cards/hui-iframe-card"),
   map: () => import("../cards/hui-map-card"),
   markdown: () => import("../cards/hui-markdown-card"),

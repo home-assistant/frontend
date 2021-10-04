@@ -1,40 +1,50 @@
-import { css, LitElement, svg } from "lit";
+import {
+  css,
+  LitElement,
+  PropertyValues,
+  html,
+  TemplateResult,
+  svg,
+} from "lit";
 import { customElement, property } from "lit/decorators";
-import { NODE_SIZE, SPACING } from "./hat-graph";
+import { NODE_SIZE, SPACING } from "./hat-graph-const";
 
+/**
+ * @attribute active
+ * @attribute track
+ */
 @customElement("hat-graph-node")
 export class HatGraphNode extends LitElement {
   @property() iconPath?: string;
 
   @property({ reflect: true, type: Boolean }) disabled?: boolean;
 
-  @property({ reflect: true, type: Boolean }) graphstart?: boolean;
+  @property({ reflect: true, type: Boolean }) graphStart?: boolean;
 
-  @property({ reflect: true, type: Boolean }) nofocus?: boolean;
+  @property({ type: Boolean, attribute: "nofocus" }) noFocus = false;
 
   @property({ reflect: true, type: Number }) badge?: number;
 
-  connectedCallback() {
-    super.connectedCallback();
-    if (!this.hasAttribute("tabindex") && !this.nofocus)
-      this.setAttribute("tabindex", "0");
+  protected updated(changedProps: PropertyValues) {
+    if (changedProps.has("noFocus")) {
+      if (!this.hasAttribute("tabindex") && !this.noFocus) {
+        this.setAttribute("tabindex", "0");
+      } else if (changedProps.get("noFocus") !== undefined && this.noFocus) {
+        this.removeAttribute("tabindex");
+      }
+    }
   }
 
-  render() {
-    const height = NODE_SIZE + (this.graphstart ? 2 : SPACING + 1);
+  protected render(): TemplateResult {
+    const height = NODE_SIZE + (this.graphStart ? 2 : SPACING + 1);
     const width = SPACING + NODE_SIZE;
-    return svg`
-    <svg
-    width="${width}px"
-    height="${height}px"
-    viewBox="-${Math.ceil(width / 2)} -${
-      this.graphstart
-        ? Math.ceil(height / 2)
-        : Math.ceil((NODE_SIZE + SPACING * 2) / 2)
-    } ${width} ${height}"
-    >
-      ${
-        this.graphstart
+    return html`
+      <svg
+        viewBox="-${Math.ceil(width / 2)} -${this.graphStart
+          ? Math.ceil(height / 2)
+          : Math.ceil((NODE_SIZE + SPACING * 2) / 2)} ${width} ${height}"
+      >
+        ${this.graphStart
           ? ``
           : svg`
           <path
@@ -45,41 +55,31 @@ export class HatGraphNode extends LitElement {
             "
             line-caps="round"
           />
-          `
-      }
-    <g class="node">
-      <circle
-        cx="0"
-        cy="0"
-        r="${NODE_SIZE / 2}"
-      />
-      }
-      ${
-        this.badge
-          ? svg`
+          `}
+        <g class="node">
+          <circle cx="0" cy="0" r=${NODE_SIZE / 2} />
+          }
+          ${this.badge
+            ? svg`
         <g class="number">
           <circle
             cx="8"
-            cy="${-NODE_SIZE / 2}"
+            cy=${-NODE_SIZE / 2}
             r="8"
           ></circle>
           <text
             x="8"
-            y="${-NODE_SIZE / 2}"
+            y=${-NODE_SIZE / 2}
             text-anchor="middle"
             alignment-baseline="middle"
           >${this.badge > 9 ? "9+" : this.badge}</text>
         </g>
       `
-          : ""
-      }
-      <g
-        style="pointer-events: none"
-        transform="translate(${-12} ${-12})"
-      >
-        ${this.iconPath ? svg`<path class="icon" d="${this.iconPath}"/>` : ""}
-      </g>
-    </g>
+            : ""}
+          <g style="pointer-events: none" transform="translate(${-12} ${-12})">
+            ${this.iconPath ? svg`<path class="icon" d=${this.iconPath}/>` : ""}
+          </g>
+        </g>
       </svg>
     `;
   }
@@ -89,12 +89,19 @@ export class HatGraphNode extends LitElement {
       :host {
         display: flex;
         flex-direction: column;
+        width: calc(var(--hat-graph-node-size) + var(--hat-graph-spacing));
+        height: calc(
+          var(--hat-graph-node-size) + var(--hat-graph-spacing) + 1px
+        );
       }
-      :host(.track) {
+      :host([graphStart]) {
+        height: calc(var(--hat-graph-node-size) + 2px);
+      }
+      :host([track]) {
         --stroke-clr: var(--track-clr);
         --icon-clr: var(--default-icon-clr);
       }
-      :host(.active) circle {
+      :host([active]) circle {
         --stroke-clr: var(--active-clr);
         --icon-clr: var(--default-icon-clr);
       }
@@ -108,13 +115,9 @@ export class HatGraphNode extends LitElement {
       :host([disabled]) circle {
         stroke: var(--disabled-clr);
       }
-      :host-context([disabled]) {
-        --stroke-clr: var(--disabled-clr);
-      }
-      :host([nofocus]):host-context(.active),
-      :host([nofocus]):host-context(:focus) {
-        --circle-clr: var(--active-clr);
-        --icon-clr: var(--default-icon-clr);
+      svg {
+        width: 100%;
+        height: 100%;
       }
       circle,
       path.connector {
@@ -136,24 +139,6 @@ export class HatGraphNode extends LitElement {
       }
       path.icon {
         fill: var(--icon-clr);
-      }
-
-      :host(.triggered) svg {
-        overflow: visible;
-      }
-      :host(.triggered) circle {
-        animation: glow 10s;
-      }
-      @keyframes glow {
-        0% {
-          filter: drop-shadow(0px 0px 5px rgba(var(--rgb-trigger-color), 0));
-        }
-        10% {
-          filter: drop-shadow(0px 0px 10px rgba(var(--rgb-trigger-color), 1));
-        }
-        100% {
-          filter: drop-shadow(0px 0px 5px rgba(var(--rgb-trigger-color), 0));
-        }
       }
     `;
   }

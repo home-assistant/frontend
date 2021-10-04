@@ -26,6 +26,14 @@
         "shopping_list": "Nakupovalni seznam",
         "states": "Pregled"
     },
+    "state": {
+        "default": {
+            "off": "Izključen",
+            "on": "Vključen",
+            "unavailable": "Ni na voljo",
+            "unknown": "Neznano"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -94,12 +102,69 @@
             "not_home": "Odsoten"
         }
     },
-    "state": {
-        "default": {
-            "off": "Izključen",
-            "on": "Vključen",
-            "unavailable": "Ni na voljo",
-            "unknown": "Neznano"
+    "supervisor": {
+        "addon": {
+            "configuration": {
+                "audio": {
+                    "default": "Privzeto",
+                    "header": "Zvok",
+                    "input": "Vhod",
+                    "output": "Izhod"
+                },
+                "network": {
+                    "container": "vsebnik",
+                    "disabled": "Onemogočeno",
+                    "header": "Omrežje",
+                    "host": "Gostitelj"
+                },
+                "no_configuration": "Ta dodatek ne izpostavlja konfiguracije, s katero bi se lahko ukvarjali...",
+                "options": {
+                    "edit_in_ui": "Urejanje v uporabniškem vmesniku",
+                    "edit_in_yaml": "Urejanje v storitvi YAML",
+                    "header": "Možnosti",
+                    "invalid_yaml": "Neveljaven YAML",
+                    "show_unused_optional": "Prikaži neuporabljene izbirne možnosti konfiguracije"
+                }
+            },
+            "dashboard": {
+                "changelog": "Dnevnik sprememb",
+                "cpu_usage": "poraba procesorja za delovanje dodatkov",
+                "ram_usage": "porabljen  RAM  za delovanje dodatkov"
+            },
+            "failed_to_reset": "Ni uspelo ponastaviti konfiguracije dodatka, {error}",
+            "failed_to_save": "Ni uspelo shraniti konfiguracije dodatka, {error}",
+            "state": {
+                "installed": "Dodatek je nameščen",
+                "not_available": "Dodatek ni na voljo v vašem sistemu",
+                "not_installed": "Dodatek ni nameščen"
+            }
+        },
+        "backup": {
+            "created": "Ustvarjeno"
+        },
+        "dashboard": {
+            "addon_stopped": "Dodatek je ustavljen",
+            "addons": "Nameščeni dodatki",
+            "no_addons": "Nimate nameščenih še nobenih dodatkov. Pojdite v trgovino z dodatki in začnite!"
+        },
+        "dialog": {
+            "hardware": {
+                "attributes": "Lastnosti",
+                "id": "ID",
+                "search": "Iskanje naprav",
+                "subsystem": "Podsistem",
+                "title": "Strojna oprema"
+            }
+        },
+        "panel": {
+            "dashboard": "Nadzorna plošča",
+            "store": "Trgovina z dodatki",
+            "system": "Sistem"
+        },
+        "system": {
+            "supervisor": {
+                "search": "Iskanje"
+            }
         }
     },
     "ui": {
@@ -309,6 +374,9 @@
                 "no_match": "Ni ustreznih območji",
                 "show_areas": "Prikaži območja"
             },
+            "attributes": {
+                "expansion_header": "Lastnosti"
+            },
             "blueprint-picker": {
                 "add_user": "Dodaj uporabnika",
                 "remove_user": "Odstrani uporabnika",
@@ -323,6 +391,12 @@
             },
             "date-range-picker": {
                 "end_date": "Končni datum",
+                "ranges": {
+                    "last_week": "Prejšnji teden",
+                    "this_week": "Ta teden",
+                    "today": "Danes",
+                    "yesterday": "Včeraj"
+                },
                 "select": "Izberite",
                 "start_date": "Začetni datum"
             },
@@ -409,10 +483,10 @@
                 "documentation": "dokumentacija",
                 "learn_adding_local_media": "Več o dodajanju medijskih vsebin  preberite v {documentation}.",
                 "local_media_files": "V mapo medijskih vsebin dodajte video, zvočne in slikovne datoteke, ki jih lahko pregledujete ali predvajate v brskalniku oz podprtih predvajalnikih.",
+                "media-player-browser": "Brskalnik za medijski predvajalnik",
                 "media_browsing_error": "Napaka pri brskanju po vsebinah",
                 "media_not_supported": "Predvajalnik ne podpira te vrste vsebin",
                 "media_player": "Medijski predvajalnik",
-                "media-player-browser": "Brskalnik za medijski predvajalnik",
                 "no_items": "Ni predmetov",
                 "no_local_media_found": "Ni bilo najdenega lokalnih medijskih vsebin",
                 "no_media_folder": "Videti je, da še niste ustvarili mape medijskih vsebin",
@@ -466,6 +540,13 @@
             },
             "service-picker": {
                 "service": "Storitev"
+            },
+            "statistic-picker": {
+                "learn_more": "Preberite več o statistiki",
+                "missing_entity": "Zakaj moja entiteta ni navedena?",
+                "no_match": "Ni bilo najdenih ujemajočih se statističnih podatkov",
+                "no_statistics": "Nimaš statistike.",
+                "statistic": "Statistika"
             },
             "target-picker": {
                 "add_area_id": "Izberite območje",
@@ -662,7 +743,6 @@
                         "integrations": "Integracije",
                         "logs": "Dnevniki",
                         "lovelace": "Nadzorne plošče Lovelace",
-                        "navigate_to": "Pojdi na {panel}",
                         "person": "Osebe",
                         "scene": "Scene",
                         "script": "Skripti",
@@ -746,6 +826,10 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Spremenite ime naprave"
                 }
+            },
+            "zha_reconfigure_device": {
+                "attribute": "Atribut",
+                "button_show": "Pokaži podrobnosti"
             }
         },
         "duration": {
@@ -791,7 +875,8 @@
                     "caption": "Območja",
                     "data_table": {
                         "area": "Območje",
-                        "devices": "Naprave"
+                        "devices": "Naprave",
+                        "entities": "Entitete"
                     },
                     "delete": {
                         "confirmation_text": "Vse naprave na tem območju bodo postale nedodeljene.",
@@ -803,6 +888,7 @@
                         "create": "Ustvari",
                         "default_name": "Novo območje",
                         "delete": "Izbriši",
+                        "linked_entities_caption": "Entitete",
                         "name": "Ime",
                         "name_required": "Ime je obvezno",
                         "unknown_error": "Neznana napaka",
@@ -844,7 +930,6 @@
                             "introduction": "Dejanja so tisto, kar bo Home Assistant izvedel, ko se sproži avtomatizacija.",
                             "learn_more": "Preberite več o dejanjih",
                             "name": "Akcija",
-                            "type_select": "Vrsta ukrepa",
                             "type": {
                                 "choose": {
                                     "add_option": "Dodaj možnost",
@@ -878,7 +963,6 @@
                                 "repeat": {
                                     "label": "Ponovite",
                                     "sequence": "Akcije",
-                                    "type_select": "Vrsta ponovite",
                                     "type": {
                                         "count": {
                                             "label": "Števec"
@@ -891,7 +975,8 @@
                                             "conditions": "Medtem pogoji",
                                             "label": "Medtem"
                                         }
-                                    }
+                                    },
+                                    "type_select": "Vrsta ponovite"
                                 },
                                 "scene": {
                                     "label": "Aktivirajte sceno"
@@ -911,6 +996,7 @@
                                     "wait_template": "Čakalna predloga"
                                 }
                             },
+                            "type_select": "Vrsta ukrepa",
                             "unsupported_action": "Ni podpore za UI za dejanje: {action}"
                         },
                         "alias": "Ime",
@@ -929,7 +1015,6 @@
                             "introduction": "Pogoji so izbirni in bodo preprečili nadaljnjo izvedbo, razen če so izpolnjeni vsi pogoji.",
                             "learn_more": "Preberite več o pogojih",
                             "name": "Stanje",
-                            "type_select": "Vrsta pogoja",
                             "type": {
                                 "and": {
                                     "label": "In"
@@ -994,6 +1079,7 @@
                                     "zone": "Območje"
                                 }
                             },
+                            "type_select": "Vrsta pogoja",
                             "unsupported_condition": "Brez podpore za UI za pogoj: {condition}"
                         },
                         "copy_to_clipboard": "Kopiraj v odložišče",
@@ -1033,7 +1119,6 @@
                             "introduction": "Sprožilci so tisto, kar začne obdelavo pravila avtomatizacije. Za isto pravilo je mogoče določiti več sprožilcev. Ko se sprožilec sproži, bo Home Assistant preveril morebitne pogoje in izvedel dejanje.",
                             "learn_more": "Preberite več o sprožilcih",
                             "name": "Sprožilec",
-                            "type_select": "Tip sprožilca",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -1098,17 +1183,17 @@
                                     "label": "Predloga",
                                     "value_template": "Vrednostna predloga"
                                 },
-                                "time_pattern": {
-                                    "hours": "Ur",
-                                    "label": "Časovni vzorec",
-                                    "minutes": "Minut",
-                                    "seconds": "Sekund"
-                                },
                                 "time": {
                                     "at": "Ob",
                                     "label": "Čas",
                                     "type_input": "Vrednost pomočnika za datum/čas",
                                     "type_value": "Fiksni čas"
+                                },
+                                "time_pattern": {
+                                    "hours": "Ur",
+                                    "label": "Časovni vzorec",
+                                    "minutes": "Minut",
+                                    "seconds": "Sekund"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -1123,6 +1208,7 @@
                                     "zone": "Območje"
                                 }
                             },
+                            "type_select": "Tip sprožilca",
                             "unsupported_platform": "Brez podpore za UI za platformo: {platform}"
                         },
                         "unsaved_confirm": "Imate neshranjene spremembe. Ste prepričani, da želite zapustiti stran?"
@@ -1214,6 +1300,7 @@
                             "title": "Alexa"
                         },
                         "connected": "Povezan",
+                        "connecting": "Povezovanje...",
                         "connection_status": "Stanje povezave v oblaku",
                         "fetching_subscription": "Pridobivam naročnino...",
                         "google": {
@@ -1242,6 +1329,7 @@
                         "remote": {
                             "access_is_being_prepared": "Oddaljeni dostop se pripravlja. Obvestili vas bomo, ko bo pripravljen.",
                             "certificate_info": "Informacije o potrdilu",
+                            "connected": "Povezan",
                             "info": "Home Assistant Cloud zagotavlja varno oddaljeno povezavo do vašega primerka, medtem ko ste zunaj doma.",
                             "instance_is_available": "Vaš primerek je na voljo na",
                             "instance_will_be_available": "Vaš primerek bo na voljo na",
@@ -1266,9 +1354,9 @@
                             "loading": "Nalaganje",
                             "manage": "Upravljanje",
                             "no_hooks_yet": "Izgleda, da še nimate webhooks-ov. Začnite s konfiguracijo ",
+                            "no_hooks_yet2": " ali z ustvarjanjem ",
                             "no_hooks_yet_link_automation": "webhook avtomatizacije",
                             "no_hooks_yet_link_integration": "integracijo, ki temelji na Webhook-u",
-                            "no_hooks_yet2": " ali z ustvarjanjem ",
                             "title": "Webhooks"
                         }
                     },
@@ -1384,10 +1472,12 @@
                     "section": {
                         "core": {
                             "core_config": {
+                                "currency": "valuta",
                                 "edit_requires_storage": "Urejevalnik je onemogočen, ker so nastavitve shranjene v configuration.yaml.",
                                 "elevation": "Nadmorska višina",
                                 "elevation_meters": "metrov",
                                 "external_url": "Zunanji URL",
+                                "find_currency_value": "Poiščite svojo vrednost",
                                 "imperial_example": "Fahrenheit, funtov",
                                 "internal_url": "Notranji URL",
                                 "latitude": "Zemljepisna širina",
@@ -1512,7 +1602,48 @@
                     "scripts": "Skripte",
                     "unknown_error": "Neznana napaka",
                     "unnamed_device": "Neimenovana naprava",
-                    "update": "Posodobite"
+                    "update": "Posodobite",
+                    "update_device_error": "Posodabljanje naprave ni uspelo"
+                },
+                "energy": {
+                    "device_consumption": {
+                        "dialog": {
+                            "selected_stat_intro": "Izberite entiteto, ki predstavlja porabo energije naprave."
+                        },
+                        "learn_more": "Več informacij o tem, kako začeti.",
+                        "sub": "Sledenje porabi energije posameznih naprav omogoča Home Assistantu, da razčleni vašo porabo energije glede na napravo.",
+                        "title": "Posamezne naprave"
+                    },
+                    "grid": {
+                        "flow_dialog": {
+                            "from": {
+                                "cost_number": "Uporaba statične cene",
+                                "cost_number_input": "Cena na kWh",
+                                "cost_number_suffix": "{valuta}/kWh"
+                            },
+                            "to": {
+                                "cost_entity": "Uporabite entiteto s trenutno stopnjo",
+                                "cost_entity_input": "Entiteta s trenutno stopnjo",
+                                "cost_number": "uporabi statično vrednost",
+                                "cost_number_input": "Cena na kWh",
+                                "cost_number_suffix": "{valuta}/kWh",
+                                "cost_para": "Ali dobite denar nazaj, ko vrnete energijo v omrežje?",
+                                "cost_stat": "Uporabite entiteto, ki sledi skupnemu znesku prejetega denarja.",
+                                "cost_stat_input": "Entiteta skupnega nadomestila",
+                                "energy_stat": "Energija, vrnjena v omrežje (kWh)",
+                                "header": "Konfiguracija proizvodnje energije v omrežje",
+                                "no_cost": "Ne dobim nazaj denarja",
+                                "paragraph": "Proizvodnja v omrežje je energija, ki se izvaših  sončnih kolektorjev pretaka v električno omrežje."
+                            }
+                        },
+                        "learn_more": "Več informacij o tem, kako začeti."
+                    },
+                    "solar": {
+                        "learn_more": "Več informacij o tem, kako začeti.",
+                        "stat_production": "Vaša proizvodnja sončne energije",
+                        "sub": "Dovolite da Home Assistant spremlja vaše sončne kolektorje in vam omogoči vpogled v njihovo delovanje.",
+                        "title": "Sončni kolektorji"
+                    }
                 },
                 "entities": {
                     "caption": "Entitete",
@@ -1564,10 +1695,6 @@
                         }
                     }
                 },
-                "filtering": {
-                    "clear": "Počisti",
-                    "filtering_by": "Filtriranje po"
-                },
                 "header": "Konfiguriraj Home Assistant",
                 "helpers": {
                     "caption": "Pomočniki",
@@ -1616,16 +1743,11 @@
                     "path_configuration": "Pot do configuration.yaml: {path}",
                     "server": "strežnik",
                     "source": "Vir:",
-                    "system_health_error": "Komponenta \"system health\" ni naložena. Dodajte \"system_health:\" v svoj configuration.yaml",
                     "system_health": {
                         "manage": "Upravljaj",
                         "more_info": "več informacij"
-                    }
-                },
-                "integration_panel_move": {
-                    "link_integration_page": "Stran za integracije",
-                    "missing_zha": "Ali manjka konfiguracijska plošča ZHA? Premaknjen je bil v vnos ZHA na {integrations_page} .",
-                    "missing_zwave": "Ali manjka konfiguracijska plošča Z-Wave? Premaknili so ga v vnos Z-Wave na {integrations_page} ."
+                    },
+                    "system_health_error": "Komponenta \"system health\" ni naložena. Dodajte \"system_health:\" v svoj configuration.yaml"
                 },
                 "integrations": {
                     "add_integration": "Dodaj integracijo",
@@ -1644,7 +1766,6 @@
                         "hub": "Povezan prek",
                         "manuf": "naredil: {manufacturer}",
                         "no_area": "Brez območja",
-                        "options": "Možnosti",
                         "reload": "Znova naloži",
                         "reload_confirm": "Integracija je bila znova naložena",
                         "reload_restart_confirm": "Znova zaženi Home Assistant, da dokončate ponovno nalaganje te integracije",
@@ -1665,7 +1786,6 @@
                             "open_site": "Odprite spletno stran"
                         },
                         "finish": "Dokončaj",
-                        "loading_first_time": "Prosimo, počakajte, da se integracija namesti",
                         "not_all_required_fields": "Vsa zahtevana polja niso izpolnjena.",
                         "submit": "Pošlji"
                     },
@@ -1680,7 +1800,6 @@
                         "confirm_delete_ignore_title": "Ali želite prenehati ignorirati {name}?",
                         "confirm_ignore": "Ali ste prepričani, da ne želite nastaviti te integracije? To lahko razveljavite s klikom na 'Prikaži prezrte integracije' v prelivnem meniju v zgornjem desnem kotu.",
                         "confirm_ignore_title": "Prezri odkritje {name}?",
-                        "hide_ignored": "Skrij prezrte integracije",
                         "ignore": "Ignoriraj",
                         "ignored": "Ignorirano",
                         "show_ignored": "Pokaži prezrte integracije",
@@ -1791,7 +1910,6 @@
                     }
                 },
                 "mqtt": {
-                    "button": "Konfiguriraj",
                     "description_listen": "Poslušajte temi",
                     "description_publish": "Objavi paket",
                     "listening_to": "Poslušanje",
@@ -1805,7 +1923,6 @@
                     "topic": "tema"
                 },
                 "ozw": {
-                    "button": "Nastavi",
                     "common": {
                         "controller": "Krmilnik",
                         "instance": "Instanca",
@@ -1830,6 +1947,11 @@
                         "nodes": "Vozlišča",
                         "select_instance": "Izberi instanco"
                     },
+                    "network": {
+                        "header": "Upravljanje omrežja",
+                        "introduction": "Upravljajte omrežne funkcije.",
+                        "node_count": "{count} vozlišč"
+                    },
                     "network_status": {
                         "details": {
                             "driverallnodesqueried": "Poizvedena so bila vsa vozlišča",
@@ -1850,10 +1972,9 @@
                         "starting": "Zaganja se",
                         "unknown": "Neznano"
                     },
-                    "network": {
-                        "header": "Upravljanje omrežja",
-                        "introduction": "Upravljajte omrežne funkcije.",
-                        "node_count": "{count} vozlišč"
+                    "node": {
+                        "button": "Podrobnosti o vozlišču",
+                        "not_found": "Vozlišča ni mogoče najti"
                     },
                     "node_config": {
                         "header": "Konfiguracija vozlišča",
@@ -1882,10 +2003,6 @@
                         "static": "Pridobivanje statičnih vrednosti iz naprave.",
                         "versions": "Pridobivanje informacij o različicah vdelane programske opreme in o ukaznih razredov",
                         "wakeup": "Nastavljanje podpore za vrste in sporočila za prebujanje"
-                    },
-                    "node": {
-                        "button": "Podrobnosti o vozlišču",
-                        "not_found": "Vozlišča ni mogoče najti"
                     },
                     "nodes_table": {
                         "failed": "Neuspešno",
@@ -1983,6 +2100,7 @@
                         "add_scene": "Dodajanje scene",
                         "delete_confirm": "Ali ste prepričani, da želite izbrisati to sceno?",
                         "delete_scene": "Brisanje scene",
+                        "duplicate": "Podvoji",
                         "edit_scene": "Urejanje scene",
                         "header": "Urejevalnik scen",
                         "headers": {
@@ -2187,7 +2305,6 @@
                         "search_again": "Ponovno iskanje",
                         "spinner": "Iskanje ZHA Zigbee naprav..."
                     },
-                    "button": "Konfiguriraj",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributi izbrane gruče",
                         "get_zigbee_attribute": "Pridobite Zigbee Atribute",
@@ -2292,52 +2409,7 @@
                     "introduction": "Območja omogočajo določitev določenih regij. Ko je oseba znotraj tega območja, bo stanje prevzelo njegovo ime. Območja se lahko uporabljajo tudi kot sprožilec ali pogoj v avtomatizacijah.",
                     "no_zones_created_yet": "Izgleda, da še niste ustvarili nobenih con."
                 },
-                "zwave_js": {
-                    "add_node": {
-                        "view_device": "Ogled naprave"
-                    },
-                    "button": "Nastavi",
-                    "common": {
-                        "add_node": "Dodaj vozlišče",
-                        "close": "Zapri",
-                        "home_id": "ID doma",
-                        "network": "Omrežje",
-                        "node_id": "ID vozlišča",
-                        "remove_node": "Odstrani vozlišče"
-                    },
-                    "dashboard": {
-                        "driver_version": "Različica gonilnika",
-                        "dump_dead_nodes_text": "Nekatera vaša vozlišča se niso odzvala in so domnevno mrtva. Ta ne bodo v celoti izvožena.",
-                        "home_id": "ID doma"
-                    },
-                    "device_info": {
-                        "node_ready": "Vozlišče pripravljeno",
-                        "node_status": "Stanje vozlišča",
-                        "zwave_info": "Z-Wave Informacije"
-                    },
-                    "navigation": {
-                        "network": "Omrežje"
-                    },
-                    "network_status": {
-                        "connected": "Povezan",
-                        "connecting": "Povezovanje",
-                        "unknown": "Neznano"
-                    },
-                    "node_status": {
-                        "alive": "Živ",
-                        "asleep": "Spi",
-                        "awake": "Buden",
-                        "dead": "Mrtev",
-                        "unknown": "Neznano"
-                    },
-                    "remove_node": {
-                        "exclusion_failed": "Vozlišča ni bilo mogoče odstraniti. Za več informacij preverite dnevnike.",
-                        "exclusion_finished": "Vozlišče {id} je bilo odstranjeno iz vašega Z-Wave omrežja.",
-                        "title": "Odstrani Z-Wave vozlišče"
-                    }
-                },
                 "zwave": {
-                    "button": "Konfiguriraj",
                     "common": {
                         "index": "Indeks",
                         "instance": "Instanca",
@@ -2420,6 +2492,71 @@
                     "values": {
                         "header": "Vrednosti vozlišča"
                     }
+                },
+                "zwave_js": {
+                    "add_node": {
+                        "view_device": "Ogled naprave"
+                    },
+                    "common": {
+                        "add_node": "Dodaj vozlišče",
+                        "close": "Zapri",
+                        "home_id": "ID doma",
+                        "network": "Omrežje",
+                        "node_id": "ID vozlišča",
+                        "remove_node": "Odstrani vozlišče"
+                    },
+                    "dashboard": {
+                        "driver_version": "Različica gonilnika",
+                        "dump_dead_nodes_text": "Nekatera vaša vozlišča se niso odzvala in so domnevno mrtva. Ta ne bodo v celoti izvožena.",
+                        "home_id": "ID doma"
+                    },
+                    "device_info": {
+                        "heal_node": "Pozdravi Vozlišče",
+                        "node_ready": "Vozlišče pripravljeno",
+                        "node_status": "Stanje vozlišča",
+                        "remove_failed": "Odstranite nedelujočo napravo",
+                        "zwave_info": "Z-Wave Informacije"
+                    },
+                    "heal_node": {
+                        "healing_complete": "{naprava} je bila ozdravljena.",
+                        "healing_failed": "{naprave} ni bilo mogoče ozdraviti.",
+                        "healing_failed_check_logs": "Dodatne informacije so morebiti na voljo v dnevnikih.",
+                        "in_progress": "Poteka zdravljenje naprave {naprava}.",
+                        "introduction": "Sporočite napravi {device}, naj posodobi svoje poti nazaj v krmilnik. To lahko pomaga pri težavah s komunikacijo, če ste pred kratkim premaknili napravo ali krmilnik.",
+                        "network_heal_in_progress": "Zdravljenje omrežja Z-Wave že poteka. Pred zdravljenjem posamezne naprave počakajte, da se zaključi.",
+                        "start_heal": "Ozdravi napravo",
+                        "title": "Zdravljenje naprave Z-Wave",
+                        "traffic_warning": "Postopek zdravljenja ustvarja veliko prometa v omrežju Z-Wave. Zaradi tega se lahko naprave med zdravljenjem odzivajo počasi (ali se sploh ne odzivajo)."
+                    },
+                    "navigation": {
+                        "logs": "Dnevniki",
+                        "network": "Omrežje"
+                    },
+                    "network_status": {
+                        "connected": "Povezan",
+                        "connecting": "Povezovanje",
+                        "unknown": "Neznano"
+                    },
+                    "node_status": {
+                        "alive": "Živ",
+                        "asleep": "Spi",
+                        "awake": "Buden",
+                        "dead": "Mrtev",
+                        "unknown": "Neznano"
+                    },
+                    "remove_failed_node": {
+                        "in_progress": "Odstranjevanje naprave je v teku.",
+                        "introduction": "Odstranite nedelujočo napravo iz omrežja Z-Wave. To uporabite, če naprave ne morete normalno izključiti, ker je pokvarjena.",
+                        "removal_failed": "Naprave ni bilo mogoče odstraniti iz vašega omrežja Z-Wave.",
+                        "removal_finished": "Vozlišče {id} je bilo odstranjeno iz vašega Z-Wave omrežja.",
+                        "remove_device": "Odstranite napravo",
+                        "title": "Odstranite nedelujočo napravo Z-Wave"
+                    },
+                    "remove_node": {
+                        "exclusion_failed": "Vozlišča ni bilo mogoče odstraniti. Za več informacij preverite dnevnike.",
+                        "exclusion_finished": "Vozlišče {id} je bilo odstranjeno iz vašega Z-Wave omrežja.",
+                        "title": "Odstrani Z-Wave vozlišče"
+                    }
                 }
             },
             "custom": {
@@ -2495,20 +2632,9 @@
                     }
                 }
             },
-            "history": {
-                "ranges": {
-                    "last_week": "Prejšnji teden",
-                    "this_week": "Ta teden",
-                    "today": "Danes",
-                    "yesterday": "Včeraj"
-                }
-            },
-            "logbook": {
-                "ranges": {
-                    "last_week": "Prejšnji teden",
-                    "this_week": "Ta teden",
-                    "today": "Danes",
-                    "yesterday": "Včeraj"
+            "energy": {
+                "charts": {
+                    "by_device": "Poraba naprave"
                 }
             },
             "lovelace": {
@@ -2617,7 +2743,6 @@
                         "entities": {
                             "description": "Kartica entitet je najpogostejša vrsta kartice. Predmete združuje v sezname.",
                             "edit_special_row": "Podrobnosti te vrstice si oglejte s klikom na gumb za urejanje",
-                            "entity_row_editor": "Urejevalnik vrstic entitete",
                             "entity_row": {
                                 "attribute": "Atribut",
                                 "button": "Gumb",
@@ -2629,6 +2754,7 @@
                                 "section": "Sekcija",
                                 "weblink": "Spletna povezava"
                             },
+                            "entity_row_editor": "Urejevalnik vrstic entitete",
                             "name": "Subjekti",
                             "secondary_info_values": {
                                 "brightness": "Svetlost",
@@ -2655,6 +2781,7 @@
                         "gauge": {
                             "description": "Gauge kartica je osnovna kartica, ki omogoča vizualno videnje podatkov senzorjev.",
                             "name": "Merilnik",
+                            "needle_gauge": "Prikaz kot iglični merilnik?",
                             "severity": {
                                 "define": "Določi resnost?",
                                 "green": "Zelena",
@@ -2667,6 +2794,7 @@
                             "attribute": "Atribut",
                             "camera_image": "Subjekt kamere",
                             "camera_view": "Pogled kamere",
+                            "days_to_show": "Dnevi za prikaz",
                             "double_tap_action": "Dejanje dvojnega dotika",
                             "entities": "Subjekti",
                             "entity": "Subjekt",
@@ -2779,6 +2907,10 @@
                             "integration_not_loaded": "Ta kartica zahteva nastavitev integracije `shopping_list`.",
                             "name": "Nakupovalni seznam"
                         },
+                        "statistics-graph": {
+                            "description": "Kartica Graf Statistike omogoča prikaz grafa statistike za vsako od navedenih entitet.",
+                            "name": "Graf statistike"
+                        },
                         "thermostat": {
                             "description": "Kartica Termostat omogoča nadzor nad vašo klimatsko enoto. Omogoča spreminjanje temperature in načina dela.",
                             "name": "Termostat"
@@ -2848,6 +2980,12 @@
                         "tab_badges": "Značke",
                         "tab_settings": "Nastavitve",
                         "tab_visibility": "Vidljivost",
+                        "type": "Vrsta pogleda",
+                        "types": {
+                            "masonry": "Masonry (privzeto)",
+                            "panel": "Panel (1 kartica)",
+                            "sidebar": "Stranska vrstica"
+                        },
                         "visibility": {
                             "select_users": "Izberite, kateri uporabniki bi morali videti ta pogled v navigaciji"
                         }
@@ -2898,7 +3036,6 @@
                         "unsaved_changes": "Neshranjene spremembe"
                     },
                     "save_config": {
-                        "cancel": "Pozabi",
                         "close": "Zapri",
                         "empty_config": "Začnite s prazno nadzorno ploščo",
                         "header": "Prevzemite nadzor nad lovelace vmesnikom",
@@ -2927,8 +3064,6 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "To prikaže prvo kartico v polni širini. Ostale kartice v tem pogledu in značke ne bodo prikazane.",
-                            "title": "Način panel?",
                             "warning_multiple_cards": "Ta pogled vsebuje več kartic, na plošči je lahko prikazana največ ena kartica."
                         }
                     }
@@ -3217,18 +3352,18 @@
                     "prompt_copy_token": "Kopirate žeton za dostop. Ta ne bo prikazan znova.",
                     "prompt_name": "Dajte žetonu ime"
                 },
+                "mfa": {
+                    "confirm_disable": "Ali ste prepričani, da želite onemogočiti {name} ?",
+                    "disable": "Onemogoči",
+                    "enable": "Omogoči",
+                    "header": "Večfaktorski moduli za preverjanje pristnosti"
+                },
                 "mfa_setup": {
                     "close": "Zapri",
                     "step_done": "Nastavitev je bila opravljena za {step}",
                     "submit": "Pošlji",
                     "title_aborted": "Prekinjeno",
                     "title_success": "Uspeh!"
-                },
-                "mfa": {
-                    "confirm_disable": "Ali ste prepričani, da želite onemogočiti {name} ?",
-                    "disable": "Onemogoči",
-                    "enable": "Omogoči",
-                    "header": "Večfaktorski moduli za preverjanje pristnosti"
                 },
                 "push_notifications": {
                     "add_device_prompt": {
@@ -3270,6 +3405,12 @@
                     "link_promo": "Preberite več o temah",
                     "primary_color": "Primarna barva",
                     "reset": "Ponastavi"
+                },
+                "time_format": {
+                    "formats": {
+                        "12": "12 ur (AM / PM)",
+                        "24": "24 ur"
+                    }
                 },
                 "vibrate": {
                     "description": "V tej napravi omogočite ali onemogočite vibracije pri krmiljenju naprav.",

@@ -17,8 +17,9 @@ import {
 import { customElement, property } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
-import relativeTime from "../../common/datetime/relative_time";
+import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
+import { toggleAttribute } from "../../common/dom/toggle_attribute";
 import { LogbookEntry } from "../../data/logbook";
 import {
   ChooseAction,
@@ -65,11 +66,7 @@ class RenderedTimeTracker {
   renderTime(from: Date, to: Date): void {
     this.entries.push(html`
       <ha-timeline label>
-        ${relativeTime(from, this.hass.localize, {
-          compareTime: to,
-          includeTense: false,
-        })}
-        later
+        ${relativeTime(from, this.hass.locale, to, false)} later
       </ha-timeline>
     `);
     this.lastReportedTime = to;
@@ -121,9 +118,8 @@ class LogbookRenderer {
       return;
     }
 
-    const previousEntryDate = this.pendingItems[
-      this.pendingItems.length - 1
-    ][0];
+    const previousEntryDate =
+      this.pendingItems[this.pendingItems.length - 1][0];
 
     // If logbook entry is too long after the last one,
     // add a time passed label
@@ -243,7 +239,7 @@ class ActionRenderer {
     let data;
     try {
       data = getDataFromPath(this.trace.config, path);
-    } catch (err) {
+    } catch (err: any) {
       this._renderEntry(
         path,
         `Unable to extract path ${path}. Download trace and report as bug`
@@ -325,13 +321,15 @@ class ActionRenderer {
     if (defaultExecuted) {
       this._renderEntry(choosePath, `${name}: Default action executed`);
     } else if (chooseTrace.result) {
+      const choiceNumeric =
+        chooseTrace.result.choice !== "default"
+          ? chooseTrace.result.choice + 1
+          : undefined;
       const choiceConfig = this._getDataFromPath(
         `${this.keys[index]}/choose/${chooseTrace.result.choice}`
       ) as ChooseActionChoice | undefined;
       const choiceName = choiceConfig
-        ? `${
-            choiceConfig.alias || `Choice ${chooseTrace.result.choice}`
-          } executed`
+        ? `${choiceConfig.alias || `Option ${choiceNumeric}`} executed`
         : `Error: ${chooseTrace.error}`;
       this._renderEntry(choosePath, `${name}: ${choiceName}`);
     } else {
@@ -553,7 +551,7 @@ export class HaAutomationTracer extends LitElement {
       this.shadowRoot!.querySelectorAll<HaTimeline>(
         "ha-timeline[data-path]"
       ).forEach((el) => {
-        el.toggleAttribute("selected", this.selectedPath === el.dataset.path);
+        toggleAttribute(el, "selected", this.selectedPath === el.dataset.path);
         if (!this.allowPick || el.tabIndex === 0) {
           return;
         }

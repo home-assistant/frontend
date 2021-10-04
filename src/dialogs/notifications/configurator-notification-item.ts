@@ -33,7 +33,7 @@ export class HuiConfiguratorNotificationItem extends LitElement {
           )}
         </div>
 
-        <mwc-button slot="actions" @click="${this._handleClick}"
+        <mwc-button slot="actions" @click=${this._handleClick}
           >${computeStateDisplay(
             this.hass.localize,
             this.notification,

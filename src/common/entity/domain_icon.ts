@@ -5,6 +5,7 @@ import { HassEntity } from "home-assistant-js-websocket";
  * Optionally pass in a state to influence the domain icon.
  */
 import { DEFAULT_DOMAIN_ICON, FIXED_DOMAIN_ICONS } from "../const";
+import { alarmPanelIcon } from "./alarm_panel_icon";
 import { binarySensorIcon } from "./binary_sensor_icon";
 import { coverIcon } from "./cover_icon";
 import { sensorIcon } from "./sensor_icon";
@@ -18,18 +19,7 @@ export const domainIcon = (
 
   switch (domain) {
     case "alarm_control_panel":
-      switch (compareState) {
-        case "armed_home":
-          return "hass:bell-plus";
-        case "armed_night":
-          return "hass:bell-sleep";
-        case "disarmed":
-          return "hass:bell-outline";
-        case "triggered":
-          return "hass:bell-ring";
-        default:
-          return "hass:bell";
-      }
+      return alarmPanelIcon(compareState);
 
     case "binary_sensor":
       return binarySensorIcon(compareState, stateObj);
@@ -43,7 +33,17 @@ export const domainIcon = (
         : "hass:air-humidifier";
 
     case "lock":
-      return compareState === "unlocked" ? "hass:lock-open" : "hass:lock";
+      switch (compareState) {
+        case "unlocked":
+          return "hass:lock-open";
+        case "jammed":
+          return "hass:lock-alert";
+        case "locking":
+        case "unlocking":
+          return "hass:lock-clock";
+        default:
+          return "hass:lock";
+      }
 
     case "media_player":
       return compareState === "playing" ? "hass:cast-connected" : "hass:cast";

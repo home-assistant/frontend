@@ -1,0 +1,135 @@
+import { mdiBatteryHigh } from "@mdi/js";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { customElement, property, state } from "lit/decorators";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-dialog";
+import {
+  BatterySourceTypeEnergyPreference,
+  emptyBatteryEnergyPreference,
+} from "../../../../data/energy";
+import { HassDialog } from "../../../../dialogs/make-dialog-manager";
+import { haStyle, haStyleDialog } from "../../../../resources/styles";
+import { HomeAssistant } from "../../../../types";
+import { EnergySettingsBatteryDialogParams } from "./show-dialogs-energy";
+import "@material/mwc-button/mwc-button";
+import "../../../../components/entity/ha-statistic-picker";
+
+const energyUnits = ["kWh"];
+const energyDeviceClasses = ["energy"];
+
+@customElement("dialog-energy-battery-settings")
+export class DialogEnergyBatterySettings
+  extends LitElement
+  implements HassDialog<EnergySettingsBatteryDialogParams>
+{
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
+  @state() private _params?: EnergySettingsBatteryDialogParams;
+
+  @state() private _source?: BatterySourceTypeEnergyPreference;
+
+  @state() private _error?: string;
+
+  public async showDialog(
+    params: EnergySettingsBatteryDialogParams
+  ): Promise<void> {
+    this._params = params;
+    this._source = params.source
+      ? { ...params.source }
+      : (this._source = emptyBatteryEnergyPreference());
+  }
+
+  public closeDialog(): void {
+    this._params = undefined;
+    this._source = undefined;
+    this._error = undefined;
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
+  }
+
+  protected render(): TemplateResult {
+    if (!this._params || !this._source) {
+      return html``;
+    }
+
+    return html`
+      <ha-dialog
+        open
+        .heading=${html`<ha-svg-icon
+            .path=${mdiBatteryHigh}
+            style="--mdc-icon-size: 32px;"
+          ></ha-svg-icon>
+          Configure battery system`}
+        @closed=${this.closeDialog}
+      >
+        ${this._error ? html`<p class="error">${this._error}</p>` : ""}
+
+        <ha-statistic-picker
+          .hass=${this.hass}
+          .includeUnitOfMeasurement=${energyUnits}
+          .includeDeviceClasses=${energyDeviceClasses}
+          .value=${this._source.stat_energy_to}
+          .label=${`Energy going in to the battery (kWh)`}
+          entities-only
+          @value-changed=${this._statisticToChanged}
+        ></ha-statistic-picker>
+
+        <ha-statistic-picker
+          .hass=${this.hass}
+          .includeUnitOfMeasurement=${energyUnits}
+          .includeDeviceClasses=${energyDeviceClasses}
+          .value=${this._source.stat_energy_from}
+          .label=${`Energy coming out of the battery (kWh)`}
+          entities-only
+          @value-changed=${this._statisticFromChanged}
+        ></ha-statistic-picker>
+
+        <mwc-button @click=${this.closeDialog} slot="secondaryAction">
+          ${this.hass.localize("ui.common.cancel")}
+        </mwc-button>
+        <mwc-button
+          @click=${this._save}
+          .disabled=${!this._source.stat_energy_from ||
+          !this._source.stat_energy_to}
+          slot="primaryAction"
+        >
+          ${this.hass.localize("ui.common.save")}
+        </mwc-button>
+      </ha-dialog>
+    `;
+  }
+
+  private _statisticToChanged(ev: CustomEvent<{ value: string }>) {
+    this._source = { ...this._source!, stat_energy_to: ev.detail.value };
+  }
+
+  private _statisticFromChanged(ev: CustomEvent<{ value: string }>) {
+    this._source = { ...this._source!, stat_energy_from: ev.detail.value };
+  }
+
+  private async _save() {
+    try {
+      await this._params!.saveCallback(this._source!);
+      this.closeDialog();
+    } catch (err: any) {
+      this._error = err.message;
+    }
+  }
+
+  static get styles(): CSSResultGroup {
+    return [
+      haStyle,
+      haStyleDialog,
+      css`
+        ha-dialog {
+          --mdc-dialog-max-width: 430px;
+        }
+      `,
+    ];
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "dialog-energy-battery-settings": DialogEnergyBatterySettings;
+  }
+}

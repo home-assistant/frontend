@@ -1,5 +1,6 @@
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import memoizeOne from "memoize-one";
+import { customElement, property, state } from "lit/decorators";
 import { computeRTLDirection } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-code-editor";
 import { createCloseHeading } from "../../../../../components/ha-dialog";
@@ -14,7 +15,6 @@ import type {
 import "../../../../../components/ha-circular-progress";
 import { fetchDevices, ZHADevice } from "../../../../../data/zha";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { customElement, property, state } from "lit/decorators";
 
 export interface DeviceRowData extends DataTableRowData {
   id: string;

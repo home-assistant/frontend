@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, object, optional, string } from "superstruct";
+import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/entity/ha-entity-attribute-picker";
@@ -13,24 +13,29 @@ import "../../components/hui-entity-editor";
 import "../../components/hui-theme-select-editor";
 import { headerFooterConfigStructs } from "../../header-footer/structs";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  entity: optional(string()),
-  name: optional(string()),
-  icon: optional(string()),
-  attribute: optional(string()),
-  unit: optional(string()),
-  theme: optional(string()),
-  footer: optional(headerFooterConfigStructs),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    name: optional(string()),
+    icon: optional(string()),
+    attribute: optional(string()),
+    unit: optional(string()),
+    theme: optional(string()),
+    state_color: optional(boolean()),
+    footer: optional(headerFooterConfigStructs),
+  })
+);
 
 @customElement("hui-entity-card-editor")
 export class HuiEntityCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EntityCardConfig;
@@ -58,6 +63,10 @@ export class HuiEntityCardEditor
 
   get _unit(): string {
     return this._config!.unit || "";
+  }
+
+  get _state_color(): boolean {
+    return this._config!.state_color ?? false;
   }
 
   get _theme(): string {
@@ -131,12 +140,27 @@ export class HuiEntityCardEditor
             @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
-        <hui-theme-select-editor
-          .hass=${this.hass}
-          .value=${this._theme}
-          .configValue=${"theme"}
-          @value-changed=${this._valueChanged}
-        ></hui-theme-select-editor>
+        <div class="side-by-side">
+          <hui-theme-select-editor
+            .hass=${this.hass}
+            .value=${this._theme}
+            .configValue=${"theme"}
+            @value-changed=${this._valueChanged}
+          >
+          </hui-theme-select-editor>
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.state_color"
+            )}
+          >
+            <ha-switch
+              .checked=${this._config!.state_color}
+              .configValue=${"state_color"}
+              @change=${this._valueChanged}
+            >
+            </ha-switch>
+          </ha-formfield>
+        </div>
       </div>
     `;
   }

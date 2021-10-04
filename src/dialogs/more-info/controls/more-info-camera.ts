@@ -106,7 +106,7 @@ class MoreInfoCamera extends LitElement {
           preload_stream: checkbox.checked!,
         }
       );
-    } catch (err) {
+    } catch (err: any) {
       alert(err.message);
       checkbox.checked = !checkbox.checked;
     }

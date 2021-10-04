@@ -12,6 +12,7 @@ import { customElement, property, state, query } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { alarmPanelIcon } from "../../../common/entity/alarm_panel_icon";
 import "../../../components/ha-card";
 import "../../../components/ha-label-badge";
 import {
@@ -23,16 +24,6 @@ import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
 import type { LovelaceCard } from "../types";
 import { AlarmPanelCardConfig } from "./types";
-
-const ICONS = {
-  armed_away: "hass:shield-lock",
-  armed_custom_bypass: "hass:security",
-  armed_home: "hass:shield-home",
-  armed_night: "hass:shield-home",
-  disarmed: "hass:shield-check",
-  pending: "hass:shield-outline",
-  triggered: "hass:bell-ring",
-};
 
 const BUTTONS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "clear"];
 
@@ -155,14 +146,14 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        .header="${this._config.name ||
+        .header=${this._config.name ||
         stateObj.attributes.friendly_name ||
-        this._stateDisplay(stateObj.state)}"
+        this._stateDisplay(stateObj.state)}
       >
         <ha-label-badge
-          class="${classMap({ [stateObj.state]: true })}"
-          .icon="${ICONS[stateObj.state] || "hass:shield-outline"}"
-          .label="${this._stateIconLabel(stateObj.state)}"
+          class=${classMap({ [stateObj.state]: true })}
+          .icon=${alarmPanelIcon(stateObj.state)}
+          .label=${this._stateIconLabel(stateObj.state)}
           @click=${this._handleMoreInfo}
         ></ha-label-badge>
         <div id="armActions" class="actions">
@@ -172,8 +163,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           ).map(
             (stateAction) => html`
               <mwc-button
-                .action="${stateAction}"
-                @click="${this._handleActionClick}"
+                .action=${stateAction}
+                @click=${this._handleActionClick}
                 outlined
               >
                 ${this._actionDisplay(stateAction)}
@@ -202,8 +193,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                     ? html` <mwc-button disabled></mwc-button> `
                     : html`
                         <mwc-button
-                          .value="${value}"
-                          @click="${this._handlePadClick}"
+                          .value=${value}
+                          @click=${this._handlePadClick}
                           outlined
                           class=${classMap({
                             numberkey: value !== "clear",

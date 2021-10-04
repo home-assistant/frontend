@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -13,7 +12,7 @@ import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import {
   extractApiErrorMessage,
-  ignoreSupervisorError,
+  ignoreSupervisorError
 } from "../../../src/data/hassio/common";
 import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
@@ -21,25 +20,26 @@ import {
   configSyncOS,
   rebootHost,
   shutdownHost,
-  updateOS,
+  updateOS
 } from "../../../src/data/hassio/host";
 import {
   fetchNetworkInfo,
-  NetworkInfo,
+  NetworkInfo
 } from "../../../src/data/hassio/network";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
-  showPromptDialog,
+  showPromptDialog
 } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import {
   getValueInPercentage,
-  roundWithOneDecimal,
+  roundWithOneDecimal
 } from "../../../src/util/calculate";
 import "../components/supervisor-metric";
+import { showHassioDatadiskDialog } from "../dialogs/datadisk/show-dialog-hassio-datadisk";
 import { showHassioHardwareDialog } from "../dialogs/hardware/show-dialog-hassio-hardware";
 import { showNetworkDialog } from "../dialogs/network/show-dialog-network";
 import { hassioStyle } from "../resources/hassio-style";
@@ -113,7 +113,7 @@ class HassioHostInfo extends LitElement {
                   `
                 : ""}
             </ha-settings-row>
-            ${!this.supervisor.host.features.includes("hassos")
+            ${!this.supervisor.host.features.includes("haos")
               ? html`<ha-settings-row>
                   <span slot="heading">
                     ${this.supervisor.localize("system.host.docker_version")}
@@ -180,22 +180,40 @@ class HassioHostInfo extends LitElement {
               `
             : ""}
 
-          <ha-button-menu
-            corner="BOTTOM_START"
-            @action=${this._handleMenuAction}
-          >
+          <ha-button-menu corner="BOTTOM_START">
             <ha-icon-button
               .label=${this.hass.localize("common.menu")}
               .path=${mdiDotsVertical}
               slot="trigger"
             ></ha-icon-button>
-            <mwc-list-item>
+            <mwc-list-item
+              .action=${"hardware"}
+              @click=${this._handleMenuAction}
+            >
               ${this.supervisor.localize("system.host.hardware")}
             </mwc-list-item>
-            ${this.supervisor.host.features.includes("hassos")
-              ? html`<mwc-list-item>
-                  ${this.supervisor.localize("system.host.import_from_usb")}
-                </mwc-list-item>`
+            ${this.supervisor.host.features.includes("haos")
+              ? html`
+                  <mwc-list-item
+                    .action=${"import_from_usb"}
+                    @click=${this._handleMenuAction}
+                  >
+                    ${this.supervisor.localize("system.host.import_from_usb")}
+                  </mwc-list-item>
+                  ${this.supervisor.host.features.includes("os_agent") &&
+                  atLeastVersion(this.supervisor.host.agent_version, 1, 2, 0)
+                    ? html`
+                        <mwc-list-item
+                          .action=${"move_datadisk"}
+                          @click=${this._handleMenuAction}
+                        >
+                          ${this.supervisor.localize(
+                            "system.host.move_datadisk"
+                          )}
+                        </mwc-list-item>
+                      `
+                    : ""}
+                `
               : ""}
           </ha-button-menu>
         </div>
@@ -218,22 +236,31 @@ class HassioHostInfo extends LitElement {
     return network_info.interfaces.find((a) => a.primary)?.ipv4?.address![0];
   });
 
-  private async _handleMenuAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
+  private async _handleMenuAction(ev) {
+    switch ((ev.target as any).action) {
+      case "hardware":
         await this._showHardware();
         break;
-      case 1:
+      case "import_from_usb":
         await this._importFromUSB();
         break;
+      case "move_datadisk":
+        await this._moveDatadisk();
+        break;
     }
+  }
+
+  private _moveDatadisk(): void {
+    showHassioDatadiskDialog(this, {
+      supervisor: this.supervisor,
+    });
   }
 
   private async _showHardware(): Promise<void> {
     let hardware;
     try {
       hardware = await fetchHassioHardwareInfo(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       await showAlertDialog(this, {
         title: this.supervisor.localize(
           "system.host.failed_to_get_hardware_list"
@@ -263,7 +290,7 @@ class HassioHostInfo extends LitElement {
 
     try {
       await rebootHost(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       // Ignore connection errors, these are all expected
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
@@ -293,7 +320,7 @@ class HassioHostInfo extends LitElement {
 
     try {
       await shutdownHost(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       // Ignore connection errors, these are all expected
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
@@ -334,7 +361,7 @@ class HassioHostInfo extends LitElement {
     try {
       await updateOS(this.hass);
       fireEvent(this, "supervisor-collection-refresh", { collection: "os" });
-    } catch (err) {
+    } catch (err: any) {
       if (this.hass.connection.connected) {
         showAlertDialog(this, {
           title: this.supervisor.localize(
@@ -372,7 +399,7 @@ class HassioHostInfo extends LitElement {
         fireEvent(this, "supervisor-collection-refresh", {
           collection: "host",
         });
-      } catch (err) {
+      } catch (err: any) {
         showAlertDialog(this, {
           title: this.supervisor.localize("system.host.failed_to_set_hostname"),
           text: extractApiErrorMessage(err),
@@ -387,7 +414,7 @@ class HassioHostInfo extends LitElement {
       fireEvent(this, "supervisor-collection-refresh", {
         collection: "host",
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize(
           "system.host.failed_to_import_from_usb"

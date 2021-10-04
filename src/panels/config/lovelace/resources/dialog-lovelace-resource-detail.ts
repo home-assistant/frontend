@@ -151,7 +151,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
               <mwc-button
                 slot="secondaryAction"
                 class="warning"
-                @click="${this._deleteResource}"
+                @click=${this._deleteResource}
                 .disabled=${this._submitting}
               >
                 ${this.hass!.localize(
@@ -162,7 +162,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
           : html``}
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateResource}"
+          @click=${this._updateResource}
           .disabled=${urlInvalid || !this._type || this._submitting}
         >
           ${this._params.resource
@@ -206,7 +206,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
         await this._params!.createResource(values);
       }
       this._params = undefined;
-    } catch (err) {
+    } catch (err: any) {
       this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;

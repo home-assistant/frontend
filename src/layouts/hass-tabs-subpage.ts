@@ -178,7 +178,7 @@ class HassTabsSubpage extends LitElement {
       >
         <slot></slot>
       </div>
-      <div id="fab" class="${classMap({ tabs: showTabs })}">
+      <div id="fab" class=${classMap({ tabs: showTabs })}>
         <slot name="fab"></slot>
       </div>
     `;
@@ -274,6 +274,7 @@ class HassTabsSubpage extends LitElement {
         flex: 1;
         max-height: var(--header-height);
         line-height: 20px;
+        color: var(--sidebar-text-color);
       }
 
       .content {

@@ -10,6 +10,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import { customElement, property } from "lit/decorators";
 import { computeRTL } from "../../../../../common/util/compute_rtl";
 import "../../../../../components/ha-card";
 import "../../../../../components/ha-fab";
@@ -25,7 +26,6 @@ import {
   updateZHAConfiguration,
   ZHAConfiguration,
 } from "../../../../../data/zha";
-import { customElement, property } from "lit/decorators";
 
 export const zhaTabs: PageNavigation[] = [
   {
@@ -84,7 +84,7 @@ class ZHAConfigDashboard extends LitElement {
           ${this.configEntryId
             ? html`<div class="card-actions">
                 <a
-                  href="${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}"
+                  href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                 >
                   <mwc-button
                     >${this.hass.localize(
@@ -93,7 +93,7 @@ class ZHAConfigDashboard extends LitElement {
                   >
                 </a>
                 <a
-                  href="${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}"
+                  href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                 >
                   <mwc-button
                     >${this.hass.localize(

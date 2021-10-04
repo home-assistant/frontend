@@ -17,7 +17,8 @@ const QR_LOGO_URL = "/static/icons/favicon-192x192.png";
 @customElement("dialog-tag-detail")
 class DialogTagDetail
   extends LitElement
-  implements HassDialog<TagDetailDialogParams> {
+  implements HassDialog<TagDetailDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _id?: string;
@@ -81,10 +82,10 @@ class DialogTagDetail
               .value=${this._name}
               .configValue=${"name"}
               @value-changed=${this._valueChanged}
-              .label="${this.hass!.localize("ui.panel.config.tag.detail.name")}"
-              .errorMessage="${this.hass!.localize(
+              .label=${this.hass!.localize("ui.panel.config.tag.detail.name")}
+              .errorMessage=${this.hass!.localize(
                 "ui.panel.config.tag.detail.required_error_msg"
-              )}"
+              )}
               required
               auto-validate
             ></paper-input>
@@ -138,7 +139,7 @@ class DialogTagDetail
               <mwc-button
                 slot="secondaryAction"
                 class="warning"
-                @click="${this._deleteEntry}"
+                @click=${this._deleteEntry}
                 .disabled=${this._submitting}
               >
                 ${this.hass!.localize("ui.panel.config.tag.detail.delete")}
@@ -147,7 +148,7 @@ class DialogTagDetail
           : html``}
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateEntry}"
+          @click=${this._updateEntry}
           .disabled=${this._submitting}
         >
           ${this._params.entry
@@ -157,7 +158,7 @@ class DialogTagDetail
         ${this._params.openWrite && !this._params.entry
           ? html` <mwc-button
               slot="primaryAction"
-              @click="${this._updateWriteEntry}"
+              @click=${this._updateWriteEntry}
               .disabled=${this._submitting}
             >
               ${this.hass!.localize(
@@ -189,7 +190,7 @@ class DialogTagDetail
         newValue = await this._params!.createEntry(values, this._id);
       }
       this.closeDialog();
-    } catch (err) {
+    } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
     } finally {
       this._submitting = false;

@@ -62,7 +62,6 @@ export const showDialog = async (
     LOADED[dialogTag] = dialogImport().then(() => {
       const dialogEl = document.createElement(dialogTag) as HassDialog;
       element.provideHass(dialogEl);
-      root.appendChild(dialogEl);
       return dialogEl;
     });
   }
@@ -85,7 +84,7 @@ export const showDialog = async (
         { dialog: dialogTag, dialogParams: dialogParams, open: true },
         ""
       );
-    } catch (err) {
+    } catch (err: any) {
       // dialogParams could not be cloned, probably contains callback
       mainWindow.history.pushState(
         { dialog: dialogTag, dialogParams: null, open: true },
@@ -94,6 +93,9 @@ export const showDialog = async (
     }
   }
   const dialogElement = await LOADED[dialogTag];
+  // Append it again so it's the last element in the root,
+  // so it's guaranteed to be on top of the other elements
+  root.appendChild(dialogElement);
   dialogElement.showDialog(dialogParams);
 };
 

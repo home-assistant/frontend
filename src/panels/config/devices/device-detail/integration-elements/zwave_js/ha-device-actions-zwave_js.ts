@@ -16,6 +16,8 @@ import {
 import { haStyle } from "../../../../../../resources/styles";
 import { HomeAssistant } from "../../../../../../types";
 import { showZWaveJSReinterviewNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-reinterview-node";
+import { showZWaveJSHealNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-heal-node";
+import { showZWaveJSRemoveFailedNodeDialog } from "../../../../integrations/integration-panels/zwave_js/show-dialog-zwave_js-remove-failed-node";
 
 @customElement("ha-device-actions-zwave_js")
 export class HaDeviceActionsZWaveJS extends LitElement {
@@ -31,9 +33,8 @@ export class HaDeviceActionsZWaveJS extends LitElement {
     if (changedProperties.has("device")) {
       this._entryId = this.device.config_entries[0];
 
-      const identifiers:
-        | ZWaveJSNodeIdentifiers
-        | undefined = getIdentifiersFromDevice(this.device);
+      const identifiers: ZWaveJSNodeIdentifiers | undefined =
+        getIdentifiersFromDevice(this.device);
       if (!identifiers) {
         return;
       }
@@ -52,9 +53,19 @@ export class HaDeviceActionsZWaveJS extends LitElement {
           )}
         </mwc-button>
       </a>
-      <mwc-button @click=${this._reinterviewClicked}
-        >Re-interview Device</mwc-button
-      >
+      <mwc-button @click=${this._reinterviewClicked}>
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.device_info.reinterview_device"
+        )}
+      </mwc-button>
+      <mwc-button @click=${this._healNodeClicked}>
+        ${this.hass.localize("ui.panel.config.zwave_js.device_info.heal_node")}
+      </mwc-button>
+      <mwc-button @click=${this._removeFailedNode}>
+        ${this.hass.localize(
+          "ui.panel.config.zwave_js.device_info.remove_failed"
+        )}
+      </mwc-button>
     `;
   }
 
@@ -63,6 +74,27 @@ export class HaDeviceActionsZWaveJS extends LitElement {
       return;
     }
     showZWaveJSReinterviewNodeDialog(this, {
+      entry_id: this._entryId,
+      node_id: this._nodeId,
+    });
+  }
+
+  private async _healNodeClicked() {
+    if (!this._nodeId || !this._entryId) {
+      return;
+    }
+    showZWaveJSHealNodeDialog(this, {
+      entry_id: this._entryId,
+      node_id: this._nodeId,
+      device: this.device,
+    });
+  }
+
+  private async _removeFailedNode() {
+    if (!this._nodeId || !this._entryId) {
+      return;
+    }
+    showZWaveJSRemoveFailedNodeDialog(this, {
       entry_id: this._entryId,
       node_id: this._nodeId,
     });

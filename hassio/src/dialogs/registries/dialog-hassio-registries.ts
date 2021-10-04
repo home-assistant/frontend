@@ -159,9 +159,9 @@ class HassioRegistriesDialog extends LitElement {
 
   public focus(): void {
     this.updateComplete.then(() =>
-      (this.shadowRoot?.querySelector(
-        "[dialogInitialFocus]"
-      ) as HTMLElement)?.focus()
+      (
+        this.shadowRoot?.querySelector("[dialogInitialFocus]") as HTMLElement
+      )?.focus()
     );
   }
 
@@ -188,7 +188,7 @@ class HassioRegistriesDialog extends LitElement {
       await addHassioDockerRegistry(this.hass, data);
       await this._loadRegistries();
       this._addingRegistry = false;
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("dialog.registries.failed_to_add"),
         text: extractApiErrorMessage(err),
@@ -202,7 +202,7 @@ class HassioRegistriesDialog extends LitElement {
     try {
       await removeHassioDockerRegistry(this.hass, entry.registry);
       await this._loadRegistries();
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("dialog.registries.failed_to_remove"),
         text: extractApiErrorMessage(err),

@@ -13,6 +13,7 @@ import { HomeAssistant } from "../types";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 
+// eslint-disable-next-line lit/prefer-static-styles
 const defaultRowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
     paper-item {
       margin: -5px -10px;

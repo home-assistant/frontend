@@ -58,6 +58,7 @@ export class HuiCardOptions extends LitElement {
             )}</mwc-button
           >
           <div>
+            <slot name="buttons"></slot>
             <ha-icon-button
               .label=${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.move_down"
@@ -65,7 +66,7 @@ export class HuiCardOptions extends LitElement {
               .path=${mdiArrowDown}
               class="move-arrow"
               @click=${this._cardDown}
-              ?disabled=${this.lovelace!.config.views[this.path![0]].cards!
+              .disabled=${this.lovelace!.config.views[this.path![0]].cards!
                 .length ===
               this.path![1] + 1}
             ></ha-icon-button>
@@ -86,7 +87,6 @@ export class HuiCardOptions extends LitElement {
                 )}
                 .path=${mdiDotsVertical}
               ></ha-icon-button>
-
               <mwc-list-item>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.move"
@@ -226,7 +226,7 @@ export class HuiCardOptions extends LitElement {
             deleteCard(this.lovelace!.config, this.path!)
           );
           showSaveSuccessToast(this, this.hass!);
-        } catch (err) {
+        } catch (err: any) {
           showAlertDialog(this, {
             text: `Moving failed: ${err.message}`,
           });

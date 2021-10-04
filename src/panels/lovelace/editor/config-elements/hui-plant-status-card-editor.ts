@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, object, optional, string } from "superstruct";
+import { assert, assign, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
@@ -9,22 +9,26 @@ import { HomeAssistant } from "../../../../types";
 import { PlantStatusCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
 import { LovelaceCardEditor } from "../../types";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 import { EditorTarget, EntitiesEditorEvent } from "../types";
 import { configElementStyle } from "./config-elements-style";
 
-const cardConfigStruct = object({
-  type: string(),
-  entity: optional(string()),
-  name: optional(string()),
-  theme: optional(string()),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    entity: optional(string()),
+    name: optional(string()),
+    theme: optional(string()),
+  })
+);
 
 const includeDomains = ["plant"];
 
 @customElement("hui-plant-status-card-editor")
 export class HuiPlantStatusCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: PlantStatusCardConfig;
@@ -60,10 +64,10 @@ export class HuiPlantStatusCardEditor
             "ui.panel.lovelace.editor.card.config.required"
           )})"
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
-          @change="${this._valueChanged}"
+          @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <paper-input
@@ -72,15 +76,15 @@ export class HuiPlantStatusCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._name}"
-          .configValue="${"name"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._name}
+          .configValue=${"name"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
       </div>
     `;

@@ -22,6 +22,7 @@ import {
   enableConfigEntry,
   reloadConfigEntry,
   updateConfigEntry,
+  ERROR_STATES,
 } from "../../../data/config_entries";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
 import type { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -37,12 +38,6 @@ import { haStyle, haStyleScrollbar } from "../../../resources/styles";
 import type { HomeAssistant } from "../../../types";
 import type { ConfigEntryExtended } from "./ha-config-integrations";
 import "./ha-integration-header";
-
-const ERROR_STATES: ConfigEntry["state"][] = [
-  "migration_error",
-  "setup_error",
-  "setup_retry",
-];
 
 const integrationsWithPanel = {
   hassio: "/hassio/dashboard",
@@ -87,7 +82,7 @@ export class HaIntegrationCard extends LitElement {
     return html`
       <ha-card
         outlined
-        class="${classMap({
+        class=${classMap({
           single: hasItem,
           group: !hasItem,
           hasMultiple: this.items.length > 1,
@@ -95,7 +90,7 @@ export class HaIntegrationCard extends LitElement {
           "state-not-loaded": hasItem && item!.state === "not_loaded",
           "state-failed-unload": hasItem && item!.state === "failed_unload",
           "state-error": hasItem && ERROR_STATES.includes(item!.state),
-        })}"
+        })}
         .configEntry=${item}
       >
         <ha-integration-header
@@ -300,14 +295,13 @@ export class HaIntegrationCard extends LitElement {
             slot="trigger"
             .label=${this.hass.localize("ui.common.menu")}
             .path=${mdiDotsVertical}
-          >
-          </ha-icon-button>
-          <mwc-list-item @request-selected="${this._editEntryName}">
+          ></ha-icon-button>
+          <mwc-list-item @request-selected=${this._handleRename}>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"
             )}
           </mwc-list-item>
-          <mwc-list-item @request-selected="${this._handleSystemOptions}">
+          <mwc-list-item @request-selected=${this._handleSystemOptions}>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.system_options"
             )}
@@ -332,20 +326,20 @@ export class HaIntegrationCard extends LitElement {
           item.state === "loaded" &&
           item.supports_unload &&
           item.source !== "system"
-            ? html`<mwc-list-item @request-selected="${this._handleReload}">
+            ? html`<mwc-list-item @request-selected=${this._handleReload}>
                 ${this.hass.localize(
                   "ui.panel.config.integrations.config_entry.reload"
                 )}
               </mwc-list-item>`
             : ""}
           ${item.disabled_by === "user"
-            ? html`<mwc-list-item @request-selected="${this._handleEnable}">
+            ? html`<mwc-list-item @request-selected=${this._handleEnable}>
                 ${this.hass.localize("ui.common.enable")}
               </mwc-list-item>`
             : item.source !== "system"
             ? html`<mwc-list-item
                 class="warning"
-                @request-selected="${this._handleDisable}"
+                @request-selected=${this._handleDisable}
               >
                 ${this.hass.localize("ui.common.disable")}
               </mwc-list-item>`
@@ -353,7 +347,7 @@ export class HaIntegrationCard extends LitElement {
           ${item.source !== "system"
             ? html`<mwc-list-item
                 class="warning"
-                @request-selected="${this._handleDelete}"
+                @request-selected=${this._handleDelete}
               >
                 ${this.hass.localize(
                   "ui.panel.config.integrations.config_entry.delete"
@@ -417,6 +411,15 @@ export class HaIntegrationCard extends LitElement {
 
   private _showOptions(ev) {
     showOptionsFlowDialog(this, ev.target.closest("ha-card").configEntry);
+  }
+
+  private _handleRename(ev: CustomEvent<RequestSelectedDetail>): void {
+    if (!shouldHandleRequestSelectedEvent(ev)) {
+      return;
+    }
+    this._editEntryName(
+      ((ev.target as HTMLElement).closest("ha-card") as any).configEntry
+    );
   }
 
   private _handleReload(ev: CustomEvent<RequestSelectedDetail>): void {
@@ -490,7 +493,7 @@ export class HaIntegrationCard extends LitElement {
     let result: DisableConfigEntryResult;
     try {
       result = await disableConfigEntry(this.hass, entryId);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.integrations.config_entry.disable_error"
@@ -517,7 +520,7 @@ export class HaIntegrationCard extends LitElement {
     let result: DisableConfigEntryResult;
     try {
       result = await enableConfigEntry(this.hass, entryId);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.config.integrations.config_entry.disable_error"
@@ -544,7 +547,8 @@ export class HaIntegrationCard extends LitElement {
 
     const confirmed = await showConfirmationDialog(this, {
       text: this.hass.localize(
-        "ui.panel.config.integrations.config_entry.delete_confirm"
+        "ui.panel.config.integrations.config_entry.delete_confirm",
+        { title: configEntry.title }
       ),
     });
 
@@ -577,8 +581,7 @@ export class HaIntegrationCard extends LitElement {
     });
   }
 
-  private async _editEntryName(ev) {
-    const configEntry = ev.target.closest("ha-card").configEntry;
+  private async _editEntryName(configEntry: ConfigEntry) {
     const newName = await showPromptDialog(this, {
       title: this.hass.localize("ui.panel.config.integrations.rename_dialog"),
       defaultValue: configEntry.title,

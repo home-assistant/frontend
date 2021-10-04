@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, object, optional, string } from "superstruct";
+import { assert, object, optional, string, assign } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-icon-input";
@@ -15,23 +15,27 @@ import { LovelaceCardEditor } from "../../types";
 import { actionConfigStruct } from "../structs/action-struct";
 import { EditorTarget } from "../types";
 import { configElementStyle } from "./config-elements-style";
+import { baseLovelaceCardConfig } from "../structs/base-card-struct";
 
-const cardConfigStruct = object({
-  type: string(),
-  name: optional(string()),
-  entity: optional(string()),
-  theme: optional(string()),
-  icon: optional(string()),
-  hold_action: optional(actionConfigStruct),
-  double_tap_action: optional(actionConfigStruct),
-});
+const cardConfigStruct = assign(
+  baseLovelaceCardConfig,
+  object({
+    name: optional(string()),
+    entity: optional(string()),
+    theme: optional(string()),
+    icon: optional(string()),
+    hold_action: optional(actionConfigStruct),
+    double_tap_action: optional(actionConfigStruct),
+  })
+);
 
 const includeDomains = ["light"];
 
 @customElement("hui-light-card-editor")
 export class HuiLightCardEditor
   extends LitElement
-  implements LovelaceCardEditor {
+  implements LovelaceCardEditor
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: LightCardConfig;

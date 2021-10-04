@@ -132,9 +132,8 @@ export class HaMediaPlayerBrowse extends LitElement {
       return html``;
     }
 
-    const currentItem = this._mediaPlayerItems[
-      this._mediaPlayerItems.length - 1
-    ];
+    const currentItem =
+      this._mediaPlayerItems[this._mediaPlayerItems.length - 1];
 
     const previousItem: MediaPlayerItem | undefined =
       this._mediaPlayerItems.length > 1
@@ -367,10 +366,10 @@ export class HaMediaPlayerBrowse extends LitElement {
                         "ui.components.media-browser.learn_adding_local_media",
                         "documentation",
                         html`<a
-                          href="${documentationUrl(
+                          href=${documentationUrl(
                             this.hass,
                             "/more-info/local-media/add-media"
-                          )}"
+                          )}
                           target="_blank"
                           rel="noreferrer"
                           >${this.hass.localize(
@@ -502,7 +501,7 @@ export class HaMediaPlayerBrowse extends LitElement {
         item.media_content_id,
         item.media_content_type
       );
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.components.media-browser.media_browsing_error"
@@ -583,10 +582,10 @@ export class HaMediaPlayerBrowse extends LitElement {
             "ui.components.media-browser.setup_local_help",
             "documentation",
             html`<a
-              href="${documentationUrl(
+              href=${documentationUrl(
                 this.hass,
                 "/more-info/local-media/setup-media"
-              )}"
+              )}
               target="_blank"
               rel="noreferrer"
               >${this.hass.localize(

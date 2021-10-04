@@ -98,7 +98,7 @@ export class CloudWebhooks extends LitElement {
                         `
                       : this._cloudHooks![entry.webhook_id]
                       ? html`
-                          <mwc-button @click="${this._handleManageButton}">
+                          <mwc-button @click=${this._handleManageButton}>
                             ${this.hass!.localize(
                               "ui.panel.config.cloud.account.webhooks.manage"
                             )}
@@ -156,7 +156,7 @@ export class CloudWebhooks extends LitElement {
 
     try {
       updatedWebhook = await createCloudhook(this.hass!, entry.webhook_id);
-    } catch (err) {
+    } catch (err: any) {
       alert((err as WebhookError).message);
       return;
     } finally {
@@ -178,7 +178,7 @@ export class CloudWebhooks extends LitElement {
     this._progress = [...this._progress, webhookId];
     try {
       await deleteCloudhook(this.hass!, webhookId!);
-    } catch (err) {
+    } catch (err: any) {
       alert(
         `${this.hass!.localize(
           "ui.panel.config.cloud.account.webhooks.disable_hook_error_msg"

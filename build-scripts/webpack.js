@@ -6,6 +6,7 @@ const { WebpackManifestPlugin } = require("webpack-manifest-plugin");
 const paths = require("./paths.js");
 const bundle = require("./bundle.js");
 const log = require("fancy-log");
+const WebpackBar = require("webpackbar");
 
 class LogStartCompilePlugin {
   ignoredFirst = false;
@@ -49,12 +50,16 @@ const createWebpackConfig = ({
           test: /\.m?js$|\.ts$/,
           use: {
             loader: "babel-loader",
-            options: bundle.babelOptions({ latestBuild }),
+            options: {
+              ...bundle.babelOptions({ latestBuild }),
+              cacheDirectory: !isProdBuild,
+              cacheCompression: false,
+            },
           },
         },
         {
           test: /\.css$/,
-          use: "raw-loader",
+          type: "asset/source",
         },
       ],
     },
@@ -66,8 +71,11 @@ const createWebpackConfig = ({
           terserOptions: bundle.terserOptions(latestBuild),
         }),
       ],
+      moduleIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
+      chunkIds: isProdBuild && !isStatsBuild ? "deterministic" : "named",
     },
     plugins: [
+      new WebpackBar({ fancy: !isProdBuild }),
       new WebpackManifestPlugin({
         // Only include the JS of entrypoints
         filter: (file) => file.isInitial && !file.name.endsWith(".map"),
@@ -112,16 +120,6 @@ const createWebpackConfig = ({
         new RegExp(bundle.emptyPackages({ latestBuild }).join("|")),
         path.resolve(paths.polymer_dir, "src/util/empty.js")
       ),
-      // We need to change the import of the polyfill for EventTarget, so we replace the polyfill file with our customized one
-      new webpack.NormalModuleReplacementPlugin(
-        new RegExp(
-          path.resolve(
-            paths.polymer_dir,
-            "src/resources/lit-virtualizer/lib/uni-virtualizer/lib/polyfillLoaders/EventTarget.js"
-          )
-        ),
-        path.resolve(paths.polymer_dir, "src/resources/EventTarget-ponyfill.js")
-      ),
       !isProdBuild && new LogStartCompilePlugin(),
     ].filter(Boolean),
     resolve: {
@@ -129,24 +127,32 @@ const createWebpackConfig = ({
       alias: {
         "lit/decorators$": "lit/decorators.js",
         "lit/directive$": "lit/directive.js",
+        "lit/directives/until$": "lit/directives/until.js",
+        "lit/directives/class-map$": "lit/directives/class-map.js",
+        "lit/directives/style-map$": "lit/directives/style-map.js",
+        "lit/directives/if-defined$": "lit/directives/if-defined.js",
+        "lit/directives/guard$": "lit/directives/guard.js",
+        "lit/directives/cache$": "lit/directives/cache.js",
+        "lit/directives/repeat$": "lit/directives/repeat.js",
         "lit/polyfill-support$": "lit/polyfill-support.js",
       },
     },
     output: {
       filename: ({ chunk }) => {
-        if (!isProdBuild || dontHash.has(chunk.name)) {
+        if (!isProdBuild || isStatsBuild || dontHash.has(chunk.name)) {
           return `${chunk.name}.js`;
         }
         return `${chunk.name}.${chunk.hash.substr(0, 8)}.js`;
       },
       chunkFilename:
-        isProdBuild && !isStatsBuild
-          ? "chunk.[chunkhash].js"
-          : "[name].chunk.js",
+        isProdBuild && !isStatsBuild ? "[chunkhash:8].js" : "[id].chunk.js",
       path: outputPath,
       publicPath,
       // To silence warning in worker plugin
       globalObject: "self",
+    },
+    experiments: {
+      topLevelAwait: true,
     },
   };
 };

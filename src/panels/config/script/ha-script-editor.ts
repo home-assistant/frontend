@@ -241,10 +241,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                   "ui.panel.config.script.editor.modes.description",
                                   "documentation_link",
                                   html`<a
-                                    href="${documentationUrl(
+                                    href=${documentationUrl(
                                       this.hass,
                                       "/integrations/script/#script-modes"
-                                    )}"
+                                    )}
                                     target="_blank"
                                     rel="noreferrer"
                                     >${this.hass.localize(
@@ -296,12 +296,21 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                   <div
                                     class="card-actions layout horizontal justified center"
                                   >
-                                    <span></span>
+                                    <a
+                                      href="/config/script/trace/${this
+                                        .scriptEntityId}"
+                                    >
+                                      <mwc-button>
+                                        ${this.hass.localize(
+                                          "ui.panel.config.script.editor.show_trace"
+                                        )}
+                                      </mwc-button>
+                                    </a>
                                     <mwc-button
                                       @click=${this._runScript}
-                                      title="${this.hass.localize(
+                                      title=${this.hass.localize(
                                         "ui.panel.config.script.picker.run_script"
-                                      )}"
+                                      )}
                                       ?disabled=${this._dirty}
                                     >
                                       ${this.hass.localize(
@@ -327,10 +336,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                               )}
                             </p>
                             <a
-                              href="${documentationUrl(
+                              href=${documentationUrl(
                                 this.hass,
                                 "/docs/scripts/"
-                              )}"
+                              )}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -360,9 +369,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                         >
                           <mwc-button
                             @click=${this._runScript}
-                            title="${this.hass.localize(
+                            title=${this.hass.localize(
                               "ui.panel.config.script.picker.run_script"
-                            )}"
+                            )}
                             ?disabled=${this._dirty}
                           >
                             ${this.hass.localize(

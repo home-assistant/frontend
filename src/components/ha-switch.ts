@@ -1,7 +1,8 @@
-import { Switch } from "@material/mwc-switch";
+import { Switch } from "@material/mwc-switch/deprecated";
 import { css, CSSResultGroup } from "lit";
 import { customElement, property } from "lit/decorators";
 import { forwardHaptic } from "../data/haptics";
+
 @customElement("ha-switch")
 // @ts-expect-error
 export class HaSwitch extends Switch {

@@ -3,7 +3,7 @@ import { mdiDelete } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import memoizeOne from "memoize-one";
-import relativeTime from "../../common/datetime/relative_time";
+import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-settings-row";
@@ -68,10 +68,7 @@ class HaLongLivedTokens extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.profile.long_lived_access_tokens.created",
                       "date",
-                      relativeTime(
-                        new Date(token.created_at),
-                        this.hass.localize
-                      )
+                      relativeTime(new Date(token.created_at), this.hass.locale)
                     )}
                   </div>
                   <ha-icon-button
@@ -120,7 +117,7 @@ class HaLongLivedTokens extends LitElement {
       showLongLivedAccessTokenDialog(this, { token, name });
 
       fireEvent(this, "hass-refresh-tokens");
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.profile.long_lived_access_tokens.create_failed"
@@ -149,7 +146,7 @@ class HaLongLivedTokens extends LitElement {
         refresh_token_id: token.id,
       });
       fireEvent(this, "hass-refresh-tokens");
-    } catch (err) {
+    } catch (err: any) {
       await showAlertDialog(this, {
         title: this.hass.localize(
           "ui.panel.profile.long_lived_access_tokens.delete_failed"

@@ -7,7 +7,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import { getExternalConfig } from "../external_app/external_config";
@@ -42,27 +42,23 @@ class HaHLSPlayer extends LitElement {
   // don't cache this, as we remove it on disconnects
   @query("video") private _videoEl!: HTMLVideoElement;
 
-  @state() private _attached = false;
-
   private _hlsPolyfillInstance?: HlsLite;
 
-  private _useExoPlayer = false;
+  private _exoPlayer = false;
 
   public connectedCallback() {
     super.connectedCallback();
-    this._attached = true;
+    if (this.hasUpdated) {
+      this._startHls();
+    }
   }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    this._attached = false;
+    this._cleanUp();
   }
 
   protected render(): TemplateResult {
-    if (!this._attached) {
-      return html``;
-    }
-
     return html`
       <video
         ?autoplay=${this.autoPlay}
@@ -77,21 +73,13 @@ class HaHLSPlayer extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    const attachedChanged = changedProps.has("_attached");
     const urlChanged = changedProps.has("url");
 
-    if (!urlChanged && !attachedChanged) {
+    if (!urlChanged) {
       return;
     }
 
-    // If we are no longer attached, destroy polyfill
-    if (attachedChanged && !this._attached) {
-      // Tear down existing polyfill, if available
-      this._destroyPolyfill();
-      return;
-    }
-
-    this._destroyPolyfill();
+    this._cleanUp();
     this._startHls();
   }
 
@@ -108,8 +96,13 @@ class HaHLSPlayer extends LitElement {
     const useExoPlayerPromise = this._getUseExoPlayer();
     const masterPlaylistPromise = fetch(this.url);
 
-    const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.min.js"))
+    const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.min"))
       .default;
+
+    if (!this.isConnected) {
+      return;
+    }
+
     let hlsSupported = Hls.isSupported();
 
     if (!hlsSupported) {
@@ -118,18 +111,23 @@ class HaHLSPlayer extends LitElement {
     }
 
     if (!hlsSupported) {
-      this._videoEl.innerHTML = this.hass.localize(
+      videoEl.innerHTML = this.hass.localize(
         "ui.components.media-browser.video_not_supported"
       );
       return;
     }
 
-    this._useExoPlayer = await useExoPlayerPromise;
+    const useExoPlayer = await useExoPlayerPromise;
     const masterPlaylist = await (await masterPlaylistPromise).text();
+
+    if (!this.isConnected) {
+      return;
+    }
 
     // Parse playlist assuming it is a master playlist. Match group 1 is whether hevc, match group 2 is regular playlist url
     // See https://tools.ietf.org/html/rfc8216 for HLS spec details
-    const playlistRegexp = /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
+    const playlistRegexp =
+      /#EXT-X-STREAM-INF:.*?(?:CODECS=".*?(hev1|hvc1)?\..*?".*?)?(?:\n|\r\n)(.+)/g;
     const match = playlistRegexp.exec(masterPlaylist);
     const matchTwice = playlistRegexp.exec(masterPlaylist);
 
@@ -144,7 +142,7 @@ class HaHLSPlayer extends LitElement {
     }
 
     // If codec is HEVC and ExoPlayer is supported, use ExoPlayer.
-    if (this._useExoPlayer && match !== null && match[1] !== undefined) {
+    if (useExoPlayer && match !== null && match[1] !== undefined) {
       this._renderHLSExoPlayer(playlist_url);
     } else if (Hls.isSupported()) {
       this._renderHLSPolyfill(videoEl, Hls, playlist_url);
@@ -154,6 +152,7 @@ class HaHLSPlayer extends LitElement {
   }
 
   private async _renderHLSExoPlayer(url: string) {
+    this._exoPlayer = true;
     window.addEventListener("resize", this._resizeExoPlayer);
     this.updateComplete.then(() => nextRender()).then(this._resizeExoPlayer);
     this._videoEl.style.visibility = "hidden";
@@ -202,25 +201,28 @@ class HaHLSPlayer extends LitElement {
 
   private async _renderHLSNative(videoEl: HTMLVideoElement, url: string) {
     videoEl.src = url;
-    await new Promise((resolve) =>
-      videoEl.addEventListener("loadedmetadata", resolve)
-    );
-    videoEl.play();
+    videoEl.addEventListener("loadedmetadata", () => {
+      videoEl.play();
+    });
   }
 
   private _elementResized() {
     fireEvent(this, "iron-resize");
   }
 
-  private _destroyPolyfill() {
+  private _cleanUp() {
     if (this._hlsPolyfillInstance) {
       this._hlsPolyfillInstance.destroy();
       this._hlsPolyfillInstance = undefined;
     }
-    if (this._useExoPlayer) {
+    if (this._exoPlayer) {
       window.removeEventListener("resize", this._resizeExoPlayer);
       this.hass!.auth.external!.fireMessage({ type: "exoplayer/stop" });
+      this._exoPlayer = false;
     }
+    const videoEl = this._videoEl;
+    videoEl.removeAttribute("src");
+    videoEl.load();
   }
 
   static get styles(): CSSResultGroup {

@@ -11,7 +11,7 @@ import {
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { compare } from "../../../../common/string/compare";
+import { stringCompare } from "../../../../common/string/compare";
 import { HaSwitch } from "../../../../components/ha-switch";
 import "../../../../components/user/ha-user-badge";
 import { LovelaceViewConfig, ShowViewConfig } from "../../../../data/lovelace";
@@ -43,7 +43,7 @@ export class HuiViewVisibilityEditor extends LitElement {
   @state() private _visible!: boolean | ShowViewConfig[];
 
   private _sortedUsers = memoizeOne((users: User[]) =>
-    users.sort((a, b) => compare(a.name, b.name))
+    users.sort((a, b) => stringCompare(a.name, b.name))
   );
 
   protected firstUpdated(changedProps: PropertyValues) {
@@ -76,7 +76,7 @@ export class HuiViewVisibilityEditor extends LitElement {
             ></ha-user-badge>
             <paper-item-body>${user.name}</paper-item-body>
             <ha-switch
-              .userId="${user.id}"
+              .userId=${user.id}
               @change=${this.valChange}
               .checked=${this.checkUser(user.id)}
             ></ha-switch>

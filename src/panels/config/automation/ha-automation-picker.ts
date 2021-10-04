@@ -60,11 +60,12 @@ class HaAutomationPicker extends LitElement {
       if (filteredAutomations === null) {
         return [];
       }
-      return (filteredAutomations
-        ? automations.filter((automation) =>
-            filteredAutomations!.includes(automation.entity_id)
-          )
-        : automations
+      return (
+        filteredAutomations
+          ? automations.filter((automation) =>
+              filteredAutomations!.includes(automation.entity_id)
+            )
+          : automations
       ).map((automation) => ({
         ...automation,
         name: computeStateName(automation),
@@ -148,9 +149,9 @@ class HaAutomationPicker extends LitElement {
           <ha-icon-button
             .automation=${automation}
             @click=${this._showInfo}
-            .label="${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.config.automation.picker.show_info_automation"
-            )}"
+        )}
             .path=${mdiInformationOutline}
           ></ha-icon-button>
         `,
@@ -198,9 +199,9 @@ class HaAutomationPicker extends LitElement {
           >
             <ha-icon-button
               .disabled=${!automation.attributes.id}
-              .label="${this.hass.localize(
+              .label=${this.hass.localize(
                 "ui.panel.config.automation.picker.edit_automation"
-              )}"
+        )}
               .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
             ></ha-icon-button>
           </a>
@@ -296,7 +297,7 @@ class HaAutomationPicker extends LitElement {
         ${this.hass.localize("ui.panel.config.automation.picker.introduction")}
         <p>
           <a
-            href="${documentationUrl(this.hass, "/docs/automation/editor/")}"
+            href=${documentationUrl(this.hass, "/docs/automation/editor/")}
             target="_blank"
             rel="noreferrer"
           >

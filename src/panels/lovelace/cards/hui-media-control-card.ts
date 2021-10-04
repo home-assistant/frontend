@@ -525,9 +525,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const progressWidth = (this.shadowRoot!.querySelector(
-      "paper-progress"
-    ) as HTMLElement).offsetWidth;
+    const progressWidth = (
+      this.shadowRoot!.querySelector("paper-progress") as HTMLElement
+    ).offsetWidth;
 
     const percent = e.offsetX / progressWidth;
     const position = (e.currentTarget! as any).max * percent;
@@ -547,7 +547,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       const { foreground, background } = await extractColors(this._image);
       this._backgroundColor = background.hex;
       this._foregroundColor = foreground.hex;
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Error getting Image Colors", err);
       this._foregroundColor = undefined;

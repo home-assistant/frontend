@@ -9,7 +9,8 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { hasTemplate } from "../../../common/string/has-template";
 import { extractSearchParam } from "../../../common/url/search-params";
-import "../../../components/buttons/ha-progress-button";
+import { HaProgressButton } from "../../../components/buttons/ha-progress-button";
+
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-expansion-panel";
@@ -26,7 +27,6 @@ import {
 import { haStyle } from "../../../resources/styles";
 import "../../../styles/polymer-ha-style";
 import { HomeAssistant } from "../../../types";
-import "../../../util/app-localstorage-document";
 import { documentationUrl } from "../../../util/documentation-url";
 import { showToast } from "../../../util/toast";
 
@@ -136,11 +136,15 @@ class HaPanelDevService extends LitElement {
                 >`
               : ""}
           </div>
-          <mwc-button .disabled=${!isValid} raised @click=${this._callService}>
+          <ha-progress-button
+            .disabled=${!isValid}
+            raised
+            @click=${this._callService}
+          >
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.services.call_service"
             )}
-          </mwc-button>
+          </ha-progress-button>
         </div>
       </div>
 
@@ -170,14 +174,14 @@ class HaPanelDevService extends LitElement {
                     </h3>
                     ${this._serviceData?.service
                       ? html` <a
-                          href="${documentationUrl(
+                          href=${documentationUrl(
                             this.hass,
                             "/integrations/" +
                               computeDomain(this._serviceData?.service)
-                          )}"
-                          title="${this.hass.localize(
+                          )}
+                          title=${this.hass.localize(
                             "ui.components.service-control.integration_doc"
-                          )}"
+                          )}
                           target="_blank"
                           rel="noreferrer"
                         >
@@ -294,13 +298,14 @@ class HaPanelDevService extends LitElement {
     }
   );
 
-  private async _callService() {
+  private async _callService(ev) {
+    const button = ev.currentTarget as HaProgressButton;
     if (!this._serviceData?.service) {
       return;
     }
     try {
       await callExecuteScript(this.hass, [this._serviceData]);
-    } catch (err) {
+    } catch (err: any) {
       const [domain, service] = this._serviceData.service.split(".", 2);
       if (
         err.error?.code === ERR_CONNECTION_LOST &&
@@ -309,6 +314,7 @@ class HaPanelDevService extends LitElement {
         return;
       }
       forwardHaptic("failure");
+      button.actionError();
       showToast(this, {
         message:
           this.hass.localize(
@@ -317,7 +323,9 @@ class HaPanelDevService extends LitElement {
             this._serviceData.service
           ) + ` ${err.message}`,
       });
+      return;
     }
+    button.actionSuccess();
   }
 
   private _toggleYaml() {
@@ -362,7 +370,7 @@ class HaPanelDevService extends LitElement {
         let value: any = "";
         try {
           value = load(field.example);
-        } catch (err) {
+        } catch (err: any) {
           value = field.example;
         }
         example[field.key] = value;

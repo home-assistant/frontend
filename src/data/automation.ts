@@ -46,12 +46,25 @@ export interface BlueprintAutomationConfig extends ManualAutomationConfig {
 }
 
 export interface ForDict {
-  hours?: number | string;
-  minutes?: number | string;
-  seconds?: number | string;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+  milliseconds?: number;
 }
 
-export interface StateTrigger {
+export interface ContextConstraint {
+  context_id?: string;
+  parent_id?: string;
+  user_id?: string | string[];
+}
+
+export interface BaseTrigger {
+  platform: string;
+  id?: string;
+}
+
+export interface StateTrigger extends BaseTrigger {
   platform: "state";
   entity_id: string;
   attribute?: string;
@@ -60,25 +73,25 @@ export interface StateTrigger {
   for?: string | number | ForDict;
 }
 
-export interface MqttTrigger {
+export interface MqttTrigger extends BaseTrigger {
   platform: "mqtt";
   topic: string;
   payload?: string;
 }
 
-export interface GeoLocationTrigger {
+export interface GeoLocationTrigger extends BaseTrigger {
   platform: "geo_location";
   source: string;
   zone: string;
   event: "enter" | "leave";
 }
 
-export interface HassTrigger {
+export interface HassTrigger extends BaseTrigger {
   platform: "homeassistant";
   event: "start" | "shutdown";
 }
 
-export interface NumericStateTrigger {
+export interface NumericStateTrigger extends BaseTrigger {
   platform: "numeric_state";
   entity_id: string;
   attribute?: string;
@@ -88,54 +101,48 @@ export interface NumericStateTrigger {
   for?: string | number | ForDict;
 }
 
-export interface SunTrigger {
+export interface SunTrigger extends BaseTrigger {
   platform: "sun";
   offset: number;
   event: "sunrise" | "sunset";
 }
 
-export interface TimePatternTrigger {
+export interface TimePatternTrigger extends BaseTrigger {
   platform: "time_pattern";
   hours?: number | string;
   minutes?: number | string;
   seconds?: number | string;
 }
 
-export interface WebhookTrigger {
+export interface WebhookTrigger extends BaseTrigger {
   platform: "webhook";
   webhook_id: string;
 }
 
-export interface ZoneTrigger {
+export interface ZoneTrigger extends BaseTrigger {
   platform: "zone";
   entity_id: string;
   zone: string;
   event: "enter" | "leave";
 }
 
-export interface TagTrigger {
+export interface TagTrigger extends BaseTrigger {
   platform: "tag";
   tag_id: string;
   device_id?: string;
 }
 
-export interface TimeTrigger {
+export interface TimeTrigger extends BaseTrigger {
   platform: "time";
   at: string;
 }
 
-export interface TemplateTrigger {
+export interface TemplateTrigger extends BaseTrigger {
   platform: "template";
   value_template: string;
 }
 
-export interface ContextConstraint {
-  context_id?: string;
-  parent_id?: string;
-  user_id?: string | string[];
-}
-
-export interface EventTrigger {
+export interface EventTrigger extends BaseTrigger {
   platform: "event";
   event_type: string;
   event_data?: any;
@@ -158,24 +165,26 @@ export type Trigger =
   | EventTrigger
   | DeviceTrigger;
 
-export interface LogicalCondition {
-  condition: "and" | "not" | "or";
+interface BaseCondition {
+  condition: string;
   alias?: string;
+}
+
+export interface LogicalCondition extends BaseCondition {
+  condition: "and" | "not" | "or";
   conditions: Condition | Condition[];
 }
 
-export interface StateCondition {
+export interface StateCondition extends BaseCondition {
   condition: "state";
-  alias?: string;
   entity_id: string;
   attribute?: string;
   state: string | number;
   for?: string | number | ForDict;
 }
 
-export interface NumericStateCondition {
+export interface NumericStateCondition extends BaseCondition {
   condition: "numeric_state";
-  alias?: string;
   entity_id: string;
   attribute?: string;
   above?: number;
@@ -183,34 +192,35 @@ export interface NumericStateCondition {
   value_template?: string;
 }
 
-export interface SunCondition {
+export interface SunCondition extends BaseCondition {
   condition: "sun";
-  alias?: string;
   after_offset: number;
   before_offset: number;
   after: "sunrise" | "sunset";
   before: "sunrise" | "sunset";
 }
 
-export interface ZoneCondition {
+export interface ZoneCondition extends BaseCondition {
   condition: "zone";
-  alias?: string;
   entity_id: string;
   zone: string;
 }
 
-export interface TimeCondition {
+export interface TimeCondition extends BaseCondition {
   condition: "time";
-  alias?: string;
   after?: string;
   before?: string;
   weekday?: string | string[];
 }
 
-export interface TemplateCondition {
+export interface TemplateCondition extends BaseCondition {
   condition: "template";
-  alias?: string;
   value_template: string;
+}
+
+export interface TriggerCondition extends BaseCondition {
+  condition: "trigger";
+  id: string;
 }
 
 export type Condition =
@@ -221,7 +231,8 @@ export type Condition =
   | TimeCondition
   | TemplateCondition
   | DeviceCondition
-  | LogicalCondition;
+  | LogicalCondition
+  | TriggerCondition;
 
 export const triggerAutomationActions = (
   hass: HomeAssistant,

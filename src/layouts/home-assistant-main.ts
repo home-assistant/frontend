@@ -1,3 +1,4 @@
+/* eslint-disable lit/prefer-static-styles */
 import "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import type { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import "@polymer/app-layout/app-drawer/app-drawer";
@@ -103,7 +104,7 @@ class HomeAssistantMain extends LitElement {
   }
 
   protected firstUpdated() {
-    import("../components/ha-sidebar");
+    import(/* webpackPreload: true */ "../components/ha-sidebar");
 
     this.addEventListener(
       "hass-edit-sidebar",

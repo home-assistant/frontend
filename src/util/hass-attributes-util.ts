@@ -50,19 +50,31 @@ const hassAttributeUtil = {
     ],
     humidifier: ["dehumidifier", "humidifier"],
     sensor: [
+      "aqi",
       "battery",
       "carbon_dioxide",
       "carbon_monoxide",
       "current",
+      "date",
       "energy",
       "humidity",
       "illuminance",
+      "nitrogen_dioxide",
+      "nitrogen_monoxide",
+      "nitrous_oxide",
+      "ozone",
+      "pm25",
+      "pm1",
+      "pm10",
       "power",
       "power_factor",
       "pressure",
+      "monetary",
       "signal_strength",
+      "sulphur_dioxide",
       "temperature",
       "timestamp",
+      "volatile_organic_compounds",
       "voltage",
     ],
     switch: ["switch", "outlet"],
@@ -177,7 +189,7 @@ export function formatAttributeValue(
         // If invalid URL, exception will be raised
         const url = new URL(value);
         if (url.protocol === "http:" || url.protocol === "https:")
-          return html`<a target="_blank" rel="noreferrer" href="${value}"
+          return html`<a target="_blank" rel="noreferrer" href=${value}
             >${value}</a
           >`;
       } catch (_) {

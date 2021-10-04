@@ -9,6 +9,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
@@ -40,7 +41,8 @@ const IP_VERSIONS = ["ipv4", "ipv6"];
 @customElement("dialog-hassio-network")
 export class DialogHassioNetwork
   extends LitElement
-  implements HassDialog<HassioNetworkDialogParams> {
+  implements HassDialog<HassioNetworkDialogParams>
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public supervisor!: Supervisor;
@@ -109,7 +111,7 @@ export class DialogHassioNetwork
             ></ha-icon-button>
           </ha-header-bar>
           ${this._interfaces.length > 1
-            ? html` <mwc-tab-bar
+            ? html`<mwc-tab-bar
                 .activeIndex=${this._curTabIndex}
                 @MDCTabBar:activated=${this._handleTabActivated}
                 >${this._interfaces.map(
@@ -252,9 +254,9 @@ export class DialogHassioNetwork
             `
           : ""}
         ${this._dirty
-          ? html`<div class="warning">
+          ? html`<ha-alert alert-type="warning">
               ${this.supervisor.localize("dialog.network.warning")}
-            </div>`
+            </ha-alert>`
           : ""}
       </div>
       <div class="buttons">
@@ -287,7 +289,7 @@ export class DialogHassioNetwork
         this.hass,
         this._interface.interface
       );
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: "Failed to scan for accesspoints",
         text: extractApiErrorMessage(err),
@@ -448,7 +450,7 @@ export class DialogHassioNetwork
         this._interface!.interface,
         interfaceOptions
       );
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("dialog.network.failed_to_change"),
         text: extractApiErrorMessage(err),
@@ -494,7 +496,7 @@ export class DialogHassioNetwork
   }
 
   private _handleRadioValueChangedAp(ev: CustomEvent): void {
-    const value = ((ev.target as any).value as string) as
+    const value = (ev.target as any).value as string as
       | "open"
       | "wep"
       | "wpa-psk";

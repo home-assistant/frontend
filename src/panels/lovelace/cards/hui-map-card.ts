@@ -9,6 +9,8 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { mdiImageFilterCenterFocus } from "@mdi/js";
+import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
@@ -22,26 +24,11 @@ import { EntityConfig } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
 import { MapCardConfig } from "./types";
 import "../../../components/map/ha-map";
-import { mdiImageFilterCenterFocus } from "@mdi/js";
 import type { HaMap, HaMapPaths } from "../../../components/map/ha-map";
-import memoizeOne from "memoize-one";
+import { getColorByIndex } from "../../../common/color/colors";
 
 const MINUTE = 60000;
 
-const COLORS = [
-  "#0288D1",
-  "#00AA00",
-  "#984ea3",
-  "#00d2d5",
-  "#ff7f00",
-  "#af8d00",
-  "#7f80cd",
-  "#b3e900",
-  "#c42e60",
-  "#a65628",
-  "#f781bf",
-  "#8dd3c7",
-];
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -87,9 +74,10 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
-    this._configEntities = (config.entities
-      ? processConfigEntities<EntityConfig>(config.entities)
-      : []
+    this._configEntities = (
+      config.entities
+        ? processConfigEntities<EntityConfig>(config.entities)
+        : []
     ).map((entity) => entity.entity);
 
     this._cleanupHistory();
@@ -145,6 +133,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
               this._config,
               this._configEntities
             )}
+            .zoom=${this._config.default_zoom ?? 14}
             .paths=${this._getHistoryPaths(this._config, this._history)}
             .darkMode=${this._config.dark_mode}
           ></ha-map>
@@ -226,7 +215,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     if (color) {
       return color;
     }
-    color = COLORS[this._colorIndex % COLORS.length];
+    color = getColorByIndex(this._colorIndex);
     this._colorIndex++;
     this._colorDict[entityId] = color;
     return color;

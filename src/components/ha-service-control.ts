@@ -5,15 +5,18 @@ import {
   HassServiceTarget,
 } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeObjectId } from "../common/entity/compute_object_id";
+import {
+  fetchIntegrationManifest,
+  IntegrationManifest,
+} from "../data/integration";
 import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
-import { documentationUrl } from "../util/documentation-url";
 import "./ha-checkbox";
 import "./ha-selector/ha-selector";
 import "./ha-service-picker";
@@ -53,6 +56,8 @@ export class HaServiceControl extends LitElement {
 
   @state() private _checkedKeys = new Set();
 
+  @state() private _manifest?: IntegrationManifest;
+
   @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
 
   protected updated(changedProperties: PropertyValues<this>) {
@@ -71,6 +76,19 @@ export class HaServiceControl extends LitElement {
       this.value?.service,
       this.hass.services
     );
+
+    // Fetch the manifest if we have a service selected and the service domain changed.
+    // If no service is selected, clear the manifest.
+    if (this.value?.service) {
+      if (
+        !oldValue?.service ||
+        computeDomain(this.value.service) !== computeDomain(oldValue.service)
+      ) {
+        this._fetchManifest(computeDomain(this.value?.service));
+      }
+    } else {
+      this._manifest = undefined;
+    }
 
     if (
       serviceData &&
@@ -177,15 +195,12 @@ export class HaServiceControl extends LitElement {
       ></ha-service-picker>
       <div class="description">
         <p>${serviceData?.description}</p>
-        ${this.value?.service
+        ${this._manifest
           ? html` <a
-              href="${documentationUrl(
-                this.hass,
-                "/integrations/" + computeDomain(this.value?.service)
-              )}"
-              title="${this.hass.localize(
+              href=${this._manifest.documentation}
+              title=${this.hass.localize(
                 "ui.components.service-control.integration_doc"
-              )}"
+              )}
               target="_blank"
               rel="noreferrer"
             >
@@ -383,6 +398,15 @@ export class HaServiceControl extends LitElement {
         data: ev.detail.value,
       },
     });
+  }
+
+  private async _fetchManifest(integration: string) {
+    this._manifest = undefined;
+    try {
+      this._manifest = await fetchIntegrationManifest(this.hass, integration);
+    } catch (err: any) {
+      // Ignore if loading manifest fails. Probably bad JSON in manifest
+    }
   }
 
   static get styles(): CSSResultGroup {

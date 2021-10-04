@@ -8,6 +8,12 @@
         "shopping_list": "பொருட்கள் பட்டியல்",
         "states": "கண்ணோட்டம்"
     },
+    "state": {
+        "default": {
+            "unavailable": "கிடைக்கவில்லை",
+            "unknown": "தெரியவில்லை"
+        }
+    },
     "state_attributes": {
         "climate": {
             "fan_mode": {
@@ -39,12 +45,6 @@
         },
         "person": {
             "home": "முகப்பு"
-        }
-    },
-    "state": {
-        "default": {
-            "unavailable": "கிடைக்கவில்லை",
-            "unknown": "தெரியவில்லை"
         }
     },
     "ui": {

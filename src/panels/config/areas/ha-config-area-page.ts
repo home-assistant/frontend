@@ -52,9 +52,13 @@ class HaConfigAreaPage extends LitElement {
 
   @state() private _related?: RelatedResult;
 
-  private _area = memoizeOne((areaId: string, areas: AreaRegistryEntry[]):
-    | AreaRegistryEntry
-    | undefined => areas.find((area) => area.area_id === areaId));
+  private _area = memoizeOne(
+    (
+      areaId: string,
+      areas: AreaRegistryEntry[]
+    ): AreaRegistryEntry | undefined =>
+      areas.find((area) => area.area_id === areaId)
+  );
 
   private _memberships = memoizeOne(
     (
@@ -384,7 +388,7 @@ class HaConfigAreaPage extends LitElement {
         try {
           await deleteAreaRegistryEntry(this.hass!, entry!.area_id);
           return true;
-        } catch (err) {
+        } catch (err: any) {
           return false;
         }
       },

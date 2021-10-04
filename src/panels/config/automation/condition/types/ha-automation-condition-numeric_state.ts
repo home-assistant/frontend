@@ -20,13 +20,8 @@ export default class HaNumericStateCondition extends LitElement {
   }
 
   public render() {
-    const {
-      value_template,
-      entity_id,
-      attribute,
-      below,
-      above,
-    } = this.condition;
+    const { value_template, entity_id, attribute, below, above } =
+      this.condition;
 
     return html`
       <ha-entity-picker

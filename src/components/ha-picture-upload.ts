@@ -1,5 +1,4 @@
 import { mdiImagePlus } from "@mdi/js";
-import "@polymer/iron-input/iron-input";
 import "@polymer/paper-input/paper-input-container";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -90,7 +89,7 @@ export class HaPictureUpload extends LitElement {
       const media = await createImage(this.hass, file);
       this.value = generateImageThumbnailUrl(media.id, this.size);
       fireEvent(this, "change");
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: err.toString(),
       });

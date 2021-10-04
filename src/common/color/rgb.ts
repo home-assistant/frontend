@@ -1,4 +1,4 @@
-const luminosity = (rgb: [number, number, number]): number => {
+export const luminosity = (rgb: [number, number, number]): number => {
   // http://www.w3.org/TR/WCAG20/#relativeluminancedef
   const lum: [number, number, number] = [0, 0, 0];
   for (let i = 0; i < rgb.length; i++) {

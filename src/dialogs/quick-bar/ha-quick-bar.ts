@@ -1,4 +1,4 @@
-import { Layout1d, scroll } from "../../resources/lit-virtualizer";
+import { Layout1d, scroll } from "@lit-labs/virtualizer";
 import "@material/mwc-list/mwc-list";
 import type { List } from "@material/mwc-list/mwc-list";
 import { SingleSelectedEvent } from "@material/mwc-list/mwc-list-foundation";
@@ -25,7 +25,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { navigate } from "../../common/navigate";
 import "../../common/search/search-input";
-import { compare } from "../../common/string/compare";
+import { stringCompare } from "../../common/string/compare";
 import {
   fuzzyFilterSort,
   ScorableTextItem,
@@ -270,7 +270,7 @@ export class QuickBar extends LitElement {
       >
         <span>
           <ha-chip
-            .label="${item.categoryText}"
+            .label=${item.categoryText}
             hasIcon
             class="command-category ${item.categoryKey}"
           >
@@ -298,6 +298,10 @@ export class QuickBar extends LitElement {
 
   private _handleSelected(ev: SingleSelectedEvent) {
     const index = ev.detail.index;
+    if (index < 0) {
+      return;
+    }
+
     const item = ((ev.target as List).items[index] as any).item;
     this.processItemAndCloseDialog(item, index);
   }
@@ -394,7 +398,7 @@ export class QuickBar extends LitElement {
         };
       })
       .sort((a, b) =>
-        compare(a.primaryText.toLowerCase(), b.primaryText.toLowerCase())
+        stringCompare(a.primaryText.toLowerCase(), b.primaryText.toLowerCase())
       );
   }
 
@@ -404,7 +408,7 @@ export class QuickBar extends LitElement {
       ...this._generateServerControlCommands(),
       ...this._generateNavigationCommands(),
     ].sort((a, b) =>
-      compare(
+      stringCompare(
         a.strings.join(" ").toLowerCase(),
         b.strings.join(" ").toLowerCase()
       )

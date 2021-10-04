@@ -8,7 +8,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-circular-progress";
 import "../../components/ha-form/ha-form";
@@ -21,22 +21,17 @@ import { configFlowContentStyles } from "./styles";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
-  public flowConfig!: FlowConfig;
+  @property({ attribute: false }) public flowConfig!: FlowConfig;
 
-  @property()
-  public step!: DataEntryFlowStepForm;
+  @property({ attribute: false }) public step!: DataEntryFlowStepForm;
 
-  @property()
-  public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property()
-  private _loading = false;
+  @state() private _loading = false;
 
-  @property()
-  private _stepData?: Record<string, any>;
+  @state() private _stepData?: Record<string, any>;
 
-  @property()
-  private _errorMsg?: string;
+  @state() private _errorMsg?: string;
 
   protected render(): TemplateResult {
     const step = this.step;
@@ -164,7 +159,7 @@ class StepFlowForm extends LitElement {
       fireEvent(this, "flow-update", {
         step,
       });
-    } catch (err) {
+    } catch (err: any) {
       this._errorMsg =
         (err && err.body && err.body.message) || "Unknown error occurred";
     } finally {

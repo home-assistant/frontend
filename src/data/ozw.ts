@@ -73,14 +73,6 @@ export interface OZWDeviceConfig {
   help: string;
 }
 
-export interface OZWMigrationData {
-  migration_device_map: Record<string, string>;
-  zwave_entity_ids: string[];
-  ozw_entity_ids: string[];
-  migration_entity_map: Record<string, string>;
-  migrated: boolean;
-}
-
 export const nodeQueryStages = [
   "ProtocolInfo",
   "Probe",
@@ -218,13 +210,4 @@ export const refreshNodeInfo = (
     type: "ozw/refresh_node_info",
     ozw_instance,
     node_id,
-  });
-
-export const migrateZwave = (
-  hass: HomeAssistant,
-  dry_run = true
-): Promise<OZWMigrationData> =>
-  hass.callWS({
-    type: "ozw/migrate_zwave",
-    dry_run,
   });
