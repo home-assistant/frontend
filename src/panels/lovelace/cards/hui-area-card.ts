@@ -33,6 +33,7 @@ import {
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import { ActionHandlerEvent } from "../../../data/lovelace";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { handleAction } from "../common/handle-action";
@@ -43,7 +44,10 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig, EntitiesCardEntityConfig } from "./types";
 
 @customElement("hui-area-card")
-export class HuiAreaCard extends LitElement implements LovelaceCard {
+export class HuiAreaCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import("../editor/config-elements/hui-area-card-editor");
     return document.createElement("hui-area-card-editor");
@@ -69,11 +73,9 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
   @state() private _devices?: DeviceRegistryEntry[];
 
-  private _entitiesDialog?: string[];
+  @state() private _entitiesDialog?: string[];
 
-  private _entitiesToggle?: string[];
-
-  private _unsubs?: UnsubscribeFunc[];
+  @state() private _entitiesToggle?: string[];
 
   private _getArea = memoizeOne(
     (
@@ -115,6 +117,24 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     }
   );
 
+  public hassSubscribe(): UnsubscribeFunc[] {
+    if (!this.hass) {
+      return [];
+    }
+
+    return [
+      subscribeAreaRegistry(this.hass!.connection, (areas) => {
+        this._areas = areas;
+      }),
+      subscribeDeviceRegistry(this.hass!.connection, (devices) => {
+        this._devices = devices;
+      }),
+      subscribeEntityRegistry(this.hass!.connection, (entries) => {
+        this._entities = entries;
+      }),
+    ];
+  }
+
   public getCardSize(): number {
     return 5;
   }
@@ -127,25 +147,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     this._config = {
       ...config,
     };
-  }
-
-  public connectedCallback() {
-    super.connectedCallback();
-
-    if (!this.hass) {
-      return;
-    }
-    this._loadData();
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsubs) {
-      while (this._unsubs.length) {
-        this._unsubs.pop()!();
-      }
-      this._unsubs = undefined;
-    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -207,23 +208,19 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
 
     const toggleEntities: EntitiesCardEntityConfig[] = processConfigEntities(
       this._entitiesToggle!
-    )
-      .map((entityConfig) => ({
-        tap_action: { action: "toggle" },
-        hold_action: { action: "more-info" },
-        ...entityConfig,
-      }))
-      .slice(0, 3) as EntitiesCardEntityConfig[];
+    ).map((entityConfig) => ({
+      tap_action: { action: "toggle" },
+      hold_action: { action: "more-info" },
+      ...entityConfig,
+    })) as EntitiesCardEntityConfig[];
 
     const dialogEntities: EntitiesCardEntityConfig[] = processConfigEntities(
       this._entitiesDialog!
-    )
-      .map((entityConfig) => ({
-        tap_action: { action: "more-info" },
-        hold_action: { action: "more-info" },
-        ...entityConfig,
-      }))
-      .slice(0, 3) as EntitiesCardEntityConfig[];
+    ).map((entityConfig) => ({
+      tap_action: { action: "more-info" },
+      hold_action: { action: "more-info" },
+      ...entityConfig,
+    })) as EntitiesCardEntityConfig[];
 
     return html`
       <ha-card>
@@ -275,6 +272,44 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     `;
   }
 
+  public willUpdate(changedProps: PropertyValues) {
+    if (
+      (!this.hass ||
+        !this._config?.area ||
+        !this._areas ||
+        !this._entities ||
+        !this._devices) &&
+      !changedProps.has("_entities") &&
+      !changedProps.has("_devices")
+    ) {
+      return;
+    }
+
+    this._entitiesDialog = [];
+    this._entitiesToggle = [];
+
+    const { entities } = this._memberships(
+      this._config!.area,
+      this._devices!,
+      this._entities!
+    );
+
+    if (entities.length === 0) {
+      return;
+    }
+
+    entities.forEach((entity) => {
+      if (
+        !DOMAINS_TOGGLE.has(computeDomain(entity.entity_id)) &&
+        this._entitiesDialog!.length < 3
+      ) {
+        this._entitiesDialog!.push(entity.entity_id);
+      } else if (this._entitiesToggle!.length < 3) {
+        this._entitiesToggle!.push(entity.entity_id);
+      }
+    });
+  }
+
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (!this._config || !this.hass) {
@@ -291,54 +326,6 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
-
-    if (!this._unsubs && changedProps.has("hass")) {
-      this._loadData();
-      return;
-    }
-
-    if (!this._areas || !this._entities || !this._devices) {
-      return;
-    }
-
-    this._entitiesDialog = [];
-    this._entitiesToggle = [];
-
-    const { entities } = this._memberships(
-      this._config.area,
-      this._devices,
-      this._entities
-    );
-
-    if (entities.length === 0) {
-      return;
-    }
-
-    entities.forEach((entity) => {
-      if (!DOMAINS_TOGGLE.has(computeDomain(entity.entity_id))) {
-        this._entitiesDialog!.push(entity.entity_id);
-      } else {
-        this._entitiesToggle!.push(entity.entity_id);
-      }
-    });
-  }
-
-  private _loadData() {
-    if (this._unsubs) {
-      return;
-    }
-
-    this._unsubs = [
-      subscribeAreaRegistry(this.hass!.connection, (areas) => {
-        this._areas = areas;
-      }),
-      subscribeDeviceRegistry(this.hass!.connection, (devices) => {
-        this._devices = devices;
-      }),
-      subscribeEntityRegistry(this.hass!.connection, (entries) => {
-        this._entities = entries;
-      }),
-    ];
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
