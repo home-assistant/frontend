@@ -220,7 +220,7 @@ export abstract class HuiElementEditor<T> extends LitElement {
           ? html`
               <ha-alert
                 .title=${this.hass.localize("ui.errors.config.error_detected")}
-                .alertType=${"error"}
+                alert-type="error"
               >
                 <ul>
                   ${this._errors!.map((error) => html`<li>${error}</li>`)}
