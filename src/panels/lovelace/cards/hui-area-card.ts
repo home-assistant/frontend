@@ -286,13 +286,12 @@ export class HuiAreaCard
 
   public willUpdate(changedProps: PropertyValues) {
     if (
-      (!this.hass ||
-        !this._config?.area ||
-        !this._areas ||
-        !this._entities ||
-        !this._devices) &&
-      !changedProps.has("_entities") &&
-      !changedProps.has("_devices")
+      !this.hass ||
+      !this._config?.area ||
+      !this._areas ||
+      !this._entities ||
+      !this._devices ||
+      (!changedProps.has("_entities") && !changedProps.has("_devices"))
     ) {
       return;
     }
