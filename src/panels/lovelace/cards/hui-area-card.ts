@@ -43,7 +43,13 @@ import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig, EntitiesCardEntityConfig } from "./types";
 
-const AREA_SENSOR_CLASSES = ["temperature", "humidity", "aqi"];
+const AREA_SENSOR_CLASSES = [
+  "temperature",
+  "humidity",
+  "aqi",
+  "motion",
+  "door",
+];
 
 @customElement("hui-area-card")
 export class HuiAreaCard
@@ -233,11 +239,15 @@ export class HuiAreaCard
                     })}
                     @action=${this._handleAction}
                   ></ha-icon>
-                  ${computeStateDisplay(
-                    this.hass!.localize,
-                    stateObj,
-                    this.hass!.locale
-                  )}
+                  ${computeDomain(entityConf.entity) === "binary_sensor"
+                    ? ""
+                    : html`
+                        ${computeStateDisplay(
+                          this.hass!.localize,
+                          stateObj,
+                          this.hass!.locale
+                        )}
+                      `}
                 </span>
               `;
             })}
@@ -248,11 +258,11 @@ export class HuiAreaCard
               const stateObj = this.hass!.states[entityConf.entity];
               return html`
                 <ha-icon-button
-                  .config=${entityConf}
-                  .icon=${stateIcon(stateObj)}
                   class=${classMap({
                     off: STATES_OFF.includes(stateObj.state),
                   })}
+                  .config=${entityConf}
+                  .icon=${stateIcon(stateObj)}
                   .actionHandler=${actionHandler({
                     hasHold: hasAction(entityConf.hold_action),
                   })}
