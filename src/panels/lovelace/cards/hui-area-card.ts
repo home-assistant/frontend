@@ -232,44 +232,48 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <img src=${this.hass.hassUrl(this._config.image)} />
-        <div class="sensors">
-          ${dialogEntities.map((entityConf) => {
-            const stateObj = this.hass!.states[entityConf.entity];
-            return html`
-              <span>
-                <ha-icon
+        <div class="container">
+          <div class="sensors">
+            ${dialogEntities.map((entityConf) => {
+              const stateObj = this.hass!.states[entityConf.entity];
+              return html`
+                <span>
+                  <ha-icon
+                    .config=${entityConf}
+                    .icon=${stateIcon(stateObj)}
+                    .actionHandler=${actionHandler({
+                      hasHold: hasAction(entityConf.hold_action),
+                    })}
+                    @action=${this._handleAction}
+                  ></ha-icon>
+                  ${computeStateDisplay(
+                    this.hass!.localize,
+                    stateObj,
+                    this.hass!.locale
+                  )}
+                </span>
+              `;
+            })}
+          </div>
+          <div class="name">${area!.name}</div>
+          <div class="buttons">
+            ${toggleEntities.map((entityConf) => {
+              const stateObj = this.hass!.states[entityConf.entity];
+              return html`
+                <ha-icon-button
                   .config=${entityConf}
                   .icon=${stateIcon(stateObj)}
+                  class=${classMap({
+                    off: STATES_OFF.includes(stateObj.state),
+                  })}
                   .actionHandler=${actionHandler({
                     hasHold: hasAction(entityConf.hold_action),
                   })}
                   @action=${this._handleAction}
-                ></ha-icon>
-                ${computeStateDisplay(
-                  this.hass!.localize,
-                  stateObj,
-                  this.hass!.locale
-                )}
-              </span>
-            `;
-          })}
-        </div>
-        <div class="name">${area!.name}</div>
-        <div class="buttons">
-          ${toggleEntities.map((entityConf) => {
-            const stateObj = this.hass!.states[entityConf.entity];
-            return html`
-              <ha-icon-button
-                .config=${entityConf}
-                .icon=${stateIcon(stateObj)}
-                class=${classMap({ off: STATES_OFF.includes(stateObj.state) })}
-                .actionHandler=${actionHandler({
-                  hasHold: hasAction(entityConf.hold_action),
-                })}
-                @action=${this._handleAction}
-              ></ha-icon-button>
-            `;
-          })}
+                ></ha-icon-button>
+              `;
+            })}
+          </div>
         </div>
       </ha-card>
     `;
@@ -335,6 +339,15 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           width: 100%;
         }
 
+        .container {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+        }
+
         .name {
           color: white;
           font-size: 22px;
@@ -369,11 +382,7 @@ export class HuiAreaCard extends LitElement implements LovelaceCard {
           font-size: 16px;
           position: absolute;
           top: 5%;
-          /* left: 2%; */
-          background: rgba(47, 47, 47, 0.4);
-          padding: 8px;
-          border-bottom-right-radius: 20px;
-          border-top-right-radius: 20px;
+          left: 2%;
         }
       `,
     ];
