@@ -1,9 +1,10 @@
 import "@polymer/paper-input/paper-input";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, object, optional, string } from "superstruct";
 import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import "../../../../components/ha-alert";
 import { HomeAssistant } from "../../../../types";
 import { ShoppingListCardConfig } from "../../cards/types";
 import "../../components/hui-theme-select-editor";
@@ -50,11 +51,11 @@ export class HuiShoppingListEditor
       <div class="card-config">
         ${!isComponentLoaded(this.hass, "shopping_list")
           ? html`
-              <div class="error">
+              <ha-alert .alertType=${"error"}>
                 ${this.hass.localize(
                   "ui.panel.lovelace.editor.card.shopping-list.integration_not_loaded"
                 )}
-              </div>
+              </ha-alert>
             `
           : ""}
         <paper-input
@@ -98,14 +99,6 @@ export class HuiShoppingListEditor
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
-  }
-
-  static get styles(): CSSResultGroup {
-    return css`
-      .error {
-        color: var(--error-color);
-      }
-    `;
   }
 }
 
