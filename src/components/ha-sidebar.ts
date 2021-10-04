@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button";
 import {
   mdiBell,
   mdiCellphoneCog,
@@ -784,7 +783,7 @@ class HaSidebar extends LitElement {
         :host([rtl][expanded]) .menu {
           width: calc(256px + env(safe-area-inset-right));
         }
-        .menu mwc-icon-button {
+        .menu ha-icon-button {
           color: var(--sidebar-icon-color);
         }
         .title {
@@ -1019,7 +1018,7 @@ class HaSidebar extends LitElement {
           font-weight: 500;
         }
 
-        :host([rtl]) .menu mwc-icon-button {
+        :host([rtl]) .menu ha-icon-button {
           -webkit-transform: scaleX(-1);
           transform: scaleX(-1);
         }

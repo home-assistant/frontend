@@ -1,16 +1,15 @@
 import { mdiPencil } from "@mdi/js";
-import "@material/mwc-icon-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { property } from "lit/decorators";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { navigate } from "../../common/navigate";
-import "../../components/ha-svg-icon";
 import "../../components/ha-menu-button";
-import "../../layouts/ha-app-layout";
-import { HomeAssistant } from "../../types";
+import "../../components/ha-svg-icon";
 import "../../components/map/ha-map";
+import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
 
 class HaPanelMap extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;

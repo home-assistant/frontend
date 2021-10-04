@@ -1,5 +1,3 @@
-import "./ha-icon-button";
-import "@material/mwc-icon-button";
 import { mdiMenu } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -8,6 +6,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { computeDomain } from "../common/entity/compute_domain";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { HomeAssistant } from "../types";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 
 @customElement("ha-menu-button")

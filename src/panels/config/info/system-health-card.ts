@@ -1,6 +1,4 @@
-import "../../../components/ha-icon-button";
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiContentCopy } from "@mdi/js";
@@ -13,6 +11,7 @@ import { copyToClipboard } from "../../../common/util/copy-clipboard";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { domainToName } from "../../../data/integration";
 import {

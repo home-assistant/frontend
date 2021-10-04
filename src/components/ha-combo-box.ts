@@ -1,5 +1,3 @@
-import "./ha-icon-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -12,6 +10,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 
 const defaultRowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
@@ -142,7 +141,7 @@ export class HaComboBox extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      paper-input > mwc-icon-button {
+      paper-input > ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
         color: var(--secondary-text-color);

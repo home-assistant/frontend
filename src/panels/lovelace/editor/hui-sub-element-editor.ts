@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-icon-button";
 import { mdiArrowLeft } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state, query } from "lit/decorators";

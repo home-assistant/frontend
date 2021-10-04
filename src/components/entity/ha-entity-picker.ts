@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
@@ -21,9 +20,9 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
+import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
-import "../ha-icon-button";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -299,7 +298,7 @@ export class HaEntityPicker extends LitElement {
       .suffix {
         display: flex;
       }
-      mwc-icon-button {
+      ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 0px 2px;
         color: var(--secondary-text-color);

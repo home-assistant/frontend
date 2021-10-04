@@ -1,10 +1,10 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiEye, mdiEyeOff } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
+import "../ha-icon-button";
 import "../ha-svg-icon";
 import type {
   HaFormElement,
@@ -43,17 +43,15 @@ export class HaFormString extends LitElement implements HaFormElement {
             .autoValidate=${this.schema.required}
             @value-changed=${this._valueChanged}
           >
-            <mwc-icon-button
+            <ha-icon-button
               toggles
               slot="suffix"
               id="iconButton"
-              title="Click to toggle between masked and clear password"
+              label="Click to toggle between masked and clear password"
               @click=${this._toggleUnmaskedPassword}
               tabindex="-1"
-              ><ha-svg-icon
-                .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
-              ></ha-svg-icon>
-            </mwc-icon-button>
+              .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
+            ></ha-icon-button>
           </paper-input>
         `
       : html`
@@ -97,7 +95,7 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   static get styles(): CSSResultGroup {
     return css`
-      mwc-icon-button {
+      ha-icon-button {
         --mdc-icon-button-size: 24px;
         color: var(--secondary-text-color);
       }

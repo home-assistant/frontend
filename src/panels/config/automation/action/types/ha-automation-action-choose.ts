@@ -160,7 +160,7 @@ export class HaChooseAction extends LitElement implements ActionElement {
           display: block;
           text-align: center;
         }
-        mwc-icon-button {
+        ha-icon-button {
           position: absolute;
           right: 0;
           padding: 4px;

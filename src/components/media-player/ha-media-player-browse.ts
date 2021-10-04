@@ -944,7 +944,7 @@ export class HaMediaPlayerBrowse extends LitElement {
           -webkit-line-clamp: 1;
         }
 
-        :host(:not([narrow])[scroll]) .header:not(.no-img) mwc-icon-button {
+        :host(:not([narrow])[scroll]) .header:not(.no-img) ha-icon-button {
           align-self: center;
         }
 

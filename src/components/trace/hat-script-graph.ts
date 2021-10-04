@@ -1,11 +1,10 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import {
   mdiAbTesting,
   mdiArrowUp,
   mdiAsterisk,
   mdiCallSplit,
   mdiCheckboxBlankOutline,
-  mdiCheckBoxOutline,
+  mdiCheckboxOutline,
   mdiChevronDown,
   mdiChevronRight,
   mdiChevronUp,
@@ -180,7 +179,7 @@ class HatScriptGraph extends LitElement {
                 <hat-graph>
                   <hat-graph-node
                     .iconPath=${!trace || track_this
-                      ? mdiCheckBoxOutline
+                      ? mdiCheckboxOutline
                       : mdiCheckboxBlankOutline}
                     @focus=${this.selectNode(config, branch_path)}
                     class=${classMap({
@@ -454,19 +453,17 @@ class HatScriptGraph extends LitElement {
           )}
         </hat-graph>
         <div class="actions">
-          <mwc-icon-button
+          <ha-icon-button
             .disabled=${paths.length === 0 || paths[0] === this.selected}
             @click=${this.previousTrackedNode}
-          >
-            <ha-svg-icon .path=${mdiChevronUp}></ha-svg-icon>
-          </mwc-icon-button>
-          <mwc-icon-button
+            .path=${mdiChevronUp}
+          ></ha-icon-button>
+          <ha-icon-button
             .disabled=${paths.length === 0 ||
             paths[paths.length - 1] === this.selected}
             @click=${this.nextTrackedNode}
-          >
-            <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiChevronDown}
+          ></ha-icon-button>
         </div>
       `;
     } catch (err) {

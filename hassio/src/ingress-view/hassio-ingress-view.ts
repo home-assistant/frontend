@@ -240,7 +240,7 @@ class HassioIngressView extends LitElement {
         flex-grow: 1;
       }
 
-      mwc-icon-button {
+      ha-icon-button {
         pointer-events: auto;
       }
 

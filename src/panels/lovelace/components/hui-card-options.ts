@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
@@ -135,11 +134,11 @@ export class HuiCardOptions extends LitElement {
         align-items: center;
       }
 
-      mwc-icon-button {
+      ha-icon-button {
         color: var(--primary-text-color);
       }
 
-      mwc-icon-button.move-arrow[disabled] {
+      ha-icon-button.move-arrow[disabled] {
         color: var(--disabled-text-color);
       }
 

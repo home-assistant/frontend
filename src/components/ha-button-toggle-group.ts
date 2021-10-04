@@ -1,11 +1,10 @@
-import "./ha-icon-button";
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import { fireEvent } from "../common/dom/fire_event";
 import type { ToggleButton } from "../types";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 
 @customElement("ha-button-toggle-group")
@@ -56,14 +55,14 @@ export class HaButtonToggleGroup extends LitElement {
         --mdc-icon-button-size: var(--button-toggle-size, 36px);
         --mdc-icon-size: var(--button-toggle-icon-size, 20px);
       }
-      mwc-icon-button,
+      ha-icon-button,
       mwc-button {
         border: 1px solid var(--primary-color);
         border-right-width: 0px;
         position: relative;
         cursor: pointer;
       }
-      mwc-icon-button::before,
+      ha-icon-button::before,
       mwc-button::before {
         top: 0;
         left: 0;
@@ -76,20 +75,20 @@ export class HaButtonToggleGroup extends LitElement {
         content: "";
         transition: opacity 15ms linear, background-color 15ms linear;
       }
-      mwc-icon-button[active]::before,
+      ha-icon-button[active]::before,
       mwc-button[active]::before {
         opacity: var(--mdc-icon-button-ripple-opacity, 0.12);
       }
-      mwc-icon-button:first-child,
+      ha-icon-button:first-child,
       mwc-button:first-child {
         border-radius: 4px 0 0 4px;
       }
-      mwc-icon-button:last-child,
+      ha-icon-button:last-child,
       mwc-button:last-child {
         border-radius: 0 4px 4px 0;
         border-right-width: 1px;
       }
-      mwc-icon-button:only-child,
+      ha-icon-button:only-child,
       mwc-button:only-child {
         border-radius: 4px;
         border-right-width: 1px;

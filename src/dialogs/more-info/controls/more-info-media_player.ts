@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button";
 import { mdiPlayBoxMultiple } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";

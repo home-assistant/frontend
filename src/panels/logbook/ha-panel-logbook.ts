@@ -1,5 +1,4 @@
 import { mdiRefresh } from "@mdi/js";
-import "@material/mwc-icon-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { css, html, LitElement, PropertyValues } from "lit";

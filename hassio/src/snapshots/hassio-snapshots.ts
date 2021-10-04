@@ -372,7 +372,7 @@ export class HassioSnapshots extends LitElement {
           margin-right: -12px;
         }
         .header-btns > mwc-button,
-        .header-btns > mwc-icon-button {
+        .header-btns > ha-icon-button {
           margin: 8px;
         }
       `,

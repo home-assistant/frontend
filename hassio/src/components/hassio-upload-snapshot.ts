@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiFolderUpload } from "@mdi/js";
 import "@polymer/iron-input/iron-input";
 import "@polymer/paper-input/paper-input-container";
@@ -35,6 +34,7 @@ export class HassioUploadSnapshot extends LitElement {
   public render(): TemplateResult {
     return html`
       <ha-file-upload
+        .hass=${this.hass}
         .uploading=${this._uploading}
         .icon=${mdiFolderUpload}
         accept="application/x-tar"

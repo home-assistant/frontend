@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDelete } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -233,7 +232,7 @@ class HassioRegistriesDialog extends LitElement {
         mwc-button {
           margin-left: 8px;
         }
-        mwc-icon-button {
+        ha-icon-button {
           color: var(--error-color);
           margin: -10px;
         }

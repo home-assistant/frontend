@@ -611,7 +611,7 @@ export class QuickBar extends LitElement {
           color: var(--primary-text-color);
         }
 
-        paper-input mwc-icon-button {
+        paper-input ha-icon-button {
           --mdc-icon-button-size: 24px;
           color: var(--primary-text-color);
         }

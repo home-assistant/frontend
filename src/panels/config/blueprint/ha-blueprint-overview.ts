@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import {
   mdiDelete,
   mdiDownload,

@@ -1,5 +1,3 @@
-import "../../../components/ha-icon-button";
-import "@material/mwc-icon-button";
 import { mdiClose, mdiDrag, mdiPencil } from "@mdi/js";
 import {
   css,
@@ -19,6 +17,7 @@ import Sortable, {
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/entity/ha-entity-picker";
 import type { HaEntityPicker } from "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { sortableStyles } from "../../../resources/ha-sortable-style";
 import { HomeAssistant } from "../../../types";

@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import { mdiPencil, mdiPencilOff, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
@@ -155,12 +154,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     <paper-item-body> ${entry.name} </paper-item-body>
                     ${!this.narrow
                       ? html`
-                          <mwc-icon-button
+                          <ha-icon-button
                             .entry=${entry}
                             @click=${this._openEditEntry}
-                          >
-                            <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                          </mwc-icon-button>
+                            .path=${mdiPencil}
+                          ></ha-icon-button>
                         `
                       : ""}
                   </paper-icon-item>
@@ -182,7 +180,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       stateObject.entity_id}
                     </paper-item-body>
                     <div style="display:inline-block">
-                      <mwc-icon-button
+                      <ha-icon-button
                         .entityId=${stateObject.entity_id}
                         @click=${this._openCoreConfig}
                         disabled=${ifDefined(
@@ -192,15 +190,12 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                             ? undefined
                             : true
                         )}
-                      >
-                        <ha-svg-icon
-                          .path=${stateObject.entity_id === "zone.home" &&
-                          this.narrow &&
-                          this._canEditCore
-                            ? mdiPencil
-                            : mdiPencilOff}
-                        ></ha-svg-icon>
-                      </mwc-icon-button>
+                        .path=${stateObject.entity_id === "zone.home" &&
+                        this.narrow &&
+                        this._canEditCore
+                          ? mdiPencil
+                          : mdiPencilOff}
+                      ></ha-icon-button>
                       <paper-tooltip animation-delay="0" position="left">
                         ${stateObject.entity_id === "zone.home"
                           ? this.hass.localize(
@@ -489,10 +484,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         overflow: hidden;
       }
       ha-icon,
-      mwc-icon-button:not([disabled]) {
+      ha-icon-button:not([disabled]) {
         color: var(--secondary-text-color);
       }
-      mwc-icon-button {
+      ha-icon-button {
         --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
       }
       .empty {

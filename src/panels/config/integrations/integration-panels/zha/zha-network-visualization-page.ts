@@ -143,6 +143,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           ? html`
               <div slot="header">
                 <search-input
+                  .hass=${this.hass}
                   no-label-float
                   no-underline
                   class="header"
@@ -159,6 +160,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         <div class="header">
           ${!this.narrow
             ? html`<search-input
+                .hass=${this.hass}
                 no-label-float
                 no-underline
                 @value-changed=${this._handleSearchChange}

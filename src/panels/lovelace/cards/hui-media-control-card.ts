@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import { mdiPlayBoxMultiple } from "@mdi/js";
 import "@polymer/paper-progress/paper-progress";
 import type { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
@@ -690,7 +689,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         --mdc-icon-size: 40px;
       }
 
-      mwc-icon-button.browse-media {
+      ha-icon-button.browse-media {
         position: absolute;
         right: 4px;
         --mdc-icon-size: 24px;

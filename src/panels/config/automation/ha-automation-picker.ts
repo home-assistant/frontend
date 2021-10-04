@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import {
   mdiHelpCircle,
   mdiHistory,

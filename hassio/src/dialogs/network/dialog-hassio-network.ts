@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button";
 import "@material/mwc-list/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import "@material/mwc-tab";

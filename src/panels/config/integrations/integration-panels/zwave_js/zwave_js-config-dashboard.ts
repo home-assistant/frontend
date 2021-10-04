@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiCheckCircle, mdiCircle, mdiRefresh } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -66,9 +65,11 @@ class ZWaveJSConfigDashboard extends LitElement {
         .route=${this.route}
         .tabs=${configTabs}
       >
-        <mwc-icon-button slot="toolbar-icon" @click=${this._fetchData}>
-          <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-        </mwc-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          @click=${this._fetchData}
+          .path=${mdiRefresh}
+        ></ha-icon-button>
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
             ${this.hass.localize("ui.panel.config.zwave_js.dashboard.header")}

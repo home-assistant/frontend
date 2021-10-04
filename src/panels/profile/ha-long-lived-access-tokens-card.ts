@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
@@ -173,7 +172,7 @@ class HaLongLivedTokens extends LitElement {
         mwc-button {
           --mdc-theme-primary: var(--primary-color);
         }
-        mwc-icon-button {
+        ha-icon-button {
           color: var(--primary-text-color);
         }
       `,

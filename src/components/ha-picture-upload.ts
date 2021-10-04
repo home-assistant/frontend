@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiImagePlus } from "@mdi/js";
 import "@polymer/iron-input/iron-input";
 import "@polymer/paper-input/paper-input-container";
@@ -35,6 +34,7 @@ export class HaPictureUpload extends LitElement {
   public render(): TemplateResult {
     return html`
       <ha-file-upload
+        .hass=${this.hass}
         .icon=${mdiImagePlus}
         .label=${this.label ||
         this.hass.localize("ui.components.picture-upload.label")}

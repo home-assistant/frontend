@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list";
 import "@material/mwc-list/mwc-list-item";
 import { mdiFilterVariant, mdiPlus } from "@mdi/js";
@@ -319,6 +318,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           ? html`
               <div slot="header">
                 <search-input
+                  .hass=${this.hass}
                   .filter=${this._filter}
                   class="header"
                   no-label-float
@@ -334,6 +334,7 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           : html`
               <div class="search">
                 <search-input
+                  .hass=${this.hass}
                   no-label-float
                   no-underline
                   .filter=${this._filter}

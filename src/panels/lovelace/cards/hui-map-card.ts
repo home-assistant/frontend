@@ -377,7 +377,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         background: inherit;
       }
 
-      mwc-icon-button {
+      ha-icon-button {
         position: absolute;
         top: 75px;
         left: 3px;

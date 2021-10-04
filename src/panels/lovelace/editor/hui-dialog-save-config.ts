@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiHelpCircle } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";

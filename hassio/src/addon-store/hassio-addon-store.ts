@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDotsVertical } from "@mdi/js";
@@ -115,6 +114,7 @@ class HassioAddonStore extends LitElement {
           : html`
               <div class="search">
                 <search-input
+                  .hass=${this.hass}
                   no-label-float
                   no-underline
                   .filter=${this._filter}

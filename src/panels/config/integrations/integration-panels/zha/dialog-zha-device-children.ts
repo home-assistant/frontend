@@ -101,6 +101,7 @@ class DialogZHADeviceChildren extends LitElement {
               active
             ></ha-circular-progress>`
           : html`<ha-data-table
+              .hass=${this.hass}
               .columns=${this._columns}
               .data=${this._deviceChildren(this._device, this._devices)}
               auto-height

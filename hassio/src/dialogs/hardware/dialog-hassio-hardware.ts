@@ -76,6 +76,7 @@ class HassioHardwareDialog extends LitElement {
             dialogAction="close"
           ></ha-icon-button>
           <search-input
+            .hass=${this.hass}
             autofocus
             no-label-float
             .filter=${this._filter}
@@ -143,7 +144,7 @@ class HassioHardwareDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        mwc-icon-button {
+        ha-icon-button {
           position: absolute;
           right: 16px;
           top: 10px;

@@ -1,7 +1,6 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import {
   mdiClose,
   mdiDevices,
@@ -15,7 +14,7 @@ import {
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, unsafeCSS } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { ensureArray } from "../common/ensure-array";
@@ -545,13 +544,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       .mdc-chip:not(.add) {
         cursor: default;
       }
-      .mdc-chip mwc-icon-button {
+      .mdc-chip ha-icon-button {
         --mdc-icon-button-size: 24px;
         display: flex;
         align-items: center;
         outline: none;
       }
-      .mdc-chip mwc-icon-button ha-svg-icon {
+      .mdc-chip ha-icon-button ha-svg-icon {
         border-radius: 50%;
         background: var(--secondary-text-color);
       }

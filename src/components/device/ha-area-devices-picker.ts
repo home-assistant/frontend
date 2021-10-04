@@ -1,6 +1,4 @@
-import "../ha-icon-button";
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -16,6 +14,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
+import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -37,9 +36,9 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
+import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./ha-devices-picker";
-import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 
 interface DevicesByArea {
   [areaId: string]: AreaDevices;
@@ -57,7 +56,7 @@ const rowRenderer: ComboBoxLitRenderer<AreaDevices> = (item) => html`<style>
       margin: -10px 0;
       padding: 0;
     }
-    mwc-icon-button {
+    ha-icon-button {
       float: right;
     }
     .devices {
@@ -394,7 +393,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
       .suffix {
         display: flex;
       }
-      mwc-icon-button {
+      ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 0px 2px;
         color: var(--secondary-text-color);

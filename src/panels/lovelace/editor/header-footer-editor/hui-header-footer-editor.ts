@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiClose, mdiPencil, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -115,7 +114,7 @@ export class HuiHeaderFooterEditor extends LitElement {
         align-items: center;
       }
 
-      mwc-icon-button,
+      ha-icon-button,
       .header-footer-icon {
         --mdc-icon-button-size: 36px;
         color: var(--secondary-text-color);

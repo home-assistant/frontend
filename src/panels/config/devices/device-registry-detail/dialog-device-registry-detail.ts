@@ -25,7 +25,7 @@ class DialogDeviceRegistryDetail extends LitElement {
 
   @state() private _params?: DeviceRegistryDetailDialogParams;
 
-  @state() private _areaId?: string | null;
+  @property() public _areaId?: string | null;
 
   @state() private _disabledBy!: string | null;
 

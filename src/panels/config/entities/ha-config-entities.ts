@@ -525,32 +525,32 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       >
                     `
                   : html`
-                      <mwc-icon-button
+                      <ha-icon-button
                         id="enable-btn"
                         @click=${this._enableSelected}
-                        ><ha-svg-icon .path=${mdiUndo}></ha-svg-icon
-                      ></mwc-icon-button>
+                        .path=${mdiUndo}
+                      ></ha-icon-button>
                       <paper-tooltip animation-delay="0" for="enable-btn">
                         ${this.hass.localize(
                           "ui.panel.config.entities.picker.enable_selected.button"
                         )}
                       </paper-tooltip>
-                      <mwc-icon-button
+                      <ha-icon-button
                         id="disable-btn"
                         @click=${this._disableSelected}
-                        ><ha-svg-icon .path=${mdiCancel}></ha-svg-icon
-                      ></mwc-icon-button>
+                        .path=${mdiCancel}
+                      ></ha-icon-button>
                       <paper-tooltip animation-delay="0" for="disable-btn">
                         ${this.hass.localize(
                           "ui.panel.config.entities.picker.disable_selected.button"
                         )}
                       </paper-tooltip>
-                      <mwc-icon-button
+                      <ha-icon-button
                         class="warning"
                         id="remove-btn"
                         @click=${this._removeSelected}
-                        ><ha-svg-icon .path=${mdiDelete}></ha-svg-icon
-                      ></mwc-icon-button>
+                        .path=${mdiDelete}
+                      ></ha-icon-button>
                       <paper-tooltip animation-delay="0" for="remove-btn">
                         ${this.hass.localize(
                           "ui.panel.config.entities.picker.remove_selected.button"
@@ -560,17 +560,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               </div>
             </div> `
           : html`<ha-button-menu slot="filter-menu" corner="BOTTOM_START" multi>
-              <mwc-icon-button
+              <ha-icon-button
                 slot="trigger"
                 .label=${this.hass!.localize(
                   "ui.panel.config.entities.picker.filter.filter"
                 )}
-                .title=${this.hass!.localize(
-                  "ui.panel.config.entities.picker.filter.filter"
-                )}
-              >
-                <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-              </mwc-icon-button>
+                .path=${mdiFilterVariant}
+              ></ha-icon-button>
               <mwc-list-item
                 @request-selected="${this._showDisabledChanged}"
                 graphic="control"
@@ -881,7 +877,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           margin-right: -12px;
         }
         .header-btns > mwc-button,
-        .header-btns > mwc-icon-button {
+        .header-btns > ha-icon-button {
           margin: 8px;
         }
         ha-button-menu {

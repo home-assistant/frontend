@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -143,7 +142,7 @@ class HaRefreshTokens extends LitElement {
         ha-settings-row {
           padding: 0;
         }
-        mwc-icon-button {
+        ha-icon-button {
           color: var(--primary-text-color);
         }
       `,
