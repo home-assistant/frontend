@@ -3517,7 +3517,7 @@
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
-          "next": "Next",
+          "next": "Login",
           "start_over": "Start over",
           "error": "Error: {error}",
           "providers": {
