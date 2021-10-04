@@ -17,6 +17,7 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
+import { showFixStatisticsUnsupportedUnitMetadataDialog } from "./show-dialog-statistics-fix-unsupported-unit-meta";
 
 const FIX_ISSUES_ORDER = {
   entity_not_recorded: 1,
@@ -178,11 +179,11 @@ class HaPanelDevStatistics extends LitElement {
         });
         break;
       case "unsupported_unit_metadata":
-        showAlertDialog(this, {
-          title: "Unsupported unit in recorded statistics",
-          text: html`The unit of the statistics in your database for this entity
-          is not a supported unit for the device class of the entity,
-          ${issue.data.device_class}. It should be ${issue.data.supported_unit}.`,
+        showFixStatisticsUnsupportedUnitMetadataDialog(this, {
+          issue,
+          fixedCallback: () => {
+            this._validateStatistics();
+          },
         });
         break;
       case "unsupported_unit_state":
