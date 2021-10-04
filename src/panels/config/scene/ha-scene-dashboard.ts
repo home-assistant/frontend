@@ -75,7 +75,7 @@ class HaSceneDashboard extends LitElement {
               .scene=${scene}
               .label=${this.hass.localize(
                 "ui.panel.config.scene.picker.activate_scene"
-          )}
+              )}
               .path=${mdiPlay}
               @click=${(ev: Event) => this._activateScene(ev)}
             ></ha-icon-button>

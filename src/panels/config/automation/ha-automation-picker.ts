@@ -151,7 +151,7 @@ class HaAutomationPicker extends LitElement {
             @click=${this._showInfo}
             .label=${this.hass.localize(
               "ui.panel.config.automation.picker.show_info_automation"
-        )}
+            )}
             .path=${mdiInformationOutline}
           ></ha-icon-button>
         `,
@@ -201,7 +201,7 @@ class HaAutomationPicker extends LitElement {
               .disabled=${!automation.attributes.id}
               .label=${this.hass.localize(
                 "ui.panel.config.automation.picker.edit_automation"
-        )}
+              )}
               .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
             ></ha-icon-button>
           </a>

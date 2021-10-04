@@ -366,7 +366,7 @@ class HassioAddonInfo extends LitElement {
                         id="docker_api"
                         .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.docker"
-      )}
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiDocker}></ha-svg-icon>
