@@ -45,10 +45,9 @@ export class HaForm extends LitElement implements HaFormElement {
       <div class="root">
         ${this.error && this.error.base
           ? html`
-              <ha-alert
-                alert-type="error"
-                .title=${this._computeError(this.error.base, this.schema)}
-              ></ha-alert>
+              <ha-alert alert-type="error">
+                ${this._computeError(this.error.base, this.schema)}
+              </ha-alert>
             `
           : ""}
         ${this.schema.map((item) => {
@@ -56,11 +55,9 @@ export class HaForm extends LitElement implements HaFormElement {
           return html`
             ${error
               ? html`
-                  <ha-alert
-                    own-margin
-                    alert-type="error"
-                    .title=${this._computeError(error, item)}
-                  ></ha-alert>
+                  <ha-alert own-margin alert-type="error">
+                    ${this._computeError(error, item)}
+                  </ha-alert>
                 `
               : ""}
             ${dynamicElement(`ha-form-${item.type}`, {

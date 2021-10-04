@@ -146,21 +146,19 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         `;
       case "error":
         return html`
-          <ha-alert
-            alert-type="error"
-            .title=${this.localize(
+          <ha-alert alert-type="error">
+            ${this.localize(
               "ui.panel.page-authorize.form.error",
               "error",
               this._errorMessage
             )}
-          ></ha-alert>
+          </ha-alert>
         `;
       case "loading":
         return html`
-          <ha-alert
-            alert-type="info"
-            .title=${this.localize("ui.panel.page-authorize.form.working")}
-          ></ha-alert>
+          <ha-alert alert-type="info">
+            ${this.localize("ui.panel.page-authorize.form.working")}
+          </ha-alert>
         `;
       default:
         return html``;

@@ -44,9 +44,7 @@ class StepFlowForm extends LitElement {
       <div class="content">
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         ${this._errorMsg
-          ? html`
-              <ha-alert alert-type="error" .title=${this._errorMsg}></ha-alert>
-            `
+          ? html`<ha-alert alert-type="error">${this._errorMsg}</ha-alert>`
           : ""}
         <ha-form
           .data=${stepData}
