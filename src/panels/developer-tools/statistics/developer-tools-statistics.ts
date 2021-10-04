@@ -127,11 +127,27 @@ class HaPanelDevStatistics extends LitElement {
       validateStatistics(this.hass),
     ]);
 
-    this._data = statisticIds.map((statistic) => ({
-      ...statistic,
-      state: this.hass.states[statistic.statistic_id],
-      issues: issues[statistic.statistic_id],
-    }));
+    const statsIds = new Set();
+
+    this._data = statisticIds.map((statistic) => {
+      statsIds.add(statistic.statistic_id);
+      return {
+        ...statistic,
+        state: this.hass.states[statistic.statistic_id],
+        issues: issues[statistic.statistic_id],
+      };
+    });
+
+    Object.keys(issues).forEach((statisticId) => {
+      if (!statsIds.has(statisticId)) {
+        this._data.push({
+          statistic_id: statisticId,
+          unit_of_measurement: "",
+          state: this.hass.states[statisticId],
+          issues: issues[statisticId],
+        });
+      }
+    });
   }
 
   private _fixIssue(ev) {
