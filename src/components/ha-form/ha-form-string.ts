@@ -12,7 +12,7 @@ import type {
   HaFormStringSchema,
 } from "./ha-form";
 
-const SECRET_FIELDS = ["password", "client_secret", "access_secret"];
+const SECRET_FIELDS = ["password", "client_secret", "access_secret", "secret"];
 
 @customElement("ha-form-string")
 export class HaFormString extends LitElement implements HaFormElement {
