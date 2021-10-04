@@ -17,14 +17,21 @@ import type { TimeLineData } from "./timeline-chart/const";
  */
 const BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED = new Set([
   "battery",
+  "cold",
   "door",
   "garage_door",
   "gas",
+  "heat",
   "lock",
+  "moisture",
+  "motion",
+  "occupancy",
   "opening",
   "problem",
   "safety",
   "smoke",
+  "sound",
+  "vibration",
   "window",
 ]);
 
