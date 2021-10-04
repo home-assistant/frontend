@@ -20,7 +20,7 @@ const SCHEMAS: {
     translations: {
       username: "Username",
       password: "Password",
-      invalid_login: "Invalid login",
+      invalid_login: "Invalid username or password",
     },
     error: {
       base: "invalid_login",
