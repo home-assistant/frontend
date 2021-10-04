@@ -100,7 +100,12 @@ export interface StatisticsValidationResultUnitsChanged {
 
 export interface StatisticsValidationResultUnsupportedUnitMetadata {
   type: "unsupported_unit_metadata";
-  data: { statistic_id: string; device_class: string; metadata_unit: string };
+  data: {
+    statistic_id: string;
+    device_class: string;
+    metadata_unit: string;
+    supported_unit: string;
+  };
 }
 
 export interface StatisticsValidationResultUnsupportedUnitState {

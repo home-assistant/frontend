@@ -18,6 +18,13 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
 
+const FIX_ISSUES_ORDER = {
+  entity_not_recorded: 1,
+  unsupported_unit_state: 2,
+  unsupported_state_class: 3,
+  units_changed: 4,
+  unsupported_unit_metadata: 5,
+};
 @customElement("developer-tools-statistics")
 class HaPanelDevStatistics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -127,22 +134,28 @@ class HaPanelDevStatistics extends LitElement {
   }
 
   private _fixIssue(ev) {
-    const issue = ev.currentTarget.data[0] as StatisticsValidationResult;
+    const issues = (ev.currentTarget.data as StatisticsValidationResult[]).sort(
+      (itemA, itemB) =>
+        (FIX_ISSUES_ORDER[itemA.type] ?? 99) -
+        (FIX_ISSUES_ORDER[itemB.type] ?? 99)
+    );
+    const issue = issues[0];
     switch (issue.type) {
       case "entity_not_recorded":
         showAlertDialog(this, {
           title: "Entity not recorded",
           text: html`State changes of this entity are not recorded, therefore,
             we can not track long term statistics for it. <br /><br />You
-            probably excluded this entity, or have selective entities
-            included.<br /><br />Check the
+            probably excluded this entity, or have just included some
+            entities.<br /><br />See the
             <a
               href="https://www.home-assistant.io/integrations/recorder/#configure-filter"
               target="_blank"
               rel="noreferrer noopener"
             >
               recorder documentation</a
-            >.`,
+            >
+            for more information.`,
         });
         break;
       case "unsupported_state_class":
@@ -150,8 +163,8 @@ class HaPanelDevStatistics extends LitElement {
           title: "Unsupported state class",
           text: html`The state class of this entity, ${issue.data.state_class}
             is not supported. <br />Statistics can not be generated until this
-            entity has a supported state class.<br /><br />If this unit was
-            provided by an integration, this is a bug. Please report an
+            entity has a supported state class.<br /><br />If this state class
+            was provided by an integration, this is a bug. Please report an
             issue.<br /><br />If you have set this state class yourself, please
             correct it. The different state classes and when to use which can be
             found in the
@@ -168,16 +181,8 @@ class HaPanelDevStatistics extends LitElement {
         showAlertDialog(this, {
           title: "Unsupported unit in recorded statistics",
           text: html`The unit of the statistics in your database for this entity
-            are not a supported unit for the device class of the entity,
-            ${issue.data.device_class}. The supported units are documented in
-            the
-            <a
-              href="https://developers.home-assistant.io/docs/core/entity/sensor"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              developer documentation</a
-            >.`,
+          is not a supported unit for the device class of the entity,
+          ${issue.data.device_class}. It should be ${issue.data.supported_unit}.`,
         });
         break;
       case "unsupported_unit_state":
@@ -192,7 +197,7 @@ class HaPanelDevStatistics extends LitElement {
             generated, make sure the unit matched the device class. The
             supported units are documented in the
             <a
-              href="https://developers.home-assistant.io/docs/core/entity/sensor"
+              href="https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes"
               target="_blank"
               rel="noreferrer noopener"
             >
