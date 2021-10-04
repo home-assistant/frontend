@@ -154,14 +154,14 @@ class ZWaveJSConfigDashboard extends LitElement {
                   </div>
                   <div class="card-actions">
                     <a
-                      href="${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}"
+                      href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                     >
                       <mwc-button>
                         ${this.hass.localize("ui.panel.config.devices.caption")}
                       </mwc-button>
                     </a>
                     <a
-                      href="${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}"
+                      href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                     >
                       <mwc-button>
                         ${this.hass.localize(
@@ -422,7 +422,7 @@ class ZWaveJSConfigDashboard extends LitElement {
         this.hass,
         `/api/zwave_js/dump/${this.configEntryId}`
       );
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: "Error",
         text: err.error || err.body || err,

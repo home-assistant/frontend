@@ -49,20 +49,16 @@ export class HuiDialogDeleteCard extends LitElement {
                 <div class="element-preview">
                   <hui-card-preview
                     .hass=${this.hass}
-                    .config="${this._cardConfig}"
+                    .config=${this._cardConfig}
                   ></hui-card-preview>
                 </div>
               `
             : ""}
         </div>
-        <mwc-button slot="secondaryAction" @click="${this.closeDialog}">
+        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
           ${this.hass!.localize("ui.common.cancel")}
         </mwc-button>
-        <mwc-button
-          slot="primaryAction"
-          class="warning"
-          @click="${this._delete}"
-        >
+        <mwc-button slot="primaryAction" class="warning" @click=${this._delete}>
           ${this.hass!.localize("ui.common.delete")}
         </mwc-button>
       </ha-dialog>

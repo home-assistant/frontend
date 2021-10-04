@@ -75,7 +75,7 @@ export class HuiDialogSuggestCard extends LitElement {
                     (cardConfig) => html`
                       <hui-card-preview
                         .hass=${this.hass}
-                        .config="${cardConfig}"
+                        .config=${cardConfig}
                       ></hui-card-preview>
                     `
                   )}
@@ -92,22 +92,22 @@ export class HuiDialogSuggestCard extends LitElement {
               `
             : ""}
         </div>
-        <mwc-button slot="secondaryAction" @click="${this.closeDialog}">
+        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
           ${this._params.yaml
             ? this.hass!.localize("ui.common.close")
             : this.hass!.localize("ui.common.cancel")}
         </mwc-button>
         ${!this._params.yaml
           ? html`
-              <mwc-button slot="primaryAction" @click="${this._pickCard}"
+              <mwc-button slot="primaryAction" @click=${this._pickCard}
                 >${this.hass!.localize(
                   "ui.panel.lovelace.editor.suggest_card.create_own"
                 )}</mwc-button
               >
               <mwc-button
                 slot="primaryAction"
-                .disabled="${this._saving}"
-                @click="${this._save}"
+                .disabled=${this._saving}
+                @click=${this._save}
               >
                 ${this._saving
                   ? html`

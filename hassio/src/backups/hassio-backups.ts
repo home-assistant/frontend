@@ -14,7 +14,7 @@ import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import memoizeOne from "memoize-one";
 import { atLeastVersion } from "../../../src/common/config/version";
-import relativeTime from "../../../src/common/datetime/relative_time";
+import { relativeTime } from "../../../src/common/datetime/relative_time";
 import { HASSDomEvent } from "../../../src/common/dom/fire_event";
 import {
   DataTableColumnContainer,
@@ -133,7 +133,7 @@ export class HassioBackups extends LitElement {
         filterable: true,
         sortable: true,
         template: (entry: string) =>
-          relativeTime(new Date(entry), this.hass.localize),
+          relativeTime(new Date(entry), this.hass.locale),
       },
       secondary: {
         title: "",
@@ -294,7 +294,7 @@ export class HassioBackups extends LitElement {
       await Promise.all(
         this._selectedBackups.map((slug) => removeBackup(this.hass, slug))
       );
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("backup.failed_to_delete"),
         text: extractApiErrorMessage(err),

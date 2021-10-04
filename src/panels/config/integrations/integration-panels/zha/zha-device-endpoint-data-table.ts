@@ -68,7 +68,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               direction: "asc",
               grows: true,
               template: (name, device: any) => html`
-                <a href="${`/config/devices/device/${device.dev_id}`}">
+                <a href=${`/config/devices/device/${device.dev_id}`}>
                   ${name}
                 </a>
               `,
@@ -87,7 +87,7 @@ export class ZHADeviceEndpointDataTable extends LitElement {
               direction: "asc",
               grows: true,
               template: (name, device: any) => html`
-                <a href="${`/config/devices/device/${device.dev_id}`}">
+                <a href=${`/config/devices/device/${device.dev_id}`}>
                   ${name}
                 </a>
               `,

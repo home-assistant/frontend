@@ -56,8 +56,8 @@ export class CloudRemotePref extends LitElement {
       >
         <div class="switch">
           <ha-switch
-            .checked="${remote_enabled}"
-            @change="${this._toggleChanged}"
+            .checked=${remote_enabled}
+            @change=${this._toggleChanged}
           ></ha-switch>
         </div>
         <div class="card-content">
@@ -130,7 +130,7 @@ export class CloudRemotePref extends LitElement {
         await disconnectCloudRemote(this.hass);
       }
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       alert(err.message);
       toggle.checked = !toggle.checked;
     }

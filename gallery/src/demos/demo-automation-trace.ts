@@ -1,3 +1,4 @@
+/* eslint-disable lit/no-template-arrow */
 import { html, css, LitElement, TemplateResult } from "lit";
 import "../../../src/components/ha-card";
 import "../../../src/components/trace/hat-script-graph";

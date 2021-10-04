@@ -194,7 +194,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         this._state = "error";
         this._errorMessage = data.message;
       }
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Error starting auth flow", err);
       this._state = "error";
@@ -317,7 +317,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         return;
       }
       await this._updateStep(newStep);
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Error submitting step", err);
       this._state = "error";

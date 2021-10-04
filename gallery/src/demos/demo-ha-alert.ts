@@ -107,19 +107,21 @@ export class DemoHaAlert extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-card header="ha-alert demo">
-        ${alerts.map(
-          (alert) => html`
-            <ha-alert
-              .title=${alert.title || ""}
-              .alertType=${alert.type}
-              .dismissable=${alert.dismissable || false}
-              .actionText=${alert.action || ""}
-              .rtl=${alert.rtl || false}
-            >
-              ${alert.description}
-            </ha-alert>
-          `
-        )}
+        <div class="card-content">
+          ${alerts.map(
+            (alert) => html`
+              <ha-alert
+                .title=${alert.title || ""}
+                .alertType=${alert.type}
+                .dismissable=${alert.dismissable || false}
+                .actionText=${alert.action || ""}
+                .rtl=${alert.rtl || false}
+              >
+                ${alert.description}
+              </ha-alert>
+            `
+          )}
+        </div>
       </ha-card>
     `;
   }
@@ -129,6 +131,10 @@ export class DemoHaAlert extends LitElement {
       ha-card {
         max-width: 600px;
         margin: 24px auto;
+      }
+      ha-alert {
+        display: block;
+        margin: 24px 0;
       }
       .condition {
         padding: 16px;

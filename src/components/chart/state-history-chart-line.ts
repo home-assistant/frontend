@@ -5,7 +5,7 @@ import { getColorByIndex } from "../../common/color/colors";
 import {
   formatNumber,
   numberFormatToLocale,
-} from "../../common/string/format_number";
+} from "../../common/number/format_number";
 import { LineChartEntity, LineChartState } from "../../data/history";
 import { HomeAssistant } from "../../types";
 import "./ha-chart-base";

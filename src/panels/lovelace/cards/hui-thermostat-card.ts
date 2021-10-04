@@ -16,7 +16,7 @@ import { UNIT_F } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { formatNumber } from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import type { HaCard } from "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -412,9 +412,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
     return html`
       <ha-icon-button
-        class="${classMap({ "selected-icon": currentMode === mode })}"
-        .mode="${mode}"
-        .icon="${modeIcons[mode]}"
+        class=${classMap({ "selected-icon": currentMode === mode })}
+        .mode=${mode}
+        .icon=${modeIcons[mode]}
         @click=${this._handleAction}
         tabindex="0"
       ></ha-icon-button>

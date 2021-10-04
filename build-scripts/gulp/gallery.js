@@ -51,6 +51,7 @@ gulp.task(
     gulp.parallel(
       "gen-icons-json",
       "build-translations",
+      "build-locale-data",
       "gather-gallery-demos"
     ),
     "copy-static-gallery",
@@ -70,6 +71,7 @@ gulp.task(
     gulp.parallel(
       "gen-icons-json",
       "build-translations",
+      "build-locale-data",
       "gather-gallery-demos"
     ),
     "copy-static-gallery",

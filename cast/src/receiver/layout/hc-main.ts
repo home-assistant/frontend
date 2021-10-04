@@ -148,14 +148,14 @@ export class HcMain extends HassElement {
           expires_in: 0,
         }),
       });
-    } catch (err) {
+    } catch (err: any) {
       this._error = this._getErrorMessage(err);
       return;
     }
     let connection;
     try {
       connection = await createConnection({ auth });
-    } catch (err) {
+    } catch (err: any) {
       this._error = this._getErrorMessage(err);
       return;
     }
@@ -193,7 +193,7 @@ export class HcMain extends HassElement {
         this._unsubLovelace = llColl.subscribe((lovelaceConfig) =>
           this._handleNewLovelaceConfig(lovelaceConfig)
         );
-      } catch (err) {
+      } catch (err: any) {
         // eslint-disable-next-line
         console.log("Error fetching Lovelace configuration", err, msg);
         // Generate a Lovelace config.

@@ -388,7 +388,7 @@ class HaConfigAreaPage extends LitElement {
         try {
           await deleteAreaRegistryEntry(this.hass!, entry!.area_id);
           return true;
-        } catch (err) {
+        } catch (err: any) {
           return false;
         }
       },

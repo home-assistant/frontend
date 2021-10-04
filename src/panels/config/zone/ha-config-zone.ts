@@ -457,7 +457,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         this._map?.fitMap();
       }
       return true;
-    } catch (err) {
+    } catch (err: any) {
       return false;
     }
   }

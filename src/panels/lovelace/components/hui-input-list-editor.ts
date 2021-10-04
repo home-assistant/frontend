@@ -23,7 +23,7 @@ export class HuiInputListEditor extends LitElement {
       ${this.value.map(
         (listEntry, index) => html`
           <paper-input
-            label="${this.inputLabel}"
+            label=${this.inputLabel}
             .value=${listEntry}
             .configValue=${"entry"}
             .index=${index}
@@ -42,7 +42,7 @@ export class HuiInputListEditor extends LitElement {
         `
       )}
       <paper-input
-        label="${this.inputLabel}"
+        label=${this.inputLabel}
         @change=${this._addEntry}
       ></paper-input>
     `;

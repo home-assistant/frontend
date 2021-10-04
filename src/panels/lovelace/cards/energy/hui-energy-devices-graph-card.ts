@@ -3,6 +3,7 @@ import {
   ChartDataset,
   ChartOptions,
   ParsedDataType,
+  ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
 import { addHours } from "date-fns";
@@ -17,15 +18,11 @@ import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
   formatNumber,
   numberFormatToLocale,
-} from "../../../../common/string/format_number";
+} from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import type HaChartBase from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import {
-  DeviceConsumptionEnergyPreference,
-  EnergyData,
-  getEnergyDataCollection,
-} from "../../../../data/energy";
+import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   fetchStatistics,
@@ -51,8 +48,6 @@ export class HuiEnergyDevicesGraphCard
   @state() private _chartData: ChartData = { datasets: [] };
 
   @query("ha-chart-base") private _chart?: HaChartBase;
-
-  private _deviceConsumptionPrefs: DeviceConsumptionEnergyPreference[] = [];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -110,11 +105,11 @@ export class HuiEnergyDevicesGraphCard
           ticks: {
             autoSkip: false,
             callback: (index) => {
-              const devicePref = this._deviceConsumptionPrefs[index];
-              const entity = this.hass.states[devicePref.stat_consumption];
-              return entity
-                ? computeStateName(entity)
-                : devicePref.stat_consumption;
+              const entityId = (
+                this._chartData.datasets[0].data[index] as ScatterDataPoint
+              ).y;
+              const entity = this.hass.states[entityId];
+              return entity ? computeStateName(entity) : entityId;
             },
           },
         },
@@ -130,6 +125,10 @@ export class HuiEnergyDevicesGraphCard
         tooltip: {
           mode: "nearest",
           callbacks: {
+            title: (item) => {
+              const entity = this.hass.states[item[0].label];
+              return entity ? computeStateName(entity) : item[0].label;
+            },
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
                 context.parsed.x,
@@ -149,15 +148,13 @@ export class HuiEnergyDevicesGraphCard
         );
         fireEvent(this, "hass-more-info", {
           // @ts-ignore
-          entityId: this._chartData?.datasets[0]?.data[index]?.label,
+          entityId: this._chartData?.datasets[0]?.data[index]?.y,
         });
       },
     })
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
-    this._deviceConsumptionPrefs = energyData.prefs.device_consumption;
-
     this._data = await fetchStatistics(
       this.hass,
       addHours(energyData.start, -1),

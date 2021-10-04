@@ -8,7 +8,7 @@ export const handleFetchPromise = async <T>(
 
   try {
     response = await fetchPromise;
-  } catch (err) {
+  } catch (err: any) {
     // eslint-disable-next-line @typescript-eslint/no-throw-literal
     throw {
       error: "Request error",
@@ -24,7 +24,7 @@ export const handleFetchPromise = async <T>(
   if (contentType && contentType.includes("application/json")) {
     try {
       body = await response.json();
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw {
         error: "Unable to parse JSON response",

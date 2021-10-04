@@ -62,7 +62,7 @@ class OnboardingRestoreBackup extends ProvideHassLitMixin(LitElement) {
     if (this.restoring) {
       try {
         await fetchInstallationType();
-      } catch (err) {
+      } catch (err: any) {
         if ((err as Error).message === "unauthorized") {
           window.location.replace("/");
         }

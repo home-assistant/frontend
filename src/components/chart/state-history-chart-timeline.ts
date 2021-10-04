@@ -5,7 +5,7 @@ import { customElement, property, state } from "lit/decorators";
 import { getColorByIndex } from "../../common/color/colors";
 import { formatDateTimeWithSeconds } from "../../common/datetime/format_date_time";
 import { computeDomain } from "../../common/entity/compute_domain";
-import { numberFormatToLocale } from "../../common/string/format_number";
+import { numberFormatToLocale } from "../../common/number/format_number";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { TimelineEntity } from "../../data/history";
 import { HomeAssistant } from "../../types";
@@ -62,7 +62,11 @@ const getColor = (
   entityState: HassEntity,
   computedStyles: CSSStyleDeclaration
 ) => {
-  if (invertOnOff(entityState)) {
+  // Inversion is only valid for "on" or "off" state
+  if (
+    (stateString === "on" || stateString === "off") &&
+    invertOnOff(entityState)
+  ) {
     stateString = stateString === "on" ? "off" : "on";
   }
   if (stateColorMap.has(stateString)) {

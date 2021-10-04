@@ -65,32 +65,21 @@ class HassioDatadiskDialog extends LitElement {
         open
         scrimClickAction
         escapeKeyAction
+        .heading=${this.moving
+          ? this.dialogParams.supervisor.localize("dialog.datadisk_move.moving")
+          : this.dialogParams.supervisor.localize("dialog.datadisk_move.title")}
         @closed=${this.closeDialog}
         ?hideActions=${this.moving}
       >
         ${this.moving
-          ? html`<slot name="heading">
-                <h2 id="title" class="header_title">
-                  ${this.dialogParams.supervisor.localize(
-                    "dialog.datadisk_move.moving"
-                  )}
-                </h2>
-              </slot>
-              <ha-circular-progress alt="Moving" size="large" active>
+          ? html` <ha-circular-progress alt="Moving" size="large" active>
               </ha-circular-progress>
               <p class="progress-text">
                 ${this.dialogParams.supervisor.localize(
                   "dialog.datadisk_move.moving_desc"
                 )}
               </p>`
-          : html`<slot name="heading">
-                <h2 id="title" class="header_title">
-                  ${this.dialogParams.supervisor.localize(
-                    "dialog.datadisk_move.title"
-                  )}
-                </h2>
-              </slot>
-              ${this.devices?.length
+          : html` ${this.devices?.length
                 ? html`
                     ${this.dialogParams.supervisor.localize(
                       "dialog.datadisk_move.description",
@@ -149,7 +138,7 @@ class HassioDatadiskDialog extends LitElement {
     this.moving = true;
     try {
       await moveDatadisk(this.hass, this.selectedDevice!);
-    } catch (err) {
+    } catch (err: any) {
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         showAlertDialog(this, {
           title: this.dialogParams!.supervisor.localize(

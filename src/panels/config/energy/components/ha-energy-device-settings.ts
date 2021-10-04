@@ -51,10 +51,10 @@ export class EnergyDeviceSettings extends LitElement {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="${documentationUrl(
+              href=${documentationUrl(
                 this.hass,
                 "/docs/energy/individual-devices/"
-              )}"
+              )}
               >${this.hass.localize(
                 "ui.panel.config.energy.device_consumption.learn_more"
               )}</a
@@ -126,7 +126,7 @@ export class EnergyDeviceSettings extends LitElement {
           (device) => device !== deviceToDelete
         ),
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }
   }
