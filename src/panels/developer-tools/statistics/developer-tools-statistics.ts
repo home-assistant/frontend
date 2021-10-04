@@ -17,7 +17,15 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { showFixStatisticsUnitsChangedDialog } from "./show-dialog-statistics-fix-units-changed";
+import { showFixStatisticsUnsupportedUnitMetadataDialog } from "./show-dialog-statistics-fix-unsupported-unit-meta";
 
+const FIX_ISSUES_ORDER = {
+  entity_not_recorded: 1,
+  unsupported_unit_state: 2,
+  unsupported_state_class: 3,
+  units_changed: 4,
+  unsupported_unit_metadata: 5,
+};
 @customElement("developer-tools-statistics")
 class HaPanelDevStatistics extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -119,48 +127,115 @@ class HaPanelDevStatistics extends LitElement {
       validateStatistics(this.hass),
     ]);
 
-    this._data = statisticIds.map((statistic) => ({
-      ...statistic,
-      state: this.hass.states[statistic.statistic_id],
-      issues: issues[statistic.statistic_id],
-    }));
+    const statsIds = new Set();
+
+    this._data = statisticIds.map((statistic) => {
+      statsIds.add(statistic.statistic_id);
+      return {
+        ...statistic,
+        state: this.hass.states[statistic.statistic_id],
+        issues: issues[statistic.statistic_id],
+      };
+    });
+
+    Object.keys(issues).forEach((statisticId) => {
+      if (!statsIds.has(statisticId)) {
+        this._data.push({
+          statistic_id: statisticId,
+          unit_of_measurement: "",
+          state: this.hass.states[statisticId],
+          issues: issues[statisticId],
+        });
+      }
+    });
   }
 
   private _fixIssue(ev) {
-    const issue = ev.currentTarget.data[0] as StatisticsValidationResult;
-    if (issue.type === "unsupported_unit") {
-      showAlertDialog(this, {
-        title: "Unsupported unit",
-        text: html`The unit of your entity is not a supported unit for the
-          device class of the entity, ${issue.data.device_class}.
-          <br />Statistics can not be generated until this entity has a
-          supported unit.<br /><br />If this unit was provided by an
-          integration, this is a bug. Please report an issue.<br /><br />If you
-          have set this unit yourself, and want to have statistics generated,
-          make sure the unit matched the device class. The supported units are
-          documented in the
-          <a
-            href="https://developers.home-assistant.io/docs/core/entity/sensor"
-            target="_blank"
-          >
-            developer documentation</a
-          >.`,
-      });
-      return;
+    const issues = (ev.currentTarget.data as StatisticsValidationResult[]).sort(
+      (itemA, itemB) =>
+        (FIX_ISSUES_ORDER[itemA.type] ?? 99) -
+        (FIX_ISSUES_ORDER[itemB.type] ?? 99)
+    );
+    const issue = issues[0];
+    switch (issue.type) {
+      case "entity_not_recorded":
+        showAlertDialog(this, {
+          title: "Entity not recorded",
+          text: html`State changes of this entity are not recorded, therefore,
+            we can not track long term statistics for it. <br /><br />You
+            probably excluded this entity, or have just included some
+            entities.<br /><br />See the
+            <a
+              href="https://www.home-assistant.io/integrations/recorder/#configure-filter"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              recorder documentation</a
+            >
+            for more information.`,
+        });
+        break;
+      case "unsupported_state_class":
+        showAlertDialog(this, {
+          title: "Unsupported state class",
+          text: html`The state class of this entity, ${issue.data.state_class}
+            is not supported. <br />Statistics can not be generated until this
+            entity has a supported state class.<br /><br />If this state class
+            was provided by an integration, this is a bug. Please report an
+            issue.<br /><br />If you have set this state class yourself, please
+            correct it. The different state classes and when to use which can be
+            found in the
+            <a
+              href="https://developers.home-assistant.io/docs/core/entity/sensor/#long-term-statistics"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              developer documentation</a
+            >.`,
+        });
+        break;
+      case "unsupported_unit_metadata":
+        showFixStatisticsUnsupportedUnitMetadataDialog(this, {
+          issue,
+          fixedCallback: () => {
+            this._validateStatistics();
+          },
+        });
+        break;
+      case "unsupported_unit_state":
+        showAlertDialog(this, {
+          title: "Unsupported unit",
+          text: html`The unit of your entity is not a supported unit for the
+            device class of the entity, ${issue.data.device_class}.
+            <br />Statistics can not be generated until this entity has a
+            supported unit.<br /><br />If this unit was provided by an
+            integration, this is a bug. Please report an issue.<br /><br />If
+            you have set this unit yourself, and want to have statistics
+            generated, make sure the unit matches the device class. The
+            supported units are documented in the
+            <a
+              href="https://developers.home-assistant.io/docs/core/entity/sensor/#available-device-classes"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              developer documentation</a
+            >.`,
+        });
+        break;
+      case "units_changed":
+        showFixStatisticsUnitsChangedDialog(this, {
+          issue,
+          fixedCallback: () => {
+            this._validateStatistics();
+          },
+        });
+        break;
+      default:
+        showAlertDialog(this, {
+          title: "Fix issue",
+          text: "Fixing this issue is not supported yet.",
+        });
     }
-    if (issue.type === "units_changed") {
-      showFixStatisticsUnitsChangedDialog(this, {
-        issue,
-        fixedCallback: () => {
-          this._validateStatistics();
-        },
-      });
-      return;
-    }
-    showAlertDialog(this, {
-      title: "Fix issue",
-      text: "Fixing this issue is not supported yet.",
-    });
   }
 
   static get styles(): CSSResultGroup {

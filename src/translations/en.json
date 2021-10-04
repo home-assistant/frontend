@@ -3728,7 +3728,10 @@
             "issue": "Issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
-              "unsupported_unit": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''."
+              "unsupported_unit_state": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''.",
+              "unsupported_unit_metadata": "The unit (''{state_unit}'') of the recorded statistics doesn't match a unit of device class ''{device_class}''.",
+              "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
+              "entity_not_recorded": "This entity is excluded from being recorded."
             },
             "fix_issue": {
               "units_changed": {
