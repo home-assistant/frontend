@@ -12,7 +12,7 @@ import "../../../src/components/ha-card";
 import "../../../src/components/ha-settings-row";
 import {
   extractApiErrorMessage,
-  ignoreSupervisorError
+  ignoreSupervisorError,
 } from "../../../src/data/hassio/common";
 import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import {
@@ -20,23 +20,23 @@ import {
   configSyncOS,
   rebootHost,
   shutdownHost,
-  updateOS
+  updateOS,
 } from "../../../src/data/hassio/host";
 import {
   fetchNetworkInfo,
-  NetworkInfo
+  NetworkInfo,
 } from "../../../src/data/hassio/network";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
   showConfirmationDialog,
-  showPromptDialog
+  showPromptDialog,
 } from "../../../src/dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import {
   getValueInPercentage,
-  roundWithOneDecimal
+  roundWithOneDecimal,
 } from "../../../src/util/calculate";
 import "../components/supervisor-metric";
 import { showHassioDatadiskDialog } from "../dialogs/datadisk/show-dialog-hassio-datadisk";

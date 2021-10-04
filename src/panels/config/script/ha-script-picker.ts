@@ -4,7 +4,7 @@ import {
   mdiInformationOutline,
   mdiPencil,
   mdiPlay,
-  mdiPlus
+  mdiPlus,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -129,7 +129,9 @@ class HaScriptPicker extends LitElement {
         <ha-icon-button
           .script=${script}
           @click=${this._showInfo}
-          .label=${this.hass.localize("ui.panel.config.script.picker.show_info")}
+          .label=${this.hass.localize(
+            "ui.panel.config.script.picker.show_info"
+          )}
           .path=${mdiInformationOutline}
         ></ha-icon-button>
       `,
