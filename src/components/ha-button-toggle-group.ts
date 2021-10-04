@@ -1,4 +1,4 @@
-import "@material/mwc-button/mwc-button";
+import { Button } from "@material/mwc-button/mwc-button";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, queryAll } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
