@@ -235,7 +235,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
         --mdc-button-disabled-ink-color: var(--disabled-text-color);
         --mdc-icon-button-ripple-opacity: 0.2;
       }
-      hak-icon-button {
+      ha-icon-button {
         --mdc-icon-button-size: 28px;
       }
       ha-button-toggle-group {
