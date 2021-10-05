@@ -1098,9 +1098,13 @@
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have the expected units of measurement 'kWh', 'm³' or 'ft³':"
               },
-              "entity_unexpected_unit_price": {
+              "entity_unexpected_unit_energy_price": {
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'' or ''{currency}/Wh'':"
+              },
+              "entity_unexpected_unit_gas_price": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/m³'' or ''{currency}/ft³'':"
               },
               "entity_unexpected_state_class": {
                 "title": "Unexpected state class",
@@ -3755,7 +3759,10 @@
             "issue": "Issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
-              "unsupported_unit": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''."
+              "unsupported_unit_state": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''.",
+              "unsupported_unit_metadata": "The unit (''{state_unit}'') of the recorded statistics doesn't match a unit of device class ''{device_class}''.",
+              "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
+              "entity_not_recorded": "This entity is excluded from being recorded."
             },
             "fix_issue": {
               "units_changed": {
