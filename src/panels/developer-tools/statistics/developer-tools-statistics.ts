@@ -82,7 +82,9 @@ class HaPanelDevStatistics extends LitElement {
                     issue.data
                   ) || issue.type
               )
-            : "No issues"}`,
+            : html`${this.hass.localize(
+                "ui.panel.developer-tools.tabs.statistics.no_issue"
+              )}`}`,
       },
       fix: {
         title: "",
@@ -92,7 +94,9 @@ class HaPanelDevStatistics extends LitElement {
                 @click=${(ev) => this._fixIssue(ev)}
                 .data=${data.issues}
               >
-                Fix issue
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
+                )}
               </mwc-button>`
             : ""}`,
         width: "113px",
