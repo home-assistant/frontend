@@ -63,8 +63,8 @@ export class HuiDialogEditLovelace extends LitElement {
           )}
           <hui-lovelace-editor
             .hass=${this.hass}
-            .config="${this._config}"
-            @lovelace-config-changed="${this._ConfigChanged}"
+            .config=${this._config}
+            @lovelace-config-changed=${this._ConfigChanged}
           ></hui-lovelace-editor
         ></paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
@@ -72,8 +72,8 @@ export class HuiDialogEditLovelace extends LitElement {
             >${this.hass!.localize("ui.common.cancel")}</mwc-button
           >
           <mwc-button
-            ?disabled="${!this._config || this._saving}"
-            @click="${this._save}"
+            ?disabled=${!this._config || this._saving}
+            @click=${this._save}
           >
             ${this._saving
               ? html`<ha-circular-progress
@@ -109,7 +109,7 @@ export class HuiDialogEditLovelace extends LitElement {
     try {
       await lovelace.saveConfig(config);
       this.closeDialog();
-    } catch (err) {
+    } catch (err: any) {
       alert(`Saving failed: ${err.message}`);
     } finally {
       this._saving = false;

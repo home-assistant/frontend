@@ -39,6 +39,7 @@ export interface EntityCardConfig extends LovelaceCardConfig {
   attribute?: string;
   unit?: string;
   theme?: string;
+  state_color?: boolean;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {

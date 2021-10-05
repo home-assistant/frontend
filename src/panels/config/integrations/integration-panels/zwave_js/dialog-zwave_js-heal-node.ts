@@ -225,8 +225,8 @@ class DialogZWaveJSHealNode extends LitElement {
       this._status = (await healNode(this.hass, this.entry_id!, this.node_id!))
         ? "finished"
         : "failed";
-    } catch (error) {
-      this._error = error.message;
+    } catch (err: any) {
+      this._error = err.message;
       this._status = "failed";
     }
   }

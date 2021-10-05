@@ -68,7 +68,7 @@ const connProm = async (auth) => {
     }
 
     return { auth, conn };
-  } catch (err) {
+  } catch (err: any) {
     if (err !== ERR_INVALID_AUTH) {
       throw err;
     }

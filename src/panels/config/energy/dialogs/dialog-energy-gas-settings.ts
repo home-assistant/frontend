@@ -5,6 +5,9 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-dialog";
 import {
   emptyGasEnergyPreference,
+  ENERGY_GAS_ENERGY_UNITS,
+  ENERGY_GAS_UNITS,
+  ENERGY_GAS_VOLUME_UNITS,
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { HassDialog } from "../../../../dialogs/make-dialog-manager";
@@ -17,8 +20,6 @@ import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-radio";
 import "../../../../components/ha-formfield";
 import type { HaRadio } from "../../../../components/ha-radio";
-
-const energyUnits = ["m³"];
 
 @customElement("dialog-energy-gas-settings")
 export class DialogEnergyGasSettings
@@ -77,9 +78,19 @@ export class DialogEnergyGasSettings
 
         <ha-statistic-picker
           .hass=${this.hass}
-          .includeUnitOfMeasurement=${energyUnits}
+          .includeUnitOfMeasurement=${this._params.unit === undefined
+            ? ENERGY_GAS_UNITS
+            : this._params.unit === "energy"
+            ? ENERGY_GAS_ENERGY_UNITS
+            : ENERGY_GAS_VOLUME_UNITS}
           .value=${this._source.stat_energy_from}
-          .label=${`Gas usage (m³)`}
+          .label=${`Gas usage (${
+            this._params.unit === undefined
+              ? "m³ or kWh"
+              : this._params.unit === "energy"
+              ? "kWh"
+              : "m³"
+          })`}
           entities-only
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
@@ -244,8 +255,8 @@ export class DialogEnergyGasSettings
       }
       await this._params!.saveCallback(this._source!);
       this.closeDialog();
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
   }
 

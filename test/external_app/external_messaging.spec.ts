@@ -67,7 +67,7 @@ describe("ExternalMessaging", () => {
     try {
       await sendMessageProm;
       assert.fail("Should have raised");
-    } catch (err) {
+    } catch (err: any) {
       assert.deepEqual(err, {
         code: "no_auth",
         message: "There is no authentication.",

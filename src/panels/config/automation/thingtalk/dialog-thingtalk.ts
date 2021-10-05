@@ -78,7 +78,7 @@ class DialogThingtalk extends LitElement {
           .hass=${this.hass}
           .placeholders=${this._placeholders}
           .opened=${this._opened}
-          .skip=${() => this._skip()}
+          .skip=${this._skip}
           @opened-changed=${this._openedChanged}
           @placeholders-filled=${this._handlePlaceholders}
         >
@@ -145,10 +145,10 @@ class DialogThingtalk extends LitElement {
           >
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <mwc-button class="left" @click="${this._skip}">
+          <mwc-button class="left" @click=${this._skip}>
             ${this.hass.localize(`ui.common.skip`)}
           </mwc-button>
-          <mwc-button @click="${this._generate}" .disabled=${this._submitting}>
+          <mwc-button @click=${this._generate} .disabled=${this._submitting}>
             ${this._submitting
               ? html`<ha-circular-progress
                   active
@@ -178,7 +178,7 @@ class DialogThingtalk extends LitElement {
       const result = await convertThingTalk(this.hass, this._value);
       config = result.config;
       placeholders = result.placeholders;
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message;
       this._submitting = false;
       return;
@@ -229,10 +229,10 @@ class DialogThingtalk extends LitElement {
     this.closeDialog();
   }
 
-  private _skip() {
+  private _skip = () => {
     this._params!.callback(undefined);
     this.closeDialog();
-  }
+  };
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!ev.detail.value) {

@@ -150,13 +150,13 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         @action=${this._handleAction}
-        @focus="${this.handleRippleFocus}"
-        @blur="${this.handleRippleBlur}"
-        @mousedown="${this.handleRippleActivate}"
-        @mouseup="${this.handleRippleDeactivate}"
-        @touchstart="${this.handleRippleActivate}"
-        @touchend="${this.handleRippleDeactivate}"
-        @touchcancel="${this.handleRippleDeactivate}"
+        @focus=${this.handleRippleFocus}
+        @blur=${this.handleRippleBlur}
+        @mousedown=${this.handleRippleActivate}
+        @mouseup=${this.handleRippleDeactivate}
+        @touchstart=${this.handleRippleActivate}
+        @touchend=${this.handleRippleDeactivate}
+        @touchcancel=${this.handleRippleDeactivate}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
@@ -249,48 +249,49 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 4% 0;
-        font-size: 1.2rem;
-        height: 100%;
-        box-sizing: border-box;
-        justify-content: center;
-        position: relative;
-      }
+    return [
+      iconColorCSS,
+      css`
+        ha-card {
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding: 4% 0;
+          font-size: 1.2rem;
+          height: 100%;
+          box-sizing: border-box;
+          justify-content: center;
+          position: relative;
+        }
 
-      ha-card:focus {
-        outline: none;
-      }
+        ha-card:focus {
+          outline: none;
+        }
 
-      ha-icon {
-        width: 40%;
-        height: auto;
-        color: var(--paper-item-icon-color, #44739e);
-        --mdc-icon-size: 100%;
-      }
+        ha-icon {
+          width: 40%;
+          height: auto;
+          color: var(--paper-item-icon-color, #44739e);
+          --mdc-icon-size: 100%;
+        }
 
-      ha-icon + span {
-        margin-top: 8px;
-      }
+        ha-icon + span {
+          margin-top: 8px;
+        }
 
-      ha-icon,
-      span {
-        outline: none;
-      }
+        ha-icon,
+        span {
+          outline: none;
+        }
 
-      .state {
-        font-size: 0.9rem;
-        color: var(--secondary-text-color);
-      }
-
-      ${iconColorCSS}
-    `;
+        .state {
+          font-size: 0.9rem;
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 
   private _computeBrightness(stateObj: HassEntity | LightEntity): string {

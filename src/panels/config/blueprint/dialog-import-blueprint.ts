@@ -183,8 +183,8 @@ class DialogImportBlueprint extends LitElement {
         return;
       }
       this._result = await importBlueprint(this.hass, url);
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     } finally {
       this._importing = false;
     }
@@ -206,8 +206,8 @@ class DialogImportBlueprint extends LitElement {
       );
       this._params.importedCallback();
       this.closeDialog();
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     } finally {
       this._saving = false;
     }

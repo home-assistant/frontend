@@ -7,9 +7,13 @@ export interface ConditionalBaseConfig extends LovelaceCardConfig {
   conditions: Condition[];
 }
 
-export type TimestampRenderingFormats =
-  | "relative"
-  | "total"
-  | "date"
-  | "time"
-  | "datetime";
+export const TIMESTAMP_RENDERING_FORMATS = [
+  "relative",
+  "total",
+  "date",
+  "time",
+  "datetime",
+] as const;
+
+export type TimestampRenderingFormat =
+  typeof TIMESTAMP_RENDERING_FORMATS[number];

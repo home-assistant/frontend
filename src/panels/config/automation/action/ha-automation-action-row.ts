@@ -310,7 +310,9 @@ export default class HaAutomationActionRow extends LitElement {
     }
 
     if (type !== getType(this.action)) {
-      const elClass = customElements.get(`ha-automation-action-${type}`);
+      const elClass = customElements.get(
+        `ha-automation-action-${type}`
+      ) as CustomElementConstructor & { defaultConfig: Action };
 
       fireEvent(this, "value-changed", {
         value: {

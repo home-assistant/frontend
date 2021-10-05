@@ -113,7 +113,7 @@ class OZWNodeConfig extends LitElement {
                     ${this._node.node_query_stage}
                     ${this._metadata?.metadata.ProductManualURL
                       ? html` <a
-                          href="${this._metadata.metadata.ProductManualURL}"
+                          href=${this._metadata.metadata.ProductManualURL}
                         >
                           <p>
                             ${this.hass.localize(
@@ -136,9 +136,9 @@ class OZWNodeConfig extends LitElement {
                   ? html`
                       <ha-card
                         class="content"
-                        header="${this.hass.localize(
+                        header=${this.hass.localize(
                           "ui.panel.config.ozw.common.wakeup_instructions"
-                        )}"
+                        )}
                       >
                         <div class="card-content">
                           <span class="secondary">
@@ -199,7 +199,7 @@ class OZWNodeConfig extends LitElement {
         metadataProm,
         configProm,
       ]);
-    } catch (err) {
+    } catch (err: any) {
       if (err.code === ERR_NOT_FOUND) {
         this._error = ERR_NOT_FOUND;
         return;

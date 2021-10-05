@@ -144,7 +144,7 @@ class HassioCoreInfo extends LitElement {
 
     try {
       await restartCore(this.hass);
-    } catch (err) {
+    } catch (err: any) {
       if (this.hass.connection.connected) {
         showAlertDialog(this, {
           title: this.supervisor.localize(

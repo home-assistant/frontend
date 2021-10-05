@@ -84,7 +84,7 @@ export const showDialog = async (
         { dialog: dialogTag, dialogParams: dialogParams, open: true },
         ""
       );
-    } catch (err) {
+    } catch (err: any) {
       // dialogParams could not be cloned, probably contains callback
       mainWindow.history.pushState(
         { dialog: dialogTag, dialogParams: null, open: true },

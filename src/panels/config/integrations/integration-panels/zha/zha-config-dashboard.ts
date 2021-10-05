@@ -84,7 +84,7 @@ class ZHAConfigDashboard extends LitElement {
           ${this.configEntryId
             ? html`<div class="card-actions">
                 <a
-                  href="${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}"
+                  href=${`/config/devices/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                 >
                   <mwc-button
                     >${this.hass.localize(
@@ -93,7 +93,7 @@ class ZHAConfigDashboard extends LitElement {
                   >
                 </a>
                 <a
-                  href="${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}"
+                  href=${`/config/entities/dashboard?historyBack=1&config_entry=${this.configEntryId}`}
                 >
                   <mwc-button
                     >${this.hass.localize(

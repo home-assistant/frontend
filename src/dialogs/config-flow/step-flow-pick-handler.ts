@@ -118,12 +118,12 @@ class StepFlowPickHandler extends LitElement {
                 ${this.hass.localize(
                   "ui.panel.config.integrations.note_about_website_reference"
                 )}<a
-                  href="${documentationUrl(
+                  href=${documentationUrl(
                     this.hass,
                     `/integrations/${
                       this._filter ? `#search/${this._filter}` : ""
                     }`
-                  )}"
+                  )}
                   target="_blank"
                   rel="noreferrer"
                   >${this.hass.localize(

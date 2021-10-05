@@ -22,7 +22,7 @@ export async function confDeleteCard(
           await lovelace.saveConfig(insertCard(newLovelace, path, cardConfig));
         };
         showDeleteSuccessToast(element, hass!, action);
-      } catch (err) {
+      } catch (err: any) {
         showAlertDialog(element, {
           text: `Deleting failed: ${err.message}`,
         });

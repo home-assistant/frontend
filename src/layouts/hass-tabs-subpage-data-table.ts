@@ -169,7 +169,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         ? html`<div class="active-filters">
             ${this.narrow
               ? html`<div>
-                  <ha-svg-icon .path="${mdiFilterVariant}"></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
                   <paper-tooltip animation-delay="0" position="left">
                     ${filterInfo}
                   </paper-tooltip>

@@ -248,7 +248,7 @@ export class HaPanelLogbook extends LitElement {
           : {},
         this._fetchUserPromise,
       ]);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.components.logbook.retrieval_error"),
         text: err.message,

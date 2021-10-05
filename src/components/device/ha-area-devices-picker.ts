@@ -50,6 +50,7 @@ interface AreaDevices {
   devices: string[];
 }
 
+// eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<AreaDevices> = (item) => html`<style>
     paper-item {
       padding: 0;

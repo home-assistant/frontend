@@ -23,6 +23,7 @@ import "./state-badge";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
+// eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
     paper-item {
       padding: 0;

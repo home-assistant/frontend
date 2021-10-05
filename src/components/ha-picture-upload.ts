@@ -89,7 +89,7 @@ export class HaPictureUpload extends LitElement {
       const media = await createImage(this.hass, file);
       this.value = generateImageThumbnailUrl(media.id, this.size);
       fireEvent(this, "change");
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: err.toString(),
       });

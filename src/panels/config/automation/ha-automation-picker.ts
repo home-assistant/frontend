@@ -135,7 +135,7 @@ class HaAutomationPicker extends LitElement {
           template: (_info, automation: any) => html`
             <mwc-button
               .automation=${automation}
-              @click=${(ev) => this._runActions(ev)}
+              @click=${this._runActions}
               .disabled=${UNAVAILABLE_STATES.includes(automation.state)}
             >
               ${this.hass.localize("ui.card.automation.trigger")}
@@ -150,9 +150,9 @@ class HaAutomationPicker extends LitElement {
           <mwc-icon-button
             .automation=${automation}
             @click=${this._showInfo}
-            .label="${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.config.automation.picker.show_info_automation"
-            )}"
+            )}
           >
             <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
           </mwc-icon-button>
@@ -202,9 +202,9 @@ class HaAutomationPicker extends LitElement {
           >
             <mwc-icon-button
               .disabled=${!automation.attributes.id}
-              .label="${this.hass.localize(
+              .label=${this.hass.localize(
                 "ui.panel.config.automation.picker.edit_automation"
-              )}"
+              )}
             >
               <ha-svg-icon
                 .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
@@ -300,7 +300,7 @@ class HaAutomationPicker extends LitElement {
         ${this.hass.localize("ui.panel.config.automation.picker.introduction")}
         <p>
           <a
-            href="${documentationUrl(this.hass, "/docs/automation/editor/")}"
+            href=${documentationUrl(this.hass, "/docs/automation/editor/")}
             target="_blank"
             rel="noreferrer"
           >
@@ -313,10 +313,10 @@ class HaAutomationPicker extends LitElement {
     });
   }
 
-  private _runActions(ev) {
+  private _runActions = (ev) => {
     const entityId = ev.currentTarget.automation.entity_id;
     triggerAutomationActions(this.hass, entityId);
-  }
+  };
 
   private _createNew() {
     if (

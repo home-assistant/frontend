@@ -271,7 +271,7 @@ export class QuickBar extends LitElement {
       >
         <span>
           <ha-chip
-            .label="${item.categoryText}"
+            .label=${item.categoryText}
             hasIcon
             class="command-category ${item.categoryKey}"
           >
@@ -299,6 +299,10 @@ export class QuickBar extends LitElement {
 
   private _handleSelected(ev: SingleSelectedEvent) {
     const index = ev.detail.index;
+    if (index < 0) {
+      return;
+    }
+
     const item = ((ev.target as List).items[index] as any).item;
     this.processItemAndCloseDialog(item, index);
   }
