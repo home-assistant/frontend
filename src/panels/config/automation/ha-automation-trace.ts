@@ -90,7 +90,7 @@ export class HaAutomationTrace extends LitElement {
     }
 
     const actionButtons = html`
-      <mwc-icon-button label="Refresh" @click=${() => this._loadTraces()}>
+      <mwc-icon-button label="Refresh" @click=${this._refreshTraces}>
         <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
       </mwc-icon-button>
       <mwc-icon-button
@@ -111,7 +111,7 @@ export class HaAutomationTrace extends LitElement {
         .tabs=${configSections.automation}
       >
         ${this.narrow
-          ? html`<span slot="header"> ${title} </span>
+          ? html`<span slot="header">${title}</span>
               <div slot="toolbar-icon">${actionButtons}</div>`
           : ""}
         <div class="toolbar">
@@ -333,6 +333,10 @@ export class HaAutomationTrace extends LitElement {
 
   private _pickNode(ev) {
     this._selected = ev.detail;
+  }
+
+  private _refreshTraces() {
+    this._loadTraces();
   }
 
   private async _loadTraces(runId?: string) {

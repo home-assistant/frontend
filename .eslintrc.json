@@ -111,8 +111,7 @@
     ],
     "unused-imports/no-unused-imports": "error",
     "lit/attribute-value-entities": "off",
-    "lit/no-template-map": "off",
-    "lit/no-template-arrow": "warn"
+    "lit/no-template-map": "off"
   },
   "plugins": ["disable", "unused-imports"],
   "processor": "disable/disable"
