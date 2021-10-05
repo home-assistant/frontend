@@ -126,12 +126,14 @@ export class EnergyGridSettings extends LitElement {
                     ? computeStateName(entityState)
                     : flow.stat_energy_from}</span
                 >
-                <mwc-icon-button @click=${this._editFromSource}>
-                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                </mwc-icon-button>
-                <mwc-icon-button @click=${this._deleteFromSource}>
-                  <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button
+                  @click=${this._editFromSource}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
+                <ha-icon-button
+                  @click=${this._deleteFromSource}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
               </div>
             `;
           })}
@@ -159,12 +161,14 @@ export class EnergyGridSettings extends LitElement {
                     ? computeStateName(entityState)
                     : flow.stat_energy_to}</span
                 >
-                <mwc-icon-button @click=${this._editToSource}>
-                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                </mwc-icon-button>
-                <mwc-icon-button @click=${this._deleteToSource}>
-                  <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button
+                  @click=${this._editToSource}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
+                <ha-icon-button
+                  @click=${this._deleteToSource}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
               </div>
             `;
           })}
@@ -186,13 +190,12 @@ export class EnergyGridSettings extends LitElement {
               />
               <span class="content">${entry.title}</span>
               <a href=${`/config/integrations#config_entry=${entry.entry_id}`}>
-                <mwc-icon-button>
-                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button .path=${mdiPencil}></ha-icon-button>
               </a>
-              <mwc-icon-button @click=${this._removeCO2Sensor}>
-                <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                @click=${this._removeCO2Sensor}
+                .path=${mdiDelete}
+              ></ha-icon-button>
             </div>`
           )}
           ${this._configEntries?.length === 0

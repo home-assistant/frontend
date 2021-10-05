@@ -65,12 +65,12 @@ class HaPanelHistory extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.history")}</div>
-            <mwc-icon-button
+            <ha-icon-button
               @click=${this._refreshHistory}
               .disabled=${this._isLoading}
-            >
-              <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-            </mwc-icon-button>
+              .path=${mdiRefresh}
+              .label=${this.hass.localize("ui.common.refresh")}
+            ></ha-icon-button>
           </app-toolbar>
         </app-header>
 

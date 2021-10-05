@@ -122,7 +122,7 @@ class PanelEnergy extends LitElement {
     return [
       haStyle,
       css`
-        mwc-icon-button {
+        ha-icon-button {
           color: var(--text-primary-color);
         }
         app-toolbar {

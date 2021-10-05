@@ -105,7 +105,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
         display: block;
         padding: 0;
       }
-      paper-input > mwc-icon-button {
+      paper-input > ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 2px;
       }

@@ -13,8 +13,8 @@ import {
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -80,9 +80,11 @@ export class EnergyDeviceSettings extends LitElement {
                     ? computeStateName(entityState)
                     : device.stat_consumption}</span
                 >
-                <mwc-icon-button @click=${this._deleteDevice} .device=${device}>
-                  <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button
+                  @click=${this._deleteDevice}
+                  .device=${device}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
               </div>
             `;
           })}
