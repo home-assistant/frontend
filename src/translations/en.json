@@ -436,29 +436,7 @@
         }
       },
       "relative_time": {
-        "never": "Never",
-        "just_now": "Just now",
-        "duration": {
-          "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-          "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-          "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
-          "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
-          "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
-        },
-        "past_duration": {
-          "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n} ago",
-          "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n} ago",
-          "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n} ago",
-          "day": "{count} {count, plural,\n  one {day}\n  other {days}\n} ago",
-          "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n} ago"
-        },
-        "future_duration": {
-          "second": "In {count} {count, plural,\n  one {second}\n  other {seconds}\n}",
-          "minute": "In {count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
-          "hour": "In {count} {count, plural,\n  one {hour}\n  other {hours}\n}",
-          "day": "In {count} {count, plural,\n  one {day}\n  other {days}\n}",
-          "week": "In {count} {count, plural,\n  one {week}\n  other {weeks}\n}"
-        }
+        "never": "Never"
       },
       "history_charts": {
         "history_disabled": "History integration disabled",
@@ -1113,13 +1091,21 @@
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have the expected units of measurement 'kWh', 'm³' or 'ft³':"
               },
-              "entity_unexpected_unit_price": {
+              "entity_unexpected_unit_energy_price": {
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'' or ''{currency}/Wh'':"
               },
-              "entity_unexpected_state_class_total_increasing": {
+              "entity_unexpected_unit_gas_price": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/m³'' or ''{currency}/ft³'':"
+              },
+              "entity_unexpected_state_class": {
                 "title": "Unexpected state class",
-                "description": "The following entities do not have the expected state class 'total_increasing'"
+                "description": "The following entities do not have the expected state class:"
+              },
+              "entity_state_class_measurement_no_last_reset": {
+                "title": "Last reset missing",
+                "description": "The following entities have state class 'measurement' but 'last_reset' is missing:"
               }
             }
           }
@@ -1250,7 +1236,8 @@
               "open": "Open",
               "add_dashboard": "Add dashboard"
             },
-            "confirm_delete": "Are you sure you want to delete this dashboard?",
+            "confirm_delete_title": "Delete {dashboard_title}?",
+            "confirm_delete_text": "Your dashboard will be permanently deleted.",
             "cant_edit_yaml": "Dashboards defined in YAML cannot be edited from the UI. Change them in configuration.yaml.",
             "cant_edit_default": "The standard Lovelace dashboard cannot be edited from the UI. You can hide it by setting another dashboard as default.",
             "detail": {
@@ -1969,15 +1956,11 @@
               "title": "Remote Control",
               "connected": "Connected",
               "not_connected": "Not Connected",
-              "reconnecting": "Reconnecting",
+              "reconnecting": "Not connected. Trying to reconnect.",
               "access_is_being_prepared": "Remote control is being prepared. We will notify you when it's ready.",
               "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
               "instance_is_available": "Your instance is available at",
               "instance_will_be_available": "Your instance will be available at",
-              "remote_enabled": {
-                "caption": "Automatically connect",
-                "description": "Enable this option to make sure that your Home Assistant instance is always remotely accessible."
-              },
               "link_learn_how_it_works": "Learn how it works",
               "certificate_info": "Certificate Info"
             },
@@ -2666,9 +2649,9 @@
             "wakeup_interval": "Wake-up Interval"
           },
           "migration": {
-            "ozw": {
-              "header": "Migrate to OpenZWave",
-              "introduction": "This wizard will help you migrate from the legacy Z-Wave integration to the OpenZWave integration that is currently in beta."
+            "zwave_js": {
+              "header": "Migrate to Z-Wave JS",
+              "introduction": "This integration is no longer maintained, and we advise you to move to the new Z-Wave JS integration. This wizard will help you migrate from the legacy Z-Wave integration to the new Z-Wave JS integration."
             }
           },
           "network_management": {
@@ -2752,41 +2735,43 @@
           },
           "common": {
             "network": "Network",
-            "node_id": "Node ID",
+            "node_id": "Device ID",
             "home_id": "Home ID",
             "source": "Source",
             "close": "Close",
-            "add_node": "Add Node",
-            "remove_node": "Remove Node",
+            "add_node": "Add device",
+            "remove_node": "Remove device",
             "reconfigure_server": "Re-configure Server",
             "heal_network": "Heal Network"
           },
           "dashboard": {
             "header": "Manage your Z-Wave Network",
-            "introduction": "Manage your Z-Wave network and Z-Wave nodes",
+            "introduction": "Manage your Z-Wave network and Z-Wave devices",
             "driver_version": "Driver Version",
             "server_version": "Server Version",
             "home_id": "Home ID",
-            "nodes_ready": "Nodes ready",
+            "nodes_ready": "Devices ready",
             "dump_debug": "Download a dump of your network to help diagnose issues",
-            "dump_dead_nodes_title": "Some of your nodes are dead",
-            "dump_dead_nodes_text": "Some of your nodes didn't respond and are assumed dead. These will not be fully exported.",
-            "dump_not_ready_title": "Not all nodes are ready yet",
-            "dump_not_ready_text": "If you create an export while not all nodes are ready, you could miss needed data. Give your network some time to query all nodes. Do you want to continue with the dump?",
+            "dump_dead_nodes_title": "Some of your devices are dead",
+            "dump_dead_nodes_text": "Some of your devices didn't respond and are assumed dead. These will not be fully exported.",
+            "dump_not_ready_title": "Not all devices are ready yet",
+            "dump_not_ready_text": "If you create an export while not all devices are ready, you could miss needed data. Give your network some time to query all devices. Do you want to continue with the dump?",
             "dump_not_ready_confirm": "Download"
           },
           "device_info": {
             "zwave_info": "Z-Wave Info",
-            "node_status": "Node Status",
-            "node_ready": "Node Ready",
+            "node_status": "Device Status",
+            "node_ready": "Device Ready",
             "device_config": "Configure Device",
             "reinterview_device": "Re-interview Device",
             "heal_node": "Heal Device",
-            "remove_failed": "Remove Failed Device"
+            "remove_failed": "Remove Failed Device",
+            "is_secure": "Secure",
+            "unknown": "Unknown"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
-            "introduction": "Manage and adjust device (node) specific configuration parameters for the selected device",
+            "introduction": "Manage and adjust device specific configuration parameters for the selected device",
             "attribution": "Device configuration parameters and descriptions are provided by the {device_database}",
             "zwave_js_device_database": "Z-Wave JS Device Database",
             "battery_device_notice": "Battery devices must be awake to update their config. Please refer to your device manual for instructions on how to wake the device.",
@@ -2810,37 +2795,50 @@
             "unknown": "Unknown"
           },
           "add_node": {
-            "title": "Add a Z-Wave Node",
-            "introduction": "This wizard will guide you through adding a node to your Z-Wave network.",
-            "use_secure_inclusion": "Use secure inclusion",
-            "secure_inclusion_warning": "Secure devices require additional bandwidth; too many secure devices can slow down your Z-Wave network. We recommend only using secure inclusion for devices that require it, like locks or garage door openers.",
-            "start_inclusion": "Start Inclusion",
-            "start_secure_inclusion": "Start Secure Inclusion",
+            "title": "Add a Z-Wave Device",
             "cancel_inclusion": "Cancel Inclusion",
             "controller_in_inclusion_mode": "Your Z-Wave controller is now in inclusion mode.",
             "follow_device_instructions": "Follow the directions that came with your device to trigger pairing on the device.",
-            "inclusion_failed": "The node could not be added. Please check the logs for more information.",
-            "inclusion_finished": "The node has been added.",
+            "inclusion_failed": "The device could not be added. Please check the logs for more information.",
+            "inclusion_finished": "The device has been added.",
             "view_device": "View Device",
             "interview_started": "The device is being interviewed. This may take some time.",
-            "interview_failed": "The device interview failed. Additional information may be available in the logs."
+            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
+            "security_classes": {
+              "S2_Unauthenticated": {
+                "title": "S2 Unauthenticated",
+                "description": "Like S2 Authenticated, but without verification that the correct device is included"
+              },
+              "S2_Authenticated": {
+                "title": "S2 Authenticated",
+                "description": "Example: Lighting, Sensors and Security Systems"
+              },
+              "S2_AccessControl": {
+                "title": "S2 Access Control",
+                "description": "Example: Door Locks and Garage Doors"
+              },
+              "S0_Legacy": {
+                "title": "S0 Legacy",
+                "description": "Example: Legacy Door Locks without S2 support"
+              }
+            }
           },
           "remove_node": {
-            "title": "Remove a Z-Wave Node",
-            "introduction": "Remove a node from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
+            "title": "Remove a Z-Wave device",
+            "introduction": "Remove a device from your Z-Wave network, and remove the associated device and entities from Home Assistant.",
             "start_exclusion": "Start Exclusion",
             "cancel_exclusion": "Cancel Exclusion",
             "controller_in_exclusion_mode": "Your Z-Wave controller is now in exclusion mode.",
             "follow_device_instructions": "Follow the directions that came with your device to trigger exclusion on the device.",
-            "exclusion_failed": "The node could not be removed. Please check the logs for more information.",
-            "exclusion_finished": "Node {id} has been removed from your Z-Wave network."
+            "exclusion_failed": "The device could not be removed. Please check the logs for more information.",
+            "exclusion_finished": "Device {id} has been removed from your Z-Wave network."
           },
           "remove_failed_node": {
             "title": "Remove a Failed Z-Wave Device",
             "introduction": "Remove a failed device from your Z-Wave network. Use this if you are unable to exclude a device normally because it is broken.",
             "remove_device": "Remove Device",
             "in_progress": "The device removal is in progress.",
-            "removal_finished": "Node {id} has been removed from your Z-Wave network.",
+            "removal_finished": "Device {id} has been removed from your Z-Wave network.",
             "removal_failed": "The device could not be removed from your Z-Wave network."
           },
           "reinterview_node": {
@@ -3727,6 +3725,26 @@
             "listeners": "This template listens for the following state changed events:",
             "entity": "Entity",
             "domain": "Domain"
+          },
+          "statistics": {
+            "title": "Statistics",
+            "entity": "Entity",
+            "issue": "Issue",
+            "issues": {
+              "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
+              "unsupported_unit_state": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''.",
+              "unsupported_unit_metadata": "The unit (''{state_unit}'') of the recorded statistics doesn't match a unit of device class ''{device_class}''.",
+              "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
+              "entity_not_recorded": "This entity is excluded from being recorded."
+            },
+            "fix_issue": {
+              "units_changed": {
+                "title": "The unit of this entity changed",
+                "update": "Update the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
+                "clear": "Delete all old statistic data for this entity",
+                "fix": "Fix issue"
+              }
+            }
           }
         }
       },
@@ -4074,7 +4092,7 @@
         "unsupported_reason": {
           "apparmor": "AppArmor is not enabled on the host",
           "container": "Containers known to cause issues",
-          "content-trust": "Content-trust validation is disabled",
+          "content_trust": "Content-trust validation is disabled",
           "dbus": "DBUS",
           "docker_configuration": "Docker Configuration",
           "docker_version": "Docker Version",
@@ -4082,7 +4100,9 @@
           "lxc": "LXC",
           "network_manager": "Network Manager",
           "os": "Operating System",
+          "os_agent": "OS Agent",
           "privileged": "Supervisor is not privileged",
+          "source_mods": "Source modifications",
           "systemd": "Systemd"
         },
         "unhealthy_reason": {
@@ -4099,6 +4119,7 @@
         "failed_to_shutdown": "Failed to shutdown the host",
         "failed_to_set_hostname": "Setting hostname failed",
         "failed_to_import_from_usb": "Failed to import from USB",
+        "failed_to_move": "Failed to move datadisk",
         "used_space": "Used space",
         "hostname": "Hostname",
         "change_hostname": "Change Hostname",
@@ -4114,7 +4135,8 @@
         "confirm_shutdown": "Are you sure you want to shutdown the host?",
         "shutdown_host": "Shutdown host",
         "hardware": "Hardware",
-        "import_from_usb": "Import from USB"
+        "import_from_usb": "Import from USB",
+        "move_datadisk": "Move datadisk"
       },
       "core": {
         "cpu_usage": "Core CPU Usage",
@@ -4201,6 +4223,17 @@
         "id": "ID",
         "attributes": "Attributes",
         "device_path": "Device path"
+      },
+      "datadisk_move": {
+        "title": "[%key:supervisor::system::host::move_datadisk%]",
+        "description": "You are currently using ''{current_path}'' as datadisk. Moving data disks will reboot your device and it's estimated to take {time} minutes. Your Home Assistant installation will not be accessible during this period. Do not disconnect the power during the move!",
+        "select_device": "Select new datadisk",
+        "no_devices": "No suitable attached devices found",
+        "moving_desc": "Rebooting and moving datadisk. Please have patience",
+        "moving": "Moving datadisk",
+        "loading_devices": "Loading devices",
+        "cancel": "[%key:ui::common::cancel%]",
+        "move": "Move"
       }
     }
   }

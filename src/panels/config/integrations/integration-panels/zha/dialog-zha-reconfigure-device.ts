@@ -66,7 +66,7 @@ class DialogZHAReconfigureDevice extends LitElement {
     return html`
       <ha-dialog
         open
-        @closed="${this.closeDialog}"
+        @closed=${this.closeDialog}
         .heading=${createCloseHeading(
           this.hass,
           this.hass.localize(`ui.dialogs.zha_reconfigure_device.heading`) +

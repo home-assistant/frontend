@@ -191,7 +191,7 @@ class HcCast extends LitElement {
       }
       this.connection.close();
       location.reload();
-    } catch (err) {
+    } catch (err: any) {
       alert("Unable to log out!");
     }
   }

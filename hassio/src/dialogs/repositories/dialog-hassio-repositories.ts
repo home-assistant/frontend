@@ -185,7 +185,7 @@ class HassioRepositoriesDialog extends LitElement {
       this._repositories = addonsinfo.repositories;
 
       fireEvent(this, "supervisor-collection-refresh", { collection: "addon" });
-    } catch (err) {
+    } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }
   }
@@ -207,7 +207,7 @@ class HassioRepositoriesDialog extends LitElement {
       await this._loadData();
 
       input.value = "";
-    } catch (err) {
+    } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }
     this._processing = false;
@@ -229,7 +229,7 @@ class HassioRepositoriesDialog extends LitElement {
         addons_repositories: newRepositories,
       });
       await this._loadData();
-    } catch (err) {
+    } catch (err: any) {
       this._error = extractApiErrorMessage(err);
     }
   }

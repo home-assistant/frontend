@@ -162,7 +162,7 @@ export class DialogEntityEditor extends LitElement {
               this._params!.entity_id,
               "faq_link",
               html`<a
-                href="${documentationUrl(this.hass, "/faq/unique_id")}"
+                href=${documentationUrl(this.hass, "/faq/unique_id")}
                 target="_blank"
                 rel="noreferrer"
                 >${this.hass.localize("ui.dialogs.entity_registry.faq")}</a
@@ -174,8 +174,8 @@ export class DialogEntityEditor extends LitElement {
                     "ui.dialogs.entity_registry.info_customize",
                     "customize_link",
                     html`<a
-                      href="${"/config/customize/edit/" +
-                      this._params!.entity_id}"
+                      href=${"/config/customize/edit/" +
+                      this._params!.entity_id}
                       rel="noreferrer"
                       >${this.hass.localize(
                         "ui.dialogs.entity_registry.customize_link"

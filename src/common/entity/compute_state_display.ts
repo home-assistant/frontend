@@ -4,7 +4,7 @@ import { FrontendLocaleData } from "../../data/translation";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
-import { formatNumber } from "../string/format_number";
+import { formatNumber } from "../number/format_number";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
 

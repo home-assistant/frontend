@@ -107,12 +107,10 @@ class DialogZoneDetail extends LitElement {
               .value=${this._name}
               .configValue=${"name"}
               @value-changed=${this._valueChanged}
-              .label="${this.hass!.localize(
-                "ui.panel.config.zone.detail.name"
-              )}"
-              .errorMessage="${this.hass!.localize(
+              .label=${this.hass!.localize("ui.panel.config.zone.detail.name")}
+              .errorMessage=${this.hass!.localize(
                 "ui.panel.config.zone.detail.required_error_msg"
-              )}"
+              )}
               required
               auto-validate
             ></paper-input>
@@ -120,12 +118,10 @@ class DialogZoneDetail extends LitElement {
               .value=${this._icon}
               .configValue=${"icon"}
               @value-changed=${this._valueChanged}
-              .label="${this.hass!.localize(
-                "ui.panel.config.zone.detail.icon"
-              )}"
-              .errorMessage="${this.hass!.localize(
+              .label=${this.hass!.localize("ui.panel.config.zone.detail.icon")}
+              .errorMessage=${this.hass!.localize(
                 "ui.panel.config.zone.detail.icon_error_msg"
-              )}"
+              )}
               .invalid=${iconValid}
             ></paper-input>
             <ha-locations-editor
@@ -146,24 +142,24 @@ class DialogZoneDetail extends LitElement {
                 .value=${this._latitude}
                 .configValue=${"latitude"}
                 @value-changed=${this._valueChanged}
-                .label="${this.hass!.localize(
+                .label=${this.hass!.localize(
                   "ui.panel.config.zone.detail.latitude"
-                )}"
-                .errorMessage="${this.hass!.localize(
+                )}
+                .errorMessage=${this.hass!.localize(
                   "ui.panel.config.zone.detail.required_error_msg"
-                )}"
+                )}
                 .invalid=${latValid}
               ></paper-input>
               <paper-input
                 .value=${this._longitude}
                 .configValue=${"longitude"}
                 @value-changed=${this._valueChanged}
-                .label="${this.hass!.localize(
+                .label=${this.hass!.localize(
                   "ui.panel.config.zone.detail.longitude"
-                )}"
-                .errorMessage="${this.hass!.localize(
+                )}
+                .errorMessage=${this.hass!.localize(
                   "ui.panel.config.zone.detail.required_error_msg"
-                )}"
+                )}
                 .invalid=${lngValid}
               ></paper-input>
             </div>
@@ -171,12 +167,12 @@ class DialogZoneDetail extends LitElement {
               .value=${this._radius}
               .configValue=${"radius"}
               @value-changed=${this._valueChanged}
-              .label="${this.hass!.localize(
+              .label=${this.hass!.localize(
                 "ui.panel.config.zone.detail.radius"
-              )}"
-              .errorMessage="${this.hass!.localize(
+              )}
+              .errorMessage=${this.hass!.localize(
                 "ui.panel.config.zone.detail.required_error_msg"
-              )}"
+              )}
               .invalid=${radiusValid}
             ></paper-input>
             <p>
@@ -200,7 +196,7 @@ class DialogZoneDetail extends LitElement {
               <mwc-button
                 slot="secondaryAction"
                 class="warning"
-                @click="${this._deleteEntry}"
+                @click=${this._deleteEntry}
                 .disabled=${this._submitting}
               >
                 ${this.hass!.localize("ui.panel.config.zone.detail.delete")}
@@ -209,7 +205,7 @@ class DialogZoneDetail extends LitElement {
           : html``}
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateEntry}"
+          @click=${this._updateEntry}
           .disabled=${!valid || this._submitting}
         >
           ${this._params.entry
@@ -284,7 +280,7 @@ class DialogZoneDetail extends LitElement {
         await this._params!.createEntry(values);
       }
       this._params = undefined;
-    } catch (err) {
+    } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
     } finally {
       this._submitting = false;

@@ -167,7 +167,7 @@ const processTheme = (
       const prefixedRgbKey = `--${rgbKey}`;
       styles[prefixedRgbKey] = rgbValue;
       keys[prefixedRgbKey] = "";
-    } catch (e) {
+    } catch (err: any) {
       continue;
     }
   }

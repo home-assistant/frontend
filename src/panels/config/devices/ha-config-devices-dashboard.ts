@@ -419,7 +419,7 @@ export class HaConfigDeviceDashboard extends LitElement {
             <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-list-item
-            @request-selected="${this._showDisabledChanged}"
+            @request-selected=${this._showDisabledChanged}
             graphic="control"
             .selected=${this._showDisabled}
           >

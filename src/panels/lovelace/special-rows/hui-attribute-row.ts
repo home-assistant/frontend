@@ -11,7 +11,7 @@ import { classMap } from "lit/directives/class-map";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import checkValidDate from "../../../common/datetime/check_valid_date";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import { formatNumber } from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/number/format_number";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { formatAttributeValue } from "../../../util/hass-attributes-util";

@@ -61,9 +61,9 @@ export class HuiUnusedEntities extends LitElement {
         ${!this.narrow
           ? html`
               <ha-card
-                header="${this.hass.localize(
+                header=${this.hass.localize(
                   "ui.panel.lovelace.unused_entities.title"
-                )}"
+                )}
               >
                 <div class="card-content">
                   ${this.hass.localize(
@@ -89,9 +89,9 @@ export class HuiUnusedEntities extends LitElement {
               icon: "",
               entity_id: entity,
               stateObj,
-              name: computeStateName(stateObj),
+              name: stateObj ? computeStateName(stateObj) : "Unavailable",
               domain: computeDomain(entity),
-              last_changed: stateObj!.last_changed,
+              last_changed: stateObj?.last_changed,
             };
           }) as DataTableRowData[]}
           @selected-changed=${this._handleSelectedChanged}

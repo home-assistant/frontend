@@ -74,10 +74,10 @@ class HaSceneDashboard extends LitElement {
           html`
             <mwc-icon-button
               .scene=${scene}
-              title="${this.hass.localize(
+              title=${this.hass.localize(
                 "ui.panel.config.scene.picker.activate_scene"
-              )}"
-              @click=${(ev: Event) => this._activateScene(ev)}
+              )}
+              @click=${this._activateScene}
             >
               <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
             </mwc-icon-button>
@@ -102,9 +102,9 @@ class HaSceneDashboard extends LitElement {
           <mwc-icon-button
             .scene=${scene}
             @click=${this._showInfo}
-            title="${this.hass.localize(
+            title=${this.hass.localize(
               "ui.panel.config.scene.picker.show_info_scene"
-            )}"
+            )}
           >
             <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
           </mwc-icon-button>
@@ -123,9 +123,9 @@ class HaSceneDashboard extends LitElement {
           >
             <mwc-icon-button
               .disabled=${!scene.attributes.id}
-              title="${this.hass.localize(
+              title=${this.hass.localize(
                 "ui.panel.config.scene.picker.edit_scene"
-              )}"
+              )}
             >
               <ha-svg-icon
                 .path=${scene.attributes.id ? mdiPencil : mdiPencilOff}
@@ -213,7 +213,7 @@ class HaSceneDashboard extends LitElement {
     fireEvent(this, "hass-more-info", { entityId });
   }
 
-  private async _activateScene(ev) {
+  private _activateScene = async (ev) => {
     ev.stopPropagation();
     const scene = ev.currentTarget.scene as SceneEntity;
     await activateScene(this.hass, scene.entity_id);
@@ -225,7 +225,7 @@ class HaSceneDashboard extends LitElement {
       ),
     });
     forwardHaptic("light");
-  }
+  };
 
   private _showHelp() {
     showAlertDialog(this, {
@@ -234,7 +234,7 @@ class HaSceneDashboard extends LitElement {
         ${this.hass.localize("ui.panel.config.scene.picker.introduction")}
         <p>
           <a
-            href="${documentationUrl(this.hass, "/docs/scene/editor/")}"
+            href=${documentationUrl(this.hass, "/docs/scene/editor/")}
             target="_blank"
             rel="noreferrer"
           >

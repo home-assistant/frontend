@@ -24,6 +24,8 @@ gulp.task(
     "gen-index-hassio-dev",
     "build-supervisor-translations",
     "copy-translations-supervisor",
+    "build-locale-data",
+    "copy-locale-data-supervisor",
     env.useRollup() ? "rollup-watch-hassio" : "webpack-watch-hassio"
   )
 );
@@ -38,6 +40,8 @@ gulp.task(
     "gen-icons-json",
     "build-supervisor-translations",
     "copy-translations-supervisor",
+    "build-locale-data",
+    "copy-locale-data-supervisor",
     env.useRollup() ? "rollup-prod-hassio" : "webpack-prod-hassio",
     "gen-index-hassio-prod",
     ...// Don't compress running tests

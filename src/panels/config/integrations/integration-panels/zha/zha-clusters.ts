@@ -62,11 +62,11 @@ export class ZHAClusters extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide="${this.isWide}">
+      <ha-config-section .isWide=${this.isWide}>
         <div class="header" slot="header">
           <ha-icon-button
             class="toggle-help-icon"
-            @click="${this._onHelpTap}"
+            @click=${this._onHelpTap}
             icon="hass:help-circle"
           >
           </ha-icon-button>
@@ -85,8 +85,8 @@ export class ZHAClusters extends LitElement {
             >
               <paper-listbox
                 slot="dropdown-content"
-                .selected="${this._selectedClusterIndex}"
-                @iron-select="${this._selectedClusterChanged}"
+                .selected=${this._selectedClusterIndex}
+                @iron-select=${this._selectedClusterChanged}
               >
                 ${this._clusters.map(
                   (entry) => html`

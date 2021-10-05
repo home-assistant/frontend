@@ -60,9 +60,9 @@ export class HuiMarkdownCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <paper-textarea
           .label="${this.hass.localize(
@@ -70,19 +70,19 @@ export class HuiMarkdownCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .value="${this._content}"
-          .configValue="${"content"}"
+          .value=${this._content}
+          .configValue=${"content"}
           @keydown=${this._ignoreKeydown}
-          @value-changed="${this._valueChanged}"
+          @value-changed=${this._valueChanged}
           autocapitalize="none"
           autocomplete="off"
           spellcheck="false"
         ></paper-textarea>
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
       </div>
     `;

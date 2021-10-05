@@ -15,7 +15,7 @@ const haTabFixBehaviorImpl = {
   },
 };
 
-// paper-dialog that uses the haTabFixBehaviorImpl behvaior
+// paper-dialog that uses the haTabFixBehaviorImpl behavior
 // export class HaPaperDialog extends paperDialogClass {}
 // @ts-ignore
 export class HaPaperDialog
