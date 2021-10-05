@@ -190,7 +190,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
             `
           : ""}
         ${this._config.show_name
-          ? html` <span tabindex="-1" .title=${name}> ${name} </span> `
+          ? html`<span tabindex="-1" .title=${name}>${name}</span>`
           : ""}
         ${this._config.show_state && stateObj
           ? html`<span class="state">
