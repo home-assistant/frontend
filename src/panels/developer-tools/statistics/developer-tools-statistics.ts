@@ -82,7 +82,7 @@ class HaPanelDevStatistics extends LitElement {
                     issue.data
                   ) || issue.type
               )
-            : "👍 No issues!"}`,
+            : "No issues"}`,
       },
       fix: {
         title: "",
