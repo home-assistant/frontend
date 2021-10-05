@@ -76,6 +76,47 @@ export interface StatisticsMetaData {
   statistic_id: string;
 }
 
+export type StatisticsValidationResult =
+  | StatisticsValidationResultEntityNotRecorded
+  | StatisticsValidationResultUnsupportedStateClass
+  | StatisticsValidationResultUnitsChanged
+  | StatisticsValidationResultUnsupportedUnitMetadata
+  | StatisticsValidationResultUnsupportedUnitState;
+
+export interface StatisticsValidationResultEntityNotRecorded {
+  type: "entity_not_recorded";
+  data: { statistic_id: string };
+}
+
+export interface StatisticsValidationResultUnsupportedStateClass {
+  type: "unsupported_state_class";
+  data: { statistic_id: string; state_class: string };
+}
+
+export interface StatisticsValidationResultUnitsChanged {
+  type: "units_changed";
+  data: { statistic_id: string; state_unit: string; metadata_unit: string };
+}
+
+export interface StatisticsValidationResultUnsupportedUnitMetadata {
+  type: "unsupported_unit_metadata";
+  data: {
+    statistic_id: string;
+    device_class: string;
+    metadata_unit: string;
+    supported_unit: string;
+  };
+}
+
+export interface StatisticsValidationResultUnsupportedUnitState {
+  type: "unsupported_unit_state";
+  data: { statistic_id: string; device_class: string; metadata_unit: string };
+}
+
+export interface StatisticsValidationResults {
+  [statisticId: string]: StatisticsValidationResult[];
+}
+
 export const fetchRecent = (
   hass: HomeAssistant,
   entityId: string,
@@ -303,6 +344,28 @@ export const fetchStatistics = (
     end_time: endTime?.toISOString(),
     statistic_ids,
     period,
+  });
+
+export const validateStatistics = (hass: HomeAssistant) =>
+  hass.callWS<StatisticsValidationResults>({
+    type: "recorder/validate_statistics",
+  });
+
+export const updateStatisticsMetadata = (
+  hass: HomeAssistant,
+  statistic_id: string,
+  unit_of_measurement: string | null
+) =>
+  hass.callWS<void>({
+    type: "recorder/update_statistics_metadata",
+    statistic_id,
+    unit_of_measurement,
+  });
+
+export const clearStatistics = (hass: HomeAssistant, statistic_ids: string[]) =>
+  hass.callWS<void>({
+    type: "recorder/clear_statistics",
+    statistic_ids,
   });
 
 export const calculateStatisticSumGrowth = (

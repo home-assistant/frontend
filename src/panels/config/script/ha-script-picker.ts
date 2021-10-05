@@ -76,10 +76,10 @@ class HaScriptPicker extends LitElement {
           html`
             <mwc-icon-button
               .script=${script}
-              title="${this.hass.localize(
+              title=${this.hass.localize(
                 "ui.panel.config.script.picker.run_script"
-              )}"
-              @click=${(ev: Event) => this._runScript(ev)}
+              )}
+              @click=${this._runScript}
             >
               <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
             </mwc-icon-button>
@@ -131,9 +131,7 @@ class HaScriptPicker extends LitElement {
         <mwc-icon-button
           .script=${script}
           @click=${this._showInfo}
-          title="${this.hass.localize(
-            "ui.panel.config.script.picker.show_info"
-          )}"
+          title=${this.hass.localize("ui.panel.config.script.picker.show_info")}
         >
           <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
         </mwc-icon-button>
@@ -160,9 +158,9 @@ class HaScriptPicker extends LitElement {
       template: (_info, script: any) => html`
         <a href="/config/script/edit/${script.entity_id}">
           <mwc-icon-button
-            title="${this.hass.localize(
+            title=${this.hass.localize(
               "ui.panel.config.script.picker.edit_script"
-            )}"
+            )}
           >
             <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
           </mwc-icon-button>
@@ -236,7 +234,7 @@ class HaScriptPicker extends LitElement {
     this._filterValue = undefined;
   }
 
-  private async _runScript(ev) {
+  private _runScript = async (ev) => {
     ev.stopPropagation();
     const script = ev.currentTarget.script as HassEntity;
     await triggerScript(this.hass, script.entity_id);
@@ -247,7 +245,7 @@ class HaScriptPicker extends LitElement {
         computeStateName(script)
       ),
     });
-  }
+  };
 
   private _showInfo(ev) {
     ev.stopPropagation();
@@ -262,7 +260,7 @@ class HaScriptPicker extends LitElement {
         ${this.hass.localize("ui.panel.config.script.picker.introduction")}
         <p>
           <a
-            href="${documentationUrl(this.hass, "/docs/scripts/editor/")}"
+            href=${documentationUrl(this.hass, "/docs/scripts/editor/")}
             target="_blank"
             rel="noreferrer"
           >

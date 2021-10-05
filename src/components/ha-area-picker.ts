@@ -46,6 +46,7 @@ import "./ha-svg-icon";
 
 const rowRenderer: ComboBoxLitRenderer<AreaRegistryEntry> = (
   item
+  // eslint-disable-next-line lit/prefer-static-styles
 ) => html`<style>
     paper-item {
       padding: 0;
@@ -435,7 +436,7 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
           });
           this._areas = [...this._areas!, area];
           this._setValue(area.area_id);
-        } catch (err) {
+        } catch (err: any) {
           showAlertDialog(this, {
             text: this.hass.localize(
               "ui.components.area-picker.add_dialog.failed_create_area"

@@ -50,7 +50,7 @@ class HaCallApiButton extends LitElement {
       this._progressButton.actionSuccess();
       eventData.success = true;
       eventData.response = resp;
-    } catch (err) {
+    } catch (err: any) {
       this.progress = false;
       this._progressButton.actionError();
       eventData.success = false;

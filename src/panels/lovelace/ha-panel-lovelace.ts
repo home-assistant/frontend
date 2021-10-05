@@ -117,8 +117,8 @@ class LovelacePanel extends LitElement {
       return html`
         <hass-error-screen
           .hass=${this.hass}
-          title="${domainToName(this.hass!.localize, "lovelace")}"
-          .error="${this._errorMsg}"
+          title=${domainToName(this.hass!.localize, "lovelace")}
+          .error=${this._errorMsg}
         >
           <mwc-button raised @click=${this._forceFetchConfig}>
             ${this.hass!.localize("ui.panel.lovelace.reload_lovelace")}
@@ -131,8 +131,8 @@ class LovelacePanel extends LitElement {
       return html`
         <hui-editor
           .hass=${this.hass}
-          .lovelace="${this.lovelace}"
-          .closeEditor="${this._closeEditor}"
+          .lovelace=${this.lovelace}
+          .closeEditor=${this._closeEditor}
         ></hui-editor>
       `;
     }
@@ -263,7 +263,7 @@ class LovelacePanel extends LitElement {
       } else {
         conf = rawConf;
       }
-    } catch (err) {
+    } catch (err: any) {
       if (err.code !== "config_not_found") {
         // eslint-disable-next-line
         console.log(err);
@@ -379,7 +379,7 @@ class LovelacePanel extends LitElement {
           });
           this._ignoreNextUpdateEvent = true;
           await saveConfig(this.hass!, urlPath, newConfig);
-        } catch (err) {
+        } catch (err: any) {
           // eslint-disable-next-line
           console.error(err);
           // Rollback the optimistic update
@@ -414,7 +414,7 @@ class LovelacePanel extends LitElement {
           });
           this._ignoreNextUpdateEvent = true;
           await deleteConfig(this.hass!, urlPath);
-        } catch (err) {
+        } catch (err: any) {
           // eslint-disable-next-line
           console.error(err);
           // Rollback the optimistic update

@@ -254,7 +254,7 @@ export class HuiLogbookCard extends LitElement implements LovelaceCard {
         ),
         this._fetchUserPromise,
       ]);
-    } catch (err) {
+    } catch (err: any) {
       this._error = err.message;
     }
 

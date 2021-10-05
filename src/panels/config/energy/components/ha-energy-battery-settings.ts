@@ -4,7 +4,6 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import "../../../../components/entity/ha-statistic-picker";
 import "../../../../components/ha-card";
 import "../../../../components/ha-settings-row";
 import {
@@ -63,7 +62,7 @@ export class EnergyBatterySettings extends LitElement {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="${documentationUrl(this.hass, "/docs/energy/battery/")}"
+              href=${documentationUrl(this.hass, "/docs/energy/battery/")}
               >${this.hass.localize(
                 "ui.panel.config.energy.battery.learn_more"
               )}</a
@@ -168,7 +167,7 @@ export class EnergyBatterySettings extends LitElement {
           (source) => source !== sourceToDelete
         ),
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }
   }

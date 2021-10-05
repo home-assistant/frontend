@@ -58,9 +58,9 @@ export class HuiIframeCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .value="${this._url}"
-          .configValue="${"url"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._url}
+          .configValue=${"url"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
           <paper-input
@@ -69,9 +69,9 @@ export class HuiIframeCardEditor
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._title}"
-            .configValue="${"title"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._title}
+            .configValue=${"title"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
           <paper-input
             .label="${this.hass.localize(
@@ -79,9 +79,9 @@ export class HuiIframeCardEditor
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .value="${this._aspect_ratio}"
-            .configValue="${"aspect_ratio"}"
-            @value-changed="${this._valueChanged}"
+            .value=${this._aspect_ratio}
+            .configValue=${"aspect_ratio"}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
       </div>

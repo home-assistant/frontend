@@ -82,6 +82,7 @@ module.exports.babelOptions = ({ latestBuild }) => ({
     // Only support the syntax, Webpack will handle it.
     "@babel/plugin-syntax-import-meta",
     "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-syntax-top-level-await",
     "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-proposal-nullish-coalescing-operator",
     ["@babel/plugin-proposal-decorators", { decoratorsBeforeExport: true }],

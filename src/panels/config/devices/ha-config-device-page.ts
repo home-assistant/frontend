@@ -687,7 +687,7 @@ export class HaConfigDevicePage extends LitElement {
                 try {
                   // eslint-disable-next-line no-await-in-loop
                   result = await disableConfigEntry(this.hass, cnfg_entry);
-                } catch (err) {
+                } catch (err: any) {
                   showAlertDialog(this, {
                     title: this.hass.localize(
                       "ui.panel.config.integrations.config_entry.disable_error"
@@ -710,7 +710,7 @@ export class HaConfigDevicePage extends LitElement {
         }
         try {
           await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
-        } catch (err) {
+        } catch (err: any) {
           showAlertDialog(this, {
             title: this.hass.localize(
               "ui.panel.config.devices.update_device_error"

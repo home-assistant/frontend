@@ -53,13 +53,13 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
         <paper-input
           no-label-float
           .disabled=${stateObj.state === UNAVAILABLE}
-          .value="${stateObj.state}"
-          .minlength="${stateObj.attributes.min}"
-          .maxlength="${stateObj.attributes.max}"
-          .autoValidate="${stateObj.attributes.pattern}"
-          .pattern="${stateObj.attributes.pattern}"
-          .type="${stateObj.attributes.mode}"
-          @change="${this._selectedValueChanged}"
+          .value=${stateObj.state}
+          .minlength=${stateObj.attributes.min}
+          .maxlength=${stateObj.attributes.max}
+          .autoValidate=${stateObj.attributes.pattern}
+          .pattern=${stateObj.attributes.pattern}
+          .type=${stateObj.attributes.mode}
+          @change=${this._selectedValueChanged}
           placeholder="(empty value)"
         ></paper-input>
       </hui-generic-entity-row>

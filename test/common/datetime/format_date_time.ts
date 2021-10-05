@@ -16,7 +16,7 @@ describe("formatDateTime", () => {
         number_format: NumberFormat.language,
         time_format: TimeFormat.am_pm,
       }),
-      "November 18, 2017, 11:12 PM"
+      "November 18, 2017 at 11:12 PM"
     );
     assert.strictEqual(
       formatDateTime(dateObj, {
@@ -24,7 +24,7 @@ describe("formatDateTime", () => {
         number_format: NumberFormat.language,
         time_format: TimeFormat.twenty_four,
       }),
-      "November 18, 2017, 23:12"
+      "November 18, 2017 at 23:12"
     );
   });
 });
@@ -39,7 +39,7 @@ describe("formatDateTimeWithSeconds", () => {
         number_format: NumberFormat.language,
         time_format: TimeFormat.am_pm,
       }),
-      "November 18, 2017, 11:12:13 PM"
+      "November 18, 2017 at 11:12:13 PM"
     );
     assert.strictEqual(
       formatDateTimeWithSeconds(dateObj, {
@@ -47,7 +47,7 @@ describe("formatDateTimeWithSeconds", () => {
         number_format: NumberFormat.language,
         time_format: TimeFormat.twenty_four,
       }),
-      "November 18, 2017, 23:12:13"
+      "November 18, 2017 at 23:12:13"
     );
   });
 });

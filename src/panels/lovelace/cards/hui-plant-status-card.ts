@@ -111,7 +111,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        class="${stateObj.attributes.entity_picture ? "has-plant-image" : ""}"
+        class=${stateObj.attributes.entity_picture ? "has-plant-image" : ""}
       >
         <div
           class="banner"
@@ -129,20 +129,17 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
                 @action=${this._handleMoreInfo}
                 .actionHandler=${actionHandler()}
                 tabindex="0"
-                .value="${item}"
+                .value=${item}
               >
                 <div>
                   <ha-icon
-                    icon="${this.computeIcon(
-                      item,
-                      stateObj.attributes.battery
-                    )}"
+                    icon=${this.computeIcon(item, stateObj.attributes.battery)}
                   ></ha-icon>
                 </div>
                 <div
-                  class="${stateObj.attributes.problem.indexOf(item) === -1
+                  class=${stateObj.attributes.problem.indexOf(item) === -1
                     ? ""
-                    : "problem"}"
+                    : "problem"}
                 >
                   ${stateObj.attributes[item]}
                 </div>

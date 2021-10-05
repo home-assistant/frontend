@@ -120,12 +120,10 @@ class DialogPersonDetail extends LitElement {
               dialogInitialFocus
               .value=${this._name}
               @value-changed=${this._nameChanged}
-              label="${this.hass!.localize(
-                "ui.panel.config.person.detail.name"
-              )}"
-              error-message="${this.hass!.localize(
+              label=${this.hass!.localize("ui.panel.config.person.detail.name")}
+              error-message=${this.hass!.localize(
                 "ui.panel.config.person.detail.name_error_msg"
-              )}"
+              )}
               required
               auto-validate
             ></paper-input>
@@ -198,10 +196,10 @@ class DialogPersonDetail extends LitElement {
                   <ul>
                     <li>
                       <a
-                        href="${documentationUrl(
+                        href=${documentationUrl(
                           this.hass,
                           "/integrations/#presence-detection"
-                        )}"
+                        )}
                         target="_blank"
                         rel="noreferrer"
                         >${this.hass!.localize(
@@ -211,7 +209,7 @@ class DialogPersonDetail extends LitElement {
                     </li>
                     <li>
                       <a
-                        @click="${this._closeDialog}"
+                        @click=${this._closeDialog}
                         href="/config/integrations"
                       >
                         ${this.hass!.localize(
@@ -228,7 +226,7 @@ class DialogPersonDetail extends LitElement {
               <mwc-button
                 slot="secondaryAction"
                 class="warning"
-                @click="${this._deleteEntry}"
+                @click=${this._deleteEntry}
                 .disabled=${(this._user && this._user.is_owner) ||
                 this._submitting}
               >
@@ -248,7 +246,7 @@ class DialogPersonDetail extends LitElement {
           : html``}
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateEntry}"
+          @click=${this._updateEntry}
           .disabled=${nameInvalid || this._submitting}
         >
           ${this._params.entry
@@ -398,7 +396,7 @@ class DialogPersonDetail extends LitElement {
         this._personExists = true;
       }
       this._params = undefined;
-    } catch (err) {
+    } catch (err: any) {
       this._error = err ? err.message : "Unknown error";
     } finally {
       this._submitting = false;

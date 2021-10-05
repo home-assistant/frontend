@@ -3,7 +3,6 @@
 
 # build
 build
-build-translations/*
 hass_frontend/*
 dist
 

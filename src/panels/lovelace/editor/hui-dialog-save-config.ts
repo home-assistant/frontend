@@ -187,7 +187,7 @@ export class HuiSaveConfig extends LitElement implements HassDialog {
       lovelace.setEditMode(true);
       this._saving = false;
       this.closeDialog();
-    } catch (err) {
+    } catch (err: any) {
       alert(`Saving failed: ${err.message}`);
       this._saving = false;
     }

@@ -1,3 +1,4 @@
+/* eslint-disable lit/prefer-static-styles */
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";

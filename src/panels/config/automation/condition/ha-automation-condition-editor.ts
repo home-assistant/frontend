@@ -111,7 +111,11 @@ export default class HaAutomationConditionEditor extends LitElement {
       return;
     }
 
-    const elClass = customElements.get(`ha-automation-condition-${type}`);
+    const elClass = customElements.get(
+      `ha-automation-condition-${type}`
+    ) as CustomElementConstructor & {
+      defaultConfig: Omit<Condition, "condition">;
+    };
 
     if (type !== this.condition.condition) {
       fireEvent(this, "value-changed", {

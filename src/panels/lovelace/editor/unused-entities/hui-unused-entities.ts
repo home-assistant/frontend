@@ -61,9 +61,9 @@ export class HuiUnusedEntities extends LitElement {
         ${!this.narrow
           ? html`
               <ha-card
-                header="${this.hass.localize(
+                header=${this.hass.localize(
                   "ui.panel.lovelace.unused_entities.title"
-                )}"
+                )}
               >
                 <div class="card-content">
                   ${this.hass.localize(

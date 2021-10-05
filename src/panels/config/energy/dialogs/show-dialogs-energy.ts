@@ -2,6 +2,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   BatterySourceTypeEnergyPreference,
   DeviceConsumptionEnergyPreference,
+  EnergyGasUnit,
   EnergyInfo,
   FlowFromGridSourceEnergyPreference,
   FlowToGridSourceEnergyPreference,
@@ -44,6 +45,7 @@ export interface EnergySettingsBatteryDialogParams {
 
 export interface EnergySettingsGasDialogParams {
   source?: GasSourceTypeEnergyPreference;
+  unit?: EnergyGasUnit;
   saveCallback: (source: GasSourceTypeEnergyPreference) => Promise<void>;
 }
 

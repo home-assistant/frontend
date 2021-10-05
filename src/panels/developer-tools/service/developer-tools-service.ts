@@ -174,14 +174,14 @@ class HaPanelDevService extends LitElement {
                     </h3>
                     ${this._serviceData?.service
                       ? html` <a
-                          href="${documentationUrl(
+                          href=${documentationUrl(
                             this.hass,
                             "/integrations/" +
                               computeDomain(this._serviceData?.service)
-                          )}"
-                          title="${this.hass.localize(
+                          )}
+                          title=${this.hass.localize(
                             "ui.components.service-control.integration_doc"
-                          )}"
+                          )}
                           target="_blank"
                           rel="noreferrer"
                         >
@@ -307,7 +307,7 @@ class HaPanelDevService extends LitElement {
     }
     try {
       await callExecuteScript(this.hass, [this._serviceData]);
-    } catch (err) {
+    } catch (err: any) {
       const [domain, service] = this._serviceData.service.split(".", 2);
       if (
         err.error?.code === ERR_CONNECTION_LOST &&
@@ -372,7 +372,7 @@ class HaPanelDevService extends LitElement {
         let value: any = "";
         try {
           value = load(field.example);
-        } catch (err) {
+        } catch (err: any) {
           value = field.example;
         }
         example[field.key] = value;

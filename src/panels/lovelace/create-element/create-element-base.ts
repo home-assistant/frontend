@@ -136,7 +136,7 @@ const _lazyCreate = <T extends keyof CreateElementConfigTypes>(
       customElements.upgrade(element);
       // @ts-ignore
       element.setConfig(config);
-    } catch (err) {
+    } catch (err: any) {
       // We let it rebuild and the error wil be handled by _createElement
       fireEvent(element, "ll-rebuild");
     }
@@ -168,7 +168,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
       domainTypes,
       defaultType
     );
-  } catch (err) {
+  } catch (err: any) {
     // eslint-disable-next-line
     console.error(tagSuffix, config.type, err);
     return _createErrorElement(err.message, config);

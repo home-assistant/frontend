@@ -63,7 +63,7 @@ export const getOptimisticCollection = <StateType>(
 
       try {
         return await saveCollection(conn, data);
-      } catch (err) {
+      } catch (err: any) {
         if (store) {
           store.setState(current as any, true);
         }

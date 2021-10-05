@@ -307,7 +307,7 @@ class OnboardingCoreConfig extends LitElement {
       if (values.currency) {
         this._currency = values.currency;
       }
-    } catch (err) {
+    } catch (err: any) {
       alert(`Failed to detect location information: ${err.message}`);
     } finally {
       this._working = false;
@@ -333,7 +333,7 @@ class OnboardingCoreConfig extends LitElement {
         type: "core_config",
         result,
       });
-    } catch (err) {
+    } catch (err: any) {
       this._working = false;
       alert(`Failed to save: ${err.message}`);
     }

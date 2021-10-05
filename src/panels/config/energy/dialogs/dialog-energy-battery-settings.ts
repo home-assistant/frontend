@@ -15,6 +15,7 @@ import "@material/mwc-button/mwc-button";
 import "../../../../components/entity/ha-statistic-picker";
 
 const energyUnits = ["kWh"];
+const energyDeviceClasses = ["energy"];
 
 @customElement("dialog-energy-battery-settings")
 export class DialogEnergyBatterySettings
@@ -65,6 +66,7 @@ export class DialogEnergyBatterySettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitOfMeasurement=${energyUnits}
+          .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source.stat_energy_to}
           .label=${`Energy going in to the battery (kWh)`}
           entities-only
@@ -74,6 +76,7 @@ export class DialogEnergyBatterySettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitOfMeasurement=${energyUnits}
+          .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source.stat_energy_from}
           .label=${`Energy coming out of the battery (kWh)`}
           entities-only
@@ -107,8 +110,8 @@ export class DialogEnergyBatterySettings
     try {
       await this._params!.saveCallback(this._source!);
       this.closeDialog();
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
   }
 

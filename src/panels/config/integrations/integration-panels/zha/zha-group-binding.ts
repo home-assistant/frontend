@@ -71,7 +71,7 @@ export class ZHAGroupBindingControl extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide="${this.isWide}">
+      <ha-config-section .isWide=${this.isWide}>
         <div class="sectionHeader" slot="header">
           <span
             >${this.hass!.localize(
@@ -80,7 +80,7 @@ export class ZHAGroupBindingControl extends LitElement {
           >
           <ha-icon-button
             class="toggle-help-icon"
-            @click="${this._onHelpTap}"
+            @click=${this._onHelpTap}
             icon="hass:help-circle"
           >
           </ha-icon-button>
@@ -101,8 +101,8 @@ export class ZHAGroupBindingControl extends LitElement {
             >
               <paper-listbox
                 slot="dropdown-content"
-                .selected="${this._bindTargetIndex}"
-                @iron-select="${this._bindTargetIndexChanged}"
+                .selected=${this._bindTargetIndex}
+                @iron-select=${this._bindTargetIndexChanged}
               >
                 ${this.groups.map(
                   (group) => html` <paper-item>${group.name}</paper-item> `
@@ -139,8 +139,8 @@ export class ZHAGroupBindingControl extends LitElement {
             : ""}
           <div class="card-actions">
             <mwc-button
-              @click="${this._onBindGroupClick}"
-              .disabled="${!this._canBind}"
+              @click=${this._onBindGroupClick}
+              .disabled=${!this._canBind}
               >${this.hass!.localize(
                 "ui.panel.config.zha.group_binding.bind_button_label"
               )}</mwc-button
@@ -155,8 +155,8 @@ export class ZHAGroupBindingControl extends LitElement {
                 `
               : ""}
             <mwc-button
-              @click="${this._onUnbindGroupClick}"
-              .disabled="${!this._canBind}"
+              @click=${this._onUnbindGroupClick}
+              .disabled=${!this._canBind}
               >${this.hass!.localize(
                 "ui.panel.config.zha.group_binding.unbind_button_label"
               )}</mwc-button

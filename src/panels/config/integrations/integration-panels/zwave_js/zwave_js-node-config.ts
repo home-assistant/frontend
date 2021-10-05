@@ -168,8 +168,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
                   "device_database",
                   html`<a
                     rel="noreferrer noopener"
-                    href="${this._nodeMetadata?.device_database_url ||
-                    "https://devices.zwave-js.io"}"
+                    href=${this._nodeMetadata?.device_database_url ||
+                    "https://devices.zwave-js.io"}
                     target="_blank"
                     >${this.hass.localize(
                       "ui.panel.config.zwave_js.node_config.zwave_js_device_database"
@@ -389,8 +389,8 @@ class ZWaveJSNodeConfig extends SubscribeMixin(LitElement) {
       this._config![target.key].value = value;
 
       this.setResult(target.key, result.status);
-    } catch (error) {
-      this.setError(target.key, error.message);
+    } catch (err: any) {
+      this.setError(target.key, err.message);
     }
   }
 

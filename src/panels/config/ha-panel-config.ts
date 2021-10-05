@@ -402,7 +402,14 @@ class HaPanelConfig extends HassRouterPage {
   private async _updateCloudStatus() {
     this._cloudStatus = await fetchCloudStatus(this.hass);
 
-    if (this._cloudStatus.cloud === "connecting") {
+    if (
+      // Relayer connecting
+      this._cloudStatus.cloud === "connecting" ||
+      // Remote connecting
+      (this._cloudStatus.logged_in &&
+        this._cloudStatus.prefs.remote_enabled &&
+        !this._cloudStatus.remote_connected)
+    ) {
       setTimeout(() => this._updateCloudStatus(), 5000);
     }
   }

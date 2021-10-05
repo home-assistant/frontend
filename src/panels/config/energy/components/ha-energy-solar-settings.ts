@@ -65,10 +65,7 @@ export class EnergySolarSettings extends LitElement {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="${documentationUrl(
-                this.hass,
-                "/docs/energy/solar-panels/"
-              )}"
+              href=${documentationUrl(this.hass, "/docs/energy/solar-panels/")}
               >${this.hass.localize(
                 "ui.panel.config.energy.solar.learn_more"
               )}</a
@@ -175,7 +172,7 @@ export class EnergySolarSettings extends LitElement {
           (source) => source !== sourceToDelete
         ),
       });
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }
   }
