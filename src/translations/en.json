@@ -287,6 +287,7 @@
       "next": "Next",
       "back": "Back",
       "undo": "Undo",
+      "move": "Move",
       "save": "Save",
       "rename": "Rename",
       "yes": "Yes",
@@ -3042,7 +3043,8 @@
           },
           "select_view": {
             "header": "Choose a view",
-            "dashboard_label": "Dashboard"
+            "dashboard_label": "Dashboard",
+            "views_label": "View"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",

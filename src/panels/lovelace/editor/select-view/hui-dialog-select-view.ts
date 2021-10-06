@@ -1,4 +1,5 @@
 import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -28,6 +29,8 @@ export class HuiDialogSelectView extends LitElement {
 
   @state() private _config?: LovelaceConfig;
 
+  @state() private _selectedViewIdx = 0;
+
   public showDialog(params: SelectViewDialogParams): void {
     this._config = params.lovelaceConfig;
     this._urlPath = params.urlPath;
@@ -50,7 +53,6 @@ export class HuiDialogSelectView extends LitElement {
       <ha-dialog
         open
         @closed=${this.closeDialog}
-        hideActions
         .heading=${createCloseHeading(
           this.hass,
           this._params.header ||
@@ -94,12 +96,41 @@ export class HuiDialogSelectView extends LitElement {
             </ha-paper-dropdown-menu>`
           : ""}
         ${this._config
-          ? html` <hui-views-list
-              .lovelaceConfig=${this._config}
-              @view-selected=${this._selectView}
-            >
-            </hui-views-list>`
+          ? html`
+              <ha-paper-dropdown-menu
+                .label=${this.hass.localize(
+                  "ui.panel.lovelace.editor.select_view.views_label"
+                )}
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  .selected=${this._selectedViewIdx}
+                >
+                  ${this._config.views.map(
+                    (view, idx) => html`
+                      <paper-icon-item
+                        .data-index=${idx}
+                        @click=${this._viewChanged}
+                        data-index=${idx}
+                      >
+                        <ha-icon
+                          slot="item-icon"
+                          .icon=${view.icon || "hass:cast"}
+                        ></ha-icon>
+                        <paper-item-body>${view.title}</paper-item-body>
+                      </paper-icon-item>
+                    `
+                  )}
+                </paper-listbox>
+              </ha-paper-dropdown-menu>
+            `
           : html`<div>No config found.</div>`}
+        <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
+          ${this.hass!.localize("ui.common.cancel")}
+        </mwc-button>
+        <mwc-button slot="primaryAction" @click=${this._selectView}>
+          ${this.hass!.localize("ui.common.move")}
+        </mwc-button>
       </ha-dialog>
     `;
   }
@@ -125,9 +156,20 @@ export class HuiDialogSelectView extends LitElement {
     }
   }
 
-  private _selectView(e: CustomEvent): void {
-    const view: number = e.detail.view;
-    this._params!.viewSelectedCallback(this._urlPath!, this._config!, view);
+  private _viewChanged(e: CustomEvent) {
+    const view = Number((e.currentTarget as any).getAttribute("data-index"));
+    if (!isNaN(view)) {
+      this._selectedViewIdx = view;
+    }
+  }
+
+  private _selectView(): void {
+    fireEvent(this, "view-selected", { view: this._selectedViewIdx });
+    this._params!.viewSelectedCallback(
+      this._urlPath!,
+      this._config!,
+      this._selectedViewIdx
+    );
     this.closeDialog();
   }
 
