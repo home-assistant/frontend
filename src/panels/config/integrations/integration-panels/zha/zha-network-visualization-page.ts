@@ -175,7 +175,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
             .label=${this.hass.localize(
               "ui.panel.config.zha.visualization.zoom_label"
             )}
-            .deviceFilter=${(device) => this._filterDevices(device)}
+            .deviceFilter=${this._filterDevices}
             @value-changed=${this._onZoomToDevice}
           ></ha-device-picker>
           <div class="controls">
@@ -361,7 +361,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
     await refreshTopology(this.hass);
   }
 
-  private _filterDevices(device: DeviceRegistryEntry): boolean {
+  private _filterDevices = (device: DeviceRegistryEntry): boolean => {
     if (!this.hass) {
       return false;
     }
@@ -373,7 +373,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
       }
     }
     return false;
-  }
+  };
 
   private _handleCheckboxChange(ev: Event) {
     this._autoZoom = (ev.target as HaCheckbox).checked;

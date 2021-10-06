@@ -90,7 +90,7 @@ export class HaScriptTrace extends LitElement {
     const actionButtons = html`
       <ha-icon-button
         label="Refresh"
-        @click=${() => this._loadTraces()}
+        @click=${this._refreshTraces}
         .path=${mdiRefresh}
       ></ha-icon-button>
       <ha-icon-button
@@ -320,6 +320,10 @@ export class HaScriptTrace extends LitElement {
 
   private _pickNode(ev) {
     this._selected = ev.detail;
+  }
+
+  private _refreshTraces() {
+    this._loadTraces();
   }
 
   private async _loadTraces(runId?: string) {

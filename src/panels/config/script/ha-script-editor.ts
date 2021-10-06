@@ -87,7 +87,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .backCallback=${() => this._backTapped()}
+        .backCallback=${this._backTapped}
         .tabs=${configSections.automation}
       >
         <ha-button-menu
@@ -577,7 +577,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     this._dirty = true;
   }
 
-  private _backTapped(): void {
+  private _backTapped = (): void => {
     if (this._dirty) {
       showConfirmationDialog(this, {
         text: this.hass!.localize(
@@ -590,7 +590,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     } else {
       history.back();
     }
-  }
+  };
 
   private async _duplicate() {
     if (this._dirty) {

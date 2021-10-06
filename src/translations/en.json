@@ -3757,6 +3757,7 @@
             "title": "Statistics",
             "entity": "Entity",
             "issue": "Issue",
+            "no_issue": "No issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
               "unsupported_unit_state": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''.",
@@ -3765,11 +3766,11 @@
               "entity_not_recorded": "This entity is excluded from being recorded."
             },
             "fix_issue": {
+              "fix": "Fix issue",
               "units_changed": {
                 "title": "The unit of this entity changed",
                 "update": "Update the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
-                "clear": "Delete all old statistic data for this entity",
-                "fix": "Fix issue"
+                "clear": "Delete all old statistic data for this entity"
               }
             }
           }

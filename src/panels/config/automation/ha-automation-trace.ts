@@ -93,7 +93,7 @@ export class HaAutomationTrace extends LitElement {
       <ha-icon-button
         .label=${this.hass.localize("ui.panel.config.automation.trace.refresh")}
         .path=${mdiRefresh}
-        @click=${() => this._loadTraces()}
+        @click=${this._refreshTraces}
       ></ha-icon-button>
       <ha-icon-button
         .label=${this.hass.localize(
@@ -114,7 +114,7 @@ export class HaAutomationTrace extends LitElement {
         .tabs=${configSections.automation}
       >
         ${this.narrow
-          ? html`<span slot="header"> ${title} </span>
+          ? html`<span slot="header">${title}</span>
               <div slot="toolbar-icon">${actionButtons}</div>`
           : ""}
         <div class="toolbar">
@@ -342,6 +342,10 @@ export class HaAutomationTrace extends LitElement {
 
   private _pickNode(ev) {
     this._selected = ev.detail;
+  }
+
+  private _refreshTraces() {
+    this._loadTraces();
   }
 
   private async _loadTraces(runId?: string) {

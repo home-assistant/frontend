@@ -7,6 +7,7 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../common/search/search-input";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import { LocalizeFunc } from "../../common/translations/localize";
 import "../../components/ha-icon-next";
 import { domainToName } from "../../data/integration";
@@ -59,7 +60,7 @@ class StepFlowPickHandler extends LitElement {
         return fuse.search(filter).map((result) => result.item);
       }
       return handlers.sort((a, b) =>
-        a.name.toUpperCase() < b.name.toUpperCase() ? -1 : 1
+        caseInsensitiveStringCompare(a.name, b.name)
       );
     }
   );

@@ -124,11 +124,11 @@ class HaBlueprintOverview extends LitElement {
                   "ui.panel.config.blueprint.overview.use_blueprint"
                 )}
                 .path=${mdiRobot}
-                @click=${(ev) => this._createNew(ev)}
+                @click=${this._createNew}
               ></ha-icon-button>`
             : html`<mwc-button
                 .blueprint=${blueprint}
-                @click=${(ev) => this._createNew(ev)}
+                @click=${this._createNew}
               >
                 ${this.hass.localize(
                   "ui.panel.config.blueprint.overview.use_blueprint"
@@ -150,7 +150,7 @@ class HaBlueprintOverview extends LitElement {
                     : "ui.panel.config.blueprint.overview.share_blueprint_no_url"
                 )}
                 .path=${mdiShareVariant}
-                @click=${(ev) => this._share(ev)}
+                @click=${this._share}
               ></ha-icon-button>`,
       },
       delete: {
@@ -165,7 +165,7 @@ class HaBlueprintOverview extends LitElement {
                   "ui.panel.config.blueprint.overview.delete_blueprint"
                 )}
                 .path=${mdiDelete}
-                @click=${(ev) => this._delete(ev)}
+                @click=${this._delete}
               ></ha-icon-button>`,
       },
     })
@@ -273,12 +273,12 @@ class HaBlueprintOverview extends LitElement {
     fireEvent(this, "reload-blueprints");
   }
 
-  private _createNew(ev) {
+  private _createNew = (ev) => {
     const blueprint = ev.currentTarget.blueprint as BlueprintMetaDataPath;
     createNewFunctions[blueprint.domain](blueprint);
-  }
+  };
 
-  private _share(ev) {
+  private _share = (ev) => {
     const blueprint = ev.currentTarget.blueprint;
     const params = new URLSearchParams();
     params.append("redirect", "blueprint_import");
@@ -286,9 +286,9 @@ class HaBlueprintOverview extends LitElement {
     window.open(
       `https://my.home-assistant.io/create-link/?${params.toString()}`
     );
-  }
+  };
 
-  private async _delete(ev) {
+  private _delete = async (ev) => {
     const blueprint = ev.currentTarget.blueprint;
     if (
       !(await showConfirmationDialog(this, {
@@ -304,7 +304,7 @@ class HaBlueprintOverview extends LitElement {
     }
     await deleteBlueprint(this.hass, blueprint.domain, blueprint.path);
     fireEvent(this, "reload-blueprints");
-  }
+  };
 
   static get styles(): CSSResultGroup {
     return haStyle;
