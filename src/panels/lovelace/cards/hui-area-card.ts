@@ -241,7 +241,7 @@ export class HuiAreaCard
         <div class="container">
           <div class="sensors">
             ${dialogEntities.map((entityConf) => {
-              const stateObj = this.hass!.states[entityConf.entity];
+              const stateObj = this.hass.states[entityConf.entity];
               return html`
                 <span>
                   <ha-icon
