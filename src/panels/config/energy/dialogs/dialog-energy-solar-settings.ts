@@ -49,7 +49,7 @@ export class DialogEnergySolarSettings
     this._fetchSolarForecastConfigEntries();
     this._source = params.source
       ? { ...params.source }
-      : (this._source = emptySolarEnergyPreference());
+      : emptySolarEnergyPreference();
     this._forecast = this._source.config_entry_solar_forecast !== null;
   }
 

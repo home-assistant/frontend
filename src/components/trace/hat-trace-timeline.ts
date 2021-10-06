@@ -511,18 +511,16 @@ export class HaAutomationTracer extends LitElement {
         className: isError ? "error" : undefined,
       };
     }
-    // null means it was stopped by a condition
-    if (entry) {
-      entries.push(html`
-        <ha-timeline
-          lastItem
-          .icon=${entry.icon}
-          class=${ifDefined(entry.className)}
-        >
-          ${entry.description}
-        </ha-timeline>
-      `);
-    }
+
+    entries.push(html`
+      <ha-timeline
+        lastItem
+        .icon=${entry.icon}
+        class=${ifDefined(entry.className)}
+      >
+        ${entry.description}
+      </ha-timeline>
+    `);
 
     return html`${entries}`;
   }

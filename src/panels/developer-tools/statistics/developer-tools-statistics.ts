@@ -41,7 +41,6 @@ class HaPanelDevStatistics extends LitElement {
     this._validateStatistics();
   }
 
-  /* eslint-disable lit/no-template-arrow */
   private _columns = memoizeOne(
     (localize): DataTableColumnContainer => ({
       state: {
@@ -82,16 +81,13 @@ class HaPanelDevStatistics extends LitElement {
                     issue.data
                   ) || issue.type
               )
-            : ""}`,
+            : "No issues"}`,
       },
       fix: {
         title: "",
         template: (_, data: any) =>
           html`${data.issues
-            ? html`<mwc-button
-                @click=${(ev) => this._fixIssue(ev)}
-                .data=${data.issues}
-              >
+            ? html`<mwc-button @click=${this._fixIssue} .data=${data.issues}>
                 Fix issue
               </mwc-button>`
             : ""}`,
@@ -99,7 +95,6 @@ class HaPanelDevStatistics extends LitElement {
       },
     })
   );
-  /* eslint-enable lit/no-template-arrow */
 
   protected render() {
     return html`
@@ -150,7 +145,7 @@ class HaPanelDevStatistics extends LitElement {
     });
   }
 
-  private _fixIssue(ev) {
+  private _fixIssue = (ev) => {
     const issues = (ev.currentTarget.data as StatisticsValidationResult[]).sort(
       (itemA, itemB) =>
         (FIX_ISSUES_ORDER[itemA.type] ?? 99) -
@@ -236,7 +231,7 @@ class HaPanelDevStatistics extends LitElement {
           text: "Fixing this issue is not supported yet.",
         });
     }
-  }
+  };
 
   static get styles(): CSSResultGroup {
     return [

@@ -88,7 +88,7 @@ export class HuiEnergyUsageGraphCard
             )}
             chart-type="bar"
           ></ha-chart-base>
-          ${!this._chartData.datasets.length
+          ${!this._chartData.datasets.some((dataset) => dataset.data.length)
             ? html`<div class="no-data">
                 ${isToday(this._start)
                   ? "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."
@@ -228,6 +228,8 @@ export class HuiEnergyUsageGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
+    const datasets: ChartDataset<"bar">[] = [];
+
     const statistics: {
       to_grid?: string[];
       from_grid?: string[];
@@ -283,32 +285,8 @@ export class HuiEnergyUsageGraphCard
       energyData.start
     );
 
-    const statisticsData = Object.values(energyData.stats);
-
-    const datasets: ChartDataset<"bar">[] = [];
-    let endTime: Date;
-
     this._start = energyData.start;
     this._end = energyData.end || endOfToday();
-
-    if (statisticsData.length === 0) {
-      this._chartData = {
-        datasets,
-      };
-      return;
-    }
-
-    endTime = new Date(
-      Math.max(
-        ...statisticsData.map((stats) =>
-          stats.length ? new Date(stats[stats.length - 1].start).getTime() : 0
-        )
-      )
-    );
-
-    if (endTime > new Date()) {
-      endTime = new Date();
-    }
 
     const combinedData: {
       to_grid?: { [statId: string]: { [start: string]: number } };

@@ -77,7 +77,7 @@ class HaSceneDashboard extends LitElement {
               title=${this.hass.localize(
                 "ui.panel.config.scene.picker.activate_scene"
               )}
-              @click=${(ev: Event) => this._activateScene(ev)}
+              @click=${this._activateScene}
             >
               <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
             </mwc-icon-button>
@@ -213,7 +213,7 @@ class HaSceneDashboard extends LitElement {
     fireEvent(this, "hass-more-info", { entityId });
   }
 
-  private async _activateScene(ev) {
+  private _activateScene = async (ev) => {
     ev.stopPropagation();
     const scene = ev.currentTarget.scene as SceneEntity;
     await activateScene(this.hass, scene.entity_id);
@@ -225,7 +225,7 @@ class HaSceneDashboard extends LitElement {
       ),
     });
     forwardHaptic("light");
-  }
+  };
 
   private _showHelp() {
     showAlertDialog(this, {

@@ -220,21 +220,7 @@ export class HuiEnergyGasGraphCard
 
     this._unit = getEnergyGasUnit(this.hass, energyData.prefs) || "m³";
 
-    const statisticsData = Object.values(energyData.stats);
     const datasets: ChartDataset<"bar">[] = [];
-    let endTime: Date;
-
-    endTime = new Date(
-      Math.max(
-        ...statisticsData.map((stats) =>
-          stats.length ? new Date(stats[stats.length - 1].start).getTime() : 0
-        )
-      )
-    );
-
-    if (!endTime || endTime > new Date()) {
-      endTime = new Date();
-    }
 
     const computedStyles = getComputedStyle(this);
     const gasColor = computedStyles

@@ -123,7 +123,7 @@ export class QuickBar extends LitElement {
       : this._entityItems;
 
     if (items && this._filter && this._filter !== " ") {
-      items = this._filterItems(items || [], this._filter);
+      items = this._filterItems(items, this._filter);
     }
 
     return html`

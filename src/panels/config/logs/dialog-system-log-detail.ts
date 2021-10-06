@@ -65,7 +65,7 @@ class DialogSystemLogDetail extends LitElement {
       this._manifest &&
       (this._manifest.is_built_in ||
         // Custom components with our offical docs should not link to our docs
-        !this._manifest.documentation.includes("www.home-assistant.io"));
+        !this._manifest.documentation.includes("://www.home-assistant.io"));
 
     return html`
       <ha-dialog open @closed=${this.closeDialog} hideActions .heading=${true}>
