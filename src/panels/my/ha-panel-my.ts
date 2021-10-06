@@ -218,7 +218,7 @@ class HaPanelMy extends LitElement {
 
   protected render() {
     if (this._error) {
-      let error = "Unknown error";
+      let error: string;
       switch (this._error) {
         case "not_supported":
           error =
