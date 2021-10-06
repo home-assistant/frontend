@@ -22,6 +22,8 @@ import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
+import "../../../components/ha-overflow-menu";
+import "../../../components/ha-overflow-menu-item";
 import {
   AutomationEntity,
   triggerAutomationActions,
@@ -143,6 +145,107 @@ class HaAutomationPicker extends LitElement {
           `,
         };
       }
+      columns.actions = {
+        title: "",
+        template: (_info, automation: any) => html`
+          <ha-overflow-menu
+            .hass=${this.hass}
+            style="color: var(--secondary-text-color)"
+          >
+            <!-- Info Button -->
+
+            <ha-overflow-menu-item
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.picker.show_info_automation"
+              )}
+            >
+              <mwc-icon-button
+                .automation=${automation}
+                @click=${this._showInfo}
+                .label=${this.hass.localize(
+                  "ui.panel.config.automation.picker.show_info_automation"
+                )}
+              >
+                <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
+              </mwc-icon-button>
+            </ha-overflow-menu-item>
+
+            <!-- Trace Button -->
+            <ha-overflow-menu-item
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.picker.show_info_automation"
+              )}
+            >
+              <div>
+                <a
+                  href=${ifDefined(
+                    automation.attributes.id
+                      ? `/config/automation/trace/${automation.attributes.id}`
+                      : undefined
+                  )}
+                >
+                  <mwc-icon-button
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.dev_automation"
+                    )}
+                    .disabled=${!automation.attributes.id}
+                  >
+                    <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
+                  </mwc-icon-button>
+                </a>
+                ${!automation.attributes.id
+                  ? html`
+                      <paper-tooltip animation-delay="0" position="left">
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.dev_only_editable"
+                        )}
+                      </paper-tooltip>
+                    `
+                  : ""}
+              </div>
+            </ha-overflow-menu-item>
+
+            <!-- Edit Button -->
+            <ha-overflow-menu-item
+              .label=${this.hass.localize(
+                "ui.panel.config.automation.picker.edit_automation"
+              )}
+            >
+              <div>
+                <a
+                  href=${ifDefined(
+                    automation.attributes.id
+                      ? `/config/automation/edit/${automation.attributes.id}`
+                      : undefined
+                  )}
+                >
+                  <mwc-icon-button
+                    .disabled=${!automation.attributes.id}
+                    .label=${this.hass.localize(
+                      "ui.panel.config.automation.picker.edit_automation"
+                    )}
+                  >
+                    <ha-svg-icon
+                      .path=${automation.attributes.id
+                        ? mdiPencil
+                        : mdiPencilOff}
+                    ></ha-svg-icon>
+                  </mwc-icon-button>
+                </a>
+                ${!automation.attributes.id
+                  ? html`
+                      <paper-tooltip animation-delay="0" position="left">
+                        ${this.hass.localize(
+                          "ui.panel.config.automation.picker.only_editable"
+                        )}
+                      </paper-tooltip>
+                    `
+                  : ""}
+              </div>
+            </ha-overflow-menu-item>
+          </ha-overflow-menu>
+        `,
+      };
       columns.info = {
         title: "",
         type: "icon-button",
