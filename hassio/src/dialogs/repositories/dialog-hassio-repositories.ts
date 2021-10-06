@@ -9,6 +9,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
@@ -57,7 +58,7 @@ class HassioRepositoriesDialog extends LitElement {
   private _filteredRepositories = memoizeOne((repos: HassioAddonRepository[]) =>
     repos
       .filter((repo) => repo.slug !== "core" && repo.slug !== "local")
-      .sort((a, b) => (a.name < b.name ? -1 : 1))
+      .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name))
   );
 
   protected render(): TemplateResult {
