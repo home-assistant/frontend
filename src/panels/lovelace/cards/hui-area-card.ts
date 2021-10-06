@@ -382,11 +382,6 @@ export class HuiAreaCard
           background-size: cover;
         }
 
-        img {
-          display: block;
-          width: 100%;
-        }
-
         .container {
           position: absolute;
           top: 0;
