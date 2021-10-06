@@ -67,11 +67,9 @@ export class HuiAreaCardEditor
           @value-changed=${this._valueChanged}
         ></ha-area-picker>
         <paper-input
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.image"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.optional"
-          )})"
+          )}
           .value=${this._image}
           .configValue=${"image"}
           @value-changed=${this._valueChanged}
@@ -97,18 +95,16 @@ export class HuiAreaCardEditor
     if (this[`_${target.configValue}`] === value) {
       return;
     }
+
     let newConfig;
     if (target.configValue) {
-      if (value !== false && !value) {
+      if (!value) {
         newConfig = { ...this._config };
         delete newConfig[target.configValue!];
       } else {
         newConfig = {
           ...this._config,
-          [target.configValue!]:
-            target.configValue === "icon_height" && !isNaN(Number(target.value))
-              ? `${String(value)}px`
-              : value,
+          [target.configValue!]: value,
         };
       }
     }

@@ -148,9 +148,7 @@ export class HuiAreaCard
       throw new Error("Area Required");
     }
 
-    this._config = {
-      ...config,
-    };
+    this._config = config;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
