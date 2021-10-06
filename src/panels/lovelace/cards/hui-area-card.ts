@@ -10,6 +10,7 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
+import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { DOMAINS_TOGGLE, STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -156,9 +157,20 @@ export class HuiAreaCard
       return true;
     }
 
-    if (!changedProps.has("hass")) {
-    	return false;
+    if (
+      changedProps.has("_entitiesDialog") ||
+      changedProps.has("_entitiesToggle") ||
+      changedProps.has("_devices") ||
+      changedProps.has("_area") ||
+      changedProps.has("_entities")
+    ) {
+      return true;
     }
+
+    if (!changedProps.has("hass")) {
+      return false;
+    }
+
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
     if (
@@ -236,8 +248,11 @@ export class HuiAreaCard
     })) as EntitiesCardEntityConfig[];
 
     return html`
-      <ha-card>
-        <img src=${this.hass.hassUrl(this._config.image)} />
+      <ha-card
+        style=${styleMap({
+          "background-image": `url(${this.hass.hassUrl(this._config.image)})`,
+        })}
+      >
         <div class="container">
           <div class="sensors">
             ${dialogEntities.map((entityConf) => {
@@ -319,13 +334,13 @@ export class HuiAreaCard
       const isToggle = DOMAINS_TOGGLE.has(domain);
       const stateObj = this.hass!.states[entity.entity_id];
 
-      if (isToggle && this._entitiesToggle!.length < 3) {
+      if (this._entitiesToggle!.length < 3 && isToggle) {
         this._entitiesToggle!.push(entity.entity_id);
       } else if (
+        this._entitiesDialog!.length < 3 &&
         !isToggle &&
         stateObj.attributes.device_class &&
-        AREA_SENSOR_CLASSES.includes(stateObj.attributes.device_class) &&
-        this._entitiesDialog!.length < 3
+        AREA_SENSOR_CLASSES.includes(stateObj.attributes.device_class)
       ) {
         this._entitiesDialog!.push(entity.entity_id);
       }
@@ -341,10 +356,10 @@ export class HuiAreaCard
     const oldConfig = changedProps.get("_config") as AreaCardConfig | undefined;
 
     if (
-      !oldHass ||
-      !oldConfig ||
-      oldHass.themes !== this.hass.themes ||
-      oldConfig.theme !== this._config.theme
+      (changedProps.has("hass") &&
+        (!oldHass || oldHass.themes !== this.hass.themes)) ||
+      (changedProps.has("_config") &&
+        (!oldConfig || oldConfig.theme !== this._config.theme))
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
@@ -363,6 +378,8 @@ export class HuiAreaCard
           overflow: hidden;
           height: 100%;
           position: relative;
+          padding-bottom: 56.25%;
+          background-size: cover;
         }
 
         img {
