@@ -63,9 +63,7 @@ class HuiClimateEntityRow extends LitElement implements LovelaceRow {
     return html`
       <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <div
-          class="text-content ${classMap({
-            pointer,
-          })}"
+          class="text-content ${pointer ? "pointer" : ""}"
           @action=${this._handleAction}
           .actionHandler=${actionHandler({
             hasHold: hasAction(this._config.hold_action),
