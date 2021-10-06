@@ -2904,6 +2904,8 @@
             "clear_items": "Clear checked items",
             "add_item": "Add item",
             "reorder_items": "Reorder items",
+            "show_reordering_tool": "Show reordering tool",
+            "hide_reordering_tool": "Hide reordering tool",
             "drag_and_drop": "Drag and drop"
           },
           "picture-elements": {

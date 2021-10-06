@@ -1,8 +1,9 @@
-import { mdiDrag, mdiNotificationClearAll, mdiSort } from "@mdi/js";
+import { mdiDrag, mdiDotsVertical } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { ActionDetail } from "@material/mwc-list";
 import {
   css,
   CSSResultGroup,
@@ -18,6 +19,7 @@ import { repeat } from "lit/directives/repeat";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import "../../../components/ha-button-menu";
 import {
   addItem,
   clearItems,
@@ -130,16 +132,25 @@ class HuiShoppingListCard
               @paste=${this._handlePaste}
               @keydown=${this._handleKeyPress}
             ></paper-textarea>`}
-
-            <ha-svg-icon
-              class="reorderButton"
-              .path=${mdiSort}
-              .title=${this.hass!.localize(
-                "ui.panel.lovelace.cards.shopping-list.reorder_items"
-              )}
-              @click=${this._toggleReorder}
-            >
-            </ha-svg-icon>
+            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
+              <mwc-icon-button slot="trigger">
+                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+              </mwc-icon-button>
+              <mwc-list-item>
+                ${this.hass!.localize(
+                  "ui.panel.lovelace.cards.shopping-list.clear_items"
+                )}
+              </mwc-list-item>
+              <mwc-list-item
+                >${this._reordering
+                  ? this.hass!.localize(
+                      "ui.panel.lovelace.cards.shopping-list.hide_reordering_tool"
+                    )
+                  : this.hass!.localize(
+                      "ui.panel.lovelace.cards.shopping-list.show_reordering_tool"
+                    )}
+              </mwc-list-item>
+            </ha-button-menu>
           </div>
           ${this._reordering
             ? html`
@@ -156,24 +167,6 @@ class HuiShoppingListCard
             : this._renderItems(this._uncheckedItems!)}
           ${this._checkedItems!.length > 0
             ? html`
-                <div class="divider"></div>
-                <div class="checked">
-                  <span>
-                    ${this.hass!.localize(
-                      "ui.panel.lovelace.cards.shopping-list.checked_items"
-                    )}
-                  </span>
-                  <ha-svg-icon
-                    class="clearall"
-                    tabindex="0"
-                    .path=${mdiNotificationClearAll}
-                    .title=${this.hass!.localize(
-                      "ui.panel.lovelace.cards.shopping-list.clear_items"
-                    )}
-                    @click=${this._clearItems}
-                  >
-                  </ha-svg-icon>
-                </div>
                 ${repeat(
                   this._checkedItems!,
                   (item) => item.id,
@@ -256,6 +249,17 @@ class HuiShoppingListCard
     }
     this._checkedItems = checkedItems;
     this._uncheckedItems = uncheckedItems;
+  }
+
+  private _handleAction(ev: CustomEvent<ActionDetail>) {
+    switch (ev.detail.index) {
+      case 0:
+        this._clearItems();
+        break;
+      case 1:
+        this._toggleReorder();
+        break;
+    }
   }
 
   private _completeItem(ev): void {
