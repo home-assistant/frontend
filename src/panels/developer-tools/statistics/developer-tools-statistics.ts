@@ -81,9 +81,7 @@ class HaPanelDevStatistics extends LitElement {
                     issue.data
                   ) || issue.type
               )
-            : localize(
-                "ui.panel.developer-tools.tabs.statistics.no_issue"
-              )}`,
+            : localize("ui.panel.developer-tools.tabs.statistics.no_issue")}`,
       },
       fix: {
         title: "",
