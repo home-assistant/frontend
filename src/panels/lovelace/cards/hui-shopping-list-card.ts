@@ -440,7 +440,7 @@ class HuiShoppingListCard
       }
 
       .reorderButton {
-        padding-left: 16px;
+        padding: 12px;
         cursor: pointer;
       }
 
