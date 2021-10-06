@@ -63,7 +63,7 @@ export class HuiGenericEntityRowEditor
       return html``;
     }
 
-    const domain = this._entity ? computeDomain(this._entity) : "";
+    const domain = computeDomain(this._entity);
 
     return html`
       <div class="card-config">
