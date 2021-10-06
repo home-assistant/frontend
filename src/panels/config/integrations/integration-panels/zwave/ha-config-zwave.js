@@ -493,7 +493,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeEntities(selectedNode) {
-    if (!this.nodes || selectedNode === -1) return -1;
+    if (!this.nodes || selectedNode === -1) {
+      return -1;
+    }
     const nodeid = this.nodes[this.selectedNode].attributes.node_id;
     const hass = this.hass;
     return Object.keys(this.hass.states)
@@ -512,7 +514,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   selectedNodeChanged(selectedNode) {
-    if (selectedNode === -1) return;
+    if (selectedNode === -1) {
+      return;
+    }
     this.selectedEntity = -1;
 
     this.hass
@@ -573,7 +577,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   selectedEntityChanged(selectedEntity) {
-    if (selectedEntity === -1) return;
+    if (selectedEntity === -1) {
+      return;
+    }
     this.hass
       .callApi(
         "GET",
@@ -640,12 +646,16 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeRefreshEntityServiceData(selectedEntity) {
-    if (selectedEntity === -1) return -1;
+    if (selectedEntity === -1) {
+      return -1;
+    }
     return { entity_id: this.entities[selectedEntity].entity_id };
   }
 
   computePollIntensityServiceData(entityPollingIntensity) {
-    if (!this.selectedNode === -1 || this.selectedEntity === -1) return -1;
+    if (this.selectedNode === -1 || this.selectedEntity === -1) {
+      return -1;
+    }
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
       value_id: this.entities[this.selectedEntity].attributes.value_id,

@@ -42,7 +42,7 @@ export class DialogEnergyGasSettings
     this._params = params;
     this._source = params.source
       ? { ...params.source }
-      : (this._source = emptyGasEnergyPreference());
+      : emptyGasEnergyPreference();
     this._costs = this._source.entity_energy_price
       ? "entity"
       : this._source.number_energy_price

@@ -107,8 +107,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
           type: "icon-button",
           template: (_write, tag: any) => html` <mwc-icon-button
             .tag=${tag}
-            @click=${(ev: Event) =>
-              this._openWrite((ev.currentTarget as any).tag)}
+            @click=${this._handleWriteClick}
             title=${this.hass.localize("ui.panel.config.tag.write")}
           >
             <ha-svg-icon .path=${mdiContentDuplicate}></ha-svg-icon>
@@ -120,8 +119,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         type: "icon-button",
         template: (_automation, tag: any) => html` <mwc-icon-button
           .tag=${tag}
-          @click=${(ev: Event) =>
-            this._createAutomation((ev.currentTarget as any).tag)}
+          @click=${this._handleAutomationClick}
           title=${this.hass.localize("ui.panel.config.tag.create_automation")}
         >
           <ha-svg-icon .path=${mdiRobot}></ha-svg-icon>
@@ -132,8 +130,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
         type: "icon-button",
         template: (_settings, tag: any) => html` <mwc-icon-button
           .tag=${tag}
-          @click=${(ev: Event) =>
-            this._openDialog((ev.currentTarget as any).tag)}
+          @click=${this._handleEditClick}
           title=${this.hass.localize("ui.panel.config.tag.edit")}
         >
           <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
@@ -209,6 +206,25 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
     `;
   }
 
+  private _handleWriteClick = (ev: Event) =>
+    this._openWrite((ev.currentTarget as any).tag);
+
+  private _handleAutomationClick = (ev: Event) => {
+    const tag = (ev.currentTarget as any).tag;
+    const data = {
+      alias: this.hass.localize(
+        "ui.panel.config.tag.automation_title",
+        "name",
+        tag.name || tag.id
+      ),
+      trigger: [{ platform: "tag", tag_id: tag.id } as TagTrigger],
+    };
+    showAutomationEditor(data);
+  };
+
+  private _handleEditClick = (ev: Event) =>
+    this._openDialog((ev.currentTarget as any).tag);
+
   private _showHelp() {
     showAlertDialog(this, {
       title: this.hass.localize("ui.panel.config.tag.caption"),
@@ -249,18 +265,6 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
       type: "tag/write",
       payload: { name: tag.name || null, tag: tag.id },
     });
-  }
-
-  private _createAutomation(tag: Tag) {
-    const data = {
-      alias: this.hass.localize(
-        "ui.panel.config.tag.automation_title",
-        "name",
-        tag.name || tag.id
-      ),
-      trigger: [{ platform: "tag", tag_id: tag.id } as TagTrigger],
-    };
-    showAutomationEditor(data);
   }
 
   private _addTag() {

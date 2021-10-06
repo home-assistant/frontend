@@ -34,7 +34,7 @@ export class HaDeviceSelector extends LitElement {
       .hass=${this.hass}
       .value=${this.value}
       .label=${this.label}
-      .deviceFilter=${(device) => this._filterDevices(device)}
+      .deviceFilter=${this._filterDevices}
       .includeDeviceClasses=${this.selector.device.entity?.device_class
         ? [this.selector.device.entity.device_class]
         : undefined}
@@ -46,7 +46,7 @@ export class HaDeviceSelector extends LitElement {
     ></ha-device-picker>`;
   }
 
-  private _filterDevices(device: DeviceRegistryEntry): boolean {
+  private _filterDevices = (device: DeviceRegistryEntry): boolean => {
     if (
       this.selector.device?.manufacturer &&
       device.manufacturer !== this.selector.device.manufacturer
@@ -70,7 +70,7 @@ export class HaDeviceSelector extends LitElement {
       }
     }
     return true;
-  }
+  };
 
   private async _loadConfigEntries() {
     this._configEntries = (await getConfigEntries(this.hass)).filter(
