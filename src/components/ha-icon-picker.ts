@@ -7,8 +7,11 @@ import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 import "./ha-icon";
 import { mdiDeprecatedIcons } from "../data/iconsets";
+import iconList from "../../build/mdi/iconList.json";
 
-let cachedState: string[];
+const mdiIconList = iconList
+  .filter((icon) => !(icon in mdiDeprecatedIcons))
+  .map((icon) => `mdi:${icon}`);
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
@@ -51,10 +54,6 @@ export class HaIconPicker extends LitElement {
   @property({ type: Boolean }) public disabled = false;
 
   @query("vaadin-combo-box-light", true) private comboBox!: HTMLElement;
-
-  private _initedStates = false;
-
-  private _states: string[] = [];
 
   @property({ type: Boolean }) private _opened = false;
 
@@ -117,8 +116,8 @@ export class HaIconPicker extends LitElement {
     const filterString = ev.detail.value.toLowerCase();
     const characterCount = filterString.length;
     if (characterCount >= 2) {
-      const filteredItems = this._states.filter((state) =>
-        state.toLowerCase().includes(filterString)
+      const filteredItems = mdiIconList.filter((icon) =>
+        icon.toLowerCase().includes(filterString)
       );
       if (filteredItems.length > 0) {
         (this.comboBox as any).filteredItems = filteredItems;
@@ -127,25 +126,6 @@ export class HaIconPicker extends LitElement {
       }
     } else {
       (this.comboBox as any).filteredItems = [];
-    }
-  }
-
-  public willUpdate() {
-    if (!this._initedStates) {
-      if (cachedState) {
-        this._states = cachedState;
-        this._initedStates = true;
-      } else {
-        fetch(`/static/mdi/iconList.json`)
-          .then((response) => response.json())
-          .then((icons) => {
-            this._states = icons
-              .filter((icon) => !(icon in mdiDeprecatedIcons))
-              .map((icon) => `mdi:${icon}`);
-            cachedState = this._states;
-            this._initedStates = true;
-          });
-      }
     }
   }
 
