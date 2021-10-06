@@ -113,10 +113,12 @@ export class HuiDialogSelectView extends LitElement {
                         @click=${this._viewChanged}
                         data-index=${idx}
                       >
-                        <ha-icon
-                          slot="item-icon"
-                          .icon=${view.icon || "hass:cast"}
-                        ></ha-icon>
+                        ${view.icon
+                          ? html`<ha-icon
+                              slot="item-icon"
+                              .icon=${view.icon || "hass:cast"}
+                            ></ha-icon>`
+                          : ""}
                         <paper-item-body>${view.title}</paper-item-body>
                       </paper-icon-item>
                     `
