@@ -116,5 +116,10 @@ gulp.task("gen-icons-json", (done) => {
     JSON.stringify({ version: package.version, parts })
   );
 
+  fs.writeFileSync(
+    path.resolve(OUTPUT_DIR, "iconList.json"),
+    JSON.stringify(meta.map((icon) => icon.name))
+  );
+
   done();
 });
