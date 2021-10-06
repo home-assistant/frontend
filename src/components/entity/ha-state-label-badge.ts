@@ -88,7 +88,7 @@ export class HaStateLabelBadge extends LitElement {
           entityState,
           this._timerTimeRemaining
         )}
-        .description=${this.name ? this.name : computeStateName(entityState)}
+        .description=${this.name ?? computeStateName(entityState)}
       ></ha-label-badge>
     `;
   }

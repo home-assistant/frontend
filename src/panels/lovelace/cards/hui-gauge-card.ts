@@ -119,6 +119,8 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const name = this._config.name ?? computeStateName(stateObj);
+
     // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
     // for consistent value display across gauge, entity, entity-row, etc.
     return html`
@@ -138,9 +140,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
           .needle=${this._config!.needle}
           .levels=${this._config!.needle ? this._severityLevels() : undefined}
         ></ha-gauge>
-        <div class="name">
-          ${this._config.name || computeStateName(stateObj)}
-        </div>
+        <div class="name" .title=${name}>${name}</div>
       </ha-card>
     `;
   }
