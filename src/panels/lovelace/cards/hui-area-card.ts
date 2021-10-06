@@ -156,6 +156,9 @@ export class HuiAreaCard
       return true;
     }
 
+    if (!changedProps.has("hass")) {
+    	return false;
+    }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
     if (
