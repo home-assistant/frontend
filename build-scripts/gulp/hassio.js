@@ -1,9 +1,6 @@
 const gulp = require("gulp");
-const fs = require("fs");
-const path = require("path");
 
 const env = require("../env");
-const paths = require("../paths");
 
 require("./clean.js");
 require("./gen-icons-json.js");
