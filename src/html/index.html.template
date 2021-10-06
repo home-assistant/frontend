@@ -46,7 +46,7 @@
         background-color: #THEMEC;
       }
       html {
-        background-color: var(--primary-background-color);
+        background-color: var(--app-header-background-color);
       }
       @media (prefers-color-scheme: dark) {
         html {
