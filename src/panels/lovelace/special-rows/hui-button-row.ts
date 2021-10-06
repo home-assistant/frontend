@@ -51,7 +51,7 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
         : undefined;
 
     const name =
-      this._config.name || (stateObj ? computeStateName(stateObj) : "");
+      this._config.name ?? (stateObj ? computeStateName(stateObj) : "");
 
     return html`
       <ha-icon

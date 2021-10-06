@@ -54,7 +54,7 @@ class HuiGenericEntityRow extends LitElement {
         !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this.config.entity)));
 
     const hasSecondary = this.secondaryText || this.config.secondary_info;
-    const name = this.config.name || computeStateName(stateObj);
+    const name = this.config.name ?? computeStateName(stateObj);
 
     return html`
       <state-badge

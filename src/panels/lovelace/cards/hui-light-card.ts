@@ -96,7 +96,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     const brightness =
       Math.round((stateObj.attributes.brightness / 255) * 100) || 0;
 
-    const name = this._config.name || computeStateName(stateObj);
+    const name = this._config.name ?? computeStateName(stateObj);
 
     return html`
       <ha-card>

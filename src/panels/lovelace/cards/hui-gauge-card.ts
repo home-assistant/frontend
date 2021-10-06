@@ -119,7 +119,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const name = this._config.name || computeStateName(stateObj);
+    const name = this._config.name ?? computeStateName(stateObj);
 
     // Use `stateObj.state` as value to keep formatting (e.g trailing zeros)
     // for consistent value display across gauge, entity, entity-row, etc.

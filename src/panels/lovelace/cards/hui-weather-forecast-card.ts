@@ -190,7 +190,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
 
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
-    const name = this._config.name || computeStateName(stateObj);
+    const name = this._config.name ?? computeStateName(stateObj);
 
     return html`
       <ha-card
