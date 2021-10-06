@@ -490,7 +490,7 @@ export const reduceSumStatisticsByDay = (
     // add init value if the first value isn't end of previous period
     result.push({
       ...values[0]!,
-      start: startOfMonth(addDays(new Date(values[0].start), -1)).toISOString(),
+      start: startOfDay(addDays(new Date(values[0].start), -1)).toISOString(),
     });
   }
   let lastValue: StatisticValue;
@@ -546,7 +546,7 @@ export const reduceSumStatisticsByMonth = (
       prevMonth = month;
     }
     if (prevMonth !== month) {
-      // Last value of the day
+      // Last value of the month
       result.push({
         ...lastValue!,
         start: startOfMonth(new Date(lastValue!.start)).toISOString(),
