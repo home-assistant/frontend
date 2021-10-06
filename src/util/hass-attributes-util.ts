@@ -124,7 +124,7 @@ hassAttributeUtil.LOGIC_STATE_ATTRIBUTES = {
   },
   state_class: {
     type: "array",
-    options: { sensor: ["measurement"] },
+    options: { sensor: ["measurement", "total", "total_increasing"] },
     description: "State class",
     domains: ["sensor"],
   },
