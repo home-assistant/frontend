@@ -24,13 +24,15 @@ class StateInfo extends LitElement {
       return html``;
     }
 
+    const name = computeStateName(this.stateObj);
+
     return html`<state-badge
         .stateObj=${this.stateObj}
         .stateColor=${true}
       ></state-badge>
       <div class="info">
-        <div class="name" .inDialog=${this.inDialog}>
-          ${computeStateName(this.stateObj)}
+        <div class="name" .title=${name} .inDialog=${this.inDialog}>
+          ${name}
         </div>
         ${this.inDialog
           ? html`<div class="time-ago">
