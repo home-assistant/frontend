@@ -58,7 +58,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
             autocomplete="off"
           >
             <ha-svg-icon
-              ,path=${mdiMenuDown}
+              .path=${mdiMenuDown}
               suffix
               slot="suffix"
             ></ha-svg-icon>
