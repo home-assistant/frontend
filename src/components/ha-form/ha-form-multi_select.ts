@@ -1,3 +1,4 @@
+import { mdiMenuDown } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
@@ -7,7 +8,7 @@ import "@polymer/paper-ripple/paper-ripple";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-icon";
+import "../ha-svg-icon";
 import {
   HaFormElement,
   HaFormMultiSelectData,
@@ -56,11 +57,11 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
             input-aria-haspopup="listbox"
             autocomplete="off"
           >
-            <ha-icon
-              icon="paper-dropdown-menu:arrow-drop-down"
+            <ha-svg-icon
+              .path=${mdiMenuDown}
               suffix
               slot="suffix"
-            ></ha-icon>
+            ></ha-svg-icon>
           </paper-input>
         </div>
         <paper-listbox
