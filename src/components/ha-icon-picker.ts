@@ -6,12 +6,9 @@ import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 import "./ha-icon";
-import { mdiDeprecatedIcons } from "../data/iconsets";
 import iconList from "../../build/mdi/iconList.json";
 
-const mdiIconList = iconList
-  .filter((icon) => !(icon in mdiDeprecatedIcons))
-  .map((icon) => `mdi:${icon}`);
+const mdiIconList = iconList.map((icon) => `mdi:${icon}`);
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
