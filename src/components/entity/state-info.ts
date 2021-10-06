@@ -38,6 +38,7 @@ class StateInfo extends LitElement {
                 id="last_changed"
                 .hass=${this.hass}
                 .datetime=${this.stateObj.last_changed}
+                capitalize
               ></ha-relative-time>
               <paper-tooltip animation-delay="0" for="last_changed">
                 <div>
@@ -92,7 +93,6 @@ class StateInfo extends LitElement {
       state-badge {
         float: left;
       }
-
       :host([rtl]) state-badge {
         float: right;
       }
