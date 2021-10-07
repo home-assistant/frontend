@@ -19,7 +19,7 @@ import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-card";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../src/components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-yaml-editor";

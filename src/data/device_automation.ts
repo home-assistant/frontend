@@ -1,5 +1,5 @@
 import { computeStateName } from "../common/entity/compute_state_name";
-import { HaFormSchema } from "../components/ha-form/ha-form";
+import type { HaFormSchema } from "../components/ha-form/types";
 import { HomeAssistant } from "../types";
 import { BaseTrigger } from "./automation";
 
