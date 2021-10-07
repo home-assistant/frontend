@@ -104,6 +104,7 @@ export class HuiEntityPickerTable extends LitElement {
         <ha-relative-time
           .hass=${this.hass!}
           .datetime=${lastChanged}
+          capitalize
         ></ha-relative-time>
       `,
     };

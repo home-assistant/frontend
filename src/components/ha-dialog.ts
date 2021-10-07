@@ -4,7 +4,8 @@ import { css, CSSResultGroup, html, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import { computeRTLDirection } from "../common/util/compute_rtl";
 import type { HomeAssistant } from "../types";
-import "./ha-icon-button";
+import "@material/mwc-icon-button/mwc-icon-button";
+import "./ha-svg-icon";
 
 export const createCloseHeading = (
   hass: HomeAssistant,

@@ -210,6 +210,7 @@ class HaLogbook extends LitElement {
                 <ha-relative-time
                   .hass=${this.hass}
                   .datetime=${item.when}
+                  capitalize
                 ></ha-relative-time>
                 ${item.domain === "automation" &&
                 item.context_id! in this.traceContexts

@@ -93,11 +93,13 @@ export class MoreInfoDialog extends LitElement {
     }
     const entityId = this._entityId;
     const stateObj = this.hass.states[entityId];
-    const domain = computeDomain(entityId);
 
     if (!stateObj) {
       return html``;
     }
+
+    const domain = computeDomain(entityId);
+    const name = computeStateName(stateObj);
 
     return html`
       <ha-dialog
@@ -117,8 +119,13 @@ export class MoreInfoDialog extends LitElement {
               )}
               .path=${mdiClose}
             ></ha-icon-button>
-            <div slot="title" class="main-title" @click=${this._enlarge}>
-              ${computeStateName(stateObj)}
+            <div
+              slot="title"
+              class="main-title"
+              .title=${name}
+              @click=${this._enlarge}
+            >
+              ${name}
             </div>
             ${this.hass.user!.is_admin
               ? html`
