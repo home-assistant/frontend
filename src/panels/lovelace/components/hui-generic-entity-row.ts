@@ -54,6 +54,7 @@ class HuiGenericEntityRow extends LitElement {
         !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this.config.entity)));
 
     const hasSecondary = this.secondaryText || this.config.secondary_info;
+    const name = this.config.name ?? computeStateName(stateObj);
 
     return html`
       <state-badge
@@ -82,8 +83,9 @@ class HuiGenericEntityRow extends LitElement {
           hasHold: hasAction(this.config!.hold_action),
           hasDoubleClick: hasAction(this.config!.double_tap_action),
         })}
+        .title=${name}
       >
-        ${this.config.name || computeStateName(stateObj)}
+        ${name}
         ${hasSecondary
           ? html`
               <div class="secondary">
@@ -95,6 +97,7 @@ class HuiGenericEntityRow extends LitElement {
                       <ha-relative-time
                         .hass=${this.hass}
                         .datetime=${stateObj.last_changed}
+                        capitalize
                       ></ha-relative-time>
                     `
                   : this.config.secondary_info === "last-updated"
@@ -102,6 +105,7 @@ class HuiGenericEntityRow extends LitElement {
                       <ha-relative-time
                         .hass=${this.hass}
                         .datetime=${stateObj.last_updated}
+                        capitalize
                       ></ha-relative-time>
                     `
                   : this.config.secondary_info === "last-triggered"
@@ -110,6 +114,7 @@ class HuiGenericEntityRow extends LitElement {
                         <ha-relative-time
                           .hass=${this.hass}
                           .datetime=${stateObj.attributes.last_triggered}
+                          capitalize
                         ></ha-relative-time>
                       `
                     : this.hass.localize(

@@ -3,6 +3,7 @@ import { until } from "lit/directives/until";
 import checkValidDate from "../common/datetime/check_valid_date";
 import { formatDate } from "../common/datetime/format_date";
 import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
+import { capitalizeFirstLetter } from "../common/string/capitalize-first-letter";
 import { isDate } from "../common/string/is_date";
 import { isTimestamp } from "../common/string/is_timestamp";
 import { HomeAssistant } from "../types";
@@ -159,7 +160,7 @@ export function formatAttributeName(value: string): string {
     .replace(/\bip\b/g, "IP")
     .replace(/\bmac\b/g, "MAC")
     .replace(/\bgps\b/g, "GPS");
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  return capitalizeFirstLetter(value);
 }
 
 export function formatAttributeValue(

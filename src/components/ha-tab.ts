@@ -10,8 +10,6 @@ import {
   state,
 } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
-import "./ha-icon";
-import "./ha-svg-icon";
 
 @customElement("ha-tab")
 export class HaTab extends LitElement {
