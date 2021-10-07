@@ -158,51 +158,35 @@ class HaAutomationPicker extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.automation.picker.show_info_automation"
               )}
+              .automation=${automation}
+              .path=${mdiInformationOutline}
+              @click=${this._showInfo}
             >
-              <mwc-icon-button
-                .automation=${automation}
-                @click=${this._showInfo}
-                .label=${this.hass.localize(
-                  "ui.panel.config.automation.picker.show_info_automation"
-                )}
-              >
-                <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
-              </mwc-icon-button>
             </ha-overflow-menu-item>
 
             <!-- Trace Button -->
             <ha-overflow-menu-item
               .label=${this.hass.localize(
-                "ui.panel.config.automation.picker.show_info_automation"
+                "ui.panel.config.automation.picker.dev_automation"
+              )}
+              .automation=${automation}
+              .disabled=${!automation.attributes.id}
+              .path=${mdiHistory}
+              @click=${this._handleIconClick(
+                ifDefined(automation.attributes.id)
+                  ? `/config/automation/trace/${automation.attributes.id}`
+                  : ""
               )}
             >
-              <div>
-                <a
-                  href=${ifDefined(
-                    automation.attributes.id
-                      ? `/config/automation/trace/${automation.attributes.id}`
-                      : undefined
-                  )}
-                >
-                  <mwc-icon-button
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.picker.dev_automation"
-                    )}
-                    .disabled=${!automation.attributes.id}
-                  >
-                    <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
-                  </mwc-icon-button>
-                </a>
-                ${!automation.attributes.id
-                  ? html`
-                      <paper-tooltip animation-delay="0" position="left">
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.picker.dev_only_editable"
-                        )}
-                      </paper-tooltip>
-                    `
-                  : ""}
-              </div>
+              ${!automation.attributes.id
+                ? html`
+                    <paper-tooltip animation-delay="0" position="left">
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.picker.dev_only_editable"
+                      )}
+                    </paper-tooltip>
+                  `
+                : ""}
             </ha-overflow-menu-item>
 
             <!-- Edit Button -->
@@ -210,38 +194,24 @@ class HaAutomationPicker extends LitElement {
               .label=${this.hass.localize(
                 "ui.panel.config.automation.picker.edit_automation"
               )}
+              .automation=${automation}
+              .disabled=${!automation.attributes.id}
+              .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
+              @click=${this._handleIconClick(
+                ifDefined(automation.attributes.id)
+                  ? `/config/automation/edit/${automation.attributes.id}`
+                  : ""
+              )}
             >
-              <div>
-                <a
-                  href=${ifDefined(
-                    automation.attributes.id
-                      ? `/config/automation/edit/${automation.attributes.id}`
-                      : undefined
-                  )}
-                >
-                  <mwc-icon-button
-                    .disabled=${!automation.attributes.id}
-                    .label=${this.hass.localize(
-                      "ui.panel.config.automation.picker.edit_automation"
-                    )}
-                  >
-                    <ha-svg-icon
-                      .path=${automation.attributes.id
-                        ? mdiPencil
-                        : mdiPencilOff}
-                    ></ha-svg-icon>
-                  </mwc-icon-button>
-                </a>
-                ${!automation.attributes.id
-                  ? html`
-                      <paper-tooltip animation-delay="0" position="left">
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.picker.only_editable"
-                        )}
-                      </paper-tooltip>
-                    `
-                  : ""}
-              </div>
+              ${!automation.attributes.id
+                ? html`
+                    <paper-tooltip animation-delay="0" position="left">
+                      ${this.hass.localize(
+                        "ui.panel.config.automation.picker.only_editable"
+                      )}
+                    </paper-tooltip>
+                  `
+                : ""}
             </ha-overflow-menu-item>
           </ha-overflow-menu>
         `,
@@ -388,6 +358,16 @@ class HaAutomationPicker extends LitElement {
     this._filteredAutomations = undefined;
     this._activeFilters = undefined;
     this._filterValue = undefined;
+  }
+
+  private _handleIconClick(href: string) {
+    return (ev) => {
+      ev.stopPropagation();
+
+      if (href) {
+        navigate(href.toString());
+      }
+    };
   }
 
   private _showInfo(ev) {

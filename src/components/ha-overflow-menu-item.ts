@@ -6,11 +6,15 @@ import { customElement, property } from "lit/decorators";
 export class HaOverflowMenuItem extends LitElement {
   @property({ attribute: false }) public label;
 
+  @property({ attribute: false }) public path;
+
+  @property({ attribute: false }) public disabled;
+
   protected render(): TemplateResult {
     return html`
-      <mwc-list-item graphic="icon">
+      <mwc-list-item graphic="icon" .disabled=${this.disabled}>
         <div slot="graphic">
-          <slot></slot>
+          <ha-svg-icon .path=${this.path}></ha-svg-icon>
         </div>
         ${this.label}
       </mwc-list-item>
