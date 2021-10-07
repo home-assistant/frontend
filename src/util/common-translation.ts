@@ -23,6 +23,10 @@ export async function getTranslation(
   language: string,
   base_url?: string
 ) {
+  const translationsBase = base_url || "core";
+  if (!translations[translationsBase]) {
+    translations[translationsBase] = {};
+  }
   const metadata = translationMetadata.translations[language];
   if (!metadata) {
     if (language !== "en") {
@@ -37,14 +41,14 @@ export async function getTranslation(
   }.json`;
 
   // Fetch translation from the server
-  if (!translations[fingerprint]) {
-    translations[fingerprint] = fetchTranslation(
+  if (!translations[translationsBase][fingerprint]) {
+    translations[translationsBase][fingerprint] = fetchTranslation(
       fingerprint,
       base_url || DEFAULT_BASE_URL
     )
       .then((data) => ({ language, data }))
       .catch((error) => {
-        delete translations[fingerprint];
+        delete translations[translationsBase][fingerprint];
         if (language !== "en") {
           // Couldn't load selected translation. Try a fall back to en before failing.
           return getTranslation(fragment, "en", base_url);
@@ -52,5 +56,5 @@ export async function getTranslation(
         return Promise.reject(error);
       });
   }
-  return translations[fingerprint];
+  return translations[translationsBase][fingerprint];
 }
