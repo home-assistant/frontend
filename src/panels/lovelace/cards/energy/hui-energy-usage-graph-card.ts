@@ -1,5 +1,11 @@
 import { ChartData, ChartDataset, ChartOptions } from "chart.js";
-import { startOfToday, endOfToday, isToday, differenceInDays } from "date-fns";
+import {
+  startOfToday,
+  endOfToday,
+  isToday,
+  differenceInDays,
+  addHours,
+} from "date-fns";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -13,6 +19,7 @@ import {
 } from "../../../../common/color/convert-color";
 import { hexBlend } from "../../../../common/color/hex";
 import { labDarken } from "../../../../common/color/lab";
+import { formatTime } from "../../../../common/datetime/format_time";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
   formatNumber,
@@ -168,6 +175,16 @@ export class HuiEnergyUsageGraphCard
             position: "nearest",
             filter: (val) => val.formattedValue !== "0",
             callbacks: {
+              title: (datasets) => {
+                if (dayDifference > 0) {
+                  return datasets[0].label;
+                }
+                const date = new Date(datasets[0].parsed.x);
+                return `${formatTime(date, locale)} - ${formatTime(
+                  addHours(date, 1),
+                  locale
+                )}`;
+              },
               label: (context) =>
                 `${context.dataset.label}: ${formatNumber(
                   Math.abs(context.parsed.y),

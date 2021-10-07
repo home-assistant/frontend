@@ -79,6 +79,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
                   ? html`<ha-relative-time
                       .hass=${this.hass}
                       .datetime=${tag.last_scanned_datetime}
+                      capitalize
                     ></ha-relative-time>`
                   : this.hass.localize("ui.panel.config.tag.never_scanned")}
               </div>`
@@ -96,6 +97,7 @@ export class HaConfigTags extends SubscribeMixin(LitElement) {
               ? html`<ha-relative-time
                   .hass=${this.hass}
                   .datetime=${last_scanned_datetime}
+                  capitalize
                 ></ha-relative-time>`
               : this.hass.localize("ui.panel.config.tag.never_scanned")}
           `,

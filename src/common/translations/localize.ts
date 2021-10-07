@@ -4,7 +4,7 @@ import { shouldPolyfill as shouldPolyfillRelativeTime } from "@formatjs/intl-rel
 import { shouldPolyfill as shouldPolyfillDateTime } from "@formatjs/intl-datetimeformat/lib/should-polyfill";
 import IntlMessageFormat from "intl-messageformat";
 import { Resources } from "../../types";
-import { getLocalLanguage } from "../../util/hass-translation";
+import { getLocalLanguage } from "../../util/common-translation";
 
 export type LocalizeFunc = (key: string, ...args: any[]) => string;
 interface FormatType {

@@ -81,14 +81,16 @@ class HaPanelDevStatistics extends LitElement {
                     issue.data
                   ) || issue.type
               )
-            : "No issues"}`,
+            : localize("ui.panel.developer-tools.tabs.statistics.no_issue")}`,
       },
       fix: {
         title: "",
         template: (_, data: any) =>
           html`${data.issues
             ? html`<mwc-button @click=${this._fixIssue} .data=${data.issues}>
-                Fix issue
+                ${localize(
+                  "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
+                )}
               </mwc-button>`
             : ""}`,
         width: "113px",
