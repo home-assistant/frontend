@@ -97,7 +97,9 @@ export class HaStateLabelBadge extends LitElement {
       >
         ${icon ? html`<ha-icon .icon=${icon}></ha-icon>` : ""}
         ${value && (this.icon || !this.image)
-          ? html`<span>${value}</span>`
+          ? html`<span class=${value && value.length > 4 ? "big" : ""}
+              >${value}</span
+            >`
           : ""}
       </ha-label-badge>
     `;
@@ -218,7 +220,9 @@ export class HaStateLabelBadge extends LitElement {
       :host {
         cursor: pointer;
       }
-
+      .big {
+        font-size: 70%;
+      }
       ha-label-badge {
         --ha-label-badge-color: var(--label-badge-red, #df4c1e);
       }
