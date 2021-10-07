@@ -41,14 +41,14 @@ const createConfigEntry = (
 const createManifest = (
   isCustom: boolean,
   isCloud: boolean,
-  quality_scale: "gold" | "internal" | "platinum" | "silver" | undefined,
+  isPlatinum: boolean,
   name = "ESPHome"
 ): IntegrationManifest => ({
   name,
   domain: "esphome",
   is_built_in: !isCustom,
   config_flow: false,
-  quality_scale,
+  quality_scale: isPlatinum ? "platinum" : undefined,
   documentation: "https://www.home-assistant.io/integrations/esphome/",
   iot_class: isCloud ? "cloud_polling" : "local_polling",
 });
@@ -225,7 +225,7 @@ export class DemoIntegrationCard extends LitElement {
 
   @state() isCloud = false;
 
-  @state() qualityScale?: "gold" | "internal" | "platinum" | "silver";
+  @state() isPlatinum = false;
 
   protected render(): TemplateResult {
     if (!this.hass) {
@@ -240,20 +240,9 @@ export class DemoIntegrationCard extends LitElement {
           <ha-formfield label="Relies on cloud">
             <ha-switch @change=${this._toggleCloud}></ha-switch>
           </ha-formfield>
-          <paper-dropdown-menu label="Quality scale" dynamic-align>
-            <paper-listbox
-              slot="dropdown-content"
-              .selected=${this.qualityScale}
-              attr-for-selected="qualityScale"
-              @iron-select=${this._qualityScaleChanged}
-            >
-              <paper-item qualityScale="">Not set</paper-item>
-              <paper-item qualityScale="silver">Silver</paper-item>
-              <paper-item qualityScale="gold">Gold</paper-item>
-              <paper-item qualityScale="platinum">Platinum</paper-item>
-              <paper-item qualityScale="internal">Internal</paper-item>
-            </paper-listbox>
-          </paper-dropdown-menu>
+          <ha-formfield label="Platinum quality scale">
+            <ha-switch @change=${this._togglePlatinum}></ha-switch>
+          </ha-formfield>
         </div>
 
         <ha-ignored-config-entry-card
@@ -262,7 +251,7 @@ export class DemoIntegrationCard extends LitElement {
           .manifest=${createManifest(
             this.isCustomIntegration,
             this.isCloud,
-            this.qualityScale
+            this.isPlatinum
           )}
         ></ha-ignored-config-entry-card>
 
@@ -274,7 +263,7 @@ export class DemoIntegrationCard extends LitElement {
               .manifest=${createManifest(
                 this.isCustomIntegration,
                 this.isCloud,
-                this.qualityScale,
+                this.isPlatinum,
                 flow.handler === "roku" ? "Roku" : "Philips Hue"
               )}
             ></ha-config-flow-card>
@@ -292,7 +281,7 @@ export class DemoIntegrationCard extends LitElement {
               .manifest=${createManifest(
                 this.isCustomIntegration,
                 this.isCloud,
-                this.qualityScale
+                this.isPlatinum
               )}
               .entityRegistryEntries=${createEntityRegistryEntries(
                 info.items[0]
@@ -322,7 +311,7 @@ export class DemoIntegrationCard extends LitElement {
           .manifest=${createManifest(
             this.isCustomIntegration,
             this.isCloud,
-            this.qualityScale
+            this.isPlatinum
           )}
           .entityRegistryEntries=${createEntityRegistryEntries(loadedEntry)}
           .deviceRegistryEntries=${createDeviceRegistryEntries(loadedEntry)}
@@ -346,26 +335,16 @@ export class DemoIntegrationCard extends LitElement {
     );
   }
 
-  private async _qualityScaleChanged(ev: CustomEvent) {
-    const qualityScale:
-      | "gold"
-      | "internal"
-      | "platinum"
-      | "silver"
-      | undefined = ev.detail.item.getAttribute("qualityScale") || undefined;
-    console.log(qualityScale);
-    if (qualityScale === this.qualityScale) {
-      return;
-    }
-    this.qualityScale = qualityScale;
-  }
-
   private _toggleCustomIntegration() {
     this.isCustomIntegration = !this.isCustomIntegration;
   }
 
   private _toggleCloud() {
     this.isCloud = !this.isCloud;
+  }
+
+  private _togglePlatinum() {
+    this.isPlatinum = !this.isPlatinum;
   }
 
   static get styles() {

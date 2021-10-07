@@ -2335,13 +2335,7 @@
             },
             "provided_by_custom_integration": "Provided by a custom integration",
             "depends_on_cloud": "Depends on the cloud",
-            "quality_scale": "Ranked {quality_scale} on our quality scale",
-            "quality_scales": {
-              "silver": "silver",
-              "gold": "gold",
-              "platinum": "platinum",
-              "internal": "internal"
-            },
+            "platinum_quality_scale": "Platinum quality scale",
             "disabled_polling": "Automatic polling for updated data disabled",
             "state": {
               "loaded": "Loaded",
