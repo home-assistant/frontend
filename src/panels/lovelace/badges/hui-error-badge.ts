@@ -2,6 +2,7 @@ import { mdiAlert } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/ha-label-badge";
+import "../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../types";
 import { LovelaceBadge } from "../types";
 import { ErrorBadgeConfig } from "./types";

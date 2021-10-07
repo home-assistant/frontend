@@ -8,7 +8,7 @@ import {
 } from "lit";
 import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "./ha-icon";
+import "./ha-svg-icon";
 
 class HaLabelBadge extends LitElement {
   @property() public value?: string;
@@ -29,7 +29,7 @@ class HaLabelBadge extends LitElement {
               big: Boolean(this.value && this.value.length > 4),
             })}
           >
-            <slot> </slot>
+            <slot></slot>
           </div>
           ${this.label
             ? html`
@@ -45,7 +45,7 @@ class HaLabelBadge extends LitElement {
             : ""}
         </div>
         ${this.description
-          ? html` <div class="title">${this.description}</div> `
+          ? html`<div class="title">${this.description}</div>`
           : ""}
       </div>
     `;
