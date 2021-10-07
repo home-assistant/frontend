@@ -30,10 +30,10 @@ export class HaIconButton extends LitElement {
   };
 
   protected render(): TemplateResult {
-    // Note: `aria-label` required despite the `mcw-icon-button` docs saying `label` should be enough
+    // Note: `ariaLabel` required despite the `mwc-icon-button` docs saying `label` should be enough
     return html`
       <mwc-icon-button
-        aria-label=${this.label}
+        .ariaLabel=${this.label}
         .title=${this.hideTitle ? "" : this.label}
         .disabled=${this.disabled}
       >
