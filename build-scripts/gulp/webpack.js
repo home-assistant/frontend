@@ -30,7 +30,7 @@ const isWsl =
 /**
  * @param {{
  *   compiler: import("webpack").Compiler,
- *   static: string,
+ *   contentBase: string,
  *   port: number,
  *   listenHost?: string
  * }}
@@ -113,7 +113,7 @@ gulp.task("webpack-prod-app", () =>
 gulp.task("webpack-dev-server-demo", () =>
   runDevServer({
     compiler: webpack(bothBuilds(createDemoConfig, { isProdBuild: false })),
-    static: paths.demo_output_root,
+    contentBase: paths.demo_output_root,
     port: 8090,
   })
 );
@@ -129,7 +129,7 @@ gulp.task("webpack-prod-demo", () =>
 gulp.task("webpack-dev-server-cast", () =>
   runDevServer({
     compiler: webpack(bothBuilds(createCastConfig, { isProdBuild: false })),
-    static: paths.cast_output_root,
+    contentBase: paths.cast_output_root,
     port: 8080,
     // Accessible from the network, because that's how Cast hits it.
     listenHost: "0.0.0.0",
@@ -171,7 +171,7 @@ gulp.task("webpack-dev-server-gallery", () =>
   runDevServer({
     // We don't use the es5 build, but the dev server will fuck up the publicPath if we don't
     compiler: webpack(bothBuilds(createGalleryConfig, { isProdBuild: false })),
-    static: paths.gallery_output_root,
+    contentBase: paths.gallery_output_root,
     port: 8100,
   })
 );
