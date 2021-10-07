@@ -1045,10 +1045,9 @@
               "cost_stat": "Use an entity tracking the total costs",
               "cost_stat_input": "Total Costs Entity",
               "cost_entity": "Use an entity with current price",
-              "cost_entity_input": "Entity with the current price",
+              "cost_entity_input": "Entity with the current price per {unit}",
               "cost_number": "Use a static price",
-              "cost_number_input": "Price per m³",
-              "cost_number_suffix": "{currency}/m³"
+              "cost_number_input": "Price per {unit}"
             }
           },
           "device_consumption": {
@@ -1091,9 +1090,13 @@
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have the expected units of measurement 'kWh', 'm³' or 'ft³':"
               },
-              "entity_unexpected_unit_price": {
+              "entity_unexpected_unit_energy_price": {
                 "title": "Unexpected unit of measurement",
                 "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'' or ''{currency}/Wh'':"
+              },
+              "entity_unexpected_unit_gas_price": {
+                "title": "Unexpected unit of measurement",
+                "description": "The following entities do not have the expected units of measurement ''{currency}/kWh'', ''{currency}/Wh'', ''{currency}/m³'' or ''{currency}/ft³'':"
               },
               "entity_unexpected_state_class": {
                 "title": "Unexpected state class",
@@ -2768,7 +2771,9 @@
             "device_config": "Configure Device",
             "reinterview_device": "Re-interview Device",
             "heal_node": "Heal Device",
-            "remove_failed": "Remove Failed Device"
+            "remove_failed": "Remove Failed Device",
+            "is_secure": "Secure",
+            "unknown": "Unknown"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
@@ -3522,7 +3527,7 @@
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
-          "next": "Next",
+          "next": "Login",
           "start_over": "Start over",
           "error": "Error: {error}",
           "providers": {
@@ -3731,16 +3736,20 @@
             "title": "Statistics",
             "entity": "Entity",
             "issue": "Issue",
+            "no_issue": "No issue",
             "issues": {
               "units_changed": "The unit of this entity changed from ''{metadata_unit}'' to ''{state_unit}''.",
-              "unsupported_unit": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''."
+              "unsupported_unit_state": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''.",
+              "unsupported_unit_metadata": "The unit (''{metadata_unit}'') of the recorded statistics doesn't match the supported unit ''{supported_unit}'' of device class ''{device_class}''.",
+              "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
+              "entity_not_recorded": "This entity is excluded from being recorded."
             },
             "fix_issue": {
+              "fix": "Fix issue",
               "units_changed": {
                 "title": "The unit of this entity changed",
                 "update": "Update the historic statistic values from ''{metadata_unit}'' to ''{state_unit}''",
-                "clear": "Delete all old statistic data for this entity",
-                "fix": "Fix issue"
+                "clear": "Delete all old statistic data for this entity"
               }
             }
           }

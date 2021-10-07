@@ -4,6 +4,7 @@ import { shouldPolyfill as shouldPolyfillRelativeTime } from "@formatjs/intl-rel
 import { shouldPolyfill as shouldPolyfillDateTime } from "@formatjs/intl-datetimeformat/lib/should-polyfill";
 import IntlMessageFormat from "intl-messageformat";
 import { Resources } from "../../types";
+import { getLocalLanguage } from "../../util/common-translation";
 
 export type LocalizeFunc = (key: string, ...args: any[]) => string;
 interface FormatType {
@@ -15,34 +16,32 @@ export interface FormatsType {
   time: FormatType;
 }
 
-const polyfillPluralRules = shouldPolyfillPluralRules();
-const polyfillRelativeTime = shouldPolyfillRelativeTime();
-const polyfillDateTime = shouldPolyfillDateTime();
+const loadedPolyfillLocale = new Set();
 
 const polyfills: Promise<any>[] = [];
 if (__BUILD__ === "latest") {
   if (shouldPolyfillLocale()) {
     polyfills.push(import("@formatjs/intl-locale/polyfill"));
   }
-  if (polyfillPluralRules) {
+  if (shouldPolyfillPluralRules()) {
     polyfills.push(import("@formatjs/intl-pluralrules/polyfill"));
+    polyfills.push(import("@formatjs/intl-pluralrules/locale-data/en"));
   }
-  if (polyfillRelativeTime) {
+  if (shouldPolyfillRelativeTime()) {
     polyfills.push(import("@formatjs/intl-relativetimeformat/polyfill"));
   }
-  if (polyfillDateTime) {
+  if (shouldPolyfillDateTime()) {
     polyfills.push(import("@formatjs/intl-datetimeformat/polyfill"));
   }
 }
 
-let polyfillLoaded = polyfills.length === 0;
-export const polyfillsLoaded = polyfillLoaded
-  ? undefined
-  : Promise.all(polyfills).then(() => {
-      polyfillLoaded = true;
-      // Load English so it becomes the default
-      return loadPolyfillLocales("en");
-    });
+export const polyfillsLoaded =
+  polyfills.length === 0
+    ? undefined
+    : Promise.all(polyfills).then(() =>
+        // Load the default language
+        loadPolyfillLocales(getLocalLanguage())
+      );
 
 /**
  * Adapted from Polymer app-localize-behavior.
@@ -71,11 +70,11 @@ export const computeLocalize = async (
   resources: Resources,
   formats?: FormatsType
 ): Promise<LocalizeFunc> => {
-  if (!polyfillLoaded) {
+  if (polyfillsLoaded) {
     await polyfillsLoaded;
   }
 
-  loadPolyfillLocales(language);
+  await loadPolyfillLocales(language);
 
   // Everytime any of the parameters change, invalidate the strings cache.
   cache._localizationCache = {};
@@ -129,28 +128,44 @@ export const computeLocalize = async (
 };
 
 export const loadPolyfillLocales = async (language: string) => {
-  if (!polyfillsLoaded) {
+  if (loadedPolyfillLocale.has(language)) {
     return;
   }
-  await polyfillsLoaded;
+  loadedPolyfillLocale.add(language);
   try {
-    if (polyfillPluralRules) {
-      await import(
-        /* webpackExclude: /.+-.+\.js$/ */
-        `@formatjs/intl-pluralrules/locale-data/${language}`
+    if (
+      Intl.NumberFormat &&
+      // @ts-ignore
+      typeof Intl.NumberFormat.__addLocaleData === "function"
+    ) {
+      const result = await fetch(
+        `/static/locale-data/intl-numberformat/${language}.json`
       );
+      // @ts-ignore
+      Intl.NumberFormat.__addLocaleData(await result.json());
     }
-    if (polyfillRelativeTime) {
-      await import(
-        /* webpackExclude: /.+-.+\.js$/ */
-        `@formatjs/intl-relativetimeformat/locale-data/${language}`
+    if (
+      // @ts-expect-error
+      Intl.RelativeTimeFormat &&
+      // @ts-ignore
+      typeof Intl.RelativeTimeFormat.__addLocaleData === "function"
+    ) {
+      const result = await fetch(
+        `/static/locale-data/intl-relativetimeformat/${language}.json`
       );
+      // @ts-ignore
+      Intl.RelativeTimeFormat.__addLocaleData(await result.json());
     }
-    if (polyfillDateTime) {
-      await import(
-        /* webpackExclude: /.+-.+\.js$/ */
-        `@formatjs/intl-datetimeformat/locale-data/${language}`
+    if (
+      Intl.DateTimeFormat &&
+      // @ts-ignore
+      typeof Intl.DateTimeFormat.__addLocaleData === "function"
+    ) {
+      const result = await fetch(
+        `/static/locale-data/intl-datetimeformat/${language}.json`
       );
+      // @ts-ignore
+      Intl.DateTimeFormat.__addLocaleData(await result.json());
     }
   } catch (_e) {
     // Ignore

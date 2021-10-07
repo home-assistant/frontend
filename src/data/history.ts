@@ -77,18 +77,42 @@ export interface StatisticsMetaData {
 }
 
 export type StatisticsValidationResult =
-  | StatisticsValidationResultUnsupportedUnit
-  | StatisticsValidationResultUnitsChanged;
+  | StatisticsValidationResultEntityNotRecorded
+  | StatisticsValidationResultUnsupportedStateClass
+  | StatisticsValidationResultUnitsChanged
+  | StatisticsValidationResultUnsupportedUnitMetadata
+  | StatisticsValidationResultUnsupportedUnitState;
 
-export interface StatisticsValidationResultUnsupportedUnit {
-  type: "unsupported_unit";
-  data: { statistic_id: string; device_class: string; state_unit: string };
+export interface StatisticsValidationResultEntityNotRecorded {
+  type: "entity_not_recorded";
+  data: { statistic_id: string };
+}
+
+export interface StatisticsValidationResultUnsupportedStateClass {
+  type: "unsupported_state_class";
+  data: { statistic_id: string; state_class: string };
 }
 
 export interface StatisticsValidationResultUnitsChanged {
   type: "units_changed";
   data: { statistic_id: string; state_unit: string; metadata_unit: string };
 }
+
+export interface StatisticsValidationResultUnsupportedUnitMetadata {
+  type: "unsupported_unit_metadata";
+  data: {
+    statistic_id: string;
+    device_class: string;
+    metadata_unit: string;
+    supported_unit: string;
+  };
+}
+
+export interface StatisticsValidationResultUnsupportedUnitState {
+  type: "unsupported_unit_state";
+  data: { statistic_id: string; device_class: string; metadata_unit: string };
+}
+
 export interface StatisticsValidationResults {
   [statisticId: string]: StatisticsValidationResult[];
 }
@@ -466,7 +490,7 @@ export const reduceSumStatisticsByDay = (
     // add init value if the first value isn't end of previous period
     result.push({
       ...values[0]!,
-      start: startOfMonth(addDays(new Date(values[0].start), -1)).toISOString(),
+      start: startOfDay(addDays(new Date(values[0].start), -1)).toISOString(),
     });
   }
   let lastValue: StatisticValue;
@@ -522,7 +546,7 @@ export const reduceSumStatisticsByMonth = (
       prevMonth = month;
     }
     if (prevMonth !== month) {
-      // Last value of the day
+      // Last value of the month
       result.push({
         ...lastValue!,
         start: startOfMonth(new Date(lastValue!.start)).toISOString(),

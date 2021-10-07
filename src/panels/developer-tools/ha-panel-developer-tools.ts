@@ -102,7 +102,7 @@ class PanelDeveloperTools extends LitElement {
         }
         developer-tools-router {
           display: block;
-          height: calc(100vh - 112px);
+          height: calc(100vh - 104px);
         }
         ha-tabs {
           margin-left: max(env(safe-area-inset-left), 24px);

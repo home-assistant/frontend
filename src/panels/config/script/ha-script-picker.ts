@@ -79,7 +79,7 @@ class HaScriptPicker extends LitElement {
               title=${this.hass.localize(
                 "ui.panel.config.script.picker.run_script"
               )}
-              @click=${(ev: Event) => this._runScript(ev)}
+              @click=${this._runScript}
             >
               <ha-svg-icon .path=${mdiPlay}></ha-svg-icon>
             </mwc-icon-button>
@@ -234,7 +234,7 @@ class HaScriptPicker extends LitElement {
     this._filterValue = undefined;
   }
 
-  private async _runScript(ev) {
+  private _runScript = async (ev) => {
     ev.stopPropagation();
     const script = ev.currentTarget.script as HassEntity;
     await triggerScript(this.hass, script.entity_id);
@@ -245,7 +245,7 @@ class HaScriptPicker extends LitElement {
         computeStateName(script)
       ),
     });
-  }
+  };
 
   private _showInfo(ev) {
     ev.stopPropagation();

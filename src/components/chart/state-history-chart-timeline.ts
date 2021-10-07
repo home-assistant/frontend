@@ -21,6 +21,7 @@ const BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED = new Set([
   "garage_door",
   "gas",
   "lock",
+  "motion",
   "opening",
   "problem",
   "safety",
@@ -55,7 +56,11 @@ const getColor = (
   entityState: HassEntity,
   computedStyles: CSSStyleDeclaration
 ) => {
-  if (invertOnOff(entityState)) {
+  // Inversion is only valid for "on" or "off" state
+  if (
+    (stateString === "on" || stateString === "off") &&
+    invertOnOff(entityState)
+  ) {
     stateString = stateString === "on" ? "off" : "on";
   }
   if (stateColorMap.has(stateString)) {

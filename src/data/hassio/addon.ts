@@ -1,5 +1,5 @@
 import { atLeastVersion } from "../../common/config/version";
-import { HaFormSchema } from "../../components/ha-form/ha-form";
+import type { HaFormSchema } from "../../components/ha-form/types";
 import { HomeAssistant } from "../../types";
 import { SupervisorArch } from "../supervisor/supervisor";
 import {

@@ -25,7 +25,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { navigate } from "../../common/navigate";
 import "../../common/search/search-input";
-import { stringCompare } from "../../common/string/compare";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
   fuzzyFilterSort,
   ScorableTextItem,
@@ -123,7 +123,7 @@ export class QuickBar extends LitElement {
       : this._entityItems;
 
     if (items && this._filter && this._filter !== " ") {
-      items = this._filterItems(items || [], this._filter);
+      items = this._filterItems(items, this._filter);
     }
 
     return html`
@@ -399,7 +399,7 @@ export class QuickBar extends LitElement {
         };
       })
       .sort((a, b) =>
-        stringCompare(a.primaryText.toLowerCase(), b.primaryText.toLowerCase())
+        caseInsensitiveStringCompare(a.primaryText, b.primaryText)
       );
   }
 
@@ -409,10 +409,7 @@ export class QuickBar extends LitElement {
       ...this._generateServerControlCommands(),
       ...this._generateNavigationCommands(),
     ].sort((a, b) =>
-      stringCompare(
-        a.strings.join(" ").toLowerCase(),
-        b.strings.join(" ").toLowerCase()
-      )
+      caseInsensitiveStringCompare(a.strings.join(" "), b.strings.join(" "))
     );
   }
 

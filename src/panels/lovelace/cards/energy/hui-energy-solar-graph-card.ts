@@ -10,7 +10,13 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import { differenceInDays, endOfToday, isToday, startOfToday } from "date-fns";
+import {
+  addHours,
+  differenceInDays,
+  endOfToday,
+  isToday,
+  startOfToday,
+} from "date-fns";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergySolarGraphCardConfig } from "../types";
@@ -40,6 +46,7 @@ import {
   reduceSumStatisticsByMonth,
   reduceSumStatisticsByDay,
 } from "../../../../data/history";
+import { formatTime } from "../../../../common/datetime/format_time";
 
 @customElement("hui-energy-solar-graph-card")
 export class HuiEnergySolarGraphCard
@@ -173,6 +180,16 @@ export class HuiEnergySolarGraphCard
           tooltip: {
             mode: "nearest",
             callbacks: {
+              title: (datasets) => {
+                if (dayDifference > 0) {
+                  return datasets[0].label;
+                }
+                const date = new Date(datasets[0].parsed.x);
+                return `${formatTime(date, locale)} - ${formatTime(
+                  addHours(date, 1),
+                  locale
+                )}`;
+              },
               label: (context) =>
                 `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
@@ -226,21 +243,7 @@ export class HuiEnergySolarGraphCard
       }
     }
 
-    const statisticsData = Object.values(energyData.stats);
     const datasets: ChartDataset<"bar">[] = [];
-    let endTime: Date;
-
-    endTime = new Date(
-      Math.max(
-        ...statisticsData.map((stats) =>
-          stats.length ? new Date(stats[stats.length - 1].start).getTime() : 0
-        )
-      )
-    );
-
-    if (!endTime || endTime > new Date()) {
-      endTime = new Date();
-    }
 
     const computedStyles = getComputedStyle(this);
     const solarColor = computedStyles

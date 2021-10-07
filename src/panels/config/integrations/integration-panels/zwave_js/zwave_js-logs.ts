@@ -16,6 +16,7 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
 import { fileDownload } from "../../../../../util/file_download";
 import { configTabs } from "./zwave_js-config-router";
+import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 
 @customElement("zwave_js-logs")
 class ZWaveJSLogs extends SubscribeMixin(LitElement) {
@@ -149,7 +150,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     setZWaveJSLogLevel(this.hass!, this.configEntryId, selected);
     this._textarea!.value += `${this.hass.localize(
       "ui.panel.config.zwave_js.logs.log_level_changed",
-      { level: selected.charAt(0).toUpperCase() + selected.slice(1) }
+      { level: capitalizeFirstLetter(selected) }
     )}\n`;
   }
 

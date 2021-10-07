@@ -26,8 +26,8 @@ export const configFlowContentStyles = css`
 
   .buttons {
     position: relative;
-    padding: 8px 8px 8px 24px;
-    margin: 0;
+    padding: 8px 16px 8px 24px;
+    margin: 8px 0 0;
     color: var(--primary-color);
     display: flex;
     justify-content: flex-end;

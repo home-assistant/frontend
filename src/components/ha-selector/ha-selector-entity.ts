@@ -27,7 +27,7 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
       .hass=${this.hass}
       .value=${this.value}
       .label=${this.label}
-      .entityFilter=${(entity) => this._filterEntities(entity)}
+      .entityFilter=${this._filterEntities}
       .disabled=${this.disabled}
       allow-custom-entity
     ></ha-entity-picker>`;
@@ -48,7 +48,7 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
     ];
   }
 
-  private _filterEntities(entity: HassEntity): boolean {
+  private _filterEntities = (entity: HassEntity): boolean => {
     if (this.selector.entity?.domain) {
       if (computeStateDomain(entity) !== this.selector.entity.domain) {
         return false;
@@ -72,7 +72,7 @@ export class HaEntitySelector extends SubscribeMixin(LitElement) {
       }
     }
     return true;
-  }
+  };
 }
 
 declare global {

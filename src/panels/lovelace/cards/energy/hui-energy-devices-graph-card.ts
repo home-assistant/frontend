@@ -3,6 +3,7 @@ import {
   ChartDataset,
   ChartOptions,
   ParsedDataType,
+  ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
 import { addHours } from "date-fns";
@@ -21,11 +22,7 @@ import {
 import "../../../../components/chart/ha-chart-base";
 import type HaChartBase from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
-import {
-  DeviceConsumptionEnergyPreference,
-  EnergyData,
-  getEnergyDataCollection,
-} from "../../../../data/energy";
+import { EnergyData, getEnergyDataCollection } from "../../../../data/energy";
 import {
   calculateStatisticSumGrowth,
   fetchStatistics,
@@ -51,8 +48,6 @@ export class HuiEnergyDevicesGraphCard
   @state() private _chartData: ChartData = { datasets: [] };
 
   @query("ha-chart-base") private _chart?: HaChartBase;
-
-  private _deviceConsumptionPrefs: DeviceConsumptionEnergyPreference[] = [];
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -110,11 +105,11 @@ export class HuiEnergyDevicesGraphCard
           ticks: {
             autoSkip: false,
             callback: (index) => {
-              const devicePref = this._deviceConsumptionPrefs[index];
-              const entity = this.hass.states[devicePref.stat_consumption];
-              return entity
-                ? computeStateName(entity)
-                : devicePref.stat_consumption;
+              const entityId = (
+                this._chartData.datasets[0].data[index] as ScatterDataPoint
+              ).y;
+              const entity = this.hass.states[entityId];
+              return entity ? computeStateName(entity) : entityId;
             },
           },
         },
@@ -160,8 +155,6 @@ export class HuiEnergyDevicesGraphCard
   );
 
   private async _getStatistics(energyData: EnergyData): Promise<void> {
-    this._deviceConsumptionPrefs = energyData.prefs.device_consumption;
-
     this._data = await fetchStatistics(
       this.hass,
       addHours(energyData.start, -1),
@@ -170,21 +163,6 @@ export class HuiEnergyDevicesGraphCard
         (device) => device.stat_consumption
       )
     );
-
-    const statisticsData = Object.values(this._data!);
-    let endTime: Date;
-
-    endTime = new Date(
-      Math.max(
-        ...statisticsData.map((stats) =>
-          stats.length ? new Date(stats[stats.length - 1].start).getTime() : 0
-        )
-      )
-    );
-
-    if (!endTime || endTime > new Date()) {
-      endTime = new Date();
-    }
 
     const data: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> = [];
     const borderColor: string[] = [];
