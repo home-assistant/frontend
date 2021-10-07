@@ -36,7 +36,7 @@ export class DialogEnergyBatterySettings
     this._params = params;
     this._source = params.source
       ? { ...params.source }
-      : (this._source = emptyBatteryEnergyPreference());
+      : emptyBatteryEnergyPreference();
   }
 
   public closeDialog(): void {

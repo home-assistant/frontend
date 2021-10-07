@@ -104,12 +104,7 @@ class HuiTimestampDisplay extends LitElement {
       this._relative =
         this._format === "relative"
           ? relativeTime(this.ts, this.hass!.locale)
-          : (this._relative = relativeTime(
-              new Date(),
-              this.hass!.locale,
-              this.ts,
-              false
-            ));
+          : relativeTime(new Date(), this.hass!.locale, this.ts, false);
     }
   }
 }
