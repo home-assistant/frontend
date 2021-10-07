@@ -13,8 +13,11 @@ import {
 import { translationMetadata } from "../resources/translations-metadata";
 import { Constructor, HomeAssistant } from "../types";
 import { storeState } from "../util/ha-pref-storage";
-import { getTranslation } from "../util/hass-translation";
-import { getLocalLanguage, getUserLocale } from "../util/common-translation";
+import {
+  getLocalLanguage,
+  getTranslation,
+  getUserLocale,
+} from "../util/common-translation";
 import { HassBaseEl } from "./hass-base-mixin";
 
 declare global {
@@ -373,3 +376,7 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       }
     }
   };
+
+// Load selected translation into memory immediately so it is ready when Polymer
+// initializes.
+getTranslation(null, getLocalLanguage());
