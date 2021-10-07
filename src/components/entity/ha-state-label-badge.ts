@@ -81,7 +81,6 @@ export class HaStateLabelBadge extends LitElement {
           "has-unit_of_measurement":
             "unit_of_measurement" in entityState.attributes,
         })}
-        .value=${value}
         .image=${this.icon
           ? ""
           : this.image
