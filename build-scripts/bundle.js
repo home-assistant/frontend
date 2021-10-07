@@ -35,7 +35,7 @@ module.exports.definedVars = ({ isProdBuild, latestBuild, defineOverlay }) => ({
   __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
   __VERSION__: JSON.stringify(env.version()),
   __DEMO__: false,
-  __HASSIO__: false,
+  __SUPERVISOR__: false,
   __BACKWARDS_COMPAT__: false,
   __STATIC_PATH__: "/static/",
   "process.env.NODE_ENV": JSON.stringify(
@@ -196,7 +196,7 @@ module.exports.config = {
       isProdBuild,
       latestBuild,
       defineOverlay: {
-        __HASSIO__: true,
+        __SUPERVISOR__: true,
       },
     };
   },
