@@ -17,6 +17,7 @@ import { navigate } from "../../../src/common/navigate";
 import "../../../src/common/search/search-input";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import "../../../src/components/ha-button-menu";
+import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-svg-icon";
 import {
   HassioAddonInfo,

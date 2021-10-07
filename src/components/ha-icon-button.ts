@@ -1,7 +1,13 @@
 import "@material/mwc-icon-button";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
 import { customElement, property } from "lit/decorators";
-import "./ha-icon";
 
 @customElement("ha-icon-button")
 export class HaIconButton extends LitElement {
@@ -16,7 +22,7 @@ export class HaIconButton extends LitElement {
   // Label that is used for ARIA support and as tooltip
   @property({ type: String }) label = "";
 
-  @property({ type: Boolean }) hideTooltip = false;
+  @property({ type: Boolean }) hideTitle = false;
 
   static shadowRootOptions: ShadowRootInit = {
     mode: "open",
@@ -24,17 +30,24 @@ export class HaIconButton extends LitElement {
   };
 
   protected render(): TemplateResult {
-    // Note: `aria-label` required despite the docs saying `label` should be enough
+    // Note: `aria-label` required despite the `mcw-icon-button` docs saying `label` should be enough
     return html`
       <mwc-icon-button
         aria-label=${this.label}
-        .title=${this.hideTooltip ? "" : this.label}
+        .title=${this.hideTitle ? "" : this.label}
         .disabled=${this.disabled}
       >
         ${this.icon ? html`<ha-icon .icon=${this.icon}></ha-icon>` : ""}
         ${this.path ? html`<ha-svg-icon .path=${this.path}></ha-svg-icon>` : ""}
       </mwc-icon-button>
     `;
+  }
+
+  public willUpdate(changedProps: PropertyValues): void {
+    // Only actually import `ha-icon` if it gets used
+    if (changedProps.has("icon") && this.icon) {
+      import("./ha-icon");
+    }
   }
 
   static get styles(): CSSResultGroup {

@@ -23,7 +23,7 @@ import {
 } from "../../../src/components/data-table/ha-data-table";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-fab";
-import { extractApiErrorMessage } from "../../../src/data/hassio/common";
+import "../../../src/components/ha-svg-icon";
 import {
   fetchHassioBackups,
   friendlyFolderName,
@@ -31,6 +31,7 @@ import {
   reloadHassioBackups,
   removeBackup,
 } from "../../../src/data/hassio/backup";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { Supervisor } from "../../../src/data/supervisor/supervisor";
 import {
   showAlertDialog,
@@ -40,9 +41,9 @@ import "../../../src/layouts/hass-tabs-subpage-data-table";
 import type { HaTabsSubpageDataTable } from "../../../src/layouts/hass-tabs-subpage-data-table";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant, Route } from "../../../src/types";
-import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hassio-create-backup";
-import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-backup";
 import { showBackupUploadDialog } from "../dialogs/backup/show-dialog-backup-upload";
+import { showHassioBackupDialog } from "../dialogs/backup/show-dialog-hassio-backup";
+import { showHassioCreateBackupDialog } from "../dialogs/backup/show-dialog-hassio-create-backup";
 import { supervisorTabs } from "../hassio-tabs";
 import { hassioStyle } from "../resources/hassio-style";
 
