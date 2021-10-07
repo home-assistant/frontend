@@ -13,8 +13,6 @@ import "./ha-icon";
 class HaLabelBadge extends LitElement {
   @property() public value?: string;
 
-  @property() public icon?: string;
-
   @property() public label?: string;
 
   @property() public description?: string;
@@ -31,14 +29,7 @@ class HaLabelBadge extends LitElement {
               big: Boolean(this.value && this.value.length > 4),
             })}
           >
-            <slot>
-              ${this.icon && !this.value && !this.image
-                ? html`<ha-icon .icon=${this.icon}></ha-icon>`
-                : ""}
-              ${this.value && !this.image
-                ? html`<span>${this.value}</span>`
-                : ""}
-            </slot>
+            <slot> </slot>
           </div>
           ${this.label
             ? html`
