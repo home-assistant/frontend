@@ -12,7 +12,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-button-menu";
-import "../ha-icon";
+import "../ha-svg-icon";
 import {
   HaFormElement,
   HaFormMultiSelectData,
