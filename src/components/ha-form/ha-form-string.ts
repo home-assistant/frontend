@@ -62,14 +62,13 @@ export class HaFormString extends LitElement implements HaFormElement {
         @input=${this._valueChanged}
       ></mwc-textfield>
       ${isPassword
-        ? html`
-            <ha-icon-button
-              toggles
-              .label="Click to toggle between masked and clear password"
-              @click=${this._toggleUnmaskedPassword}
-              tabindex="-1"
-              .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
-            ></ha-icon-button>`
+        ? html`<ha-icon-button
+            toggles
+            .label="Click to toggle between masked and clear password"
+            @click=${this._toggleUnmaskedPassword}
+            tabindex="-1"
+            .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
+          ></ha-icon-button>`
         : ""}
     `;
   }
