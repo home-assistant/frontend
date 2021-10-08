@@ -332,11 +332,15 @@ export class HuiAreaCard
     entities.forEach((entity) => {
       const domain = computeDomain(entity.entity_id);
       const isToggle = DOMAINS_TOGGLE.has(domain);
-      const stateObj = this.hass!.states[entity.entity_id];
 
       if (this._entitiesToggle!.length < 3 && isToggle) {
         this._entitiesToggle!.push(entity.entity_id);
-      } else if (
+        return;
+      }
+
+      const stateObj = this.hass!.states[entity.entity_id];
+
+      if (
         this._entitiesDialog!.length < 3 &&
         !isToggle &&
         stateObj.attributes.device_class &&
