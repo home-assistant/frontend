@@ -73,9 +73,9 @@ export class HaStateLabelBadge extends LitElement {
 
     const value = this._computeValue(domain, entityState);
     const icon = this.icon ? this.icon : this._computeIcon(domain, entityState);
-    const image =
-      entityState.attributes.entity_picture_local ||
-      entityState.attributes.entity_picture;
+    const image = this.icon ? "" : this.image ? this.image :
+      (entityState.attributes.entity_picture_local ||
+      entityState.attributes.entity_picture);
 
     return html`
       <ha-label-badge
@@ -84,7 +84,7 @@ export class HaStateLabelBadge extends LitElement {
           "has-unit_of_measurement":
             "unit_of_measurement" in entityState.attributes,
         })}
-        .image=${this.icon ? "" : this.image ? this.image : image}
+        .image=${image}
         .label=${this._computeLabel(
           domain,
           entityState,
@@ -92,7 +92,7 @@ export class HaStateLabelBadge extends LitElement {
         )}
         .description=${this.name ?? computeStateName(entityState)}
       >
-        ${!image && !this.image && icon ? html`<ha-icon .icon=${icon}></ha-icon>` : ""}
+        ${!image && icon ? html`<ha-icon .icon=${icon}></ha-icon>` : ""}
         ${value && (this.icon || !this.image)
           ? html`<span class=${value && value.length > 4 ? "big" : ""}
               >${value}</span
