@@ -63,6 +63,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     return html`
       <mwc-textfield
         type="number"
+        inputMode="numeric"
         .label=${this.label}
         .value=${this.data !== undefined ? this.data : ""}
         .required=${this.schema.required}
