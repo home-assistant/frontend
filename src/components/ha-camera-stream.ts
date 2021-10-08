@@ -80,7 +80,7 @@ class HaCameraStream extends LitElement {
     ) {
       if (typeof RTCPeerConnection === "undefined") {
         return html`<ha-alert alert-type="error"
-          >${this.hass.localize(
+          >${this.hass!.localize(
             "ui.components.media-browser.video_not_supported"
           )}</ha-alert
         >`;
