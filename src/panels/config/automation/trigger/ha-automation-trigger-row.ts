@@ -263,7 +263,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _idChanged(ev: CustomEvent) {
     const newId = ev.detail.value;
-    if (newId === this.trigger.id) {
+    if (newId === (this.trigger.id ?? "")) {
       return;
     }
     const value = { ...this.trigger };
