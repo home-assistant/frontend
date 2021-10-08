@@ -16,8 +16,6 @@ class HaDurationInput extends LitElement {
 
   @property() public label?: string;
 
-  @property() public suffix?: string;
-
   @property({ type: Boolean }) public required?: boolean;
 
   @property({ type: Boolean }) public enableMillisecond?: boolean;
