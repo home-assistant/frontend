@@ -10,7 +10,13 @@ import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { handleWebRtcOffer, WebRtcAnswer } from "../data/camera";
 import type { HomeAssistant } from "../types";
+import "./ha-alert";
 
+/**
+ * A WebRTC stream is established by first sending an offer through a signal
+ * path via an integration. An answer is returned, then the rest of the stream
+ * is handled entirely client side.
+ */
 @customElement("ha-web-rtc-player")
 class HaWebRtcPlayer extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -36,9 +42,7 @@ class HaWebRtcPlayer extends LitElement {
 
   protected render(): TemplateResult {
     if (this._error) {
-      return html`<hass-error-screen
-        .error=${this._error}
-      ></hass-error-screen>`;
+      return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
     }
     return html`
       <video
@@ -72,17 +76,10 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
 
-    // A WebRTC connection is established by first sending an offer through
-    // a signal path from the integration. An answer is returned, then all
-    // other stream is handled purely client side.
     const peerConnection = new RTCPeerConnection();
-
     // Some cameras (such as nest) require a data channel to establish a stream
     // however, not used by any integrations.
     peerConnection.createDataChannel("dataSendChannel");
-
-    // Get connection information about the remote stream throught the camera
-    // integration.
     const offerOptions = {
       offerToReceiveAudio: 1,
       offerToReceiveVideo: 1,
@@ -102,18 +99,12 @@ class HaWebRtcPlayer extends LitElement {
       return;
     }
 
-    // Render remote stream once media tracks are discovered.
+    // Setup callbacks to render remote stream once media tracks are discovered.
     const remoteStream = new MediaStream();
     peerConnection.addEventListener("track", (event) => {
       remoteStream.addTrack(event.track);
       this._videoEl.srcObject = remoteStream;
     });
-
-    // TODO: When there is an error negotiating a stream, can we display that?
-    // TODO: Can we detect a stream authentication failure and automatically reconnect?
-    // peerConnection.oniceconnectionstatechange = (event) => {
-    //    console.log("connection", peerConnection.iceConnectionState);
-    // };
 
     // Initiate the stream with the remote device
     const remoteDesc = new RTCSessionDescription({
@@ -136,8 +127,6 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   static get styles(): CSSResultGroup {
-    // TODO: Need to handle the case where the video is vertical so that it
-    // resizees to fit within the height of the screen.
     return css`
       video {
         display: block;
