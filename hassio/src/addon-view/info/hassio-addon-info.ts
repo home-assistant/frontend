@@ -297,10 +297,11 @@ class HassioAddonInfo extends LitElement {
                   })}
                   @click=${this._showMoreInfo}
                   id="rating"
-                  .value=${this.addon.rating}
                   label="rating"
                   description=""
-                ></ha-label-badge>
+                >
+                  ${this.addon.rating}
+                </ha-label-badge>
                 ${this.addon.host_network
                   ? html`
                       <ha-label-badge
