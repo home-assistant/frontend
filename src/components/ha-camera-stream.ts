@@ -15,9 +15,12 @@ import {
   CAMERA_SUPPORT_STREAM,
   computeMJPEGStreamUrl,
   fetchStreamUrl,
+  STREAM_TYPE_HLS,
+  STREAM_TYPE_WEB_RTC,
 } from "../data/camera";
 import { HomeAssistant } from "../types";
 import "./ha-hls-player";
+import "./ha-web-rtc-player";
 
 @customElement("ha-camera-stream")
 class HaCameraStream extends LitElement {
@@ -34,8 +37,8 @@ class HaCameraStream extends LitElement {
   @property({ type: Boolean, attribute: "allow-exoplayer" })
   public allowExoPlayer = false;
 
-  // We keep track if we should force MJPEG with a string
-  // that way it automatically resets if we change entity.
+  // We keep track if we should force MJPEG if there was a failure
+  // to get the HLS stream url. This is reset if we change entities.
   @state() private _forceMJPEG?: string;
 
   @state() private _url?: string;
@@ -48,7 +51,8 @@ class HaCameraStream extends LitElement {
       !this._shouldRenderMJPEG &&
       this.stateObj &&
       (changedProps.get("stateObj") as CameraEntity | undefined)?.entity_id !==
-        this.stateObj.entity_id
+        this.stateObj.entity_id &&
+      this.stateObj!.attributes.stream_type === STREAM_TYPE_HLS
     ) {
       this._forceMJPEG = undefined;
       this._url = undefined;
@@ -70,7 +74,19 @@ class HaCameraStream extends LitElement {
     if (!this.stateObj) {
       return html``;
     }
-
+    if (
+      supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM) &&
+      this.stateObj!.attributes.stream_type === STREAM_TYPE_WEB_RTC
+    ) {
+      return html` <ha-web-rtc-player
+        autoplay
+        playsinline
+        .muted=${this.muted}
+        .controls=${this.controls}
+        .hass=${this.hass}
+        .entityid=${this.stateObj!.entity_id}
+      ></ha-web-rtc-player>`;
+    }
     return html`
       ${__DEMO__ || this._shouldRenderMJPEG
         ? html`
