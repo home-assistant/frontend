@@ -92,7 +92,7 @@ export class HaStateLabelBadge extends LitElement {
         )}
         .description=${this.name ?? computeStateName(entityState)}
       >
-        ${!image && icon ? html`<ha-icon .icon=${icon}></ha-icon>` : ""}
+        ${!image && !this.image && icon ? html`<ha-icon .icon=${icon}></ha-icon>` : ""}
         ${value && (this.icon || !this.image)
           ? html`<span class=${value && value.length > 4 ? "big" : ""}
               >${value}</span
