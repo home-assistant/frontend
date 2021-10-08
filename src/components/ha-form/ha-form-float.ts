@@ -24,6 +24,7 @@ export class HaFormFloat extends LitElement implements HaFormElement {
   protected render(): TemplateResult {
     return html`
       <mwc-textfield
+        inputMode="decimal"
         .label=${this.label}
         .value=${this.data !== undefined ? this.data : ""}
         .required=${this.schema.required}
