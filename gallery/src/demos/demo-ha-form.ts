@@ -3,7 +3,6 @@ import "@material/mwc-button";
 import { LitElement, TemplateResult, html } from "lit";
 import { customElement } from "lit/decorators";
 import { computeInitialHaFormData } from "../../../src/components/ha-form/compute-initial-ha-form-data";
-import "../../../src/components/ha-card";
 import type { HaFormSchema } from "../../../src/components/ha-form/types";
 import "../../../src/components/ha-form/ha-form";
 import "../components/demo-black-white-row";
