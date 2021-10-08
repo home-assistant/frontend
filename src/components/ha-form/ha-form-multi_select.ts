@@ -101,8 +101,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         this.shadowRoot?.querySelector("mwc-textfield") || ({} as any);
       if (formElement) {
         formElement.style.textOverflow = "ellipsis";
-        formElement.style.cursor = "pointer";
-        formElement.setAttribute("readonly", "");
       }
       if (mdcRoot) {
         mdcRoot.style.cursor = "pointer";
@@ -162,10 +160,17 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       :host([own-margin]) {
         margin-bottom: 5px;
       }
-      ha-button-menu,
-      mwc-textfield,
+      ha-button-menu {
+        display: block;
+        cursor: pointer;
+      }
       mwc-formfield {
         display: block;
+        padding-right: 16px;
+      }
+      mwc-textfield {
+        display: block;
+        pointer-events: none;
       }
       ha-svg-icon {
         color: var(--input-dropdown-icon-color);
