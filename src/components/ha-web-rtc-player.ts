@@ -90,7 +90,7 @@ class HaWebRtcPlayer extends LitElement {
       webRtcAnswer = await handleWebRtcOffer(
         this.hass!,
         this.entityid!,
-        offer.sdp
+        offer.sdp!
       );
     } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
