@@ -80,11 +80,13 @@ class HaWebRtcPlayer extends LitElement {
     // Some cameras (such as nest) require a data channel to establish a stream
     // however, not used by any integrations.
     peerConnection.createDataChannel("dataSendChannel");
-    const offerOptions = {
+    const offerOptions: RTCOfferOptions = {
       offerToReceiveAudio: 1,
       offerToReceiveVideo: 1,
     };
-    const offer = await peerConnection.createOffer(offerOptions);
+    const offer: RTCSessionDescriptionInit = await peerConnection.createOffer(
+      offerOptions
+    );
     await peerConnection.setLocalDescription(offer);
 
     let webRtcAnswer: WebRtcAnswer;
@@ -94,7 +96,7 @@ class HaWebRtcPlayer extends LitElement {
         this.entityid!,
         offer.sdp
       );
-    } catch (err) {
+    } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
       return;
     }
