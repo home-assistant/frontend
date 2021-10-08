@@ -72,17 +72,13 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   private async _startWebRtc(): Promise<void> {
-    if (typeof RTCPeerConnection === "undefined") {
-      return;
-    }
-
     const peerConnection = new RTCPeerConnection();
     // Some cameras (such as nest) require a data channel to establish a stream
     // however, not used by any integrations.
     peerConnection.createDataChannel("dataSendChannel");
     const offerOptions: RTCOfferOptions = {
-      offerToReceiveAudio: 1,
-      offerToReceiveVideo: 1,
+      offerToReceiveAudio: true,
+      offerToReceiveVideo: true,
     };
     const offer: RTCSessionDescriptionInit = await peerConnection.createOffer(
       offerOptions
@@ -132,10 +128,6 @@ class HaWebRtcPlayer extends LitElement {
     return css`
       video {
         display: block;
-      }
-
-      video {
-        width: 100%;
       }
     `;
   }

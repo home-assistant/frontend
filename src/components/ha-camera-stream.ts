@@ -75,16 +75,23 @@ class HaCameraStream extends LitElement {
       return html``;
     }
     if (
-      supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM) &&
-      this.stateObj!.attributes.stream_type === STREAM_TYPE_WEB_RTC
+      supportsFeature(this.stateObj, CAMERA_SUPPORT_STREAM) &&
+      this.stateObj.attributes.stream_type === STREAM_TYPE_WEB_RTC
     ) {
+      if (typeof RTCPeerConnection === "undefined") {
+        return html`<ha-alert alert-type="error"
+          >${this.hass.localize(
+            "ui.components.media-browser.video_not_supported"
+          )}</ha-alert
+        >`;
+      }
       return html` <ha-web-rtc-player
         autoplay
         playsinline
         .muted=${this.muted}
         .controls=${this.controls}
         .hass=${this.hass}
-        .entityid=${this.stateObj!.entity_id}
+        .entityid=${this.stateObj.entity_id}
       ></ha-web-rtc-player>`;
     }
     return html`
@@ -92,7 +99,7 @@ class HaCameraStream extends LitElement {
         ? html`
             <img
               .src=${__DEMO__
-                ? this.stateObj!.attributes.entity_picture!
+                ? this.stateObj.attributes.entity_picture!
                 : this._connected
                 ? computeMJPEGStreamUrl(this.stateObj)
                 : ""}
