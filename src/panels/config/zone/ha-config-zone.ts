@@ -123,7 +123,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       this._storageItems === undefined ||
       this._stateItems === undefined
     ) {
-      return html` <hass-loading-screen></hass-loading-screen> `;
+      return html`<hass-loading-screen></hass-loading-screen>`;
     }
     const hass = this.hass;
     const listBox =
@@ -150,14 +150,16 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     .entry=${entry}
                   >
                     <ha-icon .icon=${entry.icon} slot="item-icon"></ha-icon>
-                    <paper-item-body> ${entry.name} </paper-item-body>
+                    <paper-item-body>${entry.name}</paper-item-body>
                     ${!this.narrow
                       ? html`
                           <ha-icon-button
                             .entry=${entry}
                             @click=${this._openEditEntry}
                             .path=${mdiPencil}
-                            .label=${this.hass!.localize("ui.common.edit")}
+                            .label=${hass.localize(
+                              "ui.panel.config.zone.edit_zone"
+                            )}
                           ></ha-icon-button>
                         `
                       : ""}
@@ -195,18 +197,20 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                         this._canEditCore
                           ? mdiPencil
                           : mdiPencilOff}
-                        .label=${this.hass!.localize("ui.common.edit")}
+                        .label=${hass.localize(
+                          "ui.panel.config.zone.edit_zone"
+                        )}
                       ></ha-icon-button>
                       <paper-tooltip animation-delay="0" position="left">
                         ${stateObject.entity_id === "zone.home"
-                          ? this.hass.localize(
+                          ? hass.localize(
                               `ui.panel.config.zone.${
                                 this.narrow
                                   ? "edit_home_zone_narrow"
                                   : "edit_home_zone"
                               }`
                             )
-                          : this.hass.localize(
+                          : hass.localize(
                               "ui.panel.config.zone.configured_in_yaml"
                             )}
                       </paper-tooltip>
@@ -517,6 +521,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       paper-icon-item {
         padding-top: 4px;
         padding-bottom: 4px;
+        cursor: pointer;
       }
       .overflow paper-icon-item:last-child {
         margin-bottom: 80px;
