@@ -3,6 +3,7 @@ import { customElement, property } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
+import "../../../components/ha-alert";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { IframeCardConfig } from "./types";
 
@@ -57,6 +58,18 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       }
     } else if (!this.isPanel) {
       padding = "50%";
+    }
+
+    if (
+      location.protocol === "https:" &&
+      new URL(this._config.url, location.toString()).protocol !== "https:"
+    ) {
+      return html`
+        <ha-alert alert-type="error">
+          Unable to load iframes that load websites over <code>http://</code> if
+          Home Assistant is served over <code>https://</code>.
+        </ha-alert>
+      `;
     }
 
     return html`
