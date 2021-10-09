@@ -15,7 +15,6 @@ import { computeActiveState } from "../../common/entity/compute_active_state";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import type { HomeAssistant } from "../../types";
-import "../ha-icon";
 import "../ha-state-icon";
 
 export class StateBadge extends LitElement {
@@ -154,7 +153,7 @@ export class StateBadge extends LitElement {
         :host([icon]:focus) {
           background: var(--divider-color);
         }
-        ha-icon {
+        ha-state-icon {
           transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
         }
         .missing {
