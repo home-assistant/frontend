@@ -39,6 +39,8 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _opened = false;
 
   @query("paper-menu-button", true) private _input?: HTMLElement;
@@ -60,6 +62,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
           <ha-checkbox
             .checked=${data.includes(value)}
             .value=${value}
+            .disabled=${this.disabled}
             @change=${this._valueChanged}
           ></ha-checkbox>
         </mwc-formfield>
@@ -73,6 +76,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
     return html`
       <ha-button-menu
+        .disabled=${this.disabled}
         fixed
         corner="BOTTOM_START"
         @opened=${this._handleOpen}
@@ -84,6 +88,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
           .value=${data
             .map((value) => this.schema.options![value] || value)
             .join(", ")}
+          .disabled=${this.disabled}
           tabindex="-1"
         ></mwc-textfield>
         <ha-svg-icon

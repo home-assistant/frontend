@@ -13,6 +13,8 @@ export class HaFormFloat extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @query("mwc-textfield") private _input?: HTMLElement;
 
   public focus() {
@@ -27,6 +29,7 @@ export class HaFormFloat extends LitElement implements HaFormElement {
         inputMode="decimal"
         .label=${this.label}
         .value=${this.data !== undefined ? this.data : ""}
+        .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
         .suffix=${this.schema.description?.suffix}

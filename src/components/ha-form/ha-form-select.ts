@@ -19,6 +19,8 @@ export class HaFormSelect extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @query("mwc-select", true) private _input?: HTMLElement;
 
   public focus() {
@@ -38,6 +40,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
                 <ha-radio
                   .checked=${value === this.data}
                   .value=${value}
+                  .disabled=${this.disabled}
                   @change=${this._valueChanged}
                 ></ha-radio>
               </mwc-formfield>
@@ -52,6 +55,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
         fixedMenuPosition
         .label=${this.label}
         .value=${this.data}
+        .disabled=${this.disabled}
         @closed=${stopPropagation}
         @selected=${this._valueChanged}
       >

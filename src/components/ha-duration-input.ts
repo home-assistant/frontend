@@ -20,6 +20,8 @@ class HaDurationInput extends LitElement {
 
   @property({ type: Boolean }) public enableMillisecond?: boolean;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @query("paper-time-input", true) private _input?: HTMLElement;
 
   public focus() {
@@ -34,6 +36,7 @@ class HaDurationInput extends LitElement {
         .label=${this.label}
         .required=${this.required}
         .autoValidate=${this.required}
+        .disabled=${this.disabled}
         error-message="Required"
         enable-second
         .enableMillisecond=${this.enableMillisecond}
