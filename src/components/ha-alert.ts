@@ -54,7 +54,7 @@ class HaAlert extends LitElement {
 
     const oldHass = changedProps.get("hass") as HomeAssistant;
     if (!oldHass || !this.hass) {
-      return false;
+      return true;
     }
     return this.hass.language !== oldHass.language;
   }
