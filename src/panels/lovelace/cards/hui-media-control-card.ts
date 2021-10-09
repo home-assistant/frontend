@@ -15,12 +15,11 @@ import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { extractColors } from "../../../common/image/extract_color";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-icon-button";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
@@ -227,7 +226,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div class="top-info">
             <div class="icon-name">
-              <ha-icon class="icon" .icon=${stateIcon(stateObj)}></ha-icon>
+              <ha-state-icon class="icon" .state=${stateObj}></ha-state-icon>
               <div>
                 ${this._config!.name ||
                 computeStateName(this.hass!.states[this._config!.entity])}
@@ -706,7 +705,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         align-items: center;
       }
 
-      .icon-name ha-icon {
+      .icon-name ha-state-icon {
         padding-right: 8px;
       }
 

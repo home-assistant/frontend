@@ -10,6 +10,7 @@ import {
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
+  HassEntity,
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
@@ -20,7 +21,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { ensureArray } from "../common/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
-import { stateIcon } from "../common/entity/state_icon";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -41,15 +41,14 @@ import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./entity/ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
 import "./ha-area-picker";
-import "./ha-icon";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 
 @customElement("ha-target-picker")
 export class HaTargetPicker extends SubscribeMixin(LitElement) {
-  @property() public hass!: HomeAssistant;
+  @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property() public value?: HassServiceTarget;
+  @property({ attribute: false }) public value?: HassServiceTarget;
 
   @property() public label?: string;
 
@@ -147,7 +146,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
                 "entity_id",
                 entity_id,
                 entity ? computeStateName(entity) : entity_id,
-                entity ? stateIcon(entity) : undefined
+                entity
               );
             })
           : ""}
@@ -230,7 +229,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     type: string,
     id: string,
     name: string,
-    icon?: string,
+    entityState?: HassEntity,
     iconPath?: string
   ) {
     return html`
@@ -245,11 +244,11 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               .path=${iconPath}
             ></ha-svg-icon>`
           : ""}
-        ${icon
-          ? html`<ha-icon
+        ${entityState
+          ? html`<ha-state-icon
               class="mdc-chip__icon mdc-chip__icon--leading"
-              .icon=${icon}
-            ></ha-icon>`
+              .state=${entityState}
+            ></ha-state-icon>`
           : ""}
         <span role="gridcell">
           <span role="button" tabindex="0" class="mdc-chip__primary-action">

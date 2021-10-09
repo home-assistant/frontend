@@ -1,4 +1,5 @@
 import "@material/mwc-button/mwc-button";
+import { mdiCast, mdiCastConnected } from "@mdi/js";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { Auth, Connection } from "home-assistant-js-websocket";
@@ -17,6 +18,7 @@ import {
 import { atLeastVersion } from "../../../../src/common/config/version";
 import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
 import "../../../../src/components/ha-icon";
+import "../../../../src/components/ha-svg-icon";
 import {
   getLegacyLovelaceCollection,
   getLovelaceCollection,
@@ -73,7 +75,7 @@ class HcCast extends LitElement {
           ? html`
               <p class="center-item">
                 <mwc-button raised @click=${this._handleLaunch}>
-                  <ha-icon icon="hass:cast"></ha-icon>
+                  <ha-svg-icon path=${mdiCast}></ha-svg-icon>
                   Start Casting
                 </mwc-button>
               </p>
@@ -111,7 +113,7 @@ class HcCast extends LitElement {
           ${this.castManager.status
             ? html`
                 <mwc-button @click=${this._handleLaunch}>
-                  <ha-icon icon="hass:cast-connected"></ha-icon>
+                  <ha-svg-icon .path=${mdiCastConnected}></ha-svg-icon>
                   Manage
                 </mwc-button>
               `
@@ -233,7 +235,7 @@ class HcCast extends LitElement {
         color: var(--secondary-text-color);
       }
 
-      mwc-button ha-icon {
+      mwc-button ha-svg-icon {
         margin-right: 8px;
         height: 18px;
       }

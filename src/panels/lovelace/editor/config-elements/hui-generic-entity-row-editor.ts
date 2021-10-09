@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { assert } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
@@ -88,7 +87,6 @@ export class HuiGenericEntityRowEditor
               "ui.panel.lovelace.editor.card.generic.icon"
             )}
             .value=${this._config.icon}
-            .placeholder=${stateIcon(this.hass!.states[this._config.entity])}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
           ></ha-icon-picker>

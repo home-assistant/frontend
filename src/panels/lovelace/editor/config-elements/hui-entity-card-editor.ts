@@ -3,7 +3,6 @@ import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/entity/ha-entity-attribute-picker";
 import "../../../../components/ha-icon-picker";
 import { HomeAssistant } from "../../../../types";
@@ -110,8 +109,7 @@ export class HuiEntityCardEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._icon}
-            .placeholder=${this._icon ||
-            stateIcon(this.hass.states[this._entity])}
+            .placeholder=${this._icon}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
           ></ha-icon-picker>

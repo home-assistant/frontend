@@ -12,7 +12,6 @@ import { formatTime } from "../../../common/datetime/format_time";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/number/format_number";
 import { debounce } from "../../../common/util/debounce";
@@ -207,10 +206,10 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
           <div class="icon-image">
             ${weatherStateIcon ||
             html`
-              <ha-icon
+              <ha-state-icon
                 class="weather-icon"
-                .icon=${stateIcon(stateObj)}
-              ></ha-icon>
+                .state=${stateObj}
+              ></ha-state-icon>
             `}
           </div>
           <div class="info">

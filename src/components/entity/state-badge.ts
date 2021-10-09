@@ -1,3 +1,4 @@
+import { mdiAlert } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -12,10 +13,10 @@ import { ifDefined } from "lit/directives/if-defined";
 import { styleMap } from "lit/directives/style-map";
 import { computeActiveState } from "../../common/entity/compute_active_state";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
-import { stateIcon } from "../../common/entity/state_icon";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 import type { HomeAssistant } from "../../types";
 import "../ha-icon";
+import "../ha-state-icon";
 
 export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
@@ -39,7 +40,7 @@ export class StateBadge extends LitElement {
     // We either need a `stateObj` or one override
     if (!stateObj && !this.overrideIcon && !this.overrideImage) {
       return html`<div class="missing">
-        <ha-icon icon="hass:alert"></ha-icon>
+        <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
       </div>`;
     }
 
@@ -49,18 +50,17 @@ export class StateBadge extends LitElement {
 
     const domain = stateObj ? computeStateDomain(stateObj) : undefined;
 
-    return html`
-      <ha-icon
-        style=${styleMap(this._iconStyle)}
-        data-domain=${ifDefined(
-          this.stateColor || (domain === "light" && this.stateColor !== false)
-            ? domain
-            : undefined
-        )}
-        data-state=${stateObj ? computeActiveState(stateObj) : ""}
-        .icon=${this.overrideIcon || (stateObj ? stateIcon(stateObj) : "")}
-      ></ha-icon>
-    `;
+    return html`<ha-state-icon
+      style=${styleMap(this._iconStyle)}
+      data-domain=${ifDefined(
+        this.stateColor || (domain === "light" && this.stateColor !== false)
+          ? domain
+          : undefined
+      )}
+      data-state=${stateObj ? computeActiveState(stateObj) : ""}
+      .icon=${this.overrideIcon}
+      .state=${stateObj}
+    ></ha-state-icon>`;
   }
 
   public willUpdate(changedProps: PropertyValues) {
