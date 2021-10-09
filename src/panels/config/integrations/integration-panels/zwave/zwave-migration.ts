@@ -159,7 +159,10 @@ export class ZwaveMigration extends LitElement {
                         )
                         .map(
                           (entityState) =>
-                            html`<ha-alert alert-type="warning">
+                            html`<ha-alert
+                              .hass=${this.hass}
+                              alert-type="warning"
+                            >
                               Device ${computeStateName(entityState)}
                               (${entityState.entity_id}) is not ready yet! For
                               the best result, wake the device up if it is
@@ -252,7 +255,10 @@ export class ZwaveMigration extends LitElement {
                       </p>
                       ${this._waitingOnDevices?.map(
                         (device) =>
-                          html`<ha-alert alert-type="warning">
+                          html`<ha-alert
+                            .hass=${this.hass}
+                            alert-type="warning"
+                          >
                             Device ${computeDeviceName(device, this.hass)} is
                             not ready yet! For the best result, wake the device
                             up if it is battery powered and wait for this device
@@ -265,6 +271,7 @@ export class ZwaveMigration extends LitElement {
                             ${this._migratedZwaveEntities!.length !==
                             this._migrationData.zwave_entity_ids.length
                               ? html`<ha-alert
+                                    .hass=${this.hass}
                                     alert-type="warning"
                                     title="Not all entities can be migrated!"
                                   >

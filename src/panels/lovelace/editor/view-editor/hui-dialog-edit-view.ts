@@ -124,7 +124,7 @@ export class HuiDialogEditView extends LitElement {
             ? html`
                 ${VIEWS_NO_BADGE_SUPPORT.includes(this._type)
                   ? html`
-                      <ha-alert alert-type="warning">
+                      <ha-alert .hass=${this.hass} alert-type="warning">
                         ${this.hass!.localize(
                           "ui.panel.lovelace.editor.edit_badges.view_no_badges"
                         )}

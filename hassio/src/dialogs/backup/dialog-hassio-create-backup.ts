@@ -64,7 +64,9 @@ class HassioCreateBackupDialog extends LitElement {
             >
             </supervisor-backup-content>`}
         ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          ? html`<ha-alert .hass=${this.hass} alert-type="error">
+              ${this._error}
+            </ha-alert>`
           : ""}
         <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
           ${this._dialogParams.supervisor.localize("common.close")}

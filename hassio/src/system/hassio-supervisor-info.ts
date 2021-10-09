@@ -174,6 +174,7 @@ class HassioSupervisorInfo extends LitElement {
                   </ha-settings-row>`
                 : ""
               : html`<ha-alert
+                  .hass=${this.hass}
                   alert-type="warning"
                   .actionText=${this.supervisor.localize("common.learn_more")}
                   @alert-action-clicked=${this._unsupportedDialog}
@@ -184,6 +185,7 @@ class HassioSupervisorInfo extends LitElement {
                 </ha-alert>`}
             ${!this.supervisor.supervisor.healthy
               ? html`<ha-alert
+                  .hass=${this.hass}
                   alert-type="error"
                   .actionText=${this.supervisor.localize("common.learn_more")}
                   @alert-action-clicked=${this._unhealthyDialog}

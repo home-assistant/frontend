@@ -19,7 +19,9 @@ export const createEntityNotFoundWarning = (
 @customElement("hui-warning")
 export class HuiWarning extends LitElement {
   protected render(): TemplateResult {
-    return html`<ha-alert alert-type="warning"><slot></slot></ha-alert> `;
+    return html`<ha-alert alert-type="warning">
+      <slot></slot>
+    </ha-alert> `;
   }
 }
 

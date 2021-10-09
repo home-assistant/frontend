@@ -35,7 +35,11 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
       }
     }
 
-    return html`<ha-alert alert-type="error" .title=${this._config.error}>
+    return html`<ha-alert
+      .hass=${this.hass}
+      alert-type="error"
+      .title=${this._config.error}
+    >
       ${dumped ? html`<pre>${dumped}</pre>` : ""}
     </ha-alert>`;
   }

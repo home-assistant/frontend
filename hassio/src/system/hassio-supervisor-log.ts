@@ -69,7 +69,9 @@ class HassioSupervisorLog extends LitElement {
     return html`
       <ha-card>
         ${this._error
-          ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+          ? html`<ha-alert .hass=${this.hass} alert-type="error">
+              ${this._error}
+            </ha-alert>`
           : ""}
         ${this.hass.userData?.showAdvanced
           ? html`

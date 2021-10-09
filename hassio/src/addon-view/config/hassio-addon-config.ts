@@ -137,14 +137,16 @@ class HassioAddonConfig extends LitElement {
                 .yamlSchema=${ADDON_YAML_SCHEMA}
               ></ha-yaml-editor>`}
           ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            ? html`<ha-alert .hass=${this.hass} alert-type="error">
+                ${this._error}
+              </ha-alert>`
             : ""}
           ${!this._yamlMode ||
           (this._canShowSchema && this.addon.schema) ||
           this._valid
             ? ""
             : html`
-                <ha-alert alert-type="error">
+                <ha-alert .hass=${this.hass} alert-type="error">
                   ${this.supervisor.localize(
                     "addon.configuration.options.invalid_yaml"
                   )}

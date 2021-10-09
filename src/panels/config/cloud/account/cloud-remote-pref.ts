@@ -64,6 +64,7 @@ export class CloudRemotePref extends LitElement {
           ${!remote_connected && remote_enabled
             ? html`
                 <ha-alert
+                  .hass=${this.hass}
                   .title=${this.hass.localize(
                     `ui.panel.config.cloud.account.remote.reconnecting`
                   )}

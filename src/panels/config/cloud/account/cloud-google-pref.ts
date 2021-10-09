@@ -46,6 +46,7 @@ export class CloudGooglePref extends LitElement {
           ${google_enabled && !this.cloudStatus.google_registered
             ? html`
                 <ha-alert
+                  .hass=${this.hass}
                   .title=${this.hass.localize(
                     "ui.panel.config.cloud.account.google.not_configured_title"
                   )}

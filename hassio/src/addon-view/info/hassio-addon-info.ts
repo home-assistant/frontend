@@ -144,14 +144,14 @@ class HassioAddonInfo extends LitElement {
                       this.addon.arch
                     )
                     ? html`
-                        <ha-alert alert-type="warning">
+                        <ha-alert .hass=${this.hass} alert-type="warning">
                           ${this.supervisor.localize(
                             "addon.dashboard.not_available_arch"
                           )}
                         </ha-alert>
                       `
                     : html`
-                        <ha-alert alert-type="warning">
+                        <ha-alert .hass=${this.hass} alert-type="warning">
                           ${this.supervisor.localize(
                             "addon.dashboard.not_available_arch",
                             "core_version_installed",
@@ -572,7 +572,9 @@ class HassioAddonInfo extends LitElement {
             </div>
           </div>
           ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            ? html`<ha-alert .hass=${this.hass} alert-type="error">
+                ${this._error}
+              </ha-alert>`
             : ""}
           ${!this.addon.version && addonStoreInfo && !this.addon.available
             ? !addonArchIsSupported(
@@ -580,14 +582,14 @@ class HassioAddonInfo extends LitElement {
                 this.addon.arch
               )
               ? html`
-                  <ha-alert alert-type="warning">
+                  <ha-alert .hass=${this.hass} alert-type="warning">
                     ${this.supervisor.localize(
                       "addon.dashboard.not_available_arch"
                     )}
                   </ha-alert>
                 `
               : html`
-                  <ha-alert alert-type="warning">
+                  <ha-alert .hass=${this.hass} alert-type="warning">
                     ${this.supervisor.localize(
                       "addon.dashboard.not_available_version",
                       "core_version_installed",

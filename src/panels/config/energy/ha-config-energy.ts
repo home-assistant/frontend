@@ -78,7 +78,7 @@ class HaConfigEnergy extends LitElement {
         .route=${this.route}
         .tabs=${configSections.experiences}
       >
-        <ha-alert>
+        <ha-alert .hass=${this.hass}>
           After setting up a new device, it can take up to 2 hours for new data
           to arrive in your energy dashboard.
         </ha-alert>

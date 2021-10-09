@@ -11,6 +11,8 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
+import { computeRTL } from "../common/util/compute_rtl";
+import { HomeAssistant } from "../types";
 import "./ha-svg-icon";
 
 const ALERT_ICONS = {
@@ -29,6 +31,8 @@ declare global {
 
 @customElement("ha-alert")
 class HaAlert extends LitElement {
+  @property({ type: Object }) public hass?: HomeAssistant;
+
   @property() public title = "";
 
   @property({ attribute: "alert-type" }) public alertType:
@@ -37,7 +41,7 @@ class HaAlert extends LitElement {
     | "error"
     | "success" = "info";
 
-  @property({ attribute: "action-text" }) public actionText = "";
+  @property({ attribute: "action-text" }) public actionText?: string;
 
   @property({ type: Boolean }) public dismissable = false;
 
@@ -47,7 +51,7 @@ class HaAlert extends LitElement {
     return html`
       <div
         class="issue-type ${classMap({
-          rtl: this.rtl,
+          rtl: this.hass ? computeRTL(this.hass) : this.rtl,
           [this.alertType]: true,
         })}"
       >

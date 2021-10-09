@@ -252,7 +252,7 @@ export class DialogHassioNetwork
             `
           : ""}
         ${this._dirty
-          ? html`<ha-alert alert-type="warning">
+          ? html`<ha-alert .hass=${this.hass} alert-type="warning">
               ${this.supervisor.localize("dialog.network.warning")}
             </ha-alert>`
           : ""}

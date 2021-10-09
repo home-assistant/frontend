@@ -64,7 +64,9 @@ class HassioAddonNetwork extends LitElement {
       >
         <div class="card-content">
           ${this._error
-            ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+            ? html`<ha-alert .hass=${this.hass} alert-type="error">
+                ${this._error}
+              </ha-alert>`
             : ""}
 
           <table>

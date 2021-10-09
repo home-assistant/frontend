@@ -23,6 +23,7 @@ class EnergyValidationMessage extends LitElement {
     return Object.entries(grouped).map(
       ([issueType, gIssues]) => html`
           <ha-alert
+            .hass=${this.hass}
             alert-type="warning"
             .title=${
               this.hass.localize(

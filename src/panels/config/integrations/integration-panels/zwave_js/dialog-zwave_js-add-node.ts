@@ -166,7 +166,7 @@ class DialogZWaveJSAddNode extends LitElement {
                 </p>
                 ${
                   this._error
-                    ? html`<ha-alert alert-type="error"
+                    ? html`<ha-alert .hass=${this.hass} alert-type="error"
                         >${this._error}</ha-alert
                       >`
                     : ""
@@ -192,7 +192,9 @@ class DialogZWaveJSAddNode extends LitElement {
           ? html`
               <h3>The device has requested the following security classes:</h3>
               ${this._error
-                ? html`<ha-alert alert-type="error">${this._error}</ha-alert>`
+                ? html`<ha-alert .hass=${this.hass} alert-type="error"
+                    >${this._error}</ha-alert
+                  >`
                 : ""}
               <div class="flex-column">
                 ${this._requestedGrant?.securityClasses
@@ -356,6 +358,7 @@ class DialogZWaveJSAddNode extends LitElement {
                   </p>
                   ${this._lowSecurity
                     ? html`<ha-alert
+                        .hass=${this.hass}
                         alert-type="warning"
                         title="The device was added insecurely"
                       >
