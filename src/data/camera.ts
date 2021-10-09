@@ -86,19 +86,15 @@ export const fetchStreamUrl = async (
   return stream;
 };
 
-export const handleWebRtcOffer = async (
+export const handleWebRtcOffer = (
   hass: HomeAssistant,
   entityId: string,
   offer: string
-) => {
-  const data = {
+) => hass.callWS<WebRtcAnswer>({
     type: "camera/web_rtc_offer",
     entity_id: entityId,
     offer: offer,
-  };
-  const answer = await hass.callWS<WebRtcAnswer>(data);
-  return answer;
-};
+  });
 
 export const fetchCameraPrefs = (hass: HomeAssistant, entityId: string) =>
   hass.callWS<CameraPreferences>({

@@ -88,8 +88,8 @@ class HaWebRtcPlayer extends LitElement {
     let webRtcAnswer: WebRtcAnswer;
     try {
       webRtcAnswer = await handleWebRtcOffer(
-        this.hass!,
-        this.entityid!,
+        this.hass,
+        this.entityid,
         offer.sdp!
       );
     } catch (err: any) {
