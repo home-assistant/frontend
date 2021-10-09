@@ -11,6 +11,8 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @query("ha-time-input", true) private _input?: HTMLElement;
 
   public focus() {
@@ -25,6 +27,7 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
         .label=${this.label}
         .required=${this.schema.required}
         .data=${this.data}
+        .disabled=${this.disabled}
       ></ha-duration-input>
     `;
   }

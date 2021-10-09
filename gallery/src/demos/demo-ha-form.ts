@@ -230,12 +230,26 @@ class DemoHaForm extends LitElement {
     ({ schema, data }) => data || computeInitialHaFormData(schema)
   );
 
+  private disabled = SCHEMAS.map(() => false);
+
   protected render(): TemplateResult {
     return html`
       ${SCHEMAS.map((info, idx) => {
         const translations = info.translations || {};
         return html`
-          <demo-black-white-row .title=${info.title} .value=${this.data[idx]}>
+          <demo-black-white-row
+            .title=${info.title}
+            .value=${this.data[idx]}
+            .disabled=${this.disabled[idx]}
+            @submitted=${() => {
+              this.disabled[idx] = true;
+              this.requestUpdate();
+              setTimeout(() => {
+                this.disabled[idx] = false;
+                this.requestUpdate();
+              }, 2000);
+            }}
+          >
             ${["light", "dark"].map(
               (slot) => html`
                 <ha-form
@@ -243,6 +257,7 @@ class DemoHaForm extends LitElement {
                   .data=${this.data[idx]}
                   .schema=${info.schema}
                   .error=${info.error}
+                  .disabled=${this.disabled[idx]}
                   .computeError=${(error) => translations[error] || error}
                   .computeLabel=${(schema) =>
                     translations[schema.name] || schema.name}
