@@ -1,6 +1,5 @@
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
