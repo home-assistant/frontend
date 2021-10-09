@@ -90,7 +90,8 @@ export const handleWebRtcOffer = (
   hass: HomeAssistant,
   entityId: string,
   offer: string
-) => hass.callWS<WebRtcAnswer>({
+) =>
+  hass.callWS<WebRtcAnswer>({
     type: "camera/web_rtc_offer",
     entity_id: entityId,
     offer: offer,
