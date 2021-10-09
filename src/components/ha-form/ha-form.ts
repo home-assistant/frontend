@@ -23,6 +23,8 @@ export class HaForm extends LitElement implements HaFormElement {
 
   @property() public error?: Record<string, string>;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @property() public computeError?: (schema: HaFormSchema, error) => string;
 
   @property() public computeLabel?: (schema: HaFormSchema) => string;
@@ -64,6 +66,7 @@ export class HaForm extends LitElement implements HaFormElement {
               schema: item,
               data: getValue(this.data, item),
               label: this._computeLabel(item),
+              disabled: this.disabled,
             })}
           `;
         })}

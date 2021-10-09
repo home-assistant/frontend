@@ -1,12 +1,16 @@
+import { Button } from "@material/mwc-button";
 import { html, LitElement, css, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 
 @customElement("demo-black-white-row")
 class DemoBlackWhiteRow extends LitElement {
   @property() title!: string;
 
   @property() value!: any;
+
+  @property() disabled = false;
 
   protected render(): TemplateResult {
     return html`
@@ -17,7 +21,12 @@ class DemoBlackWhiteRow extends LitElement {
               <slot name="light"></slot>
             </div>
             <div class="card-actions">
-              <mwc-button>Submit</mwc-button>
+              <mwc-button
+                .disabled=${this.disabled}
+                @click=${this.handleSubmit}
+              >
+                Submit
+              </mwc-button>
             </div>
           </ha-card>
         </div>
@@ -27,7 +36,12 @@ class DemoBlackWhiteRow extends LitElement {
               <slot name="dark"></slot>
             </div>
             <div class="card-actions">
-              <mwc-button>Submit</mwc-button>
+              <mwc-button
+                .disabled=${this.disabled}
+                @click=${this.handleSubmit}
+              >
+                Submit
+              </mwc-button>
             </div>
           </ha-card>
           <pre>${JSON.stringify(this.value, undefined, 2)}</pre>
@@ -49,6 +63,13 @@ class DemoBlackWhiteRow extends LitElement {
       "default",
       { dark: true }
     );
+  }
+
+  handleSubmit(ev) {
+    const content = (ev.target as Button).closest(".content")!;
+    fireEvent(this, "submitted" as any, {
+      slot: content.classList.contains("light") ? "light" : "dark",
+    });
   }
 
   static styles = css`

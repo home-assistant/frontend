@@ -18,6 +18,8 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @query("paper-checkbox", true) private _input?: HTMLElement;
 
   public focus() {
@@ -31,6 +33,7 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
       <mwc-formfield .label=${this.label}>
         <ha-checkbox
           .checked=${this.data}
+          .disabled=${this.disabled}
           @change=${this._valueChanged}
         ></ha-checkbox>
       </mwc-formfield>
