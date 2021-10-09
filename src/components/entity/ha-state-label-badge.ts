@@ -73,9 +73,12 @@ export class HaStateLabelBadge extends LitElement {
 
     const value = this._computeValue(domain, entityState);
     const icon = this.icon ? this.icon : this._computeIcon(domain, entityState);
-    const image = this.icon ? "" : this.image ? this.image :
-      (entityState.attributes.entity_picture_local ||
-      entityState.attributes.entity_picture);
+    const image = this.icon
+      ? ""
+      : this.image
+      ? this.image
+      : entityState.attributes.entity_picture_local ||
+        entityState.attributes.entity_picture;
 
     return html`
       <ha-label-badge
