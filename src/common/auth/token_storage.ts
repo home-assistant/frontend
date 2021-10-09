@@ -18,19 +18,16 @@ let tokenCache = window.__tokenCache;
 if (!tokenCache) {
   tokenCache = window.__tokenCache = {
     tokens: undefined,
-    writeEnabled: undefined,
   };
 }
 
 export function askWrite() {
-  return (
-    tokenCache.tokens !== undefined && tokenCache.writeEnabled === undefined
-  );
+  return tokenCache.tokens !== undefined;
 }
 
 export function saveTokens(tokens: AuthData | null) {
   tokenCache.tokens = tokens;
-  if (tokenCache.writeEnabled) {
+  if (storage.getItem("keepSignedIn")) {
     try {
       storage.hassTokens = JSON.stringify(tokens);
     } catch (err: any) {
@@ -40,10 +37,11 @@ export function saveTokens(tokens: AuthData | null) {
 }
 
 export function enableWrite() {
-  tokenCache.writeEnabled = true;
-  if (tokenCache.tokens) {
-    saveTokens(tokenCache.tokens);
-  }
+  storage.setItem("keepSignedIn", "true");
+}
+
+export function disableWrite() {
+  storage.removeItem("keepSignedIn");
 }
 
 export function loadTokens() {

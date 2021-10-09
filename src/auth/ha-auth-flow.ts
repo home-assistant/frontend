@@ -7,9 +7,11 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import "./ha-password-manager-polyfill";
 import { property, state } from "lit/decorators";
+import { disableWrite, enableWrite } from "../common/auth/token_storage";
+import "../components/ha-checkbox";
 import "../components/ha-form/ha-form";
+import "../components/ha-formfield";
 import "../components/ha-markdown";
 import "../components/ha-alert";
 import { AuthProvider } from "../data/auth";
@@ -19,6 +21,7 @@ import {
 } from "../data/data_entry_flow";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
+import "./ha-password-manager-polyfill";
 
 type State = "loading" | "error" | "step";
 
@@ -201,9 +204,26 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             .computeError=${this._computeErrorCallback(step)}
             @value-changed=${this._stepDataChanged}
           ></ha-form>
+          <ha-formfield
+            class="keep-logged-in"
+            .label=${this.localize("ui.panel.page-authorize.keep_logged_in")}
+          >
+            <ha-checkbox
+              .checked=${false}
+              @change=${this._keepLoggedInChanged}
+            ></ha-checkbox>
+          </ha-formfield>
         `;
       default:
         return html``;
+    }
+  }
+
+  private _keepLoggedInChanged(e: CustomEvent<HTMLInputElement>) {
+    if ((e.currentTarget as any).checked) {
+      enableWrite();
+    } else {
+      disableWrite();
     }
   }
 
@@ -356,6 +376,10 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       .action {
         margin: 24px 0 8px;
         text-align: center;
+      }
+      /* Align with the rest of the form. */
+      .keep-logged-in {
+        margin-left: -15px;
       }
     `;
   }
