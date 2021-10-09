@@ -1,5 +1,9 @@
+import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-radio-button/paper-radio-button";
+import "@polymer/paper-radio-group/paper-radio-group";
+import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -14,8 +18,15 @@ import {
 } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
-import "../../components/hui-views-list";
 import type { SelectViewDialogParams } from "./show-select-view-dialog";
+
+declare global {
+  interface HASSDomEvents {
+    "view-selected": {
+      view: number;
+    };
+  }
+}
 
 @customElement("hui-dialog-select-view")
 export class HuiDialogSelectView extends LitElement {
@@ -97,34 +108,21 @@ export class HuiDialogSelectView extends LitElement {
           : ""}
         ${this._config
           ? html`
-              <ha-paper-dropdown-menu
-                .label=${this.hass.localize(
-                  "ui.panel.lovelace.editor.select_view.views_label"
-                )}
+              <paper-radio-group
+                @selected-changed=${this._viewChanged}
+                .selected=${this._selectedViewIdx}
               >
-                <paper-listbox
-                  slot="dropdown-content"
-                  .selected=${this._selectedViewIdx}
-                >
-                  ${this._config.views.map(
-                    (view, idx) => html`
-                      <paper-icon-item
-                        .data-index=${idx}
-                        @click=${this._viewChanged}
-                        data-index=${idx}
-                      >
-                        ${view.icon
-                          ? html`<ha-icon
-                              slot="item-icon"
-                              .icon=${view.icon || "hass:cast"}
-                            ></ha-icon>`
-                          : ""}
-                        <paper-item-body>${view.title}</paper-item-body>
-                      </paper-icon-item>
-                    `
-                  )}
-                </paper-listbox>
-              </ha-paper-dropdown-menu>
+                ${this._config.views.map(
+                  (view, idx) => html`
+                    <paper-radio-button .name=${idx.toString()}>
+                      ${view.icon
+                        ? html` <ha-icon .icon=${view.icon}></ha-icon> `
+                        : ""}
+                      ${view.title}
+                    </paper-radio-button>
+                  `
+                )}
+              </paper-radio-group>
             `
           : html`<div>No config found.</div>`}
         <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
@@ -151,6 +149,7 @@ export class HuiDialogSelectView extends LitElement {
       urlPath = null;
     }
     this._urlPath = urlPath;
+    this._selectedViewIdx = 0;
     try {
       this._config = await fetchConfig(this.hass.connection, urlPath, false);
     } catch (err: any) {
@@ -159,7 +158,8 @@ export class HuiDialogSelectView extends LitElement {
   }
 
   private _viewChanged(e: CustomEvent) {
-    const view = Number((e.currentTarget as any).getAttribute("data-index"));
+    const view = Number((e.target as PaperRadioGroupElement).selected);
+
     if (!isNaN(view)) {
       this._selectedViewIdx = view;
     }
@@ -181,6 +181,9 @@ export class HuiDialogSelectView extends LitElement {
       css`
         ha-paper-dropdown-menu {
           width: 100%;
+        }
+        paper-radio-button {
+          display: block;
         }
       `,
     ];
