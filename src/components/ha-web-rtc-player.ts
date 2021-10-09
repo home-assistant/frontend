@@ -7,7 +7,6 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import { handleWebRtcOffer, WebRtcAnswer } from "../data/camera";
 import type { HomeAssistant } from "../types";
 import "./ha-alert";
@@ -51,7 +50,6 @@ class HaWebRtcPlayer extends LitElement {
         .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
-        @loadeddata=${this._elementResized}
       ></video>
     `;
   }
@@ -110,10 +108,6 @@ class HaWebRtcPlayer extends LitElement {
       sdp: webRtcAnswer.answer,
     });
     await peerConnection.setRemoteDescription(remoteDesc);
-  }
-
-  private _elementResized() {
-    fireEvent(this, "iron-resize");
   }
 
   private _cleanUp() {
