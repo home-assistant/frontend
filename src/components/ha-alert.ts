@@ -7,7 +7,7 @@ import {
   mdiClose,
   mdiInformationOutline,
 } from "@mdi/js";
-import { css, html, LitElement } from "lit";
+import { css, html, LitElement, PropertyValues } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
@@ -46,6 +46,18 @@ class HaAlert extends LitElement {
   @property({ type: Boolean }) public dismissable = false;
 
   @property({ type: Boolean }) public rtl = false;
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.size !== 1 || !changedProps.has("hass")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant;
+    if (!oldHass || !this.hass) {
+      return false;
+    }
+    return this.hass.language !== oldHass.language;
+  }
 
   public render() {
     return html`
