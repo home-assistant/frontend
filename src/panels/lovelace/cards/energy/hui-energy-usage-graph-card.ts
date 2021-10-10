@@ -98,8 +98,10 @@ export class HuiEnergyUsageGraphCard
           ${!this._chartData.datasets.some((dataset) => dataset.data.length)
             ? html`<div class="no-data">
                 ${isToday(this._start)
-                  ? "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."
-                  : "There is no data for this period."}
+                  ? this.hass.localize("ui.panel.lovelace.cards.energy.no_data")
+                  : this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.no_data_period"
+                    )}
               </div>`
             : ""}
         </div>
@@ -204,16 +206,14 @@ export class HuiEnergyUsageGraphCard
                 }
                 return [
                   totalConsumed
-                    ? `Total consumed: ${formatNumber(
-                        totalConsumed,
-                        locale
-                      )} kWh`
+                    ? `${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed"
+                      )}: ${formatNumber(totalConsumed, locale)} kWh`
                     : "",
                   totalReturned
-                    ? `Total returned: ${formatNumber(
-                        totalReturned,
-                        locale
-                      )} kWh`
+                    ? `${this.hass.localize(
+                        "ui.panel.lovelace.cards.energyenergy_usage_graph.total_returned"
+                      )}: ${formatNumber(totalReturned, locale)} kWh`
                     : "",
                 ].filter(Boolean);
               },
@@ -344,9 +344,15 @@ export class HuiEnergyUsageGraphCard
         .trim(),
     };
     const labels = {
-      used_grid: "Combined from grid",
-      used_solar: "Consumed solar",
-      used_battery: "Consumed battery",
+      used_grid: this.hass.localize(
+        "ui.panel.lovelace.cards.energy.energy_usage_graph.combined_from_grid"
+      ),
+      used_solar: this.hass.localize(
+        "ui.panel.lovelace.cards.energy.energy_usage_graph.consumed_solar"
+      ),
+      used_battery: this.hass.localize(
+        "ui.panel.lovelace.cards.energy.energy_usage_graph.consumed_battery"
+      ),
     };
 
     const backgroundColor = computedStyles

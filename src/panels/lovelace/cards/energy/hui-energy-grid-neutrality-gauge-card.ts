@@ -61,7 +61,9 @@ class HuiEnergyGridGaugeCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     const prefs = this._data.prefs;
@@ -102,11 +104,13 @@ class HuiEnergyGridGaugeCard
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
-                  This card represents your energy dependency.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
+                  )}
                   <br /><br />
-                  If it's green, it means you produced more energy than that you
-                  consumed from the grid. If it's in the red, it means that you
-                  relied on the grid for part of your home's energy consumption.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.red_green_color_explain"
+                  )}
                 </span>
               </paper-tooltip>
 
@@ -126,11 +130,17 @@ class HuiEnergyGridGaugeCard
               ></ha-gauge>
               <div class="name">
                 ${returnedToGrid! >= consumedFromGrid!
-                  ? "Net returned to the grid"
-                  : "Net consumed from the grid"}
+                  ? this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_returned_grid"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_consumed_grid"
+                    )}
               </div>
             `
-          : "Grid neutrality could not be calculated"}
+          : this.hass.localize(
+              "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.grid_neutrality_not_calculated"
+            )}
       </ha-card>
     `;
   }

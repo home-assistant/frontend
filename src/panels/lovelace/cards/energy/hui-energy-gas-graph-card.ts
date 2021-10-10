@@ -110,8 +110,10 @@ export class HuiEnergyGasGraphCard
           ${!this._chartData.datasets.length
             ? html`<div class="no-data">
                 ${isToday(this._start)
-                  ? "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."
-                  : "There is no data for this period."}
+                  ? this.hass.localize("ui.panel.lovelace.cards.energy.no_data")
+                  : this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.no_data_period"
+                    )}
               </div>`
             : ""}
         </div>
