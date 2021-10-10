@@ -78,7 +78,11 @@ export class EnergyBatterySettings extends LitElement {
               `
           )}
 
-          <h3>Battery systems</h3>
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.energy.battery.battery_systems"
+            )}
+          </h3>
           ${batterySources.map((source) => {
             const fromEntityState = this.hass.states[source.stat_energy_from];
             const toEntityState = this.hass.states[source.stat_energy_to];
@@ -113,7 +117,9 @@ export class EnergyBatterySettings extends LitElement {
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiBatteryHigh}></ha-svg-icon>
             <mwc-button @click=${this._addSource}
-              >Add battery system</mwc-button
+              >${this.hass.localize(
+                "ui.panel.config.energy.battery.add_battery_system"
+              )}</mwc-button
             >
           </div>
         </div>
@@ -154,7 +160,7 @@ export class EnergyBatterySettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you want to delete this source?",
+        title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
       return;

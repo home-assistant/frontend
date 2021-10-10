@@ -82,7 +82,7 @@ export class DialogEnergyGasSettings
             .path=${mdiFire}
             style="--mdc-icon-size: 32px;"
           ></ha-svg-icon>
-          Configure Gas consumption`}
+          ${this.hass.localize("ui.panel.config.energy.gas.dialog.header")}`}
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -95,9 +95,13 @@ export class DialogEnergyGasSettings
             ? ENERGY_GAS_ENERGY_UNITS
             : ENERGY_GAS_VOLUME_UNITS}
           .value=${this._source.stat_energy_from}
-          .label=${`Gas usage (${
+          .label=${`${this.hass.localize(
+            "ui.panel.config.energy.gas.dialog.gas_usage"
+          )} (${
             this._params.unit === undefined
-              ? "m³ or kWh"
+              ? this.hass.localize(
+                  "ui.panel.config.energy.gas.dialog.m3_or_kWh"
+                )
               : this._params.unit === "energy"
               ? "kWh"
               : "m³"
