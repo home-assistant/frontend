@@ -3,17 +3,21 @@ import { HomeAssistant } from "../../../types";
 
 export interface Condition {
   entity: string;
+  attribute?: string;
   state?: string;
   state_not?: string;
 }
 
 export function checkConditionsMet(
   conditions: Condition[],
-  hass: HomeAssistant
+  hass: HomeAssistant,
 ): boolean {
   return conditions.every((c) => {
-    const state = hass.states[c.entity]
-      ? hass!.states[c.entity].state
+    const entity = hass!.states[c.entity];
+    const state = entity
+      ? c.attribute
+        ? entity.attributes[c.attribute] || UNAVAILABLE
+        : entity.state
       : UNAVAILABLE;
 
     return c.state ? state === c.state : state !== c.state_not;
