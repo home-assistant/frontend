@@ -331,9 +331,8 @@ export class HuiAreaCard
 
     entities.forEach((entity) => {
       const domain = computeDomain(entity.entity_id);
-      const isToggle = DOMAINS_TOGGLE.has(domain);
 
-      if (this._entitiesToggle!.length < 3 && isToggle) {
+      if (this._entitiesToggle!.length < 5 && DOMAINS_TOGGLE.has(domain)) {
         this._entitiesToggle!.push(entity.entity_id);
         return;
       }
@@ -341,8 +340,8 @@ export class HuiAreaCard
       const stateObj = this.hass!.states[entity.entity_id];
 
       if (
-        this._entitiesDialog!.length < 3 &&
-        !isToggle &&
+        this._entitiesDialog!.length < 5 &&
+        AREA_NON_TOGGLE_DOMAINS.includes(domain) &&
         stateObj.attributes.device_class &&
         AREA_SENSOR_CLASSES.includes(stateObj.attributes.device_class)
       ) {
@@ -397,12 +396,12 @@ export class HuiAreaCard
 
         .name {
           color: white;
-          font-size: 22px;
+          font-size: 24px;
           font-weight: 300;
           letter-spacing: 0.175rem;
           position: absolute;
           transform: translate(0px, -50%);
-          bottom: 1%;
+          bottom: 3%;
           left: 2%;
         }
 
@@ -417,7 +416,7 @@ export class HuiAreaCard
           background-color: var(--area-button-on-color, rgb(175, 175, 175));
           border-radius: 50%;
           margin-left: 8px;
-          --mdc-icon-button-size: 36px;
+          --mdc-icon-button-size: 44px;
         }
 
         ha-icon-button.off {
@@ -429,10 +428,11 @@ export class HuiAreaCard
 
         .sensors {
           color: white;
-          font-size: 16px;
+          font-size: 18px;
           position: absolute;
           top: 5%;
           left: 2%;
+          --mdc-icon-size: 28px;
         }
       `,
     ];
