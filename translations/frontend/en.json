@@ -992,7 +992,8 @@
                     "note": "Note: This might not work yet with all integrations.",
                     "open_device_settings": "Open device settings",
                     "unavailable": "This entity is not currently available.",
-                    "update": "Update"
+                    "update": "Update",
+                    "customize": "Customize"
                 },
                 "faq": "documentation",
                 "info_customize": "You can overwrite some attributes in the {customize_link} section.",

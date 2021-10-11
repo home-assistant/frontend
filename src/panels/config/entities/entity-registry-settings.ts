@@ -13,6 +13,7 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
+import { navigate } from "../../../common/navigate";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
 import "../../../components/ha-icon-input";
@@ -235,14 +236,23 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           : ""}
       </div>
       <div class="buttons">
-        <mwc-button
-          class="warning"
-          @click=${this._confirmDeleteEntry}
-          .disabled=${this._submitting ||
-          !(stateObj && stateObj.attributes.restored)}
-        >
-          ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
-        </mwc-button>
+        <div>
+          <mwc-button
+            class="warning"
+            @click=${this._confirmDeleteEntry}
+            .disabled=${this._submitting ||
+            !(stateObj && stateObj.attributes.restored)}
+          >
+            ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
+          </mwc-button>
+          ${this.hass.userData?.showAdvanced
+            ? html`<mwc-button @click=${this._goToCustomize}>
+                ${this.hass.localize(
+                  "ui.dialogs.entity_registry.editor.customize"
+                )}
+              </mwc-button>`
+            : ""}
+        </div>
         <mwc-button
           @click=${this._updateEntry}
           .disabled=${invalidDomainUpdate || this._submitting}
@@ -354,6 +364,11 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
 
   private _disabledByChanged(ev: Event): void {
     this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
+  }
+
+  private _goToCustomize(): void {
+    navigate(`/config/customize/edit/${this.entry.entity_id}`);
+    fireEvent(this as HTMLElement, "close-dialog");
   }
 
   static get styles(): CSSResultGroup {
