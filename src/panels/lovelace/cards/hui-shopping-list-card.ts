@@ -1,4 +1,4 @@
-import { mdiDrag } from "@mdi/js";
+import { mdiDrag, mdiPlus, mdiCheckboxMultipleBlankOutline } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
@@ -57,8 +57,6 @@ class HuiShoppingListCard
 
   @state() private _renderEmptySortable = false;
 
-  @state() private _sortableInit = false;
-
   private _sortable?;
 
   @query("#sortable") private _sortableEl?: HTMLElement;
@@ -116,20 +114,32 @@ class HuiShoppingListCard
       >
         <div class="card-content">
           <div class="addRow">
-            <paper-checkbox
-              tabindex="0"
-              ?disabled=${this._uncheckedItems?.length === 0 &&
-              this._checkedItems?.length === 0}
-            ></paper-checkbox>
-            ${html`<paper-textarea
-              no-label-float
-              class="addBox"
-              placeholder=${this.hass!.localize(
+            <ha-svg-icon
+              class="add-item-icon"
+              .path=${mdiCheckboxMultipleBlankOutline}
+              .title=${this.hass!.localize(
                 "ui.panel.lovelace.cards.shopping-list.add_item"
               )}
-              @paste=${this._handlePaste}
-              @keydown=${this._handleKeyPress}
-            ></paper-textarea>`}
+            >
+            </ha-svg-icon>
+            ${html`<paper-textarea
+                no-label-float
+                class="addBox"
+                placeholder=${this.hass!.localize(
+                  "ui.panel.lovelace.cards.shopping-list.add_item"
+                )}
+                @paste=${this._handlePaste}
+                @keydown=${this._handleKeyPress}
+              ></paper-textarea>
+              <ha-svg-icon
+                class="addButton"
+                .path=${mdiPlus}
+                .title=${this.hass!.localize(
+                  "ui.panel.lovelace.cards.shopping-list.add_item"
+                )}
+                @click=${this._handleInput}
+              >
+              </ha-svg-icon>`}
           </div>
           <div id="sortable">
             ${guard([this._uncheckedItems, this._renderEmptySortable], () =>
@@ -139,13 +149,13 @@ class HuiShoppingListCard
             )}
           </div>
           ${this._checkedItems!.length > 0
-            ? html`
+            ? html`<div class="checked-section">
                 ${repeat(
                   this._checkedItems!,
                   (item) => item.id,
                   (item) =>
                     html`
-                      <div class="editRow">
+                      <div class="editRow checked-item">
                         <paper-checkbox
                           tabindex="0"
                           ?checked=${item.complete}
@@ -161,7 +171,16 @@ class HuiShoppingListCard
                       </div>
                     `
                 )}
-              `
+                <a href="" class="clear-items-link" @click=${this._clearItems}>
+                  ${this._checkedItems!.length === 1
+                    ? this.hass!.localize(
+                        "ui.panel.lovelace.cards.shopping-list.clear_item"
+                      )
+                    : this.hass!.localize(
+                        "ui.panel.lovelace.cards.shopping-list.clear_items"
+                      )}
+                </a>
+              </div>`
             : ""}
         </div>
       </ha-card>
@@ -220,12 +239,7 @@ class HuiShoppingListCard
     }
     this._checkedItems = checkedItems;
     this._uncheckedItems = uncheckedItems;
-    await this.updateComplete;
-    if (!this._sortableInit) {
-      this._createSortable();
-      this._sortableInit = true;
-      await this.updateComplete;
-    }
+    this._createSortable();
   }
 
   private _completeItem(ev): void {
@@ -277,6 +291,13 @@ class HuiShoppingListCard
     }
   }
 
+  private _handleInput() {
+    const inputContent = this._newItem.value;
+    if (inputContent) {
+      this._splitOnLineBreaks(inputContent);
+    }
+  }
+
   private _handlePaste(ev: {
     clipboardData: { getData: (arg0: string) => string };
   }): void {
@@ -304,9 +325,9 @@ class HuiShoppingListCard
     const sortableEl = this._sortableEl;
     this._sortable = new Sortable(sortableEl, {
       animation: 150,
-      fallbackClass: "sortable-fallback",
       dataIdAttr: "item-id",
-      handle: "ha-svg-icon",
+      fallbackClass: "sortable-fallback",
+      handle: ".reorderButton",
       onEnd: async (evt) => {
         // Since this is `onEnd` event, it's possible that
         // an item wa dragged away and was put back to its original position.
@@ -343,58 +364,37 @@ class HuiShoppingListCard
       }
 
       .editRow,
-      .addRow,
-      .checked,
-      .input-mode,
-      .input-mode .item {
+      .addRow {
         display: flex;
         align-items: center;
+      }
+
+      .add-item-icon {
+        margin-right: 18px;
+        width: 22px;
+        height: 22px;
+        margin-left: -2px;
       }
 
       .card-content {
         margin-top: 0;
       }
 
-      .input-mode .item {
-        cursor: pointer;
-        color: var(--secondary-text-color);
-        font-weight: 500;
-      }
-
-      .input-mode .item.active,
-      .input-mode .item:hover {
-        color: var(--primary-text-color);
-      }
-
-      .input-mode .item.active:hover {
-        cursor: auto;
-      }
-
-      .input-mode .item:first-of-type {
-        margin: 0 28px 0 0;
-      }
-
-      .input-mode {
-        margin-bottom: 24px;
-      }
-
-      .input-mode ha-svg-icon {
-        --mdc-icon-size: 18px;
-        padding-right: 4px;
-      }
-
       .addButton {
-        padding-right: 16px;
+        padding: 12px 0 12px 20px;
         cursor: pointer;
       }
 
       .reorderButton {
-        padding: 12px;
+        padding: 12px 0 6px 20px;
         cursor: pointer;
       }
 
+      .sortable-ghost {
+        opacity: 0.5;
+      }
+
       paper-checkbox {
-        padding-left: 4px;
         padding-right: 20px;
         --paper-checkbox-label-spacing: 0px;
       }
@@ -404,18 +404,20 @@ class HuiShoppingListCard
         flex-grow: 1;
       }
 
-      .checked {
-        margin: 12px 0;
-        justify-content: space-between;
+      .checked-section {
+        display: flex;
+        flex-direction: column;
       }
 
-      .checked span {
-        color: var(--primary-text-color);
-        font-weight: 500;
+      .checked-item {
+        padding-right: 44px;
+        flex-grow: 1;
       }
 
-      .clearall {
-        cursor: pointer;
+      .clear-items-link {
+        padding: 6px 0 0 12px;
+        align-self: flex-end;
+        color: var(--primary-color);
       }
     `;
   }
