@@ -1,8 +1,7 @@
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
-import type { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-group";
+import "../../../../components/ha-radio";
+import "../../../../components/ha-formfield";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -107,21 +106,23 @@ export class HuiDialogSelectView extends LitElement {
           : ""}
         ${this._config
           ? html`
-              <paper-radio-group
-                @selected-changed=${this._viewChanged}
-                .selected=${this._selectedViewIdx}
-              >
-                ${this._config.views.map(
-                  (view, idx) => html`
-                    <paper-radio-button .name=${idx.toString()}>
-                      ${view.icon
-                        ? html` <ha-icon .icon=${view.icon}></ha-icon> `
-                        : ""}
-                      ${view.title}
-                    </paper-radio-button>
-                  `
-                )}
-              </paper-radio-group>
+              ${this._config.views.map(
+                (view, idx) => html`
+                  <ha-formfield
+                    .label=${view.icon
+                      ? html`<ha-icon .icon=${view.icon}></ha-icon>
+                          ${view.title}`
+                      : html`${view.title}`}
+                  >
+                    <ha-radio
+                      @click=${this._viewChanged}
+                      .value=${idx.toString()}
+                      .checked=${this._selectedViewIdx === idx}
+                    >
+                    </ha-radio>
+                  </ha-formfield>
+                `
+              )}
             `
           : html`<div>No config found.</div>`}
         <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
@@ -156,8 +157,8 @@ export class HuiDialogSelectView extends LitElement {
     }
   }
 
-  private _viewChanged(e: CustomEvent) {
-    const view = Number((e.target as PaperRadioGroupElement).selected);
+  private _viewChanged(e) {
+    const view = Number(e.target.value);
 
     if (!isNaN(view)) {
       this._selectedViewIdx = view;
@@ -181,7 +182,7 @@ export class HuiDialogSelectView extends LitElement {
         ha-paper-dropdown-menu {
           width: 100%;
         }
-        paper-radio-button {
+        ha-formfield {
           display: block;
         }
       `,
