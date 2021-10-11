@@ -1,9 +1,9 @@
-import { mdiDrag, mdiDotsVertical } from "@mdi/js";
+import { mdiDrag } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-input/paper-textarea";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { ActionDetail } from "@material/mwc-list";
+import Sortable from "sortablejs/modular/sortable.core.esm";
 import {
   css,
   CSSResultGroup,
@@ -33,8 +33,6 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { SensorCardConfig, ShoppingListCardConfig } from "./types";
 
-let Sortable;
-
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard
   extends SubscribeMixin(LitElement)
@@ -57,9 +55,9 @@ class HuiShoppingListCard
 
   @state() private _checkedItems?: ShoppingListItem[];
 
-  @state() private _reordering = false;
-
   @state() private _renderEmptySortable = false;
+
+  @state() private _sortableInit = false;
 
   private _sortable?;
 
@@ -132,39 +130,14 @@ class HuiShoppingListCard
               @paste=${this._handlePaste}
               @keydown=${this._handleKeyPress}
             ></paper-textarea>`}
-            <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-              <mwc-icon-button slot="trigger">
-                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-              </mwc-icon-button>
-              <mwc-list-item>
-                ${this.hass!.localize(
-                  "ui.panel.lovelace.cards.shopping-list.clear_items"
-                )}
-              </mwc-list-item>
-              <mwc-list-item
-                >${this._reordering
-                  ? this.hass!.localize(
-                      "ui.panel.lovelace.cards.shopping-list.hide_reordering_tool"
-                    )
-                  : this.hass!.localize(
-                      "ui.panel.lovelace.cards.shopping-list.show_reordering_tool"
-                    )}
-              </mwc-list-item>
-            </ha-button-menu>
           </div>
-          ${this._reordering
-            ? html`
-                <div id="sortable">
-                  ${guard(
-                    [this._uncheckedItems, this._renderEmptySortable],
-                    () =>
-                      this._renderEmptySortable
-                        ? ""
-                        : this._renderItems(this._uncheckedItems!)
-                  )}
-                </div>
-              `
-            : this._renderItems(this._uncheckedItems!)}
+          <div id="sortable">
+            ${guard([this._uncheckedItems, this._renderEmptySortable], () =>
+              this._renderEmptySortable
+                ? ""
+                : this._renderItems(this._uncheckedItems!)
+            )}
+          </div>
           ${this._checkedItems!.length > 0
             ? html`
                 ${repeat(
@@ -215,18 +188,16 @@ class HuiShoppingListCard
                 .itemId=${item.id}
                 @change=${this._saveEdit}
               ></paper-input>
-              ${this._reordering
-                ? html`
-                    <ha-svg-icon
-                      .title=${this.hass!.localize(
-                        "ui.panel.lovelace.cards.shopping-list.drag_and_drop"
-                      )}
-                      class="reorderButton"
-                      .path=${mdiDrag}
-                    >
-                    </ha-svg-icon>
-                  `
-                : ""}
+              ${html`
+                <ha-svg-icon
+                  .title=${this.hass!.localize(
+                    "ui.panel.lovelace.cards.shopping-list.drag_and_drop"
+                  )}
+                  class="reorderButton"
+                  .path=${mdiDrag}
+                >
+                </ha-svg-icon>
+              `}
             </div>
           `
       )}
@@ -249,16 +220,11 @@ class HuiShoppingListCard
     }
     this._checkedItems = checkedItems;
     this._uncheckedItems = uncheckedItems;
-  }
-
-  private _handleAction(ev: CustomEvent<ActionDetail>) {
-    switch (ev.detail.index) {
-      case 0:
-        this._clearItems();
-        break;
-      case 1:
-        this._toggleReorder();
-        break;
+    await this.updateComplete;
+    if (!this._sortableInit) {
+      this._createSortable();
+      this._sortableInit = true;
+      await this.updateComplete;
     }
   }
 
@@ -331,23 +297,6 @@ class HuiShoppingListCard
     }
     if (ev.keyCode === 13 && ev.shiftKey && !inputContent) {
       ev.preventDefault();
-    }
-  }
-
-  private async _toggleReorder() {
-    if (!Sortable) {
-      const sortableImport = await import(
-        "sortablejs/modular/sortable.core.esm"
-      );
-      Sortable = sortableImport.Sortable;
-    }
-    this._reordering = !this._reordering;
-    await this.updateComplete;
-    if (this._reordering) {
-      this._createSortable();
-    } else {
-      this._sortable?.destroy();
-      this._sortable = undefined;
     }
   }
 
