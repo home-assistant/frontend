@@ -267,21 +267,20 @@ class HuiShoppingListCard
   }
 
   private _addItem(item: string): void {
-    const newItem = this._newItem;
     if (item.length > 0) {
       addItem(this.hass!, item).catch(() => this._fetchData());
     }
-
-    newItem.value = "";
   }
 
   private _setUpList(input: string[]): void {
+    const newItem = this._newItem;
     for (const item of input) {
       const trimmed = item.trim();
       if (trimmed !== "") {
         this._addItem(trimmed);
       }
     }
+    newItem.value = "";
   }
 
   private _splitOnLineBreaks(input: string) {
@@ -300,7 +299,9 @@ class HuiShoppingListCard
 
   private _handlePaste(ev: {
     clipboardData: { getData: (arg0: string) => string };
+    preventDefault: () => void;
   }): void {
+    ev.preventDefault();
     this._splitOnLineBreaks(ev.clipboardData.getData("text"));
   }
 
