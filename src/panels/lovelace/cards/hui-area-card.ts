@@ -414,14 +414,17 @@ export class HuiAreaCard
 
         ha-icon-button {
           color: white;
-          background-color: rgb(175, 175, 175);
+          background-color: var(--area-button-on-color, rgb(175, 175, 175));
           border-radius: 50%;
           margin-left: 8px;
           --mdc-icon-button-size: 36px;
         }
 
         ha-icon-button.off {
-          background-color: rgba(175, 175, 175, 0.5);
+          background-color: var(
+            --area-button-off-color,
+            rgba(175, 175, 175, 0.5)
+          );
         }
 
         .sensors {
