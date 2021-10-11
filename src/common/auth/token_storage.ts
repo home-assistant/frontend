@@ -22,7 +22,7 @@ if (!tokenCache) {
 }
 
 export function askWrite() {
-  return tokenCache.tokens !== undefined;
+  return tokenCache.tokens !== undefined && storage.getItem("keepSignedIn");
 }
 
 export function saveTokens(tokens: AuthData | null) {
@@ -38,6 +38,9 @@ export function saveTokens(tokens: AuthData | null) {
 
 export function enableWrite() {
   storage.setItem("keepSignedIn", "true");
+  if (tokenCache.tokens) {
+    saveTokens(tokenCache.tokens);
+  }
 }
 
 export function disableWrite() {
