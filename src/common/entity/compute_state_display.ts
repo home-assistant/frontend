@@ -39,7 +39,7 @@ export const computeStateDisplay = (
   const domain = computeStateDomain(stateObj);
 
   if (domain === "input_datetime") {
-    if (state) {
+    if (state !== undefined) {
       // If trying to display an explicit state, need to parse the explict state to `Date` then format.
       // Attributes aren't available, we have to use `state`.
       try {
@@ -63,7 +63,7 @@ export const computeStateDisplay = (
           }
         }
         return state;
-      } catch {
+      } catch (_e) {
         // Formatting methods may throw error if date parsing doesn't go well,
         // just return the state string in that case.
         return state;
@@ -71,28 +71,32 @@ export const computeStateDisplay = (
     } else {
       // If not trying to display an explicit state, create `Date` object from `stateObj`'s attributes then format.
       let date: Date;
-      if (!stateObj.attributes.has_time) {
+      try {
+        if (!stateObj.attributes.has_time) {
+          date = new Date(
+            stateObj.attributes.year,
+            stateObj.attributes.month - 1,
+            stateObj.attributes.day
+          );
+          return formatDate(date, locale);
+        }
+        if (!stateObj.attributes.has_date) {
+          date = new Date();
+          date.setHours(stateObj.attributes.hour, stateObj.attributes.minute);
+          return formatTime(date, locale);
+        }
+
         date = new Date(
           stateObj.attributes.year,
           stateObj.attributes.month - 1,
-          stateObj.attributes.day
+          stateObj.attributes.day,
+          stateObj.attributes.hour,
+          stateObj.attributes.minute
         );
-        return formatDate(date, locale);
+        return formatDateTime(date, locale);
+      } catch (_e) {
+        return stateObj.state;
       }
-      if (!stateObj.attributes.has_date) {
-        date = new Date();
-        date.setHours(stateObj.attributes.hour, stateObj.attributes.minute);
-        return formatTime(date, locale);
-      }
-
-      date = new Date(
-        stateObj.attributes.year,
-        stateObj.attributes.month - 1,
-        stateObj.attributes.day,
-        stateObj.attributes.hour,
-        stateObj.attributes.minute
-      );
-      return formatDateTime(date, locale);
     }
   }
 
