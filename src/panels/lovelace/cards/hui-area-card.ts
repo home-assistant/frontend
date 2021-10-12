@@ -332,7 +332,7 @@ export class HuiAreaCard
     entities.forEach((entity) => {
       const domain = computeDomain(entity.entity_id);
 
-      if (this._entitiesToggle!.length < 5 && DOMAINS_TOGGLE.has(domain)) {
+      if (this._entitiesToggle!.length < 3 && DOMAINS_TOGGLE.has(domain)) {
         this._entitiesToggle!.push(entity.entity_id);
         return;
       }
@@ -340,7 +340,7 @@ export class HuiAreaCard
       const stateObj = this.hass!.states[entity.entity_id];
 
       if (
-        this._entitiesDialog!.length < 5 &&
+        this._entitiesDialog!.length < 3 &&
         AREA_NON_TOGGLE_DOMAINS.includes(domain) &&
         stateObj.attributes.device_class &&
         AREA_SENSOR_CLASSES.includes(stateObj.attributes.device_class)
