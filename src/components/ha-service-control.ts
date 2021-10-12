@@ -24,6 +24,11 @@ import "./ha-settings-row";
 import "./ha-yaml-editor";
 import type { HaYamlEditor } from "./ha-yaml-editor";
 
+const showOptionalToggle = (field) =>
+  field.selector &&
+  !field.required &&
+  !("boolean" in field.selector && field.default);
+
 interface ExtHassService extends Omit<HassService, "fields"> {
   fields: {
     key: string;
@@ -185,7 +190,7 @@ export class HaServiceControl extends LitElement {
 
     const hasOptional = Boolean(
       !shouldRenderServiceDataYaml &&
-        serviceData?.fields.some((field) => field.selector && !field.required)
+        serviceData?.fields.some((field) => showOptionalToggle(field))
     );
 
     return html`<ha-service-picker
@@ -254,14 +259,15 @@ export class HaServiceControl extends LitElement {
             .defaultValue=${this._value?.data}
             @value-changed=${this._dataChanged}
           ></ha-yaml-editor>`
-        : serviceData?.fields.map((dataField) =>
-            dataField.selector &&
-            (!dataField.advanced ||
-              this.showAdvanced ||
-              (this._value?.data &&
-                this._value.data[dataField.key] !== undefined))
+        : serviceData?.fields.map((dataField) => {
+            const showOptional = showOptionalToggle(dataField);
+            return dataField.selector &&
+              (!dataField.advanced ||
+                this.showAdvanced ||
+                (this._value?.data &&
+                  this._value.data[dataField.key] !== undefined))
               ? html`<ha-settings-row .narrow=${this.narrow}>
-                  ${dataField.required
+                  ${!showOptional
                     ? hasOptional
                       ? html`<div slot="prefix" class="checkbox-spacer"></div>`
                       : ""
@@ -276,7 +282,7 @@ export class HaServiceControl extends LitElement {
                   <span slot="heading">${dataField.name || dataField.key}</span>
                   <span slot="description">${dataField?.description}</span>
                   <ha-selector
-                    .disabled=${!dataField.required &&
+                    .disabled=${showOptional &&
                     !this._checkedKeys.has(dataField.key) &&
                     (!this._value?.data ||
                       this._value.data[dataField.key] === undefined)}
@@ -290,8 +296,8 @@ export class HaServiceControl extends LitElement {
                       : dataField.default}
                   ></ha-selector>
                 </ha-settings-row>`
-              : ""
-          )} `;
+              : "";
+          })}`;
   }
 
   private _checkboxChanged(ev) {
