@@ -147,6 +147,7 @@ class HaAutomationPicker extends LitElement {
       }
       columns.actions = {
         title: "",
+        type: "icon",
         template: (_info, automation: any) => html`
           <ha-overflow-menu
             .hass=${this.hass}

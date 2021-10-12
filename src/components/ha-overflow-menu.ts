@@ -14,7 +14,7 @@ export class HaOverflowMenu extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="ha-overflow-menu">
-        <ha-button-menu corner="BOTTOM_START" fixed>
+        <ha-button-menu corner="BOTTOM_START" absolute>
           <mwc-icon-button
             .title=${this.hass.localize("ui.common.menu")}
             .label=${this.hass.localize("ui.common.overflow_menu")}
@@ -33,7 +33,6 @@ export class HaOverflowMenu extends LitElement {
     return css`
       :host {
         display: flex;
-        background: red;
       }
 
       @media all and (max-width: 500px) {
