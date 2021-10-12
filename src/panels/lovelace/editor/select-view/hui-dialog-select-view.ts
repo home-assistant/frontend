@@ -1,6 +1,7 @@
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 import "../../../../components/ha-radio";
+import "../../../../components/ha-icon";
 import "../../../../components/ha-formfield";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
@@ -113,7 +114,9 @@ export class HuiDialogSelectView extends LitElement {
                       .label=${view.icon
                         ? html`<ha-icon .icon=${view.icon}></ha-icon>
                             ${view.title}`
-                        : html`${view.title}`}
+                        : html`<div style="margin-left: 27px">
+                            ${view.title}
+                          </div>`}
                     >
                       <ha-radio
                         @click=${this._viewChanged}
