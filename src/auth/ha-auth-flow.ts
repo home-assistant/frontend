@@ -379,7 +379,8 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       }
       /* Align with the rest of the form. */
       .keep-logged-in {
-        margin-left: -15px;
+        margin-top: 10px;
+        margin-left: -16px;
       }
     `;
   }
