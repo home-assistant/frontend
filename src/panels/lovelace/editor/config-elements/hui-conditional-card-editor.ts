@@ -29,6 +29,7 @@ import { configElementStyle } from "./config-elements-style";
 
 const conditionStruct = object({
   entity: string(),
+  attribute: optional(string()),
   state: optional(string()),
   state_not: optional(string()),
 });
@@ -148,6 +149,21 @@ export class HuiConditionalCardEditor
                         allow-custom-entity
                       ></ha-entity-picker>
                     </div>
+                    <div class="attribute">
+                      <ha-entity-attribute-picker
+                        .hass=${this.hass}
+                        .entityId=${cond.entity}
+                        .index=${idx}
+                        .label="${this.hass!.localize(
+                              "ui.panel.lovelace.editor.card.generic.attribute"
+                            )} (${this.hass!.localize(
+                              "ui.panel.lovelace.editor.card.config.optional"
+                            )})"
+                        .value=${cond.attribute}
+                        .configValue=${"attribute"}
+                        @value-changed=${this._changeCondition}
+                      ></ha-entity-attribute-picker>
+                    </div>
                     <div class="state">
                       <paper-dropdown-menu>
                         <paper-listbox
@@ -174,7 +190,9 @@ export class HuiConditionalCardEditor
                           "ui.panel.lovelace.editor.card.generic.state"
                         )} (${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.conditional.current_state"
-                        )}: ${this.hass?.states[cond.entity].state})"
+                        )}: ${cond.attribute 
+                          ? this.hass?.states[cond.entity].attributes[cond.attribute] 
+                          : this.hass?.states[cond.entity].state})"
                         .value=${cond.state_not !== undefined
                           ? cond.state_not
                           : cond.state}
@@ -279,6 +297,12 @@ export class HuiConditionalCardEditor
       const condition = { ...conditions[target.index] };
       if (target.configValue === "entity") {
         condition.entity = target.value;
+      } else if(target.configValue === "attribute") {
+        if (target.value === "" || target.value === undefined) {
+          delete condition.attribute;
+        } else {
+          condition.attribute = target.value;
+        }
       } else if (target.configValue === "state") {
         if (condition.state_not !== undefined) {
           condition.state_not = target.value;
