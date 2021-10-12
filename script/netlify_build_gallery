@@ -18,13 +18,7 @@ function createStatus() {
 
 
 if [[ "${PULL_REQUEST}" == "false" ]]; then
-  createStatus "pending" "Building gallery preview" "$DEPLOY_URL"
   gulp build-gallery
-  if [ $? -eq 0 ]; then
-    createStatus "success" "Build complete" "$DEPLOY_URL"
-  else
-    createStatus "error" "Build failed" "$DEPLOY_URL"
-  fi
 else
   if [[ "$(curl -sSLf -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GITHUB_TOKEN" \
     "https://api.github.com/repos/home-assistant/frontend/pulls/${REVIEW_ID::-2}" | jq '.labels[].name' -r)" =~ "$TARGET_LABEL" ]]; then
