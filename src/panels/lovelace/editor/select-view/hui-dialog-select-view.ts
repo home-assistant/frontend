@@ -105,25 +105,27 @@ export class HuiDialogSelectView extends LitElement {
             </ha-paper-dropdown-menu>`
           : ""}
         ${this._config
-          ? html`
-              ${this._config.views.map(
-                (view, idx) => html`
-                  <ha-formfield
-                    .label=${view.icon
-                      ? html`<ha-icon .icon=${view.icon}></ha-icon>
-                          ${view.title}`
-                      : html`${view.title}`}
-                  >
-                    <ha-radio
-                      @click=${this._viewChanged}
-                      .value=${idx.toString()}
-                      .checked=${this._selectedViewIdx === idx}
+          ? this._config.views.length > 1
+            ? html`
+                ${this._config.views.map(
+                  (view, idx) => html`
+                    <ha-formfield
+                      .label=${view.icon
+                        ? html`<ha-icon .icon=${view.icon}></ha-icon>
+                            ${view.title}`
+                        : html`${view.title}`}
                     >
-                    </ha-radio>
-                  </ha-formfield>
-                `
-              )}
-            `
+                      <ha-radio
+                        @click=${this._viewChanged}
+                        .value=${idx.toString()}
+                        .checked=${this._selectedViewIdx === idx}
+                      >
+                      </ha-radio>
+                    </ha-formfield>
+                  `
+                )}
+              `
+            : ``
           : html`<div>No config found.</div>`}
         <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
           ${this.hass!.localize("ui.common.cancel")}
