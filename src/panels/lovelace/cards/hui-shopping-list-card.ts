@@ -122,6 +122,7 @@ class HuiShoppingListCard
               )}
             >
             </ha-svg-icon>
+
             ${html`<paper-textarea
                 no-label-float
                 class="addBox"
@@ -371,10 +372,10 @@ class HuiShoppingListCard
       }
 
       .add-item-icon {
-        margin-right: 18px;
+        margin: 11px 18px 0 -2px;
         width: 22px;
         height: 22px;
-        margin-left: -2px;
+        align-self: flex-start;
       }
 
       .card-content {
@@ -382,8 +383,9 @@ class HuiShoppingListCard
       }
 
       .addButton {
-        padding: 12px 0 12px 20px;
+        padding: 10px 0 10px 20px;
         cursor: pointer;
+        align-self: flex-end;
       }
 
       .reorderButton {
