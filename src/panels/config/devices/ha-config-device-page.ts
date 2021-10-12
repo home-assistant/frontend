@@ -316,6 +316,25 @@ export class HaConfigDevicePage extends LitElement {
                     `
                   : html``
               }
+              ${
+                device.configuration_url
+                  ? html`
+                      <div class="card-actions" slot="actions">
+                        <a
+                          href=${device.configuration_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <mwc-button>
+                            ${this.hass.localize(
+                              "ui.panel.config.devices.open_configuration_url"
+                            )}
+                          </mwc-button>
+                        </a>
+                      </div>
+                    `
+                  : ""
+              }
               ${this._renderIntegrationInfo(device, integrations)}
               </ha-device-info-card>
 
