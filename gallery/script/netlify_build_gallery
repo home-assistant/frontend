@@ -7,6 +7,9 @@ if [[ "$NETLIFY" != "true" ]]; then
   exit 1
 fi
 
+echo "commit ref: $COMMIT_REF"
+echo "commit PR: ${REVIEW_ID::-2}"
+
 function createStatus() {
   state="$1"
   description="$2"
