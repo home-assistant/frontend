@@ -274,8 +274,8 @@ export class HaServiceControl extends LitElement {
                         slot="prefix"
                       ></ha-checkbox>`}
                   <span slot="heading">${dataField.name || dataField.key}</span>
-                  <span slot="description">${dataField?.description}</span
-                  ><ha-selector
+                  <span slot="description">${dataField?.description}</span>
+                  <ha-selector
                     .disabled=${!dataField.required &&
                     !this._checkedKeys.has(dataField.key) &&
                     (!this._value?.data ||
@@ -288,8 +288,8 @@ export class HaServiceControl extends LitElement {
                     this._value.data[dataField.key] !== undefined
                       ? this._value.data[dataField.key]
                       : dataField.default}
-                  ></ha-selector
-                ></ha-settings-row>`
+                  ></ha-selector>
+                </ha-settings-row>`
               : ""
           )} `;
   }
@@ -297,14 +297,26 @@ export class HaServiceControl extends LitElement {
   private _checkboxChanged(ev) {
     const checked = ev.currentTarget.checked;
     const key = ev.currentTarget.key;
+    let data;
+
     if (checked) {
       this._checkedKeys.add(key);
+      const defaultValue = this._getServiceInfo(
+        this._value?.service,
+        this.hass.services
+      )?.fields.find((field) => field.key === key)?.default;
+      if (defaultValue) {
+        data = {
+          ...this._value?.data,
+          [key]: defaultValue,
+        };
+      }
     } else {
       this._checkedKeys.delete(key);
-      const data = { ...this._value?.data };
-
+      data = { ...this._value?.data };
       delete data[key];
-
+    }
+    if (data) {
       fireEvent(this, "value-changed", {
         value: {
           ...this._value,
