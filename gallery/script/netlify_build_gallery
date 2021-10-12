@@ -7,9 +7,6 @@ if [[ "$NETLIFY" != "true" ]]; then
   exit 1
 fi
 
-echo "commit ref: $COMMIT_REF"
-echo "commit PR: ${REVIEW_ID::-2}"
-
 function createStatus() {
   state="$1"
   description="$2"
@@ -24,7 +21,7 @@ if [[ "${PULL_REQUEST}" == "false" ]]; then
   gulp build-gallery
 else
   if [[ "$(curl -sSLf -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GITHUB_TOKEN" \
-    "https://api.github.com/repos/home-assistant/frontend/pulls/${REVIEW_ID::-2}" | jq '.labels[].name' -r)" =~ "$TARGET_LABEL" ]]; then
+    "https://api.github.com/repos/home-assistant/frontend/pulls/${REVIEW_ID}" | jq '.labels[].name' -r)" =~ "$TARGET_LABEL" ]]; then
     createStatus "pending" "Building gallery preview" "$DEPLOY_URL"
     gulp build-gallery
     if [ $? -eq 0 ]; then
