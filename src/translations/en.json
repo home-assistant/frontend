@@ -2967,8 +2967,8 @@
             "no_data": "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard.",
             "no_data_period": "There is no data for this period.",
             "energy_usage_graph": {
-              "total_consumed": "Total consumed",
-              "total_returned": "Total returned",
+              "total_consumed": "Total consumed {num} kWh",
+              "total_returned": "Total returned {num} kWh",
               "combined_from_grid": "Combined from grid",
               "consumed_solar": "Consumed solar",
               "consumed_battery": "Consumed battery"
@@ -2982,8 +2982,8 @@
               "total_costs": "Total costs"
             },
             "energy_solar_graph": {
-              "production": "Production",
-              "forecast": "Forecast"
+              "production": "Production {name}",
+              "forecast": "Forecast {name}"
             },
             "solar_consumed_gauge": {
               "card_indicates_solar_energy_used": "This card indicates how much of the solar energy you produced was used by your home instead of being returned to the grid.",

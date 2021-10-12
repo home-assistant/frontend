@@ -109,7 +109,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 this.hass.locale
               )}`}
           <mwc-icon-button
-            label=${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.lovelace.components.energy_period_selector.previous"
             )}
             @click=${this._pickPrevious}
@@ -117,7 +117,7 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
             <ha-svg-icon .path=${mdiChevronLeft}></ha-svg-icon>
           </mwc-icon-button>
           <mwc-icon-button
-            label=${this.hass.localize(
+            .label=${this.hass.localize(
               "ui.panel.lovelace.components.energy_period_selector.next"
             )}
             @click=${this._pickNext}

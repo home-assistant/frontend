@@ -308,9 +308,12 @@ export class HuiEnergySolarGraphCard
 
       if (solarProductionData.length) {
         data.push({
-          label: `${this.hass.localize(
-            "ui.panel.lovelace.cards.energy.energy_solar_graph.production"
-          )} ${entity ? computeStateName(entity) : source.stat_energy_from}`,
+          label: this.hass.localize(
+            "ui.panel.lovelace.cards.energy.energy_solar_graph.production",
+            {
+              name: entity ? computeStateName(entity) : source.stat_energy_from,
+            }
+          ),
           borderColor,
           backgroundColor: borderColor + "7F",
           data: solarProductionData,
@@ -363,11 +366,14 @@ export class HuiEnergySolarGraphCard
           if (solarForecastData.length) {
             data.push({
               type: "line",
-              label: `${this.hass.localize(
-                "ui.panel.lovelace.cards.energy.energy_solar_graph.forecast"
-              )} ${
-                entity ? computeStateName(entity) : source.stat_energy_from
-              }`,
+              label: this.hass.localize(
+                "ui.panel.lovelace.cards.energy.energy_solar_graph.forecast",
+                {
+                  name: entity
+                    ? computeStateName(entity)
+                    : source.stat_energy_from,
+                }
+              ),
               fill: false,
               stepped: false,
               borderColor: computedStyles.getPropertyValue(

@@ -206,14 +206,16 @@ export class HuiEnergyUsageGraphCard
                 }
                 return [
                   totalConsumed
-                    ? `${this.hass.localize(
-                        "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed"
-                      )}: ${formatNumber(totalConsumed, locale)} kWh`
+                    ? this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_usage_graph.total_consumed",
+                        { num: formatNumber(totalConsumed, locale) }
+                      )
                     : "",
                   totalReturned
-                    ? `${this.hass.localize(
-                        "ui.panel.lovelace.cards.energyenergy_usage_graph.total_returned"
-                      )}: ${formatNumber(totalReturned, locale)} kWh`
+                    ? this.hass.localize(
+                        "ui.panel.lovelace.cards.energyenergy_usage_graph.total_returned",
+                        { num: formatNumber(totalReturned, locale) }
+                      )
                     : "",
                 ].filter(Boolean);
               },
