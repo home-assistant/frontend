@@ -8,6 +8,7 @@ dist
 
 # yarn
 .yarn/*
+.yarn_cache
 !.yarn/patches
 !.yarn/releases
 !.yarn/plugins
