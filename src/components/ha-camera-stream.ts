@@ -95,7 +95,7 @@ class HaCameraStream extends LitElement {
             .hass=${this.hass}
             .url=${this._url}
           ></ha-hls-player>`
-        : "";
+        : html``;
     }
     if (this.stateObj.attributes.stream_type === STREAM_TYPE_WEB_RTC) {
       return html` <ha-web-rtc-player
@@ -123,7 +123,7 @@ class HaCameraStream extends LitElement {
       return true;
     }
     if (
-      this.stateObj.attributes.stream_type === STREAM_TYPE_WEB_RTC &&
+      this.stateObj!.attributes.stream_type === STREAM_TYPE_WEB_RTC &&
       typeof RTCPeerConnection === "undefined"
     ) {
       // Stream requires WebRTC but browser does not support, so fallback to
