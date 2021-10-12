@@ -57,7 +57,7 @@ export const FIXED_DOMAIN_ICONS = {
 
 export const FIXED_DEVICE_CLASS_ICONS = {
   aqi: "hass:air-filter",
-  battery: "hass:battery",
+  // battery: "hass:battery", => not included by design since `sensorIcon()` will dynamically determine the icon
   carbon_dioxide: "mdi:molecule-co2",
   carbon_monoxide: "mdi:molecule-co",
   current: "hass:current-ac",
