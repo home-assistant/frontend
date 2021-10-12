@@ -166,6 +166,7 @@ export class HuiEnergySolarGraphCard
             offset: true,
           },
           y: {
+            stacked: true,
             type: "linear",
             title: {
               display: true,
@@ -312,6 +313,7 @@ export class HuiEnergySolarGraphCard
           borderColor,
           backgroundColor: borderColor + "7F",
           data: solarProductionData,
+          stack: "solar",
         });
       }
 

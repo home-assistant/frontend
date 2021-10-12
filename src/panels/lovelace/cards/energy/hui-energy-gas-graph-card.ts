@@ -173,6 +173,7 @@ export class HuiEnergyGasGraphCard
             offset: true,
           },
           y: {
+            stacked: true,
             type: "linear",
             title: {
               display: true,
@@ -304,6 +305,7 @@ export class HuiEnergyGasGraphCard
           borderColor,
           backgroundColor: borderColor + "7F",
           data: gasConsumptionData,
+          stack: "gas",
         });
       }
 
