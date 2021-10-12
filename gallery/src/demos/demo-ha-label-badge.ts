@@ -58,6 +58,23 @@ export class DemoHaLabelBadge extends LitElement {
         <div class="card-content">
           ${badges.map(
             (badge) => html`
+              <ha-label-badge
+                style="--ha-label-badge-color: ${colors[
+                  Math.floor(Math.random() * colors.length)
+                ]}"
+                .label=${badge.label}
+                .description=${badge.description}
+                .image=${badge.image}
+              >
+              </ha-label-badge>
+            `
+          )}
+        </div>
+      </ha-card>
+      <ha-card>
+        <div class="card-content">
+          ${badges.map(
+            (badge) => html`
               <div class="badge">
                 <ha-label-badge
                   style="--ha-label-badge-color: ${colors[
