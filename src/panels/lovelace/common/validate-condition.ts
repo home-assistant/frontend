@@ -10,7 +10,7 @@ export interface Condition {
 
 export function checkConditionsMet(
   conditions: Condition[],
-  hass: HomeAssistant,
+  hass: HomeAssistant
 ): boolean {
   return conditions.every((c) => {
     const entity = hass!.states[c.entity];

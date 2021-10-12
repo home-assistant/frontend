@@ -155,10 +155,10 @@ export class HuiConditionalCardEditor
                         .entityId=${cond.entity}
                         .index=${idx}
                         .label="${this.hass!.localize(
-                              "ui.panel.lovelace.editor.card.generic.attribute"
-                            )} (${this.hass!.localize(
-                              "ui.panel.lovelace.editor.card.config.optional"
-                            )})"
+                          "ui.panel.lovelace.editor.card.generic.attribute"
+                        )} (${this.hass!.localize(
+                          "ui.panel.lovelace.editor.card.config.optional"
+                        )})"
                         .value=${cond.attribute}
                         .configValue=${"attribute"}
                         @value-changed=${this._changeCondition}
@@ -190,8 +190,10 @@ export class HuiConditionalCardEditor
                           "ui.panel.lovelace.editor.card.generic.state"
                         )} (${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.conditional.current_state"
-                        )}: ${cond.attribute 
-                          ? this.hass?.states[cond.entity].attributes[cond.attribute] 
+                        )}: ${cond.attribute
+                          ? this.hass?.states[cond.entity].attributes[
+                              cond.attribute
+                            ]
                           : this.hass?.states[cond.entity].state})"
                         .value=${cond.state_not !== undefined
                           ? cond.state_not
@@ -297,7 +299,7 @@ export class HuiConditionalCardEditor
       const condition = { ...conditions[target.index] };
       if (target.configValue === "entity") {
         condition.entity = target.value;
-      } else if(target.configValue === "attribute") {
+      } else if (target.configValue === "attribute") {
         if (target.value === "" || target.value === undefined) {
           delete condition.attribute;
         } else {
