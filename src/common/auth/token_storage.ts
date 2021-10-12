@@ -22,7 +22,7 @@ if (!tokenCache) {
 }
 
 export function askWrite() {
-  return tokenCache.tokens !== undefined && storage.getItem("keepSignedIn");
+  return tokenCache.tokens !== undefined && !!storage.getItem("keepSignedIn");
 }
 
 export function saveTokens(tokens: AuthData | null) {
