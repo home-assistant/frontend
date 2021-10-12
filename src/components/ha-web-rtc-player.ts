@@ -70,6 +70,7 @@ class HaWebRtcPlayer extends LitElement {
   }
 
   private async _startWebRtc(): Promise<void> {
+    this._error = undefined;
     const peerConnection = new RTCPeerConnection();
     // Some cameras (such as nest) require a data channel to establish a stream
     // however, not used by any integrations.

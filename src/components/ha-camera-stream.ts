@@ -74,17 +74,30 @@ class HaCameraStream extends LitElement {
     if (!this.stateObj) {
       return html``;
     }
-    if (
-      supportsFeature(this.stateObj, CAMERA_SUPPORT_STREAM) &&
-      this.stateObj.attributes.stream_type === STREAM_TYPE_WEB_RTC
-    ) {
-      if (typeof RTCPeerConnection === "undefined") {
-        return html`<ha-alert alert-type="error"
-          >${this.hass!.localize(
-            "ui.components.media-browser.video_not_supported"
-          )}</ha-alert
-        >`;
-      }
+    if (__DEMO__ || this._shouldRenderMJPEG) {
+      return html` <img
+        .src=${__DEMO__
+          ? this.stateObj.attributes.entity_picture!
+          : this._connected
+          ? computeMJPEGStreamUrl(this.stateObj)
+          : ""}
+        .alt=${`Preview of the ${computeStateName(this.stateObj)} camera.`}
+      />`;
+    }
+    if (this.stateObj.attributes.stream_type === STREAM_TYPE_HLS && true) {
+      return this._url
+        ? html` <ha-hls-player
+            autoplay
+            playsinline
+            .allowExoPlayer=${this.allowExoPlayer}
+            .muted=${this.muted}
+            .controls=${this.controls}
+            .hass=${this.hass}
+            .url=${this._url}
+          ></ha-hls-player>`
+        : "";
+    }
+    if (this.stateObj.attributes.stream_type === STREAM_TYPE_WEB_RTC) {
       return html` <ha-web-rtc-player
         autoplay
         playsinline
@@ -94,42 +107,31 @@ class HaCameraStream extends LitElement {
         .entityid=${this.stateObj.entity_id}
       ></ha-web-rtc-player>`;
     }
-    return html`
-      ${__DEMO__ || this._shouldRenderMJPEG
-        ? html`
-            <img
-              .src=${__DEMO__
-                ? this.stateObj.attributes.entity_picture!
-                : this._connected
-                ? computeMJPEGStreamUrl(this.stateObj)
-                : ""}
-              .alt=${`Preview of the ${computeStateName(
-                this.stateObj
-              )} camera.`}
-            />
-          `
-        : this._url
-        ? html`
-            <ha-hls-player
-              autoplay
-              playsinline
-              .allowExoPlayer=${this.allowExoPlayer}
-              .muted=${this.muted}
-              .controls=${this.controls}
-              .hass=${this.hass}
-              .url=${this._url}
-            ></ha-hls-player>
-          `
-        : ""}
-    `;
+    return html``;
   }
 
   private get _shouldRenderMJPEG() {
-    return (
-      this._forceMJPEG === this.stateObj!.entity_id ||
+    if (this._forceMJPEG === this.stateObj!.entity_id) {
+      // Fallback when unable to fetch stream url
+      return true;
+    }
+    if (
       !isComponentLoaded(this.hass!, "stream") ||
       !supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)
-    );
+    ) {
+      // Steaming is not supported by the camera so fallback to MJPEG stream
+      return true;
+    }
+    if (
+      this.stateObj.attributes.stream_type === STREAM_TYPE_WEB_RTC &&
+      typeof RTCPeerConnection === "undefined"
+    ) {
+      // Stream requires WebRTC but browser does not support, so fallback to
+      // MJPEG stream.
+      return true;
+    }
+    // Render stream
+    return false;
   }
 
   private async _getStreamUrl(): Promise<void> {
