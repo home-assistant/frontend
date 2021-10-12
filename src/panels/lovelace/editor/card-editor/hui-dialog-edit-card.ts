@@ -74,7 +74,7 @@ export class HuiDialogEditCard
 
   @state() private _dirty = false;
 
-  @state() public isEscapeEnabled = true;
+  @state() private isEscapeEnabled = true;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
