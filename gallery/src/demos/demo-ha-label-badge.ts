@@ -36,6 +36,18 @@ const badges: {
   {
     image: "/images/living_room.png",
   },
+  {
+    label: "big label",
+  },
+  {
+    label: "big label",
+    description: "Description",
+  },
+  {
+    label: "big label",
+    description: "Description",
+    image: "/images/living_room.png",
+  },
 ];
 
 @customElement("demo-ha-label-badge")
