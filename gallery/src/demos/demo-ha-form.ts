@@ -1,11 +1,11 @@
 /* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
-import { LitElement, TemplateResult, html } from "lit";
+import { html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import { computeInitialHaFormData } from "../../../src/components/ha-form/compute-initial-ha-form-data";
-import type { HaFormSchema } from "../../../src/components/ha-form/types";
 import "../../../src/components/ha-form/ha-form";
-import "../components/demo-black-white-row";
+import type { HaFormSchema } from "../../../src/components/ha-form/types";
+import "../components/demo-black-white-card";
 
 const SCHEMAS: {
   title: string;
@@ -237,10 +237,11 @@ class DemoHaForm extends LitElement {
       ${SCHEMAS.map((info, idx) => {
         const translations = info.translations || {};
         return html`
-          <demo-black-white-row
+          <demo-black-white-card
             .title=${info.title}
             .value=${this.data[idx]}
             .disabled=${this.disabled[idx]}
+            .showSubmitBtn=${true}
             @submitted=${() => {
               this.disabled[idx] = true;
               this.requestUpdate();
@@ -268,7 +269,7 @@ class DemoHaForm extends LitElement {
                 ></ha-form>
               `
             )}
-          </demo-black-white-row>
+          </demo-black-white-card>
         `;
       })}
     `;

@@ -1,17 +1,17 @@
 /* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
-import { LitElement, TemplateResult, css, html } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
+import { mockAreaRegistry } from "../../../demo/src/stubs/area_registry";
+import { mockDeviceRegistry } from "../../../demo/src/stubs/device_registry";
+import { mockEntityRegistry } from "../../../demo/src/stubs/entity_registry";
+import { mockHassioSupervisor } from "../../../demo/src/stubs/hassio_supervisor";
 import "../../../src/components/ha-selector/ha-selector";
 import "../../../src/components/ha-settings-row";
+import { BlueprintInput } from "../../../src/data/blueprint";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../src/types";
-import "../components/demo-black-white-row";
-import { BlueprintInput } from "../../../src/data/blueprint";
-import { mockEntityRegistry } from "../../../demo/src/stubs/entity_registry";
-import { mockDeviceRegistry } from "../../../demo/src/stubs/device_registry";
-import { mockAreaRegistry } from "../../../demo/src/stubs/area_registry";
-import { mockHassioSupervisor } from "../../../demo/src/stubs/hassio_supervisor";
+import "../components/demo-black-white-card";
 
 const SCHEMAS: {
   name: string;
@@ -91,7 +91,7 @@ class DemoHaSelector extends LitElement {
           this.requestUpdate();
         };
         return html`
-          <demo-black-white-row .title=${info.name} .value=${this.data[idx]}>
+          <demo-black-white-card .title=${info.name} .value=${this.data[idx]}>
             ${["light", "dark"].map((slot) =>
               Object.entries(info.input).map(
                 ([key, value]) =>
@@ -110,7 +110,7 @@ class DemoHaSelector extends LitElement {
                   `
               )
             )}
-          </demo-black-white-row>
+          </demo-black-white-card>
         `;
       })}
     `;
