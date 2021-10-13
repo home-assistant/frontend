@@ -131,10 +131,6 @@ export class DemoHaAlert extends LitElement {
 
   static get styles() {
     return css`
-      demo-black-white-card {
-        max-width: 600px;
-        margin: 24px auto;
-      }
       ha-alert {
         display: block;
         margin: 24px 0;
