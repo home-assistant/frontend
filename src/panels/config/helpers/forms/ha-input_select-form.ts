@@ -1,10 +1,22 @@
 import "@material/mwc-button/mwc-button";
+import { mdiDrag } from "@mdi/js";
+import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import {
+  css,
+  CSSResultGroup,
+  html,
+  LitElement,
+  PropertyValues,
+  TemplateResult,
+} from "lit";
+import { customElement, property, query, state } from "lit/decorators";
+import { guard } from "lit/directives/guard";
+import { SortableEvent } from "sortablejs";
+import Sortable from "sortablejs/modular/sortable.core.esm";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-input";
@@ -20,6 +32,24 @@ class HaInputSelectForm extends LitElement {
   @property() public new?: boolean;
 
   private _item?: InputSelect;
+
+  @state() private _attached = false;
+
+  @state() private _renderEmptySortable = false;
+
+  private _sortable?: Sortable;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._attached = true;
+  }
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    this._attached = false;
+  }
+
+  @state() private _reordering = true;
 
   @state() private _name!: string;
 
@@ -79,32 +109,44 @@ class HaInputSelectForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-input>
-        ${this.hass!.localize(
-          "ui.dialogs.helper_settings.input_select.options"
-        )}:
-        ${this._options.length
-          ? this._options.map(
-              (option, index) => html`
-                <paper-item class="option">
-                  <paper-item-body> ${option} </paper-item-body>
-                  <ha-icon-button
-                    .index=${index}
-                    .title=${this.hass.localize(
-                      "ui.dialogs.helper_settings.input_select.remove_option"
-                    )}
-                    @click=${this._removeOption}
-                    icon="hass:delete"
-                  ></ha-icon-button>
-                </paper-item>
-              `
-            )
-          : html`
-              <paper-item>
-                ${this.hass!.localize(
-                  "ui.dialogs.helper_settings.input_select.no_options"
-                )}
-              </paper-item>
-            `}
+        <div class="options">
+          ${this.hass!.localize(
+            "ui.dialogs.helper_settings.input_select.options"
+          )}:
+          ${guard([this._options, this._renderEmptySortable], () =>
+            this._renderEmptySortable
+              ? ""
+              : this._options.map(
+                  (option, index) => html`
+                    <paper-item class="option">
+                      ${this._reordering
+                        ? html`
+                            <div id="sortable">
+                              <ha-svg-icon
+                                .title=${this.hass!.localize(
+                                  "ui.panel.lovelace.cards.shopping-list.drag_and_drop"
+                                )}
+                                class="reorderButton"
+                                .path=${mdiDrag}
+                              >
+                              </ha-svg-icon>
+                            </div>
+                          `
+                        : ""}
+                      <paper-item-body> ${option} </paper-item-body>
+                      <ha-icon-button
+                        .index=${index}
+                        .title=${this.hass.localize(
+                          "ui.dialogs.helper_settings.input_select.remove_option"
+                        )}
+                        @click=${this._removeOption}
+                        icon="hass:delete"
+                      ></ha-icon-button>
+                    </paper-item>
+                  `
+                )
+          )}
+        </div>
         <div class="layout horizontal bottom">
           <paper-input
             class="flex-auto"
@@ -122,6 +164,67 @@ class HaInputSelectForm extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+
+    const attachedChanged = changedProps.has("_attached");
+    const entitiesChanged = changedProps.has("_options");
+
+    if (!entitiesChanged && !attachedChanged) {
+      return;
+    }
+
+    if (attachedChanged && !this._attached) {
+      // Tear down sortable, if available
+      this._sortable?.destroy();
+      this._sortable = undefined;
+      return;
+    }
+
+    if (!this._sortable && this._options) {
+      this._createSortable();
+      return;
+    }
+
+    if (entitiesChanged) {
+      this._handleEntitiesChanged();
+    }
+  }
+
+  private async _handleEntitiesChanged() {
+    this._renderEmptySortable = true;
+    await this.updateComplete;
+    const container = this.shadowRoot!.querySelector(".options")!;
+    while (container.lastElementChild) {
+      container.removeChild(container.lastElementChild);
+    }
+    this._renderEmptySortable = false;
+  }
+
+  private _rowMoved(ev: SortableEvent): void {
+    if (ev.oldIndex === ev.newIndex) {
+      return;
+    }
+
+    const newOptions = this._options!.concat();
+
+    newOptions.splice(ev.newIndex!, 0, newOptions.splice(ev.oldIndex!, 1)[0]);
+
+    // fireEvent(this, "entities-changed", { options: newEntities });
+    fireEvent(this, "value-changed", {
+      value: { ...this._item, options: newOptions },
+    });
+  }
+
+  private _createSortable() {
+    this._sortable = new Sortable(this.shadowRoot!.querySelector(".options"), {
+      animation: 150,
+      fallbackClass: "sortable-fallback",
+      handle: "ha-svg-icon",
+      onEnd: async (evt: SortableEvent) => this._rowMoved(evt),
+    });
   }
 
   private _handleKeyAdd(ev: KeyboardEvent) {
@@ -195,6 +298,10 @@ class HaInputSelectForm extends LitElement {
         }
         mwc-button {
           margin-left: 8px;
+        }
+        .options ha-svg-icon {
+          padding-right: 8px;
+          cursor: move;
         }
       `,
     ];
