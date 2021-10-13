@@ -34,6 +34,7 @@ const hassAttributeUtil = {
       "safety",
       "smoke",
       "sound",
+      "tamper",
       "vibration",
       "window",
     ],

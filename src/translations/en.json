@@ -333,7 +333,9 @@
           "turned_off": "turned off",
           "turned_on": "turned on",
           "changed_to_state": "changed to {state}",
-          "became_unavailable": "became unavailable"
+          "became_unavailable": "became unavailable",
+          "detected_tampering": "detected tampering",
+          "cleared_tampering": "cleared tampering"
         }
       },
       "entity": {
