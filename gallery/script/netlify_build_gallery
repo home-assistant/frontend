@@ -22,12 +22,12 @@ if [[ "${PULL_REQUEST}" == "false" ]]; then
 else
   if [[ "$(curl -sSLf -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GITHUB_TOKEN" \
     "https://api.github.com/repos/home-assistant/frontend/pulls/${REVIEW_ID}" | jq '.labels[].name' -r)" =~ "$TARGET_LABEL" ]]; then
-    createStatus "pending" "Building gallery preview" "$DEPLOY_URL"
+    createStatus "pending" "Building gallery preview" "https://app.netlify.com/sites/home-assistant-gallery/deploys/$BUILD_ID"
     gulp build-gallery
     if [ $? -eq 0 ]; then
       createStatus "success" "Build complete" "$DEPLOY_URL"
     else
-      createStatus "error" "Build failed" "$DEPLOY_URL"
+      createStatus "error" "Build failed" "https://app.netlify.com/sites/home-assistant-gallery/deploys/$BUILD_ID"
     fi
   else
     createStatus "success" "Build was not requested by PR label"
