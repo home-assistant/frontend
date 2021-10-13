@@ -96,22 +96,38 @@ export class HaConfigDevicePage extends LitElement {
     (
       deviceId: string,
       entities: EntityRegistryEntry[]
-    ): Record<string, EntityRegistryStateEntry[]> =>
-      groupBy(
-        entities
-          .filter((entity) => entity.device_id === deviceId)
-          .map((entity) => ({
-            ...entity,
-            stateName: this._computeEntityName(entity),
-          }))
-          .sort((ent1, ent2) =>
-            stringCompare(
-              ent1.stateName || `zzz${ent1.entity_id}`,
-              ent2.stateName || `zzz${ent2.entity_id}`
-            )
-          ),
+    ): EntityRegistryStateEntry[] =>
+      entities
+        .filter((entity) => entity.device_id === deviceId)
+        .map((entity) => ({
+          ...entity,
+          stateName: this._computeEntityName(entity),
+        }))
+        .sort((ent1, ent2) =>
+          stringCompare(
+            ent1.stateName || `zzz${ent1.entity_id}`,
+            ent2.stateName || `zzz${ent2.entity_id}`
+          )
+        )
+  );
+
+  private _entitiesByCategory = memoizeOne(
+    (entities: EntityRegistryEntry[]) => {
+      const result = groupBy(
+        entities,
         (entry) => entry.entity_category || "state"
-      )
+      ) as Record<
+        "state" | NonNullable<EntityRegistryEntry["entity_category"]>,
+        EntityRegistryStateEntry[]
+      >;
+      for (const key of ["state", "diagnostic", "config"]) {
+        if (!(key in result)) {
+          result[key] = [];
+        }
+      }
+
+      return result;
+    }
   );
 
   private _computeArea = memoizeOne(
@@ -161,8 +177,9 @@ export class HaConfigDevicePage extends LitElement {
 
     const integrations = this._integrations(device, this.entries);
     const entities = this._entities(this.deviceId, this.entities);
-    const batteryEntity = this._batteryEntity(entities.state);
-    const batteryChargingEntity = this._batteryChargingEntity(entities.state);
+    const entitiesByCategory = this._entitiesByCategory(entities);
+    const batteryEntity = this._batteryEntity(entities);
+    const batteryChargingEntity = this._batteryChargingEntity(entities);
     const batteryState = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
@@ -295,7 +312,7 @@ export class HaConfigDevicePage extends LitElement {
               </ha-device-info-card>
 
             ${["state", "config", "diagnostic"].map((category) =>
-              !entities[category]?.length
+              !entitiesByCategory[category].length
                 ? ""
                 : html`
                     <ha-device-entities-card
@@ -303,7 +320,7 @@ export class HaConfigDevicePage extends LitElement {
                       .header=${this.hass.localize(
                         `ui.panel.config.devices.entities.${category}`
                       )}
-                      .entities=${entities[category]}
+                      .entities=${entitiesByCategory[category]}
                       .showDisabled=${device.disabled_by !== null}
                     >
                     </ha-device-entities-card>
