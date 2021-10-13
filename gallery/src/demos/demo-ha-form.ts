@@ -5,7 +5,8 @@ import { customElement } from "lit/decorators";
 import { computeInitialHaFormData } from "../../../src/components/ha-form/compute-initial-ha-form-data";
 import "../../../src/components/ha-form/ha-form";
 import type { HaFormSchema } from "../../../src/components/ha-form/types";
-import "../components/demo-black-white-card";
+import "../components/demo-black-white-row";
+import "../components/demo-submit-form";
 
 const SCHEMAS: {
   title: string;
@@ -237,24 +238,23 @@ class DemoHaForm extends LitElement {
       ${SCHEMAS.map((info, idx) => {
         const translations = info.translations || {};
         return html`
-          <demo-black-white-card
-            .title=${info.title}
-            .value=${this.data[idx]}
-            .disabled=${this.disabled[idx]}
-            .showSubmitBtn=${true}
-            @submitted=${() => {
-              this.disabled[idx] = true;
-              this.requestUpdate();
-              setTimeout(() => {
-                this.disabled[idx] = false;
-                this.requestUpdate();
-              }, 2000);
-            }}
-          >
+          <demo-black-white-row .value=${this.data[idx]}>
             ${["light", "dark"].map(
-              (slot) => html`
+              (slot) => html` <demo-submit-form
+                slot=${slot}
+                .title=${info.title}
+                .disabled=${this.disabled[idx]}
+                @submitted=${() => {
+                  this.disabled[idx] = true;
+                  this.requestUpdate();
+                  setTimeout(() => {
+                    this.disabled[idx] = false;
+                    this.requestUpdate();
+                  }, 2000);
+                }}
+              >
                 <ha-form
-                  slot=${slot}
+                  slot="content"
                   .data=${this.data[idx]}
                   .schema=${info.schema}
                   .error=${info.error}
@@ -267,9 +267,9 @@ class DemoHaForm extends LitElement {
                     this.requestUpdate();
                   }}
                 ></ha-form>
-              `
+              </demo-submit-form>`
             )}
-          </demo-black-white-card>
+          </demo-black-white-row>
         `;
       })}
     `;

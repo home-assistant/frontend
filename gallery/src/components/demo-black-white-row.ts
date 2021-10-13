@@ -10,12 +10,12 @@ class DemoBlackWhiteRow extends LitElement {
     return html`
       <div class="row">
         <div class="content light">
-          <slot name="light"> </slot>
+          <slot name="light"></slot>
         </div>
         <div class="content dark">
-          <slot name="dark"> </slot>
+          <slot name="dark"></slot>
           ${this.value
-            ? html` <pre>${JSON.stringify(this.value, undefined, 2)}</pre>`
+            ? html`<pre>${JSON.stringify(this.value, undefined, 2)}</pre>`
             : ""}
         </div>
       </div>

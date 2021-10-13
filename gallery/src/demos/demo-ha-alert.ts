@@ -1,8 +1,8 @@
-import { html, css, LitElement, TemplateResult } from "lit";
+import { css, html, LitElement, TemplateResult } from "lit";
 import { customElement } from "lit/decorators";
 import "../../../src/components/ha-alert";
 import "../../../src/components/ha-card";
-import "../components/demo-black-white-card";
+import "../components/demo-black-white-row";
 
 const alerts: {
   title?: string;
@@ -107,25 +107,28 @@ const alerts: {
 export class DemoHaAlert extends LitElement {
   protected render(): TemplateResult {
     return html`
-      <demo-black-white-card title="ha-alert demo">
+      <demo-black-white-row>
         ${["light", "dark"].map(
           (slot) =>
-            html` ${alerts.map(
-              (alert) => html`
-                <ha-alert
-                  slot=${slot}
-                  .title=${alert.title || ""}
-                  .alertType=${alert.type}
-                  .dismissable=${alert.dismissable || false}
-                  .actionText=${alert.action || ""}
-                  .rtl=${alert.rtl || false}
-                >
-                  ${alert.description}
-                </ha-alert>
-              `
-            )}`
+            html` <ha-card .slot=${slot} header="ha-alert demo">
+              <div class="card-content">
+                ${alerts.map(
+                  (alert) => html`
+                    <ha-alert
+                      .title=${alert.title || ""}
+                      .alertType=${alert.type}
+                      .dismissable=${alert.dismissable || false}
+                      .actionText=${alert.action || ""}
+                      .rtl=${alert.rtl || false}
+                    >
+                      ${alert.description}
+                    </ha-alert>
+                  `
+                )}
+              </div>
+            </ha-card>`
         )}
-      </demo-black-white-card>
+      </demo-black-white-row>
     `;
   }
 

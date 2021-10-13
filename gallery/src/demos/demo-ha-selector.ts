@@ -11,7 +11,7 @@ import "../../../src/components/ha-settings-row";
 import { BlueprintInput } from "../../../src/data/blueprint";
 import { provideHass } from "../../../src/fake_data/provide_hass";
 import type { HomeAssistant } from "../../../src/types";
-import "../components/demo-black-white-card";
+import "../components/demo-black-white-row";
 
 const SCHEMAS: {
   name: string;
@@ -91,26 +91,35 @@ class DemoHaSelector extends LitElement {
           this.requestUpdate();
         };
         return html`
-          <demo-black-white-card .title=${info.name} .value=${this.data[idx]}>
-            ${["light", "dark"].map((slot) =>
-              Object.entries(info.input).map(
-                ([key, value]) =>
-                  html`
-                    <ha-settings-row narrow slot=${slot}>
-                      <span slot="heading">${value?.name || key}</span>
-                      <span slot="description">${value?.description}</span>
-                      <ha-selector
-                        .hass=${this.hass}
-                        .selector=${value!.selector}
-                        .key=${key}
-                        .value=${data[key] ?? value!.default}
-                        @value-changed=${valueChanged}
-                      ></ha-selector>
-                    </ha-settings-row>
-                  `
-              )
+          <demo-black-white-row .value=${this.data[idx]}>
+            ${["light", "dark"].map(
+              (slot) => html`
+                <ha-card .slot=${slot} .header=${info.name}>
+                  <div class="card-content">
+                    ${Object.entries(info.input).map(
+                      ([key, value]) => html`
+                        <ha-settings-row narrow slot=${slot}>
+                          <span slot="heading">${value?.name || key}</span>
+                          ${value?.description
+                            ? html`<span slot="description"
+                                >${value?.description}</span
+                              >`
+                            : ""}
+                          <ha-selector
+                            .hass=${this.hass}
+                            .selector=${value!.selector}
+                            .key=${key}
+                            .value=${data[key] ?? value!.default}
+                            @value-changed=${valueChanged}
+                          ></ha-selector>
+                        </ha-settings-row>
+                      `
+                    )}
+                  </div>
+                </ha-card>
+              `
             )}
-          </demo-black-white-card>
+          </demo-black-white-row>
         `;
       })}
     `;
