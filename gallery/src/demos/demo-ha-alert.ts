@@ -106,24 +106,27 @@ const alerts: {
 @customElement("demo-ha-alert")
 export class DemoHaAlert extends LitElement {
   protected render(): TemplateResult {
-    return html` <demo-black-white-card title="ha-alert demo">
-      ${["light", "dark"].map(
-        (slot) => html` ${alerts.map(
-          (alert) => html`
-            <ha-alert
-              slot=${slot}
-              .title=${alert.title || ""}
-              .alertType=${alert.type}
-              .dismissable=${alert.dismissable || false}
-              .actionText=${alert.action || ""}
-              .rtl=${alert.rtl || false}
-            >
-              ${alert.description}
-            </ha-alert>
-          `
-        )}`
-      )}
-    </demo-black-white-card>`;
+    return html`
+      <demo-black-white-card title="ha-alert demo">
+        ${["light", "dark"].map(
+          (slot) =>
+            html` ${alerts.map(
+              (alert) => html`
+                <ha-alert
+                  slot=${slot}
+                  .title=${alert.title || ""}
+                  .alertType=${alert.type}
+                  .dismissable=${alert.dismissable || false}
+                  .actionText=${alert.action || ""}
+                  .rtl=${alert.rtl || false}
+                >
+                  ${alert.description}
+                </ha-alert>
+              `
+            )}`
+        )}
+      </demo-black-white-card>
+    `;
   }
 
   static get styles() {

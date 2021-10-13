@@ -55,30 +55,12 @@ const badges: {
 export class DemoHaLabelBadge extends LitElement {
   protected render(): TemplateResult {
     return html`
-    <demo-black-white-row>
-      ${["light", "dark"].map(
-        (slot) => html` <ha-card slot=${slot}>
-            <div class="card-content">
-              ${badges.map(
-                (badge) => html`
-                  <ha-label-badge
-                    style="--ha-label-badge-color: ${colors[
-                      Math.floor(Math.random() * colors.length)
-                    ]}"
-                    .label=${badge.label}
-                    .description=${badge.description}
-                    .image=${badge.image}
-                  >
-                  </ha-label-badge>
-                `
-              )}
-            </div>
-          </ha-card>
-          <ha-card slot=${slot}>
-            <div class="card-content">
-              ${badges.map(
-                (badge) => html`
-                  <div class="badge">
+      <demo-black-white-row>
+        ${["light", "dark"].map(
+          (slot) => html` <ha-card slot=${slot}>
+              <div class="card-content">
+                ${badges.map(
+                  (badge) => html`
                     <ha-label-badge
                       style="--ha-label-badge-color: ${colors[
                         Math.floor(Math.random() * colors.length)
@@ -88,14 +70,33 @@ export class DemoHaLabelBadge extends LitElement {
                       .image=${badge.image}
                     >
                     </ha-label-badge>
-                    <pre>${JSON.stringify(badge, null, 2)}</pre>
-                  </div>
-                `
-              )}
-            </div>
-          </ha-card>`
-      )}
-    </demo-black-white-row>`;
+                  `
+                )}
+              </div>
+            </ha-card>
+            <ha-card slot=${slot}>
+              <div class="card-content">
+                ${badges.map(
+                  (badge) => html`
+                    <div class="badge">
+                      <ha-label-badge
+                        style="--ha-label-badge-color: ${colors[
+                          Math.floor(Math.random() * colors.length)
+                        ]}"
+                        .label=${badge.label}
+                        .description=${badge.description}
+                        .image=${badge.image}
+                      >
+                      </ha-label-badge>
+                      <pre>${JSON.stringify(badge, null, 2)}</pre>
+                    </div>
+                  `
+                )}
+              </div>
+            </ha-card>`
+        )}
+      </demo-black-white-row>
+    `;
   }
 
   static get styles() {
