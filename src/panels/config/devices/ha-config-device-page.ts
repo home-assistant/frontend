@@ -7,6 +7,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
+import { groupBy } from "../../../common/util/group-by";
 import { slugify } from "../../../common/string/slugify";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-next";
@@ -95,19 +96,22 @@ export class HaConfigDevicePage extends LitElement {
     (
       deviceId: string,
       entities: EntityRegistryEntry[]
-    ): EntityRegistryStateEntry[] =>
-      entities
-        .filter((entity) => entity.device_id === deviceId)
-        .map((entity) => ({
-          ...entity,
-          stateName: this._computeEntityName(entity),
-        }))
-        .sort((ent1, ent2) =>
-          stringCompare(
-            ent1.stateName || `zzz${ent1.entity_id}`,
-            ent2.stateName || `zzz${ent2.entity_id}`
-          )
-        )
+    ): Record<string, EntityRegistryStateEntry[]> =>
+      groupBy(
+        entities
+          .filter((entity) => entity.device_id === deviceId)
+          .map((entity) => ({
+            ...entity,
+            stateName: this._computeEntityName(entity),
+          }))
+          .sort((ent1, ent2) =>
+            stringCompare(
+              ent1.stateName || `zzz${ent1.entity_id}`,
+              ent2.stateName || `zzz${ent2.entity_id}`
+            )
+          ),
+        (entry) => entry.entity_category || "state"
+      )
   );
 
   private _computeArea = memoizeOne(
@@ -157,8 +161,8 @@ export class HaConfigDevicePage extends LitElement {
 
     const integrations = this._integrations(device, this.entries);
     const entities = this._entities(this.deviceId, this.entities);
-    const batteryEntity = this._batteryEntity(entities);
-    const batteryChargingEntity = this._batteryChargingEntity(entities);
+    const batteryEntity = this._batteryEntity(entities.state);
+    const batteryChargingEntity = this._batteryChargingEntity(entities.state);
     const batteryState = batteryEntity
       ? this.hass.states[batteryEntity.entity_id]
       : undefined;
@@ -290,18 +294,22 @@ export class HaConfigDevicePage extends LitElement {
               ${this._renderIntegrationInfo(device, integrations)}
               </ha-device-info-card>
 
-            ${
-              entities.length
-                ? html`
+            ${["state", "config", "diagnostic"].map((category) =>
+              !entities[category]?.length
+                ? ""
+                : html`
                     <ha-device-entities-card
                       .hass=${this.hass}
-                      .entities=${entities}
+                      .header=${this.hass.localize(
+                        `ui.panel.config.devices.entities.${category}`
+                      )}
+                      .entities=${entities[category]}
                       .showDisabled=${device.disabled_by !== null}
                     >
                     </ha-device-entities-card>
                   `
-                : html``
-            }
+            )}
+
           </div>
             <div class="column">
             ${
