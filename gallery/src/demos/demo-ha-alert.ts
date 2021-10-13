@@ -110,23 +110,25 @@ export class DemoHaAlert extends LitElement {
       <demo-black-white-row>
         ${["light", "dark"].map(
           (slot) =>
-            html` <ha-card .slot=${slot} header="ha-alert demo">
-              <div class="card-content">
-                ${alerts.map(
-                  (alert) => html`
-                    <ha-alert
-                      .title=${alert.title || ""}
-                      .alertType=${alert.type}
-                      .dismissable=${alert.dismissable || false}
-                      .actionText=${alert.action || ""}
-                      .rtl=${alert.rtl || false}
-                    >
-                      ${alert.description}
-                    </ha-alert>
-                  `
-                )}
-              </div>
-            </ha-card>`
+            html`
+              <ha-card .slot=${slot} header="ha-alert demo">
+                <div class="card-content">
+                  ${alerts.map(
+                    (alert) => html`
+                      <ha-alert
+                        .title=${alert.title || ""}
+                        .alertType=${alert.type}
+                        .dismissable=${alert.dismissable || false}
+                        .actionText=${alert.action || ""}
+                        .rtl=${alert.rtl || false}
+                      >
+                        ${alert.description}
+                      </ha-alert>
+                    `
+                  )}
+                </div>
+              </ha-card>
+            `
         )}
       </demo-black-white-row>
     `;
