@@ -18,6 +18,7 @@ import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import { computeHistory, fetchDate } from "../../data/history";
 import "../../layouts/ha-app-layout";

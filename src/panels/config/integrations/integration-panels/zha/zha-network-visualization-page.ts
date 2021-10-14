@@ -14,7 +14,6 @@ import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-svg-icon";
 import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import {
   fetchDevices,

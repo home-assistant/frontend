@@ -11,7 +11,18 @@ import { classMap } from "lit/directives/class-map";
 import { repeat } from "lit/directives/repeat";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
+import "../../../components/ha-icon-button";
+import "../../../components/trace/ha-trace-blueprint-config";
+import "../../../components/trace/ha-trace-config";
+import "../../../components/trace/ha-trace-logbook";
+import "../../../components/trace/ha-trace-path-details";
+import "../../../components/trace/ha-trace-timeline";
 import "../../../components/trace/hat-script-graph";
+import type {
+  HatScriptGraph,
+  NodeInfo,
+} from "../../../components/trace/hat-script-graph";
+import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
 import { AutomationEntity } from "../../../data/automation";
 import { getLogbookDataForContext, LogbookEntry } from "../../../data/logbook";
 import {
@@ -24,16 +35,6 @@ import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
-import "../../../components/trace/ha-trace-blueprint-config";
-import "../../../components/trace/ha-trace-config";
-import "../../../components/trace/ha-trace-logbook";
-import "../../../components/trace/ha-trace-path-details";
-import "../../../components/trace/ha-trace-timeline";
-import { traceTabStyles } from "../../../components/trace/trace-tab-styles";
-import type {
-  HatScriptGraph,
-  NodeInfo,
-} from "../../../components/trace/hat-script-graph";
 
 @customElement("ha-automation-trace")
 export class HaAutomationTrace extends LitElement {

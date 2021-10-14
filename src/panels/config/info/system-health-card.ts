@@ -12,7 +12,6 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-circular-progress";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
 import { domainToName } from "../../../data/integration";
 import {
   subscribeSystemHealthInfo,

@@ -12,7 +12,7 @@ import { caseInsensitiveStringCompare } from "../../../../src/common/string/comp
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-icon-button";
 import {
   fetchHassioAddonsInfo,
   HassioAddonRepository,

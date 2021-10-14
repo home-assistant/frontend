@@ -42,6 +42,7 @@ import "./entity/ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
 import "./ha-area-picker";
 import "./ha-icon";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 
 @customElement("ha-target-picker")

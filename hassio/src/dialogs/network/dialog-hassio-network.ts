@@ -15,9 +15,9 @@ import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
 import "../../../../src/components/ha-formfield";
 import "../../../../src/components/ha-header-bar";
+import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-radio";
 import "../../../../src/components/ha-related-items";
-import "../../../../src/components/ha-svg-icon";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   AccessPoints,

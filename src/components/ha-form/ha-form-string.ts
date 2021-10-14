@@ -12,7 +12,6 @@ import {
 import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-icon-button";
-import "../ha-svg-icon";
 import type {
   HaFormElement,
   HaFormStringData,

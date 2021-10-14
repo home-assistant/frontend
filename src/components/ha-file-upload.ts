@@ -8,7 +8,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
 import "./ha-circular-progress";
 import "./ha-icon-button";
-import "./ha-svg-icon";
 
 declare global {
   interface HASSDomEvents {

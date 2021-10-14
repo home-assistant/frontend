@@ -4,6 +4,8 @@ import "@polymer/paper-listbox/paper-listbox";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultArray, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
+import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
+import "../../../../../components/ha-icon-button";
 import {
   fetchZWaveJSLogConfig,
   setZWaveJSLogLevel,
@@ -16,7 +18,6 @@ import { haStyle } from "../../../../../resources/styles";
 import { HomeAssistant, Route } from "../../../../../types";
 import { fileDownload } from "../../../../../util/file_download";
 import { configTabs } from "./zwave_js-config-router";
-import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
 
 @customElement("zwave_js-logs")
 class ZWaveJSLogs extends SubscribeMixin(LitElement) {

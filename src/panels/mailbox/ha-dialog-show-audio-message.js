@@ -4,6 +4,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-circular-progress";
+import "../../components/ha-icon-button";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../styles/polymer-ha-style-dialog";
 

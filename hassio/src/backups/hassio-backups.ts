@@ -23,6 +23,7 @@ import {
 } from "../../../src/components/data-table/ha-data-table";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-fab";
+import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-svg-icon";
 import {
   fetchHassioBackups,

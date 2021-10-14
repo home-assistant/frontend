@@ -5,6 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import {
   EnergyInfo,
   EnergyPreferences,

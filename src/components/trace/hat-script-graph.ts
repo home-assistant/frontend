@@ -38,11 +38,11 @@ import {
   ConditionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import "../ha-svg-icon";
+import "../ha-icon-button";
+import "./hat-graph-branch";
+import { BRANCH_HEIGHT, NODE_SIZE, SPACING } from "./hat-graph-const";
 import "./hat-graph-node";
 import "./hat-graph-spacer";
-import "./hat-graph-branch";
-import { NODE_SIZE, SPACING, BRANCH_HEIGHT } from "./hat-graph-const";
 
 export interface NodeInfo {
   path: string;

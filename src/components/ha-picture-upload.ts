@@ -12,7 +12,6 @@ import {
 import { HomeAssistant } from "../types";
 import "./ha-circular-progress";
 import "./ha-file-upload";
-import "./ha-svg-icon";
 
 @customElement("ha-picture-upload")
 export class HaPictureUpload extends LitElement {

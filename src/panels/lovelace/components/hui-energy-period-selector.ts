@@ -29,7 +29,7 @@ import {
 } from "../../../common/datetime/format_date";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import "../../../components/ha-button-toggle-group";
-import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-button";
 import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, ToggleButton } from "../../../types";

@@ -9,7 +9,7 @@ import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-header-bar";
-import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-icon-button";
 import { getSignedPath } from "../../../../src/data/auth";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
@@ -131,9 +131,6 @@ class HassioBackupDialog
       haStyle,
       haStyleDialog,
       css`
-        ha-svg-icon {
-          color: var(--primary-text-color);
-        }
         ha-circular-progress {
           display: block;
           text-align: center;

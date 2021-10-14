@@ -11,6 +11,7 @@ import type { HomeAssistant } from "../types";
 import "./device/ha-device-picker";
 import "./entity/ha-entity-picker";
 import "./ha-area-picker";
+import "./ha-icon-button";
 
 declare global {
   // for fire event

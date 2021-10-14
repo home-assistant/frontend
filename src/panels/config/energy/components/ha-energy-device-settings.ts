@@ -6,6 +6,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import {
   DeviceConsumptionEnergyPreference,
   EnergyPreferences,

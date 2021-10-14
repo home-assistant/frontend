@@ -10,8 +10,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-dialog";
 import "../../../components/ha-header-bar";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-related-items";
-import "../../../components/ha-svg-icon";
 import {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,

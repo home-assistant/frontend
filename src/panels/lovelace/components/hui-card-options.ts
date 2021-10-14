@@ -13,6 +13,7 @@ import {
 import { customElement, property, queryAssignedNodes } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-icon-button";
 import { saveConfig } from "../../../data/lovelace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";

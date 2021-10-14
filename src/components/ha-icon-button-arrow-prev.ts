@@ -3,7 +3,6 @@ import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
-import "./ha-svg-icon";
 
 @customElement("ha-icon-button-arrow-prev")
 export class HaIconButtonArrowPrev extends LitElement {

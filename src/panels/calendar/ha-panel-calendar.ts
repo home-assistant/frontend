@@ -16,6 +16,7 @@ import { styleMap } from "lit/directives/style-map";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
+import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import {
   Calendar,

@@ -43,6 +43,7 @@ import { actionHandler } from "../panels/lovelace/common/directives/action-handl
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../types";
 import "./ha-icon";
+import "./ha-icon-button";
 import "./ha-menu-button";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";

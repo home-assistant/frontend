@@ -7,6 +7,7 @@ import "../../../../src/common/search/search-input";
 import { stringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
+import "../../../../src/components/ha-icon-button";
 import { HassioHardwareInfo } from "../../../../src/data/hassio/hardware";
 import { dump } from "../../../../src/resources/js-yaml-dump";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";

@@ -15,10 +15,10 @@ import {
 } from "lit";
 import {
   customElement,
-  property,
-  state,
-  query,
   eventOptions,
+  property,
+  query,
+  state,
 } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
@@ -45,6 +45,7 @@ import "../ha-button-menu";
 import "../ha-card";
 import "../ha-circular-progress";
 import "../ha-fab";
+import "../ha-icon-button";
 import "../ha-svg-icon";
 
 declare global {

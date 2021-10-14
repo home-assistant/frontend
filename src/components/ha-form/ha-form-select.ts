@@ -4,7 +4,6 @@ import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-svg-icon";
 import "../ha-radio";
 import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./types";
 

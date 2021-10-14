@@ -7,7 +7,6 @@ import { computeDomain } from "../common/entity/compute_domain";
 import { subscribeNotifications } from "../data/persistent_notification";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
-import "./ha-svg-icon";
 
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {

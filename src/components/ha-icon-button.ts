@@ -8,6 +8,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property } from "lit/decorators";
+import "./ha-svg-icon";
 
 @customElement("ha-icon-button")
 export class HaIconButton extends LitElement {

@@ -7,7 +7,6 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-menu-button";
-import "../../../components/ha-svg-icon";
 import { CloudStatus } from "../../../data/cloud";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";

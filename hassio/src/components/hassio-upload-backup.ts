@@ -5,9 +5,8 @@ import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-circular-progress";
 import "../../../src/components/ha-file-upload";
-import "../../../src/components/ha-svg-icon";
-import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { HassioBackup, uploadBackup } from "../../../src/data/hassio/backup";
+import { extractApiErrorMessage } from "../../../src/data/hassio/common";
 import { showAlertDialog } from "../../../src/dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../src/types";
 

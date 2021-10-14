@@ -18,6 +18,7 @@ import { DataTableColumnContainer } from "../../../components/data-table/ha-data
 import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { forwardHaptic } from "../../../data/haptics";
 import { activateScene, SceneEntity } from "../../../data/scene";

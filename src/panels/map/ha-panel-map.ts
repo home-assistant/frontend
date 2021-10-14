@@ -5,7 +5,7 @@ import { property } from "lit/decorators";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-menu-button";
-import "../../components/ha-svg-icon";
+import "../../components/ha-icon-button";
 import "../../components/map/ha-map";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";

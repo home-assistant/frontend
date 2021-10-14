@@ -12,6 +12,7 @@ import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import { nextRender } from "../../../src/common/util/render-status";
+import "../../../src/components/ha-icon-button";
 import {
   fetchHassioAddonInfo,
   HassioAddonDetails,

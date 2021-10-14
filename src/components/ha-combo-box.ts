@@ -11,7 +11,6 @@ import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import "./ha-icon-button";
-import "./ha-svg-icon";
 
 // eslint-disable-next-line lit/prefer-static-styles
 const defaultRowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
