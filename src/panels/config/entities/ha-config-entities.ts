@@ -679,6 +679,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           icon: null,
           readonly: true,
           selectable: false,
+          entity_category: null,
         });
       }
       if (changed) {

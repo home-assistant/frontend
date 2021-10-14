@@ -8,6 +8,7 @@ import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
+import { groupBy } from "../../../common/util/group-by";
 import { slugify } from "../../../common/string/slugify";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-button";
@@ -112,6 +113,25 @@ export class HaConfigDevicePage extends LitElement {
         )
   );
 
+  private _entitiesByCategory = memoizeOne(
+    (entities: EntityRegistryEntry[]) => {
+      const result = groupBy(
+        entities,
+        (entry) => entry.entity_category || "state"
+      ) as Record<
+        "state" | NonNullable<EntityRegistryEntry["entity_category"]>,
+        EntityRegistryStateEntry[]
+      >;
+      for (const key of ["state", "diagnostic", "config"]) {
+        if (!(key in result)) {
+          result[key] = [];
+        }
+      }
+
+      return result;
+    }
+  );
+
   private _computeArea = memoizeOne(
     (areas, device): AreaRegistryEntry | undefined => {
       if (!areas || !device || !device.area_id) {
@@ -159,6 +179,7 @@ export class HaConfigDevicePage extends LitElement {
 
     const integrations = this._integrations(device, this.entries);
     const entities = this._entities(this.deviceId, this.entities);
+    const entitiesByCategory = this._entitiesByCategory(entities);
     const batteryEntity = this._batteryEntity(entities);
     const batteryChargingEntity = this._batteryChargingEntity(entities);
     const batteryState = batteryEntity
@@ -298,18 +319,22 @@ export class HaConfigDevicePage extends LitElement {
               ${this._renderIntegrationInfo(device, integrations)}
               </ha-device-info-card>
 
-            ${
-              entities.length
-                ? html`
+            ${["state", "config", "diagnostic"].map((category) =>
+              !entitiesByCategory[category].length
+                ? ""
+                : html`
                     <ha-device-entities-card
                       .hass=${this.hass}
-                      .entities=${entities}
+                      .header=${this.hass.localize(
+                        `ui.panel.config.devices.entities.${category}`
+                      )}
+                      .entities=${entitiesByCategory[category]}
                       .showDisabled=${device.disabled_by !== null}
                     >
                     </ha-device-entities-card>
                   `
-                : html``
-            }
+            )}
+
           </div>
             <div class="column">
             ${
