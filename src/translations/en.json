@@ -2916,6 +2916,9 @@
             "call_service": "Call service {name}",
             "more_info": "Show more info: {name}"
           },
+          "iframe": {
+            "error_secure_context": "Unable to load iframes pointing at websites using {target_protocol} if Home Assistant is served over {context_protocol}."
+          },
           "safe-mode": {
             "header": "Safe Mode Activated",
             "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."

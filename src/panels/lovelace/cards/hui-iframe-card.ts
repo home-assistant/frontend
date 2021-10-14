@@ -1,11 +1,12 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property } from "lit/decorators";
+import { customElement, property, state } from "lit/decorators";
 import { styleMap } from "lit/directives/style-map";
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";
 import "../../../components/ha-card";
 import "../../../components/ha-alert";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { IframeCardConfig } from "./types";
+import type { HomeAssistant } from "../../../types";
 
 @customElement("hui-iframe-card")
 export class HuiIframeCard extends LitElement implements LovelaceCard {
@@ -25,7 +26,9 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
   @property({ type: Boolean, reflect: true })
   public isPanel = false;
 
-  @property() protected _config?: IframeCardConfig;
+  @property() public hass?: HomeAssistant;
+
+  @state() protected _config?: IframeCardConfig;
 
   public getCardSize(): number {
     if (!this._config) {
@@ -46,7 +49,7 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
   }
 
   protected render(): TemplateResult {
-    if (!this._config) {
+    if (!this._config || !this.hass) {
       return html``;
     }
 
@@ -60,14 +63,18 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       padding = "50%";
     }
 
-    if (
-      location.protocol === "https:" &&
-      new URL(this._config.url, location.toString()).protocol !== "https:"
-    ) {
+    const target_protocol = new URL(this._config.url, location.toString())
+      .protocol;
+    if (location.protocol === "https:" && target_protocol !== "https:") {
       return html`
         <ha-alert alert-type="error">
-          Unable to load iframes that load websites over <code>http://</code> if
-          Home Assistant is served over <code>https://</code>.
+          ${this.hass!.localize(
+            "ui.panel.lovelace.cards.iframe.error_secure_context",
+            {
+              target_protocol,
+              context_protocol: location.protocol,
+            }
+          )}
         </ha-alert>
       `;
     }
