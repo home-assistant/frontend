@@ -50,10 +50,7 @@ class HaCoverControls extends LitElement {
           @click=${this._onOpenTap}
           .disabled=${this._computeOpenDisabled()}
         >
-          <ha-icon
-            slot="icon"
-            .icon=${computeOpenIcon(this.stateObj)}
-          ></ha-icon>
+          <ha-icon .icon=${computeOpenIcon(this.stateObj)}></ha-icon>
         </ha-icon-button>
         <ha-icon-button
           class=${classMap({
@@ -76,10 +73,7 @@ class HaCoverControls extends LitElement {
           @click=${this._onCloseTap}
           .disabled=${this._computeClosedDisabled()}
         >
-          <ha-icon
-            slot="icon"
-            .icon=${computeCloseIcon(this.stateObj)}
-          ></ha-icon>
+          <ha-icon .icon=${computeCloseIcon(this.stateObj)}></ha-icon>
         </ha-icon-button>
       </div>
     `;

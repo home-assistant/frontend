@@ -146,7 +146,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 tabindex="0"
               >
                 <ha-icon
-                  slot="icon"
                   .icon=${this._config.icon || stateIcon(stateObj)}
                 ></ha-icon>
               </ha-icon-button>

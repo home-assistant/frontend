@@ -259,10 +259,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             this.hass!.locale
           )}`}
         >
-          <ha-icon
-            slot="icon"
-            .icon=${entityConf.icon || stateIcon(stateObj)}
-          ></ha-icon>
+          <ha-icon .icon=${entityConf.icon || stateIcon(stateObj)}></ha-icon>
         </ha-icon-button>
         ${this._config!.show_state !== true && entityConf.show_state !== true
           ? html`<div class="state"></div>`

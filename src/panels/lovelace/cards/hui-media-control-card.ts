@@ -275,10 +275,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                                   action=${control.action}
                                   @click=${this._handleClick}
                                 >
-                                  <ha-icon
-                                    slot="icon"
-                                    .icon=${control.icon}
-                                  ></ha-icon>
+                                  <ha-icon .icon=${control.icon}></ha-icon>
                                 </ha-icon-button>
                               `
                             )}

@@ -29,7 +29,7 @@ export class HaIconButton extends LitElement {
         .disabled=${this.disabled}
       >
         ${this.path ? html`<ha-svg-icon .path=${this.path}></ha-svg-icon>` : ""}
-        <slot name="icon"></slot>
+        <slot></slot>
       </mwc-icon-button>
     `;
   }

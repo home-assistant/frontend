@@ -419,7 +419,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         @click=${this._handleAction}
         tabindex="0"
       >
-        <ha-icon slot="icon" .icon=${modeIcons[mode]}></ha-icon>
+        <ha-icon .icon=${modeIcons[mode]}></ha-icon>
       </ha-icon-button>
     `;
   }
