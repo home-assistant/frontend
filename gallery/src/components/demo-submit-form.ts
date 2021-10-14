@@ -45,7 +45,7 @@ class DemoSubmitForm extends LitElement {
 
   static styles = css`
     ha-card {
-      max-width: 600px;
+      width: 400px;
     }
     pre {
       width: 300px;

@@ -51,6 +51,9 @@ class DemoBlackWhiteRow extends LitElement {
       padding-left: 50px;
       padding-right: 50px;
       box-sizing: border-box;
+      display: flex;
+      align-items: end;
+      flex-direction: column;
     }
     .dark {
       flex: 1;
@@ -58,6 +61,9 @@ class DemoBlackWhiteRow extends LitElement {
       padding-right: 50px;
       box-sizing: border-box;
       flex-wrap: wrap;
+      display: flex;
+      align-items: start;
+      flex-direction: column;
     }
     pre {
       width: 300px;
@@ -65,19 +71,16 @@ class DemoBlackWhiteRow extends LitElement {
       overflow: auto;
       color: var(--primary-text-color);
     }
-    @media only screen and (max-width: 1500px) {
-      .light {
-        flex: initial;
-      }
-    }
     @media only screen and (max-width: 1000px) {
-      .light,
-      .dark {
-        padding: 16px;
-      }
       .row,
       .dark {
         flex-direction: column;
+      }
+      .content {
+        padding: 10px 0;
+        margin: 0 auto;
+        width: 100%;
+        max-width: 400px;
       }
       pre {
         margin: 16px auto;

@@ -57,7 +57,8 @@ export class DemoHaLabelBadge extends LitElement {
     return html`
       <demo-black-white-row>
         ${["light", "dark"].map(
-          (slot) => html` <ha-card slot=${slot}>
+          (slot) => html`
+            <ha-card slot=${slot}>
               <div class="card-content">
                 ${badges.map(
                   (badge) => html`
@@ -93,7 +94,8 @@ export class DemoHaLabelBadge extends LitElement {
                   `
                 )}
               </div>
-            </ha-card>`
+            </ha-card>
+          `
         )}
       </demo-black-white-row>
     `;
@@ -102,7 +104,7 @@ export class DemoHaLabelBadge extends LitElement {
   static get styles() {
     return css`
       ha-card {
-        max-width: 600px;
+        width: 400px;
         margin: 24px auto;
       }
       pre {

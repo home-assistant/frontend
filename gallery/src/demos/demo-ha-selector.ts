@@ -126,6 +126,9 @@ class DemoHaSelector extends LitElement {
   }
 
   static styles = css`
+    ha-card {
+      width: 400px;
+    }
     paper-input,
     ha-selector {
       width: 60;

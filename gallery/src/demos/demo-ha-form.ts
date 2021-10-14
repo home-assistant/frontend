@@ -240,34 +240,36 @@ class DemoHaForm extends LitElement {
         return html`
           <demo-black-white-row .value=${this.data[idx]}>
             ${["light", "dark"].map(
-              (slot) => html` <demo-submit-form
-                slot=${slot}
-                .title=${info.title}
-                .disabled=${this.disabled[idx]}
-                @submitted=${() => {
-                  this.disabled[idx] = true;
-                  this.requestUpdate();
-                  setTimeout(() => {
-                    this.disabled[idx] = false;
-                    this.requestUpdate();
-                  }, 2000);
-                }}
-              >
-                <ha-form
-                  slot="content"
-                  .data=${this.data[idx]}
-                  .schema=${info.schema}
-                  .error=${info.error}
+              (slot) => html`
+                <demo-submit-form
+                  slot=${slot}
+                  .header=${info.title}
                   .disabled=${this.disabled[idx]}
-                  .computeError=${(error) => translations[error] || error}
-                  .computeLabel=${(schema) =>
-                    translations[schema.name] || schema.name}
-                  @value-changed=${(e) => {
-                    this.data[idx] = e.detail.value;
+                  @submitted=${() => {
+                    this.disabled[idx] = true;
                     this.requestUpdate();
+                    setTimeout(() => {
+                      this.disabled[idx] = false;
+                      this.requestUpdate();
+                    }, 2000);
                   }}
-                ></ha-form>
-              </demo-submit-form>`
+                >
+                  <ha-form
+                    slot="content"
+                    .data=${this.data[idx]}
+                    .schema=${info.schema}
+                    .error=${info.error}
+                    .disabled=${this.disabled[idx]}
+                    .computeError=${(error) => translations[error] || error}
+                    .computeLabel=${(schema) =>
+                      translations[schema.name] || schema.name}
+                    @value-changed=${(e) => {
+                      this.data[idx] = e.detail.value;
+                      this.requestUpdate();
+                    }}
+                  ></ha-form>
+                </demo-submit-form>
+              `
             )}
           </demo-black-white-row>
         `;

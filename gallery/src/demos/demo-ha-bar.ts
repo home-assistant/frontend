@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../src/components/ha-bar";
 import "../../../src/components/ha-card";
+import "../components/demo-black-white-row";
 
 const bars: {
   min?: number;
@@ -38,27 +39,39 @@ const bars: {
 export class DemoHaBar extends LitElement {
   protected render(): TemplateResult {
     return html`
-      ${bars
-        .map((bar) => ({ min: 0, max: 100, warning: 70, error: 90, ...bar }))
-        .map(
-          (bar) => html`
-            <ha-card>
-              <div class="card-content">
-                <pre>Config: ${JSON.stringify(bar)}</pre>
-                <ha-bar
-                  class=${classMap({
-                    warning: bar.value > bar.warning,
-                    error: bar.value > bar.error,
-                  })}
-                  .min=${bar.min}
-                  .max=${bar.max}
-                  .value=${bar.value}
-                >
-                </ha-bar>
-              </div>
-            </ha-card>
+      <demo-black-white-row>
+        ${["light", "dark"].map(
+          (slot) => html`
+            ${bars
+              .map((bar) => ({
+                min: 0,
+                max: 100,
+                warning: 70,
+                error: 90,
+                ...bar,
+              }))
+              .map(
+                (bar) => html`
+                  <ha-card .slot=${slot}>
+                    <div class="card-content">
+                      <pre>Config: ${JSON.stringify(bar)}</pre>
+                      <ha-bar
+                        class=${classMap({
+                          warning: bar.value > bar.warning,
+                          error: bar.value > bar.error,
+                        })}
+                        .min=${bar.min}
+                        .max=${bar.max}
+                        .value=${bar.value}
+                      >
+                      </ha-bar>
+                    </div>
+                  </ha-card>
+                `
+              )}
           `
         )}
+      </demo-black-white-row>
     `;
   }
 
