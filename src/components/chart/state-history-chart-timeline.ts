@@ -12,28 +12,19 @@ import { HomeAssistant } from "../../types";
 import "./ha-chart-base";
 import type { TimeLineData } from "./timeline-chart/const";
 
-/** Binary sensor device classes for which the static colors for on/off need to be inverted.
- *  List the ones were "off" = good or normal state = should be rendered "green".
+/** Binary sensor device classes for which the static colors for on/off are NOT inverted.
+ *  List the ones were "on" = good or normal state => should be rendered "green".
+ *  Note: It is now a "not inverted" list (compared to the past) since we now have more inverted ones.
  */
-const BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED = new Set([
-  "battery",
-  "cold",
-  "door",
-  "garage_door",
-  "gas",
-  "heat",
-  "lock",
-  "moisture",
-  "motion",
-  "occupancy",
-  "opening",
-  "problem",
-  "safety",
-  "smoke",
-  "sound",
-  "tamper",
-  "vibration",
-  "window",
+const BINARY_SENSOR_DEVICE_CLASS_COLOR_NOT_INVERTED = new Set([
+  "battery_charging",
+  "connectivity",
+  "light",
+  "moving",
+  "plug",
+  "power",
+  "presence",
+  "update",
 ]);
 
 const STATIC_STATE_COLORS = new Set([
@@ -54,7 +45,7 @@ const invertOnOff = (entityState?: HassEntity) =>
   entityState &&
   computeDomain(entityState.entity_id) === "binary_sensor" &&
   "device_class" in entityState.attributes &&
-  BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED.has(
+  !BINARY_SENSOR_DEVICE_CLASS_COLOR_NOT_INVERTED.has(
     entityState.attributes.device_class!
   );
 
