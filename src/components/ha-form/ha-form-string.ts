@@ -29,6 +29,8 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _unmaskedPassword = false;
 
   @query("mwc-textfield") private _input?: HTMLElement;
@@ -52,6 +54,7 @@ export class HaFormString extends LitElement implements HaFormElement {
           : "password"}
         .label=${this.label}
         .value=${this.data || ""}
+        .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
         .suffix=${isPassword

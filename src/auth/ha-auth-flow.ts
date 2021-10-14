@@ -39,6 +39,8 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   @state() private _errorMessage?: string;
 
+  @state() private _submitting = false;
+
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
 
@@ -135,13 +137,15 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         return html`
           ${this._renderStep(this._step)}
           <div class="action">
-            <mwc-button raised @click=${this._handleSubmit}
-              >${this._step.type === "form"
-                ? this.localize("ui.panel.page-authorize.form.next")
-                : this.localize(
-                    "ui.panel.page-authorize.form.start_over"
-                  )}</mwc-button
+            <mwc-button
+              raised
+              @click=${this._handleSubmit}
+              .disabled=${this._submitting}
             >
+              ${this._step.type === "form"
+                ? this.localize("ui.panel.page-authorize.form.next")
+                : this.localize("ui.panel.page-authorize.form.start_over")}
+            </mwc-button>
           </div>
         `;
       case "error":
@@ -192,6 +196,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             .data=${this._stepData}
             .schema=${step.data_schema}
             .error=${step.errors}
+            .disabled=${this._submitting}
             .computeLabel=${this._computeLabelCallback(step)}
             .computeError=${this._computeErrorCallback(step)}
             @value-changed=${this._stepDataChanged}
@@ -317,9 +322,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       this._providerChanged(this.authProvider);
       return;
     }
-    this._state = "loading";
-    // To avoid a jumping UI.
-    this.style.setProperty("min-height", `${this.offsetHeight}px`);
+    this._submitting = true;
 
     const postData = { ...this._stepData, client_id: this.clientId };
 
@@ -344,16 +347,12 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       this._state = "error";
       this._errorMessage = this._unknownError();
     } finally {
-      this.style.setProperty("min-height", "");
+      this._submitting = false;
     }
   }
 
   static get styles(): CSSResultGroup {
     return css`
-      :host {
-        /* So we can set min-height to avoid jumping during loading */
-        display: block;
-      }
       .action {
         margin: 24px 0 8px;
         text-align: center;

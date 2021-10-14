@@ -8,7 +8,6 @@ import {
 } from "lit";
 import { property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
-import "./ha-svg-icon";
 
 class HaLabelBadge extends LitElement {
   @property() public label?: string;

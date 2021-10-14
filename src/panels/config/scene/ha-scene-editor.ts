@@ -554,7 +554,7 @@ export class HaSceneEditor extends SubscribeMixin(
     try {
       config = await getSceneConfig(this.hass, this.sceneId!);
     } catch (err: any) {
-      showAlertDialog(this, {
+      await showAlertDialog(this, {
         text:
           err.status_code === 404
             ? this.hass.localize(
@@ -565,7 +565,8 @@ export class HaSceneEditor extends SubscribeMixin(
                 "err_no",
                 err.status_code
               ),
-      }).then(() => history.back());
+      });
+      history.back();
       return;
     }
 
