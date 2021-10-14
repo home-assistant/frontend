@@ -35,6 +35,7 @@ import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
+import "../../components/ha-icon-button";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -160,13 +161,12 @@ export class QuickBar extends LitElement {
               ></ha-svg-icon>`}
           ${this._search &&
           html`
-            <mwc-icon-button
+            <ha-icon-button
               slot="suffix"
               @click=${this._clearSearch}
-              title="Clear"
-            >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+              .label=${this.hass!.localize("ui.common.clear")}
+              .path=${mdiClose}
+            ></ha-icon-button>
           `}
         </paper-input>
         ${!items
@@ -613,7 +613,7 @@ export class QuickBar extends LitElement {
           color: var(--primary-text-color);
         }
 
-        paper-input mwc-icon-button {
+        paper-input ha-icon-button {
           --mdc-icon-button-size: 24px;
           color: var(--primary-text-color);
         }

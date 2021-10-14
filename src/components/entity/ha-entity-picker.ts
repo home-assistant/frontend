@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
@@ -21,6 +20,7 @@ import { computeDomain } from "../../common/entity/compute_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
+import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./state-badge";
 
@@ -267,31 +267,27 @@ export class HaEntityPicker extends LitElement {
           <div class="suffix" slot="suffix">
             ${this.value && !this.hideClearIcon
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     .label=${this.hass.localize(
                       "ui.components.entity.entity-picker.clear"
                     )}
+                    .path=${mdiClose}
                     class="clear-button"
                     tabindex="-1"
                     @click=${this._clearValue}
                     no-ripple
-                  >
-                    <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
 
-            <mwc-icon-button
+            <ha-icon-button
               .label=${this.hass.localize(
                 "ui.components.entity.entity-picker.show_entities"
               )}
+              .path=${this._opened ? mdiMenuUp : mdiMenuDown}
               class="toggle-button"
               tabindex="-1"
-            >
-              <ha-svg-icon
-                .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-              ></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
           </div>
         </paper-input>
       </vaadin-combo-box-light>
@@ -340,7 +336,7 @@ export class HaEntityPicker extends LitElement {
       .suffix {
         display: flex;
       }
-      mwc-icon-button {
+      ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 0px 2px;
         color: var(--secondary-text-color);

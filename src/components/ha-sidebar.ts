@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button";
 import {
   mdiBell,
   mdiCellphoneCog,
@@ -44,6 +43,7 @@ import { actionHandler } from "../panels/lovelace/common/directives/action-handl
 import { haStyleScrollbar } from "../resources/styles";
 import type { HomeAssistant, PanelInfo } from "../types";
 import "./ha-icon";
+import "./ha-icon-button";
 import "./ha-menu-button";
 import "./ha-svg-icon";
 import "./user/ha-user-badge";
@@ -302,16 +302,13 @@ class HaSidebar extends LitElement {
     >
       ${!this.narrow
         ? html`
-            <mwc-icon-button
+            <ha-icon-button
               .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+              .path=${this.hass.dockedSidebar === "docked"
+                ? mdiMenuOpen
+                : mdiMenu}
               @action=${this._toggleSidebar}
-            >
-              <ha-svg-icon
-                .path=${this.hass.dockedSidebar === "docked"
-                  ? mdiMenuOpen
-                  : mdiMenu}
-              ></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
           `
         : ""}
       ${this.editMode
@@ -386,9 +383,11 @@ class HaSidebar extends LitElement {
                 : this.hass.localize(`panel.${panel.title}`) ||
                   panel.title}</span
             >
-            <mwc-icon-button class="show-panel">
-              <ha-svg-icon .path=${mdiPlus}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              .label=${this.hass.localize("ui.sidebar.show_panel")}
+              .path=${mdiPlus}
+              class="show-panel"
+            ></ha-icon-button>
           </paper-icon-item>`;
         })}
         ${this._renderSpacer()}`
@@ -723,13 +722,13 @@ class HaSidebar extends LitElement {
           <span class="item-text">${title}</span>
         </paper-icon-item>
         ${this.editMode
-          ? html`<mwc-icon-button
+          ? html`<ha-icon-button
+              .label=${this.hass.localize("ui.sidebar.hide_panel")}
+              .path=${mdiClose}
               class="hide-panel"
               .panel=${urlPath}
               @click=${this._hidePanel}
-            >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>`
+            ></ha-icon-button>`
           : ""}
       </a>
     `;
@@ -786,7 +785,7 @@ class HaSidebar extends LitElement {
         :host([rtl][expanded]) .menu {
           width: calc(256px + env(safe-area-inset-right));
         }
-        .menu mwc-icon-button {
+        .menu ha-icon-button {
           color: var(--sidebar-icon-color);
         }
         .title {
@@ -1021,7 +1020,7 @@ class HaSidebar extends LitElement {
           font-weight: 500;
         }
 
-        :host([rtl]) .menu mwc-icon-button {
+        :host([rtl]) .menu ha-icon-button {
           -webkit-transform: scaleX(-1);
           transform: scaleX(-1);
         }

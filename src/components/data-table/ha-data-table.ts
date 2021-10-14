@@ -30,6 +30,7 @@ import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
 import "../ha-svg-icon";
 import { filterData, sortData } from "./sort-filter";
+import { HomeAssistant } from "../../types";
 
 declare global {
   // for fire event
@@ -93,6 +94,8 @@ export interface SortableColumnContainer {
 
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
 
   @property({ type: Array }) public data: DataTableRowData[] = [];
@@ -232,6 +235,7 @@ export class HaDataTable extends LitElement {
             ? html`
                 <div class="table-header">
                   <search-input
+                    .hass=${this.hass}
                     @value-changed=${this._handleSearchChange}
                     .label=${this.searchLabel}
                     .noLabelFloat=${this.noLabelFloat}

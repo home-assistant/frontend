@@ -1,3 +1,4 @@
+import { mdiPalette } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import {
@@ -142,7 +143,7 @@ class MoreInfoLight extends LitElement {
                       >
                       </ha-color-picker>
                       <ha-icon-button
-                        icon="hass:palette"
+                        .path=${mdiPalette}
                         @click=${this._segmentClick}
                         class="segmentationButton"
                       ></ha-icon-button>

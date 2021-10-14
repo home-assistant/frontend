@@ -1,3 +1,12 @@
+import {
+  mdiHomeMapMarker,
+  mdiMapMarker,
+  mdiPause,
+  mdiPlay,
+  mdiPlayPause,
+  mdiStop,
+  mdiTargetVariant,
+} from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -32,13 +41,13 @@ interface VacuumCommand {
 const VACUUM_COMMANDS: VacuumCommand[] = [
   {
     translationKey: "start",
-    icon: "hass:play",
+    icon: mdiPlay,
     serviceName: "start",
     isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_START),
   },
   {
     translationKey: "pause",
-    icon: "hass:pause",
+    icon: mdiPause,
     serviceName: "pause",
     isVisible: (stateObj) =>
       // We need also to check if Start is supported because if not we show play-pause
@@ -47,7 +56,7 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
   },
   {
     translationKey: "start_pause",
-    icon: "hass:play-pause",
+    icon: mdiPlayPause,
     serviceName: "start_pause",
     isVisible: (stateObj) =>
       // If start is supported, we don't show this button
@@ -56,26 +65,26 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
   },
   {
     translationKey: "stop",
-    icon: "hass:stop",
+    icon: mdiStop,
     serviceName: "stop",
     isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_STOP),
   },
   {
     translationKey: "clean_spot",
-    icon: "hass:target-variant",
+    icon: mdiTargetVariant,
     serviceName: "clean_spot",
     isVisible: (stateObj) =>
       supportsFeature(stateObj, VACUUM_SUPPORT_CLEAN_SPOT),
   },
   {
     translationKey: "locate",
-    icon: "hass:map-marker",
+    icon: mdiMapMarker,
     serviceName: "locate",
     isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_LOCATE),
   },
   {
     translationKey: "return_home",
-    icon: "hass:home-map-marker",
+    icon: mdiHomeMapMarker,
     serviceName: "return_to_base",
     isVisible: (stateObj) =>
       supportsFeature(stateObj, VACUUM_SUPPORT_RETURN_HOME),
@@ -144,10 +153,10 @@ class MoreInfoVacuum extends LitElement {
                   (item) => html`
                     <div>
                       <ha-icon-button
-                        .icon=${item.icon}
+                        .path=${item.icon}
                         .entry=${item}
                         @click=${this.callService}
-                        .title=${this.hass!.localize(
+                        .label=${this.hass!.localize(
                           `ui.dialogs.more_info_control.vacuum.${item.translationKey}`
                         )}
                         .disabled=${stateObj.state === UNAVAILABLE}

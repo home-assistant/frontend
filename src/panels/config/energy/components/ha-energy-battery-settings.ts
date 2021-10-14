@@ -5,6 +5,7 @@ import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
 import "../../../../components/ha-settings-row";
 import {
   BatterySourceTypeEnergyPreference,
@@ -14,8 +15,8 @@ import {
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -105,12 +106,14 @@ export class EnergyBatterySettings extends LitElement {
                       : source.stat_energy_to}</span
                   >
                 </div>
-                <mwc-icon-button @click=${this._editSource}>
-                  <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                </mwc-icon-button>
-                <mwc-icon-button @click=${this._deleteSource}>
-                  <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button
+                  @click=${this._editSource}
+                  .path=${mdiPencil}
+                ></ha-icon-button>
+                <ha-icon-button
+                  @click=${this._deleteSource}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
               </div>
             `;
           })}
