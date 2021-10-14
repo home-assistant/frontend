@@ -1,10 +1,9 @@
 import "@material/mwc-button";
-import "@material/mwc-icon-button";
 import { mdiArrowLeft } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent, HASSDomEvent } from "../../../common/dom/fire_event";
-import "../../../components/ha-svg-icon";
+import "../../../components/ha-icon-button";
 import type { HomeAssistant } from "../../../types";
 import type { LovelaceRowConfig } from "../entity-rows/types";
 import type { LovelaceHeaderFooterConfig } from "../header-footer/types";
@@ -37,9 +36,11 @@ export class HuiSubElementEditor extends LitElement {
     return html`
       <div class="header">
         <div class="back-title">
-          <mwc-icon-button @click=${this._goBack}>
-            <ha-svg-icon .path=${mdiArrowLeft}></ha-svg-icon>
-          </mwc-icon-button>
+          <ha-icon-button
+            .label=${this.hass!.localize("ui.common.back")}
+            .path=${mdiArrowLeft}
+            @click=${this._goBack}
+          ></ha-icon-button>
           <span slot="title"
             >${this.hass.localize(
               `ui.panel.lovelace.editor.sub-element-editor.types.${this.config?.type}`

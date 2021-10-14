@@ -31,6 +31,7 @@ const BINARY_SENSOR_DEVICE_CLASS_COLOR_INVERTED = new Set([
   "safety",
   "smoke",
   "sound",
+  "tamper",
   "vibration",
   "window",
 ]);

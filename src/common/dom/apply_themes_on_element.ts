@@ -115,7 +115,7 @@ export const applyThemesOnElement = (
   }
 
   const newTheme =
-    themeRules && cacheKey
+    Object.keys(themeRules).length && cacheKey
       ? PROCESSED_THEMES[cacheKey] || processTheme(cacheKey, themeRules)
       : undefined;
 

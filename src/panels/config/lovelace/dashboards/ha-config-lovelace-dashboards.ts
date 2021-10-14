@@ -1,4 +1,4 @@
-import { mdiPlus } from "@mdi/js";
+import { mdiOpenInNew, mdiPlus } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -149,9 +149,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
           narrow
             ? html`
                 <ha-icon-button
-                  icon="hass:open-in-new"
+                  .path=${mdiOpenInNew}
                   .urlPath=${urlPath}
                   @click=${this._navigate}
+                  .label=${this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.picker.open"
+                  )}
                 ></ha-icon-button>
               `
             : html`

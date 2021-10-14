@@ -1,7 +1,6 @@
 // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import {
   mdiClose,
   mdiDevices,
@@ -15,7 +14,7 @@ import {
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, unsafeCSS } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { ensureArray } from "../common/ensure-array";
@@ -43,6 +42,7 @@ import "./entity/ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
 import "./ha-area-picker";
 import "./ha-icon";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 
 @customElement("ha-target-picker")
@@ -259,17 +259,19 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         ${type === "entity_id"
           ? ""
           : html` <span role="gridcell">
-              <mwc-icon-button
+              <ha-icon-button
                 class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
                 tabindex="-1"
                 role="button"
-                .label=${"Expand"}
+                .label=${this.hass.localize(
+                  "ui.components.target-picker.expand"
+                )}
+                .path=${mdiUnfoldMoreVertical}
+                hideTooltip
                 .id=${id}
                 .type=${type}
                 @click=${this._handleExpand}
-              >
-                <ha-svg-icon .path=${mdiUnfoldMoreVertical}></ha-svg-icon>
-              </mwc-icon-button>
+              ></ha-icon-button>
               <paper-tooltip class="expand" animation-delay="0"
                 >${this.hass.localize(
                   `ui.components.target-picker.expand_${type}`
@@ -277,17 +279,17 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               >
             </span>`}
         <span role="gridcell">
-          <mwc-icon-button
+          <ha-icon-button
             class="mdc-chip__icon mdc-chip__icon--trailing"
             tabindex="-1"
             role="button"
-            .label=${"Remove"}
+            .label=${this.hass.localize("ui.components.target-picker.expand")}
+            .path=${mdiClose}
+            hideTooltip
             .id=${id}
             .type=${type}
             @click=${this._handleRemove}
-          >
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
+          ></ha-icon-button>
           <paper-tooltip animation-delay="0"
             >${this.hass.localize(
               `ui.components.target-picker.remove_${type}`
@@ -543,13 +545,13 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
       .mdc-chip:not(.add) {
         cursor: default;
       }
-      .mdc-chip mwc-icon-button {
+      .mdc-chip ha-icon-button {
         --mdc-icon-button-size: 24px;
         display: flex;
         align-items: center;
         outline: none;
       }
-      .mdc-chip mwc-icon-button ha-svg-icon {
+      .mdc-chip ha-icon-button ha-svg-icon {
         border-radius: 50%;
         background: var(--secondary-text-color);
       }

@@ -1,3 +1,4 @@
+import { mdiAlert } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -14,11 +15,12 @@ import { computeStateDisplay } from "../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { stateIcon } from "../../common/entity/state_icon";
-import { timerTimeRemaining } from "../../data/timer";
 import { formatNumber } from "../../common/number/format_number";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
+import { timerTimeRemaining } from "../../data/timer";
 import { HomeAssistant } from "../../types";
 import "../ha-label-badge";
+import "../ha-icon";
 
 @customElement("ha-state-label-badge")
 export class HaStateLabelBadge extends LitElement {
@@ -58,15 +60,25 @@ export class HaStateLabelBadge extends LitElement {
         <ha-label-badge
           class="warning"
           label=${this.hass!.localize("state_badge.default.error")}
-          icon="hass:alert"
           description=${this.hass!.localize(
             "state_badge.default.entity_not_found"
           )}
-        ></ha-label-badge>
+        >
+          <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
+        </ha-label-badge>
       `;
     }
 
     const domain = computeStateDomain(entityState);
+
+    const value = this._computeValue(domain, entityState);
+    const icon = this.icon ? this.icon : this._computeIcon(domain, entityState);
+    const image = this.icon
+      ? ""
+      : this.image
+      ? this.image
+      : entityState.attributes.entity_picture_local ||
+        entityState.attributes.entity_picture;
 
     return html`
       <ha-label-badge
@@ -75,21 +87,21 @@ export class HaStateLabelBadge extends LitElement {
           "has-unit_of_measurement":
             "unit_of_measurement" in entityState.attributes,
         })}
-        .value=${this._computeValue(domain, entityState)}
-        .icon=${this.icon ? this.icon : this._computeIcon(domain, entityState)}
-        .image=${this.icon
-          ? ""
-          : this.image
-          ? this.image
-          : entityState.attributes.entity_picture_local ||
-            entityState.attributes.entity_picture}
+        .image=${image}
         .label=${this._computeLabel(
           domain,
           entityState,
           this._timerTimeRemaining
         )}
-        .description=${this.name ? this.name : computeStateName(entityState)}
-      ></ha-label-badge>
+        .description=${this.name ?? computeStateName(entityState)}
+      >
+        ${!image && icon ? html`<ha-icon .icon=${icon}></ha-icon>` : ""}
+        ${value && (this.icon || !this.image)
+          ? html`<span class=${value && value.length > 4 ? "big" : ""}
+              >${value}</span
+            >`
+          : ""}
+      </ha-label-badge>
     `;
   }
 
@@ -208,7 +220,9 @@ export class HaStateLabelBadge extends LitElement {
       :host {
         cursor: pointer;
       }
-
+      .big {
+        font-size: 70%;
+      }
       ha-label-badge {
         --ha-label-badge-color: var(--label-badge-red, #df4c1e);
       }

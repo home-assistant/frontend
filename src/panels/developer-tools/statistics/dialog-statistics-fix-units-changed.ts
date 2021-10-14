@@ -82,7 +82,7 @@ export class DialogStatisticsFixUnitsChanged extends LitElement {
 
         <mwc-button slot="primaryAction" @click=${this._fixIssue}>
           ${this.hass.localize(
-            "ui.panel.developer-tools.tabs.statistics.fix_issue.units_changed.fix"
+            "ui.panel.developer-tools.tabs.statistics.fix_issue.fix"
           )}
         </mwc-button>
         <mwc-button slot="secondaryAction" @click=${this.closeDialog}>

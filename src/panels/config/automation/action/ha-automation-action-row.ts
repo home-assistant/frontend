@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
@@ -7,13 +6,13 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import type { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
-import "../../../../components/ha-svg-icon";
+import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Action } from "../../../../data/script";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
@@ -124,41 +123,32 @@ export default class HaAutomationActionRow extends LitElement {
           <div class="card-menu">
             ${this.index !== 0
               ? html`
-                  <mwc-icon-button
-                    .title=${this.hass.localize(
-                      "ui.panel.config.automation.editor.move_up"
-                    )}
+                  <ha-icon-button
                     .label=${this.hass.localize(
                       "ui.panel.config.automation.editor.move_up"
                     )}
+                    .path=${mdiArrowUp}
                     @click=${this._moveUp}
-                  >
-                    <ha-svg-icon .path=${mdiArrowUp}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
             ${this.index !== this.totalActions - 1
               ? html`
-                  <mwc-icon-button
-                    .title=${this.hass.localize(
-                      "ui.panel.config.automation.editor.move_down"
-                    )}
+                  <ha-icon-button
                     .label=${this.hass.localize(
                       "ui.panel.config.automation.editor.move_down"
                     )}
+                    .path=${mdiArrowDown}
                     @click=${this._moveDown}
-                  >
-                    <ha-svg-icon .path=${mdiArrowDown}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-              <mwc-icon-button
+              <ha-icon-button
                 slot="trigger"
-                .title=${this.hass.localize("ui.common.menu")}
-                .label=${this.hass.localize("ui.common.overflow_menu")}
-                ><ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-              </mwc-icon-button>
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+              ></ha-icon-button>
               <mwc-list-item .disabled=${!this._uiModeAvailable}>
                 ${yamlMode
                   ? this.hass.localize(

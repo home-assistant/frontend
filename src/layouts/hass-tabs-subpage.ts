@@ -14,7 +14,6 @@ import { isComponentLoaded } from "../common/config/is_component_loaded";
 import { restoreScroll } from "../common/decorators/restore-scroll";
 import { LocalizeFunc } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
-import "../components/ha-icon";
 import "../components/ha-icon-button-arrow-prev";
 import "../components/ha-menu-button";
 import "../components/ha-svg-icon";
@@ -28,7 +27,6 @@ export interface PageNavigation {
   name?: string;
   core?: boolean;
   advancedOnly?: boolean;
-  icon?: string;
   iconPath?: string;
   info?: any;
 }
@@ -98,7 +96,7 @@ class HassTabsSubpage extends LitElement {
                       slot="icon"
                       .path=${page.iconPath}
                     ></ha-svg-icon>`
-                  : html`<ha-icon slot="icon" .icon=${page.icon}></ha-icon>`}
+                  : ""}
               </ha-tab>
             </a>
           `
@@ -236,6 +234,12 @@ class HassTabsSubpage extends LitElement {
       #tabbar {
         display: flex;
         font-size: 14px;
+        overflow: hidden;
+      }
+
+      #tabbar > a {
+        overflow: hidden;
+        max-width: 45%;
       }
 
       #tabbar.bottom-bar {

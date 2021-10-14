@@ -78,7 +78,7 @@ class DialogThingtalk extends LitElement {
           .hass=${this.hass}
           .placeholders=${this._placeholders}
           .opened=${this._opened}
-          .skip=${() => this._skip()}
+          .skip=${this._skip}
           @opened-changed=${this._openedChanged}
           @placeholders-filled=${this._handlePlaceholders}
         >
@@ -229,10 +229,10 @@ class DialogThingtalk extends LitElement {
     this.closeDialog();
   }
 
-  private _skip() {
+  private _skip = () => {
     this._params!.callback(undefined);
     this.closeDialog();
-  }
+  };
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!ev.detail.value) {

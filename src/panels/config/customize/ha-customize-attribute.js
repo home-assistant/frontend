@@ -1,6 +1,7 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import hassAttributeUtil from "../../../util/hass-attributes-util";
 import "../ha-form-style";
@@ -28,11 +29,9 @@ class HaCustomizeAttribute extends PolymerElement {
         }
       </style>
       <div id="wrapper" class="form-group"></div>
-      <ha-icon-button
-        class="button"
-        icon="[[getIcon(item.secondary)]]"
-        on-click="tapButton"
-      ></ha-icon-button>
+      <ha-icon-button class="button" on-click="tapButton">
+        <ha-icon icon="[[getIcon(item.secondary)]]"></ha-icon>
+      </ha-icon-button>
     `;
   }
 

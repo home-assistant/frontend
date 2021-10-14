@@ -361,7 +361,10 @@ const mdiDeprecatedIcons: DeprecatedIcon = {
 
 const chunks: Chunks = {};
 
-checkCacheVersion();
+// Supervisor doesn't use icons, and should not update/downgrade the icon DB.
+if (!__SUPERVISOR__) {
+  checkCacheVersion();
+}
 
 const debouncedWriteCache = debounce(() => writeCache(chunks), 2000);
 

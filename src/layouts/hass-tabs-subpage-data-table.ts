@@ -157,6 +157,7 @@ export class HaTabsSubpageDataTable extends LitElement {
       : hiddenLabel;
 
     const headerToolbar = html`<search-input
+        .hass=${this.hass}
         .filter=${this.filter}
         no-label-float
         no-underline
@@ -205,6 +206,7 @@ export class HaTabsSubpageDataTable extends LitElement {
             `
           : ""}
         <ha-data-table
+          .hass=${this.hass}
           .columns=${this.columns}
           .data=${this.data}
           .filter=${this.filter}
@@ -279,7 +281,7 @@ export class HaTabsSubpageDataTable extends LitElement {
         margin-left: 4px;
         font-size: 14px;
       }
-      .active-filters ha-icon {
+      .active-filters ha-svg-icon {
         color: var(--primary-color);
       }
       .active-filters mwc-button {

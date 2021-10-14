@@ -70,7 +70,9 @@ class HuiEnergyDistrubutionCard
     }
 
     if (!this._data) {
-      return html`Loading…`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     const prefs = this._data.prefs;
@@ -267,7 +269,11 @@ class HuiEnergyDistrubutionCard
                 ${lowCarbonEnergy === undefined
                   ? html`<div class="spacer"></div>`
                   : html`<div class="circle-container low-carbon">
-                      <span class="label">Non-fossil</span>
+                      <span class="label"
+                        >${this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_distribution.non_fossil"
+                        )}</span
+                      >
                       <a
                         class="circle"
                         href=${electricityMapUrl}
@@ -288,7 +294,11 @@ class HuiEnergyDistrubutionCard
                     </div>`}
                 ${hasSolarProduction
                   ? html`<div class="circle-container solar">
-                      <span class="label">Solar</span>
+                      <span class="label"
+                        >${this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.distribution.solar"
+                        )}</span
+                      >
                       <div class="circle">
                         <ha-svg-icon .path=${mdiSolarPower}></ha-svg-icon>
                         ${formatNumber(
@@ -304,7 +314,11 @@ class HuiEnergyDistrubutionCard
                   : ""}
                 ${hasGas
                   ? html`<div class="circle-container gas">
-                      <span class="label">Gas</span>
+                      <span class="label"
+                        >${this.hass.localize(
+                          "ui.panel.lovelace.cards.energy.energy_distribution.gas"
+                        )}</span
+                      >
                       <div class="circle">
                         <ha-svg-icon .path=${mdiFire}></ha-svg-icon>
                         ${formatNumber(gasUsage || 0, this.hass.locale, {
@@ -362,7 +376,11 @@ class HuiEnergyDistrubutionCard
                   kWh
                 </span>
               </div>
-              <span class="label">Grid</span>
+              <span class="label"
+                >${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.energy_distribution.grid"
+                )}</span
+              >
             </div>
             <div class="circle-container home">
               <div
@@ -449,7 +467,11 @@ class HuiEnergyDistrubutionCard
                     </svg>`
                   : ""}
               </div>
-              <span class="label">Home</span>
+              <span class="label"
+                >${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.energy_distribution.home"
+                )}</span
+              >
             </div>
           </div>
           ${hasBattery
@@ -479,7 +501,11 @@ class HuiEnergyDistrubutionCard
                       kWh</span
                     >
                   </div>
-                  <span class="label">Battery</span>
+                  <span class="label"
+                    >${this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_distribution.battery"
+                    )}</span
+                  >
                 </div>
                 <div class="spacer"></div>
               </div>`
@@ -659,7 +685,11 @@ class HuiEnergyDistrubutionCard
           ? html`
               <div class="card-actions">
                 <a href="/energy"
-                  ><mwc-button> Go to the energy dashboard </mwc-button></a
+                  ><mwc-button>
+                    ${this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.energy_distribution.go_to_energy_dashboard"
+                    )}
+                  </mwc-button></a
                 >
               </div>
             `
@@ -763,6 +793,8 @@ class HuiEnergyDistrubutionCard
       stroke-width: 4px;
       width: 100%;
       height: 100%;
+      top: 0;
+      left: 0;
     }
     .gas path,
     .gas circle {

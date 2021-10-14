@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiClose, mdiTune } from "@mdi/js";
@@ -11,8 +10,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-dialog";
 import "../../../components/ha-header-bar";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-related-items";
-import "../../../components/ha-svg-icon";
 import {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
@@ -82,27 +81,25 @@ export class DialogEntityEditor extends LitElement {
       >
         <div slot="heading">
           <ha-header-bar>
-            <mwc-icon-button
+            <ha-icon-button
               slot="navigationIcon"
               .label=${this.hass.localize("ui.dialogs.entity_registry.dismiss")}
+              .path=${mdiClose}
               dialogAction="cancel"
-            >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
             <span slot="title">
               ${stateObj ? computeStateName(stateObj) : entry?.name || entityId}
             </span>
             ${stateObj
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     slot="actionItems"
                     .label=${this.hass.localize(
                       "ui.dialogs.entity_registry.control"
                     )}
+                    .path=${mdiTune}
                     @click=${this._openMoreInfo}
-                  >
-                    <ha-svg-icon .path=${mdiTune}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
           </ha-header-bar>

@@ -13,6 +13,7 @@ import { computeStateName } from "../../../../../common/entity/compute_state_nam
 import { sortStatesByName } from "../../../../../common/entity/states_sort_by_name";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon";
 import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-button-arrow-prev";
 import "../../../../../components/ha-menu-button";
@@ -129,11 +130,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <span
               >[[localize('ui.panel.config.zwave.node_management.header')]]</span
             >
-            <ha-icon-button
-              class="toggle-help-icon"
-              on-click="toggleHelp"
-              icon="hass:help-circle"
-            ></ha-icon-button>
+            <ha-icon-button class="toggle-help-icon" on-click="toggleHelp">
+              <ha-icon icon="hass:help-circle"></ha-icon>
+            </ha-icon-button>
           </div>
           <span slot="introduction">
             [[localize('ui.panel.config.zwave.node_management.introduction')]]
@@ -493,7 +492,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeEntities(selectedNode) {
-    if (!this.nodes || selectedNode === -1) return -1;
+    if (!this.nodes || selectedNode === -1) {
+      return -1;
+    }
     const nodeid = this.nodes[this.selectedNode].attributes.node_id;
     const hass = this.hass;
     return Object.keys(this.hass.states)
@@ -512,7 +513,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   selectedNodeChanged(selectedNode) {
-    if (selectedNode === -1) return;
+    if (selectedNode === -1) {
+      return;
+    }
     this.selectedEntity = -1;
 
     this.hass
@@ -573,7 +576,9 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   selectedEntityChanged(selectedEntity) {
-    if (selectedEntity === -1) return;
+    if (selectedEntity === -1) {
+      return;
+    }
     this.hass
       .callApi(
         "GET",
@@ -640,12 +645,16 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeRefreshEntityServiceData(selectedEntity) {
-    if (selectedEntity === -1) return -1;
+    if (selectedEntity === -1) {
+      return -1;
+    }
     return { entity_id: this.entities[selectedEntity].entity_id };
   }
 
   computePollIntensityServiceData(entityPollingIntensity) {
-    if (!this.selectedNode === -1 || this.selectedEntity === -1) return -1;
+    if (this.selectedNode === -1 || this.selectedEntity === -1) {
+      return -1;
+    }
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
       value_id: this.entities[this.selectedEntity].attributes.value_id,

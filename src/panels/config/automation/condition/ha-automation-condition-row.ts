@@ -60,12 +60,12 @@ export default class HaAutomationConditionRow extends LitElement {
         <div class="card-content">
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-              <mwc-icon-button
-                .title=${this.hass.localize("ui.common.menu")}
-                .label=${this.hass.localize("ui.common.overflow_menu")}
+              <ha-icon-button
                 slot="trigger"
-                ><ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon
-              ></mwc-icon-button>
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+              >
+              </ha-icon-button>
               <mwc-list-item>
                 ${this._yamlMode
                   ? this.hass.localize(

@@ -297,10 +297,11 @@ class HassioAddonInfo extends LitElement {
                   })}
                   @click=${this._showMoreInfo}
                   id="rating"
-                  .value=${this.addon.rating}
                   label="rating"
                   description=""
-                ></ha-label-badge>
+                >
+                  ${this.addon.rating}
+                </ha-label-badge>
                 ${this.addon.host_network
                   ? html`
                       <ha-label-badge
@@ -364,9 +365,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="docker_api"
-                        .label=".${this.supervisor.localize(
+                        .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.docker"
-                        )}"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiDocker}></ha-svg-icon>

@@ -1,11 +1,10 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import {
   mdiAbTesting,
   mdiArrowUp,
   mdiAsterisk,
   mdiCallSplit,
   mdiCheckboxBlankOutline,
-  mdiCheckboxOutline,
+  mdiCheckboxMarkedOutline,
   mdiChevronDown,
   mdiChevronRight,
   mdiChevronUp,
@@ -39,11 +38,11 @@ import {
   ConditionTraceStep,
   TraceExtended,
 } from "../../data/trace";
-import "../ha-svg-icon";
+import "../ha-icon-button";
+import "./hat-graph-branch";
+import { BRANCH_HEIGHT, NODE_SIZE, SPACING } from "./hat-graph-const";
 import "./hat-graph-node";
 import "./hat-graph-spacer";
-import "./hat-graph-branch";
-import { NODE_SIZE, SPACING, BRANCH_HEIGHT } from "./hat-graph-const";
 
 export interface NodeInfo {
   path: string;
@@ -167,7 +166,7 @@ export class HatScriptGraph extends LitElement {
                 <div class="graph-container" ?track=${track_this}>
                   <hat-graph-node
                     .iconPath=${!trace || track_this
-                      ? mdiCheckboxOutline
+                      ? mdiCheckboxMarkedOutline
                       : mdiCheckboxBlankOutline}
                     @focus=${this.selectNode(config, branch_path)}
                     ?track=${track_this}
@@ -438,19 +437,17 @@ export class HatScriptGraph extends LitElement {
             : ""}
         </div>
         <div class="actions">
-          <mwc-icon-button
+          <ha-icon-button
             .disabled=${paths.length === 0 || paths[0] === this.selected}
             @click=${this._previousTrackedNode}
-          >
-            <ha-svg-icon .path=${mdiChevronUp}></ha-svg-icon>
-          </mwc-icon-button>
-          <mwc-icon-button
+            .path=${mdiChevronUp}
+          ></ha-icon-button>
+          <ha-icon-button
             .disabled=${paths.length === 0 ||
             paths[paths.length - 1] === this.selected}
             @click=${this._nextTrackedNode}
-          >
-            <ha-svg-icon .path=${mdiChevronDown}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiChevronDown}
+          ></ha-icon-button>
         </div>
       `;
     } catch (err: any) {

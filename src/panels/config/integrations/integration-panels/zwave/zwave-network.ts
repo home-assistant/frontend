@@ -1,3 +1,4 @@
+import { mdiHelpCircle } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -55,7 +56,8 @@ export class ZwaveNetwork extends LitElement {
           <ha-icon-button
             class="toggle-help-icon"
             @click=${this._onHelpTap}
-            icon="hass:help-circle"
+            .path=${mdiHelpCircle}
+            .label=${this.hass!.localize("ui.common.help")}
           ></ha-icon-button>
         </div>
         <div slot="introduction">

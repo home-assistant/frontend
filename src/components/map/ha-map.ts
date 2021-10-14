@@ -484,6 +484,7 @@ export class HaMap extends ReactiveElement {
         justify-content: center;
         flex-direction: column;
         text-align: center;
+        color: var(--primary-text-color);
       }
     `;
   }

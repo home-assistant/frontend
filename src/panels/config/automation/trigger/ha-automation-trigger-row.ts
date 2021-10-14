@@ -94,12 +94,11 @@ export default class HaAutomationTriggerRow extends LitElement {
         <div class="card-content">
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-              <mwc-icon-button
+              <ha-icon-button
                 slot="trigger"
-                .title=${this.hass.localize("ui.common.menu")}
-                .label=${this.hass.localize("ui.common.overflow_menu")}
-                ><ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon
-              ></mwc-icon-button>
+                .label=${this.hass.localize("ui.common.menu")}
+                .path=${mdiDotsVertical}
+              ></ha-icon-button>
               <mwc-list-item .disabled=${selected === -1}>
                 ${yamlMode
                   ? this.hass.localize(
@@ -263,7 +262,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _idChanged(ev: CustomEvent) {
     const newId = ev.detail.value;
-    if (newId === this.trigger.id) {
+    if (newId === (this.trigger.id ?? "")) {
       return;
     }
     const value = { ...this.trigger };

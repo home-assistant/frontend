@@ -17,6 +17,7 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import { UNAVAILABLE, UNAVAILABLE_STATES } from "../../../data/entity";
 import { LightEntity, lightSupportsDimming } from "../../../data/light";
@@ -96,16 +97,19 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     const brightness =
       Math.round((stateObj.attributes.brightness / 255) * 100) || 0;
 
+    const name = this._config.name ?? computeStateName(stateObj);
+
     return html`
       <ha-card>
-        <mwc-icon-button
+        <ha-icon-button
           class="more-info"
-          label="Open more info"
+          .label=${this.hass!.localize(
+            "ui.panel.lovelace.cards.show_more_info"
+          )}
+          .path=${mdiDotsVertical}
           @click=${this._handleMoreInfo}
           tabindex="0"
-        >
-          <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-        </mwc-icon-button>
+        ></ha-icon-button>
 
         <div class="content">
           <div id="controls">
@@ -129,7 +133,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   "state-on": stateObj.state === "on",
                   "state-unavailable": stateObj.state === UNAVAILABLE,
                 })}"
-                .icon=${this._config.icon || stateIcon(stateObj)}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
                 style=${styleMap({
                   filter: this._computeBrightness(stateObj),
@@ -141,11 +144,15 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   hasDoubleClick: hasAction(this._config!.double_tap_action),
                 })}
                 tabindex="0"
-              ></ha-icon-button>
+              >
+                <ha-icon
+                  .icon=${this._config.icon || stateIcon(stateObj)}
+                ></ha-icon>
+              </ha-icon-button>
             </div>
           </div>
 
-          <div id="info">
+          <div id="info" .title=${name}>
             ${UNAVAILABLE_STATES.includes(stateObj.state)
               ? html`
                   <div>
@@ -157,7 +164,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                   </div>
                 `
               : html` <div class="brightness">%</div> `}
-            ${this._config.name || computeStateName(stateObj)}
+            ${name}
           </div>
         </div>
       </ha-card>
