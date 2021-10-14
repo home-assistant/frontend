@@ -121,10 +121,10 @@ export class DialogHelperDetail extends LitElement {
                       .platform=${platform}
                       dialogInitialFocus
                     >
-                      <ha-icon
+                      <ha-svg-icon
                         slot="item-icon"
-                        .icon=${domainIcon(platform)}
-                      ></ha-icon>
+                        .path=${domainIcon(platform)}
+                      ></ha-svg-icon>
                       <span class="item-text">
                         ${this.hass.localize(
                           `ui.panel.config.helpers.types.${platform}`

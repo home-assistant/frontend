@@ -1,3 +1,4 @@
+import { mdiTelevision } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { CastManager } from "../../../src/cast/cast_manager";
@@ -27,7 +28,7 @@ class CastDemoRow extends LitElement implements LovelaceRow {
       return html``;
     }
     return html`
-      <ha-icon icon="hademo:television"></ha-icon>
+      <ha-svg-icon .path=${mdiTelevision}></ha-svg-icon>
       <div class="flex">
         <div class="name">Show Chromecast interface</div>
         <google-cast-launcher></google-cast-launcher>

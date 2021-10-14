@@ -77,7 +77,7 @@ export class HuiButtonRow extends LitElement implements LovelaceRow {
         display: flex;
         align-items: center;
       }
-      ha-icon {
+      ha-state-icon {
         padding: 8px;
         color: var(--paper-item-icon-color);
       }

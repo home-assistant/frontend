@@ -691,9 +691,6 @@ class HaConfigIntegrations extends SubscribeMixin(LitElement) {
           margin-left: 4px;
           font-size: 14px;
         }
-        .active-filters ha-icon {
-          color: var(--primary-color);
-        }
         .active-filters mwc-button {
           margin-left: 8px;
         }
