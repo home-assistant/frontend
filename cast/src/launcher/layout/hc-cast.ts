@@ -75,7 +75,7 @@ class HcCast extends LitElement {
           ? html`
               <p class="center-item">
                 <mwc-button raised @click=${this._handleLaunch}>
-                  <ha-svg-icon path=${mdiCast}></ha-svg-icon>
+                  <ha-svg-icon .path=${mdiCast}></ha-svg-icon>
                   Start Casting
                 </mwc-button>
               </p>
