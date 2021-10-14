@@ -986,10 +986,19 @@
         "energy": {
           "caption": "Energy",
           "description": "Monitor your energy production and consumption",
+          "new_device_info": "After setting up a new device, it can take up to 2 hours for new data to arrive in your energy dashboard.",
+          "delete_source": "Are you sure you want to delete this source?",
+          "delete_integration": "Are you sure you want to delete this integration? It will remove the entities it provides",
           "grid": {
             "title": "Electricity grid",
             "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
             "learn_more": "More information on how to get started.",
+            "grid_consumption": "Grid consumption",
+            "add_consumption": "Add consumption",
+            "return_to_grid": "Return to grid",
+            "add_return": "Add return",
+            "grid_carbon_footprint": "Grid carbon footprint",
+            "add_co2_signal": "Add CO2 signal integration",
             "flow_dialog": {
               "from": {
                 "header": "Configure grid consumption",
@@ -1025,19 +1034,39 @@
             "title": "Solar Panels",
             "sub": "Let Home Assistant monitor your solar panels and give you insight on their performance.",
             "learn_more": "More information on how to get started.",
+            "solar_production": "Solar production",
+            "add_solar_production": "Add solar production",
             "stat_production": "Your solar energy production",
             "stat_return_to_grid": "Solar energy returned to the grid",
-            "stat_predicted_production": "Prediction of your solar energy production"
+            "stat_predicted_production": "Prediction of your solar energy production",
+            "dialog": {
+              "header": "Configure solar panels",
+              "solar_production_energy": "Solar production energy (kWh)",
+              "solar_production_forecast": "Solar production forecast",
+              "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
+              "dont_forecast_production": "Don't forecast production",
+              "forecast_production": "Forecast Production",
+              "add_forecast": "Add forecast"
+            }
           },
           "battery": {
             "title": "Home Battery Storage",
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
-            "learn_more": "More information on how to get started."
+            "learn_more": "More information on how to get started.",
+            "battery_systems": "Battery systems",
+            "add_battery_system": "Add battery system",
+            "dialog": {
+              "header": "Configure battery system",
+              "energy_into_battery": "Energy going in to the battery (kWh)",
+              "energy_out_of_battery": "Energy coming out of the battery (kWh)"
+            }
           },
           "gas": {
             "title": "Gas Consumption",
             "sub": "Let Home Assistant monitor your gas usage.",
             "learn_more": "More information on how to get started.",
+            "gas_consumption": "Gas consumption",
+            "add_gas_source": "Add gas source",
             "dialog": {
               "header": "Configure gas consumption",
               "paragraph": "Gas consumption is the volume of gas that flows to your home.",
@@ -1049,7 +1078,9 @@
               "cost_entity": "Use an entity with current price",
               "cost_entity_input": "Entity with the current price per {unit}",
               "cost_number": "Use a static price",
-              "cost_number_input": "Price per {unit}"
+              "cost_number_input": "Price per {unit}",
+              "gas_usage": "Gas usage",
+              "m3_or_kWh": "m³ or kWh"
             }
           },
           "device_consumption": {
@@ -1058,7 +1089,11 @@
             "learn_more": "More information on how to get started.",
             "add_stat": "Pick entity to track energy of",
             "selected_stat": "Tracking energy for",
+            "devices": "Devices",
+            "add_device": "Add device",
             "dialog": {
+              "header": "Add a device",
+              "device_consumption_energy": "Device consumption energy (kWh)",
               "selected_stat_intro": "Select the entity that represents the device energy usage."
             }
           },
@@ -2928,6 +2963,61 @@
           },
           "starting": {
             "description": "Home Assistant is starting, please wait…"
+          },
+          "energy": {
+            "loading": "Loading...",
+            "no_data": "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard.",
+            "no_data_period": "There is no data for this period.",
+            "energy_usage_graph": {
+              "total_consumed": "Total consumed {num} kWh",
+              "total_returned": "Total returned {num} kWh",
+              "combined_from_grid": "Combined from grid",
+              "consumed_solar": "Consumed solar",
+              "consumed_battery": "Consumed battery"
+            },
+            "energy_sources_table": {
+              "grid_total": "Grid total",
+              "source": "Source",
+              "energy": "Energy",
+              "cost": "Cost",
+              "battery_total": "Battery total",
+              "total_costs": "Total costs"
+            },
+            "energy_solar_graph": {
+              "production": "Production {name}",
+              "forecast": "Forecast {name}"
+            },
+            "solar_consumed_gauge": {
+              "card_indicates_solar_energy_used": "This card indicates how much of the solar energy you produced was used by your home instead of being returned to the grid.",
+              "card_indicates_solar_energy_used_charge_home_bat": "If this number is typically very low, indicating excess solar production, you might want to consider charging a home battery or electric car from your solar panels at times of high solar production.",
+              "self_consumed_solar_energy": "Self-consumed solar energy",
+              "not_produced_solar_energy": "You have not produced any solar energy",
+              "self_consumed_solar_could_not_calc": "Self-consumed solar energy couldn't be calculated"
+            },
+            "grid_neutrality_gauge": {
+              "energy_dependency": "This card represents your energy dependency.",
+              "red_green_color_explain": "If it's green, it means you produced more energy than that you consumed from the grid. If it's in the red, it means that you relied on the grid for part of your home's energy consumption.",
+              "net_returned_grid": "Net returned to the grid",
+              "net_consumed_grid": "Net consumed from the grid",
+              "grid_neutrality_not_calculated": "Grid neutrality could not be calculated"
+            },
+            "energy_distribution": {
+              "grid": "Grid",
+              "gas": "Gas",
+              "solar": "Solar",
+              "non_fossil": "Non-fossil",
+              "home": "Home",
+              "battery": "Battery",
+              "go_to_energy_dashboard": "Go to the energy dashboard"
+            },
+            "energy_devices_graph": {
+              "energy_usage": "Energy usage"
+            },
+            "carbon_consumed_gauge": {
+              "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind and nuclear. The higher, the better!",
+              "non_fossil_energy_consumed": "Non-fossil energy consumed",
+              "non_fossil_energy_not_calculated": "Consumed non-fossil energy couldn't be calculated"
+            }
           }
         },
         "unused_entities": {
@@ -3362,6 +3452,15 @@
           "timestamp-display": {
             "invalid": "Invalid timestamp",
             "invalid_format": "Invalid display format"
+          },
+          "energy_period_selector": {
+            "today": "Today",
+            "day": "Day",
+            "week": "Week",
+            "month": "Month",
+            "year": "Year",
+            "previous": "Previous",
+            "next": "Next"
           }
         },
         "reload_lovelace": "Reload UI"
@@ -3823,6 +3922,14 @@
           "stat_house_energy_meter": "Total energy consumption",
           "solar": "Solar",
           "by_device": "Consumption by device"
+        },
+        "cards": {
+          "energy_usage_graph_title": "Energy usage",
+          "energy_solar_graph_title": "Solar production",
+          "energy_gas_graph_title": "Gas consumption",
+          "energy_distribution_title": "Energy distribution",
+          "energy_sources_table_title": "Sources",
+          "energy_devices_graph_title": "Monitor individual devices"
         }
       }
     }
