@@ -34,13 +34,6 @@ import { EnergyData, getEnergyDataCollection } from "../../../data/energy";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, ToggleButton } from "../../../types";
 
-const viewButtons: ToggleButton[] = [
-  { label: "Day", value: "day" },
-  { label: "Week", value: "week" },
-  { label: "Month", value: "month" },
-  { label: "Year", value: "year" },
-];
-
 @customElement("hui-energy-period-selector")
 export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -71,6 +64,33 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
       return html``;
     }
 
+    const viewButtons: ToggleButton[] = [
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.day"
+        ),
+        value: "day",
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.week"
+        ),
+        value: "week",
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.month"
+        ),
+        value: "month",
+      },
+      {
+        label: this.hass.localize(
+          "ui.panel.lovelace.components.energy_period_selector.year"
+        ),
+        value: "year",
+      },
+    ];
+
     return html`
       <div class="row">
         <div class="label">
@@ -88,17 +108,23 @@ export class HuiEnergyPeriodSelector extends SubscribeMixin(LitElement) {
                 this.hass.locale
               )}`}
           <ha-icon-button
-            label="Previous"
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.components.energy_period_selector.previous"
+            )}
             @click=${this._pickPrevious}
             .path=${mdiChevronLeft}
           ></ha-icon-button>
           <ha-icon-button
-            label="Next"
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.components.energy_period_selector.next"
+            )}
             @click=${this._pickNext}
             .path=${mdiChevronRight}
           ></ha-icon-button>
           <mwc-button dense outlined @click=${this._pickToday}>
-            Today
+            ${this.hass.localize(
+              "ui.panel.lovelace.components.energy_period_selector.today"
+            )}
           </mwc-button>
         </div>
         <div class="period">

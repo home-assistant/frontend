@@ -110,7 +110,11 @@ export class EnergyGridSettings extends LitElement {
               `
             : ""}
 
-          <h3>Grid consumption</h3>
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.grid_consumption"
+            )}
+          </h3>
           ${gridSource.flow_from.map((flow) => {
             const entityState = this.hass.states[flow.stat_energy_from];
             return html`
@@ -141,11 +145,15 @@ export class EnergyGridSettings extends LitElement {
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiHomeImportOutline}></ha-svg-icon>
             <mwc-button @click=${this._addFromSource}
-              >Add consumption</mwc-button
+              >${this.hass.localize(
+                "ui.panel.config.energy.grid.add_consumption"
+              )}</mwc-button
             >
           </div>
 
-          <h3>Return to grid</h3>
+          <h3>
+            ${this.hass.localize("ui.panel.config.energy.grid.return_to_grid")}
+          </h3>
           ${gridSource.flow_to.map((flow) => {
             const entityState = this.hass.states[flow.stat_energy_to];
             return html`
@@ -175,10 +183,18 @@ export class EnergyGridSettings extends LitElement {
           })}
           <div class="row border-bottom">
             <ha-svg-icon .path=${mdiHomeExportOutline}></ha-svg-icon>
-            <mwc-button @click=${this._addToSource}>Add return</mwc-button>
+            <mwc-button @click=${this._addToSource}
+              >${this.hass.localize(
+                "ui.panel.config.energy.grid.add_return"
+              )}</mwc-button
+            >
           </div>
 
-          <h3>Grid carbon footprint</h3>
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.energy.grid.grid_carbon_footprint"
+            )}
+          </h3>
           ${this._configEntries?.map(
             (entry) => html`<div class="row" .entry=${entry}>
               <img
@@ -211,7 +227,9 @@ export class EnergyGridSettings extends LitElement {
                     })}
                   />
                   <mwc-button @click=${this._addCO2Sensor}>
-                    Add CO2 signal integration
+                    ${this.hass.localize(
+                      "ui.panel.config.energy.grid.add_co2_signal"
+                    )}
                   </mwc-button>
                 </div>
               `
@@ -240,8 +258,7 @@ export class EnergyGridSettings extends LitElement {
     const entryId = ev.currentTarget.closest(".row").entry.entry_id;
     if (
       !(await showConfirmationDialog(this, {
-        title:
-          "Are you sure you want to delete this integration? It will remove the entities it provides",
+        title: this.hass.localize("ui.panel.config.energy.delete_integration"),
       }))
     ) {
       return;
@@ -378,7 +395,7 @@ export class EnergyGridSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you want to delete this source?",
+        title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
       return;
@@ -408,7 +425,7 @@ export class EnergyGridSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you want to delete this source?",
+        title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
       return;
