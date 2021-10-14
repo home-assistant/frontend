@@ -170,7 +170,9 @@ export class HuiEnergyDevicesGraphCard
 
     const datasets: ChartDataset<"bar", ParsedDataType<"bar">[]>[] = [
       {
-        label: "Energy usage",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_devices_graph.energy_usage"
+        ),
         borderColor,
         backgroundColor,
         data,
