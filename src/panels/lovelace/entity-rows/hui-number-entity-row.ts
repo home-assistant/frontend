@@ -84,7 +84,7 @@ class HuiNumberEntityRow extends LitElement implements LovelaceRow {
         ${stateObj.attributes.mode === "slider" ||
         (stateObj.attributes.mode === "auto" &&
           (Number(stateObj.attributes.max) - Number(stateObj.attributes.min)) /
-            Number(stateObj.attributes.step) <
+            Number(stateObj.attributes.step) <=
             256)
           ? html`
               <div class="flex">
