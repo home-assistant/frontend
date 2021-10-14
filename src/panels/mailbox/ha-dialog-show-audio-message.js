@@ -4,6 +4,8 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-circular-progress";
+import "../../components/ha-icon";
+import "../../components/ha-icon-button";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import "../../styles/polymer-ha-style-dialog";
 
@@ -56,11 +58,9 @@ class HaDialogShowAudioMessage extends LocalizeMixin(PolymerElement) {
             <template is="dom-if" if="[[_loading]]">
               <ha-circular-progress active></ha-circular-progress>
             </template>
-            <ha-icon-button
-              id="delicon"
-              on-click="openDeleteDialog"
-              icon="hass:delete"
-            ></ha-icon-button>
+            <ha-icon-button id="delicon" on-click="openDeleteDialog">
+              <ha-icon icon="hass:delete"></ha-icon>
+            </ha-icon-button>
           </div>
         </h2>
         <div id="transcribe"></div>

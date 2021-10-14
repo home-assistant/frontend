@@ -1,4 +1,5 @@
 /* eslint-disable lit/prefer-static-styles */
+import { mdiMicrophone } from "@mdi/js";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import type { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
@@ -179,7 +180,7 @@ export class HaVoiceCommandDialog extends LitElement {
                         `
                       : ""}
                     <ha-icon-button
-                      icon="hass:microphone"
+                      .path=${mdiMicrophone}
                       @click=${this._toggleListening}
                     >
                     </ha-icon-button>

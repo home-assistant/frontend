@@ -18,6 +18,7 @@ import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import "./ha-checkbox";
+import "./ha-icon-button";
 import "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-settings-row";
@@ -204,12 +205,10 @@ export class HaServiceControl extends LitElement {
               target="_blank"
               rel="noreferrer"
             >
-              <mwc-icon-button>
-                <ha-svg-icon
-                  path=${mdiHelpCircle}
-                  class="help-icon"
-                ></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                .path=${mdiHelpCircle}
+                class="help-icon"
+              ></ha-icon-button>
             </a>`
           : ""}
       </div>

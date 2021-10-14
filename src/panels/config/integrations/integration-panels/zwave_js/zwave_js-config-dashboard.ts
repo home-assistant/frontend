@@ -1,10 +1,10 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiAlertCircle, mdiCheckCircle, mdiCircle, mdiRefresh } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import "../../../../../components/ha-card";
+import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-icon-next";
 import "../../../../../components/ha-svg-icon";
 import { getSignedPath } from "../../../../../data/auth";
@@ -83,9 +83,12 @@ class ZWaveJSConfigDashboard extends LitElement {
         .route=${this.route}
         .tabs=${configTabs}
       >
-        <mwc-icon-button slot="toolbar-icon" @click=${this._fetchData}>
-          <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-        </mwc-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          @click=${this._fetchData}
+          .path=${mdiRefresh}
+          .label=${this.hass!.localize("ui.common.refresh")}
+        ></ha-icon-button>
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
             ${this.hass.localize("ui.panel.config.zwave_js.dashboard.header")}

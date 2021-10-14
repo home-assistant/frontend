@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -8,7 +7,7 @@ import { relativeTime } from "../../common/datetime/relative_time";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
 import "../../components/ha-settings-row";
-import "../../components/ha-svg-icon";
+import "../../components/ha-icon-button";
 import { RefreshToken } from "../../data/refresh_token";
 import {
   showAlertDialog,
@@ -93,14 +92,13 @@ class HaRefreshTokens extends LitElement {
                         )}
                       </paper-tooltip>`
                     : ""}
-                  <mwc-icon-button
+                  <ha-icon-button
                     .token=${token}
                     .disabled=${token.is_current}
-                    .title=${this.hass.localize(`ui.common.delete`)}
+                    .label=${this.hass.localize("ui.common.delete")}
+                    .path=${mdiDelete}
                     @click=${this._deleteToken}
-                  >
-                    <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 </div>
               </ha-settings-row>`
             )
@@ -144,7 +142,7 @@ class HaRefreshTokens extends LitElement {
         ha-settings-row {
           padding: 0;
         }
-        mwc-icon-button {
+        ha-icon-button {
           color: var(--primary-text-color);
         }
       `,

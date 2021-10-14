@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import {
   mdiHelpCircle,
   mdiHistory,
@@ -21,6 +20,7 @@ import { DataTableColumnContainer } from "../../../components/data-table/ha-data
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import {
   AutomationEntity,
@@ -147,15 +147,14 @@ class HaAutomationPicker extends LitElement {
         title: "",
         type: "icon-button",
         template: (_info, automation) => html`
-          <mwc-icon-button
+          <ha-icon-button
             .automation=${automation}
             @click=${this._showInfo}
             .label=${this.hass.localize(
               "ui.panel.config.automation.picker.show_info_automation"
             )}
-          >
-            <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiInformationOutline}
+          ></ha-icon-button>
         `,
       };
       columns.trace = {
@@ -169,14 +168,13 @@ class HaAutomationPicker extends LitElement {
                 : undefined
             )}
           >
-            <mwc-icon-button
+            <ha-icon-button
               .label=${this.hass.localize(
                 "ui.panel.config.automation.picker.dev_automation"
               )}
+              .path=${mdiHistory}
               .disabled=${!automation.attributes.id}
-            >
-              <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
           </a>
           ${!automation.attributes.id
             ? html`
@@ -200,16 +198,13 @@ class HaAutomationPicker extends LitElement {
                 : undefined
             )}
           >
-            <mwc-icon-button
+            <ha-icon-button
               .disabled=${!automation.attributes.id}
               .label=${this.hass.localize(
                 "ui.panel.config.automation.picker.edit_automation"
               )}
-            >
-              <ha-svg-icon
-                .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
-              ></ha-svg-icon>
-            </mwc-icon-button>
+              .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
+            ></ha-icon-button>
           </a>
           ${!automation.attributes.id
             ? html`
@@ -244,9 +239,12 @@ class HaAutomationPicker extends LitElement {
         @clear-filter=${this._clearFilter}
         hasFab
       >
-        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
-          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-        </mwc-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize("ui.common.help")}
+          .path=${mdiHelpCircle}
+          @click=${this._showHelp}
+        ></ha-icon-button>
         <ha-button-related-filter-menu
           slot="filter-menu"
           corner="BOTTOM_START"

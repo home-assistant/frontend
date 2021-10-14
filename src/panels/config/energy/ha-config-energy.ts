@@ -1,6 +1,5 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-svg-icon";
 import {
   EnergyPreferencesValidation,
   getEnergyPreferenceValidation,

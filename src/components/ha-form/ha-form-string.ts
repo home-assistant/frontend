@@ -11,7 +11,7 @@ import {
 } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
-import "../ha-svg-icon";
+import "../ha-icon-button";
 import type {
   HaFormElement,
   HaFormStringData,
@@ -64,17 +64,13 @@ export class HaFormString extends LitElement implements HaFormElement {
         @input=${this._valueChanged}
       ></mwc-textfield>
       ${isPassword
-        ? html`
-            <mwc-icon-button
-              toggles
-              title="Click to toggle between masked and clear password"
-              @click=${this._toggleUnmaskedPassword}
-              tabindex="-1"
-              ><ha-svg-icon
-                .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
-              ></ha-svg-icon>
-            </mwc-icon-button>
-          `
+        ? html`<ha-icon-button
+            toggles
+            .label="Click to toggle between masked and clear password"
+            @click=${this._toggleUnmaskedPassword}
+            tabindex="-1"
+            .path=${this._unmaskedPassword ? mdiEyeOff : mdiEye}
+          ></ha-icon-button>`
         : ""}
     `;
   }
@@ -126,7 +122,7 @@ export class HaFormString extends LitElement implements HaFormElement {
       mwc-textfield {
         display: block;
       }
-      mwc-icon-button {
+      ha-icon-button {
         position: absolute;
         top: 1em;
         right: 12px;

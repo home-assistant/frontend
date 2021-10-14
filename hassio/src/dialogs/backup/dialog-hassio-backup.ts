@@ -9,7 +9,7 @@ import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-header-bar";
-import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-icon-button";
 import { getSignedPath } from "../../../../src/data/auth";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
@@ -76,9 +76,12 @@ class HassioBackupDialog
         <div slot="heading">
           <ha-header-bar>
             <span slot="title">${this._backup.name}</span>
-            <mwc-icon-button slot="actionItems" dialogAction="cancel">
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              .label=${this.hass.localize("common.close")}
+              .path=${mdiClose}
+              slot="actionItems"
+              dialogAction="cancel"
+            ></ha-icon-button>
           </ha-header-bar>
         </div>
         ${this._restoringBackup
@@ -110,9 +113,11 @@ class HassioBackupDialog
               @action=${this._handleMenuAction}
               @closed=${stopPropagation}
             >
-              <mwc-icon-button slot="trigger" alt="menu">
-                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                .label=${this.hass.localize("common.menu")}
+                .path=${mdiDotsVertical}
+                slot="trigger"
+              ></ha-icon-button>
               <mwc-list-item>Download Backup</mwc-list-item>
               <mwc-list-item class="error">Delete Backup</mwc-list-item>
             </ha-button-menu>`
@@ -126,9 +131,6 @@ class HassioBackupDialog
       haStyle,
       haStyleDialog,
       css`
-        ha-svg-icon {
-          color: var(--primary-text-color);
-        }
         ha-circular-progress {
           display: block;
           text-align: center;

@@ -282,6 +282,7 @@
       "enable": "Enable",
       "disable": "Disable",
       "close": "Close",
+      "clear": "Clear",
       "leave": "Leave",
       "stay": "Stay",
       "next": "Next",
@@ -294,7 +295,7 @@
       "not_now": "Not now",
       "skip": "Skip",
       "menu": "Menu",
-      "overflow_menu": "Overflow menu",
+      "help": "Help",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
       "error_required": "Required",
@@ -341,6 +342,7 @@
       "entity": {
         "entity-picker": {
           "entity": "Entity",
+          "edit": "Edit",
           "clear": "Clear",
           "no_match": "No matching entities found",
           "show_entities": "Show entities"
@@ -351,8 +353,10 @@
         }
       },
       "target-picker": {
+        "expand": "Expand",
         "expand_area_id": "Expand this area into the separate devices and entities that it contains. After expanding, it will not update the devices and entities when the area changes.",
         "expand_device_id": "Expand this device into the separate entities that it contains. After expanding, it will not update the entities when the device changes.",
+        "remove": "Remove",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
@@ -895,7 +899,9 @@
     "sidebar": {
       "external_app_configuration": "App Configuration",
       "sidebar_toggle": "Sidebar Toggle",
-      "done": "Done"
+      "done": "Done",
+      "hide_panel": "Hide panel",
+      "show_panel": "Show panel"
     },
     "panel": {
       "my": {
@@ -922,6 +928,7 @@
         "areas": {
           "caption": "Areas",
           "description": "Group devices and entities into areas",
+          "edit_settings": "Area settings",
           "data_table": {
             "area": "Area",
             "devices": "Devices",
@@ -1209,6 +1216,7 @@
         },
         "info": {
           "caption": "Info",
+          "copy_menu": "Copy menu",
           "copy_raw": "Raw Text",
           "copy_github": "For GitHub",
           "description": "Version, system health and links to documentation",
@@ -1243,6 +1251,7 @@
           "no_issues": "There are no new issues!",
           "clear": "Clear",
           "refresh": "Refresh",
+          "copy": "Copy log entry",
           "multiple_messages": "message first occurred at {time} and shows up {counter} times",
           "level": {
             "critical": "CRITICAL",
@@ -1771,6 +1780,13 @@
               "ambiguous_entities": "One or more devices have more than one matching entity, please pick the one you want to use.",
               "unknown_placeholder": "Unknown placeholder"
             }
+          },
+          "trace": {
+            "refresh": "[%key:ui::common::refresh%]",
+            "download_trace": "Download trace",
+            "edit_automation": "Edit automation",
+            "older_trace": "Older trace",
+            "newer_trace": "Newer trace"
           }
         },
         "blueprint": {
@@ -2101,6 +2117,7 @@
           "caption": "Devices",
           "description": "Manage configured devices",
           "device_info": "Device info",
+          "edit_settings": "Edit settings",
           "unnamed_device": "Unnamed device",
           "unknown_error": "Unknown error",
           "name": "Name",
@@ -2276,6 +2293,7 @@
           "no_zones_created_yet": "Looks like you have not created any zones yet.",
           "create_zone": "Create Zone",
           "add_zone": "Add Zone",
+          "edit_zone": "Edit Zone",
           "confirm_delete": "Are you sure you want to delete this zone?",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
           "edit_home_zone": "The radius of the Home zone can't be edited from the frontend yet. Drag the marker on the map to move the home zone.",
@@ -2656,7 +2674,8 @@
             "group_name_placeholder": "Group Name",
             "create_group": "Zigbee Home Automation - Create Group",
             "create": "Create Group",
-            "creating_group": "Creating Group"
+            "creating_group": "Creating Group",
+            "delete": "Delete Group"
           },
           "visualization": {
             "header": "Network Visualization",
@@ -2925,6 +2944,7 @@
       "lovelace": {
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
+          "show_more_info": "Show more information",
           "actions": {
             "action_confirmation": "Are you sure you want to run action ''{action}''?",
             "no_entity_more_info": "No entity provided for more info dialog",
@@ -2963,6 +2983,9 @@
           },
           "starting": {
             "description": "Home Assistant is starting, please wait…"
+          },
+          "map": {
+            "reset_focus": "Reset focus"
           },
           "energy": {
             "loading": "Loading...",
@@ -3131,6 +3154,8 @@
             "delete": "Delete card",
             "duplicate": "Duplicate card",
             "move": "Move to view",
+            "move_up": "Move card up",
+            "move_down": "Move card down",
             "move_before": "Move card before",
             "move_after": "Move card after",
             "options": "More options",
@@ -3470,6 +3495,9 @@
         "playback_title": "Message playback",
         "delete_prompt": "Delete this message?",
         "delete_button": "Delete"
+      },
+      "map": {
+        "edit_zones": "Edit Zones"
       },
       "profile": {
         "current_user": "You are currently logged in as {fullName}.",
@@ -4119,6 +4147,7 @@
       "running_version": "You are currently running version {version}",
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
+      "menu": "[%key:ui::common::menu%]",
       "show_more": "Show more information about this",
       "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
       "update": "Update",

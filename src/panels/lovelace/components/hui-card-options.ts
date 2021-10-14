@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-icon-button";
 import { ActionDetail } from "@material/mwc-list/mwc-list-foundation";
 import "@material/mwc-list/mwc-list-item";
 import { mdiArrowDown, mdiArrowUp, mdiDotsVertical } from "@mdi/js";
@@ -14,6 +13,7 @@ import {
 import { customElement, property, queryAssignedNodes } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-icon-button";
 import { saveConfig } from "../../../data/lovelace";
 import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
@@ -60,36 +60,34 @@ export class HuiCardOptions extends LitElement {
           >
           <div>
             <slot name="buttons"></slot>
-            <mwc-icon-button
-              title="Move card down"
+            <ha-icon-button
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_card.move_down"
+              )}
+              .path=${mdiArrowDown}
               class="move-arrow"
               @click=${this._cardDown}
               .disabled=${this.lovelace!.config.views[this.path![0]].cards!
                 .length ===
               this.path![1] + 1}
-            >
-              <ha-svg-icon .path=${mdiArrowDown}></ha-svg-icon>
-            </mwc-icon-button>
-            <mwc-icon-button
-              title="Move card up"
+            ></ha-icon-button>
+            <ha-icon-button
+              .label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_card.move_up"
+              )}
+              .path=${mdiArrowUp}
               class="move-arrow"
               @click=${this._cardUp}
               ?disabled=${this.path![1] === 0}
-              ><ha-svg-icon .path=${mdiArrowUp}></ha-svg-icon
-            ></mwc-icon-button>
+            ></ha-icon-button>
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-              <mwc-icon-button
+              <ha-icon-button
                 slot="trigger"
-                aria-label=${this.hass!.localize(
+                .label=${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.options"
                 )}
-                title=${this.hass!.localize(
-                  "ui.panel.lovelace.editor.edit_card.options"
-                )}
-              >
-                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-              </mwc-icon-button>
-
+                .path=${mdiDotsVertical}
+              ></ha-icon-button>
               <mwc-list-item>
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.move"
@@ -137,11 +135,11 @@ export class HuiCardOptions extends LitElement {
         align-items: center;
       }
 
-      mwc-icon-button {
+      ha-icon-button {
         color: var(--primary-text-color);
       }
 
-      mwc-icon-button.move-arrow[disabled] {
+      ha-icon-button.move-arrow[disabled] {
         color: var(--disabled-text-color);
       }
 
