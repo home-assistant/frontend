@@ -61,9 +61,10 @@ class MoreInfoMediaPlayer extends LitElement {
                   (control) => html`
                     <ha-icon-button
                       action=${control.action}
-                      .icon=${control.icon}
                       @click=${this._handleClick}
-                    ></ha-icon-button>
+                    >
+                      <ha-icon slot="icon" .icon=${control.icon}></ha-icon>
+                    </ha-icon-button>
                   `
                 )}
               </div>

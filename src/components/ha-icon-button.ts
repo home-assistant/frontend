@@ -1,12 +1,5 @@
 import "@material/mwc-icon-button";
-import {
-  css,
-  CSSResultGroup,
-  html,
-  LitElement,
-  PropertyValues,
-  TemplateResult,
-} from "lit";
+import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import "./ha-svg-icon";
 
@@ -14,10 +7,7 @@ import "./ha-svg-icon";
 export class HaIconButton extends LitElement {
   @property({ type: Boolean, reflect: true }) disabled = false;
 
-  // Regular icon name
-  @property({ type: String }) icon?: string;
-
-  // SVG icon path
+  // SVG icon path (if you need a non SVG icon instead, use the provided slot to pass an <ha-icon> in)
   @property({ type: String }) path?: string;
 
   // Label that is used for ARIA support and as tooltip
@@ -38,17 +28,10 @@ export class HaIconButton extends LitElement {
         .title=${this.hideTitle ? "" : this.label}
         .disabled=${this.disabled}
       >
-        ${this.icon ? html`<ha-icon .icon=${this.icon}></ha-icon>` : ""}
         ${this.path ? html`<ha-svg-icon .path=${this.path}></ha-svg-icon>` : ""}
+        <slot name="icon"></slot>
       </mwc-icon-button>
     `;
-  }
-
-  public willUpdate(changedProps: PropertyValues): void {
-    // Only actually import `ha-icon` if it gets used
-    if (changedProps.has("icon") && this.icon) {
-      import("./ha-icon");
-    }
   }
 
   static get styles(): CSSResultGroup {

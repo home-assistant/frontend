@@ -16,6 +16,7 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import "../../../components/ha-card";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -252,13 +253,17 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           class=${classMap({
             "state-on": !STATES_OFF.has(stateObj.state),
           })}
-          .icon=${entityConf.icon || stateIcon(stateObj)}
           .label=${`${computeStateName(stateObj)} : ${computeStateDisplay(
             this.hass!.localize,
             stateObj,
             this.hass!.locale
           )}`}
-        ></ha-icon-button>
+        >
+          <ha-icon
+            slot="icon"
+            .icon=${entityConf.icon || stateIcon(stateObj)}
+          ></ha-icon>
+        </ha-icon-button>
         ${this._config!.show_state !== true && entityConf.show_state !== true
           ? html`<div class="state"></div>`
           : html`

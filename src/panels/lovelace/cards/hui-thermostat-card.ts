@@ -19,6 +19,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { formatNumber } from "../../../common/number/format_number";
 import "../../../components/ha-card";
 import type { HaCard } from "../../../components/ha-card";
+import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
 import {
   ClimateEntity,
@@ -415,10 +416,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       <ha-icon-button
         class=${classMap({ "selected-icon": currentMode === mode })}
         .mode=${mode}
-        .icon=${modeIcons[mode]}
         @click=${this._handleAction}
         tabindex="0"
-      ></ha-icon-button>
+      >
+        <ha-icon slot="icon" .icon=${modeIcons[mode]}></ha-icon>
+      </ha-icon-button>
     `;
   }
 
