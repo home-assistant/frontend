@@ -2131,6 +2131,8 @@
             "config_entry": "Config entry"
           },
           "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
+          "open_configuration_url_device": "Visit device",
+          "open_configuration_url_service": "Visit service",
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
