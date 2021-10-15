@@ -43,7 +43,8 @@ const OPTIONS = [
   "device_id",
 ];
 
-const getType = (action: Action) => OPTIONS.find((option) => option in action);
+const getType = (action: Action | undefined) =>
+  action ? OPTIONS.find((option) => option in action) : undefined;
 
 declare global {
   // for fire event
