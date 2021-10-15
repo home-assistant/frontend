@@ -13,6 +13,7 @@ import { slugify } from "../../../common/string/slugify";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
+import "../../../components/ha-alert";
 import "../../../components/ha-svg-icon";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import {
@@ -297,7 +298,7 @@ export class HaConfigDevicePage extends LitElement {
                 device.disabled_by
                   ? html`
                       <div>
-                        <p class="warning">
+                        <ha-alert alert-type="warning">
                           ${this.hass.localize(
                             "ui.panel.config.devices.enabled_cause",
                             "cause",
@@ -305,7 +306,7 @@ export class HaConfigDevicePage extends LitElement {
                               `ui.panel.config.devices.disabled_by.${device.disabled_by}`
                             )
                           )}
-                        </p>
+                        </ha-alert>
                       </div>
                       ${device.disabled_by === "user"
                         ? html` <div class="card-actions" slot="actions">
