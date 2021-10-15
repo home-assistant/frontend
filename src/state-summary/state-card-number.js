@@ -101,7 +101,7 @@ class StateCardNumber extends mixinBehaviors(
       });
       ro.observe(this.$.number_card);
     } else {
-      this.addEventListener("iron-resize", this.hiddenState);
+      this.addEventListener("iron-resize", () => this.hiddenState());
     }
   }
 
