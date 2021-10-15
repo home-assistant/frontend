@@ -1696,17 +1696,17 @@
                   "label": "Call service"
                 },
                 "delay": {
-                  "label": "Delay",
-                  "delay": "[%key:ui::panel::config::automation::editor::actions::type::delay::label%]"
+                  "label": "Wait for time to pass",
+                  "delay": "Duration"
                 },
                 "wait_template": {
-                  "label": "Wait",
+                  "label": "Wait for a template",
                   "wait_template": "Wait Template",
                   "timeout": "Timeout (optional)",
                   "continue_timeout": "Continue on timeout"
                 },
                 "wait_for_trigger": {
-                  "label": "Wait for trigger",
+                  "label": "Wait for a trigger",
                   "timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::timeout%]",
                   "continue_timeout": "[%key:ui::panel::config::automation::editor::actions::type::wait_template::continue_timeout%]"
                 },
