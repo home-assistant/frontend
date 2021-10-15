@@ -15,8 +15,9 @@ import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
-import { HomeAssistant } from "../../../../types";
-import { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
+import type { LovelaceRowConfig } from "../../../lovelace/entity-rows/types";
+import type { HomeAssistant } from "../../../../types";
+import type { HuiErrorCard } from "../../../lovelace/cards/hui-error-card";
 import { createRowElement } from "../../../lovelace/create-element/create-row-element";
 import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
 import { LovelaceRow } from "../../../lovelace/entity-rows/types";
@@ -26,6 +27,8 @@ import { EntityRegistryStateEntry } from "../ha-config-device-page";
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
   @property() public header!: string;
+
+  @property() public deviceName!: string;
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
@@ -119,9 +122,18 @@ export class HaDeviceEntitiesCard extends LitElement {
   }
 
   private _renderEntity(entry: EntityRegistryStateEntry): TemplateResult {
-    const element = createRowElement({ entity: entry.entity_id });
+    const config: LovelaceRowConfig = {
+      entity: entry.entity_id,
+    };
+
+    const element = createRowElement(config);
     if (this.hass) {
       element.hass = this.hass;
+      const state = this.hass.states[entry.entity_id];
+      const name = state?.attributes.friendly_name || "";
+      if (name.startsWith(`${this.deviceName} `)) {
+        config.name = name.substring(this.deviceName.length + 1);
+      }
     }
     // @ts-ignore
     element.entry = entry;
