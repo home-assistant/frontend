@@ -1,13 +1,13 @@
-import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-list/mwc-list";
+import "@material/mwc-list/mwc-radio-list-item";
 import "@polymer/paper-item/paper-item";
-import "../../../../components/ha-radio";
-import "../../../../components/ha-icon";
-import "../../../../components/ha-formfield";
+import "@polymer/paper-listbox/paper-listbox";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/dialog/ha-paper-dialog";
 import { createCloseHeading } from "../../../../components/ha-dialog";
+import "../../../../components/ha-icon";
 import "../../../../components/ha-paper-dropdown-menu";
 import {
   fetchConfig,
@@ -106,27 +106,28 @@ export class HuiDialogSelectView extends LitElement {
             </ha-paper-dropdown-menu>`
           : ""}
         ${this._config
-          ? this._config.views.length > 1
+          ? this._config.views.length > 0
             ? html`
-                ${this._config.views.map(
-                  (view, idx) => html`
-                    <ha-formfield
-                      .label=${view.icon
-                        ? html`<ha-icon .icon=${view.icon}></ha-icon>
-                            ${view.title}`
-                        : html`<div style="margin-left: 27px">
-                            ${view.title}
-                          </div>`}
-                    >
-                      <ha-radio
+                <mwc-list>
+                  ${[
+                    ...this._config.views,
+                    { title: "Test", icon: "hass:cast" },
+                  ].map(
+                    (view, idx) => html`
+                      <mwc-radio-list-item
+                        graphic=${this._config?.views.some(({ icon }) => icon)
+                          ? "icon"
+                          : null}
                         @click=${this._viewChanged}
                         .value=${idx.toString()}
-                        .checked=${this._selectedViewIdx === idx}
+                        .selected=${this._selectedViewIdx === idx}
                       >
-                      </ha-radio>
-                    </ha-formfield>
-                  `
-                )}
+                        <span>${view.title}</span>
+                        <ha-icon .icon=${view.icon} slot="graphic"></ha-icon>
+                      </mwc-radio-list-item>
+                    `
+                  )}
+                </mwc-list>
               `
             : ``
           : html`<div>No config found.</div>`}
