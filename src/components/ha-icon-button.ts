@@ -28,8 +28,9 @@ export class HaIconButton extends LitElement {
         .title=${this.hideTitle ? "" : this.label}
         .disabled=${this.disabled}
       >
-        ${this.path ? html`<ha-svg-icon .path=${this.path}></ha-svg-icon>` : ""}
-        <slot></slot>
+        ${this.path
+          ? html`<ha-svg-icon .path=${this.path}></ha-svg-icon>`
+          : html`<slot></slot>`}
       </mwc-icon-button>
     `;
   }
@@ -46,9 +47,6 @@ export class HaIconButton extends LitElement {
       mwc-icon-button {
         --mdc-theme-on-primary: currentColor;
         --mdc-theme-text-disabled-on-light: var(--disabled-text-color);
-      }
-      ha-icon {
-        --ha-icon-display: inline;
       }
     `;
   }
