@@ -12,6 +12,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
+import "../../../../components/ha-alert";
 import "../../../../components/ha-icon-button";
 import type { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import type { Action } from "../../../../data/script";
@@ -42,7 +43,8 @@ const OPTIONS = [
   "device_id",
 ];
 
-const getType = (action: Action) => OPTIONS.find((option) => option in action);
+const getType = (action: Action | undefined) =>
+  action ? OPTIONS.find((option) => option in action) : undefined;
 
 declare global {
   // for fire event
@@ -171,9 +173,12 @@ export default class HaAutomationActionRow extends LitElement {
             </ha-button-menu>
           </div>
           ${this._warnings
-            ? html`<div class="warning">
-                ${this.hass.localize("ui.errors.config.editor_not_supported")}:
-                <br />
+            ? html`<ha-alert
+                alert-type="warning"
+                .title=${this.hass.localize(
+                  "ui.errors.config.editor_not_supported"
+                )}
+              >
                 ${this._warnings!.length > 0 && this._warnings![0] !== undefined
                   ? html` <ul>
                       ${this._warnings!.map(
@@ -182,7 +187,7 @@ export default class HaAutomationActionRow extends LitElement {
                     </ul>`
                   : ""}
                 ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
-              </div>`
+              </ha-alert>`
             : ""}
           ${yamlMode
             ? html`
