@@ -39,6 +39,10 @@ class HaWebRtcPlayer extends LitElement {
   // don't cache this, as we remove it on disconnects
   @query("#remote-stream") private _videoEl!: HTMLVideoElement;
 
+  private _peerConnection?: RTCPeerConnection;
+
+  private _remoteStream?: MediaStream;
+
   protected render(): TemplateResult {
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
@@ -71,6 +75,7 @@ class HaWebRtcPlayer extends LitElement {
 
   private async _startWebRtc(): Promise<void> {
     this._error = undefined;
+
     const peerConnection = new RTCPeerConnection();
     // Some cameras (such as nest) require a data channel to establish a stream
     // however, not used by any integrations.
@@ -92,15 +97,16 @@ class HaWebRtcPlayer extends LitElement {
         offer.sdp!
       );
     } catch (err: any) {
-      this._error = "Failed to start WebRTC stream: " + err.message;
+      this._error = "Unable to initiate WebRTC stream: " + err.message;
+      peerConnection.close();
       return;
     }
 
     // Setup callbacks to render remote stream once media tracks are discovered.
-    const remoteStream = new MediaStream();
+    this._remoteStream = new MediaStream();
     peerConnection.addEventListener("track", (event) => {
-      remoteStream.addTrack(event.track);
-      this._videoEl.srcObject = remoteStream;
+      this._remoteStream.addTrack(event.track);
+      this._videoEl.srcObject = this._remoteStream;
     });
 
     // Initiate the stream with the remote device
@@ -108,14 +114,31 @@ class HaWebRtcPlayer extends LitElement {
       type: "answer",
       sdp: webRtcAnswer.answer,
     });
-    await peerConnection.setRemoteDescription(remoteDesc);
+    try {
+      await peerConnection.setRemoteDescription(remoteDesc);
+    } catch (err: any) {
+      this._error = "Unable to connect to WebRTC stream: " + err.message;
+      peerConnection.close();
+      return;
+    }
+    this._peerConnection = peerConnection;
   }
 
   private _cleanUp() {
+    if (this._remoteStream) {
+      this._remoteStream.getTracks().forEach((track) => {
+        track.stop();
+      });
+      this._remoteStream = undefined;
+    }
     if (this._videoEl) {
       const videoEl = this._videoEl;
       videoEl.removeAttribute("src");
       videoEl.load();
+    }
+    if (this._peerConnection) {
+      this._peerConnection.close();
+      this._peerConnection = undefined;
     }
   }
 
