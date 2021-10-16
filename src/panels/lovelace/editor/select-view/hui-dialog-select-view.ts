@@ -185,9 +185,6 @@ export class HuiDialogSelectView extends LitElement {
         ha-paper-dropdown-menu {
           width: 100%;
         }
-        ha-formfield {
-          display: block;
-        }
       `,
     ];
   }
