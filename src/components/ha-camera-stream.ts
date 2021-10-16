@@ -52,7 +52,7 @@ class HaCameraStream extends LitElement {
       this.stateObj &&
       (changedProps.get("stateObj") as CameraEntity | undefined)?.entity_id !==
         this.stateObj.entity_id &&
-      this.stateObj!.attributes.stream_type === STREAM_TYPE_HLS
+      this.stateObj!.attributes.frontend_stream_type === STREAM_TYPE_HLS
     ) {
       this._forceMJPEG = undefined;
       this._url = undefined;
@@ -84,7 +84,7 @@ class HaCameraStream extends LitElement {
         .alt=${`Preview of the ${computeStateName(this.stateObj)} camera.`}
       />`;
     }
-    if (this.stateObj.attributes.stream_type === STREAM_TYPE_HLS && true) {
+    if (this.stateObj.attributes.frontend_stream_type === STREAM_TYPE_HLS) {
       return this._url
         ? html` <ha-hls-player
             autoplay
@@ -123,7 +123,7 @@ class HaCameraStream extends LitElement {
       return true;
     }
     if (
-      this.stateObj!.attributes.stream_type === STREAM_TYPE_WEB_RTC &&
+      this.stateObj!.attributes.frontend_stream_type === STREAM_TYPE_WEB_RTC &&
       typeof RTCPeerConnection === "undefined"
     ) {
       // Stream requires WebRTC but browser does not support, so fallback to
