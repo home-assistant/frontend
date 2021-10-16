@@ -97,7 +97,7 @@ class HaWebRtcPlayer extends LitElement {
         offer.sdp!
       );
     } catch (err: any) {
-      this._error = "Unable to initiate WebRTC stream: " + err.message;
+      this._error = "Failed to start WebRTC stream: " + err.message;
       peerConnection.close();
       return;
     }
@@ -117,7 +117,7 @@ class HaWebRtcPlayer extends LitElement {
     try {
       await peerConnection.setRemoteDescription(remoteDesc);
     } catch (err: any) {
-      this._error = "Unable to connect to WebRTC stream: " + err.message;
+      this._error = "Failed to connect WebRTC stream: " + err.message;
       peerConnection.close();
       return;
     }
