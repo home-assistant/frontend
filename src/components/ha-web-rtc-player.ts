@@ -103,11 +103,12 @@ class HaWebRtcPlayer extends LitElement {
     }
 
     // Setup callbacks to render remote stream once media tracks are discovered.
-    this._remoteStream = new MediaStream();
+    const remoteStream = new MediaStream();
     peerConnection.addEventListener("track", (event) => {
-      this._remoteStream.addTrack(event.track);
-      this._videoEl.srcObject = this._remoteStream;
+      remoteStream.addTrack(event.track);
+      this._videoEl.srcObject = remoteStream;
     });
+    this._remoteStream = remoteStream;
 
     // Initiate the stream with the remote device
     const remoteDesc = new RTCSessionDescription({
