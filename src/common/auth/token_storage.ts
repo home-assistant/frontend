@@ -8,7 +8,6 @@ declare global {
       // undefined: we haven't loaded yet
       // null: none stored
       tokens?: AuthData | null;
-      writeEnabled?: boolean;
     };
   }
 }
@@ -22,12 +21,13 @@ if (!tokenCache) {
 }
 
 export function askWrite() {
-  return tokenCache.tokens !== undefined && !!storage.getItem("keepSignedIn");
+  return tokenCache.tokens !== undefined;
 }
 
 export function saveTokens(tokens: AuthData | null) {
   tokenCache.tokens = tokens;
-  if (storage.getItem("keepSignedIn")) {
+  const searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.get("keepLogged") === "true") {
     try {
       storage.hassTokens = JSON.stringify(tokens);
     } catch (err: any) {
@@ -37,16 +37,10 @@ export function saveTokens(tokens: AuthData | null) {
 }
 
 export function enableWrite() {
-  storage.setItem("keepSignedIn", "true");
   if (tokenCache.tokens) {
     saveTokens(tokenCache.tokens);
   }
 }
-
-export function disableWrite() {
-  storage.removeItem("keepSignedIn");
-}
-
 export function loadTokens() {
   if (tokenCache.tokens === undefined) {
     try {
@@ -55,7 +49,6 @@ export function loadTokens() {
       const tokens = storage.hassTokens;
       if (tokens) {
         tokenCache.tokens = JSON.parse(tokens);
-        tokenCache.writeEnabled = true;
       } else {
         tokenCache.tokens = null;
       }

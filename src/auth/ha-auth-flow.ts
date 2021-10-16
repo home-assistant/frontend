@@ -8,7 +8,6 @@ import {
   TemplateResult,
 } from "lit";
 import { property, state } from "lit/decorators";
-import { disableWrite, enableWrite } from "../common/auth/token_storage";
 import "../components/ha-checkbox";
 import "../components/ha-form/ha-form";
 import "../components/ha-formfield";
@@ -43,6 +42,8 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   @state() private _errorMessage?: string;
 
   @state() private _submitting = false;
+
+  @state() private _keepLoggedIn = false;
 
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -204,15 +205,20 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             .computeError=${this._computeErrorCallback(step)}
             @value-changed=${this._stepDataChanged}
           ></ha-form>
-          <ha-formfield
-            class="keep-logged-in"
-            .label=${this.localize("ui.panel.page-authorize.keep_logged_in")}
-          >
-            <ha-checkbox
-              .checked=${false}
-              @change=${this._keepLoggedInChanged}
-            ></ha-checkbox>
-          </ha-formfield>
+          ${this.clientId === window.location.origin
+            ? html`
+                <ha-formfield
+                  class="keep-logged-in"
+                  .label=${this.localize(
+                    "ui.panel.page-authorize.keep_logged_in"
+                  )}
+                >
+                  <ha-checkbox
+                    @change=${this._keepLoggedInChanged}
+                  ></ha-checkbox>
+                </ha-formfield>
+              `
+            : ""}
         `;
       default:
         return html``;
@@ -220,11 +226,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   }
 
   private _keepLoggedInChanged(e: CustomEvent<HTMLInputElement>) {
-    if ((e.currentTarget as any).checked) {
-      enableWrite();
-    } else {
-      disableWrite();
-    }
+    this._keepLoggedIn = (e.currentTarget as any).checked;
   }
 
   private async _providerChanged(newProvider?: AuthProvider) {
@@ -293,6 +295,9 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
     if (this.oauth2State) {
       url += `&state=${encodeURIComponent(this.oauth2State)}`;
+    }
+    if (this._keepLoggedIn) {
+      url += `&keepLogged=true`;
     }
 
     document.location.assign(url);
