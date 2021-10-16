@@ -3455,7 +3455,8 @@
         "dashboard": {
           "header": "Dashboard",
           "description": "Pick a default dashboard for this device.",
-          "dropdown_label": "Dashboard"
+          "dropdown_label": "Dashboard",
+          "default_dashboard_label": "Overview (default)"
         },
         "change_password": {
           "header": "Change Password",
