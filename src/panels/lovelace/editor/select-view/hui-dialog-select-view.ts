@@ -106,13 +106,10 @@ export class HuiDialogSelectView extends LitElement {
             </ha-paper-dropdown-menu>`
           : ""}
         ${this._config
-          ? this._config.views.length > 0
+          ? this._config.views.length > 1
             ? html`
                 <mwc-list>
-                  ${[
-                    ...this._config.views,
-                    { title: "Test", icon: "hass:cast" },
-                  ].map(
+                  ${this._config.views.map(
                     (view, idx) => html`
                       <mwc-radio-list-item
                         graphic=${this._config?.views.some(({ icon }) => icon)
