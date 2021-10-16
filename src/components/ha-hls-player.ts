@@ -8,7 +8,6 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
@@ -65,7 +64,6 @@ class HaHLSPlayer extends LitElement {
         .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
-        @loadeddata=${this._elementResized}
       ></video>
     `;
   }
@@ -204,10 +202,6 @@ class HaHLSPlayer extends LitElement {
     videoEl.addEventListener("loadedmetadata", () => {
       videoEl.play();
     });
-  }
-
-  private _elementResized() {
-    fireEvent(this, "iron-resize");
   }
 
   private _cleanUp() {
