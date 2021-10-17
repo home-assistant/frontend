@@ -19,28 +19,9 @@ import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridGaugeCardConfig } from "../types";
 
-const computedStyles = getComputedStyle(this);
-
-const LEVELS: LevelDefinition[] = [
-  {
-    level: -1,
-    stroke: computedStyles
-      .getPropertyValue("--energy-grid-consumption-color")
-      .trim(),
-  },
-  {
-    level: 0,
-    stroke: computedStyles
-      .getPropertyValue("--energy-grid-return-color")
-      .trim(),
-  },
-];
-
 @customElement("hui-energy-grid-neutrality-gauge-card")
-class HuiEnergyGridGaugeCard
-  extends SubscribeMixin(LitElement)
-  implements LovelaceCard
-{
+class HuiEnergyGridGaugeCard extends SubscribeMixin(LitElement)
+  implements LovelaceCard {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EnergyGridGaugeCardConfig;
@@ -106,6 +87,23 @@ class HuiEnergyGridGaugeCard
         value = 0;
       }
     }
+
+    const computedStyles = getComputedStyle(this);
+
+    const LEVELS: LevelDefinition[] = [
+      {
+        level: -1,
+        stroke: computedStyles
+          .getPropertyValue("--energy-grid-consumption-color")
+          .trim(),
+      },
+      {
+        level: 0,
+        stroke: computedStyles
+          .getPropertyValue("--energy-grid-return-color")
+          .trim(),
+      },
+    ];
 
     return html`
       <ha-card>
