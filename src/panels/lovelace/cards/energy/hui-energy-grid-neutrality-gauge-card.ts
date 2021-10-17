@@ -18,11 +18,22 @@ import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import type { HomeAssistant } from "../../../../types";
 import type { LovelaceCard } from "../../types";
 import type { EnergyGridGaugeCardConfig } from "../types";
-import { severityMap } from "../hui-gauge-card";
+
+const computedStyles = getComputedStyle(this);
 
 const LEVELS: LevelDefinition[] = [
-  { level: -1, stroke: severityMap.red },
-  { level: 0, stroke: severityMap.green },
+  {
+    level: -1,
+    stroke: computedStyles
+      .getPropertyValue("--energy-grid-consumption-color")
+      .trim(),
+  },
+  {
+    level: 0,
+    stroke: computedStyles
+      .getPropertyValue("--energy-grid-return-color")
+      .trim(),
+  },
 ];
 
 @customElement("hui-energy-grid-neutrality-gauge-card")
