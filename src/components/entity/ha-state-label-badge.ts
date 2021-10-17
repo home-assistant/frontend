@@ -73,13 +73,17 @@ export class HaStateLabelBadge extends LitElement {
 
     const value = this._computeValue(domain, entityState);
     const icon = this.icon ? this.icon : this._computeIcon(domain, entityState);
-    const image = this.icon
+    const image = icon
       ? ""
       : this.image
       ? this.image
       : entityState.attributes.entity_picture_local ||
         entityState.attributes.entity_picture;
 
+    // Rendering priority inside badge:
+    // 1. Icon
+    // 2. Image
+    // 3. Value string as fallback
     return html`
       <ha-label-badge
         class=${classMap({
@@ -96,7 +100,7 @@ export class HaStateLabelBadge extends LitElement {
         .description=${this.name ?? computeStateName(entityState)}
       >
         ${!image && icon ? html`<ha-icon .icon=${icon}></ha-icon>` : ""}
-        ${value && (this.icon || !this.image)
+        ${value && !icon && !image
           ? html`<span class=${value && value.length > 4 ? "big" : ""}
               >${value}</span
             >`
