@@ -27,7 +27,7 @@ export function askWrite() {
 export function saveTokens(tokens: AuthData | null) {
   tokenCache.tokens = tokens;
   const searchParams = new URLSearchParams(window.location.search);
-  if (searchParams.get("keepLogged") === "true") {
+  if (searchParams.get("storeToken") === "true") {
     try {
       storage.hassTokens = JSON.stringify(tokens);
     } catch (err: any) {

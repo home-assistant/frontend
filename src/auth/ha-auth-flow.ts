@@ -43,7 +43,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
 
   @state() private _submitting = false;
 
-  @state() private _keepLoggedIn = false;
+  @state() private _storeToken = false;
 
   willUpdate(changedProps: PropertyValues) {
     super.willUpdate(changedProps);
@@ -226,7 +226,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   }
 
   private _keepLoggedInChanged(e: CustomEvent<HTMLInputElement>) {
-    this._keepLoggedIn = (e.currentTarget as any).checked;
+    this._storeToken = (e.currentTarget as any).checked;
   }
 
   private async _providerChanged(newProvider?: AuthProvider) {
@@ -296,8 +296,8 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     if (this.oauth2State) {
       url += `&state=${encodeURIComponent(this.oauth2State)}`;
     }
-    if (this._keepLoggedIn) {
-      url += `&keepLogged=true`;
+    if (this._storeToken) {
+      url += `&storeToken=true`;
     }
 
     document.location.assign(url);
