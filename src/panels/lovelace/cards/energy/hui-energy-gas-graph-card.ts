@@ -10,7 +10,13 @@ import {
   ChartOptions,
   ScatterDataPoint,
 } from "chart.js";
-import { differenceInDays, endOfToday, isToday, startOfToday } from "date-fns";
+import {
+  addHours,
+  differenceInDays,
+  endOfToday,
+  isToday,
+  startOfToday,
+} from "date-fns";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { EnergyGasGraphCardConfig } from "../types";
@@ -24,6 +30,7 @@ import { labDarken } from "../../../../common/color/lab";
 import {
   EnergyData,
   getEnergyDataCollection,
+  getEnergyGasUnit,
   GasSourceTypeEnergyPreference,
 } from "../../../../data/energy";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
@@ -31,13 +38,14 @@ import "../../../../components/chart/ha-chart-base";
 import {
   formatNumber,
   numberFormatToLocale,
-} from "../../../../common/string/format_number";
+} from "../../../../common/number/format_number";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
 import { FrontendLocaleData } from "../../../../data/translation";
 import {
   reduceSumStatisticsByMonth,
   reduceSumStatisticsByDay,
 } from "../../../../data/history";
+import { formatTime } from "../../../../common/datetime/format_time";
 
 @customElement("hui-energy-gas-graph-card")
 export class HuiEnergyGasGraphCard
@@ -55,6 +63,8 @@ export class HuiEnergyGasGraphCard
   @state() private _start = startOfToday();
 
   @state() private _end = endOfToday();
+
+  @state() private _unit?: string;
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
@@ -92,15 +102,18 @@ export class HuiEnergyGasGraphCard
             .options=${this._createOptions(
               this._start,
               this._end,
-              this.hass.locale
+              this.hass.locale,
+              this._unit
             )}
             chart-type="bar"
           ></ha-chart-base>
           ${!this._chartData.datasets.length
             ? html`<div class="no-data">
                 ${isToday(this._start)
-                  ? "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."
-                  : "There is no data for this period."}
+                  ? this.hass.localize("ui.panel.lovelace.cards.energy.no_data")
+                  : this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.no_data_period"
+                    )}
               </div>`
             : ""}
         </div>
@@ -109,7 +122,12 @@ export class HuiEnergyGasGraphCard
   }
 
   private _createOptions = memoizeOne(
-    (start: Date, end: Date, locale: FrontendLocaleData): ChartOptions => {
+    (
+      start: Date,
+      end: Date,
+      locale: FrontendLocaleData,
+      unit?: string
+    ): ChartOptions => {
       const dayDifference = differenceInDays(end, start);
       return {
         parsing: false,
@@ -160,7 +178,7 @@ export class HuiEnergyGasGraphCard
             type: "linear",
             title: {
               display: true,
-              text: "m³",
+              text: unit,
             },
             ticks: {
               beginAtZero: true,
@@ -171,11 +189,21 @@ export class HuiEnergyGasGraphCard
           tooltip: {
             mode: "nearest",
             callbacks: {
+              title: (datasets) => {
+                if (dayDifference > 0) {
+                  return datasets[0].label;
+                }
+                const date = new Date(datasets[0].parsed.x);
+                return `${formatTime(date, locale)} - ${formatTime(
+                  addHours(date, 1),
+                  locale
+                )}`;
+              },
               label: (context) =>
                 `${context.dataset.label}: ${formatNumber(
                   context.parsed.y,
                   locale
-                )} m³`,
+                )} ${unit}`,
             },
           },
           filler: {
@@ -209,21 +237,9 @@ export class HuiEnergyGasGraphCard
         (source) => source.type === "gas"
       ) as GasSourceTypeEnergyPreference[];
 
-    const statisticsData = Object.values(energyData.stats);
+    this._unit = getEnergyGasUnit(this.hass, energyData.prefs) || "m³";
+
     const datasets: ChartDataset<"bar">[] = [];
-    let endTime: Date;
-
-    endTime = new Date(
-      Math.max(
-        ...statisticsData.map((stats) =>
-          stats.length ? new Date(stats[stats.length - 1].start).getTime() : 0
-        )
-      )
-    );
-
-    if (!endTime || endTime > new Date()) {
-      endTime = new Date();
-    }
 
     const computedStyles = getComputedStyle(this);
     const gasColor = computedStyles

@@ -18,6 +18,7 @@ import { Selector } from "../data/selector";
 import { PolymerChangedEvent } from "../polymer-types";
 import { HomeAssistant } from "../types";
 import "./ha-checkbox";
+import "./ha-icon-button";
 import "./ha-selector/ha-selector";
 import "./ha-service-picker";
 import "./ha-settings-row";
@@ -197,19 +198,17 @@ export class HaServiceControl extends LitElement {
         <p>${serviceData?.description}</p>
         ${this._manifest
           ? html` <a
-              href="${this._manifest.documentation}"
-              title="${this.hass.localize(
+              href=${this._manifest.documentation}
+              title=${this.hass.localize(
                 "ui.components.service-control.integration_doc"
-              )}"
+              )}
               target="_blank"
               rel="noreferrer"
             >
-              <mwc-icon-button>
-                <ha-svg-icon
-                  path=${mdiHelpCircle}
-                  class="help-icon"
-                ></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                .path=${mdiHelpCircle}
+                class="help-icon"
+              ></ha-icon-button>
             </a>`
           : ""}
       </div>
@@ -406,7 +405,7 @@ export class HaServiceControl extends LitElement {
     this._manifest = undefined;
     try {
       this._manifest = await fetchIntegrationManifest(this.hass, integration);
-    } catch (err) {
+    } catch (err: any) {
       // Ignore if loading manifest fails. Probably bad JSON in manifest
     }
   }

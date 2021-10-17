@@ -14,7 +14,7 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { formatNumber } from "../../../common/string/format_number";
+import { formatNumber } from "../../../common/number/format_number";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -190,6 +190,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
 
     const weatherStateIcon = getWeatherStateIcon(stateObj.state, this);
+    const name = this._config.name ?? computeStateName(stateObj);
 
     return html`
       <ha-card
@@ -221,9 +222,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                   this.hass.locale
                 )}
               </div>
-              <div class="name">
-                ${this._config.name || computeStateName(stateObj)}
-              </div>
+              <div class="name" .title=${name}>${name}</div>
             </div>
             <div class="temp-attribute">
               <div class="temp">

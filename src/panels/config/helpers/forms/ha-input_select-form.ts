@@ -1,10 +1,11 @@
 import "@material/mwc-button/mwc-button";
+import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-input";
@@ -65,9 +66,9 @@ class HaInputSelectForm extends LitElement {
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.name"
           )}
-          .errorMessage="${this.hass!.localize(
+          .errorMessage=${this.hass!.localize(
             "ui.dialogs.helper_settings.required_error_msg"
-          )}"
+          )}
           .invalid=${nameInvalid}
           dialogInitialFocus
         ></paper-input>
@@ -89,11 +90,11 @@ class HaInputSelectForm extends LitElement {
                   <paper-item-body> ${option} </paper-item-body>
                   <ha-icon-button
                     .index=${index}
-                    .title=${this.hass.localize(
+                    .label=${this.hass.localize(
                       "ui.dialogs.helper_settings.input_select.remove_option"
                     )}
                     @click=${this._removeOption}
-                    icon="hass:delete"
+                    .path=${mdiDelete}
                   ></ha-icon-button>
                 </paper-item>
               `

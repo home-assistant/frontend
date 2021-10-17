@@ -1,6 +1,5 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import "../../../components/ha-svg-icon";
 import {
   EnergyPreferencesValidation,
   getEnergyPreferenceValidation,
@@ -79,8 +78,7 @@ class HaConfigEnergy extends LitElement {
         .tabs=${configSections.experiences}
       >
         <ha-alert>
-          After setting up a new device, it can take up to 2 hours for new data
-          to arrive in your energy dashboard.
+          ${this.hass.localize("ui.panel.config.energy.new_device_info")}
         </ha-alert>
         <div class="container">
           <ha-energy-grid-settings
@@ -126,17 +124,17 @@ class HaConfigEnergy extends LitElement {
     const energyInfoPromise = await getEnergyInfo(this.hass);
     try {
       this._preferences = await getEnergyPreferences(this.hass);
-    } catch (e) {
-      if (e.code === "not_found") {
+    } catch (err: any) {
+      if (err.code === "not_found") {
         this._preferences = INITIAL_CONFIG;
       } else {
-        this._error = e.message;
+        this._error = err.message;
       }
     }
     try {
       this._validationResult = await validationPromise;
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
     this._info = await energyInfoPromise;
   }
@@ -146,8 +144,8 @@ class HaConfigEnergy extends LitElement {
     this._validationResult = undefined;
     try {
       this._validationResult = await getEnergyPreferenceValidation(this.hass);
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
     this._info = await getEnergyInfo(this.hass);
   }

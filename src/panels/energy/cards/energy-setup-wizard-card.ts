@@ -1,7 +1,12 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
-import { EnergyPreferences, saveEnergyPreferences } from "../../../data/energy";
+import {
+  EnergyInfo,
+  EnergyPreferences,
+  getEnergyInfo,
+  saveEnergyPreferences,
+} from "../../../data/energy";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, Lovelace } from "../../lovelace/types";
@@ -19,6 +24,8 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public lovelace?: Lovelace;
+
+  @state() private _info?: EnergyInfo;
 
   @state() private _step = 0;
 
@@ -39,6 +46,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
 
   protected firstUpdated() {
     this.hass.loadFragmentTranslation("config");
+    this._fetchconfig();
   }
 
   protected render(): TemplateResult {
@@ -54,6 +62,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
         ? html`<ha-energy-solar-settings
             .hass=${this.hass}
             .preferences=${this._preferences}
+            .info=${this._info}
             @value-changed=${this._prefsChanged}
           ></ha-energy-solar-settings>`
         : this._step === 2
@@ -90,6 +99,10 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
     `;
   }
 
+  private async _fetchconfig() {
+    this._info = await getEnergyInfo(this.hass);
+  }
+
   private _prefsChanged(ev: CustomEvent) {
     this._preferences = ev.detail.value;
   }
@@ -117,7 +130,7 @@ export class EnergySetupWizard extends LitElement implements LovelaceCard {
         this.hass,
         this._preferences
       );
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, { title: `Failed to save config: ${err.message}` });
     }
     fireEvent(this, "reload-energy-panel");

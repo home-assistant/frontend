@@ -3,7 +3,7 @@ import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { formatNumber } from "../../../../common/string/format_number";
+import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-gauge";
@@ -71,7 +71,9 @@ class HuiEnergyGridGaugeCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     const prefs = this._data.prefs;
@@ -112,11 +114,13 @@ class HuiEnergyGridGaugeCard
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
-                  This card indicates your net energy usage.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
+                  )}
                   <br /><br />
-                  If the needle is in the green, you returned more energy to the
-                  grid than you consumed from it. If it's in the red, you
-                  consumed more energy than you returned.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.red_green_color_explain"
+                  )}
                 </span>
               </paper-tooltip>
 
@@ -136,11 +140,17 @@ class HuiEnergyGridGaugeCard
               ></ha-gauge>
               <div class="name">
                 ${returnedToGrid! >= consumedFromGrid!
-                  ? "Net returned to the grid"
-                  : "Net consumed from the grid"}
+                  ? this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_returned_grid"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_consumed_grid"
+                    )}
               </div>
             `
-          : "Grid neutrality could not be calculated"}
+          : this.hass.localize(
+              "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.grid_neutrality_not_calculated"
+            )}
       </ha-card>
     `;
   }

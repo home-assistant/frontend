@@ -31,7 +31,7 @@ export const energyCardStyles = css`
   .row .content {
     flex-grow: 1;
   }
-  mwc-icon-button {
+  ha-icon-button {
     color: var(--secondary-text-color);
   }
 `;

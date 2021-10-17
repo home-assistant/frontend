@@ -1,3 +1,4 @@
+import { mdiHelpCircle } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
@@ -45,7 +46,7 @@ export class ZwaveNetwork extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide="${this.isWide}">
+      <ha-config-section .isWide=${this.isWide}>
         <div class="sectionHeader" slot="header">
           <span>
             ${this.hass!.localize(
@@ -54,8 +55,9 @@ export class ZwaveNetwork extends LitElement {
           </span>
           <ha-icon-button
             class="toggle-help-icon"
-            @click="${this._onHelpTap}"
-            icon="hass:help-circle"
+            @click=${this._onHelpTap}
+            .path=${mdiHelpCircle}
+            .label=${this.hass!.localize("ui.common.help")}
           ></ha-icon-button>
         </div>
         <div slot="introduction">
@@ -64,10 +66,7 @@ export class ZwaveNetwork extends LitElement {
           )}
           <p>
             <a
-              href="${documentationUrl(
-                this.hass,
-                "/docs/z-wave/control-panel/"
-              )}"
+              href=${documentationUrl(this.hass, "/docs/z-wave/control-panel/")}
               target="_blank"
               rel="noreferrer"
             >
@@ -217,14 +216,14 @@ export class ZwaveNetwork extends LitElement {
       <ha-call-service-button
         .hass=${this.hass}
         domain="zwave"
-        service="${service}"
+        service=${service}
       >
         ${this.hass!.localize("ui.panel.config.zwave.services." + service)}
       </ha-call-service-button>
       <ha-service-description
         .hass=${this.hass}
         domain="zwave"
-        service="${service}"
+        service=${service}
         ?hidden=${!this._showHelp}
       >
       </ha-service-description>

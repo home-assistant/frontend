@@ -87,7 +87,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .backCallback=${() => this._backTapped()}
+        .backCallback=${this._backTapped}
         .tabs=${configSections.automation}
       >
         <ha-button-menu
@@ -96,12 +96,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           @action=${this._handleMenuAction}
           activatable
         >
-          <mwc-icon-button
+          <ha-icon-button
             slot="trigger"
-            .title=${this.hass.localize("ui.common.menu")}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
-            ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
 
           <mwc-list-item
             aria-label=${this.hass.localize(
@@ -242,10 +241,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                   "ui.panel.config.script.editor.modes.description",
                                   "documentation_link",
                                   html`<a
-                                    href="${documentationUrl(
+                                    href=${documentationUrl(
                                       this.hass,
                                       "/integrations/script/#script-modes"
-                                    )}"
+                                    )}
                                     target="_blank"
                                     rel="noreferrer"
                                     >${this.hass.localize(
@@ -309,9 +308,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                     </a>
                                     <mwc-button
                                       @click=${this._runScript}
-                                      title="${this.hass.localize(
+                                      title=${this.hass.localize(
                                         "ui.panel.config.script.picker.run_script"
-                                      )}"
+                                      )}
                                       ?disabled=${this._dirty}
                                     >
                                       ${this.hass.localize(
@@ -337,10 +336,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                               )}
                             </p>
                             <a
-                              href="${documentationUrl(
+                              href=${documentationUrl(
                                 this.hass,
                                 "/docs/scripts/"
-                              )}"
+                              )}
                               target="_blank"
                               rel="noreferrer"
                             >
@@ -370,9 +369,9 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                         >
                           <mwc-button
                             @click=${this._runScript}
-                            title="${this.hass.localize(
+                            title=${this.hass.localize(
                               "ui.panel.config.script.picker.run_script"
-                            )}"
+                            )}
                             ?disabled=${this._dirty}
                           >
                             ${this.hass.localize(
@@ -578,7 +577,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     this._dirty = true;
   }
 
-  private _backTapped(): void {
+  private _backTapped = (): void => {
     if (this._dirty) {
       showConfirmationDialog(this, {
         text: this.hass!.localize(
@@ -586,12 +585,14 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         ),
         confirmText: this.hass!.localize("ui.common.leave"),
         dismissText: this.hass!.localize("ui.common.stay"),
-        confirm: () => history.back(),
+        confirm: () => {
+          setTimeout(() => history.back());
+        },
       });
     } else {
       history.back();
     }
-  }
+  };
 
   private async _duplicate() {
     if (this._dirty) {

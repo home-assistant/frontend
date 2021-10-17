@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiCheck, mdiClose, mdiMenuDown, mdiMenuUp } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -37,6 +36,7 @@ import {
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
+import "../ha-icon-button";
 import "../ha-svg-icon";
 import "./ha-devices-picker";
 
@@ -50,6 +50,7 @@ interface AreaDevices {
   devices: string[];
 }
 
+// eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<AreaDevices> = (item) => html`<style>
     paper-item {
       padding: 0;
@@ -323,29 +324,25 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
         >
           <div class="suffix" slot="suffix">
             ${this.value
-              ? html`<mwc-icon-button
+              ? html`<ha-icon-button
                   class="clear-button"
                   .label=${this.hass.localize(
                     "ui.components.device-picker.clear"
                   )}
+                  .path=${mdiClose}
                   @click=${this._clearValue}
                   no-ripple
-                >
-                  <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-                </mwc-icon-button> `
+                ></ha-icon-button> `
               : ""}
             ${areas.length > 0
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     .label=${this.hass.localize(
                       "ui.components.device-picker.show_devices"
                     )}
+                    .path=${this._opened ? mdiMenuUp : mdiMenuDown}
                     class="toggle-button"
-                  >
-                    <ha-svg-icon
-                      .path=${this._opened ? mdiMenuUp : mdiMenuDown}
-                    ></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
           </div>
@@ -407,7 +404,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
       .suffix {
         display: flex;
       }
-      mwc-icon-button {
+      ha-icon-button {
         --mdc-icon-button-size: 24px;
         padding: 0px 2px;
         color: var(--secondary-text-color);

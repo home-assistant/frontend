@@ -453,3 +453,53 @@ export const getEnergySolarForecasts = (hass: HomeAssistant) =>
   hass.callWS<EnergySolarForecasts>({
     type: "energy/solar_forecast",
   });
+
+export const ENERGY_GAS_VOLUME_UNITS = ["m³", "ft³"];
+export const ENERGY_GAS_ENERGY_UNITS = ["kWh"];
+export const ENERGY_GAS_UNITS = [
+  ...ENERGY_GAS_VOLUME_UNITS,
+  ...ENERGY_GAS_ENERGY_UNITS,
+];
+
+export type EnergyGasUnit = "volume" | "energy";
+
+export const getEnergyGasUnitCategory = (
+  hass: HomeAssistant,
+  prefs: EnergyPreferences
+): EnergyGasUnit | undefined => {
+  for (const source of prefs.energy_sources) {
+    if (source.type !== "gas") {
+      continue;
+    }
+
+    const entity = hass.states[source.stat_energy_from];
+    if (entity) {
+      return ENERGY_GAS_VOLUME_UNITS.includes(
+        entity.attributes.unit_of_measurement!
+      )
+        ? "volume"
+        : "energy";
+    }
+  }
+  return undefined;
+};
+
+export const getEnergyGasUnit = (
+  hass: HomeAssistant,
+  prefs: EnergyPreferences
+): string | undefined => {
+  for (const source of prefs.energy_sources) {
+    if (source.type !== "gas") {
+      continue;
+    }
+
+    const entity = hass.states[source.stat_energy_from];
+    if (entity?.attributes.unit_of_measurement) {
+      // Wh is normalized to kWh by stats generation
+      return entity.attributes.unit_of_measurement === "Wh"
+        ? "kWh"
+        : entity.attributes.unit_of_measurement;
+    }
+  }
+  return undefined;
+};

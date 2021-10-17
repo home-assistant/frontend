@@ -59,7 +59,9 @@ class HuiEnergyCarbonGaugeCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     if (!this._data.co2SignalEntity) {
@@ -129,9 +131,9 @@ class HuiEnergyCarbonGaugeCard
               <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
-                  This card represents how much of the energy consumed by your
-                  home was generated using non-fossil fuels like solar, wind and
-                  nuclear.
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
+                  )}
                 </span>
               </paper-tooltip>
               <ha-gauge
@@ -144,9 +146,15 @@ class HuiEnergyCarbonGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <div class="name">Non-fossil energy consumed</div>
+              <div class="name">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.non_fossil_energy_consumed"
+                )}
+              </div>
             `
-          : html`Consumed non-fossil energy couldn't be calculated`}
+          : html`${this.hass.localize(
+              "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.non_fossil_energy_not_calculated"
+            )}`}
       </ha-card>
     `;
   }

@@ -24,16 +24,14 @@ export class HuiPersistentNotificationItem extends LitElement {
       <notification-item-template>
         <span slot="header"> ${this.notification.title} </span>
 
-        <ha-markdown
-          breaks
-          content="${this.notification.message}"
-        ></ha-markdown>
+        <ha-markdown breaks content=${this.notification.message}></ha-markdown>
 
         <div class="time">
           <span>
             <ha-relative-time
               .hass=${this.hass}
-              .datetime="${this.notification.created_at}"
+              .datetime=${this.notification.created_at}
+              capitalize
             ></ha-relative-time>
             <paper-tooltip animation-delay="0">
               ${this._computeTooltip(this.hass, this.notification)}
@@ -41,7 +39,7 @@ export class HuiPersistentNotificationItem extends LitElement {
           </span>
         </div>
 
-        <mwc-button slot="actions" @click="${this._handleDismiss}"
+        <mwc-button slot="actions" @click=${this._handleDismiss}
           >${this.hass.localize(
             "ui.card.persistent_notification.dismiss"
           )}</mwc-button

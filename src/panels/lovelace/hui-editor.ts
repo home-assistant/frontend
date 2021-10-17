@@ -1,5 +1,6 @@
 import { undoDepth } from "@codemirror/history";
 import "@material/mwc-button";
+import { mdiClose } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { dump, load } from "js-yaml";
@@ -55,8 +56,9 @@ class LovelaceFullConfigEditor extends LitElement {
         <app-header slot="header">
           <app-toolbar>
             <ha-icon-button
-              icon="hass:close"
-              @click="${this._closeEditor}"
+              .path=${mdiClose}
+              @click=${this._closeEditor}
+              .label=${this.hass!.localize("ui.common.close")}
             ></ha-icon-button>
             <div main-title>
               ${this.hass!.localize(
@@ -209,7 +211,7 @@ class LovelaceFullConfigEditor extends LitElement {
   private async _removeConfig() {
     try {
       await this.lovelace!.deleteConfig();
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_remove",
@@ -259,7 +261,7 @@ class LovelaceFullConfigEditor extends LitElement {
     let config: LovelaceConfig;
     try {
       config = load(value) as LovelaceConfig;
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_parse_yaml",
@@ -272,7 +274,7 @@ class LovelaceFullConfigEditor extends LitElement {
     }
     try {
       assert(config, lovelaceStruct);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_invalid_config",
@@ -292,7 +294,7 @@ class LovelaceFullConfigEditor extends LitElement {
     }
     try {
       await this.lovelace!.saveConfig(config);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_save_yaml",

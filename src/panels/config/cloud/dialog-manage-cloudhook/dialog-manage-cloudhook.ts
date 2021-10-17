@@ -54,10 +54,10 @@ export class DialogManageCloudhook extends LitElement {
             )}
           </p>
           <paper-input
-            label="${inputLabel}"
-            value="${cloudhook.cloudhook_url}"
-            @click="${this._copyClipboard}"
-            @blur="${this._restoreLabel}"
+            label=${inputLabel}
+            value=${cloudhook.cloudhook_url}
+            @click=${this._copyClipboard}
+            @blur=${this._restoreLabel}
           ></paper-input>
           <p>
             ${cloudhook.managed
@@ -70,7 +70,7 @@ export class DialogManageCloudhook extends LitElement {
                   ${this.hass!.localize(
                     "ui.panel.config.cloud.dialog_cloudhook.info_disable_webhook"
                   )}
-                  <button class="link" @click="${this._disableWebhook}">
+                  <button class="link" @click=${this._disableWebhook}>
                     ${this.hass!.localize(
                       "ui.panel.config.cloud.dialog_cloudhook.link_disable_webhook"
                     )}</button
@@ -80,14 +80,14 @@ export class DialogManageCloudhook extends LitElement {
         </div>
 
         <div class="paper-dialog-buttons">
-          <a href="${docsUrl}" target="_blank" rel="noreferrer">
+          <a href=${docsUrl} target="_blank" rel="noreferrer">
             <mwc-button
               >${this.hass!.localize(
                 "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
               )}</mwc-button
             >
           </a>
-          <mwc-button @click="${this._closeDialog}"
+          <mwc-button @click=${this._closeDialog}
             >${this.hass!.localize(
               "ui.panel.config.cloud.dialog_cloudhook.close"
             )}</mwc-button
@@ -134,7 +134,7 @@ export class DialogManageCloudhook extends LitElement {
       paperInput.label = this.hass!.localize(
         "ui.panel.config.cloud.dialog_cloudhook.copied_to_clipboard"
       );
-    } catch (err) {
+    } catch (err: any) {
       // Copying failed. Oh no
     }
   }

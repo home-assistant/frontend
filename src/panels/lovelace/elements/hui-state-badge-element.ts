@@ -52,12 +52,12 @@ export class HuiStateBadgeElement
     return html`
       <ha-state-label-badge
         .hass=${this.hass}
-        .state="${stateObj}"
-        .title="${this._config.title === undefined
+        .state=${stateObj}
+        .title=${this._config.title === undefined
           ? computeStateName(stateObj)
           : this._config.title === null
           ? ""
-          : this._config.title}"
+          : this._config.title}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),

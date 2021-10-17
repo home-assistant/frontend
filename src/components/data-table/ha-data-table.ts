@@ -1,4 +1,5 @@
 import { Layout1d, scroll } from "@lit-labs/virtualizer";
+import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import deepClone from "deep-clone-simple";
 import {
   css,
@@ -27,8 +28,9 @@ import { nextRender } from "../../common/util/render-status";
 import { haStyleScrollbar } from "../../resources/styles";
 import "../ha-checkbox";
 import type { HaCheckbox } from "../ha-checkbox";
-import "../ha-icon";
+import "../ha-svg-icon";
 import { filterData, sortData } from "./sort-filter";
+import { HomeAssistant } from "../../types";
 
 declare global {
   // for fire event
@@ -92,6 +94,8 @@ export interface SortableColumnContainer {
 
 @customElement("ha-data-table")
 export class HaDataTable extends LitElement {
+  @property({ attribute: false }) public hass!: HomeAssistant;
+
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
 
   @property({ type: Array }) public data: DataTableRowData[] = [];
@@ -231,6 +235,7 @@ export class HaDataTable extends LitElement {
             ? html`
                 <div class="table-header">
                   <search-input
+                    .hass=${this.hass}
                     @value-changed=${this._handleSearchChange}
                     .label=${this.searchLabel}
                     .noLabelFloat=${this.noLabelFloat}
@@ -311,11 +316,11 @@ export class HaDataTable extends LitElement {
                 >
                   ${column.sortable
                     ? html`
-                        <ha-icon
-                          .icon=${sorted && this._sortDirection === "desc"
-                            ? "hass:arrow-down"
-                            : "hass:arrow-up"}
-                        ></ha-icon>
+                        <ha-svg-icon
+                          .path=${sorted && this._sortDirection === "desc"
+                            ? mdiArrowDown
+                            : mdiArrowUp}
+                        ></ha-svg-icon>
                       `
                     : ""}
                   <span>${column.title}</span>
@@ -550,7 +555,7 @@ export class HaDataTable extends LitElement {
 
   private _handleRowClick(ev: Event) {
     const target = ev.target as HTMLElement;
-    if (target.tagName === "HA-CHECKBOX") {
+    if (["HA-CHECKBOX", "MWC-BUTTON"].includes(target.tagName)) {
       return;
     }
     const rowId = (ev.currentTarget as any).rowId;
@@ -863,14 +868,14 @@ export class HaDataTable extends LitElement {
         :host([dir="rtl"]) .mdc-data-table__header-cell > * {
           transition: right 0.2s ease;
         }
-        .mdc-data-table__header-cell ha-icon {
+        .mdc-data-table__header-cell ha-svg-icon {
           top: -3px;
           position: absolute;
         }
-        .mdc-data-table__header-cell.not-sorted ha-icon {
+        .mdc-data-table__header-cell.not-sorted ha-svg-icon {
           left: -20px;
         }
-        :host([dir="rtl"]) .mdc-data-table__header-cell.not-sorted ha-icon {
+        :host([dir="rtl"]) .mdc-data-table__header-cell.not-sorted ha-svg-icon {
           right: -20px;
         }
         .mdc-data-table__header-cell.sortable:not(.not-sorted) span,
@@ -886,16 +891,16 @@ export class HaDataTable extends LitElement {
           left: auto;
           right: 24px;
         }
-        .mdc-data-table__header-cell.sortable:not(.not-sorted) ha-icon,
-        .mdc-data-table__header-cell.sortable:hover.not-sorted ha-icon {
+        .mdc-data-table__header-cell.sortable:not(.not-sorted) ha-svg-icon,
+        .mdc-data-table__header-cell.sortable:hover.not-sorted ha-svg-icon {
           left: 12px;
         }
         :host([dir="rtl"])
           .mdc-data-table__header-cell.sortable:not(.not-sorted)
-          ha-icon,
+          ha-svg-icon,
         :host([dir="rtl"])
           .mdc-data-table__header-cell.sortable:hover.not-sorted
-          ha-icon {
+          ha-svg-icon {
           left: auto;
           right: 12px;
         }

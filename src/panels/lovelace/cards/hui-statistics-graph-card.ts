@@ -135,7 +135,7 @@ export class HuiStatisticsGraphCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card .header="${this._config.title}">
+      <ha-card .header=${this._config.title}>
         <div
           class="content ${classMap({
             "has-header": !!this._config.title,

@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import "@material/mwc-list/mwc-list-item";
 import { mdiDelete } from "@mdi/js";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -7,7 +6,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-icon-button";
 import { extractApiErrorMessage } from "../../../../src/data/hassio/common";
 import {
   addHassioDockerRegistry,
@@ -110,16 +109,15 @@ class HassioRegistriesDialog extends LitElement {
                             )}:
                             ${entry.username}</span
                           >
-                          <mwc-icon-button
+                          <ha-icon-button
                             .entry=${entry}
-                            .title=${this.supervisor.localize(
+                            .label=${this.supervisor.localize(
                               "dialog.registries.remove"
                             )}
+                            .path=${mdiDelete}
                             slot="meta"
                             @click=${this._removeRegistry}
-                          >
-                            <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                          </mwc-icon-button>
+                          ></ha-icon-button>
                         </mwc-list-item>
                       `
                     )
@@ -190,7 +188,7 @@ class HassioRegistriesDialog extends LitElement {
       await addHassioDockerRegistry(this.hass, data);
       await this._loadRegistries();
       this._addingRegistry = false;
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("dialog.registries.failed_to_add"),
         text: extractApiErrorMessage(err),
@@ -204,7 +202,7 @@ class HassioRegistriesDialog extends LitElement {
     try {
       await removeHassioDockerRegistry(this.hass, entry.registry);
       await this._loadRegistries();
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.supervisor.localize("dialog.registries.failed_to_remove"),
         text: extractApiErrorMessage(err),
@@ -234,7 +232,7 @@ class HassioRegistriesDialog extends LitElement {
         mwc-button {
           margin-left: 8px;
         }
-        mwc-icon-button {
+        ha-icon-button {
           color: var(--error-color);
           margin: -10px;
         }

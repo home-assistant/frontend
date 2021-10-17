@@ -174,7 +174,7 @@ export class HuiConditionalCardEditor
                           "ui.panel.lovelace.editor.card.generic.state"
                         )} (${this.hass!.localize(
                           "ui.panel.lovelace.editor.card.conditional.current_state"
-                        )}: '${this.hass?.states[cond.entity].state}')"
+                        )}: ${this.hass?.states[cond.entity].state})"
                         .value=${cond.state_not !== undefined
                           ? cond.state_not
                           : cond.state}

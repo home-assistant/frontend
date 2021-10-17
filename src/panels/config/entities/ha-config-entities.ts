@@ -14,7 +14,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoize from "memoize-one";
@@ -33,6 +33,7 @@ import type {
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import {
   AreaRegistryEntry,
@@ -540,32 +541,35 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                       >
                     `
                   : html`
-                      <mwc-icon-button
+                      <ha-icon-button
                         id="enable-btn"
                         @click=${this._enableSelected}
-                        ><ha-svg-icon .path=${mdiUndo}></ha-svg-icon
-                      ></mwc-icon-button>
+                        .path=${mdiUndo}
+                        .label=${this.hass.localize("ui.common.enable")}
+                      ></ha-icon-button>
                       <paper-tooltip animation-delay="0" for="enable-btn">
                         ${this.hass.localize(
                           "ui.panel.config.entities.picker.enable_selected.button"
                         )}
                       </paper-tooltip>
-                      <mwc-icon-button
+                      <ha-icon-button
                         id="disable-btn"
                         @click=${this._disableSelected}
-                        ><ha-svg-icon .path=${mdiCancel}></ha-svg-icon
-                      ></mwc-icon-button>
+                        .path=${mdiCancel}
+                        .label=${this.hass.localize("ui.common.disable")}
+                      ></ha-icon-button>
                       <paper-tooltip animation-delay="0" for="disable-btn">
                         ${this.hass.localize(
                           "ui.panel.config.entities.picker.disable_selected.button"
                         )}
                       </paper-tooltip>
-                      <mwc-icon-button
+                      <ha-icon-button
                         class="warning"
                         id="remove-btn"
                         @click=${this._removeSelected}
-                        ><ha-svg-icon .path=${mdiDelete}></ha-svg-icon
-                      ></mwc-icon-button>
+                        .path=${mdiDelete}
+                        .label=${this.hass.localize("ui.common.remove")}
+                      ></ha-icon-button>
                       <paper-tooltip animation-delay="0" for="remove-btn">
                         ${this.hass.localize(
                           "ui.panel.config.entities.picker.remove_selected.button"
@@ -575,19 +579,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               </div>
             </div> `
           : html`<ha-button-menu slot="filter-menu" corner="BOTTOM_START" multi>
-              <mwc-icon-button
+              <ha-icon-button
                 slot="trigger"
                 .label=${this.hass!.localize(
                   "ui.panel.config.entities.picker.filter.filter"
                 )}
-                .title=${this.hass!.localize(
-                  "ui.panel.config.entities.picker.filter.filter"
-                )}
-              >
-                <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-              </mwc-icon-button>
+                .path=${mdiFilterVariant}
+              ></ha-icon-button>
               <mwc-list-item
-                @request-selected="${this._showDisabledChanged}"
+                @request-selected=${this._showDisabledChanged}
                 graphic="control"
                 .selected=${this._showDisabled}
               >
@@ -600,7 +600,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 )}
               </mwc-list-item>
               <mwc-list-item
-                @request-selected="${this._showRestoredChanged}"
+                @request-selected=${this._showRestoredChanged}
                 graphic="control"
                 .selected=${this._showUnavailable}
               >
@@ -613,7 +613,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                 )}
               </mwc-list-item>
               <mwc-list-item
-                @request-selected="${this._showReadOnlyChanged}"
+                @request-selected=${this._showReadOnlyChanged}
                 graphic="control"
                 .selected=${this._showReadOnly}
               >
@@ -679,6 +679,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           icon: null,
           readonly: true,
           selectable: false,
+          entity_category: null,
         });
       }
       if (changed) {
@@ -896,7 +897,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
           margin-right: -12px;
         }
         .header-btns > mwc-button,
-        .header-btns > mwc-icon-button {
+        .header-btns > ha-icon-button {
           margin: 8px;
         }
         ha-button-menu {

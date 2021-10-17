@@ -15,12 +15,13 @@ import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/components/buttons/ha-progress-button";
+import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-button-menu";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-form/ha-form";
-import type { HaFormSchema } from "../../../../src/components/ha-form/ha-form";
+import type { HaFormSchema } from "../../../../src/components/ha-form/types";
 import "../../../../src/components/ha-formfield";
+import "../../../../src/components/ha-icon-button";
 import "../../../../src/components/ha-switch";
 import "../../../../src/components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../../src/components/ha-yaml-editor";
@@ -100,9 +101,11 @@ class HassioAddonConfig extends LitElement {
           </h2>
           <div class="card-menu">
             <ha-button-menu corner="BOTTOM_START" @action=${this._handleAction}>
-              <mwc-icon-button slot="trigger">
-                <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-              </mwc-icon-button>
+              <ha-icon-button
+                .label=${this.hass.localize("common.menu")}
+                .path=${mdiDotsVertical}
+                slot="trigger"
+              ></ha-icon-button>
               <mwc-list-item .disabled=${!this._canShowSchema}>
                 ${this._yamlMode
                   ? this.supervisor.localize(
@@ -259,7 +262,7 @@ class HassioAddonConfig extends LitElement {
         path: "options",
       };
       fireEvent(this, "hass-api-called", eventdata);
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.common.update_available",
         "error",
@@ -300,7 +303,7 @@ class HassioAddonConfig extends LitElement {
       if (this.addon?.state === "started") {
         await suggestAddonRestart(this, this.hass, this.supervisor, this.addon);
       }
-    } catch (err) {
+    } catch (err: any) {
       this._error = this.supervisor.localize(
         "addon.failed_to_save",
         "error",

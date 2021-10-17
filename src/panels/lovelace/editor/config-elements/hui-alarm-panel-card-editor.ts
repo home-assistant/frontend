@@ -73,27 +73,29 @@ export class HuiAlarmPanelCardEditor
     return html`
       <div class="card-config">
         <ha-entity-picker
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
-          )} (${this.hass.localize(
+          )}
+          (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
-          )})"
+          )})
           .hass=${this.hass}
-          .value="${this._entity}"
+          .value=${this._entity}
           .configValue=${"entity"}
           .includeDomains=${includeDomains}
-          @change="${this._valueChanged}"
+          @change=${this._valueChanged}
           allow-custom-entity
         ></ha-entity-picker>
         <paper-input
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.name"
-          )} (${this.hass.localize(
+          )}
+          (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
-          )})"
-          .value="${this._name}"
-          .configValue="${"name"}"
-          @value-changed="${this._valueChanged}"
+          )})
+          .value=${this._name}
+          .configValue=${"name"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <span>Used States</span> ${this._states.map(
           (entityState, index) => html`
@@ -101,7 +103,7 @@ export class HuiAlarmPanelCardEditor
               <paper-item>${entityState}</paper-item>
               <ha-icon
                 class="deleteState"
-                .value="${index}"
+                .value=${index}
                 icon="hass:close"
                 @click=${this._stateRemoved}
               ></ha-icon>
@@ -109,10 +111,10 @@ export class HuiAlarmPanelCardEditor
           `
         )}
         <paper-dropdown-menu
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.alarm-panel.available_states"
-          )}"
-          @value-changed="${this._stateAdded}"
+          )}
+          @value-changed=${this._stateAdded}
         >
           <paper-listbox slot="dropdown-content">
             ${states.map(
@@ -122,9 +124,9 @@ export class HuiAlarmPanelCardEditor
         </paper-dropdown-menu>
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
       </div>
     `;

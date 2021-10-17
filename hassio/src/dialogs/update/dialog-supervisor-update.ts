@@ -6,7 +6,6 @@ import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-settings-row";
-import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
 import {
   extractApiErrorMessage,
@@ -148,7 +147,7 @@ class DialogSupervisorUpdate extends LitElement {
           this.hass,
           this._dialogParams!.backupParams
         );
-      } catch (err) {
+      } catch (err: any) {
         this._error = extractApiErrorMessage(err);
         this._action = null;
         return;
@@ -158,7 +157,7 @@ class DialogSupervisorUpdate extends LitElement {
     this._action = "update";
     try {
       await this._dialogParams!.updateHandler!();
-    } catch (err) {
+    } catch (err: any) {
       if (this.hass.connection.connected && !ignoreSupervisorError(err)) {
         this._error = extractApiErrorMessage(err);
         this._action = null;

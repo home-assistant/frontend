@@ -1,5 +1,4 @@
-import "@material/mwc-icon-button";
-import { mdiPlayBoxMultiple } from "@mdi/js";
+import { mdiDotsVertical, mdiPlayBoxMultiple } from "@mdi/js";
 import "@polymer/paper-progress/paper-progress";
 import type { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
 import {
@@ -23,7 +22,6 @@ import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-svg-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
@@ -237,7 +235,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             </div>
             <div>
               <ha-icon-button
-                icon="hass:dots-vertical"
+                .path=${mdiDotsVertical}
                 class="more-info"
                 @click=${this._handleMoreInfo}
               ></ha-icon-button>
@@ -271,27 +269,26 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                             ${controls!.map(
                               (control) => html`
                                 <ha-icon-button
-                                  .title=${this.hass.localize(
+                                  .label=${this.hass.localize(
                                     `ui.card.media_player.${control.action}`
                                   )}
-                                  .icon=${control.icon}
                                   action=${control.action}
                                   @click=${this._handleClick}
-                                ></ha-icon-button>
+                                >
+                                  <ha-icon .icon=${control.icon}></ha-icon>
+                                </ha-icon-button>
                               `
                             )}
                             ${supportsFeature(stateObj, SUPPORT_BROWSE_MEDIA)
                               ? html`
-                                  <mwc-icon-button
+                                  <ha-icon-button
                                     class="browse-media"
-                                    .title=${this.hass.localize(
+                                    .label=${this.hass.localize(
                                       "ui.card.media_player.browse_media"
                                     )}
+                                    .path=${mdiPlayBoxMultiple}
                                     @click=${this._handleBrowseMedia}
-                                    ><ha-svg-icon
-                                      .path=${mdiPlayBoxMultiple}
-                                    ></ha-svg-icon
-                                  ></mwc-icon-button>
+                                  ></ha-icon-button>
                                 `
                               : ""}
                           </div>
@@ -550,7 +547,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       const { foreground, background } = await extractColors(this._image);
       this._backgroundColor = background.hex;
       this._foregroundColor = foreground.hex;
-    } catch (err) {
+    } catch (err: any) {
       // eslint-disable-next-line no-console
       console.error("Error getting Image Colors", err);
       this._foregroundColor = undefined;
@@ -692,7 +689,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         --mdc-icon-size: 40px;
       }
 
-      mwc-icon-button.browse-media {
+      ha-icon-button.browse-media {
         position: absolute;
         right: 4px;
         --mdc-icon-size: 24px;

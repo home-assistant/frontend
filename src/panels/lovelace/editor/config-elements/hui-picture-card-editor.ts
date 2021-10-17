@@ -69,15 +69,15 @@ export class HuiPictureCardEditor
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .value="${this._image}"
-          .configValue="${"image"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._image}
+          .configValue=${"image"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <hui-theme-select-editor
           .hass=${this.hass}
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @value-changed=${this._valueChanged}
         ></hui-theme-select-editor>
         <div class="side-by-side">
           <hui-action-editor
@@ -87,10 +87,10 @@ export class HuiPictureCardEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .hass=${this.hass}
-            .config="${this._tap_action}"
-            .actions="${actions}"
-            .configValue="${"tap_action"}"
-            @value-changed="${this._valueChanged}"
+            .config=${this._tap_action}
+            .actions=${actions}
+            .configValue=${"tap_action"}
+            @value-changed=${this._valueChanged}
           ></hui-action-editor>
           <hui-action-editor
             .label="${this.hass.localize(
@@ -99,10 +99,10 @@ export class HuiPictureCardEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .hass=${this.hass}
-            .config="${this._hold_action}"
-            .actions="${actions}"
-            .configValue="${"hold_action"}"
-            @value-changed="${this._valueChanged}"
+            .config=${this._hold_action}
+            .actions=${actions}
+            .configValue=${"hold_action"}
+            @value-changed=${this._valueChanged}
           ></hui-action-editor>
         </div>
       </div>

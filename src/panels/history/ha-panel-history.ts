@@ -18,6 +18,7 @@ import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import { computeHistory, fetchDate } from "../../data/history";
 import "../../layouts/ha-app-layout";
@@ -65,12 +66,12 @@ class HaPanelHistory extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.history")}</div>
-            <mwc-icon-button
+            <ha-icon-button
               @click=${this._refreshHistory}
               .disabled=${this._isLoading}
-            >
-              <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-            </mwc-icon-button>
+              .path=${mdiRefresh}
+              .label=${this.hass.localize("ui.common.refresh")}
+            ></ha-icon-button>
           </app-toolbar>
         </app-header>
 

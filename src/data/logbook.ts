@@ -103,7 +103,7 @@ export const getLogbookDataCache = async (
     DATA_CACHE[cacheKey] = {};
   }
 
-  if (DATA_CACHE[cacheKey][entityId]) {
+  if (entityId in DATA_CACHE[cacheKey]) {
     return DATA_CACHE[cacheKey][entityId];
   }
 
@@ -277,6 +277,15 @@ export const getLogbookMessage = (
               "device_class",
               device_class
             );
+          }
+          break;
+
+        case "tamper":
+          if (isOn) {
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.detected_tampering`);
+          }
+          if (isOff) {
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.cleared_tampering`);
           }
           break;
       }

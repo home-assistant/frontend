@@ -116,6 +116,14 @@ export class HaDeviceInfoZWaveJS extends LitElement {
           ? this.hass.localize("ui.common.yes")
           : this.hass.localize("ui.common.no")}
       </div>
+      <div>
+        ${this.hass.localize("ui.panel.config.zwave_js.device_info.is_secure")}:
+        ${this._node.is_secure === true
+          ? this.hass.localize("ui.common.yes")
+          : this._node.is_secure === false
+          ? this.hass.localize("ui.common.no")
+          : this.hass.localize("ui.panel.config.zwave_js.device_info.unknown")}
+      </div>
     `;
   }
 

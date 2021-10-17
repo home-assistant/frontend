@@ -1,9 +1,6 @@
 const gulp = require("gulp");
-const fs = require("fs");
-const path = require("path");
 
 const env = require("../env");
-const paths = require("../paths");
 
 require("./clean.js");
 require("./gen-icons-json.js");
@@ -20,10 +17,11 @@ gulp.task(
       process.env.NODE_ENV = "development";
     },
     "clean-hassio",
-    "gen-icons-json",
     "gen-index-hassio-dev",
     "build-supervisor-translations",
     "copy-translations-supervisor",
+    "build-locale-data",
+    "copy-locale-data-supervisor",
     env.useRollup() ? "rollup-watch-hassio" : "webpack-watch-hassio"
   )
 );
@@ -35,9 +33,10 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean-hassio",
-    "gen-icons-json",
     "build-supervisor-translations",
     "copy-translations-supervisor",
+    "build-locale-data",
+    "copy-locale-data-supervisor",
     env.useRollup() ? "rollup-prod-hassio" : "webpack-prod-hassio",
     "gen-index-hassio-prod",
     ...// Don't compress running tests

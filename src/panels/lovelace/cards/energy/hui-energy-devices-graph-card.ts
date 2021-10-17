@@ -3,6 +3,7 @@ import {
   ChartDataset,
   ChartOptions,
   ParsedDataType,
+  ScatterDataPoint,
 } from "chart.js";
 import { getRelativePosition } from "chart.js/helpers";
 import { addHours } from "date-fns";
@@ -17,7 +18,7 @@ import { computeStateName } from "../../../../common/entity/compute_state_name";
 import {
   formatNumber,
   numberFormatToLocale,
-} from "../../../../common/string/format_number";
+} from "../../../../common/number/format_number";
 import "../../../../components/chart/ha-chart-base";
 import type HaChartBase from "../../../../components/chart/ha-chart-base";
 import "../../../../components/ha-card";
@@ -101,7 +102,16 @@ export class HuiEnergyDevicesGraphCard
       scales: {
         y: {
           type: "category",
-          ticks: { autoSkip: false },
+          ticks: {
+            autoSkip: false,
+            callback: (index) => {
+              const entityId = (
+                this._chartData.datasets[0].data[index] as ScatterDataPoint
+              ).y;
+              const entity = this.hass.states[entityId];
+              return entity ? computeStateName(entity) : entityId;
+            },
+          },
         },
         x: {
           title: {
@@ -115,6 +125,10 @@ export class HuiEnergyDevicesGraphCard
         tooltip: {
           mode: "nearest",
           callbacks: {
+            title: (item) => {
+              const entity = this.hass.states[item[0].label];
+              return entity ? computeStateName(entity) : item[0].label;
+            },
             label: (context) =>
               `${context.dataset.label}: ${formatNumber(
                 context.parsed.x,
@@ -134,7 +148,7 @@ export class HuiEnergyDevicesGraphCard
         );
         fireEvent(this, "hass-more-info", {
           // @ts-ignore
-          entityId: this._chartData?.datasets[0]?.data[index]?.entity_id,
+          entityId: this._chartData?.datasets[0]?.data[index]?.y,
         });
       },
     })
@@ -150,28 +164,15 @@ export class HuiEnergyDevicesGraphCard
       )
     );
 
-    const statisticsData = Object.values(this._data!);
-    let endTime: Date;
-
-    endTime = new Date(
-      Math.max(
-        ...statisticsData.map((stats) =>
-          stats.length ? new Date(stats[stats.length - 1].start).getTime() : 0
-        )
-      )
-    );
-
-    if (!endTime || endTime > new Date()) {
-      endTime = new Date();
-    }
-
     const data: Array<ChartDataset<"bar", ParsedDataType<"bar">>["data"]> = [];
     const borderColor: string[] = [];
     const backgroundColor: string[] = [];
 
     const datasets: ChartDataset<"bar", ParsedDataType<"bar">[]>[] = [
       {
-        label: "Energy usage",
+        label: this.hass.localize(
+          "ui.panel.lovelace.cards.energy.energy_devices_graph.energy_usage"
+        ),
         borderColor,
         backgroundColor,
         data,
@@ -180,9 +181,6 @@ export class HuiEnergyDevicesGraphCard
     ];
 
     energyData.prefs.device_consumption.forEach((device, idx) => {
-      const entity = this.hass.states[device.stat_consumption];
-      const label = entity ? computeStateName(entity) : device.stat_consumption;
-
       const value =
         device.stat_consumption in this._data!
           ? calculateStatisticSumGrowth(this._data![device.stat_consumption]) ||
@@ -191,9 +189,8 @@ export class HuiEnergyDevicesGraphCard
 
       data.push({
         // @ts-expect-error
-        y: label,
+        y: device.stat_consumption,
         x: value,
-        entity_id: device.stat_consumption,
         idx,
       });
     });

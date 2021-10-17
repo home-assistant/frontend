@@ -19,13 +19,14 @@ import {
 } from "../../../../common/color/convert-color";
 import { labDarken } from "../../../../common/color/lab";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { formatNumber } from "../../../../common/string/format_number";
+import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/chart/statistics-chart";
 import "../../../../components/ha-card";
 import {
   EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
+  getEnergyGasUnit,
 } from "../../../../data/energy";
 import { calculateStatisticSumGrowth } from "../../../../data/history";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
@@ -68,7 +69,9 @@ export class HuiEnergySourcesTableCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     let totalGrid = 0;
@@ -116,6 +119,8 @@ export class HuiEnergySourcesTableCard
           flow.stat_cost || flow.entity_energy_price || flow.number_energy_price
       );
 
+    const gasUnit = getEnergyGasUnit(this.hass, this._data.prefs) || "";
+
     return html` <ha-card>
       ${this._config.title
         ? html`<h1 class="card-header">${this._config.title}</h1>`
@@ -131,14 +136,18 @@ export class HuiEnergySourcesTableCard
                   role="columnheader"
                   scope="col"
                 >
-                  Source
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_sources_table.source"
+                  )}
                 </th>
                 <th
                   class="mdc-data-table__header-cell mdc-data-table__header-cell--numeric"
                   role="columnheader"
                   scope="col"
                 >
-                  Energy
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.energy_sources_table.energy"
+                  )}
                 </th>
                 ${showCosts
                   ? html` <th
@@ -146,7 +155,9 @@ export class HuiEnergySourcesTableCard
                       role="columnheader"
                       scope="col"
                     >
-                      Cost
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.cost"
+                      )}
                     </th>`
                   : ""}
               </tr>
@@ -287,7 +298,9 @@ export class HuiEnergySourcesTableCard
                 ? html`<tr class="mdc-data-table__row total">
                     <td class="mdc-data-table__cell"></td>
                     <th class="mdc-data-table__cell" scope="row">
-                      Battery total
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.battery_total"
+                      )}
                     </th>
                     <td
                       class="mdc-data-table__cell mdc-data-table__cell--numeric"
@@ -420,7 +433,11 @@ export class HuiEnergySourcesTableCard
               ${types.grid
                 ? html` <tr class="mdc-data-table__row total">
                     <td class="mdc-data-table__cell"></td>
-                    <th class="mdc-data-table__cell" scope="row">Grid total</th>
+                    <th class="mdc-data-table__cell" scope="row">
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.grid_total"
+                      )}
+                    </th>
                     <td
                       class="mdc-data-table__cell mdc-data-table__cell--numeric"
                     >
@@ -445,6 +462,7 @@ export class HuiEnergySourcesTableCard
                     this._data!.stats[source.stat_energy_from]
                   ) || 0;
                 totalGas += energy;
+
                 const cost_stat =
                   source.stat_cost ||
                   this._data!.info.cost_sensors[source.stat_energy_from];
@@ -479,7 +497,7 @@ export class HuiEnergySourcesTableCard
                   <td
                     class="mdc-data-table__cell mdc-data-table__cell--numeric"
                   >
-                    ${formatNumber(energy, this.hass.locale)} m³
+                    ${formatNumber(energy, this.hass.locale)} ${gasUnit}
                   </td>
                   ${showCosts
                     ? html`<td
@@ -502,7 +520,7 @@ export class HuiEnergySourcesTableCard
                     <td
                       class="mdc-data-table__cell mdc-data-table__cell--numeric"
                     >
-                      ${formatNumber(totalGas, this.hass.locale)} m³
+                      ${formatNumber(totalGas, this.hass.locale)} ${gasUnit}
                     </td>
                     ${showCosts
                       ? html`<td
@@ -520,7 +538,9 @@ export class HuiEnergySourcesTableCard
                 ? html`<tr class="mdc-data-table__row total">
                     <td class="mdc-data-table__cell"></td>
                     <th class="mdc-data-table__cell" scope="row">
-                      Total costs
+                      ${this.hass.localize(
+                        "ui.panel.lovelace.cards.energy.energy_sources_table.total_costs"
+                      )}
                     </th>
                     <td class="mdc-data-table__cell"></td>
                     <td

@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { mdiRefresh } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import "../../../components/ha-icon-button";
@@ -17,8 +18,9 @@ class ErrorLogCard extends LitElement {
           ? html`
               <ha-card>
                 <ha-icon-button
-                  icon="hass:refresh"
+                  .path=${mdiRefresh}
                   @click=${this._refreshErrorLog}
+                  .label=${this.hass!.localize("ui.common.refresh")}
                 ></ha-icon-button>
                 <div class="card-content error-log">${this._errorHTML}</div>
               </ha-card>

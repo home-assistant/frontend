@@ -143,16 +143,20 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const name = this._config.show_name
+      ? this._config.name || (stateObj ? computeStateName(stateObj) : "")
+      : "";
+
     return html`
       <ha-card
         @action=${this._handleAction}
-        @focus="${this.handleRippleFocus}"
-        @blur="${this.handleRippleBlur}"
-        @mousedown="${this.handleRippleActivate}"
-        @mouseup="${this.handleRippleDeactivate}"
-        @touchstart="${this.handleRippleActivate}"
-        @touchend="${this.handleRippleDeactivate}"
-        @touchcancel="${this.handleRippleDeactivate}"
+        @focus=${this.handleRippleFocus}
+        @blur=${this.handleRippleBlur}
+        @mousedown=${this.handleRippleActivate}
+        @mouseup=${this.handleRippleDeactivate}
+        @touchstart=${this.handleRippleActivate}
+        @touchend=${this.handleRippleDeactivate}
+        @touchcancel=${this.handleRippleDeactivate}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
@@ -186,12 +190,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
             `
           : ""}
         ${this._config.show_name
-          ? html`
-              <span tabindex="-1">
-                ${this._config.name ||
-                (stateObj ? computeStateName(stateObj) : "")}
-              </span>
-            `
+          ? html`<span tabindex="-1" .title=${name}>${name}</span>`
           : ""}
         ${this._config.show_state && stateObj
           ? html`<span class="state">

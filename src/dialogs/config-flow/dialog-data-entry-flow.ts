@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { mdiClose } from "@mdi/js";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import type { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
@@ -115,7 +116,7 @@ class DataEntryFlowDialog extends LitElement {
           this.hass,
           params.continueFlowId
         );
-      } catch (err) {
+      } catch (err: any) {
         this._step = undefined;
         this._params = undefined;
         showAlertDialog(this, {
@@ -232,10 +233,10 @@ class DataEntryFlowDialog extends LitElement {
               ""
             : html`
                 <ha-icon-button
-                  aria-label=${this.hass.localize(
+                  .label=${this.hass.localize(
                     "ui.panel.config.integrations.config_flow.dismiss"
                   )}
-                  icon="hass:close"
+                  .path=${mdiClose}
                   dialogAction="close"
                   ?rtl=${computeRTL(this.hass)}
                 ></ha-icon-button>
@@ -370,7 +371,7 @@ class DataEntryFlowDialog extends LitElement {
       let step: DataEntryFlowStep;
       try {
         step = await this._params!.flowConfig.createFlow(this.hass, handler);
-      } catch (err) {
+      } catch (err: any) {
         this._step = undefined;
         this._params = undefined;
         showAlertDialog(this, {
