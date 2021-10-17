@@ -17,7 +17,6 @@ import {
   rgb2hex,
   rgb2lab,
 } from "../../../../common/color/convert-color";
-import { hexBlend } from "../../../../common/color/hex";
 import { labDarken } from "../../../../common/color/lab";
 import { formatTime } from "../../../../common/datetime/format_time";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
@@ -39,10 +38,8 @@ import { LovelaceCard } from "../../types";
 import { EnergyUsageGraphCardConfig } from "../types";
 
 @customElement("hui-energy-usage-graph-card")
-export class HuiEnergyUsageGraphCard
-  extends SubscribeMixin(LitElement)
-  implements LovelaceCard
-{
+export class HuiEnergyUsageGraphCard extends SubscribeMixin(LitElement)
+  implements LovelaceCard {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyUsageGraphCardConfig;
@@ -356,10 +353,6 @@ export class HuiEnergyUsageGraphCard
         "ui.panel.lovelace.cards.energy.energy_usage_graph.consumed_battery"
       ),
     };
-
-    const backgroundColor = computedStyles
-      .getPropertyValue("--card-background-color")
-      .trim();
 
     Object.entries(statistics).forEach(([key, statIds]) => {
       const sum = [
