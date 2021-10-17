@@ -70,12 +70,16 @@ export class HaStateLabelBadge extends LitElement {
     }
 
     // Rendering priority inside badge:
-    // 1. Image (either directly from badge config or otherwise entity)
-    // 2. Icon (either directly from badge config or determined from entity state)
-    // 3. Value string as fallback
+    // 1. Icon directly defined in badge config
+    // 2. Image directly defined in badge config
+    // 3. Image taken from entity picture
+    // 4. Icon determined via entity state
+    // 5. Value string as fallback
     const domain = computeStateDomain(entityState);
     const icon = this.icon ? this.icon : this._computeIcon(domain, entityState);
-    const image = this.image
+    const image = this.icon
+      ? ""
+      : this.image
       ? this.image
       : entityState.attributes.entity_picture_local ||
         entityState.attributes.entity_picture;
