@@ -74,7 +74,7 @@ export class HuiDialogEditCard
 
   @state() private _dirty = false;
 
-  @state() private isEscapeEnabled = true;
+  @state() private _isEscapeEnabled = true;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
@@ -94,8 +94,9 @@ export class HuiDialogEditCard
   }
 
   public closeDialog(): boolean {
-    this.isEscapeEnabled = true;
+    this._isEscapeEnabled = true;
     window.removeEventListener("dialog-closed", this._disableEscapeKeyClose);
+    window.removeEventListener("hass-more-info", this._disableEscapeKeyClose);
     if (this._dirty) {
       this._confirmCancel();
       return false;
@@ -130,12 +131,12 @@ export class HuiDialogEditCard
 
   private _enableEscapeKeyClose(ev: any) {
     if (ev.detail.dialog === "ha-more-info-dialog") {
-      this.isEscapeEnabled = true;
+      this._isEscapeEnabled = true;
     }
   }
 
   private _disableEscapeKeyClose() {
-    this.isEscapeEnabled = false;
+    this._isEscapeEnabled = false;
   }
 
   protected render(): TemplateResult {
@@ -170,7 +171,7 @@ export class HuiDialogEditCard
       <ha-dialog
         open
         scrimClickAction
-        .escapeKeyAction=${this.isEscapeEnabled ? undefined : ""}
+        .escapeKeyAction=${this._isEscapeEnabled ? undefined : ""}
         @keydown=${this._ignoreKeydown}
         @closed=${this._cancel}
         @opened=${this._opened}
@@ -214,7 +215,6 @@ export class HuiDialogEditCard
               .hass=${this.hass}
               .config=${this._cardConfig}
               class=${this._error ? "blur" : ""}
-              @click=${this._disableEscapeKeyClose}
             ></hui-card-preview>
             ${this._error
               ? html`
@@ -297,7 +297,12 @@ export class HuiDialogEditCard
   }
 
   private _opened() {
-    window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.addEventListener("dialog-closed", (ev: any) =>
+      this._enableEscapeKeyClose(ev)
+    );
+    window.addEventListener("hass-more-info", () =>
+      this._disableEscapeKeyClose()
+    );
     this._cardEditorEl?.focusYamlEditor();
   }
 
