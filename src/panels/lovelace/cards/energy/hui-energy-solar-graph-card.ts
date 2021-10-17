@@ -307,7 +307,7 @@ export class HuiEnergySolarGraphCard
             entity ? computeStateName(entity) : source.stat_energy_from
           }`,
           borderColor,
-          backgroundColor: borderColor + "7F",
+          backgroundColor: borderColor + "BF",
           data: solarProductionData,
         });
       }
