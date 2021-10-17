@@ -69,21 +69,19 @@ export class HaStateLabelBadge extends LitElement {
       `;
     }
 
+    // Rendering priority inside badge:
+    // 1. Image (either directly from badge config or otherwise entity)
+    // 2. Icon (either directly from badge config or determined from entity state)
+    // 3. Value string as fallback
     const domain = computeStateDomain(entityState);
-
-    const value = this._computeValue(domain, entityState);
     const icon = this.icon ? this.icon : this._computeIcon(domain, entityState);
-    const image = icon
-      ? ""
-      : this.image
+    const image = this.image
       ? this.image
       : entityState.attributes.entity_picture_local ||
         entityState.attributes.entity_picture;
+    const value =
+      !image && !icon ? this._computeValue(domain, entityState) : undefined;
 
-    // Rendering priority inside badge:
-    // 1. Icon
-    // 2. Image
-    // 3. Value string as fallback
     return html`
       <ha-label-badge
         class=${classMap({
