@@ -36,10 +36,8 @@ export const applyThemesOnElement = (
   let cacheKey = selectedTheme;
   let themeRules: Partial<ThemeVars> = {};
 
-  // The "dark" flag in hass.selectedTheme only carries the radio box selection of the theme picker,
-  // but not the actually active dark mode (that e.g. could be determined on the fly if set to "auto").
-  // We therefore locally overwrite the flag from hass.selectedTheme with the one from
-  // hass.themes so that the correct theme mode gets applied.
+  // If there is no explicitly desired dark mode provided, we automatically
+  // use the active one from hass.themes.
   if (!themeSettings || themeSettings?.dark === undefined) {
     themeSettings = {
       ...themeSettings,
