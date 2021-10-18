@@ -86,7 +86,7 @@ class MoreInfoCamera extends LitElement {
       supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM) &&
       // The stream component for HLS streams supports a server-side pre-load
       // option that client initiated WebRTC streams do not
-      this.stateObj!.attributes.stream_type === STREAM_TYPE_HLS
+      this.stateObj!.attributes.frontend_stream_type === STREAM_TYPE_HLS
     ) {
       // Fetch in background while we set up the video.
       this._fetchCameraPrefs();
