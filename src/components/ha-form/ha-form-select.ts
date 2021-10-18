@@ -56,7 +56,6 @@ export class HaFormSelect extends LitElement implements HaFormElement {
         .value=${this.data}
         .disabled=${this.disabled}
         @closed=${stopPropagation}
-        @keydown=${stopPropagation}
         @selected=${this._valueChanged}
       >
         ${this.schema.optional
