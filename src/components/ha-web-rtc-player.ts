@@ -39,6 +39,10 @@ class HaWebRtcPlayer extends LitElement {
   // don't cache this, as we remove it on disconnects
   @query("#remote-stream") private _videoEl!: HTMLVideoElement;
 
+  private _peerConnection?: RTCPeerConnection;
+
+  private _remoteStream?: MediaStream;
+
   protected render(): TemplateResult {
     if (this._error) {
       return html`<ha-alert alert-type="error">${this._error}</ha-alert>`;
@@ -71,6 +75,7 @@ class HaWebRtcPlayer extends LitElement {
 
   private async _startWebRtc(): Promise<void> {
     this._error = undefined;
+
     const peerConnection = new RTCPeerConnection();
     // Some cameras (such as nest) require a data channel to establish a stream
     // however, not used by any integrations.
@@ -93,6 +98,7 @@ class HaWebRtcPlayer extends LitElement {
       );
     } catch (err: any) {
       this._error = "Failed to start WebRTC stream: " + err.message;
+      peerConnection.close();
       return;
     }
 
@@ -102,20 +108,38 @@ class HaWebRtcPlayer extends LitElement {
       remoteStream.addTrack(event.track);
       this._videoEl.srcObject = remoteStream;
     });
+    this._remoteStream = remoteStream;
 
     // Initiate the stream with the remote device
     const remoteDesc = new RTCSessionDescription({
       type: "answer",
       sdp: webRtcAnswer.answer,
     });
-    await peerConnection.setRemoteDescription(remoteDesc);
+    try {
+      await peerConnection.setRemoteDescription(remoteDesc);
+    } catch (err: any) {
+      this._error = "Failed to connect WebRTC stream: " + err.message;
+      peerConnection.close();
+      return;
+    }
+    this._peerConnection = peerConnection;
   }
 
   private _cleanUp() {
+    if (this._remoteStream) {
+      this._remoteStream.getTracks().forEach((track) => {
+        track.stop();
+      });
+      this._remoteStream = undefined;
+    }
     if (this._videoEl) {
       const videoEl = this._videoEl;
       videoEl.removeAttribute("src");
       videoEl.load();
+    }
+    if (this._peerConnection) {
+      this._peerConnection.close();
+      this._peerConnection = undefined;
     }
   }
 
