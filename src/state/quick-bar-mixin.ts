@@ -54,7 +54,11 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
     private _canOverrideAlphanumericInput(e: KeyboardEvent) {
       const el = e.composedPath()[0] as any;
 
-      if (["MWC-LIST-ITEM", "TEXTAREA"].includes(el.tagName)) {
+      if (el.tagName === "TEXTAREA") {
+        return false;
+      }
+
+      if (el.parentElement?.tagName === "MWC-SELECT") {
         return false;
       }
 
