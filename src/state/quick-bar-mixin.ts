@@ -58,6 +58,10 @@ export default <T extends Constructor<HassElement>>(superClass: T) =>
         return false;
       }
 
+      if (el.parentElement.tagName === "MWC-SELECT") {
+        return false;
+      }
+
       if (el.tagName !== "INPUT") {
         return true;
       }
