@@ -121,7 +121,7 @@ class HaInputSelectForm extends LitElement {
                     <paper-item class="option">
                       ${this._reordering
                         ? html`
-                            <div id="sortable">
+                            <div class="reorderButtonWrapper">
                               <ha-svg-icon
                                 .title=${this.hass!.localize(
                                   "ui.panel.lovelace.cards.shopping-list.drag_and_drop"
@@ -133,7 +133,17 @@ class HaInputSelectForm extends LitElement {
                             </div>
                           `
                         : ""}
-                      <paper-item-body> ${option} </paper-item-body>
+                      <paper-input
+                        class="option_input"
+                        label=${index}
+                        autocapitalize="none"
+                        autocomplete="off"
+                        autocorrect="off"
+                        spellcheck="false"
+                        @value-changed=${this._inputValueChanged}
+                        .value=${option}
+                      >
+                      </paper-input>
                       <ha-icon-button
                         .index=${index}
                         .title=${this.hass.localize(
@@ -166,13 +176,6 @@ class HaInputSelectForm extends LitElement {
       </div>
     `;
   }
-
-  // Empty when there are no options.
-  //   <paper-item>
-  //   ${this.hass!.localize(
-  //     "ui.dialogs.helper_settings.input_select.no_options"
-  //   )}
-  // </paper-item>
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
@@ -220,7 +223,6 @@ class HaInputSelectForm extends LitElement {
 
     newOptions.splice(ev.newIndex!, 0, newOptions.splice(ev.oldIndex!, 1)[0]);
 
-    // fireEvent(this, "entities-changed", { options: newEntities });
     fireEvent(this, "value-changed", {
       value: { ...this._item, options: newOptions },
     });
@@ -271,6 +273,18 @@ class HaInputSelectForm extends LitElement {
     });
   }
 
+  private _inputValueChanged(ev: CustomEvent) {
+    const updatedValue = ev.detail.value;
+    const labelIndex = (ev.target as any).label;
+
+    const newValue = { ...this._item };
+    (newValue.options as string[])[labelIndex] = updatedValue;
+
+    fireEvent(this, "value-changed", {
+      value: newValue,
+    });
+  }
+
   private _valueChanged(ev: CustomEvent) {
     if (!this.new && !this._item) {
       return;
@@ -299,7 +313,11 @@ class HaInputSelectForm extends LitElement {
         .form {
           color: var(--primary-text-color);
         }
+        paper-input.option_input {
+          width: 100%;
+        }
         .option {
+          padding: 0;
           border: 1px solid var(--divider-color);
           border-radius: 4px;
           margin-top: 4px;
@@ -307,7 +325,12 @@ class HaInputSelectForm extends LitElement {
         mwc-button {
           margin-left: 8px;
         }
-        .options ha-svg-icon {
+        .reorderButtonWrapper {
+          width: 48px;
+          height: 48px;
+        }
+        .reorderButton {
+          display: inline;
           padding-right: 8px;
           cursor: move;
         }
