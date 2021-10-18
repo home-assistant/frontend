@@ -126,7 +126,7 @@ export class HuiDialogSelectView extends LitElement {
                   )}
                 </mwc-list>
               `
-            : ``
+            : ""
           : html`<div>No config found.</div>`}
         <mwc-button slot="secondaryAction" @click=${this.closeDialog}>
           ${this.hass!.localize("ui.common.cancel")}
