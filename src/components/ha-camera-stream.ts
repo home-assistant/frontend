@@ -97,7 +97,7 @@ class HaCameraStream extends LitElement {
           ></ha-hls-player>`
         : html``;
     }
-    if (this.stateObj.attributes.stream_type === STREAM_TYPE_WEB_RTC) {
+    if (this.stateObj.attributes.frontend_stream_type === STREAM_TYPE_WEB_RTC) {
       return html` <ha-web-rtc-player
         autoplay
         playsinline
