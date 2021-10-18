@@ -1,9 +1,8 @@
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiArrowLeft, mdiArrowRight } from "@mdi/js";
 import { html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { HomeAssistant } from "../types";
-import "./ha-svg-icon";
+import "./ha-icon-button";
 
 @customElement("ha-icon-button-arrow-next")
 export class HaIconButtonArrowNext extends LitElement {
@@ -28,12 +27,13 @@ export class HaIconButtonArrowNext extends LitElement {
   }
 
   protected render(): TemplateResult {
-    return html`<mwc-icon-button
-      .disabled=${this.disabled}
-      .label=${this.label || this.hass?.localize("ui.common.next") || "Next"}
-    >
-      <ha-svg-icon .path=${this._icon}></ha-svg-icon>
-    </mwc-icon-button> `;
+    return html`
+      <ha-icon-button
+        .disabled=${this.disabled}
+        .label=${this.label || this.hass?.localize("ui.common.next") || "Next"}
+        .path=${this._icon}
+      ></ha-icon-button>
+    `;
   }
 }
 

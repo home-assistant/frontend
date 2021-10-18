@@ -1,5 +1,6 @@
 import { undoDepth } from "@codemirror/history";
 import "@material/mwc-button";
+import { mdiClose } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { dump, load } from "js-yaml";
@@ -55,8 +56,9 @@ class LovelaceFullConfigEditor extends LitElement {
         <app-header slot="header">
           <app-toolbar>
             <ha-icon-button
-              icon="hass:close"
+              .path=${mdiClose}
               @click=${this._closeEditor}
+              .label=${this.hass!.localize("ui.common.close")}
             ></ha-icon-button>
             <div main-title>
               ${this.hass!.localize(

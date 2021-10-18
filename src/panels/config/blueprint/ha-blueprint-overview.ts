@@ -1,4 +1,3 @@
-import "@material/mwc-icon-button";
 import {
   mdiDelete,
   mdiDownload,
@@ -22,6 +21,7 @@ import { extractSearchParam } from "../../../common/url/search-params";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-fab";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-svg-icon";
 import { showAutomationEditor } from "../../../data/automation";
 import {
@@ -119,18 +119,14 @@ class HaBlueprintOverview extends LitElement {
           blueprint.error
             ? ""
             : narrow
-            ? html`<mwc-icon-button
+            ? html` <ha-icon-button
                 .blueprint=${blueprint}
                 .label=${this.hass.localize(
                   "ui.panel.config.blueprint.overview.use_blueprint"
                 )}
-                title=${this.hass.localize(
-                  "ui.panel.config.blueprint.overview.use_blueprint"
-                )}
+                .path=${mdiRobot}
                 @click=${this._createNew}
-              >
-                <ha-svg-icon .path=${mdiRobot}></ha-svg-icon>
-              </mwc-icon-button>`
+              ></ha-icon-button>`
             : html`<mwc-button
                 .blueprint=${blueprint}
                 @click=${this._createNew}
@@ -146,7 +142,7 @@ class HaBlueprintOverview extends LitElement {
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
-            : html`<mwc-icon-button
+            : html`<ha-icon-button
                 .blueprint=${blueprint}
                 .disabled=${!blueprint.source_url}
                 .label=${this.hass.localize(
@@ -154,9 +150,9 @@ class HaBlueprintOverview extends LitElement {
                     ? "ui.panel.config.blueprint.overview.share_blueprint"
                     : "ui.panel.config.blueprint.overview.share_blueprint_no_url"
                 )}
+                .path=${mdiShareVariant}
                 @click=${this._share}
-                ><ha-svg-icon .path=${mdiShareVariant}></ha-svg-icon
-              ></mwc-icon-button>`,
+              ></ha-icon-button>`,
       },
       delete: {
         title: "",
@@ -164,14 +160,14 @@ class HaBlueprintOverview extends LitElement {
         template: (_, blueprint: any) =>
           blueprint.error
             ? ""
-            : html` <mwc-icon-button
+            : html` <ha-icon-button
                 .blueprint=${blueprint}
                 .label=${this.hass.localize(
                   "ui.panel.config.blueprint.overview.delete_blueprint"
                 )}
+                .path=${mdiDelete}
                 @click=${this._delete}
-                ><ha-svg-icon .path=${mdiDelete}></ha-svg-icon
-              ></mwc-icon-button>`,
+              ></ha-icon-button>`,
       },
     })
   );
@@ -220,9 +216,12 @@ class HaBlueprintOverview extends LitElement {
           </a>
         </div>`}
       >
-        <mwc-icon-button slot="toolbar-icon" @click=${this._showHelp}>
-          <ha-svg-icon .path=${mdiHelpCircle}></ha-svg-icon>
-        </mwc-icon-button>
+        <ha-icon-button
+          slot="toolbar-icon"
+          .label=${this.hass.localize("ui.common.help")}
+          .path=${mdiHelpCircle}
+          @click=${this._showHelp}
+        ></ha-icon-button>
         <ha-fab
           slot="fab"
           .label=${this.hass.localize(

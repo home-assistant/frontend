@@ -69,10 +69,22 @@ export class HaStateLabelBadge extends LitElement {
       `;
     }
 
+    // Rendering priority inside badge:
+    // 1. Icon directly defined in badge config
+    // 2. Image directly defined in badge config
+    // 3. Image taken from entity picture
+    // 4. Icon determined via entity state
+    // 5. Value string as fallback
     const domain = computeStateDomain(entityState);
-
-    const value = this._computeValue(domain, entityState);
     const icon = this.icon ? this.icon : this._computeIcon(domain, entityState);
+    const image = this.icon
+      ? ""
+      : this.image
+      ? this.image
+      : entityState.attributes.entity_picture_local ||
+        entityState.attributes.entity_picture;
+    const value =
+      !image && !icon ? this._computeValue(domain, entityState) : undefined;
 
     return html`
       <ha-label-badge
@@ -81,12 +93,7 @@ export class HaStateLabelBadge extends LitElement {
           "has-unit_of_measurement":
             "unit_of_measurement" in entityState.attributes,
         })}
-        .image=${this.icon
-          ? ""
-          : this.image
-          ? this.image
-          : entityState.attributes.entity_picture_local ||
-            entityState.attributes.entity_picture}
+        .image=${image}
         .label=${this._computeLabel(
           domain,
           entityState,
@@ -94,8 +101,8 @@ export class HaStateLabelBadge extends LitElement {
         )}
         .description=${this.name ?? computeStateName(entityState)}
       >
-        ${icon ? html`<ha-icon .icon=${icon}></ha-icon>` : ""}
-        ${value && (this.icon || !this.image)
+        ${!image && icon ? html`<ha-icon .icon=${icon}></ha-icon>` : ""}
+        ${value && !icon && !image
           ? html`<span class=${value && value.length > 4 ? "big" : ""}
               >${value}</span
             >`

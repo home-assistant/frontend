@@ -73,11 +73,12 @@ export class HuiAlarmPanelCardEditor
     return html`
       <div class="card-config">
         <ha-entity-picker
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.entity"
-          )} (${this.hass.localize(
+          )}
+          (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
-          )})"
+          )})
           .hass=${this.hass}
           .value=${this._entity}
           .configValue=${"entity"}
@@ -86,11 +87,12 @@ export class HuiAlarmPanelCardEditor
           allow-custom-entity
         ></ha-entity-picker>
         <paper-input
-          .label="${this.hass.localize(
+          .label=${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.name"
-          )} (${this.hass.localize(
+          )}
+          (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
-          )})"
+          )})
           .value=${this._name}
           .configValue=${"name"}
           @value-changed=${this._valueChanged}

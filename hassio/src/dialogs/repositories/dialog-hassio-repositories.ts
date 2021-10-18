@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -13,7 +12,7 @@ import { caseInsensitiveStringCompare } from "../../../../src/common/string/comp
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-icon-button";
 import {
   fetchHassioAddonsInfo,
   HassioAddonRepository,
@@ -90,15 +89,14 @@ class HassioRepositoriesDialog extends LitElement {
                       <div secondary>${repo.maintainer}</div>
                       <div secondary>${repo.url}</div>
                     </paper-item-body>
-                    <mwc-icon-button
+                    <ha-icon-button
                       .slug=${repo.slug}
-                      .title=${this._dialogParams!.supervisor.localize(
+                      .label=${this._dialogParams!.supervisor.localize(
                         "dialog.repositories.remove"
                       )}
+                      .path=${mdiDelete}
                       @click=${this._removeRepository}
-                    >
-                      <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                    </mwc-icon-button>
+                    ></ha-icon-button>
                   </paper-item>
                 `
               )

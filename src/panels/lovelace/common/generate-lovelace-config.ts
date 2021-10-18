@@ -189,6 +189,7 @@ const adjustName = (name: string): string =>
   hasUpperCase(name.substr(0, name.indexOf(" ")))
     ? name
     : name[0].toUpperCase() + name.slice(1);
+
 const computeDefaultViewStates = (
   entities: HassEntities,
   entityEntries: EntityRegistryEntry[]
@@ -196,7 +197,9 @@ const computeDefaultViewStates = (
   const states = {};
   const hiddenEntities = new Set(
     entityEntries
-      .filter((entry) => HIDE_PLATFORM.has(entry.platform))
+      .filter(
+        (entry) => entry.entity_category || HIDE_PLATFORM.has(entry.platform)
+      )
       .map((entry) => entry.entity_id)
   );
 

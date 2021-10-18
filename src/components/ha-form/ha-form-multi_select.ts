@@ -12,7 +12,7 @@ import {
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-button-menu";
-import "../ha-icon";
+import "../ha-svg-icon";
 import {
   HaFormElement,
   HaFormMultiSelectData,
@@ -39,6 +39,8 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
   @property() public label!: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @state() private _opened = false;
 
   @query("paper-menu-button", true) private _input?: HTMLElement;
@@ -60,6 +62,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
           <ha-checkbox
             .checked=${data.includes(value)}
             .value=${value}
+            .disabled=${this.disabled}
             @change=${this._valueChanged}
           ></ha-checkbox>
         </mwc-formfield>
@@ -73,6 +76,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
 
     return html`
       <ha-button-menu
+        .disabled=${this.disabled}
         fixed
         corner="BOTTOM_START"
         @opened=${this._handleOpen}
@@ -84,6 +88,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
           .value=${data
             .map((value) => this.schema.options![value] || value)
             .join(", ")}
+          .disabled=${this.disabled}
           tabindex="-1"
         ></mwc-textfield>
         <ha-svg-icon
@@ -101,8 +106,6 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         this.shadowRoot?.querySelector("mwc-textfield") || ({} as any);
       if (formElement) {
         formElement.style.textOverflow = "ellipsis";
-        formElement.style.cursor = "pointer";
-        formElement.setAttribute("readonly", "");
       }
       if (mdcRoot) {
         mdcRoot.style.cursor = "pointer";
@@ -162,10 +165,17 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       :host([own-margin]) {
         margin-bottom: 5px;
       }
-      ha-button-menu,
-      mwc-textfield,
+      ha-button-menu {
+        display: block;
+        cursor: pointer;
+      }
       mwc-formfield {
         display: block;
+        padding-right: 16px;
+      }
+      mwc-textfield {
+        display: block;
+        pointer-events: none;
       }
       ha-svg-icon {
         color: var(--input-dropdown-icon-color);

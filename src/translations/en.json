@@ -282,6 +282,7 @@
       "enable": "Enable",
       "disable": "Disable",
       "close": "Close",
+      "clear": "Clear",
       "leave": "Leave",
       "stay": "Stay",
       "next": "Next",
@@ -294,7 +295,7 @@
       "not_now": "Not now",
       "skip": "Skip",
       "menu": "Menu",
-      "overflow_menu": "Overflow menu",
+      "help": "Help",
       "successfully_saved": "Successfully saved",
       "successfully_deleted": "Successfully deleted",
       "error_required": "Required",
@@ -333,12 +334,15 @@
           "turned_off": "turned off",
           "turned_on": "turned on",
           "changed_to_state": "changed to {state}",
-          "became_unavailable": "became unavailable"
+          "became_unavailable": "became unavailable",
+          "detected_tampering": "detected tampering",
+          "cleared_tampering": "cleared tampering"
         }
       },
       "entity": {
         "entity-picker": {
           "entity": "Entity",
+          "edit": "Edit",
           "clear": "Clear",
           "no_match": "No matching entities found",
           "show_entities": "Show entities"
@@ -349,8 +353,10 @@
         }
       },
       "target-picker": {
+        "expand": "Expand",
         "expand_area_id": "Expand this area into the separate devices and entities that it contains. After expanding, it will not update the devices and entities when the area changes.",
         "expand_device_id": "Expand this device into the separate entities that it contains. After expanding, it will not update the entities when the device changes.",
+        "remove": "Remove",
         "remove_area_id": "Remove area",
         "remove_device_id": "Remove device",
         "remove_entity_id": "Remove entity",
@@ -893,7 +899,9 @@
     "sidebar": {
       "external_app_configuration": "App Configuration",
       "sidebar_toggle": "Sidebar Toggle",
-      "done": "Done"
+      "done": "Done",
+      "hide_panel": "Hide panel",
+      "show_panel": "Show panel"
     },
     "panel": {
       "my": {
@@ -920,6 +928,7 @@
         "areas": {
           "caption": "Areas",
           "description": "Group devices and entities into areas",
+          "edit_settings": "Area settings",
           "data_table": {
             "area": "Area",
             "devices": "Devices",
@@ -984,10 +993,19 @@
         "energy": {
           "caption": "Energy",
           "description": "Monitor your energy production and consumption",
+          "new_device_info": "After setting up a new device, it can take up to 2 hours for new data to arrive in your energy dashboard.",
+          "delete_source": "Are you sure you want to delete this source?",
+          "delete_integration": "Are you sure you want to delete this integration? It will remove the entities it provides",
           "grid": {
             "title": "Electricity grid",
             "sub": "Configure the amount of energy that you consume from the grid and, if you produce energy, give back to the grid. This allows Home Assistant to track your whole home energy usage.",
             "learn_more": "More information on how to get started.",
+            "grid_consumption": "Grid consumption",
+            "add_consumption": "Add consumption",
+            "return_to_grid": "Return to grid",
+            "add_return": "Add return",
+            "grid_carbon_footprint": "Grid carbon footprint",
+            "add_co2_signal": "Add CO2 signal integration",
             "flow_dialog": {
               "from": {
                 "header": "Configure grid consumption",
@@ -1023,19 +1041,39 @@
             "title": "Solar Panels",
             "sub": "Let Home Assistant monitor your solar panels and give you insight on their performance.",
             "learn_more": "More information on how to get started.",
+            "solar_production": "Solar production",
+            "add_solar_production": "Add solar production",
             "stat_production": "Your solar energy production",
             "stat_return_to_grid": "Solar energy returned to the grid",
-            "stat_predicted_production": "Prediction of your solar energy production"
+            "stat_predicted_production": "Prediction of your solar energy production",
+            "dialog": {
+              "header": "Configure solar panels",
+              "solar_production_energy": "Solar production energy (kWh)",
+              "solar_production_forecast": "Solar production forecast",
+              "solar_production_forecast_description": "Adding solar production forecast information will allow you to quickly see your expected production for today.",
+              "dont_forecast_production": "Don't forecast production",
+              "forecast_production": "Forecast Production",
+              "add_forecast": "Add forecast"
+            }
           },
           "battery": {
             "title": "Home Battery Storage",
             "sub": "If you have a battery system, you can configure it to monitor how much energy was stored and used from your battery.",
-            "learn_more": "More information on how to get started."
+            "learn_more": "More information on how to get started.",
+            "battery_systems": "Battery systems",
+            "add_battery_system": "Add battery system",
+            "dialog": {
+              "header": "Configure battery system",
+              "energy_into_battery": "Energy going in to the battery (kWh)",
+              "energy_out_of_battery": "Energy coming out of the battery (kWh)"
+            }
           },
           "gas": {
             "title": "Gas Consumption",
             "sub": "Let Home Assistant monitor your gas usage.",
             "learn_more": "More information on how to get started.",
+            "gas_consumption": "Gas consumption",
+            "add_gas_source": "Add gas source",
             "dialog": {
               "header": "Configure gas consumption",
               "paragraph": "Gas consumption is the volume of gas that flows to your home.",
@@ -1047,7 +1085,9 @@
               "cost_entity": "Use an entity with current price",
               "cost_entity_input": "Entity with the current price per {unit}",
               "cost_number": "Use a static price",
-              "cost_number_input": "Price per {unit}"
+              "cost_number_input": "Price per {unit}",
+              "gas_usage": "Gas usage",
+              "m3_or_kWh": "m³ or kWh"
             }
           },
           "device_consumption": {
@@ -1056,7 +1096,11 @@
             "learn_more": "More information on how to get started.",
             "add_stat": "Pick entity to track energy of",
             "selected_stat": "Tracking energy for",
+            "devices": "Devices",
+            "add_device": "Add device",
             "dialog": {
+              "header": "Add a device",
+              "device_consumption_energy": "Device consumption energy (kWh)",
               "selected_stat_intro": "Select the entity that represents the device energy usage."
             }
           },
@@ -1101,6 +1145,10 @@
               "entity_unexpected_state_class": {
                 "title": "Unexpected state class",
                 "description": "The following entities do not have the expected state class:"
+              },
+              "entity_unexpected_device_class": {
+                "title": "Unexpected device class",
+                "description": "The following entities do not have the expected device class:"
               },
               "entity_state_class_measurement_no_last_reset": {
                 "title": "Last reset missing",
@@ -1168,6 +1216,7 @@
         },
         "info": {
           "caption": "Info",
+          "copy_menu": "Copy menu",
           "copy_raw": "Raw Text",
           "copy_github": "For GitHub",
           "description": "Version, system health and links to documentation",
@@ -1202,6 +1251,7 @@
           "no_issues": "There are no new issues!",
           "clear": "Clear",
           "refresh": "Refresh",
+          "copy": "Copy log entry",
           "multiple_messages": "message first occurred at {time} and shows up {counter} times",
           "level": {
             "critical": "CRITICAL",
@@ -1238,7 +1288,7 @@
             "confirm_delete_title": "Delete {dashboard_title}?",
             "confirm_delete_text": "Your dashboard will be permanently deleted.",
             "cant_edit_yaml": "Dashboards defined in YAML cannot be edited from the UI. Change them in configuration.yaml.",
-            "cant_edit_default": "The standard Lovelace dashboard cannot be edited from the UI. You can hide it by setting another dashboard as default.",
+            "cant_edit_default": "The default Lovelace dashboard, Overview, cannot be edited from the UI. You can hide it by setting another dashboard as default.",
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
@@ -1730,6 +1780,13 @@
               "ambiguous_entities": "One or more devices have more than one matching entity, please pick the one you want to use.",
               "unknown_placeholder": "Unknown placeholder"
             }
+          },
+          "trace": {
+            "refresh": "[%key:ui::common::refresh%]",
+            "download_trace": "Download trace",
+            "edit_automation": "Edit automation",
+            "older_trace": "Older trace",
+            "newer_trace": "Newer trace"
           }
         },
         "blueprint": {
@@ -1875,7 +1932,7 @@
             "title": "Cloud Login",
             "introduction": "Home Assistant Cloud provides you with a secure remote connection to your instance while away from home. It also allows you to connect with cloud-only services: Amazon Alexa and Google Assistant.",
             "introduction2": "This service is run by our partner ",
-            "introduction2a": ", a company founded by the founders of Home Assistant and Hass.io.",
+            "introduction2a": ", a company founded by the founders of Home Assistant.",
             "introduction3": "Home Assistant Cloud is a subscription service with a free one month trial. No payment information necessary.",
             "learn_more_link": "Learn more about Home Assistant Cloud",
             "dismiss": "Dismiss",
@@ -1909,7 +1966,7 @@
             "feature_amazon_alexa": "Integration with Amazon Alexa",
             "feature_webhook_apps": "Easy integration with webhook-based apps like OwnTracks",
             "information3": "This service is run by our partner ",
-            "information3a": ", a company founded by the founders of Home Assistant and Hass.io.",
+            "information3a": ", a company founded by the founders of Home Assistant.",
             "information4": "By registering an account you agree to the following terms and conditions.",
             "link_terms_conditions": "Terms and Conditions",
             "link_privacy_policy": "Privacy Policy",
@@ -2060,6 +2117,7 @@
           "caption": "Devices",
           "description": "Manage configured devices",
           "device_info": "Device info",
+          "edit_settings": "Edit settings",
           "unnamed_device": "Unnamed device",
           "unknown_error": "Unknown error",
           "name": "Name",
@@ -2073,6 +2131,8 @@
             "config_entry": "Config entry"
           },
           "enabled_description": "Disabled devices will not be shown and entities belonging to the device will be disabled and not added to Home Assistant.",
+          "open_configuration_url_device": "Visit device",
+          "open_configuration_url_service": "Visit service",
           "automation": {
             "automations": "Automations",
             "no_automations": "No automations",
@@ -2112,6 +2172,9 @@
           "device_not_found": "Device not found.",
           "entities": {
             "entities": "Entities",
+            "state": "State",
+            "diagnostic": "Diagnostic",
+            "config": "Config",
             "add_entities_lovelace": "Add to Lovelace",
             "none": "This device has no entities",
             "hide_disabled": "Hide disabled",
@@ -2235,6 +2298,7 @@
           "no_zones_created_yet": "Looks like you have not created any zones yet.",
           "create_zone": "Create Zone",
           "add_zone": "Add Zone",
+          "edit_zone": "Edit Zone",
           "confirm_delete": "Are you sure you want to delete this zone?",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
           "edit_home_zone": "The radius of the Home zone can't be edited from the frontend yet. Drag the marker on the map to move the home zone.",
@@ -2615,7 +2679,8 @@
             "group_name_placeholder": "Group Name",
             "create_group": "Zigbee Home Automation - Create Group",
             "create": "Create Group",
-            "creating_group": "Creating Group"
+            "creating_group": "Creating Group",
+            "delete": "Delete Group"
           },
           "visualization": {
             "header": "Network Visualization",
@@ -2884,6 +2949,7 @@
       "lovelace": {
         "cards": {
           "confirm_delete": "Are you sure you want to delete this card?",
+          "show_more_info": "Show more information",
           "actions": {
             "action_confirmation": "Are you sure you want to run action ''{action}''?",
             "no_entity_more_info": "No entity provided for more info dialog",
@@ -2916,12 +2982,73 @@
             "call_service": "Call service {name}",
             "more_info": "Show more info: {name}"
           },
+          "iframe": {
+            "error_secure_context": "Unable to load iframes pointing at websites using {target_protocol} if Home Assistant is served over {context_protocol}."
+          },
           "safe-mode": {
             "header": "Safe Mode Activated",
             "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong."
           },
           "starting": {
             "description": "Home Assistant is starting, please wait…"
+          },
+          "map": {
+            "reset_focus": "Reset focus"
+          },
+          "energy": {
+            "loading": "Loading...",
+            "no_data": "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard.",
+            "no_data_period": "There is no data for this period.",
+            "energy_usage_graph": {
+              "total_consumed": "Total consumed {num} kWh",
+              "total_returned": "Total returned {num} kWh",
+              "combined_from_grid": "Combined from grid",
+              "consumed_solar": "Consumed solar",
+              "consumed_battery": "Consumed battery"
+            },
+            "energy_sources_table": {
+              "grid_total": "Grid total",
+              "source": "Source",
+              "energy": "Energy",
+              "cost": "Cost",
+              "battery_total": "Battery total",
+              "total_costs": "Total costs"
+            },
+            "energy_solar_graph": {
+              "production": "Production {name}",
+              "forecast": "Forecast {name}"
+            },
+            "solar_consumed_gauge": {
+              "card_indicates_solar_energy_used": "This card indicates how much of the solar energy you produced was used by your home instead of being returned to the grid.",
+              "card_indicates_solar_energy_used_charge_home_bat": "If this number is typically very low, indicating excess solar production, you might want to consider charging a home battery or electric car from your solar panels at times of high solar production.",
+              "self_consumed_solar_energy": "Self-consumed solar energy",
+              "not_produced_solar_energy": "You have not produced any solar energy",
+              "self_consumed_solar_could_not_calc": "Self-consumed solar energy couldn't be calculated"
+            },
+            "grid_neutrality_gauge": {
+              "energy_dependency": "This card represents your energy dependency.",
+              "red_green_color_explain": "If it's green, it means you produced more energy than that you consumed from the grid. If it's in the red, it means that you relied on the grid for part of your home's energy consumption.",
+              "net_returned_grid": "Net returned to the grid",
+              "net_consumed_grid": "Net consumed from the grid",
+              "grid_neutrality_not_calculated": "Grid neutrality could not be calculated"
+            },
+            "energy_distribution": {
+              "grid": "Grid",
+              "gas": "Gas",
+              "solar": "Solar",
+              "non_fossil": "Non-fossil",
+              "home": "Home",
+              "battery": "Battery",
+              "go_to_energy_dashboard": "Go to the energy dashboard"
+            },
+            "energy_devices_graph": {
+              "energy_usage": "Energy usage"
+            },
+            "carbon_consumed_gauge": {
+              "card_indicates_energy_used": "This card indicates how much of the energy consumed by your home was generated using non-fossil fuels like solar, wind and nuclear. The higher, the better!",
+              "non_fossil_energy_consumed": "Non-fossil energy consumed",
+              "non_fossil_energy_not_calculated": "Consumed non-fossil energy couldn't be calculated"
+            }
           }
         },
         "unused_entities": {
@@ -3035,6 +3162,8 @@
             "delete": "Delete card",
             "duplicate": "Duplicate card",
             "move": "Move to view",
+            "move_up": "Move card up",
+            "move_down": "Move card down",
             "move_before": "Move card before",
             "move_after": "Move card after",
             "options": "More options",
@@ -3356,6 +3485,15 @@
           "timestamp-display": {
             "invalid": "Invalid timestamp",
             "invalid_format": "Invalid display format"
+          },
+          "energy_period_selector": {
+            "today": "Today",
+            "day": "Day",
+            "week": "Week",
+            "month": "Month",
+            "year": "Year",
+            "previous": "Previous",
+            "next": "Next"
           }
         },
         "reload_lovelace": "Reload UI"
@@ -3365,6 +3503,9 @@
         "playback_title": "Message playback",
         "delete_prompt": "Delete this message?",
         "delete_button": "Delete"
+      },
+      "map": {
+        "edit_zones": "Edit Zones"
       },
       "profile": {
         "current_user": "You are currently logged in as {fullName}.",
@@ -3451,7 +3592,8 @@
         "dashboard": {
           "header": "Dashboard",
           "description": "Pick a default dashboard for this device.",
-          "dropdown_label": "Dashboard"
+          "dropdown_label": "Dashboard",
+          "default_dashboard_label": "Overview (default)"
         },
         "change_password": {
           "header": "Change Password",
@@ -3817,6 +3959,14 @@
           "stat_house_energy_meter": "Total energy consumption",
           "solar": "Solar",
           "by_device": "Consumption by device"
+        },
+        "cards": {
+          "energy_usage_graph_title": "Energy usage",
+          "energy_solar_graph_title": "Solar production",
+          "energy_gas_graph_title": "Gas consumption",
+          "energy_distribution_title": "Energy distribution",
+          "energy_sources_table_title": "Sources",
+          "energy_devices_graph_title": "Monitor individual devices"
         }
       }
     }
@@ -3877,7 +4027,7 @@
         "protection_mode": {
           "title": "Warning: Protection mode is disabled!",
           "content": "Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.",
-          "enable": "Enable Protection mode"
+          "enable": "[%key:ui::common::enable%]"
         },
         "capability": {
           "stage": {
@@ -4006,6 +4156,7 @@
       "running_version": "You are currently running version {version}",
       "save": "[%key:ui::common::save%]",
       "close": "[%key:ui::common::close%]",
+      "menu": "[%key:ui::common::menu%]",
       "show_more": "Show more information about this",
       "update_available": "{count, plural,\n  one {Update}\n  other {{count} updates}\n} pending",
       "update": "Update",

@@ -279,6 +279,15 @@ export const getLogbookMessage = (
             );
           }
           break;
+
+        case "tamper":
+          if (isOn) {
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.detected_tampering`);
+          }
+          if (isOff) {
+            return hass.localize(`${LOGBOOK_LOCALIZE_PATH}.cleared_tampering`);
+          }
+          break;
       }
 
       break;

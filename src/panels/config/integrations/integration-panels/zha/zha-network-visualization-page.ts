@@ -14,7 +14,6 @@ import "../../../../../components/ha-button-menu";
 import "../../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../../components/ha-checkbox";
 import "../../../../../components/ha-formfield";
-import "../../../../../components/ha-svg-icon";
 import { DeviceRegistryEntry } from "../../../../../data/device_registry";
 import {
   fetchDevices,
@@ -142,6 +141,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
           ? html`
               <div slot="header">
                 <search-input
+                  .hass=${this.hass}
                   no-label-float
                   no-underline
                   class="header"
@@ -158,6 +158,7 @@ export class ZHANetworkVisualizationPage extends LitElement {
         <div class="header">
           ${!this.narrow
             ? html`<search-input
+                .hass=${this.hass}
                 no-label-float
                 no-underline
                 @value-changed=${this._handleSearchChange}

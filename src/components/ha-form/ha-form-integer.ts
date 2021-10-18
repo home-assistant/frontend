@@ -23,6 +23,8 @@ export class HaFormInteger extends LitElement implements HaFormElement {
 
   @property() public label?: string;
 
+  @property({ type: Boolean }) public disabled = false;
+
   @query("paper-input ha-slider") private _input?: HTMLElement;
 
   private _lastValue?: HaFormIntegerData;
@@ -44,6 +46,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
                   <ha-checkbox
                     @change=${this._handleCheckboxChange}
                     .checked=${this.data !== undefined}
+                    .disabled=${this.disabled}
                   ></ha-checkbox>
                 `
               : ""}
@@ -52,7 +55,8 @@ export class HaFormInteger extends LitElement implements HaFormElement {
               .value=${this._value}
               .min=${this.schema.valueMin}
               .max=${this.schema.valueMax}
-              .disabled=${this.data === undefined && this.schema.optional}
+              .disabled=${this.disabled ||
+              (this.data === undefined && this.schema.optional)}
               @change=${this._valueChanged}
             ></mwc-slider>
           </div>
@@ -63,8 +67,10 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     return html`
       <mwc-textfield
         type="number"
+        inputMode="numeric"
         .label=${this.label}
         .value=${this.data !== undefined ? this.data : ""}
+        .disabled=${this.disabled}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
         .suffix=${this.schema.description?.suffix}

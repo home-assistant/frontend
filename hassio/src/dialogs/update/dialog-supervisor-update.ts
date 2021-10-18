@@ -6,7 +6,6 @@ import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-settings-row";
-import "../../../../src/components/ha-svg-icon";
 import "../../../../src/components/ha-switch";
 import {
   extractApiErrorMessage,

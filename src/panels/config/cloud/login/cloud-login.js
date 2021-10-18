@@ -9,6 +9,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import "../../../../components/buttons/ha-progress-button";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon";
 import "../../../../components/ha-icon-button";
 import "../../../../components/ha-icon-next";
 import "../../../../layouts/hass-subpage";
@@ -120,9 +121,12 @@ class CloudLogin extends LocalizeMixin(
             <ha-card hidden$="[[!flashMessage]]">
               <div class="card-content flash-msg">
                 [[flashMessage]]
-                <ha-icon-button icon="hass:close" on-click="_dismissFlash"
-                  >[[localize('ui.panel.config.cloud.login.dismiss')]]</ha-icon-button
+                <ha-icon-button
+                  label="[[localize('ui.panel.config.cloud.login.dismiss')]]"
+                  on-click="_dismissFlash"
                 >
+                  <ha-icon icon="hass:close"></ha-icon>
+                </ha-icon-button>
                 <paper-ripple id="flashRipple" noink=""></paper-ripple>
               </div>
             </ha-card>

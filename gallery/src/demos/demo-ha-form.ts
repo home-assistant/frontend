@@ -1,12 +1,11 @@
 /* eslint-disable lit/no-template-arrow */
 import "@material/mwc-button";
-import { LitElement, TemplateResult, css, html } from "lit";
+import { LitElement, TemplateResult, html } from "lit";
 import { customElement } from "lit/decorators";
 import { computeInitialHaFormData } from "../../../src/components/ha-form/compute-initial-ha-form-data";
-import "../../../src/components/ha-card";
-import { applyThemesOnElement } from "../../../src/common/dom/apply_themes_on_element";
 import type { HaFormSchema } from "../../../src/components/ha-form/types";
 import "../../../src/components/ha-form/ha-form";
+import "../components/demo-black-white-row";
 
 const SCHEMAS: {
   title: string;
@@ -231,142 +230,49 @@ class DemoHaForm extends LitElement {
     ({ schema, data }) => data || computeInitialHaFormData(schema)
   );
 
+  private disabled = SCHEMAS.map(() => false);
+
   protected render(): TemplateResult {
     return html`
       ${SCHEMAS.map((info, idx) => {
         const translations = info.translations || {};
-        const computeLabel = (schema) =>
-          translations[schema.name] || schema.name;
-        const computeError = (error) => translations[error] || error;
-
         return html`
-          <div class="row">
-            <div class="content light">
-              <ha-card .header=${info.title}>
-                <div class="card-content">
-                  <ha-form
-                    .data=${this.data[idx]}
-                    .schema=${info.schema}
-                    .error=${info.error}
-                    .computeError=${computeError}
-                    .computeLabel=${computeLabel}
-                    @value-changed=${(e) => {
-                      this.data[idx] = e.detail.value;
-                      this.requestUpdate();
-                    }}
-                  ></ha-form>
-                </div>
-                <div class="card-actions">
-                  <mwc-button>Submit</mwc-button>
-                </div>
-              </ha-card>
-            </div>
-            <div class="content dark">
-              <ha-card .header=${info.title}>
-                <div class="card-content">
-                  <ha-form
-                    .data=${this.data[idx]}
-                    .schema=${info.schema}
-                    .error=${info.error}
-                    .computeError=${computeError}
-                    .computeLabel=${computeLabel}
-                    @value-changed=${(e) => {
-                      this.data[idx] = e.detail.value;
-                      this.requestUpdate();
-                    }}
-                  ></ha-form>
-                </div>
-                <div class="card-actions">
-                  <mwc-button>Submit</mwc-button>
-                </div>
-              </ha-card>
-              <pre>${JSON.stringify(this.data[idx], undefined, 2)}</pre>
-            </div>
-          </div>
+          <demo-black-white-row
+            .title=${info.title}
+            .value=${this.data[idx]}
+            .disabled=${this.disabled[idx]}
+            @submitted=${() => {
+              this.disabled[idx] = true;
+              this.requestUpdate();
+              setTimeout(() => {
+                this.disabled[idx] = false;
+                this.requestUpdate();
+              }, 2000);
+            }}
+          >
+            ${["light", "dark"].map(
+              (slot) => html`
+                <ha-form
+                  slot=${slot}
+                  .data=${this.data[idx]}
+                  .schema=${info.schema}
+                  .error=${info.error}
+                  .disabled=${this.disabled[idx]}
+                  .computeError=${(error) => translations[error] || error}
+                  .computeLabel=${(schema) =>
+                    translations[schema.name] || schema.name}
+                  @value-changed=${(e) => {
+                    this.data[idx] = e.detail.value;
+                    this.requestUpdate();
+                  }}
+                ></ha-form>
+              `
+            )}
+          </demo-black-white-row>
         `;
       })}
     `;
   }
-
-  firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    this.shadowRoot!.querySelectorAll(".dark").forEach((el) => {
-      applyThemesOnElement(
-        el,
-        {
-          default_theme: "default",
-          default_dark_theme: "default",
-          themes: {},
-          darkMode: false,
-        },
-        "default",
-        { dark: true }
-      );
-    });
-  }
-
-  static styles = css`
-    .row {
-      display: flex;
-    }
-    .content {
-      padding: 50px 0;
-      background-color: var(--primary-background-color);
-    }
-    .light {
-      flex: 1;
-      padding-left: 50px;
-      padding-right: 50px;
-      box-sizing: border-box;
-    }
-    .light ha-card {
-      margin-left: auto;
-    }
-    .dark {
-      display: flex;
-      flex: 1;
-      padding-left: 50px;
-      box-sizing: border-box;
-      flex-wrap: wrap;
-    }
-    ha-card {
-      width: 400px;
-    }
-    pre {
-      width: 300px;
-      margin: 0 16px 0;
-      overflow: auto;
-      color: var(--primary-text-color);
-    }
-    .card-actions {
-      display: flex;
-      flex-direction: row-reverse;
-      border-top: none;
-    }
-    @media only screen and (max-width: 1500px) {
-      .light {
-        flex: initial;
-      }
-    }
-    @media only screen and (max-width: 1000px) {
-      .light,
-      .dark {
-        padding: 16px;
-      }
-      .row,
-      .dark {
-        flex-direction: column;
-      }
-      ha-card {
-        margin: 0 auto;
-        width: 100%;
-        max-width: 400px;
-      }
-      pre {
-        margin: 16px auto;
-      }
-    }
-  `;
 }
 
 declare global {

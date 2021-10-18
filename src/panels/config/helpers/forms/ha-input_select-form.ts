@@ -1,5 +1,5 @@
 import "@material/mwc-button/mwc-button";
-import { mdiDrag } from "@mdi/js";
+import { mdiDelete, mdiDrag } from "@mdi/js";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -140,6 +140,7 @@ class HaInputSelectForm extends LitElement {
                           "ui.dialogs.helper_settings.input_select.remove_option"
                         )}
                         @click=${this._removeOption}
+                        .path=${mdiDelete}
                         icon="hass:delete"
                       ></ha-icon-button>
                     </paper-item>
@@ -165,6 +166,13 @@ class HaInputSelectForm extends LitElement {
       </div>
     `;
   }
+
+  // Empty when there are no options.
+  //   <paper-item>
+  //   ${this.hass!.localize(
+  //     "ui.dialogs.helper_settings.input_select.no_options"
+  //   )}
+  // </paper-item>
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);

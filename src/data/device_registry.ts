@@ -18,6 +18,7 @@ export interface DeviceRegistryEntry {
   name_by_user: string | null;
   entry_type: "service" | null;
   disabled_by: string | null;
+  configuration_url: string | null;
 }
 
 export interface DeviceEntityLookup {

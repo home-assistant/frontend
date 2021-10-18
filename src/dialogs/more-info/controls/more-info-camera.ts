@@ -17,6 +17,7 @@ import {
   CameraPreferences,
   CAMERA_SUPPORT_STREAM,
   fetchCameraPrefs,
+  STREAM_TYPE_HLS,
   updateCameraPrefs,
 } from "../../../data/camera";
 import type { HomeAssistant } from "../../../types";
@@ -82,7 +83,10 @@ class MoreInfoCamera extends LitElement {
     if (
       curEntityId &&
       isComponentLoaded(this.hass!, "stream") &&
-      supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM)
+      supportsFeature(this.stateObj!, CAMERA_SUPPORT_STREAM) &&
+      // The stream component for HLS streams supports a server-side pre-load
+      // option that client initiated WebRTC streams do not
+      this.stateObj!.attributes.frontend_stream_type === STREAM_TYPE_HLS
     ) {
       // Fetch in background while we set up the video.
       this._fetchCameraPrefs();

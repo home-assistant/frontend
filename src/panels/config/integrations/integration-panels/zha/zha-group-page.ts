@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { mdiDelete } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, PropertyValues } from "lit";
 import { customElement, property, state, query } from "lit/decorators";
 import { HASSDomEvent } from "../../../../../common/dom/fire_event";
@@ -101,8 +102,9 @@ export class ZHAGroupPage extends LitElement {
       >
         <ha-icon-button
           slot="toolbar-icon"
-          icon="hass:delete"
+          .path=${mdiDelete}
           @click=${this._deleteGroup}
+          .label=${this.hass.localize("ui.panel.config.zha.groups.delete")}
         ></ha-icon-button>
         <ha-config-section .isWide=${this.isWide}>
           <div class="header">
