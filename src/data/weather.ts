@@ -245,17 +245,9 @@ const getWeatherExtrema = (
   const unit = getWeatherUnit(hass!, "temperature");
 
   return html`
-    ${tempHigh
-      ? `
-            ${tempHigh} ${unit}
-          `
-      : ""}
+    ${tempHigh ? `${formatNumber(tempHigh, hass.locale)} ${unit}` : ""}
     ${tempLow && tempHigh ? " / " : ""}
-    ${tempLow
-      ? `
-          ${tempLow} ${unit}
-        `
-      : ""}
+    ${tempLow ? `${formatNumber(tempLow, hass.locale)} ${unit}` : ""}
   `;
 };
 
