@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import { ActionConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
@@ -133,7 +133,7 @@ export class HuiButtonCardEditor
             .configValue=${"name"}
             @value-changed=${this._valueChanged}
           ></paper-input>
-          <ha-icon-input
+          <ha-icon-picker
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
@@ -144,7 +144,7 @@ export class HuiButtonCardEditor
             stateIcon(this.hass.states[this._entity])}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
-          ></ha-icon-input>
+          ></ha-icon-picker>
         </div>
         <div class="side-by-side">
           <div>

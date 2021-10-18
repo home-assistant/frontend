@@ -5,7 +5,7 @@ import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/entity/ha-entity-attribute-picker";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import { HomeAssistant } from "../../../../types";
 import { EntityCardConfig } from "../../cards/types";
 import "../../components/hui-action-editor";
@@ -103,7 +103,7 @@ export class HuiEntityCardEditor
             .configValue=${"name"}
             @value-changed=${this._valueChanged}
           ></paper-input>
-          <ha-icon-input
+          <ha-icon-picker
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
@@ -114,7 +114,7 @@ export class HuiEntityCardEditor
             stateIcon(this.hass.states[this._entity])}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
-          ></ha-icon-input>
+          ></ha-icon-picker>
         </div>
         <div class="side-by-side">
           <ha-entity-attribute-picker

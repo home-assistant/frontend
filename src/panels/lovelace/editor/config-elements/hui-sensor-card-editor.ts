@@ -9,7 +9,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { SensorCardConfig } from "../../cards/types";
@@ -114,7 +114,7 @@ export class HuiSensorCardEditor
           @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
-          <ha-icon-input
+          <ha-icon-picker
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
@@ -125,7 +125,7 @@ export class HuiSensorCardEditor
             stateIcon(this.hass.states[this._entity])}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
-          ></ha-icon-input>
+          ></ha-icon-picker>
           <paper-dropdown-menu
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.sensor.graph_type"

@@ -6,7 +6,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { EntitiesCardEntityConfig } from "../../cards/types";
@@ -83,7 +83,7 @@ export class HuiGenericEntityRowEditor
             .configValue=${"name"}
             @value-changed=${this._valueChanged}
           ></paper-input>
-          <ha-icon-input
+          <ha-icon-picker
             .label=${this.hass!.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )}
@@ -91,7 +91,7 @@ export class HuiGenericEntityRowEditor
             .placeholder=${stateIcon(this.hass!.states[this._config.entity])}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
-          ></ha-icon-input>
+          ></ha-icon-picker>
         </div>
         <paper-dropdown-menu .label=${"Secondary Info"}>
           <paper-listbox
