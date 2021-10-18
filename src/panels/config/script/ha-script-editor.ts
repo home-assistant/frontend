@@ -30,7 +30,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-input";
+import "../../../components/ha-icon-picker";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
@@ -213,7 +213,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                 @change=${this._aliasChanged}
                               >
                               </paper-input>
-                              <ha-icon-input
+                              <ha-icon-picker
                                 .label=${this.hass.localize(
                                   "ui.panel.config.script.editor.icon"
                                 )}
@@ -221,7 +221,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                 .value=${this._config.icon}
                                 @value-changed=${this._valueChanged}
                               >
-                              </ha-icon-input>
+                              </ha-icon-picker>
                               ${!this.scriptEntityId
                                 ? html`<paper-input
                                     .label=${this.hass.localize(

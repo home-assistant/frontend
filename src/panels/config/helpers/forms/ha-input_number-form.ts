@@ -4,7 +4,7 @@ import "@polymer/paper-radio-group/paper-radio-group";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import { InputNumber } from "../../../../data/input_number";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -85,14 +85,14 @@ class HaInputNumberForm extends LitElement {
           .invalid=${nameInvalid}
           dialogInitialFocus
         ></paper-input>
-        <ha-icon-input
+        <ha-icon-picker
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
-        ></ha-icon-input>
+        ></ha-icon-picker>
         <paper-input
           .value=${this._min}
           .configValue=${"min"}
