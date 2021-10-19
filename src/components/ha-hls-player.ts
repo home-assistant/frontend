@@ -191,6 +191,7 @@ class HaHLSPlayer extends LitElement {
       fragLoadingTimeOut: 30000,
       manifestLoadingTimeOut: 30000,
       levelLoadingTimeOut: 30000,
+      maxLiveSyncPlaybackRate: 2,
     });
     this._hlsPolyfillInstance = hls;
     hls.attachMedia(videoEl);
