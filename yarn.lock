@@ -2732,7 +2732,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material/mwc-top-app-bar@npm:^0.27.0":
+"@material/mwc-top-app-bar@npm:0.27.0, @material/mwc-top-app-bar@npm:^0.27.0":
   version: 0.27.0
   resolution: "@material/mwc-top-app-bar@npm:0.27.0"
   dependencies:
@@ -9451,8 +9451,8 @@ __metadata:
     "@material/mwc-tab-bar": 0.27.0
     "@material/mwc-textarea": 0.27.0
     "@material/mwc-textfield": 0.27.0
+    "@material/mwc-top-app-bar": 0.27.0
     "@material/mwc-top-app-bar-fixed": 0.27.0
-    "@material/top-app-bar": =14.0.0-canary.53b3cad2f.0
     "@material/web": =1.0.0-pre.4
     "@mdi/js": 7.2.96
     "@mdi/svg": 7.2.96

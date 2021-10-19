@@ -846,17 +846,9 @@ class HaSidebar extends SubscribeMixin(LitElement) {
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;
-          border-right: 1px solid var(--divider-color);
           background-color: var(--sidebar-background-color);
-          width: 56px;
-        }
-        :host([expanded]) {
-          width: 256px;
-          width: calc(256px + env(safe-area-inset-left));
-        }
-        :host([rtl]) {
-          border-right: 0;
-          border-left: 1px solid var(--divider-color);
+          width: 100%;
+          box-sizing: border-box;
         }
         .menu {
           height: var(--header-height);
