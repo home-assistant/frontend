@@ -103,11 +103,11 @@ class HuiEnergyGridGaugeCard
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
                   ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_energy_usage"
                   )}
                   <br /><br />
                   ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.red_green_color_explain"
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
                   )}
                 </span>
               </paper-tooltip>
