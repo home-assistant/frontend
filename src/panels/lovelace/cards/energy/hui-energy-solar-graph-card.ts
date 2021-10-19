@@ -315,7 +315,7 @@ export class HuiEnergySolarGraphCard
             }
           ),
           borderColor,
-          backgroundColor: borderColor + "BF",
+          backgroundColor: borderColor + "7F",
           data: solarProductionData,
         });
       }

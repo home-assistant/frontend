@@ -510,7 +510,7 @@ export class HuiEnergyUsageGraphCard
               ? Object.keys(combinedData).length
               : idx + 1,
           borderColor,
-          backgroundColor: borderColor + "BF",
+          backgroundColor: borderColor + "7F",
           stack: "stack",
           data: [],
         });
