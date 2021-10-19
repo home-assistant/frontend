@@ -85,7 +85,7 @@ documentContainer.innerHTML = `<custom-style>
 
       /* energy */
       --energy-grid-consumption-color: #488fc2;
-      --energy-grid-return-color: #7a44d2;
+      --energy-grid-return-color: #8353d1;
       --energy-solar-color: #ff9800;
       --energy-non-fossil-color: #0f9d58;
       --energy-battery-out-color: #4db6ac;
