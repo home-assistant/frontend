@@ -3027,8 +3027,8 @@
               "self_consumed_solar_could_not_calc": "Self-consumed solar energy couldn't be calculated"
             },
             "grid_neutrality_gauge": {
-              "energy_dependency": "This card represents your energy dependency.",
-              "red_green_color_explain": "If it's green, it means you produced more energy than that you consumed from the grid. If it's in the red, it means that you relied on the grid for part of your home's energy consumption.",
+              "energy_dependency": "This card indicates your net energy usage.",
+              "color_explain": "If the needle is in the purple, you returned more energy to the grid than you consumed from it. If it's in the blue, you consumed more energy from the grid than you returned.",
               "net_returned_grid": "Net returned to the grid",
               "net_consumed_grid": "Net consumed from the grid",
               "grid_neutrality_not_calculated": "Grid neutrality could not be calculated"

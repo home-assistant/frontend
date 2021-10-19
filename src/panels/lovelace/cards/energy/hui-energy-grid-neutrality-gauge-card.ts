@@ -107,7 +107,7 @@ class HuiEnergyGridGaugeCard
                   )}
                   <br /><br />
                   ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.red_green_color_explain"
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
                   )}
                 </span>
               </paper-tooltip>
