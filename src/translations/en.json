@@ -3835,22 +3835,14 @@
           },
           "states": {
             "title": "States",
-            "description1": "Set the current state representation of an entity within Home Assistant.",
-            "description2": "If the entity belongs to a device, there will be no actual communication with that device.",
             "entity": "Entity",
             "state": "State",
             "attributes": "Attributes",
-            "state_attributes": "State attributes (YAML, optional)",
-            "set_state": "Set State",
-            "current_entities": "Current entities",
             "filter_entities": "Filter entities",
             "filter_states": "Filter states",
             "filter_attributes": "Filter attributes",
             "no_entities": "No entities",
             "more_info": "More Info",
-            "alert_entity_field": "Entity is a mandatory field",
-            "last_updated": "[%key:ui::dialogs::more_info_control::last_updated%]",
-            "last_changed": "[%key:ui::dialogs::more_info_control::last_changed%]",
             "copy_id": "Copy ID to clipboard"
           },
           "templates": {
