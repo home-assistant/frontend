@@ -1,5 +1,3 @@
-import "@polymer/paper-checkbox/paper-checkbox";
-import type { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 import {
   css,
   CSSResultGroup,
@@ -12,6 +10,7 @@ import { property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-camera-stream";
+import { HaCheckbox } from "../../../components/ha-checkbox";
 import {
   CameraEntity,
   CameraPreferences,
@@ -25,7 +24,7 @@ import type { HomeAssistant } from "../../../types";
 class MoreInfoCamera extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
 
-  @property() public stateObj?: CameraEntity;
+  @property({ attribute: false }) public stateObj?: CameraEntity;
 
   @state() private _cameraPrefs?: CameraPreferences;
 
@@ -55,12 +54,14 @@ class MoreInfoCamera extends LitElement {
       ></ha-camera-stream>
       ${this._cameraPrefs
         ? html`
-            <paper-checkbox
-              .checked=${this._cameraPrefs.preload_stream}
-              @change=${this._handleCheckboxChanged}
-            >
-              Preload stream
-            </paper-checkbox>
+            <ha-formfield>
+              <ha-checkbox
+                .checked=${this._cameraPrefs.preload_stream}
+                @change=${this._handleCheckboxChanged}
+              >
+                Preload stream
+              </ha-checkbox>
+            </ha-formfield>
           `
         : undefined}
     `;
@@ -101,7 +102,7 @@ class MoreInfoCamera extends LitElement {
   }
 
   private async _handleCheckboxChanged(ev) {
-    const checkbox = ev.currentTarget as PaperCheckboxElement;
+    const checkbox = ev.currentTarget as HaCheckbox;
     try {
       this._cameraPrefs = await updateCameraPrefs(
         this.hass!,
@@ -122,7 +123,7 @@ class MoreInfoCamera extends LitElement {
         display: block;
         position: relative;
       }
-      paper-checkbox {
+      ha-checkbox {
         position: absolute;
         top: 0;
         right: 0;
@@ -135,3 +136,9 @@ class MoreInfoCamera extends LitElement {
 }
 
 customElements.define("more-info-camera", MoreInfoCamera);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "more-info-camera": MoreInfoCamera;
+  }
+}

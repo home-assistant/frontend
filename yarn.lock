@@ -3246,20 +3246,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-checkbox@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@polymer/paper-checkbox@npm:3.1.0"
-  dependencies:
-    "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
-    "@polymer/iron-checked-element-behavior": ^3.0.0-pre.26
-    "@polymer/paper-behaviors": ^3.0.0-pre.27
-    "@polymer/paper-ripple": ^3.0.0-pre.26
-    "@polymer/paper-styles": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: 95c0341387adf2033b7e1423a87230cadfae6e9459eb555c75e937c9b7886ea10e7b5a4033b2401883a9336531c4c47b61dabbca49d556dee81fa73d5faafbeb
-  languageName: node
-  linkType: hard
-
 "@polymer/paper-dialog-behavior@npm:^3.0.0-pre.26, @polymer/paper-dialog-behavior@npm:^3.0.1":
   version: 3.0.1
   resolution: "@polymer/paper-dialog-behavior@npm:3.0.1"
@@ -9109,7 +9095,6 @@ fsevents@^1.2.7:
     "@polymer/iron-input": ^3.0.1
     "@polymer/iron-overlay-behavior": ^3.0.3
     "@polymer/iron-resizable-behavior": ^3.0.1
-    "@polymer/paper-checkbox": ^3.1.0
     "@polymer/paper-dialog": ^3.0.1
     "@polymer/paper-dialog-behavior": ^3.0.1
     "@polymer/paper-dialog-scrollable": ^3.0.1
