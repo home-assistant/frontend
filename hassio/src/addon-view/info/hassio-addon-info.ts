@@ -181,7 +181,7 @@ class HassioAddonInfo extends LitElement {
       ${!this.addon.protected
         ? html`
             <ha-alert
-              alert-type="warning"
+              alert-type="error"
               .title=${this.supervisor.localize(
                 "addon.dashboard.protection_mode.title"
               )}
