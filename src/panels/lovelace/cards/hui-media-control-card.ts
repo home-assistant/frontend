@@ -271,10 +271,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                                   .label=${this.hass.localize(
                                     `ui.card.media_player.${control.action}`
                                   )}
+                                  .path=${control.icon}
                                   action=${control.action}
                                   @click=${this._handleClick}
                                 >
-                                  <ha-icon .icon=${control.icon}></ha-icon>
                                 </ha-icon-button>
                               `
                             )}

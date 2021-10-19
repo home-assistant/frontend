@@ -73,7 +73,7 @@ class CastDemoRow extends LitElement implements LovelaceRow {
         display: flex;
         align-items: center;
       }
-      ha-icon {
+      ha-svg-icon {
         padding: 8px;
         color: var(--paper-item-icon-color);
       }

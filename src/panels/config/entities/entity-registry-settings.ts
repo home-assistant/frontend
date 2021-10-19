@@ -137,11 +137,10 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           .value=${this._icon}
           @value-changed=${this._iconChanged}
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.icon")}
-          .placeholder=${this.entry.original_icon ||
-          domainIcon(
-            computeDomain(this.entry.entity_id),
-            this.hass.states[this.entry.entity_id]
-          )}
+          .placeholder=${this.entry.original_icon || stateObj?.attributes.icon}
+          .fallbackPath=${!this._icon && !stateObj?.attributes.icon && stateObj
+            ? domainIcon(computeDomain(stateObj.entity_id), stateObj)
+            : undefined}
           .disabled=${this._submitting}
         ></ha-icon-picker>
         <paper-input

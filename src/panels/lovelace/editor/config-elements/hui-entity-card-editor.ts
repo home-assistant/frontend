@@ -109,7 +109,12 @@ export class HuiEntityCardEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._icon}
-            .placeholder=${this._icon}
+            .placeholder=${this._icon || entityState?.attributes.icon}
+            .fallbackPath=${!this._icon &&
+            !entityState?.attributes.icon &&
+            entityState
+              ? domainIcon(computeDomain(entityState.entity_id), entityState)
+              : undefined}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
           ></ha-icon-picker>

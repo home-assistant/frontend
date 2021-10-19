@@ -2,7 +2,7 @@ import "@polymer/paper-input/paper-input";
 import { mdiCheck } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 import "./ha-icon";
@@ -46,13 +46,15 @@ export class HaIconPicker extends LitElement {
 
   @property() public placeholder?: string;
 
+  @property() public fallbackPath?: string;
+
   @property({ attribute: "error-message" }) public errorMessage?: string;
 
   @property({ type: Boolean }) public disabled = false;
 
   @query("vaadin-combo-box-light", true) private comboBox!: HTMLElement;
 
-  @property({ type: Boolean }) private _opened = false;
+  @state({ type: Boolean }) private _opened = false;
 
   protected render(): TemplateResult {
     return html`
@@ -77,11 +79,16 @@ export class HaIconPicker extends LitElement {
           autocorrect="off"
           spellcheck="false"
         >
-          ${!this._opened && (this._value || this.placeholder)
+          ${this._value || this.placeholder
             ? html`
                 <ha-icon .icon=${this._value || this.placeholder} slot="suffix">
                 </ha-icon>
               `
+            : this.fallbackPath
+            ? html`<ha-svg-icon
+                .path=${this.fallbackPath}
+                slot="suffix"
+              ></ha-svg-icon>`
             : ""}
         </paper-input>
       </vaadin-combo-box-light>
@@ -132,10 +139,10 @@ export class HaIconPicker extends LitElement {
 
   static get styles() {
     return css`
-      ha-icon {
-        position: absolute;
+      ha-icon,
+      ha-svg-icon {
+        position: relative;
         bottom: 2px;
-        right: 0;
       }
     `;
   }

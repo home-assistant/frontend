@@ -14,7 +14,6 @@ import { computeCloseIcon, computeOpenIcon } from "../common/entity/cover_icon";
 import { UNAVAILABLE } from "../data/entity";
 import type { HomeAssistant } from "../types";
 import CoverEntity from "../util/cover-model";
-import "./ha-icon";
 import "./ha-icon-button";
 
 @customElement("ha-cover-controls")

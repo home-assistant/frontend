@@ -16,7 +16,7 @@ import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/number/format_number";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
+import "../../../components/ha-svg-icon";
 import { UNAVAILABLE } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import {
