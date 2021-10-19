@@ -64,6 +64,7 @@ export class HuiGenericEntityRowEditor
     }
 
     const domain = computeDomain(this._entity);
+    const entityState = this.hass.states[this._entity];
 
     return html`
       <div class="card-config">

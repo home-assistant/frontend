@@ -108,6 +108,7 @@ export class HuiButtonCardEditor
     }
 
     const dir = computeRTLDirection(this.hass!);
+    const entityState = this.hass.states[this._entity];
 
     return html`
       <div class="card-config">

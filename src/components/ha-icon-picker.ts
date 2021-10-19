@@ -2,7 +2,7 @@ import "@polymer/paper-input/paper-input";
 import { mdiCheck } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
-import { customElement, property, query, state } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { PolymerChangedEvent } from "../polymer-types";
 import "./ha-icon";
@@ -54,8 +54,6 @@ export class HaIconPicker extends LitElement {
 
   @query("vaadin-combo-box-light", true) private comboBox!: HTMLElement;
 
-  @state({ type: Boolean }) private _opened = false;
-
   protected render(): TemplateResult {
     return html`
       <vaadin-combo-box-light
@@ -65,7 +63,6 @@ export class HaIconPicker extends LitElement {
         .allowCustomValue=${true}
         .filteredItems=${[]}
         ${comboBoxRenderer(rowRenderer)}
-        @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
         @filter-changed=${this._filterChanged}
       >
@@ -93,10 +90,6 @@ export class HaIconPicker extends LitElement {
         </paper-input>
       </vaadin-combo-box-light>
     `;
-  }
-
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
   }
 
   private _valueChanged(ev: PolymerChangedEvent<string>) {
