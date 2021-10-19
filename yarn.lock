@@ -3392,31 +3392,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-radio-button@npm:^3.0.0-pre.26, @polymer/paper-radio-button@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-radio-button@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-checked-element-behavior": ^3.0.0-pre.26
-    "@polymer/iron-flex-layout": ^3.0.0-pre.26
-    "@polymer/paper-behaviors": ^3.0.0-pre.27
-    "@polymer/paper-styles": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: 2e0d448dabb76164536ad0af499f88161d459b0f0b664b028f74487630bfdfac2d8e293bee0d3df6f4942fdb03bfcd5acd5818fe17213c05819a1a3e59fa2948
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-radio-group@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-radio-group@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-a11y-keys-behavior": ^3.0.0-pre.26
-    "@polymer/iron-menu-behavior": ^3.0.0-pre.26
-    "@polymer/paper-radio-button": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: e60f820171d5cbfca987a98a1396d6279fa02da8274c1a4ceaf9bb1c8e320b04be9ee0f913c6753343d3fd8861baabc7f3f9aa5e86f953b9335ed802c6e008f2
-  languageName: node
-  linkType: hard
-
 "@polymer/paper-ripple@npm:^3.0.0-pre.26, @polymer/paper-ripple@npm:^3.0.2":
   version: 3.0.2
   resolution: "@polymer/paper-ripple@npm:3.0.2"
@@ -9119,8 +9094,6 @@ fsevents@^1.2.7:
     "@polymer/paper-listbox": ^3.0.1
     "@polymer/paper-menu-button": ^3.1.0
     "@polymer/paper-progress": ^3.0.1
-    "@polymer/paper-radio-button": ^3.0.1
-    "@polymer/paper-radio-group": ^3.0.1
     "@polymer/paper-ripple": ^3.0.2
     "@polymer/paper-slider": ^3.0.1
     "@polymer/paper-styles": ^3.0.1
