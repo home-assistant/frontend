@@ -272,7 +272,7 @@ class ConfigCoreForm extends LitElement {
   }
 
   private _unitSystemChanged(ev: CustomEvent) {
-    this._unitSystem = (ev.target as HaRadio).value;
+    this._unitSystem = (ev.target as HaRadio).value as "metric" | "imperial";
   }
 
   private async _save() {
