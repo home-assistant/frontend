@@ -7,7 +7,6 @@ import {
   mdiPlus,
   mdiUndo,
 } from "@mdi/js";
-import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
