@@ -41,7 +41,6 @@ export const coverIcon = (state?: string, stateObj?: HassEntity): string => {
         default:
           return "hass:window-shutter-open";
       }
-    case "blind":
     case "curtain":
       switch (state) {
         case "opening":
@@ -53,6 +52,7 @@ export const coverIcon = (state?: string, stateObj?: HassEntity): string => {
         default:
           return "hass:curtains";
       }
+    case "blind":
     case "shade":
       switch (state) {
         case "opening":
