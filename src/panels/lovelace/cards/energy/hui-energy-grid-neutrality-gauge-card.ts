@@ -103,7 +103,7 @@ class HuiEnergyGridGaugeCard
               <paper-tooltip animation-delay="0" for="info" position="left">
                 <span>
                   ${this.hass.localize(
-                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_energy_usage"
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
                   )}
                   <br /><br />
                   ${this.hass.localize(

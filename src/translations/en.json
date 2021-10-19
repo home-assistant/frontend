@@ -3027,7 +3027,7 @@
               "self_consumed_solar_could_not_calc": "Self-consumed solar energy couldn't be calculated"
             },
             "grid_neutrality_gauge": {
-              "net_energy_usage": "This card indicates your net energy usage.",
+              "energy_dependency": "This card indicates your net energy usage.",
               "color_explain": "If the needle is in the purple, you returned more energy to the grid than you consumed from it. If it's in the blue, you consumed more energy from the grid than you returned.",
               "net_returned_grid": "Net returned to the grid",
               "net_consumed_grid": "Net consumed from the grid",
