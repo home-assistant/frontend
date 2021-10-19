@@ -43,6 +43,16 @@ export const coverIcon = (state?: string, stateObj?: HassEntity): string => {
       }
     case "blind":
     case "curtain":
+      switch (state) {
+        case "opening":
+          return "hass:arrow-split-vertical";
+        case "closing":
+          return "hass:arrow-collapse-horizontal";
+        case "closed":
+          return "hass:curtains-closed";
+        default:
+          return "hass:curtains";
+      }
     case "shade":
       switch (state) {
         case "opening":
