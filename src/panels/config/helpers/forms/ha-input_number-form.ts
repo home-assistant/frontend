@@ -1,6 +1,4 @@
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -8,6 +6,9 @@ import "../../../../components/ha-icon-picker";
 import { InputNumber } from "../../../../data/input_number";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
+import "../../../../components/ha-formfield";
+import "../../../../components/ha-radio";
+import type { HaRadio } from "../../../../components/ha-radio";
 
 @customElement("ha-input_number-form")
 class HaInputNumberForm extends LitElement {
@@ -117,21 +118,30 @@ class HaInputNumberForm extends LitElement {
                 ${this.hass.localize(
                   "ui.dialogs.helper_settings.input_number.mode"
                 )}
-                <paper-radio-group
-                  .selected=${this._mode}
-                  @selected-changed=${this._modeChanged}
+                <ha-formfield
+                  .label=${this.hass.localize(
+                    "ui.dialogs.helper_settings.input_number.slider"
+                  )}
                 >
-                  <paper-radio-button name="slider">
-                    ${this.hass.localize(
-                      "ui.dialogs.helper_settings.input_number.slider"
-                    )}
-                  </paper-radio-button>
-                  <paper-radio-button name="box">
-                    ${this.hass.localize(
-                      "ui.dialogs.helper_settings.input_number.box"
-                    )}
-                  </paper-radio-button>
-                </paper-radio-group>
+                  <ha-radio
+                    name="mode"
+                    value="slider"
+                    .checked=${this._mode === "slider"}
+                    @change=${this._modeChanged}
+                  ></ha-radio>
+                </ha-formfield>
+                <ha-formfield
+                  .label=${this.hass.localize(
+                    "ui.dialogs.helper_settings.input_number.box"
+                  )}
+                >
+                  <ha-radio
+                    name="mode"
+                    value="box"
+                    .checked=${this._mode === "box"}
+                    @change=${this._modeChanged}
+                  ></ha-radio>
+                </ha-formfield>
               </div>
               <paper-input
                 .value=${this._step}
@@ -159,7 +169,7 @@ class HaInputNumberForm extends LitElement {
 
   private _modeChanged(ev: CustomEvent) {
     fireEvent(this, "value-changed", {
-      value: { ...this._item, mode: ev.detail.value },
+      value: { ...this._item, mode: (ev.target as HaRadio).value },
     });
   }
 
