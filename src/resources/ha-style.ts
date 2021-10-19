@@ -136,25 +136,6 @@ documentContainer.innerHTML = `<custom-style>
         .map(([key, value]) => `--${key}: ${value};`)
         .join("")}
     }
-
-    /*
-      prevent clipping of positioned elements in a small scrollable
-      force smooth scrolling if can scroll
-      use non-shady selectors so this only targets iOS 9
-      conditional mixin set in ha-style-dialog does not work with shadyCSS
-    */
-    paper-dialog-scrollable:not(.can-scroll) > .scrollable {
-      -webkit-overflow-scrolling: auto !important;
-    }
-
-    paper-dialog-scrollable.can-scroll > .scrollable {
-      -webkit-overflow-scrolling: touch !important;
-    }
-
-    /* for paper-dialog */
-    iron-overlay-backdrop {
-      backdrop-filter: var(--dialog-backdrop-filter, none);
-    }
   </style>
 </custom-style>`;
 

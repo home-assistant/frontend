@@ -24,7 +24,7 @@ export const createCloseHeading = (
 // @ts-expect-error
 export class HaDialog extends Dialog {
   public scrollToPos(x: number, y: number) {
-    this.contentElement.scrollTo(x, y);
+    this.contentElement?.scrollTo(x, y);
   }
 
   protected renderHeading() {
@@ -43,6 +43,12 @@ export class HaDialog extends Dialog {
         .mdc-dialog__actions {
           justify-content: var(--justify-action-buttons, flex-end);
           padding-bottom: max(env(safe-area-inset-bottom), 8px);
+        }
+        .mdc-dialog__actions span:nth-child(1) {
+          flex: var(--secondary-action-button-flex, unset);
+        }
+        .mdc-dialog__actions span:nth-child(2) {
+          flex: var(--primary-action-button-flex, unset);
         }
         .mdc-dialog__container {
           align-items: var(--vertial-align-dialog, center);

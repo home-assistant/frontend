@@ -3246,41 +3246,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-dialog-behavior@npm:^3.0.0-pre.26, @polymer/paper-dialog-behavior@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-dialog-behavior@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-overlay-behavior": ^3.0.0-pre.27
-    "@polymer/paper-styles": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: 0f010c5528ed607eb35b437b3c478f67f9562fe3b24d10e9f7337423e077cf34807c4ad2ce98205441b7699d6330503d96ae74d8bf02809e30676a73eaa4e0c9
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-dialog-scrollable@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-dialog-scrollable@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-flex-layout": ^3.0.0-pre.26
-    "@polymer/paper-dialog-behavior": ^3.0.0-pre.26
-    "@polymer/paper-styles": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: 20a6f1725887e94b4766dc3ed26ef7e7140bad2a678c5edb743d17c9c19e95957719e6934ef95b380246c770424cb73d52e3df43b80e1533b56fad73aa29c2ff
-  languageName: node
-  linkType: hard
-
-"@polymer/paper-dialog@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@polymer/paper-dialog@npm:3.0.1"
-  dependencies:
-    "@polymer/iron-overlay-behavior": ^3.0.0-pre.27
-    "@polymer/neon-animation": ^3.0.0-pre.26
-    "@polymer/paper-dialog-behavior": ^3.0.0-pre.26
-    "@polymer/polymer": ^3.0.0
-  checksum: 3b832c7ccf18fb99869c1479390700525983686e9497c261170352e591b78c0ffcd9bc76e9863723c0d525c119fe5c78336d3c9b3eff87e1d23187d775235c3d
-  languageName: node
-  linkType: hard
-
 "@polymer/paper-dropdown-menu@npm:^3.2.0":
   version: 3.2.0
   resolution: "@polymer/paper-dropdown-menu@npm:3.2.0"
@@ -9095,9 +9060,6 @@ fsevents@^1.2.7:
     "@polymer/iron-input": ^3.0.1
     "@polymer/iron-overlay-behavior": ^3.0.3
     "@polymer/iron-resizable-behavior": ^3.0.1
-    "@polymer/paper-dialog": ^3.0.1
-    "@polymer/paper-dialog-behavior": ^3.0.1
-    "@polymer/paper-dialog-scrollable": ^3.0.1
     "@polymer/paper-dropdown-menu": ^3.2.0
     "@polymer/paper-input": ^3.2.1
     "@polymer/paper-item": ^3.0.1
