@@ -31,29 +31,9 @@ import { documentationUrl } from "../../../src/util/documentation-url";
 import "../components/supervisor-metric";
 import { hassioStyle } from "../resources/hassio-style";
 
-const UNSUPPORTED_REASON_URL = {
-  apparmor: "/more-info/unsupported/apparmor",
-  container: "/more-info/unsupported/container",
-  content_trust: "/more-info/unsupported/content_trust",
-  dbus: "/more-info/unsupported/dbus",
-  docker_configuration: "/more-info/unsupported/docker_configuration",
-  docker_version: "/more-info/unsupported/docker_version",
-  job_conditions: "/more-info/unsupported/job_conditions",
-  lxc: "/more-info/unsupported/lxc",
-  network_manager: "/more-info/unsupported/network_manager",
-  os_agent: "/more-info/unsupported/os_agent",
-  os: "/more-info/unsupported/os",
-  privileged: "/more-info/unsupported/privileged",
-  source_mods: "/more-info/unsupported/source_mods",
-  systemd: "/more-info/unsupported/systemd",
-};
-
+const UNSUPPORTED_REASON_URL = {};
 const UNHEALTHY_REASON_URL = {
   privileged: "/more-info/unsupported/privileged",
-  supervisor: "/more-info/unhealthy/supervisor",
-  setup: "/more-info/unhealthy/setup",
-  docker: "/more-info/unhealthy/docker",
-  untrusted: "/more-info/unhealthy/untrusted",
 };
 
 @customElement("hassio-supervisor-info")
@@ -425,20 +405,19 @@ class HassioSupervisorInfo extends LitElement {
           ${this.supervisor.resolution.unsupported.map(
             (reason) => html`
               <li>
-                ${UNSUPPORTED_REASON_URL[reason]
-                  ? html`<a
-                      href=${documentationUrl(
-                        this.hass,
-                        UNSUPPORTED_REASON_URL[reason]
-                      )}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      ${this.supervisor.localize(
-                        `system.supervisor.unsupported_reason.${reason}`
-                      ) || reason}
-                    </a>`
-                  : reason}
+                <a
+                  href=${documentationUrl(
+                    this.hass,
+                    UNSUPPORTED_REASON_URL[reason] ||
+                      `/more-info/unsupported/${reason}`
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ${this.supervisor.localize(
+                    `system.supervisor.unsupported_reason.${reason}`
+                  ) || reason}
+                </a>
               </li>
             `
           )}
@@ -456,20 +435,19 @@ class HassioSupervisorInfo extends LitElement {
           ${this.supervisor.resolution.unhealthy.map(
             (reason) => html`
               <li>
-                ${UNHEALTHY_REASON_URL[reason]
-                  ? html`<a
-                      href=${documentationUrl(
-                        this.hass,
-                        UNHEALTHY_REASON_URL[reason]
-                      )}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      ${this.supervisor.localize(
-                        `system.supervisor.unhealthy_reason.${reason}`
-                      ) || reason}
-                    </a>`
-                  : reason}
+                <a
+                  href=${documentationUrl(
+                    this.hass,
+                    UNHEALTHY_REASON_URL[reason] ||
+                      `/more-info/unhealthy/${reason}`
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  ${this.supervisor.localize(
+                    `system.supervisor.unhealthy_reason.${reason}`
+                  ) || reason}
+                </a>
               </li>
             `
           )}
