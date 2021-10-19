@@ -20,8 +20,10 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyGridGaugeCardConfig } from "../types";
 
 @customElement("hui-energy-grid-neutrality-gauge-card")
-class HuiEnergyGridGaugeCard extends SubscribeMixin(LitElement)
-  implements LovelaceCard {
+class HuiEnergyGridGaugeCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   @property({ attribute: false }) public hass?: HomeAssistant;
 
   @state() private _config?: EnergyGridGaugeCardConfig;

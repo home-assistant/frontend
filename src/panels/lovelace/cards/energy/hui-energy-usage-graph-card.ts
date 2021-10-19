@@ -38,8 +38,10 @@ import { LovelaceCard } from "../../types";
 import { EnergyUsageGraphCardConfig } from "../types";
 
 @customElement("hui-energy-usage-graph-card")
-export class HuiEnergyUsageGraphCard extends SubscribeMixin(LitElement)
-  implements LovelaceCard {
+export class HuiEnergyUsageGraphCard
+  extends SubscribeMixin(LitElement)
+  implements LovelaceCard
+{
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @state() private _config?: EnergyUsageGraphCardConfig;
