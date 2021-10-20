@@ -245,10 +245,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                         "ui.panel.config.script.editor.modes.description",
                                         "documentation_link",
                                         html`<a
-                                          href="${documentationUrl(
+                                          href=${documentationUrl(
                                             this.hass,
                                             "/integrations/script/#script-modes"
-                                          )}"
+                                          )}
                                           target="_blank"
                                           rel="noreferrer"
                                           >${this.hass.localize(
@@ -351,10 +351,10 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                   )}
                                 </p>
                                 <a
-                                  href="${documentationUrl(
+                                  href=${documentationUrl(
                                     this.hass,
                                     "/docs/scripts/"
-                                  )}"
+                                  )}
                                   target="_blank"
                                   rel="noreferrer"
                                 >
