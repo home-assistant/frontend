@@ -157,9 +157,6 @@ class HaBlueprintOverview extends LitElement {
                 .label=${this.hass.localize(
                   `ui.panel.config.blueprint.overview.create_${blueprint.domain}`
                 )}
-                title=${this.hass.localize(
-                  `ui.panel.config.blueprint.overview.create_${blueprint.domain}`
-                )}
                 @click=${this._createNew}
                 .path=${mdiRobot}
               >
