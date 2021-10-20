@@ -12,7 +12,6 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
 import { Calendar, fetchCalendarEvents } from "../../../data/calendar";
 import type {
   CalendarEvent,

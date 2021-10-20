@@ -1,5 +1,7 @@
 import "@material/mwc-button/mwc-button";
 import {
+  mdiLoginVariant,
+  mdiMusicNote,
   mdiPlayBoxMultiple,
   mdiSend,
   mdiVolumeHigh,
@@ -15,8 +17,8 @@ import { customElement, property, query } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-svg-icon";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-slider";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
@@ -62,8 +64,8 @@ class MoreInfoMediaPlayer extends LitElement {
                     <ha-icon-button
                       action=${control.action}
                       @click=${this._handleClick}
+                      .path=${control.icon}
                     >
-                      <ha-icon .icon=${control.icon}></ha-icon>
                     </ha-icon-button>
                   `
                 )}
@@ -130,7 +132,10 @@ class MoreInfoMediaPlayer extends LitElement {
       stateObj.attributes.source_list?.length
         ? html`
             <div class="source-input">
-              <ha-icon class="source-input" icon="hass:login-variant"></ha-icon>
+              <ha-svg-icon
+                class="source-input"
+                .path=${mdiLoginVariant}
+              ></ha-svg-icon>
               <ha-paper-dropdown-menu
                 .label=${this.hass.localize("ui.card.media_player.source")}
               >
@@ -155,7 +160,7 @@ class MoreInfoMediaPlayer extends LitElement {
       stateObj.attributes.sound_mode_list?.length
         ? html`
             <div class="sound-input">
-              <ha-icon icon="hass:music-note"></ha-icon>
+              <ha-svg-icon .path=${mdiMusicNote}></ha-svg-icon>
               <ha-paper-dropdown-menu
                 dynamic-align
                 label-float
@@ -228,8 +233,8 @@ class MoreInfoMediaPlayer extends LitElement {
         justify-content: space-between;
       }
 
-      .source-input ha-icon,
-      .sound-input ha-icon {
+      .source-input ha-svg-icon,
+      .sound-input ha-svg-icon {
         padding: 7px;
         margin-top: 24px;
       }

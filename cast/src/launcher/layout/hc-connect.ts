@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { mdiCastConnected, mdiCast } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import {
   Auth,
@@ -19,7 +20,7 @@ import {
   loadTokens,
   saveTokens,
 } from "../../../../src/common/auth/token_storage";
-import "../../../../src/components/ha-icon";
+import "../../../../src/components/ha-svg-icon";
 import "../../../../src/layouts/hass-loading-screen";
 import { registerServiceWorker } from "../../../../src/util/register-service-worker";
 import "./hc-layout";
@@ -127,11 +128,11 @@ export class HcConnect extends LitElement {
           <div class="card-actions">
             <mwc-button @click=${this._handleDemo}>
               Show Demo
-              <ha-icon
-                .icon=${this.castManager.castState === "CONNECTED"
-                  ? "hass:cast-connected"
-                  : "hass:cast"}
-              ></ha-icon>
+              <ha-svg-icon
+                .path=${this.castManager.castState === "CONNECTED"
+                  ? mdiCastConnected
+                  : mdiCast}
+              ></ha-svg-icon>
             </mwc-button>
             <div class="spacer"></div>
             <mwc-button @click=${this._handleConnect}>Authorize</mwc-button>
@@ -307,7 +308,7 @@ export class HcConnect extends LitElement {
         color: darkred;
       }
 
-      mwc-button ha-icon {
+      mwc-button ha-svg-icon {
         margin-left: 8px;
       }
 

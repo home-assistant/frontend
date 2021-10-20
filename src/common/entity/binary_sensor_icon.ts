@@ -1,3 +1,44 @@
+import {
+  mdiBattery,
+  mdiBatteryOutline,
+  mdiBatteryCharging,
+  mdiThermometer,
+  mdiSnowflake,
+  mdiServerNetworkOff,
+  mdiServerNetwork,
+  mdiDoorClosed,
+  mdiDoorOpen,
+  mdiGarage,
+  mdiGarageOpen,
+  mdiPowerPlugOff,
+  mdiPowerPlug,
+  mdiCheckCircle,
+  mdiAlertCircle,
+  mdiSmoke,
+  mdiFire,
+  mdiBrightness5,
+  mdiBrightness7,
+  mdiLock,
+  mdiLockOpen,
+  mdiWaterOff,
+  mdiWater,
+  mdiWalk,
+  mdiRun,
+  mdiHomeOutline,
+  mdiHome,
+  mdiSquare,
+  mdiSquareOutline,
+  mdiMusicNoteOff,
+  mdiMusicNote,
+  mdiPackage,
+  mdiPackageUp,
+  mdiCropPortrait,
+  mdiVibrate,
+  mdiWindowClosed,
+  mdiWindowOpen,
+  mdiRadioboxBlank,
+  mdiCheckboxMarkedCircle,
+} from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 
 /** Return an icon representing a binary sensor state. */
@@ -6,53 +47,53 @@ export const binarySensorIcon = (state?: string, stateObj?: HassEntity) => {
   const is_off = state === "off";
   switch (stateObj?.attributes.device_class) {
     case "battery":
-      return is_off ? "hass:battery" : "hass:battery-outline";
+      return is_off ? mdiBattery : mdiBatteryOutline;
     case "battery_charging":
-      return is_off ? "hass:battery" : "hass:battery-charging";
+      return is_off ? mdiBattery : mdiBatteryCharging;
     case "cold":
-      return is_off ? "hass:thermometer" : "hass:snowflake";
+      return is_off ? mdiThermometer : mdiSnowflake;
     case "connectivity":
-      return is_off ? "hass:server-network-off" : "hass:server-network";
+      return is_off ? mdiServerNetworkOff : mdiServerNetwork;
     case "door":
-      return is_off ? "hass:door-closed" : "hass:door-open";
+      return is_off ? mdiDoorClosed : mdiDoorOpen;
     case "garage_door":
-      return is_off ? "hass:garage" : "hass:garage-open";
+      return is_off ? mdiGarage : mdiGarageOpen;
     case "power":
-      return is_off ? "hass:power-plug-off" : "hass:power-plug";
+      return is_off ? mdiPowerPlugOff : mdiPowerPlug;
     case "gas":
     case "problem":
     case "safety":
     case "tamper":
-      return is_off ? "hass:check-circle" : "hass:alert-circle";
+      return is_off ? mdiCheckCircle : mdiAlertCircle;
     case "smoke":
-      return is_off ? "hass:check-circle" : "hass:smoke";
+      return is_off ? mdiCheckCircle : mdiSmoke;
     case "heat":
-      return is_off ? "hass:thermometer" : "hass:fire";
+      return is_off ? mdiThermometer : mdiFire;
     case "light":
-      return is_off ? "hass:brightness-5" : "hass:brightness-7";
+      return is_off ? mdiBrightness5 : mdiBrightness7;
     case "lock":
-      return is_off ? "hass:lock" : "hass:lock-open";
+      return is_off ? mdiLock : mdiLockOpen;
     case "moisture":
-      return is_off ? "hass:water-off" : "hass:water";
+      return is_off ? mdiWaterOff : mdiWater;
     case "motion":
-      return is_off ? "hass:walk" : "hass:run";
+      return is_off ? mdiWalk : mdiRun;
     case "occupancy":
-      return is_off ? "hass:home-outline" : "hass:home";
+      return is_off ? mdiHomeOutline : mdiHome;
     case "opening":
-      return is_off ? "hass:square" : "hass:square-outline";
+      return is_off ? mdiSquare : mdiSquareOutline;
     case "plug":
-      return is_off ? "hass:power-plug-off" : "hass:power-plug";
+      return is_off ? mdiPowerPlugOff : mdiPowerPlug;
     case "presence":
-      return is_off ? "hass:home-outline" : "hass:home";
+      return is_off ? mdiHomeOutline : mdiHome;
     case "sound":
-      return is_off ? "hass:music-note-off" : "hass:music-note";
+      return is_off ? mdiMusicNoteOff : mdiMusicNote;
     case "update":
-      return is_off ? "mdi:package" : "mdi:package-up";
+      return is_off ? mdiPackage : mdiPackageUp;
     case "vibration":
-      return is_off ? "hass:crop-portrait" : "hass:vibrate";
+      return is_off ? mdiCropPortrait : mdiVibrate;
     case "window":
-      return is_off ? "hass:window-closed" : "hass:window-open";
+      return is_off ? mdiWindowClosed : mdiWindowOpen;
     default:
-      return is_off ? "hass:radiobox-blank" : "hass:checkbox-marked-circle";
+      return is_off ? mdiRadioboxBlank : mdiCheckboxMarkedCircle;
   }
 };

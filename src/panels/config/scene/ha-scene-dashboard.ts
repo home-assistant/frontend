@@ -13,12 +13,11 @@ import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
-import "../../../components/ha-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import { forwardHaptic } from "../../../data/haptics";
 import { activateScene, SceneEntity } from "../../../data/scene";
@@ -60,7 +59,6 @@ class HaSceneDashboard extends LitElement {
       ).map((scene) => ({
         ...scene,
         name: computeStateName(scene),
-        icon: stateIcon(scene),
       }));
     }
   );
@@ -85,7 +83,8 @@ class HaSceneDashboard extends LitElement {
       icon: {
         title: "",
         type: "icon",
-        template: (icon) => html` <ha-icon .icon=${icon}></ha-icon> `,
+        template: (_, scene) =>
+          html` <ha-state-icon .state=${scene}></ha-state-icon> `,
       },
       name: {
         title: this.hass.localize("ui.panel.config.scene.picker.headers.name"),

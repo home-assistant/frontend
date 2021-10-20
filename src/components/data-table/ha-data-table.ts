@@ -747,10 +747,16 @@ export class HaDataTable extends LitElement {
           text-align: right;
         }
 
-        .mdc-data-table__cell--icon:first-child ha-icon {
+        .mdc-data-table__cell--icon:first-child ha-icon,
+        .mdc-data-table__cell--icon:first-child ha-state-icon,
+        .mdc-data-table__cell--icon:first-child ha-svg-icon {
           margin-left: 8px;
         }
-        :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child ha-icon {
+        :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child ha-icon,
+        :host([dir="rtl"])
+          .mdc-data-table__cell--icon:first-child
+          ha-state-icon,
+        :host([dir="rtl"]) .mdc-data-table__cell--icon:first-child ha-svg-icon {
           margin-left: auto;
           margin-right: 8px;
         }

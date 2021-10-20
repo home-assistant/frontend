@@ -122,9 +122,6 @@ class PanelEnergy extends LitElement {
     return [
       haStyle,
       css`
-        ha-icon-button {
-          color: var(--text-primary-color);
-        }
         app-toolbar {
           display: flex;
           justify-content: space-between;

@@ -132,10 +132,10 @@ export class HaDeviceEntitiesCard extends LitElement {
   private _renderEntry(entry: EntityRegistryStateEntry): TemplateResult {
     return html`
       <paper-icon-item .entry=${entry} @click=${this._openEditEntry}>
-        <ha-icon
+        <ha-svg-icon
           slot="item-icon"
-          .icon=${domainIcon(computeDomain(entry.entity_id))}
-        ></ha-icon>
+          .path=${domainIcon(computeDomain(entry.entity_id))}
+        ></ha-svg-icon>
         <paper-item-body>
           <div class="name">${entry.stateName || entry.entity_id}</div>
         </paper-item-body>
