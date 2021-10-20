@@ -166,7 +166,7 @@ class HaPanelDevStatistics extends LitElement {
           title: "Entity has no state",
           text: html`This entity has no state at the moment, if this is an
             orphaned entity, you may want to remove the long term statistics of
-            it from your database.<br /><br />Do you want to permantly remove
+            it from your database.<br /><br />Do you want to permanently remove
             the long term statistics of ${issue.data.statistic_id} from your
             database?`,
           confirm: async () => {
