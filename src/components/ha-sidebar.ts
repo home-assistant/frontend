@@ -73,15 +73,15 @@ const SORT_VALUE_URL_PATHS = {
 };
 
 const PANEL_ICONS = {
-  lovelace: mdiViewDashboard,
-  energy: mdiLightningBolt,
-  map: mdiTooltipAccount,
-  logbook: mdiFormatListBulletedType,
-  history: mdiChartBox,
-  "developer-tools": mdiHammer,
-  hassio: mdiHomeAssistant,
-  config: mdiCog,
   calendar: mdiCalendar,
+  config: mdiCog,
+  "developer-tools": mdiHammer,
+  energy: mdiLightningBolt,
+  hassio: mdiHomeAssistant,
+  history: mdiChartBox,
+  logbook: mdiFormatListBulletedType,
+  lovelace: mdiViewDashboard,
+  map: mdiTooltipAccount,
   "media-browser": mdiPlayBoxMultiple,
   "shopping-list": mdiCart,
 };
