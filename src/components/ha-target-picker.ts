@@ -558,7 +558,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
         width: 16px;
         height: 16px;
         --mdc-icon-size: 14px;
-        color: var(--card-background-color);
+        color: var(--secondary-text-color);
       }
       .mdc-chip__icon--leading {
         display: flex;
