@@ -1,6 +1,6 @@
+import "@material/mwc-linear-progress/mwc-linear-progress";
+import type { LinearProgress } from "@material/mwc-linear-progress/mwc-linear-progress";
 import { mdiDotsVertical, mdiPlayBoxMultiple } from "@mdi/js";
-import "@polymer/paper-progress/paper-progress";
-import type { PaperProgressElement } from "@polymer/paper-progress/paper-progress";
 import {
   css,
   CSSResultGroup,
@@ -9,7 +9,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -19,8 +19,8 @@ import { supportsFeature } from "../../../common/entity/supports-feature";
 import { extractColors } from "../../../common/image/extract_color";
 import { debounce } from "../../../common/util/debounce";
 import "../../../components/ha-card";
-import "../../../components/ha-state-icon";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-state-icon";
 import { showMediaBrowserDialog } from "../../../components/media-player/show-media-browser-dialog";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
 import {
@@ -81,7 +81,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   @state() private _cardHeight = 0;
 
-  @query("paper-progress") private _progressBar?: PaperProgressElement;
+  @query("mwc-linear-progress") private _progressBar?: LinearProgress;
 
   @state() private _marqueeActive = false;
 
@@ -296,17 +296,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                   ${!this._showProgressBar
                     ? ""
                     : html`
-                        <paper-progress
-                          .max=${stateObj.attributes.media_duration}
+                        <mwc-linear-progress
+                          determinate
                           style=${styleMap({
-                            "--paper-progress-active-color":
+                            "--mdc-theme-primary":
                               this._foregroundColor || "var(--accent-color)",
                             cursor: supportsFeature(stateObj, SUPPORT_SEEK)
                               ? "pointer"
                               : "initial",
                           })}
                           @click=${this._handleSeek}
-                        ></paper-progress>
+                        >
+                        </mwc-linear-progress>
                       `}
                 </div>
               `
@@ -508,8 +509,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _updateProgressBar(): void {
-    if (this._progressBar) {
-      this._progressBar.value = getCurrentProgress(this._stateObj!);
+    if (this._progressBar && this._stateObj?.attributes.media_duration) {
+      this._progressBar.progress =
+        getCurrentProgress(this._stateObj) /
+        this._stateObj!.attributes.media_duration;
     }
   }
 
@@ -524,12 +527,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const progressWidth = (
-      this.shadowRoot!.querySelector("paper-progress") as HTMLElement
-    ).offsetWidth;
+    const progressWidth = (this._progressBar as HTMLElement).offsetWidth;
 
     const percent = e.offsetX / progressWidth;
-    const position = (e.currentTarget! as any).max * percent;
+    const position = this._stateObj!.attributes.media_duration! * percent;
 
     this.hass!.callService("media_player", "media_seek", {
       entity_id: this._config!.entity,
@@ -730,12 +731,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         padding-top: 16px;
       }
 
-      paper-progress {
+      mwc-linear-progress {
         width: 100%;
-        height: var(--paper-progress-height, 4px);
         margin-top: 4px;
-        border-radius: calc(var(--paper-progress-height, 4px) / 2);
-        --paper-progress-container-color: rgba(200, 200, 200, 0.5);
+        --mdc-linear-progress-buffer-color: rgba(200, 200, 200, 0.5);
       }
 
       .no-image .controls {
