@@ -22,8 +22,7 @@ import "../../../components/entity/ha-entity-toggle";
 import "../../../components/ha-button-related-filter-menu";
 import "../../../components/ha-fab";
 import "../../../components/ha-svg-icon";
-import "../../../components/ha-overflow-menu";
-import "../../../components/ha-overflow-menu-item";
+import "../../../components/ha-icon-overflow-menu";
 import {
   AutomationEntity,
   triggerAutomationActions,
@@ -147,153 +146,63 @@ class HaAutomationPicker extends LitElement {
       }
       columns.actions = {
         title: "",
-        type: "icon",
+        overflows: true,
         template: (_info, automation: any) => html`
-          <ha-overflow-menu
+          <ha-icon-overflow-menu
             .hass=${this.hass}
+            .items=${[
+              // Info Button
+              {
+                path: mdiInformationOutline,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.show_info_automation"
+                ),
+                action: () => this._showInfo(automation),
+              },
+              // Trace Button
+              {
+                path: mdiHistory,
+                disabled: !automation.attributes.id,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.dev_automation"
+                ),
+                tooltip: !automation.attributes.id
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.picker.dev_only_editable"
+                    )
+                  : "",
+                action: () => {
+                  if (ifDefined(automation.attributes.id)) {
+                    navigate(
+                      `/config/automation/trace/${automation.attributes.id}`
+                    );
+                  }
+                },
+              },
+              // Edit Button
+              {
+                path: automation.attributes.id ? mdiPencil : mdiPencilOff,
+                disabled: !automation.attributes.id,
+                label: this.hass.localize(
+                  "ui.panel.config.automation.picker.edit_automation"
+                ),
+                tooltip: !automation.attributes.id
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.picker.dev_only_editable"
+                    )
+                  : "",
+                action: () => {
+                  if (ifDefined(automation.attributes.id)) {
+                    navigate(
+                      `/config/automation/edit/${automation.attributes.id}`
+                    );
+                  }
+                },
+              },
+            ]}
             style="color: var(--secondary-text-color)"
           >
-            <!-- Info Button -->
-
-            <ha-overflow-menu-item
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.picker.show_info_automation"
-              )}
-              .automation=${automation}
-              .path=${mdiInformationOutline}
-              @click=${this._showInfo}
-            >
-            </ha-overflow-menu-item>
-
-            <!-- Trace Button -->
-            <ha-overflow-menu-item
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.picker.dev_automation"
-              )}
-              .automation=${automation}
-              .disabled=${!automation.attributes.id}
-              .path=${mdiHistory}
-              @click=${this._handleIconClick(
-                ifDefined(automation.attributes.id)
-                  ? `/config/automation/trace/${automation.attributes.id}`
-                  : ""
-              )}
-            >
-              ${!automation.attributes.id
-                ? html`
-                    <paper-tooltip animation-delay="0" position="left">
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.picker.dev_only_editable"
-                      )}
-                    </paper-tooltip>
-                  `
-                : ""}
-            </ha-overflow-menu-item>
-
-            <!-- Edit Button -->
-            <ha-overflow-menu-item
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.picker.edit_automation"
-              )}
-              .automation=${automation}
-              .disabled=${!automation.attributes.id}
-              .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
-              @click=${this._handleIconClick(
-                ifDefined(automation.attributes.id)
-                  ? `/config/automation/edit/${automation.attributes.id}`
-                  : ""
-              )}
-            >
-              ${!automation.attributes.id
-                ? html`
-                    <paper-tooltip animation-delay="0" position="left">
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.picker.only_editable"
-                      )}
-                    </paper-tooltip>
-                  `
-                : ""}
-            </ha-overflow-menu-item>
-          </ha-overflow-menu>
-        `,
-      };
-      columns.info = {
-        title: "",
-        type: "icon-button",
-        template: (_info, automation) => html`
-          <mwc-icon-button
-            .automation=${automation}
-            @click=${this._showInfo}
-            .label=${this.hass.localize(
-              "ui.panel.config.automation.picker.show_info_automation"
-            )}
-          >
-            <ha-svg-icon .path=${mdiInformationOutline}></ha-svg-icon>
-          </mwc-icon-button>
-        `,
-      };
-      columns.trace = {
-        title: "",
-        type: "icon-button",
-        template: (_info, automation: any) => html`
-          <a
-            href=${ifDefined(
-              automation.attributes.id
-                ? `/config/automation/trace/${automation.attributes.id}`
-                : undefined
-            )}
-          >
-            <mwc-icon-button
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.picker.dev_automation"
-              )}
-              .disabled=${!automation.attributes.id}
-            >
-              <ha-svg-icon .path=${mdiHistory}></ha-svg-icon>
-            </mwc-icon-button>
-          </a>
-          ${!automation.attributes.id
-            ? html`
-                <paper-tooltip animation-delay="0" position="left">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.picker.dev_only_editable"
-                  )}
-                </paper-tooltip>
-              `
-            : ""}
-        `,
-      };
-      columns.edit = {
-        title: "",
-        type: "icon-button",
-        template: (_info, automation: any) => html`
-          <a
-            href=${ifDefined(
-              automation.attributes.id
-                ? `/config/automation/edit/${automation.attributes.id}`
-                : undefined
-            )}
-          >
-            <mwc-icon-button
-              .disabled=${!automation.attributes.id}
-              .label=${this.hass.localize(
-                "ui.panel.config.automation.picker.edit_automation"
-              )}
-            >
-              <ha-svg-icon
-                .path=${automation.attributes.id ? mdiPencil : mdiPencilOff}
-              ></ha-svg-icon>
-            </mwc-icon-button>
-          </a>
-          ${!automation.attributes.id
-            ? html`
-                <paper-tooltip animation-delay="0" position="left">
-                  ${this.hass.localize(
-                    "ui.panel.config.automation.picker.only_editable"
-                  )}
-                </paper-tooltip>
-              `
-            : ""}
+          </ha-icon-overflow-menu>
         `,
       };
       return columns;
@@ -361,19 +270,8 @@ class HaAutomationPicker extends LitElement {
     this._filterValue = undefined;
   }
 
-  private _handleIconClick(href: string) {
-    return (ev) => {
-      ev.stopPropagation();
-
-      if (href) {
-        navigate(href.toString());
-      }
-    };
-  }
-
-  private _showInfo(ev) {
-    ev.stopPropagation();
-    const entityId = ev.currentTarget.automation.entity_id;
+  private _showInfo(automation: AutomationEntity) {
+    const entityId = automation.entity_id;
     fireEvent(this, "hass-more-info", { entityId });
   }
 

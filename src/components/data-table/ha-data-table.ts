@@ -73,6 +73,7 @@ export interface DataTableColumnData extends DataTableSortColumnData {
   width?: string;
   maxWidth?: string;
   grows?: boolean;
+  overflows?: boolean;
   forceLTR?: boolean;
   hidden?: boolean;
 }
@@ -288,6 +289,7 @@ export class HaDataTable extends LitElement {
                 sortable: Boolean(column.sortable),
                 "not-sorted": Boolean(column.sortable && !sorted),
                 grows: Boolean(column.grows),
+                overflows: Boolean(column.overflows),
               };
               return html`
                 <div
@@ -409,6 +411,7 @@ export class HaDataTable extends LitElement {
                                     "mdc-data-table__cell--icon-button":
                                       Boolean(column.type === "icon-button"),
                                     grows: Boolean(column.grows),
+                                    overflows: Boolean(column.overflows),
                                     forceLTR: Boolean(column.forceLTR),
                                   })}"
                                   style=${column.width
@@ -926,6 +929,9 @@ export class HaDataTable extends LitElement {
         .grows {
           flex-grow: 1;
           flex-shrink: 1;
+        }
+        .overflows {
+          overflow: initial;
         }
         .forceLTR {
           direction: ltr;
