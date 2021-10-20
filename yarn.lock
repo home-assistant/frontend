@@ -3165,7 +3165,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/iron-overlay-behavior@npm:^3.0.0-pre.27, @polymer/iron-overlay-behavior@npm:^3.0.3":
+"@polymer/iron-overlay-behavior@npm:^3.0.0-pre.27":
   version: 3.0.3
   resolution: "@polymer/iron-overlay-behavior@npm:3.0.3"
   dependencies:
@@ -3331,7 +3331,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-progress@npm:^3.0.0-pre.26, @polymer/paper-progress@npm:^3.0.1":
+"@polymer/paper-progress@npm:^3.0.0-pre.26":
   version: 3.0.1
   resolution: "@polymer/paper-progress@npm:3.0.1"
   dependencies:
@@ -9033,14 +9033,11 @@ fsevents@^1.2.7:
     "@polymer/iron-flex-layout": ^3.0.1
     "@polymer/iron-icon": ^3.0.1
     "@polymer/iron-input": ^3.0.1
-    "@polymer/iron-overlay-behavior": ^3.0.3
     "@polymer/iron-resizable-behavior": ^3.0.1
     "@polymer/paper-dropdown-menu": ^3.2.0
     "@polymer/paper-input": ^3.2.1
     "@polymer/paper-item": ^3.0.1
     "@polymer/paper-listbox": ^3.0.1
-    "@polymer/paper-menu-button": ^3.1.0
-    "@polymer/paper-progress": ^3.0.1
     "@polymer/paper-ripple": ^3.0.2
     "@polymer/paper-slider": ^3.0.1
     "@polymer/paper-styles": ^3.0.1
