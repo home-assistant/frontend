@@ -2,8 +2,8 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { UNAVAILABLE, UNKNOWN } from "../../data/entity";
 import { FrontendLocaleData } from "../../data/translation";
 import { formatDate } from "../datetime/format_date";
-import { formatDateTime } from "../datetime/format_date_time";
-import { formatTime } from "../datetime/format_time";
+import { formatDateTimeWithSeconds } from "../datetime/format_date_time";
+import { formatTimeWithSeconds } from "../datetime/format_time";
 import { formatNumber } from "../number/format_number";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
@@ -46,7 +46,10 @@ export const computeStateDisplay = (
         const components = state.split(" ");
         if (components.length === 2) {
           // Date and time.
-          return formatDateTime(new Date(components.join("T")), locale);
+          return formatDateTimeWithSeconds(
+            new Date(components.join("T")),
+            locale
+          );
         }
         if (components.length === 1) {
           if (state.includes("-")) {
@@ -56,7 +59,7 @@ export const computeStateDisplay = (
           if (state.includes(":")) {
             // Time only.
             const now = new Date();
-            return formatTime(
+            return formatTimeWithSeconds(
               new Date(`${now.toISOString().split("T")[0]}T${state}`),
               locale
             );
@@ -81,8 +84,12 @@ export const computeStateDisplay = (
       }
       if (!stateObj.attributes.has_date) {
         date = new Date();
-        date.setHours(stateObj.attributes.hour, stateObj.attributes.minute);
-        return formatTime(date, locale);
+        date.setHours(
+          stateObj.attributes.hour,
+          stateObj.attributes.minute,
+          stateObj.attributes.second
+        );
+        return formatTimeWithSeconds(date, locale);
       }
 
       date = new Date(
@@ -90,9 +97,10 @@ export const computeStateDisplay = (
         stateObj.attributes.month - 1,
         stateObj.attributes.day,
         stateObj.attributes.hour,
-        stateObj.attributes.minute
+        stateObj.attributes.minute,
+        stateObj.attributes.second
       );
-      return formatDateTime(date, locale);
+      return formatDateTimeWithSeconds(date, locale);
     }
   }
 

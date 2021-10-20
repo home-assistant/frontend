@@ -71,6 +71,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
                   : stateObj.state}
                 .locale=${this.hass.locale}
                 .disabled=${UNAVAILABLE_STATES.includes(stateObj.state)}
+                enable-second
                 hide-label
                 @value-changed=${this._timeChanged}
                 @click=${this._stopEventPropagation}

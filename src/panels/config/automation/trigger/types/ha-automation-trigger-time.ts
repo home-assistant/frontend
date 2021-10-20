@@ -100,6 +100,7 @@ export class HaTimeTrigger extends LitElement implements TriggerElement {
               ? ""
               : at}
             .locale=${this.hass.locale}
+            enable-second
             @value-changed=${this._valueChanged}
           ></ha-time-input>`} `;
   }

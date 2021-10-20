@@ -1,8 +1,8 @@
 import { html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { formatDate } from "../../../common/datetime/format_date";
-import { formatDateTime } from "../../../common/datetime/format_date_time";
-import { formatTime } from "../../../common/datetime/format_time";
+import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
+import { formatTimeWithSeconds } from "../../../common/datetime/format_time";
 import { relativeTime } from "../../../common/datetime/relative_time";
 import { capitalizeFirstLetter } from "../../../common/string/capitalize-first-letter";
 import { FrontendLocaleData } from "../../../data/translation";
@@ -13,8 +13,8 @@ const FORMATS: {
   [key: string]: (ts: Date, lang: FrontendLocaleData) => string;
 } = {
   date: formatDate,
-  datetime: formatDateTime,
-  time: formatTime,
+  datetime: formatDateTimeWithSeconds,
+  time: formatTimeWithSeconds,
 };
 const INTERVAL_FORMAT = ["relative", "total"];
 
