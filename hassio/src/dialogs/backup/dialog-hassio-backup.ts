@@ -142,7 +142,7 @@ class HassioBackupDialog
           display: block;
         }
         ha-icon-button {
-          color: var(--sidebar-icon-color);
+          color: var(--secondary-text-color);
         }
       `,
     ];
