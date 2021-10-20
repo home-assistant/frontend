@@ -21,6 +21,9 @@ import {
   mdiArrowCollapseHorizontal,
   mdiArrowDown,
   mdiCircleSlice8,
+  mdiArrowSplitVertical,
+  mdiCurtains,
+  mdiCurtainsClosed,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 
@@ -64,8 +67,18 @@ export const coverIcon = (state?: string, stateObj?: HassEntity): string => {
         default:
           return mdiWindowShutterOpen;
       }
-    case "blind":
     case "curtain":
+      switch (state) {
+        case "opening":
+          return mdiArrowSplitVertical;
+        case "closing":
+          return mdiArrowCollapseHorizontal;
+        case "closed":
+          return mdiCurtainsClosed;
+        default:
+          return mdiCurtains;
+      }
+    case "blind":
     case "shade":
       switch (state) {
         case "opening":
