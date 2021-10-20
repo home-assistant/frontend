@@ -4,7 +4,7 @@ import { customElement, property, state } from "lit/decorators";
 import { assert } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
-import { stateIcon } from "../../../../common/entity/state_icon";
+import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/ha-formfield";
 import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
@@ -64,6 +64,7 @@ export class HuiGenericEntityRowEditor
     }
 
     const domain = computeDomain(this._entity);
+    const entityState = this.hass.states[this._entity];
 
     return html`
       <div class="card-config">
@@ -88,8 +89,13 @@ export class HuiGenericEntityRowEditor
               "ui.panel.lovelace.editor.card.generic.icon"
             )}
             .value=${this._config.icon}
-            .placeholder=${stateIcon(this.hass!.states[this._config.entity])}
             .configValue=${"icon"}
+            .placeholder=${entityState?.attributes.icon}
+            .fallbackPath=${!this._icon &&
+            !entityState?.attributes.icon &&
+            entityState
+              ? domainIcon(computeDomain(entityState.entity_id), entityState)
+              : undefined}
             @value-changed=${this._valueChanged}
           ></ha-icon-picker>
         </div>

@@ -46,13 +46,13 @@ export class HaIconPicker extends LitElement {
 
   @property() public placeholder?: string;
 
+  @property() public fallbackPath?: string;
+
   @property({ attribute: "error-message" }) public errorMessage?: string;
 
   @property({ type: Boolean }) public disabled = false;
 
   @query("vaadin-combo-box-light", true) private comboBox!: HTMLElement;
-
-  @property({ type: Boolean }) private _opened = false;
 
   protected render(): TemplateResult {
     return html`
@@ -63,7 +63,6 @@ export class HaIconPicker extends LitElement {
         .allowCustomValue=${true}
         .filteredItems=${[]}
         ${comboBoxRenderer(rowRenderer)}
-        @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
         @filter-changed=${this._filterChanged}
       >
@@ -77,19 +76,20 @@ export class HaIconPicker extends LitElement {
           autocorrect="off"
           spellcheck="false"
         >
-          ${!this._opened && (this._value || this.placeholder)
+          ${this._value || this.placeholder
             ? html`
                 <ha-icon .icon=${this._value || this.placeholder} slot="suffix">
                 </ha-icon>
               `
+            : this.fallbackPath
+            ? html`<ha-svg-icon
+                .path=${this.fallbackPath}
+                slot="suffix"
+              ></ha-svg-icon>`
             : ""}
         </paper-input>
       </vaadin-combo-box-light>
     `;
-  }
-
-  private _openedChanged(ev: PolymerChangedEvent<boolean>) {
-    this._opened = ev.detail.value;
   }
 
   private _valueChanged(ev: PolymerChangedEvent<string>) {
@@ -132,10 +132,10 @@ export class HaIconPicker extends LitElement {
 
   static get styles() {
     return css`
-      ha-icon {
-        position: absolute;
+      ha-icon,
+      ha-svg-icon {
+        position: relative;
         bottom: 2px;
-        right: 0;
       }
     `;
   }

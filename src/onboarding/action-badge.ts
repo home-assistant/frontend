@@ -1,6 +1,6 @@
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
-import "../components/ha-icon";
+import "../components/ha-svg-icon";
 
 @customElement("action-badge")
 class ActionBadge extends LitElement {
@@ -15,9 +15,12 @@ class ActionBadge extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="icon">
-        <ha-icon .icon=${this.icon}></ha-icon>
+        <ha-svg-icon .path=${this.icon}></ha-svg-icon>
         ${this.badgeIcon
-          ? html` <ha-icon class="badge" .icon=${this.badgeIcon}></ha-icon> `
+          ? html`<ha-svg-icon
+              class="badge"
+              .path=${this.badgeIcon}
+            ></ha-svg-icon>`
           : ""}
       </div>
       <div class="title">${this.title}</div>

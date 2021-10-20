@@ -15,7 +15,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/entity/state-badge";
-import "../../../components/ha-icon";
 import "../../../components/ha-relative-time";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";

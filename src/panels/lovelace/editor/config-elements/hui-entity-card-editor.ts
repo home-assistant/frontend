@@ -3,7 +3,8 @@ import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, boolean, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stateIcon } from "../../../../common/entity/state_icon";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/entity/ha-entity-attribute-picker";
 import "../../../../components/ha-icon-picker";
 import { HomeAssistant } from "../../../../types";
@@ -77,6 +78,7 @@ export class HuiEntityCardEditor
     if (!this.hass || !this._config) {
       return html``;
     }
+    const entityState = this.hass.states[this._entity];
 
     return html`
       <div class="card-config">
@@ -110,8 +112,12 @@ export class HuiEntityCardEditor
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._icon}
-            .placeholder=${this._icon ||
-            stateIcon(this.hass.states[this._entity])}
+            .placeholder=${this._icon || entityState?.attributes.icon}
+            .fallbackPath=${!this._icon &&
+            !entityState?.attributes.icon &&
+            entityState
+              ? domainIcon(computeDomain(entityState.entity_id), entityState)
+              : undefined}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
           ></ha-icon-picker>

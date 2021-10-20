@@ -1,4 +1,5 @@
 import {
+  mdiAlertCircleOutline,
   mdiGauge,
   mdiWaterPercent,
   mdiWeatherFog,
@@ -12,7 +13,6 @@ import {
 import { css, html, svg, SVGTemplateResult, TemplateResult } from "lit";
 import { styleMap } from "lit/directives/style-map";
 import { formatNumber } from "../common/number/format_number";
-import "../components/ha-icon";
 import "../components/ha-svg-icon";
 import type { HomeAssistant } from "../types";
 
@@ -57,7 +57,7 @@ export const weatherSVGs = new Set<string>([
 ]);
 
 export const weatherIcons = {
-  exceptional: "hass:alert-circle-outline",
+  exceptional: mdiAlertCircleOutline,
 };
 
 export const weatherAttrIcons = {
@@ -433,7 +433,10 @@ export const getWeatherStateIcon = (
 
   if (state in weatherIcons) {
     return html`
-      <ha-icon class="weather-icon" .icon=${weatherIcons[state]}></ha-icon>
+      <ha-svg-icon
+        class="weather-icon"
+        .path=${weatherIcons[state]}
+      ></ha-svg-icon>
     `;
   }
 

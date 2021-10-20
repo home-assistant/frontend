@@ -13,7 +13,6 @@ import memoizeOne from "memoize-one";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 import "../../../components/ha-button-related-filter-menu";
@@ -61,7 +60,6 @@ class HaScriptPicker extends LitElement {
       ).map((script) => ({
         ...script,
         name: computeStateName(script),
-        icon: stateIcon(script),
         last_triggered: script.attributes.last_triggered || undefined,
       }));
     }
@@ -87,7 +85,8 @@ class HaScriptPicker extends LitElement {
       icon: {
         title: "",
         type: "icon",
-        template: (icon) => html` <ha-icon .icon=${icon}></ha-icon> `,
+        template: (_icon, script) =>
+          html` <ha-state-icon .state=${script}></ha-state-icon>`,
       },
       name: {
         title: this.hass.localize("ui.panel.config.script.picker.headers.name"),
