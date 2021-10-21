@@ -288,6 +288,7 @@
       "next": "Next",
       "back": "Back",
       "undo": "Undo",
+      "move": "Move",
       "save": "Save",
       "rename": "Rename",
       "yes": "Yes",
@@ -1714,7 +1715,7 @@
                 },
                 "event": {
                   "label": "Fire event",
-                  "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
+                  "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
                   "service_data": "[%key:ui::components::service-control::service_data%]"
                 },
                 "device_id": {
@@ -3026,8 +3027,8 @@
               "self_consumed_solar_could_not_calc": "Self-consumed solar energy couldn't be calculated"
             },
             "grid_neutrality_gauge": {
-              "energy_dependency": "This card represents your energy dependency.",
-              "red_green_color_explain": "If it's green, it means you produced more energy than that you consumed from the grid. If it's in the red, it means that you relied on the grid for part of your home's energy consumption.",
+              "energy_dependency": "This card indicates your net energy usage.",
+              "color_explain": "If the needle is in the purple, you returned more energy to the grid than you consumed from it. If it's in the blue, you consumed more energy from the grid than you returned.",
               "net_returned_grid": "Net returned to the grid",
               "net_consumed_grid": "Net consumed from the grid",
               "grid_neutrality_not_calculated": "Grid neutrality could not be calculated"
@@ -3174,7 +3175,8 @@
           },
           "select_view": {
             "header": "Choose a view",
-            "dashboard_label": "Dashboard"
+            "dashboard_label": "Dashboard",
+            "views_label": "View"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -3877,7 +3879,9 @@
               "unsupported_unit_state": "The unit (''{state_unit}'') of this entity doesn't match a unit of device class ''{device_class}''.",
               "unsupported_unit_metadata": "The unit (''{metadata_unit}'') of the recorded statistics doesn't match the supported unit ''{supported_unit}'' of device class ''{device_class}''.",
               "unsupported_state_class": "The state class ''{state_class}'' of this entity is not supported.",
-              "entity_not_recorded": "This entity is excluded from being recorded."
+              "entity_not_recorded": "This entity is excluded from being recorded.",
+              "entity_no_longer_recorded": "This entity is no longer being recorded.",
+              "no_state": "There is no state available for this entity."
             },
             "fix_issue": {
               "fix": "Fix issue",
@@ -4025,7 +4029,7 @@
         "rebuild": "rebuild",
         "open_web_ui": "Open web UI",
         "protection_mode": {
-          "title": "Warning: Protection mode is disabled!",
+          "title": "Protection mode is disabled!",
           "content": "Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.",
           "enable": "[%key:ui::common::enable%]"
         },
@@ -4242,7 +4246,6 @@
         "share_diagonstics_description": "Would you want to automatically share crash reports and diagnostic information when the Supervisor encounters unexpected errors? {line_break} This will allow us to fix the problems, the information is only accessible to the Home Assistant Core team and will not be shared with others.{line_break} The data does not include any private/sensitive information and you can disable this in settings at any time you want.",
         "unsupported_reason": {
           "apparmor": "AppArmor is not enabled on the host",
-          "container": "Containers known to cause issues",
           "content_trust": "Content-trust validation is disabled",
           "dbus": "DBUS",
           "docker_configuration": "Docker Configuration",
@@ -4253,6 +4256,7 @@
           "os": "Operating System",
           "os_agent": "OS Agent",
           "privileged": "Supervisor is not privileged",
+          "software": "Unsupported software detected",
           "source_mods": "Source modifications",
           "systemd": "Systemd"
         },

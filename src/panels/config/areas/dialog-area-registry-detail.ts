@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";

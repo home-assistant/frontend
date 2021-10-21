@@ -1,4 +1,5 @@
 import {
+  mdiFan,
   mdiHomeMapMarker,
   mdiMapMarker,
   mdiPause,
@@ -195,7 +196,7 @@ class MoreInfoVacuum extends LitElement {
                   style="justify-content: center; align-self: center; padding-top: 1.3em"
                 >
                   <span>
-                    <ha-icon icon="hass:fan"></ha-icon>
+                    <ha-svg-icon .path=${mdiFan}></ha-svg-icon>
                     ${stateObj.attributes.fan_speed}
                   </span>
                 </div>

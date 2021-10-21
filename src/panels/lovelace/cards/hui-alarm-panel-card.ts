@@ -155,7 +155,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           .label=${this._stateIconLabel(stateObj.state)}
           @click=${this._handleMoreInfo}
         >
-          <ha-icon .icon=${alarmPanelIcon(stateObj.state)}></ha-icon>
+          <ha-svg-icon .path=${alarmPanelIcon(stateObj.state)}></ha-svg-icon>
         </ha-label-badge>
         <div id="armActions" class="actions">
           ${(stateObj.state === "disarmed"

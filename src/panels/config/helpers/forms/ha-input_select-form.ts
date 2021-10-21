@@ -1,6 +1,5 @@
 import "@material/mwc-button/mwc-button";
 import { mdiDelete, mdiDrag } from "@mdi/js";
-import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -19,7 +18,7 @@ import { SortableEvent } from "sortablejs";
 import Sortable from "sortablejs/modular/sortable.core.esm";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import type { InputSelect } from "../../../../data/input_select";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
@@ -101,21 +100,27 @@ class HaInputSelectForm extends LitElement {
           .invalid=${nameInvalid}
           dialogInitialFocus
         ></paper-input>
-        <ha-icon-input
+        <ha-icon-picker
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
-        ></ha-icon-input>
+        ></ha-icon-picker>
         <div class="options">
           ${this.hass!.localize(
             "ui.dialogs.helper_settings.input_select.options"
           )}:
           ${guard([this._options, this._renderEmptySortable], () =>
             this._renderEmptySortable
-              ? ""
+              ? html`
+                  <paper-item>
+                    ${this.hass!.localize(
+                      "ui.dialogs.helper_settings.input_select.no_options"
+                    )}
+                  </paper-item>
+                `
               : this._options.map(
                   (option, index) => html`
                     <paper-item class="option">
@@ -133,30 +138,31 @@ class HaInputSelectForm extends LitElement {
                             </div>
                           `
                         : ""}
-                      <paper-input
-                        class="option_input"
-                        label=${index}
-                        autocapitalize="none"
-                        autocomplete="off"
-                        autocorrect="off"
-                        spellcheck="false"
-                        @value-changed=${this._inputValueChanged}
-                        .value=${option}
-                      >
-                      </paper-input>
-                      <ha-icon-button
-                        .index=${index}
-                        .title=${this.hass.localize(
-                          "ui.dialogs.helper_settings.input_select.remove_option"
-                        )}
-                        @click=${this._removeOption}
-                        .path=${mdiDelete}
-                        icon="hass:delete"
-                      ></ha-icon-button>
+                      <paper-item class="option">
+                        <paper-input
+                          class="option_input"
+                          label=${index}
+                          autocapitalize="none"
+                          autocomplete="off"
+                          autocorrect="off"
+                          spellcheck="false"
+                          @value-changed=${this._inputValueChanged}
+                          .value=${option}
+                        >
+                        </paper-input>
+                        <ha-icon-button
+                          .index=${index}
+                          .label=${this.hass.localize(
+                            "ui.dialogs.helper_settings.input_select.remove_option"
+                          )}
+                          @click=${this._removeOption}
+                          .path=${mdiDelete}
+                        ></ha-icon-button>
+                      </paper-item>
                     </paper-item>
                   `
                 )
-          )}
+          )}:
         </div>
         <div class="layout horizontal bottom">
           <paper-input

@@ -78,6 +78,18 @@ class HassioAddonConfig extends LitElement {
     this.addon.translations.en?.configuration?.[entry.name].name ||
     entry.name;
 
+  private _schema = memoizeOne((schema: HaFormSchema[]): HaFormSchema[] =>
+    // @ts-expect-error supervisor does not implement [string, string] for select.options[]
+    schema.map((entry) =>
+      entry.type === "select"
+        ? {
+            ...entry,
+            options: entry.options.map((option) => [option, option]),
+          }
+        : entry
+    )
+  );
+
   private _filteredShchema = memoizeOne(
     (options: Record<string, unknown>, schema: HaFormSchema[]) =>
       schema.filter((entry) => entry.name in options || entry.required)
@@ -128,12 +140,14 @@ class HassioAddonConfig extends LitElement {
                 .data=${this._options!}
                 @value-changed=${this._configChanged}
                 .computeLabel=${this.computeLabel}
-                .schema=${this._showOptional
-                  ? this.addon.schema!
-                  : this._filteredShchema(
-                      this.addon.options,
-                      this.addon.schema!
-                    )}
+                .schema=${this._schema(
+                  this._showOptional
+                    ? this.addon.schema!
+                    : this._filteredShchema(
+                        this.addon.options,
+                        this.addon.schema!
+                      )
+                )}
               ></ha-form>`
             : html` <ha-yaml-editor
                 @value-changed=${this._configChanged}

@@ -1,9 +1,7 @@
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import deepFreeze from "deep-freeze";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import "../../../../components/dialog/ha-paper-dialog";
 import type { LovelaceCardConfig } from "../../../../data/lovelace";
 import { haStyleDialog } from "../../../../resources/styles";
 import type { HomeAssistant } from "../../../../types";

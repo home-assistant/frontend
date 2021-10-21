@@ -141,6 +141,9 @@ class HassioBackupDialog
           flex-shrink: 0;
           display: block;
         }
+        ha-icon-button {
+          color: var(--secondary-text-color);
+        }
       `,
     ];
   }
