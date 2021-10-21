@@ -3343,7 +3343,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polymer/paper-ripple@npm:^3.0.0-pre.26, @polymer/paper-ripple@npm:^3.0.2":
+"@polymer/paper-ripple@npm:^3.0.0-pre.26":
   version: 3.0.2
   resolution: "@polymer/paper-ripple@npm:3.0.2"
   dependencies:
@@ -9038,7 +9038,6 @@ fsevents@^1.2.7:
     "@polymer/paper-input": ^3.2.1
     "@polymer/paper-item": ^3.0.1
     "@polymer/paper-listbox": ^3.0.1
-    "@polymer/paper-ripple": ^3.0.2
     "@polymer/paper-slider": ^3.0.1
     "@polymer/paper-styles": ^3.0.1
     "@polymer/paper-tabs": ^3.1.0
