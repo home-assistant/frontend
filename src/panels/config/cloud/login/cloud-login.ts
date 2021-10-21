@@ -93,7 +93,6 @@ export class CloudLogin extends LitElement {
             ${this.flashMessage
               ? html`<ha-alert
                   dismissable
-                  ripple
                   @alert-dismissed-clicked=${this._dismissFlash}
                 >
                   ${this.flashMessage}

@@ -1,6 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-ripple/mwc-ripple";
-import type { Ripple } from "@material/mwc-ripple/mwc-ripple";
 import {
   mdiAlertCircleOutline,
   mdiAlertOutline,
@@ -9,7 +7,7 @@ import {
   mdiInformationOutline,
 } from "@mdi/js";
 import { css, html, LitElement } from "lit";
-import { customElement, property, query } from "lit/decorators";
+import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import "./ha-icon-button";
@@ -43,11 +41,7 @@ class HaAlert extends LitElement {
 
   @property({ type: Boolean }) public dismissable = false;
 
-  @property({ type: Boolean }) public ripple = false;
-
   @property({ type: Boolean }) public rtl = false;
-
-  @query("mwc-ripple") private _rippleEl?: Ripple;
 
   public render() {
     return html`
@@ -79,21 +73,9 @@ class HaAlert extends LitElement {
                 ></ha-icon-button>`
               : ""}
           </div>
-          ${this.ripple ? html`<mwc-ripple></mwc-ripple>` : ""}
         </div>
       </div>
     `;
-  }
-
-  protected firstUpdated() {
-    if (this.ripple) {
-      const rippleEl = this._rippleEl;
-      if (!rippleEl) {
-        return;
-      }
-      rippleEl.startPress();
-      setTimeout(() => rippleEl.endPress(), 1000);
-    }
   }
 
   private _dismiss_clicked() {
