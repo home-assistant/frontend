@@ -51,6 +51,7 @@ class HuiSensorCard extends HuiEntityCard {
 
     const entityCardConfig: EntityCardConfig = {
       ...cardConfig,
+      hours_to_show,
       type: "entity",
     };
 

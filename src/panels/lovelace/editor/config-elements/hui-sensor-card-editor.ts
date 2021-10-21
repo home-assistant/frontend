@@ -4,7 +4,15 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, number, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  boolean,
+  number,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
@@ -31,6 +39,7 @@ const cardConfigStruct = assign(
     detail: optional(number()),
     theme: optional(string()),
     hours_to_show: optional(number()),
+    show_trend: optional(boolean()),
   })
 );
 
@@ -80,6 +89,10 @@ export class HuiSensorCardEditor
 
   get _hours_to_show(): number | string {
     return this._config!.hours_to_show || "24";
+  }
+
+  get _show_trend(): boolean {
+    return this._config!.show_trend || false;
   }
 
   protected render(): TemplateResult {
@@ -193,6 +206,17 @@ export class HuiSensorCardEditor
             @value-changed=${this._valueChanged}
           ></paper-input>
         </div>
+        <ha-formfield
+          label=${this.hass.localize(
+            "ui.panel.lovelace.editor.card.sensor.show_trend"
+          )}
+        >
+          <ha-switch
+            .checked=${this._show_trend}
+            .configValue=${"show_trend"}
+            @change=${this._change}
+          ></ha-switch>
+        </ha-formfield>
       </div>
     `;
   }
@@ -202,15 +226,21 @@ export class HuiSensorCardEditor
       return;
     }
 
-    const value = (ev.target! as EditorTarget).checked ? 2 : 1;
+    const target = ev.target! as EditorTarget;
+    const value =
+      target.configValue === "detail"
+        ? (ev.target! as EditorTarget).checked
+          ? 2
+          : 1
+        : target.checked;
 
-    if (this._detail === value) {
+    if (this[`_${target.configValue}`] === value) {
       return;
     }
 
     this._config = {
       ...this._config,
-      detail: value,
+      [target.configValue!]: value,
     };
 
     fireEvent(this, "config-changed", { config: this._config });

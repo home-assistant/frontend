@@ -40,6 +40,8 @@ export interface EntityCardConfig extends LovelaceCardConfig {
   unit?: string;
   theme?: string;
   state_color?: boolean;
+  hours_to_show?: number;
+  show_trend?: boolean;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
@@ -357,6 +359,7 @@ export interface SensorCardConfig extends LovelaceCardConfig {
   detail?: number;
   theme?: string;
   hours_to_show?: number;
+  show_trend?: boolean;
   limits?: {
     min?: number;
     max?: number;

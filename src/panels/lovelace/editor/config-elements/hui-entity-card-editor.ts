@@ -1,7 +1,15 @@
 import "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { assert, assign, boolean, object, optional, string } from "superstruct";
+import {
+  assert,
+  assign,
+  boolean,
+  number,
+  object,
+  optional,
+  string,
+} from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
@@ -29,6 +37,8 @@ const cardConfigStruct = assign(
     theme: optional(string()),
     state_color: optional(boolean()),
     footer: optional(headerFooterConfigStructs),
+    hours_to_show: optional(number()),
+    show_trend: optional(boolean()),
   })
 );
 
@@ -72,6 +82,14 @@ export class HuiEntityCardEditor
 
   get _theme(): string {
     return this._config!.theme || "";
+  }
+
+  get _hours_to_show(): number | string {
+    return this._config!.hours_to_show || "24";
+  }
+
+  get _show_trend(): boolean {
+    return this._config!.show_trend || false;
   }
 
   protected render(): TemplateResult {
@@ -166,6 +184,36 @@ export class HuiEntityCardEditor
             >
             </ha-switch>
           </ha-formfield>
+        </div>
+
+        <div class="side-by-side">
+          <ha-formfield
+            .label=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.entity.show_trend"
+            )}
+          >
+            <ha-switch
+              .checked=${this._show_trend}
+              .configValue=${"show_trend"}
+              @change=${this._valueChanged}
+            ></ha-switch>
+          </ha-formfield>
+          ${this._show_trend
+            ? html`
+                <paper-input
+                  .label="${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.generic.hours_to_show"
+                  )} (${this.hass.localize(
+                    "ui.panel.lovelace.editor.card.config.optional"
+                  )})"
+                  type="number"
+                  .value=${this._hours_to_show}
+                  min="1"
+                  .configValue=${"hours_to_show"}
+                  @value-changed=${this._valueChanged}
+                ></paper-input>
+              `
+            : ""}
         </div>
       </div>
     `;

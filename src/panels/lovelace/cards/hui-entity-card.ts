@@ -1,3 +1,4 @@
+import { mdiArrowDown, mdiArrowUp } from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -7,6 +8,7 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
+import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
@@ -16,10 +18,12 @@ import { computeStateDomain } from "../../../common/entity/compute_state_domain"
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { formatNumber } from "../../../common/number/format_number";
+import { round } from "../../../common/number/round";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import { UNAVAILABLE_STATES } from "../../../data/entity";
+import { fetchRecent } from "../../../data/history";
 import { HomeAssistant } from "../../../types";
 import { formatAttributeValue } from "../../../util/hass-attributes-util";
 import { computeCardSize } from "../common/compute-card-size";
@@ -66,7 +70,13 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   @state() private _config?: EntityCardConfig;
 
+  @state() private _lastState?: number;
+
   private _footerElement?: HuiErrorCard | LovelaceHeaderFooter;
+
+  private _date?: Date;
+
+  private _fetching = false;
 
   public setConfig(config: EntityCardConfig): void {
     if (!config.entity) {
@@ -76,7 +86,10 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       throw new Error("Invalid entity");
     }
 
-    this._config = config;
+    this._config = {
+      hours_to_show: 24,
+      ...config,
+    };
 
     if (this._config.footer) {
       this._footerElement = createHeaderFooterElement(this._config.footer);
@@ -115,23 +128,37 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
       : !UNAVAILABLE_STATES.includes(stateObj.state);
 
     const name = this._config.name || computeStateName(stateObj);
+    const trend = this._lastState
+      ? round((Number(stateObj.state) / this._lastState) * 100, 0)
+      : undefined;
 
     return html`
       <ha-card @click=${this._handleClick} tabindex="0">
         <div class="header">
           <div class="name" .title=${name}>${name}</div>
           <div class="icon">
-            <ha-state-icon
-              .icon=${this._config.icon}
-              .state=${stateObj}
-              data-domain=${ifDefined(
-                this._config.state_color ||
-                  (domain === "light" && this._config.state_color !== false)
-                  ? domain
-                  : undefined
-              )}
-              data-state=${stateObj ? computeActiveState(stateObj) : ""}
-            ></ha-state-icon>
+            ${this._config.show_trend && trend
+              ? html`
+                  <div class="trend ${classMap({ error: trend < 100 })}">
+                    <ha-svg-icon
+                      .path=${trend < 100 ? mdiArrowDown : mdiArrowUp}
+                    ></ha-svg-icon>
+                    ${trend}%
+                  </div>
+                `
+              : html`
+                  <ha-icon
+                    .icon=${this._config.icon || stateIcon(stateObj)}
+                    data-domain=${ifDefined(
+                      this._config.state_color ||
+                        (domain === "light" &&
+                          this._config.state_color !== false)
+                        ? domain
+                        : undefined
+                    )}
+                    data-state=${stateObj ? computeActiveState(stateObj) : ""}
+                  ></ha-icon>
+                `}
           </div>
         </div>
         <div class="info">
@@ -177,7 +204,11 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (!this._config || !this.hass) {
+    if (
+      !this._config ||
+      !this.hass ||
+      (this._fetching && !changedProps.has("_config"))
+    ) {
       return;
     }
 
@@ -194,10 +225,44 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config!.theme);
     }
+
+    if (changedProps.has("_config")) {
+      if (!oldConfig || oldConfig.entity !== this._config.entity) {
+        this._lastState = undefined;
+      }
+      this._getStateHistory();
+    } else if (Date.now() - this._date!.getTime() >= 60000) {
+      this._getStateHistory();
+    }
   }
 
   private _handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
+  }
+
+  private async _getStateHistory(): Promise<void> {
+    if (this._fetching) {
+      return;
+    }
+
+    this._fetching = true;
+
+    const now = new Date();
+    const startTime = new Date(
+      new Date().setHours(now.getHours() - this._config!.hours_to_show!)
+    );
+
+    const stateHistory = await fetchRecent(
+      this.hass!,
+      this._config!.entity,
+      startTime,
+      startTime
+    );
+
+    this._lastState = Number(stateHistory[0][0].state);
+
+    this._date = now;
+    this._fetching = false;
   }
 
   static get styles(): CSSResultGroup {
@@ -232,6 +297,17 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
         .icon {
           color: var(--state-icon-color, #44739e);
           line-height: 40px;
+        }
+
+        .trend {
+          font-size: 16px;
+          color: var(--success-color);
+          display: flex;
+          align-items: center;
+        }
+
+        .trend.error {
+          color: var(--error-color);
         }
 
         .info {
