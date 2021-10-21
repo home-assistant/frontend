@@ -1715,7 +1715,7 @@
                 },
                 "event": {
                   "label": "Fire event",
-                  "event": "[%key:ui::panel::config::automation::editor::triggers::type::homeassistant::event%]",
+                  "event": "[%key:ui::panel::config::automation::editor::triggers::type::event::label%]",
                   "service_data": "[%key:ui::components::service-control::service_data%]"
                 },
                 "device_id": {
