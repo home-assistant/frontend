@@ -673,6 +673,19 @@ export class HaConfigDevicePage extends LitElement {
         </div>
       `);
     }
+    if (integrations.includes("rfxtrx")) {
+      import(
+        "./device-detail/integration-elements/rfxtrx/ha-device-actions-rfxtrx"
+      );
+      templates.push(html`
+        <div class="card-actions" slot="actions">
+          <ha-device-actions-rfxtrx
+            .hass=${this.hass}
+            .device=${device}
+          ></ha-device-actions-rfxtrx>
+        </div>
+      `);
+    }
     if (integrations.includes("zha")) {
       import("./device-detail/integration-elements/zha/ha-device-actions-zha");
       import("./device-detail/integration-elements/zha/ha-device-info-zha");
