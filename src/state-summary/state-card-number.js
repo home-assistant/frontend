@@ -6,6 +6,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 /* eslint-plugin-disable lit */
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../components/entity/state-info";
+import "../components/ha-slider";
 
 class StateCardNumber extends mixinBehaviors(
   [IronResizableBehavior],
@@ -15,12 +16,21 @@ class StateCardNumber extends mixinBehaviors(
     return html`
       <style include="iron-flex iron-flex-alignment"></style>
       <style>
+        ha-slider {
+          margin-left: auto;
+        }
         .state {
           @apply --paper-font-body1;
           color: var(--primary-text-color);
 
           text-align: right;
           line-height: 40px;
+        }
+        .sliderstate {
+          min-width: 45px;
+        }
+        ha-slider[hidden] {
+          display: none !important;
         }
         paper-input {
           text-align: right;
@@ -30,6 +40,19 @@ class StateCardNumber extends mixinBehaviors(
 
       <div class="horizontal justified layout" id="number_card">
         ${this.stateInfoTemplate}
+        <ha-slider
+          min="[[min]]"
+          max="[[max]]"
+          value="{{value}}"
+          step="[[step]]"
+          hidden="[[hiddenslider]]"
+          pin
+          on-change="selectedValueChanged"
+          on-click="stopPropagation"
+          id="slider"
+          ignore-bar-touch=""
+        >
+        </ha-slider>
         <paper-input
           no-label-float=""
           auto-validate=""
@@ -41,9 +64,19 @@ class StateCardNumber extends mixinBehaviors(
           type="number"
           on-change="selectedValueChanged"
           on-click="stopPropagation"
+          hidden="[[hiddenbox]]"
         >
         </paper-input>
-        <div class="state">[[stateObj.attributes.unit_of_measurement]]</div>
+        <div class="state" hidden="[[hiddenbox]]">
+          [[stateObj.attributes.unit_of_measurement]]
+        </div>
+        <div
+          id="sliderstate"
+          class="state sliderstate"
+          hidden="[[hiddenslider]]"
+        >
+          [[value]] [[stateObj.attributes.unit_of_measurement]]
+        </div>
       </div>
     `;
   }
@@ -58,9 +91,31 @@ class StateCardNumber extends mixinBehaviors(
     `;
   }
 
+  ready() {
+    super.ready();
+    if (typeof ResizeObserver === "function") {
+      const ro = new ResizeObserver((entries) => {
+        entries.forEach(() => {
+          this.hiddenState();
+        });
+      });
+      ro.observe(this.$.number_card);
+    } else {
+      this.addEventListener("iron-resize", () => this.hiddenState());
+    }
+  }
+
   static get properties() {
     return {
       hass: Object,
+      hiddenbox: {
+        type: Boolean,
+        value: true,
+      },
+      hiddenslider: {
+        type: Boolean,
+        value: true,
+      },
       inDialog: {
         type: Boolean,
         value: false,
@@ -83,17 +138,44 @@ class StateCardNumber extends mixinBehaviors(
       },
       step: Number,
       value: Number,
+      mode: String,
     };
   }
 
+  hiddenState() {
+    if (this.mode !== "slider") return;
+    const sliderwidth = this.$.slider.offsetWidth;
+    if (sliderwidth < 100) {
+      this.$.sliderstate.hidden = true;
+    } else if (sliderwidth >= 145) {
+      this.$.sliderstate.hidden = false;
+    }
+  }
+
   stateObjectChanged(newVal) {
+    const prevMode = this.mode;
+    const min = Number(newVal.attributes.min);
+    const max = Number(newVal.attributes.max);
+    const step = Number(newVal.attributes.step);
+    const range = (max - min) / step;
+
     this.setProperties({
-      min: Number(newVal.attributes.min),
-      max: Number(newVal.attributes.max),
-      step: Number(newVal.attributes.step),
+      min: min,
+      max: max,
+      step: step,
       value: Number(newVal.state),
+      mode: String(newVal.attributes.mode),
       maxlength: String(newVal.attributes.max).length,
+      hiddenbox:
+        newVal.attributes.mode === "slider" ||
+        (newVal.attributes.mode === "auto" && range <= 256),
+      hiddenslider:
+        newVal.attributes.mode === "box" ||
+        (newVal.attributes.mode === "auto" && range > 256),
     });
+    if (this.mode === "slider" && prevMode !== "slider") {
+      this.hiddenState();
+    }
   }
 
   selectedValueChanged() {
