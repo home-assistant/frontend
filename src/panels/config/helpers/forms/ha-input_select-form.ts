@@ -114,31 +114,26 @@ class HaInputSelectForm extends LitElement {
           )}:
           ${guard([this._options, this._renderEmptySortable], () =>
             this._renderEmptySortable
-              ? html`
-                  <paper-item>
-                    ${this.hass!.localize(
-                      "ui.dialogs.helper_settings.input_select.no_options"
-                    )}
-                  </paper-item>
-                `
+              ? ""
               : this._options.map(
                   (option, index) => html`
                     <paper-item class="option">
-                      ${this._reordering
-                        ? html`
-                            <div class="reorderButtonWrapper">
-                              <ha-svg-icon
-                                .title=${this.hass!.localize(
-                                  "ui.panel.lovelace.cards.shopping-list.drag_and_drop"
-                                )}
-                                class="reorderButton"
-                                .path=${mdiDrag}
-                              >
-                              </ha-svg-icon>
-                            </div>
-                          `
-                        : ""}
-                      <paper-item class="option">
+                      ${
+                        this._reordering
+                          ? html`
+                              <div class="reorderButtonWrapper">
+                                <ha-svg-icon
+                                  .title=${this.hass!.localize(
+                                    "ui.panel.lovelace.cards.shopping-list.drag_and_drop"
+                                  )}
+                                  class="reorderButton"
+                                  .path=${mdiDrag}
+                                >
+                                </ha-svg-icon>
+                              </div>
+                            `
+                          : ""
+                      }
                         <paper-input
                           class="option_input"
                           label=${index}
@@ -162,7 +157,7 @@ class HaInputSelectForm extends LitElement {
                     </paper-item>
                   `
                 )
-          )}:
+          )}
         </div>
         <div class="layout horizontal bottom">
           <paper-input
@@ -324,19 +319,11 @@ class HaInputSelectForm extends LitElement {
         }
         .option {
           padding: 0;
-          border: 1px solid var(--divider-color);
-          border-radius: 4px;
-          margin-top: 4px;
         }
         mwc-button {
           margin-left: 8px;
         }
-        .reorderButtonWrapper {
-          width: 48px;
-          height: 48px;
-        }
         .reorderButton {
-          display: inline;
           padding-right: 8px;
           cursor: move;
         }
