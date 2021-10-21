@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -9,10 +8,11 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
+import { caseInsensitiveStringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-circular-progress";
 import { createCloseHeading } from "../../../../src/components/ha-dialog";
-import "../../../../src/components/ha-svg-icon";
+import "../../../../src/components/ha-icon-button";
 import {
   fetchHassioAddonsInfo,
   HassioAddonRepository,
@@ -57,7 +57,7 @@ class HassioRepositoriesDialog extends LitElement {
   private _filteredRepositories = memoizeOne((repos: HassioAddonRepository[]) =>
     repos
       .filter((repo) => repo.slug !== "core" && repo.slug !== "local")
-      .sort((a, b) => (a.name < b.name ? -1 : 1))
+      .sort((a, b) => caseInsensitiveStringCompare(a.name, b.name))
   );
 
   protected render(): TemplateResult {
@@ -89,15 +89,14 @@ class HassioRepositoriesDialog extends LitElement {
                       <div secondary>${repo.maintainer}</div>
                       <div secondary>${repo.url}</div>
                     </paper-item-body>
-                    <mwc-icon-button
+                    <ha-icon-button
                       .slug=${repo.slug}
-                      .title=${this._dialogParams!.supervisor.localize(
+                      .label=${this._dialogParams!.supervisor.localize(
                         "dialog.repositories.remove"
                       )}
+                      .path=${mdiDelete}
                       @click=${this._removeRepository}
-                    >
-                      <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                    </mwc-icon-button>
+                    ></ha-icon-button>
                   </paper-item>
                 `
               )

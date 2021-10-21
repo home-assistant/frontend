@@ -25,7 +25,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { navigate } from "../../common/navigate";
 import "../../common/search/search-input";
-import { stringCompare } from "../../common/string/compare";
+import { caseInsensitiveStringCompare } from "../../common/string/compare";
 import {
   fuzzyFilterSort,
   ScorableTextItem,
@@ -35,6 +35,7 @@ import "../../components/ha-chip";
 import "../../components/ha-circular-progress";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
+import "../../components/ha-icon-button";
 import { domainToName } from "../../data/integration";
 import { getPanelNameTranslationKey } from "../../data/panel";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -123,7 +124,7 @@ export class QuickBar extends LitElement {
       : this._entityItems;
 
     if (items && this._filter && this._filter !== " ") {
-      items = this._filterItems(items || [], this._filter);
+      items = this._filterItems(items, this._filter);
     }
 
     return html`
@@ -160,13 +161,12 @@ export class QuickBar extends LitElement {
               ></ha-svg-icon>`}
           ${this._search &&
           html`
-            <mwc-icon-button
+            <ha-icon-button
               slot="suffix"
               @click=${this._clearSearch}
-              title="Clear"
-            >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+              .label=${this.hass!.localize("ui.common.clear")}
+              .path=${mdiClose}
+            ></ha-icon-button>
           `}
         </paper-input>
         ${!items
@@ -386,10 +386,14 @@ export class QuickBar extends LitElement {
   private _generateEntityItems(): EntityItem[] {
     return Object.keys(this.hass.states)
       .map((entityId) => {
+        const entityState = this.hass.states[entityId];
         const entityItem = {
-          primaryText: computeStateName(this.hass.states[entityId]),
+          primaryText: computeStateName(entityState),
           altText: entityId,
-          icon: domainIcon(computeDomain(entityId), this.hass.states[entityId]),
+          icon: entityState.attributes.icon,
+          iconPath: entityState.attributes.icon
+            ? undefined
+            : domainIcon(computeDomain(entityId), entityState),
           action: () => fireEvent(this, "hass-more-info", { entityId }),
         };
 
@@ -399,7 +403,7 @@ export class QuickBar extends LitElement {
         };
       })
       .sort((a, b) =>
-        stringCompare(a.primaryText.toLowerCase(), b.primaryText.toLowerCase())
+        caseInsensitiveStringCompare(a.primaryText, b.primaryText)
       );
   }
 
@@ -409,10 +413,7 @@ export class QuickBar extends LitElement {
       ...this._generateServerControlCommands(),
       ...this._generateNavigationCommands(),
     ].sort((a, b) =>
-      stringCompare(
-        a.strings.join(" ").toLowerCase(),
-        b.strings.join(" ").toLowerCase()
-      )
+      caseInsensitiveStringCompare(a.strings.join(" "), b.strings.join(" "))
     );
   }
 
@@ -616,7 +617,7 @@ export class QuickBar extends LitElement {
           color: var(--primary-text-color);
         }
 
-        paper-input mwc-icon-button {
+        paper-input ha-icon-button {
           --mdc-icon-button-size: 24px;
           color: var(--primary-text-color);
         }

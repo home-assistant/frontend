@@ -1,9 +1,11 @@
+import { mdiDownload } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-listbox/paper-listbox";
-import { mdiDownload } from "@mdi/js";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultArray, html, LitElement } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
+import { capitalizeFirstLetter } from "../../../../../common/string/capitalize-first-letter";
+import "../../../../../components/ha-icon-button";
 import {
   fetchZWaveJSLogConfig,
   setZWaveJSLogLevel,
@@ -98,14 +100,13 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
                   `
                 : ""}
             </div>
-            <mwc-icon-button
+            <ha-icon-button
               .label=${this.hass.localize(
                 "ui.panel.config.zwave_js.logs.download_logs"
               )}
               @click=${this._downloadLogs}
-            >
-              <ha-svg-icon .path=${mdiDownload}></ha-svg-icon>
-            </mwc-icon-button>
+              .path=${mdiDownload}
+            ></ha-icon-button>
           </ha-card>
           <textarea readonly></textarea>
         </div>
@@ -149,7 +150,7 @@ class ZWaveJSLogs extends SubscribeMixin(LitElement) {
     setZWaveJSLogLevel(this.hass!, this.configEntryId, selected);
     this._textarea!.value += `${this.hass.localize(
       "ui.panel.config.zwave_js.logs.log_level_changed",
-      { level: selected.charAt(0).toUpperCase() + selected.slice(1) }
+      { level: capitalizeFirstLetter(selected) }
     )}\n`;
   }
 

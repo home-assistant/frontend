@@ -28,6 +28,7 @@ export class HuiEntityPickerTable extends LitElement {
   protected render(): TemplateResult {
     return html`
       <ha-data-table
+        .hass=${this.hass}
         selectable
         .id=${"entity_id"}
         .columns=${this._columns(this.narrow!)}
@@ -103,6 +104,7 @@ export class HuiEntityPickerTable extends LitElement {
         <ha-relative-time
           .hass=${this.hass!}
           .datetime=${lastChanged}
+          capitalize
         ></ha-relative-time>
       `,
     };

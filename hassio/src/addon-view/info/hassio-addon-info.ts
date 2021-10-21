@@ -180,24 +180,21 @@ class HassioAddonInfo extends LitElement {
         : ""}
       ${!this.addon.protected
         ? html`
-        <ha-card class="warning">
-          <h1 class="card-header">${this.supervisor.localize(
-            "addon.dashboard.protection_mode.title"
-          )}
-          </h1>
-          <div class="card-content">
-          ${this.supervisor.localize("addon.dashboard.protection_mode.content")}
-          </div>
-          <div class="card-actions protection-enable">
-              <mwc-button @click=${this._protectionToggled}>
-              ${this.supervisor.localize(
+            <ha-alert
+              alert-type="error"
+              .title=${this.supervisor.localize(
+                "addon.dashboard.protection_mode.title"
+              )}
+              .actionText=${this.supervisor.localize(
                 "addon.dashboard.protection_mode.enable"
               )}
-              </mwc-button>
-            </div>
-          </div>
-        </ha-card>
-      `
+              @alert-action-clicked=${this._protectionToggled}
+            >
+              ${this.supervisor.localize(
+                "addon.dashboard.protection_mode.content"
+              )}
+            </ha-alert>
+          `
         : ""}
 
       <ha-card>
@@ -297,10 +294,11 @@ class HassioAddonInfo extends LitElement {
                   })}
                   @click=${this._showMoreInfo}
                   id="rating"
-                  .value=${this.addon.rating}
                   label="rating"
                   description=""
-                ></ha-label-badge>
+                >
+                  ${this.addon.rating}
+                </ha-label-badge>
                 ${this.addon.host_network
                   ? html`
                       <ha-label-badge
@@ -364,9 +362,9 @@ class HassioAddonInfo extends LitElement {
                       <ha-label-badge
                         @click=${this._showMoreInfo}
                         id="docker_api"
-                        .label=".${this.supervisor.localize(
+                        .label=${this.supervisor.localize(
                           "addon.dashboard.capability.label.docker"
-                        )}"
+                        )}
                         description=""
                       >
                         <ha-svg-icon .path=${mdiDocker}></ha-svg-icon>

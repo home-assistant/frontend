@@ -1,7 +1,12 @@
 import "@material/mwc-button";
 import "@material/mwc-list/mwc-list-item";
 import type { RequestSelectedDetail } from "@material/mwc-list/mwc-list-item";
-import { mdiAlertCircle, mdiDotsVertical, mdiOpenInNew } from "@mdi/js";
+import {
+  mdiAlertCircle,
+  mdiChevronLeft,
+  mdiDotsVertical,
+  mdiOpenInNew,
+} from "@mdi/js";
 import "@polymer/paper-item";
 import "@polymer/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
@@ -12,6 +17,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { shouldHandleRequestSelectedEvent } from "../../../common/mwc/handle-request-selected-event";
 import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-svg-icon";
 import {
@@ -112,8 +118,9 @@ export class HaIntegrationCard extends LitElement {
             ? html`
                 <div class="back-btn" slot="above-header">
                   <ha-icon-button
-                    icon="hass:chevron-left"
+                    .path=${mdiChevronLeft}
                     @click=${this._back}
+                    .label=${this.hass.localize("ui.common.back")}
                   ></ha-icon-button>
                 </div>
               `
@@ -291,13 +298,11 @@ export class HaIntegrationCard extends LitElement {
             : ""}
         </div>
         <ha-button-menu corner="BOTTOM_START">
-          <mwc-icon-button
-            .title=${this.hass.localize("ui.common.menu")}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
+          <ha-icon-button
             slot="trigger"
-          >
-            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
           <mwc-list-item @request-selected=${this._handleRename}>
             ${this.hass.localize(
               "ui.panel.config.integrations.config_entry.rename"

@@ -25,6 +25,8 @@ import { EntityRegistryStateEntry } from "../ha-config-device-page";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
+  @property() public header!: string;
+
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property() public entities!: EntityRegistryStateEntry[];
@@ -47,11 +49,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     const disabledEntities: EntityRegistryStateEntry[] = [];
     this._entityRows = [];
     return html`
-      <ha-card
-        .header=${this.hass.localize(
-          "ui.panel.config.devices.entities.entities"
-        )}
-      >
+      <ha-card .header=${this.header}>
         ${this.entities.length
           ? html`
               <div id="entities" @hass-more-info=${this._overrideMoreInfo}>
@@ -134,10 +132,10 @@ export class HaDeviceEntitiesCard extends LitElement {
   private _renderEntry(entry: EntityRegistryStateEntry): TemplateResult {
     return html`
       <paper-icon-item .entry=${entry} @click=${this._openEditEntry}>
-        <ha-icon
+        <ha-svg-icon
           slot="item-icon"
-          .icon=${domainIcon(computeDomain(entry.entity_id))}
-        ></ha-icon>
+          .path=${domainIcon(computeDomain(entry.entity_id))}
+        ></ha-svg-icon>
         <paper-item-body>
           <div class="name">${entry.stateName || entry.entity_id}</div>
         </paper-item-body>

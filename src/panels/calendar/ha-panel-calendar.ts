@@ -1,5 +1,6 @@
 import "@material/mwc-checkbox";
 import "@material/mwc-formfield";
+import { mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import {
@@ -15,6 +16,7 @@ import { styleMap } from "lit/directives/style-map";
 import { LocalStorage } from "../../common/decorators/local-storage";
 import { HASSDomEvent } from "../../common/dom/fire_event";
 import "../../components/ha-card";
+import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import {
   Calendar,
@@ -66,7 +68,8 @@ class PanelCalendar extends LitElement {
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.calendar")}</div>
             <ha-icon-button
-              icon="hass:refresh"
+              .path=${mdiRefresh}
+              .label=${this.hass.localize("ui.common.refresh")}
               @click=${this._handleRefresh}
             ></ha-icon-button>
           </app-toolbar>

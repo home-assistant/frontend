@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-next";
 import {
   fetchOZWNodeConfig,
   fetchOZWNodeMetadata,

@@ -30,7 +30,7 @@ import "../../../components/ha-button-menu";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 import "../../../components/ha-icon-button";
-import "../../../components/ha-icon-input";
+import "../../../components/ha-icon-picker";
 import "../../../components/ha-svg-icon";
 import "../../../components/ha-yaml-editor";
 import type { HaYamlEditor } from "../../../components/ha-yaml-editor";
@@ -87,7 +87,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .backCallback=${() => this._backTapped()}
+        .backCallback=${this._backTapped}
         .tabs=${configSections.automation}
       >
         <ha-button-menu
@@ -96,12 +96,11 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
           @action=${this._handleMenuAction}
           activatable
         >
-          <mwc-icon-button
+          <ha-icon-button
             slot="trigger"
-            .title=${this.hass.localize("ui.common.menu")}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
-            ><ha-svg-icon path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
+            .label=${this.hass.localize("ui.common.menu")}
+            .path=${mdiDotsVertical}
+          ></ha-icon-button>
 
           <mwc-list-item
             aria-label=${this.hass.localize(
@@ -214,7 +213,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                 @change=${this._aliasChanged}
                               >
                               </paper-input>
-                              <ha-icon-input
+                              <ha-icon-picker
                                 .label=${this.hass.localize(
                                   "ui.panel.config.script.editor.icon"
                                 )}
@@ -222,7 +221,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
                                 .value=${this._config.icon}
                                 @value-changed=${this._valueChanged}
                               >
-                              </ha-icon-input>
+                              </ha-icon-picker>
                               ${!this.scriptEntityId
                                 ? html`<paper-input
                                     .label=${this.hass.localize(
@@ -578,7 +577,7 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
     this._dirty = true;
   }
 
-  private _backTapped(): void {
+  private _backTapped = (): void => {
     if (this._dirty) {
       showConfirmationDialog(this, {
         text: this.hass!.localize(
@@ -586,12 +585,14 @@ export class HaScriptEditor extends KeyboardShortcutMixin(LitElement) {
         ),
         confirmText: this.hass!.localize("ui.common.leave"),
         dismissText: this.hass!.localize("ui.common.stay"),
-        confirm: () => history.back(),
+        confirm: () => {
+          setTimeout(() => history.back());
+        },
       });
     } else {
       history.back();
     }
-  }
+  };
 
   private async _duplicate() {
     if (this._dirty) {

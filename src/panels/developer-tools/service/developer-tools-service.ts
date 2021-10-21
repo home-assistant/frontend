@@ -14,6 +14,7 @@ import { HaProgressButton } from "../../../components/buttons/ha-progress-button
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-expansion-panel";
+import "../../../components/ha-icon-button";
 import "../../../components/ha-service-control";
 import "../../../components/ha-service-picker";
 import "../../../components/ha-yaml-editor";
@@ -185,12 +186,11 @@ class HaPanelDevService extends LitElement {
                           target="_blank"
                           rel="noreferrer"
                         >
-                          <mwc-icon-button>
-                            <ha-svg-icon
-                              path=${mdiHelpCircle}
-                              class="help-icon"
-                            ></ha-svg-icon>
-                          </mwc-icon-button>
+                          <ha-icon-button
+                            class="help-icon"
+                            .path=${mdiHelpCircle}
+                            .label=${this.hass!.localize("ui.common.help")}
+                          ></ha-icon-button>
                         </a>`
                       : ""}
                   </div>`

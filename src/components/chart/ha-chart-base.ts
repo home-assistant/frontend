@@ -86,6 +86,7 @@ export default class HaChartBase extends LitElement {
                   class=${classMap({
                     hidden: this._hiddenDatasets.has(index),
                   })}
+                  .title=${dataset.label}
                 >
                   <div
                     class="bullet"

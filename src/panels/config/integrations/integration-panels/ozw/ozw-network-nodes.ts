@@ -11,7 +11,6 @@ import {
   RowClickedEvent,
 } from "../../../../../components/data-table/ha-data-table";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-next";
 import { fetchOZWNodes, OZWDevice } from "../../../../../data/ozw";
 import "../../../../../layouts/hass-tabs-subpage";
 import "../../../../../layouts/hass-tabs-subpage-data-table";
