@@ -30,17 +30,17 @@ export class HaIconOverflowMenu extends LitElement {
         <div class="ha-icon-overflow-menu-icons">
           ${this.items.map(
             (item) => html`
+              ${item.tooltip
+                ? html`<paper-tooltip animation-delay="0" position="left">
+                    ${item.tooltip}
+                  </paper-tooltip>`
+                : ""}
               <mwc-icon-button
                 @click=${item.action}
                 .label=${item.label}
                 .disabled=${item.disabled}
               >
                 <ha-svg-icon .path=${item.path}></ha-svg-icon>
-                ${item.tooltip
-                  ? html`<paper-tooltip animation-delay="0" position="left">
-                      ${item.tooltip}
-                    </paper-tooltip>`
-                  : ""}
               </mwc-icon-button>
             `
           )}
