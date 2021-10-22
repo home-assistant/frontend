@@ -71,21 +71,7 @@ export const computeStateDisplay = (
     } else {
       // If not trying to display an explicit state, create `Date` object from `stateObj`'s attributes then format.
       let date: Date;
-      try {
-        if (!stateObj.attributes.has_time) {
-          date = new Date(
-            stateObj.attributes.year,
-            stateObj.attributes.month - 1,
-            stateObj.attributes.day
-          );
-          return formatDate(date, locale);
-        }
-        if (!stateObj.attributes.has_date) {
-          date = new Date();
-          date.setHours(stateObj.attributes.hour, stateObj.attributes.minute);
-          return formatTime(date, locale);
-        }
-
+      if (stateObj.attributes.has_date && stateObj.attributes.has_time) {
         date = new Date(
           stateObj.attributes.year,
           stateObj.attributes.month - 1,
@@ -94,9 +80,21 @@ export const computeStateDisplay = (
           stateObj.attributes.minute
         );
         return formatDateTime(date, locale);
-      } catch (_e) {
-        return stateObj.state;
       }
+      if (stateObj.attributes.has_date) {
+        date = new Date(
+          stateObj.attributes.year,
+          stateObj.attributes.month - 1,
+          stateObj.attributes.day
+        );
+        return formatDate(date, locale);
+      }
+      if (stateObj.attributes.has_time) {
+        date = new Date();
+        date.setHours(stateObj.attributes.hour, stateObj.attributes.minute);
+        return formatTime(date, locale);
+      }
+      return stateObj.state;
     }
   }
 
