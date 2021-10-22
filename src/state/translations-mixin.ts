@@ -86,6 +86,14 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       ) {
         this._loadFragmentTranslations(this.hass.language, this.hass.panelUrl);
       }
+      if (
+        this.hass?.config?.time_zone &&
+        this.hass?.config.time_zone !== oldHass?.config?.time_zone &&
+        "__setDefaultTimeZone" in Intl.DateTimeFormat
+      ) {
+        // @ts-ignore
+        Intl.DateTimeFormat.__setDefaultTimeZone(this.hass.config.time_zone);
+      }
     }
 
     protected hassConnected() {
