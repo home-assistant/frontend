@@ -77,7 +77,7 @@ export class HaStateLabelBadge extends LitElement {
     const domain = computeStateDomain(entityState);
 
     const showIcon = this.icon || this._computeShowIcon(domain, entityState);
-    const image = showIcon
+    const image = this.icon
       ? ""
       : this.image
       ? this.image
