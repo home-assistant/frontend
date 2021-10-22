@@ -100,11 +100,6 @@ const findDifferentiator = (curString, prevString) => {
 gulp.task("gen-icons-json", (done) => {
   const meta = getMeta();
 
-  fs.writeFileSync(
-    path.resolve(OUTPUT_DIR, "iconList.json"),
-    JSON.stringify(orderMeta(meta).map((icon) => icon.name))
-  );
-
   const metaAndRemoved = addRemovedMeta(meta);
   const split = splitBySize(metaAndRemoved);
 
@@ -142,6 +137,11 @@ gulp.task("gen-icons-json", (done) => {
   fs.writeFileSync(
     path.resolve(OUTPUT_DIR, "iconMetadata.json"),
     JSON.stringify({ version: package.version, parts })
+  );
+
+  fs.writeFileSync(
+    path.resolve(OUTPUT_DIR, "iconList.json"),
+    JSON.stringify(orderMeta(meta).map((icon) => icon.name))
   );
 
   done();
