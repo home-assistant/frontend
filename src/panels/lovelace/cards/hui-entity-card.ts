@@ -143,7 +143,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                     <ha-svg-icon
                       .path=${trend < 100 ? mdiArrowDown : mdiArrowUp}
                     ></ha-svg-icon>
-                    ${trend}%
+                    ${trend} %
                   </div>
                 `
               : html`
