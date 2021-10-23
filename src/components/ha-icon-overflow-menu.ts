@@ -29,8 +29,10 @@ export class HaIconOverflowMenu extends LitElement {
     return html`
       <div class="ha-overflow-menu">
         ${this.narrow
-          ? html`<!-- Collapsed Representation for Small Screens -->
+          ? html` <!-- Collapsed Representation for Small Screens -->
               <ha-button-menu
+                @click=${this._handleIconOverflowMenuClick}
+                @closed=${this._handleIconOverflowMenuClosed}
                 class="ha-icon-overflow-menu-overflow"
                 corner="BOTTOM_START"
                 absolute
@@ -75,6 +77,33 @@ export class HaIconOverflowMenu extends LitElement {
               </div>`}
       </div>
     `;
+  }
+
+  protected _handleIconOverflowMenuClick(ev) {
+    // If this component is used inside a datatable, the z-index of the row
+    // needs to be increased. Otherwise the ha-button-menu would be displayed
+    // underneath the next row in the table.
+    const row = this.closestElement(".mdc-data-table__row", ev.currentTarget);
+    if (row) {
+      row.style.zIndex = 1;
+    }
+  }
+
+  protected _handleIconOverflowMenuClosed(ev) {
+    const row = this.closestElement(".mdc-data-table__row", ev.currentTarget);
+    if (row) {
+      row.style.zIndex = 0;
+    }
+  }
+
+  /**
+   * Returns the closest element matching a selector, crossing shadow DOM boundaries.
+   */
+  closestElement(selector, el = this) {
+    return (
+      (el && el.closest(selector)) ||
+      this.closestElement(selector, el.getRootNode().host)
+    );
   }
 
   static get styles() {
