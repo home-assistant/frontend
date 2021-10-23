@@ -150,6 +150,7 @@ class HaAutomationPicker extends LitElement {
         template: (_info, automation: any) => html`
           <ha-icon-overflow-menu
             .hass=${this.hass}
+            .narrow=${this.narrow}
             .items=${[
               // Info Button
               {

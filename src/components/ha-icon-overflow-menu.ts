@@ -23,54 +23,56 @@ export class HaIconOverflowMenu extends LitElement {
 
   @property({ type: Array }) public items: IconOverflowMenuItem[] = [];
 
+  @property({ type: Boolean }) public narrow = false;
+
   protected render(): TemplateResult {
     return html`
       <div class="ha-overflow-menu">
-        <!-- Icon Representation for Big Screens -->
-        <div class="ha-icon-overflow-menu-icons">
-          ${this.items.map(
-            (item) => html`
-              ${item.tooltip
-                ? html`<paper-tooltip animation-delay="0" position="left">
-                    ${item.tooltip}
-                  </paper-tooltip>`
-                : ""}
-              <mwc-icon-button
-                @click=${item.action}
-                .label=${item.label}
-                .disabled=${item.disabled}
+        ${this.narrow
+          ? html`<!-- Collapsed Representation for Small Screens -->
+              <ha-button-menu
+                class="ha-icon-overflow-menu-overflow"
+                corner="BOTTOM_START"
+                absolute
               >
-                <ha-svg-icon .path=${item.path}></ha-svg-icon>
-              </mwc-icon-button>
-            `
-          )}
-        </div>
+                <mwc-icon-button
+                  .title=${this.hass.localize("ui.common.menu")}
+                  .label=${this.hass.localize("ui.common.overflow_menu")}
+                  slot="trigger"
+                >
+                  <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
+                </mwc-icon-button>
 
-        <!-- Collapsed Representation for Small Screens -->
-        <ha-button-menu
-          class="ha-icon-overflow-menu-overflow"
-          corner="BOTTOM_START"
-          absolute
-        >
-          <mwc-icon-button
-            .title=${this.hass.localize("ui.common.menu")}
-            .label=${this.hass.localize("ui.common.overflow_menu")}
-            slot="trigger"
-          >
-            <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-          </mwc-icon-button>
-
-          ${this.items.map(
-            (item) => html`
-              <mwc-list-item graphic="icon" .disabled=${item.disabled}>
-                <div slot="graphic">
-                  <ha-svg-icon .path=${item.path}></ha-svg-icon>
-                </div>
-                ${item.label}
-              </mwc-list-item>
-            `
-          )}
-        </ha-button-menu>
+                ${this.items.map(
+                  (item) => html`
+                    <mwc-list-item graphic="icon" .disabled=${item.disabled}>
+                      <div slot="graphic">
+                        <ha-svg-icon .path=${item.path}></ha-svg-icon>
+                      </div>
+                      ${item.label}
+                    </mwc-list-item>
+                  `
+                )}
+              </ha-button-menu>`
+          : html` <!-- Icon Representation for Big Screens -->
+              <div class="ha-icon-overflow-menu-icons">
+                ${this.items.map(
+                  (item) => html`
+                    ${item.tooltip
+                      ? html`<paper-tooltip animation-delay="0" position="left">
+                          ${item.tooltip}
+                        </paper-tooltip>`
+                      : ""}
+                    <mwc-icon-button
+                      @click=${item.action}
+                      .label=${item.label}
+                      .disabled=${item.disabled}
+                    >
+                      <ha-svg-icon .path=${item.path}></ha-svg-icon>
+                    </mwc-icon-button>
+                  `
+                )}
+              </div>`}
       </div>
     `;
   }
@@ -80,24 +82,6 @@ export class HaIconOverflowMenu extends LitElement {
       :host {
         display: flex;
         justify-content: flex-end;
-      }
-
-      .ha-icon-overflow-menu-overflow {
-        display: none;
-      }
-
-      .ha-icon-overflow-menu-icons {
-        display: block;
-      }
-
-      @media all and (max-width: 500px) {
-        .ha-icon-overflow-menu-overflow {
-          display: block;
-        }
-
-        .ha-icon-overflow-menu-icons {
-          display: none;
-        }
       }
     `;
   }
