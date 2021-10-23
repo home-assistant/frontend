@@ -47,7 +47,11 @@ export class HaIconOverflowMenu extends LitElement {
 
                 ${this.items.map(
                   (item) => html`
-                    <mwc-list-item graphic="icon" .disabled=${item.disabled}>
+                    <mwc-list-item
+                      graphic="icon"
+                      .disabled=${item.disabled}
+                      @click=${item.action}
+                    >
                       <div slot="graphic">
                         <ha-svg-icon .path=${item.path}></ha-svg-icon>
                       </div>
