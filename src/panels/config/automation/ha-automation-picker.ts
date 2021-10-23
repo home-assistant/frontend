@@ -9,7 +9,6 @@ import {
 import "@polymer/paper-tooltip/paper-tooltip";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { formatDateTime } from "../../../common/datetime/format_date_time";
@@ -173,7 +172,7 @@ class HaAutomationPicker extends LitElement {
                     )
                   : "",
                 action: () => {
-                  if (ifDefined(automation.attributes.id)) {
+                  if (automation.attributes.id) {
                     navigate(
                       `/config/automation/trace/${automation.attributes.id}`
                     );
@@ -193,7 +192,7 @@ class HaAutomationPicker extends LitElement {
                     )
                   : "",
                 action: () => {
-                  if (ifDefined(automation.attributes.id)) {
+                  if (automation.attributes.id) {
                     navigate(
                       `/config/automation/edit/${automation.attributes.id}`
                     );
