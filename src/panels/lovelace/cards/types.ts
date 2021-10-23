@@ -79,6 +79,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
 export interface AreaCardConfig extends LovelaceCardConfig {
   area: string;
   image: string; // Temp
+  navigation_path?: string;
 }
 
 export interface ButtonCardConfig extends LovelaceCardConfig {

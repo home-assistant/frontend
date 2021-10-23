@@ -37,7 +37,10 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import {
+  ActionHandlerEvent,
+  NavigateActionConfig,
+} from "../../../data/lovelace";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -247,6 +250,16 @@ export class HuiAreaCard
       ...entityConfig,
     })) as EntitiesCardEntityConfig[];
 
+    const nameConfig: { tap_action: NavigateActionConfig } | undefined = this
+      ._config.navigation_path
+      ? {
+          tap_action: {
+            action: "navigate",
+            navigation_path: this._config.navigation_path,
+          },
+        }
+      : undefined;
+
     return html`
       <ha-card
         style=${styleMap({
@@ -280,7 +293,14 @@ export class HuiAreaCard
               `;
             })}
           </div>
-          <div class="name">${area!.name}</div>
+          <div
+            class="name"
+            .actionHandler=${actionHandler()}
+            .config=${nameConfig}
+            @action=${nameConfig ? this._handleAction : undefined}
+          >
+            ${area!.name}
+          </div>
           <div class="buttons">
             ${toggleEntities.map((entityConf) => {
               const stateObj = this.hass!.states[entityConf.entity];

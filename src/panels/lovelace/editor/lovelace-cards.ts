@@ -2,10 +2,6 @@ import { Card } from "./types";
 
 export const coreCards: Card[] = [
   {
-    type: "area",
-    showElement: false,
-  },
-  {
     type: "alarm-panel",
     showElement: true,
   },
@@ -92,6 +88,9 @@ export const coreCards: Card[] = [
   {
     type: "weather-forecast",
     showElement: true,
+  },
+  {
+    type: "area",
   },
   {
     type: "conditional",
