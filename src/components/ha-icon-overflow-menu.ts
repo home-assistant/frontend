@@ -84,7 +84,7 @@ export class HaIconOverflowMenu extends LitElement {
   }
 
   protected _handleIconOverflowMenuClick(ev) {
-    // If this component is used inside a datatable, the z-index of the row
+    // If this component is used inside a data table, the z-index of the row
     // needs to be increased. Otherwise the ha-button-menu would be displayed
     // underneath the next row in the table.
     const row = this.closestElement(".mdc-data-table__row", ev.currentTarget);
