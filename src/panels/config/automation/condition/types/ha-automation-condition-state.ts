@@ -80,8 +80,11 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   private coerceToCorrectValueType(
     value: string | number
   ): string | number | string[] {
-    const splitValue = typeof value === "string" ? value?.split(",") : null;
-    return splitValue?.length ? splitValue : value;
+    if (typeof value === "string") {
+      const splitValue = value?.split(",");
+      return splitValue?.length > 1 ? splitValue : value;
+    }
+    return value;
   }
 
   private coerceToCommaSeparatedString(
