@@ -99,10 +99,10 @@ export class HaIconOverflowMenu extends LitElement {
   /**
    * Returns the closest element matching a selector, crossing shadow DOM boundaries.
    */
-  closestElement(selector, el = this) {
+  closestElement(selector, el: Element = this) {
     return (
-      (el && el.closest(selector)) ||
-      this.closestElement(selector, el.getRootNode().host)
+      el?.closest(selector) ||
+      this.closestElement(selector, (el.getRootNode() as ShadowRoot).host)
     );
   }
 
