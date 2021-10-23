@@ -23,20 +23,24 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   }
 
   protected render() {
-    const { entity_id, attribute, state } = this.condition;
+    const { attribute } = this.condition;
+    const stateString = this.coerceToCommaSeparatedString(this.condition.state);
+    const entityIdString = this.coerceToCommaSeparatedString(
+      this.condition.entity_id
+    );
     const forTime = createDurationData(this.condition.for);
 
     return html`
       <ha-entity-picker
-        .value=${entity_id}
+        .value=${entityIdString}
         .name=${"entity_id"}
-        @value-changed=${this._valueChanged}
+        @value-changed=${this._arrayValueChanged}
         .hass=${this.hass}
         allow-custom-entity
       ></ha-entity-picker>
       <ha-entity-attribute-picker
         .hass=${this.hass}
-        .entityId=${entity_id}
+        .entityId=${entityIdString}
         .value=${attribute}
         .name=${"attribute"}
         .label=${this.hass.localize(
@@ -50,8 +54,8 @@ export class HaStateCondition extends LitElement implements ConditionElement {
           "ui.panel.config.automation.editor.conditions.type.state.state"
         )}
         .name=${"state"}
-        .value=${state}
-        @value-changed=${this._valueChanged}
+        .value=${stateString}
+        @value-changed=${this._arrayValueChanged}
       ></paper-input>
       <ha-duration-input
         .label=${this.hass.localize(
@@ -66,6 +70,24 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
+  }
+
+  private _arrayValueChanged(ev: CustomEvent): void {
+    ev.detail.value = this.coerceToCorrectValueType(ev.detail.value);
+    handleChangeEvent(this, ev);
+  }
+
+  private coerceToCorrectValueType(
+    value: string | number
+  ): string | number | string[] {
+    const splitValue = typeof value === "string" ? value?.split(",") : null;
+    return splitValue?.length ? splitValue : value;
+  }
+
+  private coerceToCommaSeparatedString(
+    value: string | string[] | number
+  ): string | number {
+    return Array.isArray(value) ? value.join(",") : value;
   }
 }
 
