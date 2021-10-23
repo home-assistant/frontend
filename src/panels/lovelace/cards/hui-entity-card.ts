@@ -147,8 +147,9 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                   </div>
                 `
               : html`
-                  <ha-icon
-                    .icon=${this._config.icon || stateIcon(stateObj)}
+                  <ha-state-icon
+                    .icon=${this._config.icon}
+                    .state=${stateObj}
                     data-domain=${ifDefined(
                       this._config.state_color ||
                         (domain === "light" &&
@@ -157,7 +158,7 @@ export class HuiEntityCard extends LitElement implements LovelaceCard {
                         : undefined
                     )}
                     data-state=${stateObj ? computeActiveState(stateObj) : ""}
-                  ></ha-icon>
+                  ></ha-state-icon>
                 `}
           </div>
         </div>
