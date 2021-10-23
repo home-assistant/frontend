@@ -39,6 +39,8 @@ export class HuiEntityEditor extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     this._attached = true;
+    // Request update so that the Sortable can be re-initialized after the entities are rendered.
+    this.requestUpdate();
   }
 
   public disconnectedCallback() {
@@ -87,8 +89,14 @@ export class HuiEntityEditor extends LitElement {
   }
 
   protected firstUpdated(): void {
-    Sortable.mount(OnSpill);
-    Sortable.mount(new AutoScroll());
+    try {
+      Sortable.mount(OnSpill);
+      Sortable.mount(new AutoScroll());
+    } catch (error) {
+      // Sortable throws an error if it tries to re-mount an already mounted plugin.
+      // We ignore those errors because firstUpdated will be called multiple times if the
+      // editor is closed and re-opened.
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
