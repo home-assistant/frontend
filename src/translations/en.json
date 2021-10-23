@@ -104,6 +104,19 @@
       "device": "Device"
     }
   },
+  "device_class": {
+    "cold": "cold",
+    "gas": "gas",
+    "heat": "heat",
+    "moisture": "moisture",
+    "motion": "motion",
+    "occupancy": "occupancy",
+    "power": "power",
+    "problem": "problem",
+    "smoke": "smoke",
+    "sound": "sound",
+    "vibration": "vibration"
+  },
   "ui": {
     "auth_store": {
       "ask": "Do you want to stay logged in?",

@@ -268,14 +268,14 @@ export const getLogbookMessage = (
             return hass.localize(
               `${LOGBOOK_LOCALIZE_PATH}.detected_device_class`,
               "device_class",
-              device_class
+              hass.localize(`device_class.${device_class}`)
             );
           }
           if (isOff) {
             return hass.localize(
               `${LOGBOOK_LOCALIZE_PATH}.cleared_device_class`,
               "device_class",
-              device_class
+              hass.localize(`device_class.${device_class}`)
             );
           }
           break;
