@@ -171,9 +171,11 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       }
       ha-markdown {
         padding: 0 16px 16px;
+        word-wrap: break-word;
       }
       ha-markdown.no-header {
         padding-top: 16px;
+        word-wrap: break-word;
       }
     `;
   }
