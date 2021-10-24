@@ -227,7 +227,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   }
 
   private _keepLoggedInChanged(e: CustomEvent<HTMLInputElement>) {
-    this._storeToken = (e.currentTarget as any).checked;
+    this._storeToken = (e.currentTarget as HTMLInputElement).checked;
   }
 
   private async _providerChanged(newProvider?: AuthProvider) {
