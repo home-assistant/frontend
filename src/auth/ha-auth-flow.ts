@@ -214,6 +214,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
                   )}
                 >
                   <ha-checkbox
+                    .checked=${this._storeToken}
                     @change=${this._keepLoggedInChanged}
                   ></ha-checkbox>
                 </ha-formfield>

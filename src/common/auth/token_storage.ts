@@ -8,6 +8,7 @@ declare global {
       // undefined: we haven't loaded yet
       // null: none stored
       tokens?: AuthData | null;
+      writeEnabled?: boolean;
     };
   }
 }
@@ -17,17 +18,27 @@ let tokenCache = window.__tokenCache;
 if (!tokenCache) {
   tokenCache = window.__tokenCache = {
     tokens: undefined,
+    writeEnabled: undefined,
   };
 }
 
 export function askWrite() {
-  return tokenCache.tokens !== undefined;
+  return (
+    tokenCache.tokens !== undefined && tokenCache.writeEnabled === undefined
+  );
 }
 
 export function saveTokens(tokens: AuthData | null) {
   tokenCache.tokens = tokens;
-  const searchParams = new URLSearchParams(window.location.search);
-  if (searchParams.get("storeToken") === "true") {
+
+  if (
+    !tokenCache.writeEnabled &&
+    new URLSearchParams(window.location.search).get("storeToken") === "true"
+  ) {
+    tokenCache.writeEnabled = true;
+  }
+
+  if (tokenCache.writeEnabled) {
     try {
       storage.hassTokens = JSON.stringify(tokens);
     } catch (err: any) {
@@ -37,6 +48,7 @@ export function saveTokens(tokens: AuthData | null) {
 }
 
 export function enableWrite() {
+  tokenCache.writeEnabled = true;
   if (tokenCache.tokens) {
     saveTokens(tokenCache.tokens);
   }
@@ -49,6 +61,7 @@ export function loadTokens() {
       const tokens = storage.hassTokens;
       if (tokens) {
         tokenCache.tokens = JSON.parse(tokens);
+        tokenCache.writeEnabled = true;
       } else {
         tokenCache.tokens = null;
       }
