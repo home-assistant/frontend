@@ -11,6 +11,12 @@ import {
   mdiHomeAssistant,
   mdiKey,
   mdiNetwork,
+  mdiNumeric1,
+  mdiNumeric2,
+  mdiNumeric3,
+  mdiNumeric4,
+  mdiNumeric5,
+  mdiNumeric6,
   mdiPound,
   mdiShield,
 } from "@mdi/js";
@@ -25,7 +31,7 @@ import "../../../../src/components/buttons/ha-call-api-button";
 import "../../../../src/components/buttons/ha-progress-button";
 import "../../../../src/components/ha-alert";
 import "../../../../src/components/ha-card";
-import "../../../../src/components/ha-label-badge";
+import "../../../../src/components/ha-chip";
 import "../../../../src/components/ha-markdown";
 import "../../../../src/components/ha-settings-row";
 import "../../../../src/components/ha-svg-icon";
@@ -71,6 +77,15 @@ const STAGE_ICON = {
   stable: mdiCheckCircle,
   experimental: mdiFlask,
   deprecated: mdiExclamationThick,
+};
+
+const RATING_ICON = {
+  1: mdiNumeric1,
+  2: mdiNumeric2,
+  3: mdiNumeric3,
+  4: mdiNumeric4,
+  5: mdiNumeric5,
+  6: mdiNumeric6,
 };
 
 @customElement("hassio-addon-info")
@@ -246,6 +261,163 @@ class HassioAddonInfo extends LitElement {
                 >`}
           </div>
 
+          <div class="capabilities">
+            ${this.addon.stage !== "stable"
+              ? html` <ha-chip
+                  hasIcon
+                  class=${classMap({
+                    yellow: this.addon.stage === "experimental",
+                    red: this.addon.stage === "deprecated",
+                  })}
+                  @click=${this._showMoreInfo}
+                  id="stage"
+                >
+                  <ha-svg-icon
+                    slot="icon"
+                    .path=${STAGE_ICON[this.addon.stage]}
+                  >
+                  </ha-svg-icon>
+                  ${this.supervisor.localize(
+                    `addon.dashboard.capability.stages.${this.addon.stage}`
+                  )}
+                </ha-chip>`
+              : ""}
+
+            <ha-chip
+              hasIcon
+              class=${classMap({
+                green: [5, 6].includes(Number(this.addon.rating)),
+                yellow: [3, 4].includes(Number(this.addon.rating)),
+                red: [1, 2].includes(Number(this.addon.rating)),
+              })}
+              @click=${this._showMoreInfo}
+              id="rating"
+            >
+              <ha-svg-icon slot="icon" .path=${RATING_ICON[this.addon.rating]}>
+              </ha-svg-icon>
+
+              ${this.supervisor.localize(
+                "addon.dashboard.capability.label.rating"
+              )}
+            </ha-chip>
+            ${this.addon.host_network
+              ? html`
+                  <ha-chip
+                    hasIcon
+                    @click=${this._showMoreInfo}
+                    id="host_network"
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiNetwork}> </ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.host"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.full_access
+              ? html`
+                  <ha-chip
+                    hasIcon
+                    @click=${this._showMoreInfo}
+                    id="full_access"
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiChip}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.hardware"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.homeassistant_api
+              ? html`
+                  <ha-chip
+                    hasIcon
+                    @click=${this._showMoreInfo}
+                    id="homeassistant_api"
+                  >
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiHomeAssistant}
+                    ></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.core"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this._computeHassioApi
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="hassio_api">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiHomeAssistant}
+                    ></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      `addon.dashboard.capability.role.${this.addon.hassio_role}`
+                    ) || this.addon.hassio_role}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.docker_api
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="docker_api">
+                    <ha-svg-icon slot="icon" .path=${mdiDocker}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.docker"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.host_pid
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="host_pid">
+                    <ha-svg-icon slot="icon" .path=${mdiPound}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.host_pid"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.apparmor !== "default"
+              ? html`
+                  <ha-chip
+                    hasIcon
+                    @click=${this._showMoreInfo}
+                    class=${this._computeApparmorClassName}
+                    id="apparmor"
+                  >
+                    <ha-svg-icon slot="icon" .path=${mdiShield}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.apparmor"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.auth_api
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="auth_api">
+                    <ha-svg-icon slot="icon" .path=${mdiKey}></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.auth"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+            ${this.addon.ingress
+              ? html`
+                  <ha-chip hasIcon @click=${this._showMoreInfo} id="ingress">
+                    <ha-svg-icon
+                      slot="icon"
+                      .path=${mdiCursorDefaultClickOutline}
+                    ></ha-svg-icon>
+                    ${this.supervisor.localize(
+                      "addon.dashboard.capability.label.ingress"
+                    )}
+                  </ha-chip>
+                `
+              : ""}
+          </div>
+
           <div class="description light-color">
             ${this.addon.description}.<br />
             ${this.supervisor.localize(
@@ -266,172 +438,6 @@ class HassioAddonInfo extends LitElement {
                     />
                   `
                 : ""}
-              <div class="security">
-                ${this.addon.stage !== "stable"
-                  ? html` <ha-label-badge
-                      class=${classMap({
-                        yellow: this.addon.stage === "experimental",
-                        red: this.addon.stage === "deprecated",
-                      })}
-                      @click=${this._showMoreInfo}
-                      id="stage"
-                      .label=${this.supervisor.localize(
-                        "addon.dashboard.capability.label.stage"
-                      )}
-                      description=""
-                    >
-                      <ha-svg-icon
-                        .path=${STAGE_ICON[this.addon.stage]}
-                      ></ha-svg-icon>
-                    </ha-label-badge>`
-                  : ""}
-
-                <ha-label-badge
-                  class=${classMap({
-                    green: [5, 6].includes(Number(this.addon.rating)),
-                    yellow: [3, 4].includes(Number(this.addon.rating)),
-                    red: [1, 2].includes(Number(this.addon.rating)),
-                  })}
-                  @click=${this._showMoreInfo}
-                  id="rating"
-                  label="rating"
-                  description=""
-                >
-                  ${this.addon.rating}
-                </ha-label-badge>
-                ${this.addon.host_network
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="host_network"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.host"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiNetwork}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.full_access
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="full_access"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.hardware"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiChip}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.homeassistant_api
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="homeassistant_api"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.hass"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this._computeHassioApi
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="hassio_api"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.hassio"
-                        )}
-                        .description=${this.supervisor.localize(
-                          `addon.dashboard.capability.role.${this.addon.hassio_role}`
-                        ) || this.addon.hassio_role}
-                      >
-                        <ha-svg-icon .path=${mdiHomeAssistant}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.docker_api
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="docker_api"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.docker"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiDocker}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.host_pid
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="host_pid"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.host_pid"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiPound}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.apparmor
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        class=${this._computeApparmorClassName}
-                        id="apparmor"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.apparmor"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiShield}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.auth_api
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="auth_api"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.auth"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon .path=${mdiKey}></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-                ${this.addon.ingress
-                  ? html`
-                      <ha-label-badge
-                        @click=${this._showMoreInfo}
-                        id="ingress"
-                        .label=${this.supervisor.localize(
-                          "addon.dashboard.capability.label.ingress"
-                        )}
-                        description=""
-                      >
-                        <ha-svg-icon
-                          .path=${mdiCursorDefaultClickOutline}
-                        ></ha-svg-icon>
-                      </ha-label-badge>
-                    `
-                  : ""}
-              </div>
-
               ${this.addon.version
                 ? html`
                     <div
@@ -1175,33 +1181,30 @@ class HassioAddonInfo extends LitElement {
         .description a {
           color: var(--primary-color);
         }
+        ha-chip {
+          text-transform: capitalize;
+          --ha-chip-text-color: var(--text-primary-color);
+          --ha-chip-background-color: var(--primary-color);
+        }
+
         .red {
-          --ha-label-badge-color: var(--label-badge-red, #df4c1e);
+          --ha-chip-background-color: var(--label-badge-red, #df4c1e);
         }
         .blue {
-          --ha-label-badge-color: var(--label-badge-blue, #039be5);
+          --ha-chip-background-color: var(--label-badge-blue, #039be5);
         }
         .green {
-          --ha-label-badge-color: var(--label-badge-green, #0da035);
+          --ha-chip-background-color: var(--label-badge-green, #0da035);
         }
         .yellow {
-          --ha-label-badge-color: var(--label-badge-yellow, #f4b400);
+          --ha-chip-background-color: var(--label-badge-yellow, #f4b400);
         }
-        .security {
+        .capabilities {
           margin-bottom: 16px;
         }
         .card-actions {
           justify-content: space-between;
           display: flex;
-        }
-        .security h3 {
-          margin-bottom: 8px;
-          font-weight: normal;
-        }
-        .security ha-label-badge {
-          cursor: pointer;
-          margin-right: 4px;
-          --ha-label-badge-padding: 8px 0 0 0;
         }
         .changelog {
           display: contents;
@@ -1242,6 +1245,9 @@ class HassioAddonInfo extends LitElement {
         }
 
         @media (max-width: 720px) {
+          ha-chip {
+            line-height: 36px;
+          }
           .addon-options {
             max-width: 100%;
           }
