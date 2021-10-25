@@ -92,7 +92,7 @@ export class HuiEntityEditor extends LitElement {
     try {
       Sortable.mount(OnSpill);
       Sortable.mount(new AutoScroll());
-    } catch (error) {
+    } catch (_err) {
       // Sortable throws an error if it tries to re-mount an already mounted plugin.
       // We ignore those errors because firstUpdated will be called multiple times if the
       // editor is closed and re-opened.
