@@ -19,6 +19,8 @@ export interface DeviceAction extends DeviceAutomation {
 
 export interface DeviceCondition extends DeviceAutomation {
   condition: "device";
+  device_id: string;
+  domain: string;
 }
 
 export type DeviceTrigger = DeviceAutomation &
