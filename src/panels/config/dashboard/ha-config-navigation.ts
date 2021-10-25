@@ -54,7 +54,8 @@ class HaConfigNavigation extends LitElement {
                           `
                       : html`
                           <div secondary>
-                            ${this.hass.localize(
+                            ${page.info ||
+                            this.hass.localize(
                               `ui.panel.config.${page.component}.description`
                             )}
                           </div>
