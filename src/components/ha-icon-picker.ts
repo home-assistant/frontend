@@ -7,7 +7,7 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { customIconsetsLists } from "../data/custom_iconsets";
+import { customIconLists } from "../data/custom_icon_lists";
 import { PolymerChangedEvent } from "../polymer-types";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -119,7 +119,7 @@ export class HaIconPicker extends LitElement {
         keywords: icon.keywords,
       }));
 
-      const iconSetListPromises = Object.entries(customIconsetsLists);
+      const iconSetListPromises = Object.entries(customIconLists);
       const iconSetList = await Promise.all(
         iconSetListPromises.map(([prefix, getIconList]) =>
           getIconList()
