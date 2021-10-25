@@ -179,6 +179,7 @@ export class HaConfigDevicePage extends LitElement {
       `;
     }
 
+    const deviceName = computeDeviceName(device, this.hass);
     const integrations = this._integrations(device, this.entries);
     const entities = this._entities(this.deviceId, this.entities);
     const entitiesByCategory = this._entitiesByCategory(entities);
@@ -204,9 +205,7 @@ export class HaConfigDevicePage extends LitElement {
         ${
           this.narrow
             ? html`
-                <span slot="header">
-                  ${computeDeviceName(device, this.hass)}
-                </span>
+                <span slot="header">${deviceName}</span>
                 <ha-icon-button
                   slot="toolbar-icon"
                   .path=${mdiPencil}
@@ -230,7 +229,7 @@ export class HaConfigDevicePage extends LitElement {
                 : html`
                     <div class="header-name">
                       <div>
-                        <h1>${computeDeviceName(device, this.hass)}</h1>
+                        <h1>${deviceName}</h1>
                         ${area
                           ? html`
                               <a href="/config/areas/area/${area.area_id}"
@@ -353,6 +352,7 @@ export class HaConfigDevicePage extends LitElement {
                       .header=${this.hass.localize(
                         `ui.panel.config.devices.entities.${category}`
                       )}
+                      .deviceName=${deviceName}
                       .entities=${entitiesByCategory[category]}
                       .showDisabled=${device.disabled_by !== null}
                     >
