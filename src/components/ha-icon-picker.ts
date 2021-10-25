@@ -7,7 +7,7 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
-import { customIconLists } from "../data/custom_icon_lists";
+import { customIcons } from "../data/custom_icons";
 import { PolymerChangedEvent } from "../polymer-types";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -17,7 +17,6 @@ type IconItem = {
   keywords: string[];
 };
 let iconItems: IconItem[] = [];
-
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<IconItem> = (item) => html`<style>
@@ -113,29 +112,32 @@ export class HaIconPicker extends LitElement {
     this._opened = ev.detail.value;
     if (this._opened && !iconItems.length) {
       const iconList = await import("../../build/mdi/iconList.json");
- 
+
       const mdiIconItems = iconList.default.map((icon) => ({
         icon: `mdi:${icon.name}`,
         keywords: icon.keywords,
       }));
 
-      const iconSetListPromises = Object.entries(customIconLists);
-      const iconSetList = await Promise.all(
-        iconSetListPromises.map(([prefix, getIconList]) =>
-          getIconList()
-            .then((icons) => [prefix, icons] as [string, string[]])
-            .catch(() => [])
-        )
-      );
-      const customIconItems = iconSetList
-        .map(([prefix, icons]) => icons.map((icon) => ({
-          icon: `${prefix}:${icon}`,
-          keywords: [],
-        })))
-        .reduce((x, y) => x.concat(y), []);
-
-      iconItems = [...mdiIconItems, ...customIconItems];
+      iconItems = mdiIconItems;
       (this.comboBox as any).filteredItems = iconItems;
+
+      Object.keys(customIcons).forEach((iconSet) => {
+        this._loadCustomIconItems(iconSet);
+      });
+    }
+  }
+
+  private async _loadCustomIconItems(iconsetName: string) {
+    try {
+      const iconList = (await customIcons[iconsetName].getIconList?.()) ?? [];
+      const customIconItems = iconList.map((icon) => ({
+        icon: `${iconsetName}:${icon}`,
+        keywords: [],
+      }));
+      iconItems = [...iconItems, ...customIconItems];
+      (this.comboBox as any).filteredItems = iconItems;
+    } catch (e) {
+      // do nothing
     }
   }
 
