@@ -179,6 +179,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                     "ui.panel.config.automation.editor.triggers.type_select"
                   )}
                   .value=${this.trigger.platform}
+                  naturalMenuWidth
                   @selected=${this._typeChanged}
                 >
                   ${this._processedTypes(this.hass.localize).map(
