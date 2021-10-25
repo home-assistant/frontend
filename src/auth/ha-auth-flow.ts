@@ -205,7 +205,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             .computeError=${this._computeErrorCallback(step)}
             @value-changed=${this._stepDataChanged}
           ></ha-form>
-          ${this.clientId === window.location.origin
+          ${this.clientId === window.location.origin && step.step_id !== "mfa"
             ? html`
                 <ha-formfield
                   class="keep-logged-in"
