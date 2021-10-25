@@ -194,11 +194,11 @@ export class HaConfigDevicePage extends LitElement {
       : undefined;
     const area = this._computeArea(this.areas, device);
 
-    const configurationUrlIsPanel =
-      device.configuration_url?.startsWith("panel://") || false;
+    const configurationUrlIsHomeAssistant =
+      device.configuration_url?.startsWith("homeassistant://") || false;
 
-    const configurationUrl = configurationUrlIsPanel
-      ? device.configuration_url!.replace("panel://", "/")
+    const configurationUrl = configurationUrlIsHomeAssistant
+      ? device.configuration_url!.replace("homeassistant://", "/")
       : device.configuration_url;
 
     return html`
@@ -330,7 +330,7 @@ export class HaConfigDevicePage extends LitElement {
                         <a
                           href=${configurationUrl}
                           rel="noopener noreferrer"
-                          .target=${configurationUrlIsPanel
+                          .target=${configurationUrlIsHomeAssistant
                             ? "_self"
                             : "_blank"}
                         >
