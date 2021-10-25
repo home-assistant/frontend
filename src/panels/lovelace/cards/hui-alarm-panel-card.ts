@@ -8,13 +8,13 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { alarmPanelIcon } from "../../../common/entity/alarm_panel_icon";
 import "../../../components/ha-card";
-import "../../../components/ha-label-badge";
+import "../../../components/ha-chip";
 import {
   callAlarmAction,
   FORMAT_NUMBER,
@@ -150,13 +150,15 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         stateObj.attributes.friendly_name ||
         this._stateDisplay(stateObj.state)}
       >
-        <ha-label-badge
+        <ha-chip
+          hasIcon
           class=${classMap({ [stateObj.state]: true })}
-          .label=${this._stateIconLabel(stateObj.state)}
           @click=${this._handleMoreInfo}
         >
-          <ha-svg-icon .path=${alarmPanelIcon(stateObj.state)}></ha-svg-icon>
-        </ha-label-badge>
+          <ha-svg-icon slot="icon" .path=${alarmPanelIcon(stateObj.state)}>
+          </ha-svg-icon>
+          ${this._stateDisplay(stateObj.state)}
+        </ha-chip>
         <div id="armActions" class="actions">
           ${(stateObj.state === "disarmed"
             ? this._config.states!
@@ -215,15 +217,6 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _stateIconLabel(entityState: string): string {
-    const stateLabel = entityState.split("_").pop();
-    return stateLabel === "disarmed" ||
-      stateLabel === "triggered" ||
-      !stateLabel
-      ? ""
-      : this._stateDisplay(entityState);
-  }
-
   private _actionDisplay(entityState: string): string {
     return this.hass!.localize(`ui.card.alarm_control_panel.${entityState}`);
   }
@@ -273,14 +266,12 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         --alarm-state-color: var(--alarm-color-armed);
       }
 
-      ha-label-badge {
-        --ha-label-badge-color: var(--alarm-state-color);
-        --label-badge-text-color: var(--alarm-state-color);
-        --label-badge-background-color: var(--card-background-color);
+      ha-chip {
+        --ha-chip-text-color: var(--alarm-state-color);
         color: var(--alarm-state-color);
         position: absolute;
         right: 12px;
-        top: 8px;
+        top: 12px;
         cursor: pointer;
       }
 
