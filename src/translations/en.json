@@ -1696,7 +1696,7 @@
                   "label": "Call service"
                 },
                 "delay": {
-                  "label": "Wait for time to pass",
+                  "label": "Wait for time to pass (delay)",
                   "delay": "Duration"
                 },
                 "wait_template": {
