@@ -23,6 +23,8 @@ import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities
 import { LovelaceRow } from "../../../lovelace/entity-rows/types";
 import { showEntityEditorDialog } from "../../entities/show-dialog-entity-editor";
 import { EntityRegistryStateEntry } from "../ha-config-device-page";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { stripPrefixFromEntityName } from "../../../../common/entity/strip_prefix_from_entity_name";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -130,9 +132,12 @@ export class HaDeviceEntitiesCard extends LitElement {
     if (this.hass) {
       element.hass = this.hass;
       const state = this.hass.states[entry.entity_id];
-      const name = state?.attributes.friendly_name || "";
-      if (name.startsWith(`${this.deviceName} `)) {
-        config.name = name.substring(this.deviceName.length + 1);
+      const name = stripPrefixFromEntityName(
+        computeStateName(state),
+        `${this.deviceName} `.toLowerCase()
+      );
+      if (name) {
+        config.name = name;
       }
     }
     // @ts-ignore
