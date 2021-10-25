@@ -1,5 +1,5 @@
 import "@material/mwc-ripple";
-import { UnsubscribeFunc } from "home-assistant-js-websocket/dist/types";
+import type { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -14,9 +14,10 @@ import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
 import { DOMAINS_TOGGLE, STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
-import { stateIcon } from "../../../common/entity/state_icon";
+import { navigate } from "../../../common/navigate";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
@@ -39,7 +40,6 @@ import {
 } from "../../../data/entity_registry";
 import {
   ActionHandlerEvent,
-  NavigateActionConfig,
 } from "../../../data/lovelace";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
@@ -244,21 +244,7 @@ export class HuiAreaCard
 
     const dialogEntities: EntitiesCardEntityConfig[] = processConfigEntities(
       this._entitiesDialog!
-    ).map((entityConfig) => ({
-      tap_action: { action: "more-info" },
-      hold_action: { action: "more-info" },
-      ...entityConfig,
-    })) as EntitiesCardEntityConfig[];
-
-    const nameConfig: { tap_action: NavigateActionConfig } | undefined = this
-      ._config.navigation_path
-      ? {
-          tap_action: {
-            action: "navigate",
-            navigation_path: this._config.navigation_path,
-          },
-        }
-      : undefined;
+    ) as EntitiesCardEntityConfig[];
 
     return html`
       <ha-card
@@ -271,15 +257,11 @@ export class HuiAreaCard
             ${dialogEntities.map((entityConf) => {
               const stateObj = this.hass.states[entityConf.entity];
               return html`
-                <span>
-                  <ha-icon
-                    .config=${entityConf}
-                    .icon=${stateIcon(stateObj)}
-                    .actionHandler=${actionHandler({
-                      hasHold: hasAction(entityConf.hold_action),
-                    })}
-                    @action=${this._handleAction}
-                  ></ha-icon>
+                <span
+                  .entity=${entityConf.entity}
+                  @click=${this._handleMoreInfo}
+                >
+                  <ha-state-icon .state=${stateObj}></ha-state-icon>
                   ${computeDomain(entityConf.entity) === "binary_sensor"
                     ? ""
                     : html`
@@ -294,10 +276,8 @@ export class HuiAreaCard
             })}
           </div>
           <div
-            class="name"
-            .actionHandler=${actionHandler()}
-            .config=${nameConfig}
-            @action=${nameConfig ? this._handleAction : undefined}
+            class="name ${this._config.navigation_path ? "navigate" : ""}"
+            @click=${this._handleNavigation}
           >
             ${area!.name}
           </div>
@@ -310,12 +290,17 @@ export class HuiAreaCard
                     off: STATES_OFF.includes(stateObj.state),
                   })}
                   .config=${entityConf}
-                  .icon=${stateIcon(stateObj)}
                   .actionHandler=${actionHandler({
                     hasHold: hasAction(entityConf.hold_action),
                   })}
                   @action=${this._handleAction}
-                ></ha-icon-button>
+                >
+                  <state-badge
+                    .hass=${this.hass}
+                    .stateObj=${stateObj}
+                    stateColor
+                  ></state-badge>
+                </ha-icon-button>
               `;
             })}
           </div>
@@ -349,15 +334,20 @@ export class HuiAreaCard
       return;
     }
 
-    entities.forEach((entity) => {
+    for (const entity of entities) {
+      const stateObj: HassEntity | undefined =
+        this.hass!.states[entity.entity_id];
+
+      if (!stateObj) {
+        continue;
+      }
+
       const domain = computeDomain(entity.entity_id);
 
       if (this._entitiesToggle!.length < 3 && DOMAINS_TOGGLE.has(domain)) {
         this._entitiesToggle!.push(entity.entity_id);
-        return;
+        continue;
       }
-
-      const stateObj = this.hass!.states[entity.entity_id];
 
       if (
         this._entitiesDialog!.length < 3 &&
@@ -367,7 +357,14 @@ export class HuiAreaCard
       ) {
         this._entitiesDialog!.push(entity.entity_id);
       }
-    });
+
+      if (
+        this._entitiesDialog!.length === 3 &&
+        this._entitiesToggle!.length === 3
+      ) {
+        break;
+      }
+    }
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -385,6 +382,17 @@ export class HuiAreaCard
         (!oldConfig || oldConfig.theme !== this._config.theme))
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+  }
+
+  private _handleMoreInfo(ev) {
+    const entity = (ev.currentTarget as any).entity;
+    fireEvent(this, "hass-more-info", { entityId: entity });
+  }
+
+  private _handleNavigation() {
+    if (this._config!.navigation_path) {
+      navigate(this._config!.navigation_path);
     }
   }
 
@@ -431,19 +439,20 @@ export class HuiAreaCard
           right: 3%;
         }
 
+        .name.navigate {
+          cursor: pointer;
+        }
+
+        state-badge {
+          --ha-icon-display: inline;
+        }
+
         ha-icon-button {
           color: white;
-          background-color: var(--area-button-on-color, rgb(175, 175, 175));
+          background-color: var(--area-button-color, rgb(175, 175, 175, 0.5));
           border-radius: 50%;
           margin-left: 8px;
           --mdc-icon-button-size: 44px;
-        }
-
-        ha-icon-button.off {
-          background-color: var(
-            --area-button-off-color,
-            rgba(175, 175, 175, 0.5)
-          );
         }
 
         .sensors {
@@ -453,6 +462,7 @@ export class HuiAreaCard
           top: 5%;
           left: 2%;
           --mdc-icon-size: 28px;
+          cursor: pointer;
         }
       `,
     ];
