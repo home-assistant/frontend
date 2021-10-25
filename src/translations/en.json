@@ -2831,8 +2831,10 @@
             "reinterview_device": "Re-interview Device",
             "heal_node": "Heal Device",
             "remove_failed": "Remove Failed Device",
-            "is_secure": "Secure",
-            "unknown": "Unknown"
+            "highest_security": "Highest Security",
+            "unknown": "Unknown",
+            "zwave_plus": "Z-Wave Plus",
+            "zwave_plus_version": "Version {version}"
           },
           "node_config": {
             "header": "Z-Wave Device Configuration",
@@ -2868,24 +2870,27 @@
             "inclusion_finished": "The device has been added.",
             "view_device": "View Device",
             "interview_started": "The device is being interviewed. This may take some time.",
-            "interview_failed": "The device interview failed. Additional information may be available in the logs.",
-            "security_classes": {
-              "S2_Unauthenticated": {
-                "title": "S2 Unauthenticated",
-                "description": "Like S2 Authenticated, but without verification that the correct device is included"
-              },
-              "S2_Authenticated": {
-                "title": "S2 Authenticated",
-                "description": "Example: Lighting, Sensors and Security Systems"
-              },
-              "S2_AccessControl": {
-                "title": "S2 Access Control",
-                "description": "Example: Door Locks and Garage Doors"
-              },
-              "S0_Legacy": {
-                "title": "S0 Legacy",
-                "description": "Example: Legacy Door Locks without S2 support"
-              }
+            "interview_failed": "The device interview failed. Additional information may be available in the logs."
+          },
+          "security_classes": {
+            "None": {
+              "title": "None"
+            },
+            "S2_Unauthenticated": {
+              "title": "S2 Unauthenticated",
+              "description": "Like S2 Authenticated, but without verification that the correct device is included"
+            },
+            "S2_Authenticated": {
+              "title": "S2 Authenticated",
+              "description": "Example: Lighting, Sensors and Security Systems"
+            },
+            "S2_AccessControl": {
+              "title": "S2 Access Control",
+              "description": "Example: Door Locks and Garage Doors"
+            },
+            "S0_Legacy": {
+              "title": "S0 Legacy",
+              "description": "Example: Legacy Door Locks without S2 support"
             }
           },
           "remove_node": {
