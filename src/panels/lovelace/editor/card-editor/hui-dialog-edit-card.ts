@@ -95,7 +95,7 @@ export class HuiDialogEditCard
 
   public closeDialog(): boolean {
     this._isEscapeEnabled = true;
-    window.removeEventListener("dialog-closed", this._disableEscapeKeyClose);
+    window.removeEventListener("dialog-closed", this._enableEscapeKeyClose);
     window.removeEventListener("hass-more-info", this._disableEscapeKeyClose);
     if (this._dirty) {
       this._confirmCancel();
@@ -129,15 +129,15 @@ export class HuiDialogEditCard
     }
   }
 
-  private _enableEscapeKeyClose(ev: any) {
+  private _enableEscapeKeyClose = (ev: any) => {
     if (ev.detail.dialog === "ha-more-info-dialog") {
       this._isEscapeEnabled = true;
     }
-  }
+  };
 
-  private _disableEscapeKeyClose() {
+  private _disableEscapeKeyClose = () => {
     this._isEscapeEnabled = false;
-  }
+  };
 
   protected render(): TemplateResult {
     if (!this._params) {
@@ -297,12 +297,8 @@ export class HuiDialogEditCard
   }
 
   private _opened() {
-    window.addEventListener("dialog-closed", (ev: any) =>
-      this._enableEscapeKeyClose(ev)
-    );
-    window.addEventListener("hass-more-info", () =>
-      this._disableEscapeKeyClose()
-    );
+    window.addEventListener("dialog-closed", this._enableEscapeKeyClose);
+    window.addEventListener("hass-more-info", this._disableEscapeKeyClose);
     this._cardEditorEl?.focusYamlEditor();
   }
 
