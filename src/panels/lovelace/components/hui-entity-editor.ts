@@ -39,8 +39,6 @@ export class HuiEntityEditor extends LitElement {
   public connectedCallback() {
     super.connectedCallback();
     this._attached = true;
-    // Request update so that the Sortable can be re-initialized after the entities are rendered.
-    this.requestUpdate();
   }
 
   public disconnectedCallback() {
