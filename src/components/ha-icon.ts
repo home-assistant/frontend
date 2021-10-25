@@ -11,7 +11,6 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
 import { debounce } from "../common/util/debounce";
 import { CustomIcon, customIcons } from "../data/custom_icons";
-import { customIconsets } from "../data/custom_iconsets";
 import {
   checkCacheVersion,
   Chunks,
@@ -400,13 +399,6 @@ export class HaIcon extends LitElement {
         const customIcon = customIcons[iconPrefix];
         if (customIcon) {
           this._setCustomPath(customIcon.getIcon(iconName));
-          return;
-        }
-      }
-      if (iconPrefix in customIconsets) {
-        const customIconset = customIconsets[iconPrefix];
-        if (customIconset) {
-          this._setCustomPath(customIconset(iconName));
         }
         return;
       }

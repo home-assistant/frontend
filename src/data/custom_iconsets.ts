@@ -1,6 +1,9 @@
-import { CustomIcon } from "./custom_icons";
+interface CustomIcon {
+  path: string;
+  viewBox?: string;
+}
 
-export interface CustomIconsetsWindow {
+interface CustomIconsetsWindow {
   customIconsets?: { [key: string]: (name: string) => Promise<CustomIcon> };
 }
 
