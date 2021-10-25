@@ -144,12 +144,14 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const stateLabel = this._stateDisplay(stateObj.state);
+
     return html`
       <ha-card>
         <h1 class="card-header">
           ${this._config.name ||
           stateObj.attributes.friendly_name ||
-          this._stateDisplay(stateObj.state)}
+          stateLabel}
           <ha-chip
             hasIcon
             class=${classMap({ [stateObj.state]: true })}
@@ -157,7 +159,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           >
             <ha-svg-icon slot="icon" .path=${alarmPanelIcon(stateObj.state)}>
             </ha-svg-icon>
-            ${this._stateDisplay(stateObj.state)}
+            ${stateLabel}
           </ha-chip>
         </h1>
         <div id="armActions" class="actions">
@@ -223,8 +225,10 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   }
 
   private _stateDisplay(entityState: string): string {
-    return this.hass!.localize(
-      `component.alarm_control_panel.state._.${entityState}`
+    return (
+      this.hass!.localize(
+        `component.alarm_control_panel.state._.${entityState}`
+      ) || this.hass!.localize("state.default.unavailable")
     );
   }
 
@@ -270,11 +274,17 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       ha-chip {
         --ha-chip-background-color: var(--alarm-state-color);
         --ha-chip-text-color: var(--text-primary-color);
+        line-height: initial;
       }
 
       .card-header {
         display: flex;
         justify-content: space-between;
+        align-items: center;
+      }
+
+      .unavailable {
+        --alarm-state-color: var(--state-unavailable-color);
       }
 
       .disarmed {
