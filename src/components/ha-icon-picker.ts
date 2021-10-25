@@ -113,12 +113,11 @@ export class HaIconPicker extends LitElement {
     if (this._opened && !iconItems.length) {
       const iconList = await import("../../build/mdi/iconList.json");
 
-      const mdiIconItems = iconList.default.map((icon) => ({
+      iconItems = iconList.default.map((icon) => ({
         icon: `mdi:${icon.name}`,
         keywords: icon.keywords,
       }));
 
-      iconItems = mdiIconItems;
       (this.comboBox as any).filteredItems = iconItems;
 
       Object.keys(customIcons).forEach((iconSet) => {
