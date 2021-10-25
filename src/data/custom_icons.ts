@@ -4,7 +4,7 @@ export interface CustomIcon {
 }
 
 export interface CustomIconHelpers {
-  getIcon?: (name: string) => Promise<CustomIcon>;
+  getIcon: (name: string) => Promise<CustomIcon>;
   getIconList?: () => Promise<string[]>;
 }
 

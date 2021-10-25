@@ -398,7 +398,7 @@ export class HaIcon extends LitElement {
     if (!MDI_PREFIXES.includes(iconPrefix)) {
       if (iconPrefix in customIcons) {
         const customIcon = customIcons[iconPrefix];
-        if (customIcon && customIcon.getIcon) {
+        if (customIcon) {
           this._setCustomPath(customIcon.getIcon(iconName));
           return;
         }

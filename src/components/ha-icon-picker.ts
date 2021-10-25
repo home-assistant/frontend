@@ -128,12 +128,14 @@ export class HaIconPicker extends LitElement {
 
   private async _loadCustomIconItems(iconsetName: string) {
     try {
-      const iconList = (await customIcons[iconsetName].getIconList?.()) ?? [];
+      const getIconList = customIcons[iconsetName].getIconList;
+      if (!getIconList) return;
+      const iconList = await getIconList();
       const customIconItems = iconList.map((icon) => ({
         icon: `${iconsetName}:${icon}`,
         keywords: [],
       }));
-      iconItems = [...iconItems, ...customIconItems];
+      iconItems = iconItems.concat(customIconItems);
       (this.comboBox as any).filteredItems = iconItems;
     } catch (e) {
       // eslint-disable-next-line
