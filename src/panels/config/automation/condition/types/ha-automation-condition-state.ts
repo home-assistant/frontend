@@ -81,7 +81,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
     value: string | number
   ): string | number | string[] {
     if (typeof value === "string") {
-      const splitValue = value?.split(",");
+      const splitValue = value.split(",");
       return splitValue?.length > 1 ? splitValue : value;
     }
     return value;
