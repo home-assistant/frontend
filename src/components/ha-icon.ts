@@ -52,18 +52,6 @@ const mdiDeprecatedIcons: DeprecatedIcon = {
     newName: "cast-variant",
     removeIn: "2021.12",
   },
-  application: {
-    newName: "application-outline",
-    removeIn: "2021.12",
-  },
-  "application-cog": {
-    newName: "application-cog-outline",
-    removeIn: "2021.12",
-  },
-  "application-settings": {
-    newName: "application-settings-outline",
-    removeIn: "2021.12",
-  },
   bandcamp: {
     removeIn: "2021.12",
   },
@@ -75,14 +63,6 @@ const mdiDeprecatedIcons: DeprecatedIcon = {
   },
   "bolnisi-cross": {
     newName: "cross-bolnisi",
-    removeIn: "2021.12",
-  },
-  "boom-gate-up": {
-    newName: "boom-gate-arrow-up",
-    removeIn: "2021.12",
-  },
-  "boom-gate-up-outline": {
-    newName: "boom-gate-arrow-up-outline",
     removeIn: "2021.12",
   },
   "boom-gate-down": {
