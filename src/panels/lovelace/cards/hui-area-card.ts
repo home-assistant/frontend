@@ -38,18 +38,15 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
-import {
-  ActionHandlerEvent,
-} from "../../../data/lovelace";
+import { forwardHaptic } from "../../../data/haptics";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
-import { handleAction } from "../common/handle-action";
-import { hasAction } from "../common/has-action";
-import { processConfigEntities } from "../common/process-config-entities";
+import { toggleEntity } from "../common/entity/toggle-entity";
 import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { AreaCardConfig, EntitiesCardEntityConfig } from "./types";
+import { AreaCardConfig } from "./types";
 
 @customElement("hui-area-card")
 export class HuiAreaCard
@@ -234,18 +231,6 @@ export class HuiAreaCard
       `;
     }
 
-    const toggleEntities: EntitiesCardEntityConfig[] = processConfigEntities(
-      this._entitiesToggle!
-    ).map((entityConfig) => ({
-      tap_action: { action: "toggle" },
-      hold_action: { action: "more-info" },
-      ...entityConfig,
-    })) as EntitiesCardEntityConfig[];
-
-    const dialogEntities: EntitiesCardEntityConfig[] = processConfigEntities(
-      this._entitiesDialog!
-    ) as EntitiesCardEntityConfig[];
-
     return html`
       <ha-card
         style=${styleMap({
@@ -254,15 +239,12 @@ export class HuiAreaCard
       >
         <div class="container">
           <div class="sensors">
-            ${dialogEntities.map((entityConf) => {
-              const stateObj = this.hass.states[entityConf.entity];
+            ${this._entitiesDialog.map((entity) => {
+              const stateObj = this.hass.states[entity];
               return html`
-                <span
-                  .entity=${entityConf.entity}
-                  @click=${this._handleMoreInfo}
-                >
+                <span .entity=${entity} @click=${this._handleMoreInfo}>
                   <ha-state-icon .state=${stateObj}></ha-state-icon>
-                  ${computeDomain(entityConf.entity) === "binary_sensor"
+                  ${computeDomain(entity) === "binary_sensor"
                     ? ""
                     : html`
                         ${computeStateDisplay(
@@ -282,16 +264,16 @@ export class HuiAreaCard
             ${area!.name}
           </div>
           <div class="buttons">
-            ${toggleEntities.map((entityConf) => {
-              const stateObj = this.hass!.states[entityConf.entity];
+            ${this._entitiesToggle.map((entity) => {
+              const stateObj = this.hass!.states[entity];
               return html`
                 <ha-icon-button
                   class=${classMap({
                     off: STATES_OFF.includes(stateObj.state),
                   })}
-                  .config=${entityConf}
+                  .entity=${entity}
                   .actionHandler=${actionHandler({
-                    hasHold: hasAction(entityConf.hold_action),
+                    hasHold: true,
                   })}
                   @action=${this._handleAction}
                 >
@@ -397,8 +379,13 @@ export class HuiAreaCard
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
-    const config = (ev.currentTarget as any).config as EntitiesCardEntityConfig;
-    handleAction(this, this.hass!, config, ev.detail.action!);
+    const entity = (ev.currentTarget as any).entity as string;
+    if (ev.detail.action === "hold") {
+      fireEvent(this, "hass-more-info", { entityId: entity });
+    } else if (ev.detail.action === "tap") {
+      toggleEntity(this.hass, entity);
+      forwardHaptic("light");
+    }
   }
 
   static get styles(): CSSResultGroup {
