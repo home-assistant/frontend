@@ -184,11 +184,12 @@ export class HaFormCustomize extends LocalizeMixin(PolymerElement) {
         attr.closed ||
         attr.secondary ||
         !attr.attribute ||
-        attr.value == null
+        attr.value === null ||
+        attr.value === undefined
       )
         return;
       const value = attr.type === "json" ? JSON.parse(attr.value) : attr.value;
-      if (value == null) return;
+      if (value === null || value === undefined) return;
       data[attr.attribute] = value;
     });
 
