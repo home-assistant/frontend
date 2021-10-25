@@ -19,6 +19,7 @@ import {
   callAlarmAction,
   FORMAT_NUMBER,
 } from "../../../data/alarm_control_panel";
+import { UNAVAILABLE } from "../../../data/entity";
 import type { HomeAssistant } from "../../../types";
 import { findEntities } from "../common/find-entities";
 import { createEntityNotFoundWarning } from "../components/hui-warning";
@@ -225,10 +226,11 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   }
 
   private _stateDisplay(entityState: string): string {
-    return (
-      this.hass!.localize(
-        `component.alarm_control_panel.state._.${entityState}`
-      ) || this.hass!.localize("state.default.unavailable")
+    if (entityState === UNAVAILABLE) {
+      return this.hass!.localize("state.default.unavailable");
+    }
+    return this.hass!.localize(
+      `component.alarm_control_panel.state._.${entityState}`
     );
   }
 
