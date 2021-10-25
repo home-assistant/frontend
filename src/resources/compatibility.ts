@@ -13,6 +13,7 @@ import "@formatjs/intl-relativetimeformat/polyfill";
 import "@formatjs/intl-relativetimeformat/locale-data/en";
 import "@formatjs/intl-datetimeformat/polyfill";
 import "@formatjs/intl-datetimeformat/locale-data/en";
+import "@formatjs/intl-datetimeformat/add-all-tz";
 
 // To use comlink under ES5
 import "proxy-polyfill";
