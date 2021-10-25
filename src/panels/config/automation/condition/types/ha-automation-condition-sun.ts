@@ -19,7 +19,12 @@ export class HaSunCondition extends LitElement implements ConditionElement {
   @property({ attribute: false }) public condition!: SunCondition;
 
   public static get defaultConfig() {
-    return {};
+    return {
+      after: "sunrise" as SunCondition["after"],
+      before: "sunrise" as SunCondition["before"],
+      after_offset: 0,
+      before_offset: 0,
+    };
   }
 
   protected render() {

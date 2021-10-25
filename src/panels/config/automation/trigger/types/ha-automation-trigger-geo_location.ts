@@ -10,7 +10,7 @@ import { handleChangeEvent } from "../ha-automation-trigger-row";
 const includeDomains = ["zone"];
 
 @customElement("ha-automation-trigger-geo_location")
-export default class HaGeolocationTrigger extends LitElement {
+export class HaGeolocationTrigger extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
 
   @property({ attribute: false }) public trigger!: GeoLocationTrigger;
@@ -19,7 +19,7 @@ export default class HaGeolocationTrigger extends LitElement {
     return {
       source: "",
       zone: "",
-      event: "enter",
+      event: "enter" as GeoLocationTrigger["event"],
     };
   }
 
