@@ -230,6 +230,7 @@ export default class HaAutomationActionRow extends LitElement {
                     "ui.panel.config.automation.editor.actions.type_select"
                   )}
                   .value=${getType(this.action)}
+                  naturalMenuWidth
                   @selected=${this._typeChanged}
                 >
                   ${this._processedTypes(this.hass.localize).map(
