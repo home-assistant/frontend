@@ -194,6 +194,13 @@ export class HaConfigDevicePage extends LitElement {
       : undefined;
     const area = this._computeArea(this.areas, device);
 
+    const configurationUrlIsPanel =
+      device.configuration_url?.startsWith("panel://") || false;
+
+    const configurationUrl = configurationUrlIsPanel
+      ? device.configuration_url!.replace("panel://", "/")
+      : device.configuration_url;
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -317,13 +324,15 @@ export class HaConfigDevicePage extends LitElement {
                   : html``
               }
               ${
-                device.configuration_url
+                configurationUrl
                   ? html`
                       <div class="card-actions" slot="actions">
                         <a
-                          href=${device.configuration_url}
-                          target="_blank"
+                          href=${configurationUrl}
                           rel="noopener noreferrer"
+                          .target=${configurationUrlIsPanel
+                            ? "_self"
+                            : "_blank"}
                         >
                           <mwc-button>
                             ${this.hass.localize(
