@@ -7,6 +7,7 @@ import { css, html, LitElement, TemplateResult } from "lit";
 import { ComboBoxLitRenderer, comboBoxRenderer } from "lit-vaadin-helpers";
 import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../common/dom/fire_event";
+import { customIconsetsLists } from "../data/custom_iconsets";
 import { PolymerChangedEvent } from "../polymer-types";
 import "./ha-icon";
 import "./ha-icon-button";
@@ -16,6 +17,7 @@ type IconItem = {
   keywords: string[];
 };
 let iconItems: IconItem[] = [];
+
 
 // eslint-disable-next-line lit/prefer-static-styles
 const rowRenderer: ComboBoxLitRenderer<IconItem> = (item) => html`<style>
@@ -111,10 +113,28 @@ export class HaIconPicker extends LitElement {
     this._opened = ev.detail.value;
     if (this._opened && !iconItems.length) {
       const iconList = await import("../../build/mdi/iconList.json");
-      iconItems = iconList.default.map((icon) => ({
+ 
+      const mdiIconItems = iconList.default.map((icon) => ({
         icon: `mdi:${icon.name}`,
         keywords: icon.keywords,
       }));
+
+      const iconSetListPromises = Object.entries(customIconsetsLists);
+      const iconSetList = await Promise.all(
+        iconSetListPromises.map(([prefix, getIconList]) =>
+          getIconList()
+            .then((icons) => [prefix, icons] as [string, string[]])
+            .catch(() => [])
+        )
+      );
+      const customIconItems = iconSetList
+        .map(([prefix, icons]) => icons.map((icon) => ({
+          icon: `${prefix}:${icon}`,
+          keywords: [],
+        })))
+        .reduce((x, y) => x.concat(y), []);
+
+      iconItems = [...mdiIconItems, ...customIconItems];
       (this.comboBox as any).filteredItems = iconItems;
     }
   }
