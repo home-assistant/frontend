@@ -4084,17 +4084,20 @@
             "description": "This add-on is using Ingress to embed its interface securely into Home Assistant."
           },
           "label": {
-            "stage": "stage",
+            "core": "Core",
             "rating": "rating",
             "hardware": "hardware",
             "host": "host",
-            "hass": "hass",
             "hassio": "hassio",
             "docker": "docker",
             "host_pid": "host pid",
             "apparmor": "apparmor",
             "auth": "auth",
             "ingress": "ingress"
+          },
+          "stages": {
+            "experimental": "Experimental",
+            "deprecated": "Deprecated"
           },
           "role": {
             "manager": "manager",
