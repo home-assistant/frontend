@@ -231,7 +231,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     }
     return this.hass!.localize(
       `component.alarm_control_panel.state._.${entityState}`
-    );
+    ) || entityState;
   }
 
   private _handlePadClick(e: MouseEvent): void {
