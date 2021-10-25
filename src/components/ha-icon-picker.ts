@@ -137,7 +137,8 @@ export class HaIconPicker extends LitElement {
       iconItems = [...iconItems, ...customIconItems];
       (this.comboBox as any).filteredItems = iconItems;
     } catch (e) {
-      // do nothing
+      // eslint-disable-next-line
+      console.warn(`Unable to load icon list for ${iconsetName} iconset`);
     }
   }
 
