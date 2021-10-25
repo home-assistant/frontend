@@ -27,7 +27,7 @@ export class HaZoneTrigger extends LitElement {
     return {
       entity_id: "",
       zone: "",
-      event: "enter",
+      event: "enter" as ZoneTrigger["event"],
     };
   }
 
