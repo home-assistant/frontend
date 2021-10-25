@@ -226,12 +226,11 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   }
 
   private _stateDisplay(entityState: string): string {
-    if (entityState === UNAVAILABLE) {
-      return this.hass!.localize("state.default.unavailable");
-    }
-    return this.hass!.localize(
-      `component.alarm_control_panel.state._.${entityState}`
-    ) || entityState;
+    return entityState === UNAVAILABLE
+      ? this.hass!.localize("state.default.unavailable")
+      : this.hass!.localize(
+          `component.alarm_control_panel.state._.${entityState}`
+        ) || entityState;
   }
 
   private _handlePadClick(e: MouseEvent): void {
