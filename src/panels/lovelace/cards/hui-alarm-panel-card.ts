@@ -145,20 +145,21 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card
-        .header=${this._config.name ||
-        stateObj.attributes.friendly_name ||
-        this._stateDisplay(stateObj.state)}
-      >
-        <ha-chip
-          hasIcon
-          class=${classMap({ [stateObj.state]: true })}
-          @click=${this._handleMoreInfo}
-        >
-          <ha-svg-icon slot="icon" .path=${alarmPanelIcon(stateObj.state)}>
-          </ha-svg-icon>
-          ${this._stateDisplay(stateObj.state)}
-        </ha-chip>
+      <ha-card>
+        <h1 class="card-header">
+          ${this._config.name ||
+          stateObj.attributes.friendly_name ||
+          this._stateDisplay(stateObj.state)}
+          <ha-chip
+            hasIcon
+            class=${classMap({ [stateObj.state]: true })}
+            @click=${this._handleMoreInfo}
+          >
+            <ha-svg-icon slot="icon" .path=${alarmPanelIcon(stateObj.state)}>
+            </ha-svg-icon>
+            ${this._stateDisplay(stateObj.state)}
+          </ha-chip>
+        </h1>
         <div id="armActions" class="actions">
           ${(stateObj.state === "disarmed"
             ? this._config.states!
@@ -267,12 +268,13 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       }
 
       ha-chip {
-        --ha-chip-text-color: var(--alarm-state-color);
-        color: var(--alarm-state-color);
-        position: absolute;
-        right: 12px;
-        top: 12px;
-        cursor: pointer;
+        --ha-chip-background-color: var(--alarm-state-color);
+        --ha-chip-text-color: var(--text-primary-color);
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
       }
 
       .disarmed {
