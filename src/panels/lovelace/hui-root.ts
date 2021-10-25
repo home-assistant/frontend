@@ -713,7 +713,8 @@ class HUIRoot extends LitElement {
     });
   }
 
-  private _moveViewLeft() {
+  private _moveViewLeft(ev) {
+    ev.stopPropagation();
     if (this._curView === 0) {
       return;
     }
@@ -724,7 +725,8 @@ class HUIRoot extends LitElement {
     lovelace.saveConfig(swapView(lovelace.config, oldIndex, newIndex));
   }
 
-  private _moveViewRight() {
+  private _moveViewRight(ev) {
+    ev.stopPropagation();
     if ((this._curView! as number) + 1 === this.lovelace!.config.views.length) {
       return;
     }
