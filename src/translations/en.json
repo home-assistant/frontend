@@ -3521,7 +3521,7 @@
         "logging_in_with": "Logging in with **{authProviderName}**.",
         "pick_auth_provider": "Or log in with",
         "abort_intro": "Login aborted",
-        "keep_logged_in": "Keep me logged in",
+        "store_token": "Keep me logged in",
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",

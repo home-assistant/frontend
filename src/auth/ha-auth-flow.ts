@@ -208,14 +208,12 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
           ${this.clientId === window.location.origin && step.step_id !== "mfa"
             ? html`
                 <ha-formfield
-                  class="keep-logged-in"
-                  .label=${this.localize(
-                    "ui.panel.page-authorize.keep_logged_in"
-                  )}
+                  class="store-token"
+                  .label=${this.localize("ui.panel.page-authorize.store_token")}
                 >
                   <ha-checkbox
                     .checked=${this._storeToken}
-                    @change=${this._keepLoggedInChanged}
+                    @change=${this._storeTokenChanged}
                   ></ha-checkbox>
                 </ha-formfield>
               `
@@ -226,7 +224,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }
   }
 
-  private _keepLoggedInChanged(e: CustomEvent<HTMLInputElement>) {
+  private _storeTokenChanged(e: CustomEvent<HTMLInputElement>) {
     this._storeToken = (e.currentTarget as HTMLInputElement).checked;
   }
 
@@ -384,7 +382,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         text-align: center;
       }
       /* Align with the rest of the form. */
-      .keep-logged-in {
+      .store-token {
         margin-top: 10px;
         margin-left: -16px;
       }
