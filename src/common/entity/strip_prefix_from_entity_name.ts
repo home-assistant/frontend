@@ -1,22 +1,18 @@
 /**
  * Strips a device name from an entity name.
  * @param entityName the entity name
- * @param lowerCasedDeviceNameWithSpaceSuffix the device name, lower cased with a space suffix
+ * @param lowerCasedPrefixWithSpaceSuffix the prefix to strip, lower cased with a space suffix
  * @returns
  */
 export const stripPrefixFromEntityName = (
   entityName: string,
-  lowerCasedDeviceNameWithSpaceSuffix: string
+  lowerCasedPrefixWithSpaceSuffix: string
 ) => {
-  if (
-    !entityName.toLowerCase().startsWith(lowerCasedDeviceNameWithSpaceSuffix)
-  ) {
+  if (!entityName.toLowerCase().startsWith(lowerCasedPrefixWithSpaceSuffix)) {
     return undefined;
   }
 
-  const newName = entityName.substring(
-    lowerCasedDeviceNameWithSpaceSuffix.length
-  );
+  const newName = entityName.substring(lowerCasedPrefixWithSpaceSuffix.length);
 
   // If first word already has an upper case letter (e.g. from brand name)
   // leave as-is, otherwise capitalize the first word.
