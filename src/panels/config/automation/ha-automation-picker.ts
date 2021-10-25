@@ -4,6 +4,7 @@ import {
   mdiInformationOutline,
   mdiPencil,
   mdiPencilOff,
+  mdiPlayCircleOutline,
   mdiPlus,
 } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
@@ -135,7 +136,7 @@ class HaAutomationPicker extends LitElement {
           template: (_info, automation: any) => html`
             <mwc-button
               .automation=${automation}
-              @click=${this._runActions}
+              @click=${this._triggerRunActions}
               .disabled=${UNAVAILABLE_STATES.includes(automation.state)}
             >
               ${this.hass.localize("ui.card.automation.trigger")}
@@ -145,7 +146,7 @@ class HaAutomationPicker extends LitElement {
       }
       columns.actions = {
         title: "",
-        overflows: true,
+        type: "overflow-menu",
         template: (_info, automation: any) => html`
           <ha-icon-overflow-menu
             .hass=${this.hass}
@@ -158,6 +159,13 @@ class HaAutomationPicker extends LitElement {
                   "ui.panel.config.automation.picker.show_info_automation"
                 ),
                 action: () => this._showInfo(automation),
+              },
+              // Trigger Button
+              {
+                path: mdiPlayCircleOutline,
+                label: this.hass.localize("ui.card.automation.trigger"),
+                narrowOnly: true,
+                action: () => this._runActions(automation),
               },
               // Trace Button
               {
@@ -298,9 +306,12 @@ class HaAutomationPicker extends LitElement {
     });
   }
 
-  private _runActions = (ev) => {
-    const entityId = ev.currentTarget.automation.entity_id;
-    triggerAutomationActions(this.hass, entityId);
+  private _triggerRunActions = (ev) => {
+    this._runActions(ev.currentTarget.automation);
+  };
+
+  private _runActions = (automation: AutomationEntity) => {
+    triggerAutomationActions(this.hass, automation.entity_id);
   };
 
   private _createNew() {
