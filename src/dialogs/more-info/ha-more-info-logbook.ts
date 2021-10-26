@@ -230,7 +230,7 @@ export class MoreInfoLogbook extends LitElement {
           -webkit-font-smoothing: var(
             --paper-font-title_-_-webkit-font-smoothing
           );
-          font-size: var(--paper-font-subhead_-_font-size, 1.25rem);
+          font-size: var(--paper-font-subhead_-_font-size);
           font-weight: var(--paper-font-title_-_font-weight);
           letter-spacing: var(--paper-font-title_-_letter-spacing);
           line-height: var(--paper-font-title_-_line-height);
