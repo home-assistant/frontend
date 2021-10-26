@@ -105,11 +105,6 @@
     }
   },
   "ui": {
-    "auth_store": {
-      "ask": "Do you want to stay logged in?",
-      "decline": "No",
-      "confirm": "Yes"
-    },
     "card": {
       "alarm_control_panel": {
         "code": "Code",
