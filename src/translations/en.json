@@ -3433,7 +3433,9 @@
             "weather-forecast": {
               "name": "Weather Forecast",
               "description": "The Weather Forecast card displays the weather. Very useful to include on interfaces that people display on the wall.",
-              "show_forecast": "Show Forecast"
+              "show_both": "Show current Weather and Forecast",
+              "show_only_current": "Show only current Weather",
+              "show_only_forecast": "Show only Forecast"
             }
           },
           "view": {
