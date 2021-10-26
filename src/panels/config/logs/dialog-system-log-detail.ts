@@ -1,9 +1,10 @@
-import { mdiClose, mdiContentCopy, mdiPackageVariant } from "@mdi/js";
+import { mdiClose, mdiContentCopy } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { copyToClipboard } from "../../../common/util/copy-clipboard";
+import "../../../components/ha-alert";
 import "../../../components/ha-dialog";
 import "../../../components/ha-header-bar";
 import "../../../components/ha-icon-button";
@@ -96,12 +97,11 @@ class DialogSystemLogDetail extends LitElement {
           ></ha-icon-button>
         </ha-header-bar>
         ${this.isCustomIntegration
-          ? html`<div class="custom">
-              <ha-svg-icon .path=${mdiPackageVariant}></ha-svg-icon>
+          ? html`<ha-alert alert-type="warning">
               ${this.hass.localize(
                 "ui.panel.config.logs.error_from_custom_integration"
               )}
-            </div>`
+            </ha-alert>`
           : ""}
         <div class="contents">
           <p>
@@ -215,9 +215,9 @@ class DialogSystemLogDetail extends LitElement {
           margin-bottom: 0;
           font-family: var(--code-font-family, monospace);
         }
-        .custom {
-          padding: 8px 16px;
-          background-color: var(--warning-color);
+        ha-alert {
+          display: block;
+          margin: -4px 0;
         }
         .contents {
           padding: 16px;
