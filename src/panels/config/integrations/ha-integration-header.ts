@@ -34,7 +34,10 @@ export class HaIntegrationHeader extends LitElement {
 
     if (this.label) {
       primary = this.label;
-      secondary = primary === domainName ? undefined : domainName;
+      secondary =
+        primary.toLowerCase() === domainName.toLowerCase()
+          ? undefined
+          : domainName;
     } else {
       primary = domainName;
     }
@@ -78,7 +81,11 @@ export class HaIntegrationHeader extends LitElement {
       <slot name="above-header"></slot>
       <div class="header">
         <img
-          src=${brandsUrl(this.domain, "icon")}
+          src=${brandsUrl({
+            domain: this.domain,
+            type: "icon",
+            darkOptimized: this.hass.selectedTheme?.dark,
+          })}
           referrerpolicy="no-referrer"
           @error=${this._onImageError}
           @load=${this._onImageLoad}

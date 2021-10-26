@@ -26,7 +26,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../common/entity/state_icon";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 import "../../../components/ha-card";
@@ -143,16 +142,20 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const name = this._config.show_name
+      ? this._config.name || (stateObj ? computeStateName(stateObj) : "")
+      : "";
+
     return html`
       <ha-card
         @action=${this._handleAction}
-        @focus="${this.handleRippleFocus}"
-        @blur="${this.handleRippleBlur}"
-        @mousedown="${this.handleRippleActivate}"
-        @mouseup="${this.handleRippleDeactivate}"
-        @touchstart="${this.handleRippleActivate}"
-        @touchend="${this.handleRippleDeactivate}"
-        @touchcancel="${this.handleRippleDeactivate}"
+        @focus=${this.handleRippleFocus}
+        @blur=${this.handleRippleBlur}
+        @mousedown=${this.handleRippleActivate}
+        @mouseup=${this.handleRippleDeactivate}
+        @touchstart=${this.handleRippleActivate}
+        @touchend=${this.handleRippleDeactivate}
+        @touchcancel=${this.handleRippleDeactivate}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
@@ -163,7 +166,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       >
         ${this._config.show_icon
           ? html`
-              <ha-icon
+              <ha-state-icon
                 tabindex="-1"
                 data-domain=${ifDefined(
                   this._config.state_color && stateObj
@@ -173,8 +176,8 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                 data-state=${ifDefined(
                   stateObj ? computeActiveState(stateObj) : undefined
                 )}
-                .icon=${this._config.icon ||
-                (stateObj ? stateIcon(stateObj) : "")}
+                .icon=${this._config.icon}
+                .state=${stateObj}
                 style=${styleMap({
                   filter: stateObj ? this._computeBrightness(stateObj) : "",
                   color: stateObj ? this._computeColor(stateObj) : "",
@@ -182,16 +185,11 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
                     ? this._config.icon_height
                     : "",
                 })}
-              ></ha-icon>
+              ></ha-state-icon>
             `
           : ""}
         ${this._config.show_name
-          ? html`
-              <span tabindex="-1">
-                ${this._config.name ||
-                (stateObj ? computeStateName(stateObj) : "")}
-              </span>
-            `
+          ? html`<span tabindex="-1" .title=${name}>${name}</span>`
           : ""}
         ${this._config.show_state && stateObj
           ? html`<span class="state">
@@ -250,48 +248,49 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   static get styles(): CSSResultGroup {
-    return css`
-      ha-card {
-        cursor: pointer;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        padding: 4% 0;
-        font-size: 1.2rem;
-        height: 100%;
-        box-sizing: border-box;
-        justify-content: center;
-        position: relative;
-      }
+    return [
+      iconColorCSS,
+      css`
+        ha-card {
+          cursor: pointer;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding: 4% 0;
+          font-size: 1.2rem;
+          height: 100%;
+          box-sizing: border-box;
+          justify-content: center;
+          position: relative;
+        }
 
-      ha-card:focus {
-        outline: none;
-      }
+        ha-card:focus {
+          outline: none;
+        }
 
-      ha-icon {
-        width: 40%;
-        height: auto;
-        color: var(--paper-item-icon-color, #44739e);
-        --mdc-icon-size: 100%;
-      }
+        ha-state-icon {
+          width: 40%;
+          height: auto;
+          color: var(--paper-item-icon-color, #44739e);
+          --mdc-icon-size: 100%;
+        }
 
-      ha-icon + span {
-        margin-top: 8px;
-      }
+        ha-state-icon + span {
+          margin-top: 8px;
+        }
 
-      ha-icon,
-      span {
-        outline: none;
-      }
+        ha-state-icon,
+        span {
+          outline: none;
+        }
 
-      .state {
-        font-size: 0.9rem;
-        color: var(--secondary-text-color);
-      }
-
-      ${iconColorCSS}
-    `;
+        .state {
+          font-size: 0.9rem;
+          color: var(--secondary-text-color);
+        }
+      `,
+    ];
   }
 
   private _computeBrightness(stateObj: HassEntity | LightEntity): string {

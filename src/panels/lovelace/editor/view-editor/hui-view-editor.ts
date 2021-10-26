@@ -4,11 +4,16 @@ import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { slugify } from "../../../../common/string/slugify";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import { LovelaceViewConfig } from "../../../../data/lovelace";
 import { HomeAssistant } from "../../../../types";
 import "../../components/hui-theme-select-editor";
+import {
+  DEFAULT_VIEW_LAYOUT,
+  PANEL_VIEW_LAYOUT,
+  SIDEBAR_VIEW_LAYOUT,
+} from "../../views/const";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { EditorTarget } from "../types";
 
@@ -60,9 +65,11 @@ export class HuiViewEditor extends LitElement {
 
   get _type(): string {
     if (!this._config) {
-      return "masonry";
+      return DEFAULT_VIEW_LAYOUT;
     }
-    return this._config.panel ? "panel" : this._config.type || "masonry";
+    return this._config.panel
+      ? PANEL_VIEW_LAYOUT
+      : this._config.type || DEFAULT_VIEW_LAYOUT;
   }
 
   set config(config: LovelaceViewConfig) {
@@ -87,7 +94,7 @@ export class HuiViewEditor extends LitElement {
           @value-changed=${this._valueChanged}
           @blur=${this._handleTitleBlur}
         ></paper-input>
-        <ha-icon-input
+        <ha-icon-picker
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.icon"
           )} (${this.hass.localize(
@@ -97,7 +104,7 @@ export class HuiViewEditor extends LitElement {
           .placeholder=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-        ></ha-icon-input>
+        ></ha-icon-picker>
         <paper-input
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.url"
@@ -125,7 +132,7 @@ export class HuiViewEditor extends LitElement {
             attr-for-selected="type"
             @iron-select=${this._typeChanged}
           >
-            ${["masonry", "sidebar", "panel"].map(
+            ${[DEFAULT_VIEW_LAYOUT, SIDEBAR_VIEW_LAYOUT, PANEL_VIEW_LAYOUT].map(
               (type) => html`<paper-item .type=${type}>
                 ${this.hass.localize(
                   `ui.panel.lovelace.editor.edit_view.types.${type}`

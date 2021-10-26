@@ -17,6 +17,7 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-battery-icon";
 import "../../../components/ha-button-menu";
+import "../../../components/ha-icon-button";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
@@ -212,6 +213,10 @@ export class HaConfigDeviceDashboard extends LitElement {
           this._batteryEntity(device.id, deviceEntityLookup),
           this._batteryChargingEntity(device.id, deviceEntityLookup),
         ],
+        battery_level:
+          this.hass.states[
+            this._batteryEntity(device.id, deviceEntityLookup) || ""
+          ]?.state,
       }));
 
       this._numHiddenDevices = startLength - outputDevices.length;
@@ -286,9 +291,11 @@ export class HaConfigDeviceDashboard extends LitElement {
       columns.battery_entity = {
         title: this.hass.localize("ui.panel.config.devices.data_table.battery"),
         sortable: true,
+        filterable: true,
         type: "numeric",
         width: narrow ? "95px" : "15%",
         maxWidth: "95px",
+        valueColumn: "battery_level",
         template: (batteryEntityPair: DeviceRowData["battery_entity"]) => {
           const battery =
             batteryEntityPair && batteryEntityPair[0]
@@ -401,19 +408,15 @@ export class HaConfigDeviceDashboard extends LitElement {
             </a>`
           : html``}
         <ha-button-menu slot="filter-menu" corner="BOTTOM_START" multi>
-          <mwc-icon-button
+          <ha-icon-button
             slot="trigger"
             .label=${this.hass!.localize(
               "ui.panel.config.devices.picker.filter.filter"
             )}
-            .title=${this.hass!.localize(
-              "ui.panel.config.devices.picker.filter.filter"
-            )}
-          >
-            <ha-svg-icon .path=${mdiFilterVariant}></ha-svg-icon>
-          </mwc-icon-button>
+            .path=${mdiFilterVariant}
+          ></ha-icon-button>
           <mwc-list-item
-            @request-selected="${this._showDisabledChanged}"
+            @request-selected=${this._showDisabledChanged}
             graphic="control"
             .selected=${this._showDisabled}
           >

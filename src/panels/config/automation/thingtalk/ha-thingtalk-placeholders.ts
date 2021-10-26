@@ -1,3 +1,4 @@
+/* eslint-disable lit/no-template-arrow */
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -24,7 +25,6 @@ import {
 import { subscribeEntityRegistry } from "../../../../data/entity_registry";
 import { domainToName } from "../../../../data/integration";
 import { SubscribeMixin } from "../../../../mixins/subscribe-mixin";
-import { PolymerChangedEvent } from "../../../../polymer-types";
 import { haStyleDialog } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 import { Placeholder, PlaceholderContainer } from "./dialog-thingtalk";
@@ -123,18 +123,14 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
 
   protected render(): TemplateResult {
     return html`
-      <ha-paper-dialog
-        modal
-        with-backdrop
-        .opened=${this.opened}
-        @opened-changed="${this._openedChanged}"
+      <ha-dialog
+        open
+        scrimClickAction
+        .heading=${this.hass.localize(
+          `ui.panel.config.automation.thingtalk.link_devices.header`
+        )}
       >
-        <h2>
-          ${this.hass.localize(
-            `ui.panel.config.automation.thingtalk.link_devices.header`
-          )}
-        </h2>
-        <paper-dialog-scrollable>
+        <div>
           ${this._error ? html` <div class="error">${this._error}</div> ` : ""}
           ${Object.entries(this.placeholders).map(
             ([type, placeholders]) =>
@@ -242,16 +238,18 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                 })}
               `
           )}
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          <mwc-button class="left" @click="${this.skip}">
-            ${this.hass.localize(`ui.common.skip`)}
-          </mwc-button>
-          <mwc-button @click="${this._done}" .disabled=${!this._isDone}>
-            ${this.hass.localize(`ui.panel.config.automation.thingtalk.create`)}
-          </mwc-button>
         </div>
-      </ha-paper-dialog>
+        <mwc-button @click=${this.skip} slot="secondaryAction">
+          ${this.hass.localize(`ui.common.skip`)}
+        </mwc-button>
+        <mwc-button
+          @click=${this._done}
+          .disabled=${!this._isDone}
+          slot="primaryAction"
+        >
+          ${this.hass.localize(`ui.panel.config.automation.thingtalk.create`)}
+        </mwc-button>
+      </ha-dialog>
     `;
   }
 
@@ -439,11 +437,6 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
         this.requestUpdate("_placeholderValues");
       }
     });
-
-    fireEvent(
-      this.shadowRoot!.querySelector("ha-paper-dialog")! as HTMLElement,
-      "iron-resize"
-    );
   }
 
   private _entityPicked(ev: Event): void {
@@ -464,23 +457,15 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
     fireEvent(this, "placeholders-filled", { value: this._placeholderValues });
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    // The opened-changed event doesn't leave the shadowdom so we re-dispatch it
-    this.dispatchEvent(new CustomEvent(ev.type, ev));
-  }
-
   static get styles(): CSSResultGroup {
     return [
       haStyleDialog,
       css`
-        ha-paper-dialog {
+        ha-dialog {
           max-width: 500px;
         }
         mwc-button.left {
           margin-right: auto;
-        }
-        paper-dialog-scrollable {
-          margin-top: 10px;
         }
         h3 {
           margin: 10px 0 0 0;

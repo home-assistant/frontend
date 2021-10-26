@@ -6,7 +6,7 @@ import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { caseInsensitiveCompare } from "../../../../common/string/compare";
+import { caseInsensitiveStringCompare } from "../../../../common/string/compare";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-switch";
@@ -139,7 +139,7 @@ export class CloudTTSPref extends LitElement {
 
       languages.push([lang, label]);
     }
-    return languages.sort((a, b) => caseInsensitiveCompare(a[1], b[1]));
+    return languages.sort((a, b) => caseInsensitiveStringCompare(a[1], b[1]));
   });
 
   private getSupportedGenders = memoizeOne(
@@ -160,7 +160,7 @@ export class CloudTTSPref extends LitElement {
         }
       }
 
-      return genders.sort((a, b) => caseInsensitiveCompare(a[1], b[1]));
+      return genders.sort((a, b) => caseInsensitiveStringCompare(a[1], b[1]));
     }
   );
 
@@ -188,7 +188,7 @@ export class CloudTTSPref extends LitElement {
         tts_default_voice: [language, newGender],
       });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       this.savingPreferences = false;
       // eslint-disable-next-line no-console
       console.error(err);
@@ -212,7 +212,7 @@ export class CloudTTSPref extends LitElement {
         tts_default_voice: [language, gender],
       });
       fireEvent(this, "ha-refresh-cloud-status");
-    } catch (err) {
+    } catch (err: any) {
       this.savingPreferences = false;
       // eslint-disable-next-line no-console
       console.error(err);

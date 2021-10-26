@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { property, state } from "lit/decorators";
@@ -83,7 +82,7 @@ class DialogAreaDetail extends LitElement {
               <mwc-button
                 slot="secondaryAction"
                 class="warning"
-                @click="${this._deleteEntry}"
+                @click=${this._deleteEntry}
                 .disabled=${this._submitting}
               >
                 ${this.hass.localize("ui.panel.config.areas.editor.delete")}
@@ -92,7 +91,7 @@ class DialogAreaDetail extends LitElement {
           : html``}
         <mwc-button
           slot="primaryAction"
-          @click="${this._updateEntry}"
+          @click=${this._updateEntry}
           .disabled=${nameInvalid || this._submitting}
         >
           ${entry
@@ -130,7 +129,7 @@ class DialogAreaDetail extends LitElement {
         await this._params!.createEntry!(values);
       }
       this._params = undefined;
-    } catch (err) {
+    } catch (err: any) {
       this._error =
         err.message ||
         this.hass.localize("ui.panel.config.areas.editor.unknown_error");

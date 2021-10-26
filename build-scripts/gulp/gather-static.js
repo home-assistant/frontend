@@ -12,17 +12,26 @@ const polyPath = (...parts) => path.resolve(paths.polymer_dir, ...parts);
 const copyFileDir = (fromFile, toDir) =>
   fs.copySync(fromFile, path.join(toDir, path.basename(fromFile)));
 
-const genStaticPath = (staticDir) => (...parts) =>
-  path.resolve(staticDir, ...parts);
+const genStaticPath =
+  (staticDir) =>
+  (...parts) =>
+    path.resolve(staticDir, ...parts);
 
 function copyTranslations(staticDir) {
   const staticPath = genStaticPath(staticDir);
 
   // Translation output
   fs.copySync(
-    polyPath("build-translations/output"),
+    polyPath("build/translations/output"),
     staticPath("translations")
   );
+}
+
+function copyLocaleData(staticDir) {
+  const staticPath = genStaticPath(staticDir);
+
+  // Locale data output
+  fs.copySync(polyPath("build/locale-data"), staticPath("locale-data"));
 }
 
 function copyMdiIcons(staticDir) {
@@ -82,6 +91,11 @@ function copyMapPanel(staticDir) {
   );
 }
 
+gulp.task("copy-locale-data", async () => {
+  const staticDir = paths.app_output_static;
+  copyLocaleData(staticDir);
+});
+
 gulp.task("copy-translations-app", async () => {
   const staticDir = paths.app_output_static;
   copyTranslations(staticDir);
@@ -90,6 +104,11 @@ gulp.task("copy-translations-app", async () => {
 gulp.task("copy-translations-supervisor", async () => {
   const staticDir = paths.hassio_output_static;
   copyTranslations(staticDir);
+});
+
+gulp.task("copy-locale-data-supervisor", async () => {
+  const staticDir = paths.hassio_output_static;
+  copyLocaleData(staticDir);
 });
 
 gulp.task("copy-static-app", async () => {
@@ -101,6 +120,7 @@ gulp.task("copy-static-app", async () => {
   copyPolyfills(staticDir);
   copyFonts(staticDir);
   copyTranslations(staticDir);
+  copyLocaleData(staticDir);
   copyMdiIcons(staticDir);
 
   // Panel assets
@@ -121,6 +141,7 @@ gulp.task("copy-static-demo", async () => {
   copyMapPanel(paths.demo_output_static);
   copyFonts(paths.demo_output_static);
   copyTranslations(paths.demo_output_static);
+  copyLocaleData(paths.demo_output_static);
   copyMdiIcons(paths.demo_output_static);
 });
 
@@ -135,6 +156,7 @@ gulp.task("copy-static-cast", async () => {
   copyMapPanel(paths.cast_output_static);
   copyFonts(paths.cast_output_static);
   copyTranslations(paths.cast_output_static);
+  copyLocaleData(paths.cast_output_static);
   copyMdiIcons(paths.cast_output_static);
 });
 
@@ -150,5 +172,6 @@ gulp.task("copy-static-gallery", async () => {
   copyMapPanel(paths.gallery_output_static);
   copyFonts(paths.gallery_output_static);
   copyTranslations(paths.gallery_output_static);
+  copyLocaleData(paths.gallery_output_static);
   copyMdiIcons(paths.gallery_output_static);
 });

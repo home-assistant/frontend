@@ -1,3 +1,20 @@
+import {
+  mdiAirHumidifierOff,
+  mdiAirHumidifier,
+  mdiLockOpen,
+  mdiLockAlert,
+  mdiLockClock,
+  mdiLock,
+  mdiCastConnected,
+  mdiCast,
+  mdiEmoticonDead,
+  mdiSleep,
+  mdiTimerSand,
+  mdiZWave,
+  mdiClock,
+  mdiCalendar,
+  mdiWeatherNight,
+} from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 /**
  * Return the icon to be used for a domain.
@@ -5,6 +22,7 @@ import { HassEntity } from "home-assistant-js-websocket";
  * Optionally pass in a state to influence the domain icon.
  */
 import { DEFAULT_DOMAIN_ICON, FIXED_DOMAIN_ICONS } from "../const";
+import { alarmPanelIcon } from "./alarm_panel_icon";
 import { binarySensorIcon } from "./binary_sensor_icon";
 import { coverIcon } from "./cover_icon";
 import { sensorIcon } from "./sensor_icon";
@@ -18,18 +36,7 @@ export const domainIcon = (
 
   switch (domain) {
     case "alarm_control_panel":
-      switch (compareState) {
-        case "armed_home":
-          return "hass:bell-plus";
-        case "armed_night":
-          return "hass:bell-sleep";
-        case "disarmed":
-          return "hass:bell-outline";
-        case "triggered":
-          return "hass:bell-ring";
-        default:
-          return "hass:bell";
-      }
+      return alarmPanelIcon(compareState);
 
     case "binary_sensor":
       return binarySensorIcon(compareState, stateObj);
@@ -38,36 +45,34 @@ export const domainIcon = (
       return coverIcon(compareState, stateObj);
 
     case "humidifier":
-      return state && state === "off"
-        ? "hass:air-humidifier-off"
-        : "hass:air-humidifier";
+      return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
 
     case "lock":
       switch (compareState) {
         case "unlocked":
-          return "hass:lock-open";
+          return mdiLockOpen;
         case "jammed":
-          return "hass:lock-alert";
+          return mdiLockAlert;
         case "locking":
         case "unlocking":
-          return "hass:lock-clock";
+          return mdiLockClock;
         default:
-          return "hass:lock";
+          return mdiLock;
       }
 
     case "media_player":
-      return compareState === "playing" ? "hass:cast-connected" : "hass:cast";
+      return compareState === "playing" ? mdiCastConnected : mdiCast;
 
     case "zwave":
       switch (compareState) {
         case "dead":
-          return "hass:emoticon-dead";
+          return mdiEmoticonDead;
         case "sleeping":
-          return "hass:sleep";
+          return mdiSleep;
         case "initializing":
-          return "hass:timer-sand";
+          return mdiTimerSand;
         default:
-          return "hass:z-wave";
+          return mdiZWave;
       }
 
     case "sensor": {
@@ -81,17 +86,17 @@ export const domainIcon = (
 
     case "input_datetime":
       if (!stateObj?.attributes.has_date) {
-        return "hass:clock";
+        return mdiClock;
       }
       if (!stateObj.attributes.has_time) {
-        return "hass:calendar";
+        return mdiCalendar;
       }
       break;
 
     case "sun":
       return stateObj?.state === "above_horizon"
         ? FIXED_DOMAIN_ICONS[domain]
-        : "hass:weather-night";
+        : mdiWeatherNight;
   }
 
   if (domain in FIXED_DOMAIN_ICONS) {

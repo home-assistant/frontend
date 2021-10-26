@@ -98,6 +98,7 @@ export class HuiCardPicker extends LitElement {
 
     return html`
       <search-input
+        .hass=${this.hass}
         .filter=${this._filter}
         no-label-float
         @value-changed=${this._handleSearchChange}
@@ -263,7 +264,7 @@ export class HuiCardPicker extends LitElement {
     let newCardEl: LovelaceCard;
     try {
       newCardEl = this._tryCreateCardElement(config);
-    } catch (err) {
+    } catch (err: any) {
       return;
     }
     if (cardElToReplace.parentElement) {
@@ -293,7 +294,7 @@ export class HuiCardPicker extends LitElement {
       if (showElement) {
         try {
           element = this._tryCreateCardElement(cardConfig);
-        } catch (err) {
+        } catch (err: any) {
           element = undefined;
         }
       }

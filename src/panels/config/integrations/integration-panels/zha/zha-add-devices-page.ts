@@ -10,7 +10,6 @@ import {
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import "../../../../../components/ha-circular-progress";
-import "../../../../../components/ha-icon-button";
 import "../../../../../components/ha-service-description";
 import {
   DEVICE_MESSAGE_TYPES,
@@ -152,7 +151,7 @@ class ZHAAddDevicesPage extends LitElement {
               readonly
               max-rows="10"
               class="log"
-              value="${this._formattedEvents}"
+              value=${this._formattedEvents}
             >
             </paper-textarea>`
           : ""}

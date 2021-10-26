@@ -25,6 +25,7 @@ export const createCurrencyListEl = () => {
     "BSD",
     "BTN",
     "BWP",
+    "BYN",
     "BYR",
     "BZD",
     "CAD",

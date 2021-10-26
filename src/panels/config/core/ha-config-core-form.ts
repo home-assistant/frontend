@@ -1,8 +1,6 @@
 import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
-import "@polymer/paper-radio-button/paper-radio-button";
-import "@polymer/paper-radio-group/paper-radio-group";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
@@ -16,6 +14,9 @@ import { ConfigUpdateValues, saveCoreConfig } from "../../../data/core";
 import { SYMBOL_TO_ISO } from "../../../data/currency";
 import type { PolymerChangedEvent } from "../../../polymer-types";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-formfield";
+import "../../../components/ha-radio";
+import type { HaRadio } from "../../../components/ha-radio";
 
 @customElement("ha-config-core-form")
 class ConfigCoreForm extends LitElement {
@@ -120,32 +121,44 @@ class ConfigCoreForm extends LitElement {
                 "ui.panel.config.core.section.core.core_config.unit_system"
               )}
             </div>
-            <paper-radio-group
-              class="flex"
-              .selected=${this._unitSystemValue}
-              @selected-changed=${this._unitSystemChanged}
-            >
-              <paper-radio-button name="metric" .disabled=${disabled}>
-                ${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.unit_system_metric"
-                )}
-                <div class="secondary">
-                  ${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.metric_example"
+            <div class="radio-group">
+              <ha-formfield
+                .label=${html`${this.hass.localize(
+                    "ui.panel.config.core.section.core.core_config.unit_system_metric"
                   )}
-                </div>
-              </paper-radio-button>
-              <paper-radio-button name="imperial" .disabled=${disabled}>
-                ${this.hass.localize(
-                  "ui.panel.config.core.section.core.core_config.unit_system_imperial"
-                )}
-                <div class="secondary">
-                  ${this.hass.localize(
-                    "ui.panel.config.core.section.core.core_config.imperial_example"
+                  <div class="secondary">
+                    ${this.hass.localize(
+                      "ui.panel.config.core.section.core.core_config.metric_example"
+                    )}
+                  </div>`}
+              >
+                <ha-radio
+                  name="unit_system"
+                  value="metric"
+                  .checked=${this._unitSystemValue === "metric"}
+                  @change=${this._unitSystemChanged}
+                  .disabled=${this._working}
+                ></ha-radio>
+              </ha-formfield>
+              <ha-formfield
+                .label=${html`${this.hass.localize(
+                    "ui.panel.config.core.section.core.core_config.unit_system_imperial"
                   )}
-                </div>
-              </paper-radio-button>
-            </paper-radio-group>
+                  <div class="secondary">
+                    ${this.hass.localize(
+                      "ui.panel.config.core.section.core.core_config.imperial_example"
+                    )}
+                  </div>`}
+              >
+                <ha-radio
+                  name="unit_system"
+                  value="imperial"
+                  .checked=${this._unitSystemValue === "imperial"}
+                  @change=${this._unitSystemChanged}
+                  .disabled=${this._working}
+                ></ha-radio>
+              </ha-formfield>
+            </div>
           </div>
           <div class="row">
             <div class="flex">
@@ -258,10 +271,8 @@ class ConfigCoreForm extends LitElement {
     this._location = ev.detail.location;
   }
 
-  private _unitSystemChanged(
-    ev: PolymerChangedEvent<ConfigUpdateValues["unit_system"]>
-  ) {
-    this._unitSystem = ev.detail.value;
+  private _unitSystemChanged(ev: CustomEvent) {
+    this._unitSystem = (ev.target as HaRadio).value as "metric" | "imperial";
   }
 
   private async _save() {
@@ -279,7 +290,7 @@ class ConfigCoreForm extends LitElement {
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue,
       });
-    } catch (err) {
+    } catch (err: any) {
       alert(`Error saving config: ${err.message}`);
     } finally {
       this._working = false;
@@ -305,6 +316,12 @@ class ConfigCoreForm extends LitElement {
 
       .row > * {
         margin: 0 8px;
+      }
+
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
       }
 
       .card-actions {

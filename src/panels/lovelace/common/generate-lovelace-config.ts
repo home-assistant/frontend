@@ -3,7 +3,8 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { splitByGroups } from "../../../common/entity/split_by_groups";
-import { compare } from "../../../common/string/compare";
+import { stripPrefixFromEntityName } from "../../../common/entity/strip_prefix_from_entity_name";
+import { stringCompare } from "../../../common/string/compare";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import type { AreaRegistryEntry } from "../../../data/area_registry";
 import type { DeviceRegistryEntry } from "../../../data/device_registry";
@@ -92,7 +93,7 @@ export const computeCards = (
   const entities: Array<string | LovelaceRowConfig> = [];
 
   const titlePrefix = entityCardOptions.title
-    ? `${entityCardOptions.title} `
+    ? `${entityCardOptions.title} `.toLowerCase()
     : undefined;
 
   for (const [entityId, stateObj] of states) {
@@ -153,16 +154,18 @@ export const computeCards = (
     ) {
       // Do nothing.
     } else {
-      let name: string;
+      let name: string | undefined;
       const entityConf =
         titlePrefix &&
         stateObj &&
         // eslint-disable-next-line no-cond-assign
-        (name = computeStateName(stateObj)) !== titlePrefix &&
-        name.startsWith(titlePrefix)
+        (name = stripPrefixFromEntityName(
+          computeStateName(stateObj),
+          titlePrefix
+        ))
           ? {
               entity: entityId,
-              name: adjustName(name.substr(titlePrefix.length)),
+              name,
             }
           : entityId;
 
@@ -181,14 +184,6 @@ export const computeCards = (
   return cards;
 };
 
-const hasUpperCase = (str: string): boolean => str.toLowerCase() !== str;
-
-const adjustName = (name: string): string =>
-  // If first word already has an upper case letter (e.g. from brand name)
-  // leave as-is, otherwise capitalize the first word.
-  hasUpperCase(name.substr(0, name.indexOf(" ")))
-    ? name
-    : name[0].toUpperCase() + name.slice(1);
 const computeDefaultViewStates = (
   entities: HassEntities,
   entityEntries: EntityRegistryEntry[]
@@ -196,7 +191,9 @@ const computeDefaultViewStates = (
   const states = {};
   const hiddenEntities = new Set(
     entityEntries
-      .filter((entry) => HIDE_PLATFORM.has(entry.platform))
+      .filter(
+        (entry) => entry.entity_category || HIDE_PLATFORM.has(entry.platform)
+      )
       .map((entry) => entry.entity_id)
   );
 
@@ -262,7 +259,7 @@ export const generateViewConfig = (
         computeCards(
           ungroupedEntitites[domain]
             .sort((a, b) =>
-              compare(
+              stringCompare(
                 computeStateName(entities[a]),
                 computeStateName(entities[b])
               )

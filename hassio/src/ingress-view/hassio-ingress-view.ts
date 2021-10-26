@@ -12,6 +12,7 @@ import { fireEvent } from "../../../src/common/dom/fire_event";
 import { navigate } from "../../../src/common/navigate";
 import { extractSearchParam } from "../../../src/common/url/search-params";
 import { nextRender } from "../../../src/common/util/render-status";
+import "../../../src/components/ha-icon-button";
 import {
   fetchHassioAddonInfo,
   HassioAddonDetails,
@@ -72,12 +73,11 @@ class HassioIngressView extends LitElement {
 
     return html`${this.narrow || this.hass.dockedSidebar === "always_hidden"
       ? html`<div class="header">
-            <mwc-icon-button
-              aria-label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+            <ha-icon-button
+              .label=${this.hass.localize("ui.sidebar.sidebar_toggle")}
+              .path=${mdiMenu}
               @click=${this._toggleMenu}
-            >
-              <ha-svg-icon .path=${mdiMenu}></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
             <div class="main-title">${this._addon.name}</div>
           </div>
           ${iframe}`
@@ -91,7 +91,7 @@ class HassioIngressView extends LitElement {
       if (requestedAddon) {
         try {
           addonInfo = await fetchHassioAddonInfo(this.hass, requestedAddon);
-        } catch (err) {
+        } catch (err: any) {
           await showAlertDialog(this, {
             text: extractApiErrorMessage(err),
             title: requestedAddon,
@@ -145,7 +145,7 @@ class HassioIngressView extends LitElement {
 
     try {
       addon = await fetchHassioAddonInfo(this.hass, addonSlug);
-    } catch (err) {
+    } catch (err: any) {
       await showAlertDialog(this, {
         text: "Unable to fetch add-on info to start Ingress",
         title: "Supervisor",
@@ -179,7 +179,7 @@ class HassioIngressView extends LitElement {
 
     try {
       session = await createSessionPromise;
-    } catch (err) {
+    } catch (err: any) {
       await showAlertDialog(this, {
         text: "Unable to create an Ingress session",
         title: addon.name,
@@ -195,7 +195,7 @@ class HassioIngressView extends LitElement {
     this._sessionKeepAlive = window.setInterval(async () => {
       try {
         await validateHassioSession(this.hass, session);
-      } catch (err) {
+      } catch (err: any) {
         session = await createHassioSession(this.hass);
       }
     }, 60000);
@@ -241,7 +241,7 @@ class HassioIngressView extends LitElement {
         flex-grow: 1;
       }
 
-      mwc-icon-button {
+      ha-icon-button {
         pointer-events: auto;
       }
 

@@ -21,6 +21,7 @@ declare global {
   var __VERSION__: string;
   var __STATIC_PATH__: string;
   var __BACKWARDS_COMPAT__: boolean;
+  var __SUPERVISOR__: boolean;
   /* eslint-enable no-var, no-redeclare */
 
   interface Window {
@@ -130,7 +131,7 @@ export type FullCalendarView =
 
 export interface ToggleButton {
   label: string;
-  iconPath: string;
+  iconPath?: string;
   value: string;
 }
 

@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -183,8 +182,8 @@ class DialogImportBlueprint extends LitElement {
         return;
       }
       this._result = await importBlueprint(this.hass, url);
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     } finally {
       this._importing = false;
     }
@@ -206,8 +205,8 @@ class DialogImportBlueprint extends LitElement {
       );
       this._params.importedCallback();
       this.closeDialog();
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     } finally {
       this._saving = false;
     }

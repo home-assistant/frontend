@@ -39,6 +39,7 @@ export interface EntityCardConfig extends LovelaceCardConfig {
   attribute?: string;
   unit?: string;
   theme?: string;
+  state_color?: boolean;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
@@ -109,6 +110,12 @@ export interface EnergyUsageGraphCardConfig extends LovelaceCardConfig {
 
 export interface EnergySolarGraphCardConfig extends LovelaceCardConfig {
   type: "energy-solar-graph";
+  title?: string;
+  collection_key?: string;
+}
+
+export interface EnergyGasGraphCardConfig extends LovelaceCardConfig {
+  type: "energy-gas-graph";
   title?: string;
   collection_key?: string;
 }

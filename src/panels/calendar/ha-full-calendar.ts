@@ -11,7 +11,14 @@ import listPlugin from "@fullcalendar/list";
 // @ts-ignore
 import listStyle from "@fullcalendar/list/main.css";
 import "@material/mwc-button";
-import { mdiViewAgenda, mdiViewDay, mdiViewModule, mdiViewWeek } from "@mdi/js";
+import {
+  mdiChevronLeft,
+  mdiChevronRight,
+  mdiViewAgenda,
+  mdiViewDay,
+  mdiViewModule,
+  mdiViewWeek,
+} from "@mdi/js";
 import {
   css,
   CSSResultGroup,
@@ -23,6 +30,7 @@ import {
 } from "lit";
 import { property, state } from "lit/decorators";
 import memoize from "memoize-one";
+import { useAmPm } from "../../common/datetime/use_am_pm";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../../components/ha-button-toggle-group";
 import "../../components/ha-icon-button";
@@ -117,15 +125,15 @@ export class HAFullCalendar extends LitElement {
                         )}</mwc-button
                       >
                       <ha-icon-button
-                        label=${this.hass.localize("ui.common.previous")}
-                        icon="hass:chevron-left"
+                        .label=${this.hass.localize("ui.common.previous")}
+                        .path=${mdiChevronLeft}
                         class="prev"
                         @click=${this._handlePrev}
                       >
                       </ha-icon-button>
                       <ha-icon-button
-                        label=${this.hass.localize("ui.common.next")}
-                        icon="hass:chevron-right"
+                        .label=${this.hass.localize("ui.common.next")}
+                        .path=${mdiChevronRight}
                         class="next"
                         @click=${this._handleNext}
                       >
@@ -143,15 +151,15 @@ export class HAFullCalendar extends LitElement {
                       <h1>${this.calendar.view.title}</h1>
                       <div>
                         <ha-icon-button
-                          label=${this.hass.localize("ui.common.previous")}
-                          icon="hass:chevron-left"
+                          .label=${this.hass.localize("ui.common.previous")}
+                          .path=${mdiChevronLeft}
                           class="prev"
                           @click=${this._handlePrev}
                         >
                         </ha-icon-button>
                         <ha-icon-button
-                          label=${this.hass.localize("ui.common.next")}
-                          icon="hass:chevron-right"
+                          .label=${this.hass.localize("ui.common.next")}
+                          .path=${mdiChevronRight}
                           class="next"
                           @click=${this._handleNext}
                         >
@@ -214,6 +222,11 @@ export class HAFullCalendar extends LitElement {
       ...defaultFullCalendarConfig,
       locale: this.hass.language,
       initialView: this.initialView,
+      eventTimeFormat: {
+        hour: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
+        minute: useAmPm(this.hass.locale) ? "numeric" : "2-digit",
+        hour12: useAmPm(this.hass.locale),
+      },
     };
 
     config.dateClick = (info) => this._handleDateClick(info);
@@ -358,6 +371,10 @@ export class HAFullCalendar extends LitElement {
           );
           --fc-theme-standard-border-color: var(--divider-color);
           --fc-border-color: var(--divider-color);
+          --fc-page-bg-color: var(
+            --ha-card-background,
+            var(--card-background-color, white)
+          );
         }
 
         a {

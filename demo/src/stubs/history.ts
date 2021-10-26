@@ -1,4 +1,4 @@
-import { addHours, differenceInHours } from "date-fns";
+import { addHours, differenceInHours, endOfDay } from "date-fns";
 import { HassEntity } from "home-assistant-js-websocket";
 import { StatisticValue } from "../../../src/data/history";
 import { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
@@ -222,6 +222,7 @@ const statisticsFunctions: Record<
   "sensor.energy_production_tarif_2": (id, start, end) => {
     const productionStart = new Date(start.getTime() + 9 * 60 * 60 * 1000);
     const productionEnd = new Date(start.getTime() + 21 * 60 * 60 * 1000);
+    const dayEnd = new Date(endOfDay(productionEnd));
     const production = generateCurvedStatistics(
       id,
       productionStart,
@@ -237,15 +238,17 @@ const statisticsFunctions: Record<
     const evening = generateSumStatistics(
       id,
       productionEnd,
-      end,
+      dayEnd,
       productionFinalVal,
       0
     );
-    return [...morning, ...production, ...evening];
+    const rest = generateSumStatistics(id, dayEnd, end, productionFinalVal, 1);
+    return [...morning, ...production, ...evening, ...rest];
   },
   "sensor.solar_production": (id, start, end) => {
     const productionStart = new Date(start.getTime() + 7 * 60 * 60 * 1000);
     const productionEnd = new Date(start.getTime() + 23 * 60 * 60 * 1000);
+    const dayEnd = new Date(endOfDay(productionEnd));
     const production = generateCurvedStatistics(
       id,
       productionStart,
@@ -261,11 +264,12 @@ const statisticsFunctions: Record<
     const evening = generateSumStatistics(
       id,
       productionEnd,
-      end,
+      dayEnd,
       productionFinalVal,
       0
     );
-    return [...morning, ...production, ...evening];
+    const rest = generateSumStatistics(id, dayEnd, end, productionFinalVal, 2);
+    return [...morning, ...production, ...evening, ...rest];
   },
   "sensor.grid_fossil_fuel_percentage": (id, start, end) =>
     generateMeanStatistics(id, start, end, 35, 1.3),

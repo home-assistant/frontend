@@ -1,23 +1,25 @@
+import { mdiRefresh } from "@mdi/js";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
+import {
+  addDays,
+  endOfToday,
+  endOfWeek,
+  endOfYesterday,
+  startOfToday,
+  startOfWeek,
+  startOfYesterday,
+} from "date-fns";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
-import {
-  startOfWeek,
-  endOfWeek,
-  startOfToday,
-  endOfToday,
-  startOfYesterday,
-  endOfYesterday,
-  addDays,
-} from "date-fns";
 import { computeRTL } from "../../common/util/compute_rtl";
+import "../../components/chart/state-history-charts";
 import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
-import "../../components/chart/state-history-charts";
 import { computeHistory, fetchDate } from "../../data/history";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
@@ -66,6 +68,12 @@ class HaPanelHistory extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.history")}</div>
+            <ha-icon-button
+              @click=${this._refreshHistory}
+              .disabled=${this._isLoading}
+              .path=${mdiRefresh}
+              .label=${this.hass.localize("ui.common.refresh")}
+            ></ha-icon-button>
           </app-toolbar>
         </app-header>
 
@@ -150,6 +158,10 @@ class HaPanelHistory extends LitElement {
         this.rtl = computeRTL(this.hass);
       }
     }
+  }
+
+  private _refreshHistory() {
+    this._getHistory();
   }
 
   private async _getHistory() {

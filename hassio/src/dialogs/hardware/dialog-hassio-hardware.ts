@@ -4,9 +4,10 @@ import { customElement, property, state } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../../../src/common/dom/fire_event";
 import "../../../../src/common/search/search-input";
-import { compare } from "../../../../src/common/string/compare";
+import { stringCompare } from "../../../../src/common/string/compare";
 import "../../../../src/components/ha-dialog";
 import "../../../../src/components/ha-expansion-panel";
+import "../../../../src/components/ha-icon-button";
 import { HassioHardwareInfo } from "../../../../src/data/hassio/hardware";
 import { dump } from "../../../../src/resources/js-yaml-dump";
 import { haStyle, haStyleDialog } from "../../../../src/resources/styles";
@@ -27,7 +28,7 @@ const _filterDevices = memoizeOne(
               .toLocaleLowerCase()
               .includes(filter))
       )
-      .sort((a, b) => compare(a.name, b.name))
+      .sort((a, b) => stringCompare(a.name, b.name))
 );
 
 @customElement("dialog-hassio-hardware")
@@ -70,10 +71,13 @@ class HassioHardwareDialog extends LitElement {
           <h2>
             ${this._dialogParams.supervisor.localize("dialog.hardware.title")}
           </h2>
-          <mwc-icon-button dialogAction="close">
-            <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-          </mwc-icon-button>
+          <ha-icon-button
+            .label=${this.hass.localize("common.close")}
+            .path=${mdiClose}
+            dialogAction="close"
+          ></ha-icon-button>
           <search-input
+            .hass=${this.hass}
             autofocus
             no-label-float
             .filter=${this._filter}
@@ -141,7 +145,7 @@ class HassioHardwareDialog extends LitElement {
       haStyle,
       haStyleDialog,
       css`
-        mwc-icon-button {
+        ha-icon-button {
           position: absolute;
           right: 16px;
           top: 10px;

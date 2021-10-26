@@ -25,6 +25,7 @@ class MoreInfoAutomation extends LitElement {
         <ha-relative-time
           .hass=${this.hass}
           .datetime=${this.stateObj.attributes.last_triggered}
+          capitalize
         ></ha-relative-time>
       </div>
 

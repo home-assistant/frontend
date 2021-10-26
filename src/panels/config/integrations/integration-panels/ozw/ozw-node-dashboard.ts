@@ -4,7 +4,6 @@ import { customElement, property, state } from "lit/decorators";
 import { navigate } from "../../../../../common/navigate";
 import "../../../../../components/buttons/ha-call-service-button";
 import "../../../../../components/ha-card";
-import "../../../../../components/ha-icon-next";
 import {
   fetchOZWNodeMetadata,
   fetchOZWNodeStatus,
@@ -90,7 +89,7 @@ class OZWNodeDashboard extends LitElement {
                       Query Stage: ${this._node.node_query_stage}
                       ${this._metadata?.metadata.ProductManualURL
                         ? html` <a
-                            href="${this._metadata.metadata.ProductManualURL}"
+                            href=${this._metadata.metadata.ProductManualURL}
                           >
                             <p>Product Manual</p>
                           </a>`
@@ -167,7 +166,7 @@ class OZWNodeDashboard extends LitElement {
         this.ozwInstance,
         this.nodeId
       );
-    } catch (err) {
+    } catch (err: any) {
       if (err.code === ERR_NOT_FOUND) {
         this._not_found = true;
         return;

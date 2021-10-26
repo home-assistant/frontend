@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { mdiHelpCircle } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
@@ -68,7 +69,7 @@ export class ZHAClusterAttributes extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide="${this.isWide}">
+      <ha-config-section .isWide=${this.isWide}>
         <div class="header" slot="header">
           <span>
             ${this.hass!.localize(
@@ -77,8 +78,9 @@ export class ZHAClusterAttributes extends LitElement {
           </span>
           <ha-icon-button
             class="toggle-help-icon"
-            @click="${this._onHelpTap}"
-            icon="hass:help-circle"
+            @click=${this._onHelpTap}
+            .path=${mdiHelpCircle}
+            .label=${this.hass!.localize("ui.common.help")}
           >
           </ha-icon-button>
         </div>
@@ -91,15 +93,15 @@ export class ZHAClusterAttributes extends LitElement {
         <ha-card class="content">
           <div class="attribute-picker">
             <paper-dropdown-menu
-              label="${this.hass!.localize(
+              label=${this.hass!.localize(
                 "ui.panel.config.zha.cluster_attributes.attributes_of_cluster"
-              )}"
+              )}
               class="menu"
             >
               <paper-listbox
                 slot="dropdown-content"
-                .selected="${this._selectedAttributeIndex}"
-                @iron-select="${this._selectedAttributeChanged}"
+                .selected=${this._selectedAttributeIndex}
+                @iron-select=${this._selectedAttributeChanged}
               >
                 ${this._attributes.map(
                   (entry) => html`
@@ -135,30 +137,26 @@ export class ZHAClusterAttributes extends LitElement {
     return html`
       <div class="input-text">
         <paper-input
-          label="${this.hass!.localize("ui.panel.config.zha.common.value")}"
+          label=${this.hass!.localize("ui.panel.config.zha.common.value")}
           type="string"
-          .value="${this._attributeValue}"
-          @value-changed="${this._onAttributeValueChanged}"
-          placeholder="${this.hass!.localize(
-            "ui.panel.config.zha.common.value"
-          )}"
+          .value=${this._attributeValue}
+          @value-changed=${this._onAttributeValueChanged}
+          placeholder=${this.hass!.localize("ui.panel.config.zha.common.value")}
         ></paper-input>
       </div>
       <div class="input-text">
         <paper-input
-          label="${this.hass!.localize(
+          label=${this.hass!.localize(
             "ui.panel.config.zha.common.manufacturer_code_override"
-          )}"
+          )}
           type="number"
-          .value="${this._manufacturerCodeOverride}"
-          @value-changed="${this._onManufacturerCodeOverrideChanged}"
-          placeholder="${this.hass!.localize(
-            "ui.panel.config.zha.common.value"
-          )}"
+          .value=${this._manufacturerCodeOverride}
+          @value-changed=${this._onManufacturerCodeOverrideChanged}
+          placeholder=${this.hass!.localize("ui.panel.config.zha.common.value")}
         ></paper-input>
       </div>
       <div class="card-actions">
-        <mwc-button @click="${this._onGetZigbeeAttributeClick}">
+        <mwc-button @click=${this._onGetZigbeeAttributeClick}>
           ${this.hass!.localize(
             "ui.panel.config.zha.cluster_attributes.get_zigbee_attribute"
           )}
@@ -176,7 +174,7 @@ export class ZHAClusterAttributes extends LitElement {
           .hass=${this.hass}
           domain="zha"
           service="set_zigbee_cluster_attribute"
-          .serviceData="${this._setAttributeServiceData}"
+          .serviceData=${this._setAttributeServiceData}
         >
           ${this.hass!.localize(
             "ui.panel.config.zha.cluster_attributes.set_zigbee_attribute"

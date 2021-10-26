@@ -1,3 +1,4 @@
+import { mdiHelpCircle } from "@mdi/js";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
@@ -62,12 +63,13 @@ export class ZHAClusters extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-config-section .isWide="${this.isWide}">
+      <ha-config-section .isWide=${this.isWide}>
         <div class="header" slot="header">
           <ha-icon-button
             class="toggle-help-icon"
-            @click="${this._onHelpTap}"
-            icon="hass:help-circle"
+            @click=${this._onHelpTap}
+            .path=${mdiHelpCircle}
+            .label=${this.hass!.localize("ui.common.help")}
           >
           </ha-icon-button>
         </div>
@@ -85,8 +87,8 @@ export class ZHAClusters extends LitElement {
             >
               <paper-listbox
                 slot="dropdown-content"
-                .selected="${this._selectedClusterIndex}"
-                @iron-select="${this._selectedClusterChanged}"
+                .selected=${this._selectedClusterIndex}
+                @iron-select=${this._selectedClusterChanged}
               >
                 ${this._clusters.map(
                   (entry) => html`

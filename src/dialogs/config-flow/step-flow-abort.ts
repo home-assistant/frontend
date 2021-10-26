@@ -26,7 +26,7 @@ class StepFlowAbort extends LitElement {
         ${this.flowConfig.renderAbortDescription(this.hass, this.step)}
       </div>
       <div class="buttons">
-        <mwc-button @click="${this._flowDone}"
+        <mwc-button @click=${this._flowDone}
           >${this.hass.localize(
             "ui.panel.config.integrations.config_flow.close"
           )}</mwc-button

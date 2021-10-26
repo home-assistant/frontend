@@ -22,7 +22,7 @@ import { Constructor, ServiceCallResponse } from "../types";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import { getState } from "../util/ha-pref-storage";
 import hassCallApi from "../util/hass-call-api";
-import { getLocalLanguage } from "../util/hass-translation";
+import { getLocalLanguage } from "../util/common-translation";
 import { HassBaseEl } from "./hass-base-mixin";
 
 export const connectionMixin = <T extends Constructor<HassBaseEl>>(
@@ -81,7 +81,7 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
               serviceData,
               target
             )) as ServiceCallResponse;
-          } catch (err) {
+          } catch (err: any) {
             if (
               err.error?.code === ERR_CONNECTION_LOST &&
               serviceCallWillDisconnect(domain, service)
@@ -179,7 +179,16 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
 
       subscribeEntities(conn, (states) => this._updateHass({ states }));
-      subscribeConfig(conn, (config) => this._updateHass({ config }));
+      subscribeConfig(conn, (config) => {
+        if (
+          this.hass?.config?.time_zone !== config.time_zone &&
+          "__setDefaultTimeZone" in Intl.DateTimeFormat
+        ) {
+          // @ts-ignore
+          Intl.DateTimeFormat.__setDefaultTimeZone(config.time_zone);
+        }
+        this._updateHass({ config });
+      });
       subscribeServices(conn, (services) => this._updateHass({ services }));
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
       subscribeFrontendUserData(conn, "core", (userData) =>

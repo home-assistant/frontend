@@ -1,5 +1,4 @@
 import { mdiRefresh } from "@mdi/js";
-import "@material/mwc-icon-button";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { css, html, LitElement, PropertyValues } from "lit";
@@ -20,6 +19,7 @@ import "../../components/entity/ha-entity-picker";
 import "../../components/ha-circular-progress";
 import "../../components/ha-date-range-picker";
 import type { DateRangePickerRanges } from "../../components/ha-date-range-picker";
+import "../../components/ha-icon-button";
 import "../../components/ha-menu-button";
 import {
   clearLogbookCache,
@@ -82,12 +82,12 @@ export class HaPanelLogbook extends LitElement {
               .narrow=${this.narrow}
             ></ha-menu-button>
             <div main-title>${this.hass.localize("panel.logbook")}</div>
-            <mwc-icon-button
+            <ha-icon-button
               @click=${this._refreshLogbook}
+              .path=${mdiRefresh}
+              .label=${this.hass!.localize("ui.common.refresh")}
               .disabled=${this._isLoading}
-            >
-              <ha-svg-icon .path=${mdiRefresh}></ha-svg-icon>
-            </mwc-icon-button>
+            ></ha-icon-button>
           </app-toolbar>
         </app-header>
 
@@ -248,7 +248,7 @@ export class HaPanelLogbook extends LitElement {
           : {},
         this._fetchUserPromise,
       ]);
-    } catch (err) {
+    } catch (err: any) {
       showAlertDialog(this, {
         title: this.hass.localize("ui.components.logbook.retrieval_error"),
         text: err.message,

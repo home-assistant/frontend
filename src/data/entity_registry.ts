@@ -13,6 +13,7 @@ export interface EntityRegistryEntry {
   device_id: string | null;
   area_id: string | null;
   disabled_by: string | null;
+  entity_category: "config" | "diagnostic" | null;
 }
 
 export interface ExtEntityRegistryEntry extends EntityRegistryEntry {

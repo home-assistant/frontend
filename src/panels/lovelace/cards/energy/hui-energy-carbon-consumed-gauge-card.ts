@@ -59,7 +59,9 @@ class HuiEnergyCarbonGaugeCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     if (!this._data.co2SignalEntity) {
@@ -124,16 +126,17 @@ class HuiEnergyCarbonGaugeCard
 
     return html`
       <ha-card>
-        <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-        <paper-tooltip animation-delay="0" for="info" position="left">
-          <span>
-            This card represents how much of the energy consumed by your home
-            was generated using non-fossil fuels like solar, wind and nuclear.
-          </span>
-        </paper-tooltip>
-
         ${value !== undefined
-          ? html` <ha-gauge
+          ? html`
+              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+              <paper-tooltip animation-delay="0" for="info" position="left">
+                <span>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.card_indicates_energy_used"
+                  )}
+                </span>
+              </paper-tooltip>
+              <ha-gauge
                 min="0"
                 max="100"
                 .value=${value}
@@ -143,8 +146,15 @@ class HuiEnergyCarbonGaugeCard
                   "--gauge-color": this._computeSeverity(value),
                 })}
               ></ha-gauge>
-              <div class="name">Non-fossil energy consumed</div>`
-          : html`Consumed non-fossil energy couldn't be calculated`}
+              <div class="name">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.non_fossil_energy_consumed"
+                )}
+              </div>
+            `
+          : html`${this.hass.localize(
+              "ui.panel.lovelace.cards.energy.carbon_consumed_gauge.non_fossil_energy_not_calculated"
+            )}`}
       </ha-card>
     `;
   }
@@ -176,7 +186,6 @@ class HuiEnergyCarbonGaugeCard
       }
 
       ha-gauge {
-        --gauge-color: var(--label-badge-blue);
         width: 100%;
         max-width: 250px;
       }

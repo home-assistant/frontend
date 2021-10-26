@@ -3,7 +3,7 @@ import "@polymer/paper-tooltip";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { formatNumber } from "../../../../common/string/format_number";
+import { formatNumber } from "../../../../common/number/format_number";
 import "../../../../components/ha-card";
 import "../../../../components/ha-svg-icon";
 import "../../../../components/ha-gauge";
@@ -20,9 +20,8 @@ import type { LovelaceCard } from "../../types";
 import type { EnergyGridGaugeCardConfig } from "../types";
 
 const LEVELS: LevelDefinition[] = [
-  { level: -1, stroke: "var(--label-badge-red)" },
-  { level: -0.2, stroke: "var(--label-badge-yellow)" },
-  { level: 0, stroke: "var(--label-badge-green)" },
+  { level: -1, stroke: "var(--energy-grid-consumption-color)" },
+  { level: 0, stroke: "var(--energy-grid-return-color)" },
 ];
 
 @customElement("hui-energy-grid-neutrality-gauge-card")
@@ -60,7 +59,9 @@ class HuiEnergyGridGaugeCard
     }
 
     if (!this._data) {
-      return html`Loading...`;
+      return html`${this.hass.localize(
+        "ui.panel.lovelace.cards.energy.loading"
+      )}`;
     }
 
     const prefs = this._data.prefs;
@@ -96,18 +97,22 @@ class HuiEnergyGridGaugeCard
 
     return html`
       <ha-card>
-        <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
-        <paper-tooltip animation-delay="0" for="info" position="left">
-          <span>
-            This card represents your energy dependency.
-            <br /><br />
-            If it's green, it means you produced more energy than that you
-            consumed from the grid. If it's in the red, it means that you relied
-            on the grid for part of your home's energy consumption.
-          </span>
-        </paper-tooltip>
         ${value !== undefined
-          ? html`<ha-gauge
+          ? html`
+              <ha-svg-icon id="info" .path=${mdiInformation}></ha-svg-icon>
+              <paper-tooltip animation-delay="0" for="info" position="left">
+                <span>
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.energy_dependency"
+                  )}
+                  <br /><br />
+                  ${this.hass.localize(
+                    "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.color_explain"
+                  )}
+                </span>
+              </paper-tooltip>
+
+              <ha-gauge
                 min="-1"
                 max="1"
                 .value=${value}
@@ -123,10 +128,17 @@ class HuiEnergyGridGaugeCard
               ></ha-gauge>
               <div class="name">
                 ${returnedToGrid! >= consumedFromGrid!
-                  ? "Returned to the grid"
-                  : "Consumed from the grid"}
-              </div>`
-          : "Grid neutrality could not be calculated"}
+                  ? this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_returned_grid"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.net_consumed_grid"
+                    )}
+              </div>
+            `
+          : this.hass.localize(
+              "ui.panel.lovelace.cards.energy.grid_neutrality_gauge.grid_neutrality_not_calculated"
+            )}
       </ha-card>
     `;
   }

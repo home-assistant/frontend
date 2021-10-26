@@ -6,6 +6,7 @@ import {
   startOfYesterday,
 } from "date-fns";
 import { Collection, getCollection } from "home-assistant-js-websocket";
+import { groupBy } from "../common/util/group-by";
 import { subscribeOne } from "../common/util/subscribe-one";
 import { HomeAssistant } from "../types";
 import { ConfigEntry, getConfigEntries } from "./config_entries";
@@ -46,6 +47,28 @@ export const emptySolarEnergyPreference =
     stat_energy_from: "",
     config_entry_solar_forecast: null,
   });
+
+export const emptyBatteryEnergyPreference =
+  (): BatterySourceTypeEnergyPreference => ({
+    type: "battery",
+    stat_energy_from: "",
+    stat_energy_to: "",
+  });
+export const emptyGasEnergyPreference = (): GasSourceTypeEnergyPreference => ({
+  type: "gas",
+  stat_energy_from: "",
+  stat_cost: null,
+  entity_energy_from: null,
+  entity_energy_price: null,
+  number_energy_price: null,
+});
+
+interface EnergySolarForecast {
+  wh_hours: Record<string, number>;
+}
+export type EnergySolarForecasts = {
+  [config_entry_id: string]: EnergySolarForecast;
+};
 
 export interface DeviceConsumptionEnergyPreference {
   // This is an ever increasing value
@@ -94,9 +117,31 @@ export interface SolarSourceTypeEnergyPreference {
   config_entry_solar_forecast: string[] | null;
 }
 
+export interface BatterySourceTypeEnergyPreference {
+  type: "battery";
+  stat_energy_from: string;
+  stat_energy_to: string;
+}
+export interface GasSourceTypeEnergyPreference {
+  type: "gas";
+
+  // kWh meter
+  stat_energy_from: string;
+
+  // $ meter
+  stat_cost: string | null;
+
+  // Can be used to generate costs if stat_cost omitted
+  entity_energy_from: string | null;
+  entity_energy_price: string | null;
+  number_energy_price: number | null;
+}
+
 type EnergySource =
   | SolarSourceTypeEnergyPreference
-  | GridSourceTypeEnergyPreference;
+  | GridSourceTypeEnergyPreference
+  | BatterySourceTypeEnergyPreference
+  | GasSourceTypeEnergyPreference;
 
 export interface EnergyPreferences {
   energy_sources: EnergySource[];
@@ -105,11 +150,28 @@ export interface EnergyPreferences {
 
 export interface EnergyInfo {
   cost_sensors: Record<string, string>;
+  solar_forecast_domains: string[];
+}
+
+export interface EnergyValidationIssue {
+  type: string;
+  identifier: string;
+  value?: unknown;
+}
+
+export interface EnergyPreferencesValidation {
+  energy_sources: EnergyValidationIssue[][];
+  device_consumption: EnergyValidationIssue[][];
 }
 
 export const getEnergyInfo = (hass: HomeAssistant) =>
   hass.callWS<EnergyInfo>({
     type: "energy/info",
+  });
+
+export const getEnergyPreferenceValidation = (hass: HomeAssistant) =>
+  hass.callWS<EnergyPreferencesValidation>({
+    type: "energy/validate",
   });
 
 export const getEnergyPreferences = (hass: HomeAssistant) =>
@@ -132,19 +194,12 @@ export const saveEnergyPreferences = async (
 interface EnergySourceByType {
   grid?: GridSourceTypeEnergyPreference[];
   solar?: SolarSourceTypeEnergyPreference[];
+  battery?: BatterySourceTypeEnergyPreference[];
+  gas?: GasSourceTypeEnergyPreference[];
 }
 
-export const energySourcesByType = (prefs: EnergyPreferences) => {
-  const types: EnergySourceByType = {};
-  for (const source of prefs.energy_sources) {
-    if (source.type in types) {
-      types[source.type]!.push(source as any);
-    } else {
-      types[source.type] = [source as any];
-    }
-  }
-  return types;
-};
+export const energySourcesByType = (prefs: EnergyPreferences) =>
+  groupBy(prefs.energy_sources, (item) => item.type) as EnergySourceByType;
 
 export interface EnergyData {
   start: Date;
@@ -200,6 +255,24 @@ const getEnergyData = async (
   for (const source of prefs.energy_sources) {
     if (source.type === "solar") {
       statIDs.push(source.stat_energy_from);
+      continue;
+    }
+
+    if (source.type === "gas") {
+      statIDs.push(source.stat_energy_from);
+      if (source.stat_cost) {
+        statIDs.push(source.stat_cost);
+      }
+      const costStatId = info.cost_sensors[source.stat_energy_from];
+      if (costStatId) {
+        statIDs.push(costStatId);
+      }
+      continue;
+    }
+
+    if (source.type === "battery") {
+      statIDs.push(source.stat_energy_from);
+      statIDs.push(source.stat_energy_to);
       continue;
     }
 
@@ -374,4 +447,59 @@ export const getEnergyDataCollection = (
     }
   };
   return collection;
+};
+
+export const getEnergySolarForecasts = (hass: HomeAssistant) =>
+  hass.callWS<EnergySolarForecasts>({
+    type: "energy/solar_forecast",
+  });
+
+export const ENERGY_GAS_VOLUME_UNITS = ["m³", "ft³"];
+export const ENERGY_GAS_ENERGY_UNITS = ["kWh"];
+export const ENERGY_GAS_UNITS = [
+  ...ENERGY_GAS_VOLUME_UNITS,
+  ...ENERGY_GAS_ENERGY_UNITS,
+];
+
+export type EnergyGasUnit = "volume" | "energy";
+
+export const getEnergyGasUnitCategory = (
+  hass: HomeAssistant,
+  prefs: EnergyPreferences
+): EnergyGasUnit | undefined => {
+  for (const source of prefs.energy_sources) {
+    if (source.type !== "gas") {
+      continue;
+    }
+
+    const entity = hass.states[source.stat_energy_from];
+    if (entity) {
+      return ENERGY_GAS_VOLUME_UNITS.includes(
+        entity.attributes.unit_of_measurement!
+      )
+        ? "volume"
+        : "energy";
+    }
+  }
+  return undefined;
+};
+
+export const getEnergyGasUnit = (
+  hass: HomeAssistant,
+  prefs: EnergyPreferences
+): string | undefined => {
+  for (const source of prefs.energy_sources) {
+    if (source.type !== "gas") {
+      continue;
+    }
+
+    const entity = hass.states[source.stat_energy_from];
+    if (entity?.attributes.unit_of_measurement) {
+      // Wh is normalized to kWh by stats generation
+      return entity.attributes.unit_of_measurement === "Wh"
+        ? "kWh"
+        : entity.attributes.unit_of_measurement;
+    }
+  }
+  return undefined;
 };

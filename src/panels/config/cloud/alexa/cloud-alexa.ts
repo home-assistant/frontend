@@ -18,7 +18,7 @@ import {
   generateFilter,
   isEmptyFilter,
 } from "../../../../common/entity/entity_filter";
-import { compare } from "../../../../common/string/compare";
+import { stringCompare } from "../../../../common/string/compare";
 import "../../../../components/entity/state-info";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
@@ -116,25 +116,22 @@ class CloudAlexa extends LitElement {
         ? exposedCards
         : notExposedCards;
 
-      const iconButton = html`<mwc-icon-button
+      const iconButton = html`<ha-icon-button
         slot="trigger"
         class=${classMap({
           exposed: isExposed!,
           "not-exposed": !isExposed,
         })}
         .disabled=${!emptyFilter}
-        .title=${this.hass!.localize("ui.panel.config.cloud.alexa.expose")}
-      >
-        <ha-svg-icon
-          .path=${config.should_expose !== null
-            ? isExposed
-              ? mdiCheckboxMarked
-              : mdiCloseBox
-            : isDomainExposed
-            ? mdiCheckboxMultipleMarked
-            : mdiCloseBoxMultiple}
-        ></ha-svg-icon>
-      </mwc-icon-button>`;
+        .label=${this.hass!.localize("ui.panel.config.cloud.alexa.expose")}
+        .path=${config.should_expose !== null
+          ? isExposed
+            ? mdiCheckboxMarked
+            : mdiCloseBox
+          : isDomainExposed
+          ? mdiCheckboxMultipleMarked
+          : mdiCloseBoxMultiple}
+      ></ha-icon-button>`;
 
       target.push(html`
         <ha-card>
@@ -295,7 +292,7 @@ class CloudAlexa extends LitElement {
     entities.sort((a, b) => {
       const stateA = this.hass.states[a.entity_id];
       const stateB = this.hass.states[b.entity_id];
-      return compare(
+      return stringCompare(
         stateA ? computeStateName(stateA) : a.entity_id,
         stateB ? computeStateName(stateB) : b.entity_id
       );

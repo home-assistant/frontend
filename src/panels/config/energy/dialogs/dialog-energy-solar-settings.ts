@@ -17,12 +17,13 @@ import "../../../../components/ha-radio";
 import "../../../../components/ha-checkbox";
 import type { HaCheckbox } from "../../../../components/ha-checkbox";
 import "../../../../components/ha-formfield";
-import "../../../../components/entity/ha-entity-picker";
 import type { HaRadio } from "../../../../components/ha-radio";
 import { showConfigFlowDialog } from "../../../../dialogs/config-flow/show-dialog-config-flow";
 import { ConfigEntry, getConfigEntries } from "../../../../data/config_entries";
+import { brandsUrl } from "../../../../util/brands-url";
 
 const energyUnits = ["kWh"];
+const energyDeviceClasses = ["energy"];
 
 @customElement("dialog-energy-solar-settings")
 export class DialogEnergySolarSettings
@@ -44,11 +45,11 @@ export class DialogEnergySolarSettings
   public async showDialog(
     params: EnergySettingsSolarDialogParams
   ): Promise<void> {
-    this._fetchForecastSolarConfigEntries();
     this._params = params;
+    this._fetchSolarForecastConfigEntries();
     this._source = params.source
       ? { ...params.source }
-      : (this._source = emptySolarEnergyPreference());
+      : emptySolarEnergyPreference();
     this._forecast = this._source.config_entry_solar_forecast !== null;
   }
 
@@ -71,7 +72,7 @@ export class DialogEnergySolarSettings
             .path=${mdiSolarPower}
             style="--mdc-icon-size: 32px;"
           ></ha-svg-icon>
-          Configure solar panels`}
+          ${this.hass.localize("ui.panel.config.energy.solar.dialog.header")}`}
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -79,19 +80,31 @@ export class DialogEnergySolarSettings
         <ha-statistic-picker
           .hass=${this.hass}
           .includeUnitOfMeasurement=${energyUnits}
+          .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source.stat_energy_from}
-          .label=${`Solar production energy (kWh)`}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.solar_production_energy"
+          )}
           entities-only
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
 
-        <h3>Solar production forecast</h3>
+        <h3>
+          ${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.solar_production_forecast"
+          )}
+        </h3>
         <p>
-          Adding solar production forecast information will allow you to quickly
-          see your expected production for today.
+          ${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.solar_production_forecast_description"
+          )}
         </p>
 
-        <ha-formfield label="Don't forecast production">
+        <ha-formfield
+          label=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.dont_forecast_production"
+          )}
+        >
           <ha-radio
             value="false"
             name="forecast"
@@ -99,7 +112,11 @@ export class DialogEnergySolarSettings
             @change=${this._handleForecastChanged}
           ></ha-radio>
         </ha-formfield>
-        <ha-formfield label="Forecast Production">
+        <ha-formfield
+          label=${this.hass.localize(
+            "ui.panel.config.energy.solar.dialog.forecast_production"
+          )}
+        >
           <ha-radio
             value="true"
             name="forecast"
@@ -117,7 +134,11 @@ export class DialogEnergySolarSettings
                     <img
                       referrerpolicy="no-referrer"
                       style="height: 24px; margin-right: 16px;"
-                      src="https://brands.home-assistant.io/forecast_solar/icon.png"
+                      src=${brandsUrl({
+                        domain: entry.domain,
+                        type: "icon",
+                        darkOptimized: this.hass.selectedTheme?.dark,
+                      })}
                     />${entry.title}
                   </div>`}
                 >
@@ -132,7 +153,9 @@ export class DialogEnergySolarSettings
                 </ha-formfield>`
               )}
               <mwc-button @click=${this._addForecast}>
-                Add forecast
+                ${this.hass.localize(
+                  "ui.panel.config.energy.solar.dialog.add_forecast"
+                )}
               </mwc-button>
             </div>`
           : ""}
@@ -151,9 +174,10 @@ export class DialogEnergySolarSettings
     `;
   }
 
-  private async _fetchForecastSolarConfigEntries() {
-    this._configEntries = (await getConfigEntries(this.hass)).filter(
-      (entry) => entry.domain === "forecast_solar"
+  private async _fetchSolarForecastConfigEntries() {
+    const domains = this._params!.info.solar_forecast_domains;
+    this._configEntries = (await getConfigEntries(this.hass)).filter((entry) =>
+      domains.includes(entry.domain)
     );
   }
 
@@ -188,7 +212,7 @@ export class DialogEnergySolarSettings
             this._source!.config_entry_solar_forecast = [];
           }
           this._source!.config_entry_solar_forecast.push(params.entryId);
-          this._fetchForecastSolarConfigEntries();
+          this._fetchSolarForecastConfigEntries();
         }
       },
     });
@@ -205,8 +229,8 @@ export class DialogEnergySolarSettings
       }
       await this._params!.saveCallback(this._source!);
       this.closeDialog();
-    } catch (e) {
-      this._error = e.message;
+    } catch (err: any) {
+      this._error = err.message;
     }
   }
 

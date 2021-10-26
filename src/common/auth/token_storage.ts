@@ -33,7 +33,7 @@ export function saveTokens(tokens: AuthData | null) {
   if (tokenCache.writeEnabled) {
     try {
       storage.hassTokens = JSON.stringify(tokens);
-    } catch (err) {
+    } catch (err: any) {
       // write failed, ignore it. Happens if storage is full or private mode.
     }
   }
@@ -58,7 +58,7 @@ export function loadTokens() {
       } else {
         tokenCache.tokens = null;
       }
-    } catch (err) {
+    } catch (err: any) {
       tokenCache.tokens = null;
     }
   }

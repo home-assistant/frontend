@@ -1,6 +1,8 @@
+import { mdiAlert } from "@mdi/js";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators";
 import "../../../components/ha-label-badge";
+import "../../../components/ha-svg-icon";
 import { HomeAssistant } from "../../../types";
 import { LovelaceBadge } from "../types";
 import { ErrorBadgeConfig } from "./types";
@@ -32,11 +34,9 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
     }
 
     return html`
-      <ha-label-badge
-        label="Error"
-        icon="hass:alert"
-        description=${this._config.error}
-      ></ha-label-badge>
+      <ha-label-badge label="Error" description=${this._config.error}>
+        <ha-svg-icon .path=${mdiAlert}></ha-svg-icon>
+      </ha-label-badge>
     `;
   }
 

@@ -8,7 +8,6 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, query } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import { nextRender } from "../common/util/render-status";
 import { getExternalConfig } from "../external_app/external_config";
 import type { HomeAssistant } from "../types";
@@ -65,7 +64,6 @@ class HaHLSPlayer extends LitElement {
         .muted=${this.muted}
         ?playsinline=${this.playsInline}
         ?controls=${this.controls}
-        @loadeddata=${this._elementResized}
       ></video>
     `;
   }
@@ -98,6 +96,11 @@ class HaHLSPlayer extends LitElement {
 
     const Hls: typeof HlsType = (await import("hls.js/dist/hls.light.min"))
       .default;
+
+    if (!this.isConnected) {
+      return;
+    }
+
     let hlsSupported = Hls.isSupported();
 
     if (!hlsSupported) {
@@ -114,6 +117,10 @@ class HaHLSPlayer extends LitElement {
 
     const useExoPlayer = await useExoPlayerPromise;
     const masterPlaylist = await (await masterPlaylistPromise).text();
+
+    if (!this.isConnected) {
+      return;
+    }
 
     // Parse playlist assuming it is a master playlist. Match group 1 is whether hevc, match group 2 is regular playlist url
     // See https://tools.ietf.org/html/rfc8216 for HLS spec details
@@ -182,6 +189,7 @@ class HaHLSPlayer extends LitElement {
       fragLoadingTimeOut: 30000,
       manifestLoadingTimeOut: 30000,
       levelLoadingTimeOut: 30000,
+      maxLiveSyncPlaybackRate: 2,
     });
     this._hlsPolyfillInstance = hls;
     hls.attachMedia(videoEl);
@@ -195,10 +203,6 @@ class HaHLSPlayer extends LitElement {
     videoEl.addEventListener("loadedmetadata", () => {
       videoEl.play();
     });
-  }
-
-  private _elementResized() {
-    fireEvent(this, "iron-resize");
   }
 
   private _cleanUp() {
