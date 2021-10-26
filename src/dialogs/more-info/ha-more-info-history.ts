@@ -1,4 +1,4 @@
-import { html, LitElement, PropertyValues, TemplateResult } from "lit";
+import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { throttle } from "../../common/util/throttle";
@@ -25,12 +25,16 @@ export class MoreInfoHistory extends LitElement {
     }
 
     return html`${isComponentLoaded(this.hass, "history")
-      ? html`<state-history-charts
-          up-to-now
-          .hass=${this.hass}
-          .historyData=${this._stateHistory}
-          .isLoadingData=${!this._stateHistory}
-        ></state-history-charts>`
+      ? html` <div class="header">
+            <div class="title">History</div>
+            <a href="/history/${this.entityId}"> Details </a>
+          </div>
+          <state-history-charts
+            up-to-now
+            .hass=${this.hass}
+            .historyData=${this._stateHistory}
+            .isLoadingData=${!this._stateHistory}
+          ></state-history-charts>`
       : ""} `;
   }
 
@@ -77,6 +81,33 @@ export class MoreInfoHistory extends LitElement {
       this.hass!.localize,
       this.hass!.language
     );
+  }
+
+  static get styles() {
+    return [
+      css`
+        .header {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .header > a:visited {
+          color: var(--primary-color);
+        }
+        .title {
+          font-family: var(--paper-font-title_-_font-family);
+          -webkit-font-smoothing: var(
+            --paper-font-title_-_-webkit-font-smoothing
+          );
+          font-size: var(--paper-font-title_-_font-size);
+          font-weight: var(--paper-font-title_-_font-weight);
+          letter-spacing: var(--paper-font-title_-_letter-spacing);
+          line-height: var(--paper-font-title_-_line-height);
+        }
+      `,
+    ];
   }
 }
 

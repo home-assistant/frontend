@@ -61,6 +61,10 @@ export class MoreInfoLogbook extends LitElement {
             `
           : this._logbookEntries.length
           ? html`
+              <div class="header">
+                <div class="title">Logbook</div>
+                <a href="/logbook/${this.entityId}"> Details </a>
+              </div>
               <ha-logbook
                 narrow
                 no-icon
@@ -202,6 +206,26 @@ export class MoreInfoLogbook extends LitElement {
         ha-circular-progress {
           display: flex;
           justify-content: center;
+        }
+        .header {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+        .header > a:visited {
+          color: var(--primary-color);
+        }
+        .title {
+          font-family: var(--paper-font-title_-_font-family);
+          -webkit-font-smoothing: var(
+            --paper-font-title_-_-webkit-font-smoothing
+          );
+          font-size: var(--paper-font-title_-_font-size);
+          font-weight: var(--paper-font-title_-_font-weight);
+          letter-spacing: var(--paper-font-title_-_letter-spacing);
+          line-height: var(--paper-font-title_-_line-height);
         }
       `,
     ];

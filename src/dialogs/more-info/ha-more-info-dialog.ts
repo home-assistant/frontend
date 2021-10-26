@@ -1,7 +1,7 @@
 import "@material/mwc-button";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
-import { mdiChartBox, mdiClose, mdiCog, mdiPencil } from "@mdi/js";
+import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
 import { css, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { cache } from "lit/directives/cache";
@@ -127,15 +127,6 @@ export class MoreInfoDialog extends LitElement {
             >
               ${name}
             </div>
-            <mwc-icon-button
-              slot="actionItems"
-              .label=${this.hass.localize(
-                "ui.dialogs.more_info_control.history"
-              )}
-              @click=${this._gotoHistory}
-            >
-              <ha-svg-icon .path=${mdiChartBox}></ha-svg-icon>
-            </mwc-icon-button>
             ${this.hass.user!.is_admin
               ? html`
                   <ha-icon-button
@@ -319,11 +310,6 @@ export class MoreInfoDialog extends LitElement {
     }
 
     navigate(`/config/${domain}/edit/${idToPassThroughUrl}`);
-    this.closeDialog();
-  }
-
-  private _gotoHistory() {
-    navigate(`/history/${this._entityId}`);
     this.closeDialog();
   }
 
