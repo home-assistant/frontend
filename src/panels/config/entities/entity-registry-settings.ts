@@ -15,7 +15,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import "../../../components/ha-area-picker";
 import "../../../components/ha-expansion-panel";
-import "../../../components/ha-icon-input";
+import "../../../components/ha-icon-picker";
 import "../../../components/ha-switch";
 import type { HaSwitch } from "../../../components/ha-switch";
 import {
@@ -133,20 +133,16 @@ export class EntityRegistrySettings extends SubscribeMixin(LitElement) {
           .placeholder=${this.entry.original_name}
           .disabled=${this._submitting}
         ></paper-input>
-        <ha-icon-input
+        <ha-icon-picker
           .value=${this._icon}
           @value-changed=${this._iconChanged}
           .label=${this.hass.localize("ui.dialogs.entity_registry.editor.icon")}
-          .placeholder=${this.entry.original_icon ||
-          domainIcon(
-            computeDomain(this.entry.entity_id),
-            this.hass.states[this.entry.entity_id]
-          )}
+          .placeholder=${this.entry.original_icon || stateObj?.attributes.icon}
+          .fallbackPath=${!this._icon && !stateObj?.attributes.icon && stateObj
+            ? domainIcon(computeDomain(stateObj.entity_id), stateObj)
+            : undefined}
           .disabled=${this._submitting}
-          .errorMessage=${this.hass.localize(
-            "ui.dialogs.entity_registry.editor.icon_error"
-          )}
-        ></ha-icon-input>
+        ></ha-icon-picker>
         <paper-input
           .value=${this._entityId}
           @value-changed=${this._entityIdChanged}

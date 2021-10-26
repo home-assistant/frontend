@@ -58,7 +58,9 @@ export class DialogEnergyBatterySettings
             .path=${mdiBatteryHigh}
             style="--mdc-icon-size: 32px;"
           ></ha-svg-icon>
-          Configure battery system`}
+          ${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.header"
+          )}`}
         @closed=${this.closeDialog}
       >
         ${this._error ? html`<p class="error">${this._error}</p>` : ""}
@@ -68,7 +70,9 @@ export class DialogEnergyBatterySettings
           .includeUnitOfMeasurement=${energyUnits}
           .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source.stat_energy_to}
-          .label=${`Energy going in to the battery (kWh)`}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.energy_into_battery"
+          )}
           entities-only
           @value-changed=${this._statisticToChanged}
         ></ha-statistic-picker>
@@ -78,7 +82,9 @@ export class DialogEnergyBatterySettings
           .includeUnitOfMeasurement=${energyUnits}
           .includeDeviceClasses=${energyDeviceClasses}
           .value=${this._source.stat_energy_from}
-          .label=${`Energy coming out of the battery (kWh)`}
+          .label=${this.hass.localize(
+            "ui.panel.config.energy.battery.dialog.energy_out_of_battery"
+          )}
           entities-only
           @value-changed=${this._statisticFromChanged}
         ></ha-statistic-picker>

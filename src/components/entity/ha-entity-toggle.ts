@@ -1,3 +1,4 @@
+import { mdiFlash, mdiFlashOff } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -41,15 +42,15 @@ export class HaEntityToggle extends LitElement {
     if (this.stateObj.attributes.assumed_state) {
       return html`
         <ha-icon-button
-          aria-label=${`Turn ${computeStateName(this.stateObj)} off`}
-          icon="hass:flash-off"
+          .label=${`Turn ${computeStateName(this.stateObj)} off`}
+          .path=${mdiFlashOff}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOff}
           ?state-active=${!this._isOn}
         ></ha-icon-button>
         <ha-icon-button
-          aria-label=${`Turn ${computeStateName(this.stateObj)} on`}
-          icon="hass:flash"
+          .label=${`Turn ${computeStateName(this.stateObj)} on`}
+          .path=${mdiFlash}
           .disabled=${this.stateObj.state === UNAVAILABLE}
           @click=${this._turnOn}
           ?state-active=${this._isOn}

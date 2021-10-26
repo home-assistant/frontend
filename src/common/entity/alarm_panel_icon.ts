@@ -1,24 +1,36 @@
 /** Return an icon representing a alarm panel state. */
 
+import {
+  mdiShieldLock,
+  mdiShieldAirplane,
+  mdiShieldHome,
+  mdiShieldMoon,
+  mdiSecurity,
+  mdiShieldOutline,
+  mdiBellRing,
+  mdiShieldOff,
+  mdiShield,
+} from "@mdi/js";
+
 export const alarmPanelIcon = (state?: string) => {
   switch (state) {
     case "armed_away":
-      return "hass:shield-lock";
+      return mdiShieldLock;
     case "armed_vacation":
-      return "hass:shield-airplane";
+      return mdiShieldAirplane;
     case "armed_home":
-      return "hass:shield-home";
+      return mdiShieldHome;
     case "armed_night":
-      return "hass:shield-moon";
+      return mdiShieldMoon;
     case "armed_custom_bypass":
-      return "hass:security";
+      return mdiSecurity;
     case "pending":
-      return "hass:shield-outline";
+      return mdiShieldOutline;
     case "triggered":
-      return "hass:bell-ring";
+      return mdiBellRing;
     case "disarmed":
-      return "hass:shield-off";
+      return mdiShieldOff;
     default:
-      return "hass:shield";
+      return mdiShield;
   }
 };

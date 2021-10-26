@@ -1,5 +1,4 @@
 import "@material/mwc-button/mwc-button";
-import "@material/mwc-icon-button/mwc-icon-button";
 import {
   mdiAlertCircleOutline,
   mdiAlertOutline,
@@ -11,6 +10,7 @@ import { css, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
+import "./ha-icon-button";
 import "./ha-svg-icon";
 
 const ALERT_ICONS = {
@@ -66,12 +66,11 @@ class HaAlert extends LitElement {
                   .label=${this.actionText}
                 ></mwc-button>`
               : this.dismissable
-              ? html`<mwc-icon-button
+              ? html`<ha-icon-button
                   @click=${this._dismiss_clicked}
-                  aria-label="Dismiss alert"
-                >
-                  <ha-svg-icon .path=${mdiClose}> </ha-svg-icon>
-                </mwc-icon-button> `
+                  label="Dismiss alert"
+                  .path=${mdiClose}
+                ></ha-icon-button>`
               : ""}
           </div>
         </div>
@@ -140,7 +139,7 @@ class HaAlert extends LitElement {
     mwc-button {
       --mdc-theme-primary: var(--primary-text-color);
     }
-    mwc-icon-button {
+    ha-icon-button {
       --mdc-icon-button-size: 36px;
     }
     .issue-type.info > .icon {

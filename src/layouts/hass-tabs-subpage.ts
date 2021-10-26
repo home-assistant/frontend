@@ -234,6 +234,12 @@ class HassTabsSubpage extends LitElement {
       #tabbar {
         display: flex;
         font-size: 14px;
+        overflow: hidden;
+      }
+
+      #tabbar > a {
+        overflow: hidden;
+        max-width: 45%;
       }
 
       #tabbar.bottom-bar {

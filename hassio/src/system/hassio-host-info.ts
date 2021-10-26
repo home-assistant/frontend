@@ -9,6 +9,7 @@ import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-button-menu";
 import "../../../src/components/ha-card";
+import "../../../src/components/ha-icon-button";
 import "../../../src/components/ha-settings-row";
 import {
   extractApiErrorMessage,
@@ -181,9 +182,11 @@ class HassioHostInfo extends LitElement {
             : ""}
 
           <ha-button-menu corner="BOTTOM_START">
-            <mwc-icon-button slot="trigger">
-              <ha-svg-icon .path=${mdiDotsVertical}></ha-svg-icon>
-            </mwc-icon-button>
+            <ha-icon-button
+              .label=${this.hass.localize("common.menu")}
+              .path=${mdiDotsVertical}
+              slot="trigger"
+            ></ha-icon-button>
             <mwc-list-item
               .action=${"hardware"}
               @click=${this._handleMenuAction}

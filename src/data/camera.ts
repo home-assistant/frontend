@@ -9,11 +9,15 @@ import { getSignedPath } from "./auth";
 export const CAMERA_SUPPORT_ON_OFF = 1;
 export const CAMERA_SUPPORT_STREAM = 2;
 
+export const STREAM_TYPE_HLS = "hls";
+export const STREAM_TYPE_WEB_RTC = "web_rtc";
+
 interface CameraEntityAttributes extends HassEntityAttributeBase {
   model_name: string;
   access_token: string;
   brand: string;
   motion_detection: boolean;
+  frontend_stream_type: string;
 }
 
 export interface CameraEntity extends HassEntityBase {
@@ -31,6 +35,10 @@ export interface CameraThumbnail {
 
 export interface Stream {
   url: string;
+}
+
+export interface WebRtcAnswer {
+  answer: string;
 }
 
 export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
@@ -77,6 +85,17 @@ export const fetchStreamUrl = async (
   stream.url = hass.hassUrl(stream.url);
   return stream;
 };
+
+export const handleWebRtcOffer = (
+  hass: HomeAssistant,
+  entityId: string,
+  offer: string
+) =>
+  hass.callWS<WebRtcAnswer>({
+    type: "camera/web_rtc_offer",
+    entity_id: entityId,
+    offer: offer,
+  });
 
 export const fetchCameraPrefs = (hass: HomeAssistant, entityId: string) =>
   hass.callWS<CameraPreferences>({

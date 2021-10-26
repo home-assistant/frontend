@@ -179,7 +179,16 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
       });
 
       subscribeEntities(conn, (states) => this._updateHass({ states }));
-      subscribeConfig(conn, (config) => this._updateHass({ config }));
+      subscribeConfig(conn, (config) => {
+        if (
+          this.hass?.config?.time_zone !== config.time_zone &&
+          "__setDefaultTimeZone" in Intl.DateTimeFormat
+        ) {
+          // @ts-ignore
+          Intl.DateTimeFormat.__setDefaultTimeZone(config.time_zone);
+        }
+        this._updateHass({ config });
+      });
       subscribeServices(conn, (services) => this._updateHass({ services }));
       subscribePanels(conn, (panels) => this._updateHass({ panels }));
       subscribeFrontendUserData(conn, "core", (userData) =>

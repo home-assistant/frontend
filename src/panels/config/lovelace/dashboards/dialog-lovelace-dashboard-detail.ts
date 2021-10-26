@@ -5,7 +5,7 @@ import { slugify } from "../../../../common/string/slugify";
 import { computeRTLDirection } from "../../../../common/util/compute_rtl";
 import { createCloseHeading } from "../../../../components/ha-dialog";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import type { HaSwitch } from "../../../../components/ha-switch";
 import {
@@ -118,13 +118,13 @@ export class DialogLovelaceDashboardDetail extends LitElement {
                     )}
                     dialogInitialFocus
                   ></paper-input>
-                  <ha-icon-input
+                  <ha-icon-picker
                     .value=${this._icon}
                     @value-changed=${this._iconChanged}
                     .label=${this.hass.localize(
                       "ui.panel.config.lovelace.dashboards.detail.icon"
                     )}
-                  ></ha-icon-input>
+                  ></ha-icon-picker>
                   ${!this._params.dashboard && this.hass.userData?.showAdvanced
                     ? html`
                         <paper-input

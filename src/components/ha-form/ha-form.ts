@@ -2,7 +2,7 @@ import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property } from "lit/decorators";
 import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../common/dom/fire_event";
-import { HaDurationData } from "../ha-duration-input";
+import "../ha-alert";
 import "./ha-form-boolean";
 import "./ha-form-constant";
 import "./ha-form-float";
@@ -11,158 +11,80 @@ import "./ha-form-multi_select";
 import "./ha-form-positive_time_period_dict";
 import "./ha-form-select";
 import "./ha-form-string";
+import { HaFormElement, HaFormDataContainer, HaFormSchema } from "./types";
 
-export type HaFormSchema =
-  | HaFormConstantSchema
-  | HaFormStringSchema
-  | HaFormIntegerSchema
-  | HaFormFloatSchema
-  | HaFormBooleanSchema
-  | HaFormSelectSchema
-  | HaFormMultiSelectSchema
-  | HaFormTimeSchema;
-
-export interface HaFormBaseSchema {
-  name: string;
-  default?: HaFormData;
-  required?: boolean;
-  optional?: boolean;
-  description?: { suffix?: string; suggested_value?: HaFormData };
-}
-
-export interface HaFormConstantSchema extends HaFormBaseSchema {
-  type: "constant";
-  value: string;
-}
-
-export interface HaFormIntegerSchema extends HaFormBaseSchema {
-  type: "integer";
-  default?: HaFormIntegerData;
-  valueMin?: number;
-  valueMax?: number;
-}
-
-export interface HaFormSelectSchema extends HaFormBaseSchema {
-  type: "select";
-  options?: string[] | Array<[string, string]>;
-}
-
-export interface HaFormMultiSelectSchema extends HaFormBaseSchema {
-  type: "multi_select";
-  options?: Record<string, string> | string[] | Array<[string, string]>;
-}
-
-export interface HaFormFloatSchema extends HaFormBaseSchema {
-  type: "float";
-}
-
-export interface HaFormStringSchema extends HaFormBaseSchema {
-  type: "string";
-  format?: string;
-}
-
-export interface HaFormBooleanSchema extends HaFormBaseSchema {
-  type: "boolean";
-}
-
-export interface HaFormTimeSchema extends HaFormBaseSchema {
-  type: "positive_time_period_dict";
-}
-
-export interface HaFormDataContainer {
-  [key: string]: HaFormData;
-}
-
-export type HaFormData =
-  | HaFormStringData
-  | HaFormIntegerData
-  | HaFormFloatData
-  | HaFormBooleanData
-  | HaFormSelectData
-  | HaFormMultiSelectData
-  | HaFormTimeData;
-
-export type HaFormStringData = string;
-export type HaFormIntegerData = number;
-export type HaFormFloatData = number;
-export type HaFormBooleanData = boolean;
-export type HaFormSelectData = string;
-export type HaFormMultiSelectData = string[];
-export type HaFormTimeData = HaDurationData;
-
-export interface HaFormElement extends LitElement {
-  schema: HaFormSchema | HaFormSchema[];
-  data?: HaFormDataContainer | HaFormData;
-  label?: string;
-  suffix?: string;
-}
+const getValue = (obj, item) => (obj ? obj[item.name] : null);
 
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
-  @property() public data!: HaFormDataContainer | HaFormData;
+  @property() public data!: HaFormDataContainer;
 
-  @property() public schema!: HaFormSchema | HaFormSchema[];
+  @property() public schema!: HaFormSchema[];
 
-  @property() public error;
+  @property() public error?: Record<string, string>;
+
+  @property({ type: Boolean }) public disabled = false;
 
   @property() public computeError?: (schema: HaFormSchema, error) => string;
 
   @property() public computeLabel?: (schema: HaFormSchema) => string;
 
-  @property() public computeSuffix?: (schema: HaFormSchema) => string;
-
   public focus() {
-    const input =
-      this.shadowRoot!.getElementById("child-form") ||
-      this.shadowRoot!.querySelector("ha-form");
-    if (!input) {
+    const root = this.shadowRoot?.querySelector(".root");
+    if (!root) {
       return;
     }
-    (input as HTMLElement).focus();
+    for (const child of root.children) {
+      if (child.tagName !== "HA-ALERT") {
+        (child as HTMLElement).focus();
+        break;
+      }
+    }
   }
 
   protected render() {
-    if (Array.isArray(this.schema)) {
-      return html`
+    return html`
+      <div class="root">
         ${this.error && this.error.base
           ? html`
-              <div class="error">
+              <ha-alert alert-type="error">
                 ${this._computeError(this.error.base, this.schema)}
-              </div>
+              </ha-alert>
             `
           : ""}
-        ${this.schema.map(
-          (item) => html`
-            <ha-form
-              .data=${this._getValue(this.data, item)}
-              .schema=${item}
-              .error=${this._getValue(this.error, item)}
-              @value-changed=${this._valueChanged}
-              .computeError=${this.computeError}
-              .computeLabel=${this.computeLabel}
-              .computeSuffix=${this.computeSuffix}
-            ></ha-form>
-          `
-        )}
-      `;
-    }
-
-    return html`
-      ${this.error
-        ? html`
-            <div class="error">
-              ${this._computeError(this.error, this.schema)}
-            </div>
-          `
-        : ""}
-      ${dynamicElement(`ha-form-${this.schema.type}`, {
-        schema: this.schema,
-        data: this.data,
-        label: this._computeLabel(this.schema),
-        suffix: this._computeSuffix(this.schema),
-        id: "child-form",
-      })}
+        ${this.schema.map((item) => {
+          const error = getValue(this.error, item);
+          return html`
+            ${error
+              ? html`
+                  <ha-alert own-margin alert-type="error">
+                    ${this._computeError(error, item)}
+                  </ha-alert>
+                `
+              : ""}
+            ${dynamicElement(`ha-form-${item.type}`, {
+              schema: item,
+              data: getValue(this.data, item),
+              label: this._computeLabel(item),
+              disabled: this.disabled,
+            })}
+          `;
+        })}
+      </div>
     `;
+  }
+
+  protected createRenderRoot() {
+    const root = super.createRenderRoot();
+    // attach it as soon as possible to make sure we fetch all events.
+    root.addEventListener("value-changed", (ev) => {
+      ev.stopPropagation();
+      const schema = (ev.target as HaFormElement).schema as HaFormSchema;
+      fireEvent(this, "value-changed", {
+        value: { ...this.data, [schema.name]: ev.detail.value },
+      });
+    });
+    return root;
   }
 
   private _computeLabel(schema: HaFormSchema) {
@@ -173,38 +95,25 @@ export class HaForm extends LitElement implements HaFormElement {
       : "";
   }
 
-  private _computeSuffix(schema: HaFormSchema) {
-    return this.computeSuffix
-      ? this.computeSuffix(schema)
-      : schema && schema.description
-      ? schema.description.suffix
-      : "";
-  }
-
   private _computeError(error, schema: HaFormSchema | HaFormSchema[]) {
     return this.computeError ? this.computeError(error, schema) : error;
   }
 
-  private _getValue(obj, item) {
-    if (obj) {
-      return obj[item.name];
-    }
-    return null;
-  }
-
-  private _valueChanged(ev: CustomEvent) {
-    ev.stopPropagation();
-    const schema = (ev.target as HaFormElement).schema as HaFormSchema;
-    const data = this.data as HaFormDataContainer;
-    fireEvent(this, "value-changed", {
-      value: { ...data, [schema.name]: ev.detail.value },
-    });
-  }
-
   static get styles(): CSSResultGroup {
+    // .root has overflow: auto to avoid margin collapse
     return css`
-      .error {
-        color: var(--error-color);
+      .root {
+        margin-bottom: -24px;
+        overflow: auto;
+      }
+      .root > * {
+        display: block;
+      }
+      .root > *:not([own-margin]) {
+        margin-bottom: 24px;
+      }
+      ha-alert[own-margin] {
+        margin-bottom: 4px;
       }
     `;
   }

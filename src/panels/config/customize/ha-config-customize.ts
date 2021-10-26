@@ -25,7 +25,7 @@ class HaConfigCustomize extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-tabs-subpage
-      .hass=${this.hass}
+        .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"

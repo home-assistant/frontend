@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-icon-button";
 import "@material/mwc-tab";
 import "@material/mwc-tab-bar";
 import { mdiClose, mdiCog, mdiPencil } from "@mdi/js";
@@ -17,7 +16,7 @@ import { computeStateName } from "../../common/entity/compute_state_name";
 import { navigate } from "../../common/navigate";
 import "../../components/ha-dialog";
 import "../../components/ha-header-bar";
-import "../../components/ha-svg-icon";
+import "../../components/ha-icon-button";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
 import { CONTINUOUS_DOMAINS } from "../../data/logbook";
 import { showEntityEditorDialog } from "../../panels/config/entities/show-dialog-entity-editor";
@@ -112,15 +111,14 @@ export class MoreInfoDialog extends LitElement {
       >
         <div slot="heading" class="heading">
           <ha-header-bar>
-            <mwc-icon-button
+            <ha-icon-button
               slot="navigationIcon"
               dialogAction="cancel"
               .label=${this.hass.localize(
                 "ui.dialogs.more_info_control.dismiss"
               )}
-            >
-              <ha-svg-icon .path=${mdiClose}></ha-svg-icon>
-            </mwc-icon-button>
+              .path=${mdiClose}
+            ></ha-icon-button>
             <div
               slot="title"
               class="main-title"
@@ -131,28 +129,26 @@ export class MoreInfoDialog extends LitElement {
             </div>
             ${this.hass.user!.is_admin
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     slot="actionItems"
                     .label=${this.hass.localize(
                       "ui.dialogs.more_info_control.settings"
                     )}
+                    .path=${mdiCog}
                     @click=${this._gotoSettings}
-                  >
-                    <ha-svg-icon .path=${mdiCog}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
             ${this.shouldShowEditIcon(domain, stateObj)
               ? html`
-                  <mwc-icon-button
+                  <ha-icon-button
                     slot="actionItems"
                     .label=${this.hass.localize(
                       "ui.dialogs.more_info_control.edit"
                     )}
+                    .path=${mdiPencil}
                     @click=${this._gotoEdit}
-                  >
-                    <ha-svg-icon .path=${mdiPencil}></ha-svg-icon>
-                  </mwc-icon-button>
+                  ></ha-icon-button>
                 `
               : ""}
           </ha-header-bar>

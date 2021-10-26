@@ -4,6 +4,10 @@ export const atLeastVersion = (
   minor: number,
   patch?: number
 ): boolean => {
+  if (__DEMO__) {
+    return true;
+  }
+
   const [haMajor, haMinor, haPatch] = version.split(".", 3);
 
   return (

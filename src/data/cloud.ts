@@ -62,6 +62,8 @@ export type CloudStatus = CloudStatusNotLoggedIn | CloudStatusLoggedIn;
 
 export interface SubscriptionInfo {
   human_description: string;
+  provider: string;
+  plan_renewal_date?: number;
 }
 
 export interface CloudWebhook {
@@ -75,6 +77,39 @@ export interface ThingTalkConversion {
   config: Partial<AutomationConfig>;
   placeholders: PlaceholderContainer;
 }
+
+export const cloudLogin = (
+  hass: HomeAssistant,
+  email: string,
+  password: string
+) =>
+  hass.callApi("POST", "cloud/login", {
+    email,
+    password,
+  });
+
+export const cloudLogout = (hass: HomeAssistant) =>
+  hass.callApi("POST", "cloud/logout");
+
+export const cloudForgotPassword = (hass: HomeAssistant, email: string) =>
+  hass.callApi("POST", "cloud/forgot_password", {
+    email,
+  });
+
+export const cloudRegister = (
+  hass: HomeAssistant,
+  email: string,
+  password: string
+) =>
+  hass.callApi("POST", "cloud/register", {
+    email,
+    password,
+  });
+
+export const cloudResendVerification = (hass: HomeAssistant, email: string) =>
+  hass.callApi("POST", "cloud/resend_confirm", {
+    email,
+  });
 
 export const fetchCloudStatus = (hass: HomeAssistant) =>
   hass.callWS<CloudStatus>({ type: "cloud/status" });
