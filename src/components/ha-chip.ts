@@ -12,7 +12,7 @@ import { customElement, property } from "lit/decorators";
 
 @customElement("ha-chip")
 export class HaChip extends LitElement {
-  @property({ type: Boolean }) public outline = false;
+  @property({ type: Boolean }) public outlined = false;
 
   @property() public label?: string;
 
@@ -22,7 +22,7 @@ export class HaChip extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="mdc-chip ${this.outline ? "outline" : ""}">
+      <div class="mdc-chip ${this.outlined ? "outlined" : ""}">
         ${this.leadingIcon
           ? html`<span role="gridcell">
               <span role="button" tabindex="0" class="mdc-chip__primary-action"
@@ -68,25 +68,25 @@ export class HaChip extends LitElement {
         color: var(--ha-chip-text-color, var(--text-primary-color));
       }
 
-      .mdc-chip.outline {
+      .mdc-chip.outlined {
         border: 2px solid var(--ha-chip-background-color, var(--primary-color));
         background: var(--card-background-color);
         color: var(--ha-chip-text-color, var(--primary-text-color));
       }
 
-      .mdc-chip:not(.outline) .mdc-chip__icon.mdc-chip__icon--leading {
+      .mdc-chip:not(.outlined) .mdc-chip__icon.mdc-chip__icon--leading {
         margin-left: -12px !important;
         margin-right: -2px !important;
       }
 
-      .mdc-chip.outline ha-svg-icon,
+      .mdc-chip.outlined ha-svg-icon,
       slot[name="trailing-icon"]::slotted(ha-svg-icon) {
         border-radius: 50%;
         background: var(--ha-chip-background-color, var(--primary-color));
         color: var(--card-background-color);
       }
 
-      .mdc-chip.outline .mdc-chip__icon.mdc-chip__icon--leading {
+      .mdc-chip.outlined .mdc-chip__icon.mdc-chip__icon--leading {
         margin-left: -16px !important;
       }
 

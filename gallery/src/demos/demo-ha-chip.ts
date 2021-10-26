@@ -63,7 +63,7 @@ export class DemoHaChip extends LitElement {
           <div class="standalone">
             <span>Simple:</span>
             <ha-chip
-              .outline=${this.standaloneIsOutlined}
+              .outlined=${this.standaloneIsOutlined}
               ?disabled=${this.standaloneIsDisabled}
               >Demo chip</ha-chip
             >
@@ -72,7 +72,7 @@ export class DemoHaChip extends LitElement {
           <div class="standalone">
             <span>Label property:</span>
             <ha-chip
-              .outline=${this.standaloneIsOutlined}
+              .outlined=${this.standaloneIsOutlined}
               ?disabled=${this.standaloneIsDisabled}
               label="Demo chip"
             ></ha-chip>
@@ -82,7 +82,7 @@ export class DemoHaChip extends LitElement {
             <span>With leadingIcon:</span>
             <ha-chip
               .leadingIcon=${mdiHomeAssistant}
-              .outline=${this.standaloneIsOutlined}
+              .outlined=${this.standaloneIsOutlined}
               ?disabled=${this.standaloneIsDisabled}
               >Demo chip</ha-chip
             >
@@ -92,7 +92,7 @@ export class DemoHaChip extends LitElement {
             <span>With trailingIcon property:</span>
             <ha-chip
               .trailingIcon=${mdiHomeAssistant}
-              .outline=${this.standaloneIsOutlined}
+              .outlined=${this.standaloneIsOutlined}
               ?disabled=${this.standaloneIsDisabled}
               >Demo chip</ha-chip
             >
@@ -101,7 +101,7 @@ export class DemoHaChip extends LitElement {
           <div class="standalone">
             <span>With trailingIcon slot:</span>
             <ha-chip
-              .outline=${this.standaloneIsOutlined}
+              .outlined=${this.standaloneIsOutlined}
               ?disabled=${this.standaloneIsDisabled}
             >
               Demo chip
