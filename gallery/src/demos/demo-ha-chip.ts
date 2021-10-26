@@ -99,7 +99,7 @@ export class DemoHaChip extends LitElement {
           </div>
 
           <div class="standalone">
-            <span>With trailingIcon slot:</span>
+            <span>With trailing-icon slot:</span>
             <ha-chip
               .outlined=${this.standaloneIsOutlined}
               ?disabled=${this.standaloneIsDisabled}
