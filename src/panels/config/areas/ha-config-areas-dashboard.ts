@@ -1,4 +1,4 @@
-import { mdiPlus } from "@mdi/js";
+import { mdiHelpCircle, mdiPlus } from "@mdi/js";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
@@ -147,7 +147,8 @@ export class HaConfigAreasDashboard extends LitElement {
       >
         <ha-icon-button
           slot="toolbar-icon"
-          icon="hass:help-circle"
+          .label=${this.hass.localize("ui.common.help")}
+          .path=${mdiHelpCircle}
           @click=${this._showHelp}
         ></ha-icon-button>
         <ha-fab

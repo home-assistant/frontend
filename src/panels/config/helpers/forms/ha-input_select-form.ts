@@ -1,13 +1,14 @@
 import "@material/mwc-button/mwc-button";
+import { mdiDelete } from "@mdi/js";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-icon-button";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import type { InputSelect } from "../../../../data/input_select";
 import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
@@ -71,14 +72,14 @@ class HaInputSelectForm extends LitElement {
           .invalid=${nameInvalid}
           dialogInitialFocus
         ></paper-input>
-        <ha-icon-input
+        <ha-icon-picker
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
           .label=${this.hass!.localize(
             "ui.dialogs.helper_settings.generic.icon"
           )}
-        ></ha-icon-input>
+        ></ha-icon-picker>
         ${this.hass!.localize(
           "ui.dialogs.helper_settings.input_select.options"
         )}:
@@ -89,11 +90,11 @@ class HaInputSelectForm extends LitElement {
                   <paper-item-body> ${option} </paper-item-body>
                   <ha-icon-button
                     .index=${index}
-                    .title=${this.hass.localize(
+                    .label=${this.hass.localize(
                       "ui.dialogs.helper_settings.input_select.remove_option"
                     )}
                     @click=${this._removeOption}
-                    icon="hass:delete"
+                    .path=${mdiDelete}
                   ></ha-icon-button>
                 </paper-item>
               `

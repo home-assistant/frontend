@@ -1,3 +1,4 @@
+import { mdiStop } from "@mdi/js";
 import type { HassEntity } from "home-assistant-js-websocket";
 import {
   css,
@@ -45,10 +46,11 @@ class HaCoverControls extends LitElement {
           .label=${this.hass.localize(
             "ui.dialogs.more_info_control.open_cover"
           )}
-          .icon=${computeOpenIcon(this.stateObj)}
           @click=${this._onOpenTap}
           .disabled=${this._computeOpenDisabled()}
-        ></ha-icon-button>
+          .path=${computeOpenIcon(this.stateObj)}
+        >
+        </ha-icon-button>
         <ha-icon-button
           class=${classMap({
             hidden: !this._entityObj.supportsStop,
@@ -56,7 +58,7 @@ class HaCoverControls extends LitElement {
           .label=${this.hass.localize(
             "ui.dialogs.more_info_control.stop_cover"
           )}
-          icon="hass:stop"
+          .path=${mdiStop}
           @click=${this._onStopTap}
           .disabled=${this.stateObj.state === UNAVAILABLE}
         ></ha-icon-button>
@@ -67,10 +69,11 @@ class HaCoverControls extends LitElement {
           .label=${this.hass.localize(
             "ui.dialogs.more_info_control.close_cover"
           )}
-          .icon=${computeCloseIcon(this.stateObj)}
           @click=${this._onCloseTap}
           .disabled=${this._computeClosedDisabled()}
-        ></ha-icon-button>
+          .path=${computeCloseIcon(this.stateObj)}
+        >
+        </ha-icon-button>
       </div>
     `;
   }

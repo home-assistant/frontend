@@ -108,8 +108,10 @@ export class HuiEnergySolarGraphCard
           ${!this._chartData.datasets.length
             ? html`<div class="no-data">
                 ${isToday(this._start)
-                  ? "There is no data to show. It can take up to 2 hours for new data to arrive after you configure your energy dashboard."
-                  : "There is no data for this period."}
+                  ? this.hass.localize("ui.panel.lovelace.cards.energy.no_data")
+                  : this.hass.localize(
+                      "ui.panel.lovelace.cards.energy.no_data_period"
+                    )}
               </div>`
             : ""}
         </div>
@@ -166,6 +168,7 @@ export class HuiEnergySolarGraphCard
             offset: true,
           },
           y: {
+            stacked: true,
             type: "linear",
             title: {
               display: true,
@@ -306,12 +309,16 @@ export class HuiEnergySolarGraphCard
 
       if (solarProductionData.length) {
         data.push({
-          label: `Production ${
-            entity ? computeStateName(entity) : source.stat_energy_from
-          }`,
+          label: this.hass.localize(
+            "ui.panel.lovelace.cards.energy.energy_solar_graph.production",
+            {
+              name: entity ? computeStateName(entity) : source.stat_energy_from,
+            }
+          ),
           borderColor,
           backgroundColor: borderColor + "7F",
           data: solarProductionData,
+          stack: "solar",
         });
       }
 
@@ -361,9 +368,14 @@ export class HuiEnergySolarGraphCard
           if (solarForecastData.length) {
             data.push({
               type: "line",
-              label: `Forecast ${
-                entity ? computeStateName(entity) : source.stat_energy_from
-              }`,
+              label: this.hass.localize(
+                "ui.panel.lovelace.cards.energy.energy_solar_graph.forecast",
+                {
+                  name: entity
+                    ? computeStateName(entity)
+                    : source.stat_energy_from,
+                }
+              ),
               fill: false,
               stepped: false,
               borderColor: computedStyles.getPropertyValue(

@@ -6,10 +6,11 @@ import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { assert, assign, number, object, optional, string } from "superstruct";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { stateIcon } from "../../../../common/entity/state_icon";
+import { computeDomain } from "../../../../common/entity/compute_domain";
+import { domainIcon } from "../../../../common/entity/domain_icon";
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-formfield";
-import "../../../../components/ha-icon-input";
+import "../../../../components/ha-icon-picker";
 import "../../../../components/ha-switch";
 import { HomeAssistant } from "../../../../types";
 import { SensorCardConfig } from "../../cards/types";
@@ -88,6 +89,8 @@ export class HuiSensorCardEditor
 
     const graphs = ["line", "none"];
 
+    const entityState = this.hass.states[this._entity];
+
     return html`
       <div class="card-config">
         <ha-entity-picker
@@ -114,18 +117,22 @@ export class HuiSensorCardEditor
           @value-changed=${this._valueChanged}
         ></paper-input>
         <div class="side-by-side">
-          <ha-icon-input
+          <ha-icon-picker
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value=${this._icon}
-            .placeholder=${this._icon ||
-            stateIcon(this.hass.states[this._entity])}
+            .placeholder=${this._icon || entityState?.attributes.icon}
+            .fallbackPath=${!this._icon &&
+            !entityState?.attributes.icon &&
+            entityState
+              ? domainIcon(computeDomain(entityState.entity_id), entityState)
+              : undefined}
             .configValue=${"icon"}
             @value-changed=${this._valueChanged}
-          ></ha-icon-input>
+          ></ha-icon-picker>
           <paper-dropdown-menu
             .label="${this.hass.localize(
               "ui.panel.lovelace.editor.card.sensor.graph_type"

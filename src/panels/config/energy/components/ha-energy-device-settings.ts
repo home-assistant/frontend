@@ -4,8 +4,9 @@ import { CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { stateIcon } from "../../../../common/entity/state_icon";
 import "../../../../components/ha-card";
+import "../../../../components/ha-icon-button";
+import "../../../../components/ha-state-icon";
 import {
   DeviceConsumptionEnergyPreference,
   EnergyPreferences,
@@ -13,8 +14,8 @@ import {
   saveEnergyPreferences,
 } from "../../../../data/energy";
 import {
-  showConfirmationDialog,
   showAlertDialog,
+  showConfirmationDialog,
 } from "../../../../dialogs/generic/show-dialog-box";
 import { haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
@@ -69,26 +70,36 @@ export class EnergyDeviceSettings extends LitElement {
                 ></ha-energy-validation-result>
               `
           )}
-          <h3>Devices</h3>
+          <h3>
+            ${this.hass.localize(
+              "ui.panel.config.energy.device_consumption.devices"
+            )}
+          </h3>
           ${this.preferences.device_consumption.map((device) => {
             const entityState = this.hass.states[device.stat_consumption];
             return html`
               <div class="row">
-                <ha-icon .icon=${stateIcon(entityState)}></ha-icon>
+                <ha-state-icon .state=${entityState}></ha-state-icon>
                 <span class="content"
                   >${entityState
                     ? computeStateName(entityState)
                     : device.stat_consumption}</span
                 >
-                <mwc-icon-button @click=${this._deleteDevice} .device=${device}>
-                  <ha-svg-icon .path=${mdiDelete}></ha-svg-icon>
-                </mwc-icon-button>
+                <ha-icon-button
+                  @click=${this._deleteDevice}
+                  .device=${device}
+                  .path=${mdiDelete}
+                ></ha-icon-button>
               </div>
             `;
           })}
           <div class="row">
             <ha-svg-icon .path=${mdiDevices}></ha-svg-icon>
-            <mwc-button @click=${this._addDevice}>Add device</mwc-button>
+            <mwc-button @click=${this._addDevice}
+              >${this.hass.localize(
+                "ui.panel.config.energy.device_consumption.add_device"
+              )}</mwc-button
+            >
           </div>
         </div>
       </ha-card>
@@ -113,7 +124,7 @@ export class EnergyDeviceSettings extends LitElement {
 
     if (
       !(await showConfirmationDialog(this, {
-        title: "Are you sure you want to delete this device?",
+        title: this.hass.localize("ui.panel.config.energy.delete_source"),
       }))
     ) {
       return;

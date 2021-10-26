@@ -17,7 +17,6 @@ gulp.task(
       process.env.NODE_ENV = "development";
     },
     "clean-hassio",
-    "gen-icons-json",
     "gen-index-hassio-dev",
     "build-supervisor-translations",
     "copy-translations-supervisor",
@@ -34,7 +33,6 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean-hassio",
-    "gen-icons-json",
     "build-supervisor-translations",
     "copy-translations-supervisor",
     "build-locale-data",

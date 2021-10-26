@@ -77,11 +77,23 @@ export interface StatisticsMetaData {
 }
 
 export type StatisticsValidationResult =
+  | StatisticsValidationResultNoState
   | StatisticsValidationResultEntityNotRecorded
+  | StatisticsValidationResultEntityNoLongerRecorded
   | StatisticsValidationResultUnsupportedStateClass
   | StatisticsValidationResultUnitsChanged
   | StatisticsValidationResultUnsupportedUnitMetadata
   | StatisticsValidationResultUnsupportedUnitState;
+
+export interface StatisticsValidationResultNoState {
+  type: "no_state";
+  data: { statistic_id: string };
+}
+
+export interface StatisticsValidationResultEntityNoLongerRecorded {
+  type: "entity_no_longer_recorded";
+  data: { statistic_id: string };
+}
 
 export interface StatisticsValidationResultEntityNotRecorded {
   type: "entity_not_recorded";
