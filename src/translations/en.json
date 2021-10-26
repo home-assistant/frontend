@@ -105,11 +105,6 @@
     }
   },
   "ui": {
-    "auth_store": {
-      "ask": "Do you want to stay logged in?",
-      "decline": "No",
-      "confirm": "Yes"
-    },
     "card": {
       "alarm_control_panel": {
         "code": "Code",
@@ -3666,6 +3661,7 @@
         "logging_in_with": "Logging in with **{authProviderName}**.",
         "pick_auth_provider": "Or log in with",
         "abort_intro": "Login aborted",
+        "store_token": "Keep me logged in",
         "form": {
           "working": "Please wait",
           "unknown_error": "Something went wrong",
