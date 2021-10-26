@@ -63,7 +63,7 @@ export class HaChipSet extends LitElement {
     return css`
       ${unsafeCSS(chipStyles)}
       .mdc-chip-set > * {
-        margin: 0 4px;
+        margin: 4px;
       }
     `;
   }

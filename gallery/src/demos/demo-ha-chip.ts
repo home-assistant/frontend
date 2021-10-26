@@ -23,6 +23,21 @@ const chips: HaChipSetItem[] = [
     trailingIcon: mdiClose,
     label: "Demo chip",
   },
+  {
+    label: "Automation",
+  },
+  {
+    label: "Blueprint",
+  },
+  {
+    label: "Script",
+  },
+  {
+    label: "Scene",
+  },
+  {
+    label: "Person",
+  },
 ];
 
 @customElement("demo-ha-chip")
