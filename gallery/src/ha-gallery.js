@@ -181,6 +181,12 @@ class HaGallery extends PolymerElement {
       this.$.notifications.showDialog({ message: "Alert action clicked" })
     );
 
+    this.addEventListener("chip-clicked", (ev) =>
+      this.$.notifications.showDialog({
+        message: `Chip ${ev.detail.index} clicked `,
+      })
+    );
+
     this.addEventListener("hass-more-info", (ev) => {
       if (ev.detail.entityId) {
         this.$.notifications.showDialog({

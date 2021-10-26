@@ -19,24 +19,36 @@ declare global {
   }
 }
 
+export interface HaChipSetItem {
+  label?: string;
+  leadingIcon?: string;
+  trailingIcon?: string;
+  outline?: boolean;
+}
+
 @customElement("ha-chip-set")
 export class HaChipSet extends LitElement {
-  @property() public items = [];
+  @property({ attribute: false }) public items?: HaChipSetItem[];
 
   protected render(): TemplateResult {
-    if (this.items.length === 0) {
-      return html``;
-    }
     return html`
       <div class="mdc-chip-set">
-        ${this.items.map(
-          (item, idx) =>
-            html`
-              <ha-chip .index=${idx} @click=${this._handleClick}>
-                ${item}
-              </ha-chip>
-            `
-        )}
+        ${this.items
+          ? this.items.map(
+              (item, idx) =>
+                html`
+                  <ha-chip
+                    @click=${this._handleClick}
+                    .index=${idx}
+                    .label=${item.label}
+                    .leadingIcon=${item.leadingIcon}
+                    .trailingIcon=${item.trailingIcon}
+                    ?outline=${item.outline}
+                  >
+                  </ha-chip>
+                `
+            )
+          : html`<slot></slot>`}
       </div>
     `;
   }
@@ -50,9 +62,8 @@ export class HaChipSet extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       ${unsafeCSS(chipStyles)}
-
-      ha-chip {
-        margin: 4px;
+      .mdc-chip-set > * {
+        margin: 0 4px;
       }
     `;
   }
