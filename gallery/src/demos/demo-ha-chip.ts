@@ -1,6 +1,8 @@
+import "../../../src/components/ha-switch";
+import "../../../src/components/ha-formfield";
 import { mdiClose, mdiHomeAssistant } from "@mdi/js";
 import { css, html, LitElement, TemplateResult } from "lit";
-import { customElement } from "lit/decorators";
+import { customElement, state } from "lit/decorators";
 import "../../../src/components/ha-card";
 import "../../../src/components/ha-chip";
 import "../../../src/components/ha-chip-set";
@@ -42,83 +44,72 @@ const chips: HaChipSetItem[] = [
 
 @customElement("demo-ha-chip")
 export class DemoHaChip extends LitElement {
+  @state() standaloneIsDisabled = false;
+
+  @state() standaloneIsOutlined = false;
+
   protected render(): TemplateResult {
     return html`
+      <div class="filters">
+        <ha-formfield label="Disable standalone chips">
+          <ha-switch @change=${this._toggleDisable}></ha-switch>
+        </ha-formfield>
+        <ha-formfield label="Outline standalone chips">
+          <ha-switch @change=${this._toggleOutline}></ha-switch>
+        </ha-formfield>
+      </div>
       <ha-card header="Standalone ha-chip demo">
         <div class="card-content">
           <div class="standalone">
             <span>Simple:</span>
-            <ha-chip>Demo chip</ha-chip>
-          </div>
-          <div class="standalone">
-            <span>Simple (outline):</span>
-            <ha-chip outline>Demo chip</ha-chip>
+            <ha-chip
+              .outline=${this.standaloneIsOutlined}
+              ?disabled=${this.standaloneIsDisabled}
+              >Demo chip</ha-chip
+            >
           </div>
 
           <div class="standalone">
             <span>Label property:</span>
-            <ha-chip label="Demo chip"></ha-chip>
-          </div>
-          <div class="standalone">
-            <span>Label property (outline):</span>
-            <ha-chip outline label="Demo chip"></ha-chip>
+            <ha-chip
+              .outline=${this.standaloneIsOutlined}
+              ?disabled=${this.standaloneIsDisabled}
+              label="Demo chip"
+            ></ha-chip>
           </div>
 
           <div class="standalone">
             <span>With leadingIcon:</span>
-            <ha-chip .leadingIcon=${mdiHomeAssistant}>Demo chip</ha-chip>
-          </div>
-          <div class="standalone">
-            <span>With leadingIcon (outline):</span>
-            <ha-chip .leadingIcon=${mdiHomeAssistant} outline
+            <ha-chip
+              .leadingIcon=${mdiHomeAssistant}
+              .outline=${this.standaloneIsOutlined}
+              ?disabled=${this.standaloneIsDisabled}
               >Demo chip</ha-chip
             >
           </div>
 
           <div class="standalone">
             <span>With trailingIcon property:</span>
-            <ha-chip .trailingIcon=${mdiHomeAssistant}>Demo chip</ha-chip>
-          </div>
-          <div class="standalone">
-            <span>With trailingIcon property (outline):</span>
-            <ha-chip .trailingIcon=${mdiHomeAssistant} outline
+            <ha-chip
+              .trailingIcon=${mdiHomeAssistant}
+              .outline=${this.standaloneIsOutlined}
+              ?disabled=${this.standaloneIsDisabled}
               >Demo chip</ha-chip
             >
           </div>
 
           <div class="standalone">
             <span>With trailingIcon slot:</span>
-            <ha-chip>
+            <ha-chip
+              .outline=${this.standaloneIsOutlined}
+              ?disabled=${this.standaloneIsDisabled}
+            >
               Demo chip
               <ha-svg-icon
                 slot="trailing-icon"
                 class="trailing"
                 .path=${mdiHomeAssistant}
               ></ha-svg-icon>
-            </ha-chip>
-          </div>
-          <div class="standalone">
-            <span>With trailingIcon slot (outline):</span>
-            <ha-chip outline>
-              Demo chip
-              <ha-svg-icon
-                slot="trailing-icon"
-                class="trailing"
-                .path=${mdiHomeAssistant}
-              ></ha-svg-icon>
-            </ha-chip>
-          </div>
-
-          <div class="standalone">
-            <span>Disabled:</span>
-            <ha-chip .trailingIcon=${mdiHomeAssistant} disabled>
-              Demo chip
-            </ha-chip>
-          </div>
-          <div class="standalone">
-            <span>Disabled (outline):</span>
-            <ha-chip .trailingIcon=${mdiHomeAssistant} disabled outline>
-              Demo chip
             </ha-chip>
           </div>
         </div>
@@ -136,6 +127,14 @@ export class DemoHaChip extends LitElement {
     `;
   }
 
+  private _toggleDisable() {
+    this.standaloneIsDisabled = !this.standaloneIsDisabled;
+  }
+
+  private _toggleOutline() {
+    this.standaloneIsOutlined = !this.standaloneIsOutlined;
+  }
+
   static get styles() {
     return css`
       ha-card {
@@ -147,12 +146,12 @@ export class DemoHaChip extends LitElement {
         display: flex;
         justify-content: space-between;
       }
-      .trailings {
-        width: 16px;
-        height: 16px;
-        padding: 4px 2px 4px 4px;
-        margin-right: -8px;
-        --mdc-icon-size: 12px;
+      .filters {
+        margin: 16px;
+      }
+      ha-formfield {
+        margin: 12px 0;
+        display: block;
       }
     `;
   }
