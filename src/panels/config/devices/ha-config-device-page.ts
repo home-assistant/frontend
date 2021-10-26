@@ -52,6 +52,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -117,14 +118,17 @@ export class HaConfigDevicePage extends LitElement {
 
   private _entitiesByCategory = memoizeOne(
     (entities: EntityRegistryEntry[]) => {
-      const result = groupBy(
-        entities,
-        (entry) => entry.entity_category || "state"
+      const result = groupBy(entities, (entry) =>
+        entry.entity_category
+          ? entry.entity_category
+          : ["sensor", "binary_sensor"].includes(computeDomain(entry.entity_id))
+          ? "monitor"
+          : "control"
       ) as Record<
-        "state" | NonNullable<EntityRegistryEntry["entity_category"]>,
+        "control" | NonNullable<EntityRegistryEntry["entity_category"]>,
         EntityRegistryStateEntry[]
       >;
-      for (const key of ["state", "diagnostic", "config"]) {
+      for (const key of ["control", "monitor", "diagnostic", "config"]) {
         if (!(key in result)) {
           result[key] = [];
         }
@@ -353,10 +357,10 @@ export class HaConfigDevicePage extends LitElement {
               </ha-device-info-card>
           </div>
           <div class="column">
-            ${["state", "config", "diagnostic"].map((category) =>
+            ${["control", "monitor", "config", "diagnostic"].map((category) =>
               // Make sure we render controls if no other cards will be rendered
               entitiesByCategory[category].length > 0 ||
-              (category === "controls" && entities.length === 0)
+              (entities.length === 0 && category === "control")
                 ? html`
                     <ha-device-entities-card
                       .hass=${this.hass}

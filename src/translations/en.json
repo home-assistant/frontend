@@ -2168,9 +2168,10 @@
           "device_not_found": "Device not found.",
           "entities": {
             "entities": "Entities",
-            "state": "State",
+            "control": "Controls",
+            "monitor": "Monitor",
             "diagnostic": "Diagnostic",
-            "config": "Config",
+            "config": "Configuration",
             "add_entities_lovelace": "Add to Lovelace",
             "none": "This device has no entities",
             "hide_disabled": "Hide disabled",
