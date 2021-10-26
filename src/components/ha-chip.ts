@@ -69,8 +69,9 @@ export class HaChip extends LitElement {
       }
 
       .mdc-chip.outlined {
+        margin: 0 -2px !important;
         border: 2px solid var(--ha-chip-background-color, var(--primary-color));
-        background: var(
+        background-color: var(
           --ha-chip-outlined-background-color,
           var(--card-background-color)
         );
@@ -79,7 +80,6 @@ export class HaChip extends LitElement {
 
       .mdc-chip:not(.outlined) .mdc-chip__icon.mdc-chip__icon--leading {
         margin-left: -12px !important;
-        margin-right: -2px !important;
       }
 
       .mdc-chip.outlined ha-svg-icon,

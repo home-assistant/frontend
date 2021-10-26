@@ -119,7 +119,7 @@ export class DemoHaChip extends LitElement {
         <div class="card-content">
           <ha-chip-set .items=${chips}> </ha-chip-set>
           <ha-chip-set
-            .items=${chips.map((chip) => ({ ...chip, outline: true }))}
+            .items=${chips.map((chip) => ({ ...chip, outlined: true }))}
           >
           </ha-chip-set>
         </div>

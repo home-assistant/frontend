@@ -23,7 +23,7 @@ export interface HaChipSetItem {
   label?: string;
   leadingIcon?: string;
   trailingIcon?: string;
-  outline?: boolean;
+  outlined?: boolean;
 }
 
 @customElement("ha-chip-set")
@@ -43,7 +43,7 @@ export class HaChipSet extends LitElement {
                     .label=${item.label}
                     .leadingIcon=${item.leadingIcon}
                     .trailingIcon=${item.trailingIcon}
-                    ?outline=${item.outline}
+                    ?outlined=${item.outlined}
                   >
                   </ha-chip>
                 `
