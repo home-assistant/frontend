@@ -148,7 +148,11 @@ export class HaDeviceEntitiesCard extends LitElement {
 
   private _renderEntry(entry: EntityRegistryStateEntry): TemplateResult {
     return html`
-      <paper-icon-item .entry=${entry} @click=${this._openEditEntry}>
+      <paper-icon-item
+        class="disabled-entry"
+        .entry=${entry}
+        @click=${this._openEditEntry}
+      >
         <ha-svg-icon
           slot="item-icon"
           .path=${domainIcon(computeDomain(entry.entity_id))}
@@ -205,6 +209,9 @@ export class HaDeviceEntitiesCard extends LitElement {
       .disabled-entry {
         color: var(--secondary-text-color);
       }
+      #entities {
+        margin-top: -24px; /* match the spacing between card title and content of the device info card above it */
+      }
       #entities > * {
         margin: 8px 16px 8px 8px;
       }
@@ -213,8 +220,9 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       paper-icon-item {
         min-height: 40px;
-        padding: 0 8px;
+        padding: 0 16px;
         cursor: pointer;
+        --paper-item-icon-width: 48px;
       }
       .name {
         font-size: 14px;
