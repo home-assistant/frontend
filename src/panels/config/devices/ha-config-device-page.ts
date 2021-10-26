@@ -354,9 +354,10 @@ export class HaConfigDevicePage extends LitElement {
           </div>
           <div class="column">
             ${["state", "config", "diagnostic"].map((category) =>
-              !entitiesByCategory[category].length
-                ? ""
-                : html`
+              // Make sure we render controls if no other cards will be rendered
+              entitiesByCategory[category].length > 0 ||
+              (category === "controls" && entities.length === 0)
+                ? html`
                     <ha-device-entities-card
                       .hass=${this.hass}
                       .header=${this.hass.localize(
@@ -368,6 +369,7 @@ export class HaConfigDevicePage extends LitElement {
                     >
                     </ha-device-entities-card>
                   `
+                : ""
             )}
           </div>
           <div class="column">
