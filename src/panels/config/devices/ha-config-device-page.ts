@@ -420,7 +420,7 @@ export class HaConfigDevicePage extends LitElement {
                               : "";
                           })
                         : html`
-                            <paper-item class="no-link">
+                            <div class="card-content">
                               ${this.hass.localize(
                                 "ui.panel.config.devices.add_prompt",
                                 "name",
@@ -428,7 +428,7 @@ export class HaConfigDevicePage extends LitElement {
                                   "ui.panel.config.devices.automation.automations"
                                 )
                               )}
-                            </paper-item>
+                            </div>
                           `}
                     </ha-card>
                   `
@@ -502,7 +502,7 @@ export class HaConfigDevicePage extends LitElement {
                                   : "";
                               })
                             : html`
-                                <paper-item class="no-link">
+                                <div class="card-content">
                                   ${this.hass.localize(
                                     "ui.panel.config.devices.add_prompt",
                                     "name",
@@ -510,7 +510,7 @@ export class HaConfigDevicePage extends LitElement {
                                       "ui.panel.config.devices.scene.scenes"
                                     )
                                   )}
-                                </paper-item>
+                                </div>
                               `
                         }
                       </ha-card>
@@ -558,7 +558,7 @@ export class HaConfigDevicePage extends LitElement {
                                 : "";
                             })
                           : html`
-                              <paper-item class="no-link">
+                              <div class="card-content">
                                 ${this.hass.localize(
                                   "ui.panel.config.devices.add_prompt",
                                   "name",
@@ -566,7 +566,7 @@ export class HaConfigDevicePage extends LitElement {
                                     "ui.panel.config.devices.script.scripts"
                                   )
                                 )}
-                              </paper-item>
+                              </div>
                             `}
                       </ha-card>
                     `
@@ -953,17 +953,9 @@ export class HaConfigDevicePage extends LitElement {
           font-size: var(--paper-font-body1_-_font-size);
         }
 
-        paper-item.no-link {
-          cursor: default;
-        }
-
         a {
           text-decoration: none;
           color: var(--primary-color);
-        }
-
-        ha-card {
-          padding-bottom: 8px;
         }
 
         ha-card a {
