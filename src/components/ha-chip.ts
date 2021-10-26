@@ -12,8 +12,6 @@ import { customElement, property } from "lit/decorators";
 
 @customElement("ha-chip")
 export class HaChip extends LitElement {
-  @property({ type: Number }) public index = 0;
-
   @property({ type: Boolean }) public outline = false;
 
   @property() public label?: string;
