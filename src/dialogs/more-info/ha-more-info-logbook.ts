@@ -1,6 +1,7 @@
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { fireEvent } from "../../common/dom/fire_event";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
@@ -10,7 +11,6 @@ import { fetchUsers } from "../../data/user";
 import "../../panels/logbook/ha-logbook";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
-import { closeDialog } from "../make-dialog-manager";
 
 @customElement("ha-more-info-logbook")
 export class MoreInfoLogbook extends LitElement {
@@ -67,7 +67,7 @@ export class MoreInfoLogbook extends LitElement {
                 <div class="title">
                   ${this.hass.localize("ui.dialogs.more_info_control.logbook")}
                 </div>
-                <a href=${href}
+                <a href=${href} @click=${this._close}
                   >${this.hass.localize(
                     "ui.dialogs.more_info_control.show_more"
                   )}</a
@@ -93,11 +93,6 @@ export class MoreInfoLogbook extends LitElement {
 
   protected firstUpdated(): void {
     this._fetchUserPromise = this._fetchUserNames();
-    this.addEventListener("click", (ev) => {
-      if ((ev.composedPath()[0] as HTMLElement).tagName === "A") {
-        setTimeout(() => closeDialog("ha-more-info-dialog"), 500);
-      }
-    });
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -194,6 +189,10 @@ export class MoreInfoLogbook extends LitElement {
     this._userIdToName = userIdToName;
   }
 
+  private _close(): void {
+    setTimeout(() => fireEvent(this, "closed"), 500);
+  }
+
   static get styles() {
     return [
       haStyle,
@@ -222,7 +221,8 @@ export class MoreInfoLogbook extends LitElement {
           align-items: center;
           margin-bottom: 8px;
         }
-        .header > a:visited {
+        .header > a,
+        a:visited {
           color: var(--primary-color);
         }
         .title {

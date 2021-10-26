@@ -7,7 +7,12 @@ import "../../components/chart/state-history-charts";
 import { getRecentWithCache } from "../../data/cached-history";
 import { HistoryResult } from "../../data/history";
 import { HomeAssistant } from "../../types";
-import { closeDialog } from "../make-dialog-manager";
+
+declare global {
+  interface HASSDomEvents {
+    closed: undefined;
+  }
+}
 
 @customElement("ha-more-info-history")
 export class MoreInfoHistory extends LitElement {
@@ -33,7 +38,7 @@ export class MoreInfoHistory extends LitElement {
             <div class="title">
               ${this.hass.localize("ui.dialogs.more_info_control.history")}
             </div>
-            <a href=${href} @click=${this.closeDialog}
+            <a href=${href} @click=${this._close}
               >${this.hass.localize(
                 "ui.dialogs.more_info_control.show_more"
               )}</a
@@ -45,15 +50,7 @@ export class MoreInfoHistory extends LitElement {
             .historyData=${this._stateHistory}
             .isLoadingData=${!this._stateHistory}
           ></state-history-charts>`
-      : ""} `;
-  }
-
-  protected firstUpdated(): void {
-    this.addEventListener("click", (ev) => {
-      if ((ev.composedPath()[0] as HTMLElement).tagName === "A") {
-        setTimeout(() => closeDialog("ha-more-info-dialog"), 500);
-      }
-    });
+      : ""}`;
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -85,10 +82,6 @@ export class MoreInfoHistory extends LitElement {
     }
   }
 
-  public closeDialog(): void {
-    fireEvent(this, "dialog-closed", { dialog: this.localName });
-  }
-
   private async _getStateHistory(): Promise<void> {
     if (!isComponentLoaded(this.hass, "history")) {
       return;
@@ -105,6 +98,10 @@ export class MoreInfoHistory extends LitElement {
     );
   }
 
+  private _close(): void {
+    setTimeout(() => fireEvent(this, "closed"), 500);
+  }
+
   static get styles() {
     return [
       css`
@@ -115,7 +112,8 @@ export class MoreInfoHistory extends LitElement {
           align-items: center;
           margin-bottom: 8px;
         }
-        .header > a:visited {
+        .header > a,
+        a:visited {
           color: var(--primary-color);
         }
         .title {

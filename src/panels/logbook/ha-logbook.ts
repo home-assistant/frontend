@@ -222,6 +222,7 @@ class HaLogbook extends LitElement {
                         }?run_id=${
                           this.traceContexts[item.context_id!].run_id
                         }`}
+                        @click=${this._close}
                         >${this.hass.localize(
                           "ui.components.logbook.show_trace"
                         )}</a
@@ -252,6 +253,10 @@ class HaLogbook extends LitElement {
     fireEvent(this, "hass-more-info", {
       entityId: entityId,
     });
+  }
+
+  private _close(): void {
+    setTimeout(() => fireEvent(this, "closed"), 500);
   }
 
   static get styles(): CSSResultGroup {
