@@ -24,7 +24,7 @@ import "../../components/ha-menu-button";
 import { computeHistory, fetchDate } from "../../data/history";
 import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
-import { HomeAssistant, Route } from "../../types";
+import { HomeAssistant } from "../../types";
 
 class HaPanelHistory extends LitElement {
   @property() hass!: HomeAssistant;
@@ -40,8 +40,6 @@ class HaPanelHistory extends LitElement {
   @property() _isLoading = false;
 
   @property() _stateHistory?;
-
-  @property() public route!: Route;
 
   @property({ reflect: true, type: Boolean }) rtl = false;
 

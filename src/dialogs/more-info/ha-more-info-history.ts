@@ -1,6 +1,7 @@
 import { css, html, LitElement, PropertyValues, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import { fireEvent } from "../../common/dom/fire_event";
 import { throttle } from "../../common/util/throttle";
 import "../../components/chart/state-history-charts";
 import { getRecentWithCache } from "../../data/cached-history";
@@ -32,7 +33,7 @@ export class MoreInfoHistory extends LitElement {
             <div class="title">
               ${this.hass.localize("ui.dialogs.more_info_control.history")}
             </div>
-            <a href=${href}
+            <a href=${href} @click=${this.closeDialog}
               >${this.hass.localize(
                 "ui.dialogs.more_info_control.show_more"
               )}</a
@@ -82,6 +83,10 @@ export class MoreInfoHistory extends LitElement {
       // wait for commit of data (we only account for the default setting of 1 sec)
       setTimeout(this._throttleGetStateHistory, 1000);
     }
+  }
+
+  public closeDialog(): void {
+    fireEvent(this, "dialog-closed", { dialog: this.localName });
   }
 
   private async _getStateHistory(): Promise<void> {
