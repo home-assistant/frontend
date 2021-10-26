@@ -7,6 +7,7 @@ export interface SelectViewDialogParams {
   dashboards?: LovelaceDashboard[];
   urlPath?: string | null;
   header?: string;
+  actionLabel?: string;
   viewSelectedCallback: (
     urlPath: string | null,
     config: LovelaceConfig,
