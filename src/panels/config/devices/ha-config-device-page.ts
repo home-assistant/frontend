@@ -52,6 +52,7 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -117,14 +118,19 @@ export class HaConfigDevicePage extends LitElement {
 
   private _entitiesByCategory = memoizeOne(
     (entities: EntityRegistryEntry[]) => {
-      const result = groupBy(
-        entities,
-        (entry) => entry.entity_category || "state"
+      const result = groupBy(entities, (entry) =>
+        entry.entity_category
+          ? entry.entity_category
+          : ["sensor", "binary_sensor"].includes(computeDomain(entry.entity_id))
+          ? "sensor"
+          : "control"
       ) as Record<
-        "state" | NonNullable<EntityRegistryEntry["entity_category"]>,
+        | "control"
+        | "sensor"
+        | NonNullable<EntityRegistryEntry["entity_category"]>,
         EntityRegistryStateEntry[]
       >;
-      for (const key of ["state", "diagnostic", "config"]) {
+      for (const key of ["control", "sensor", "diagnostic", "config"]) {
         if (!(key in result)) {
           result[key] = [];
         }
@@ -351,11 +357,13 @@ export class HaConfigDevicePage extends LitElement {
               }
               ${this._renderIntegrationInfo(device, integrations)}
               </ha-device-info-card>
-
-            ${["state", "config", "diagnostic"].map((category) =>
-              !entitiesByCategory[category].length
-                ? ""
-                : html`
+          </div>
+          <div class="column">
+            ${["control", "sensor", "config", "diagnostic"].map((category) =>
+              // Make sure we render controls if no other cards will be rendered
+              entitiesByCategory[category].length > 0 ||
+              (entities.length === 0 && category === "control")
+                ? html`
                     <ha-device-entities-card
                       .hass=${this.hass}
                       .header=${this.hass.localize(
@@ -367,10 +375,10 @@ export class HaConfigDevicePage extends LitElement {
                     >
                     </ha-device-entities-card>
                   `
+                : ""
             )}
-
           </div>
-            <div class="column">
+          <div class="column">
             ${
               isComponentLoaded(this.hass, "automation")
                 ? html`
@@ -443,86 +451,76 @@ export class HaConfigDevicePage extends LitElement {
                   `
                 : ""
             }
-            </div>
-            <div class="column">
             ${
               isComponentLoaded(this.hass, "scene") && entities.length
                 ? html`
                     <ha-card>
-                        <h1 class="card-header">
-                          ${this.hass.localize(
-                            "ui.panel.config.devices.scene.scenes"
-                          )}
+                      <h1 class="card-header">
+                        ${this.hass.localize(
+                          "ui.panel.config.devices.scene.scenes"
+                        )}
 
-                          <ha-icon-button @click=${
-                            this._createScene
-                          } .disabled=${device.disabled_by}
-                            .label=${
-                              device.disabled_by
-                                ? this.hass.localize(
-                                    "ui.panel.config.devices.scene.create_disabled"
-                                  )
-                                : this.hass.localize(
-                                    "ui.panel.config.devices.scene.create"
-                                  )
-                            }
-                            .path=${mdiPlusCircle}
-                          ></ha-icon-button>
-                        </h1>
+                        <ha-icon-button
+                          @click=${this._createScene}
+                          .disabled=${device.disabled_by}
+                          .label=${device.disabled_by
+                            ? this.hass.localize(
+                                "ui.panel.config.devices.scene.create_disabled"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.config.devices.scene.create"
+                              )}
+                          .path=${mdiPlusCircle}
+                        ></ha-icon-button>
+                      </h1>
 
-                        ${
-                          this._related?.scene?.length
-                            ? this._related.scene.map((scene) => {
-                                const entityState = this.hass.states[scene];
-                                return entityState
-                                  ? html`
-                                      <div>
-                                        <a
-                                          href=${ifDefined(
-                                            entityState.attributes.id
-                                              ? `/config/scene/edit/${entityState.attributes.id}`
-                                              : undefined
-                                          )}
-                                        >
-                                          <paper-item
-                                            .scene=${entityState}
-                                            .disabled=${!entityState.attributes
-                                              .id}
-                                          >
-                                            <paper-item-body>
-                                              ${computeStateName(entityState)}
-                                            </paper-item-body>
-                                            <ha-icon-next></ha-icon-next>
-                                          </paper-item>
-                                        </a>
-                                        ${!entityState.attributes.id
-                                          ? html`
-                                              <paper-tooltip
-                                                animation-delay="0"
-                                              >
-                                                ${this.hass.localize(
-                                                  "ui.panel.config.devices.cant_edit"
-                                                )}
-                                              </paper-tooltip>
-                                            `
-                                          : ""}
-                                      </div>
-                                    `
-                                  : "";
-                              })
-                            : html`
-                                <div class="card-content">
-                                  ${this.hass.localize(
-                                    "ui.panel.config.devices.add_prompt",
-                                    "name",
-                                    this.hass.localize(
-                                      "ui.panel.config.devices.scene.scenes"
-                                    )
-                                  )}
-                                </div>
-                              `
-                        }
-                      </ha-card>
+                      ${this._related?.scene?.length
+                        ? this._related.scene.map((scene) => {
+                            const entityState = this.hass.states[scene];
+                            return entityState
+                              ? html`
+                                  <div>
+                                    <a
+                                      href=${ifDefined(
+                                        entityState.attributes.id
+                                          ? `/config/scene/edit/${entityState.attributes.id}`
+                                          : undefined
+                                      )}
+                                    >
+                                      <paper-item
+                                        .scene=${entityState}
+                                        .disabled=${!entityState.attributes.id}
+                                      >
+                                        <paper-item-body>
+                                          ${computeStateName(entityState)}
+                                        </paper-item-body>
+                                        <ha-icon-next></ha-icon-next>
+                                      </paper-item>
+                                    </a>
+                                    ${!entityState.attributes.id
+                                      ? html`
+                                          <paper-tooltip animation-delay="0">
+                                            ${this.hass.localize(
+                                              "ui.panel.config.devices.cant_edit"
+                                            )}
+                                          </paper-tooltip>
+                                        `
+                                      : ""}
+                                  </div>
+                                `
+                              : "";
+                          })
+                        : html`
+                            <div class="card-content">
+                              ${this.hass.localize(
+                                "ui.panel.config.devices.add_prompt",
+                                "name",
+                                this.hass.localize(
+                                  "ui.panel.config.devices.scene.scenes"
+                                )
+                              )}
+                            </div>
+                          `}
                     </ha-card>
                   `
                 : ""
@@ -582,7 +580,7 @@ export class HaConfigDevicePage extends LitElement {
                   : ""
               }
             </div>
-        </div>
+          </div>
         </ha-config-section>
       </hass-tabs-subpage>    `;
   }

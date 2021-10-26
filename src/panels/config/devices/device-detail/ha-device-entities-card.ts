@@ -105,14 +105,8 @@ export class HaDeviceEntitiesCard extends LitElement {
               </div>
             `
           : html`
-              <div class="config-entry-row">
-                <paper-item-body two-line>
-                  <div>
-                    ${this.hass.localize(
-                      "ui.panel.config.devices.entities.none"
-                    )}
-                  </div>
-                </paper-item-body>
+              <div class="empty card-content">
+                ${this.hass.localize("ui.panel.config.devices.entities.none")}
               </div>
             `}
       </ha-card>
@@ -227,6 +221,9 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       .name {
         font-size: 14px;
+      }
+      .empty {
+        text-align: center;
       }
       button.show-more {
         color: var(--primary-color);
