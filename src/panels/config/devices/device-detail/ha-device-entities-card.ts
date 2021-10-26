@@ -187,7 +187,8 @@ export class HaDeviceEntitiesCard extends LitElement {
       this.hass,
       this.entities
         .filter((entity) => !entity.disabled_by)
-        .map((entity) => entity.entity_id)
+        .map((entity) => entity.entity_id),
+      this.deviceName
     );
   }
 

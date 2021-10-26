@@ -20,7 +20,6 @@ import {
   AlarmPanelCardConfig,
   EntitiesCardConfig,
   HumidifierCardConfig,
-  LightCardConfig,
   PictureEntityCardConfig,
   ThermostatCardConfig,
 } from "../cards/types";
@@ -84,8 +83,7 @@ const splitByAreas = (
 
 export const computeCards = (
   states: Array<[string, HassEntity?]>,
-  entityCardOptions: Partial<EntitiesCardConfig>,
-  single = false
+  entityCardOptions: Partial<EntitiesCardConfig>
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
 
@@ -120,12 +118,6 @@ export const computeCards = (
     } else if (domain === "humidifier") {
       const cardConfig: HumidifierCardConfig = {
         type: "humidifier",
-        entity: entityId,
-      };
-      cards.push(cardConfig);
-    } else if (domain === "light" && single) {
-      const cardConfig: LightCardConfig = {
-        type: "light",
         entity: entityId,
       };
       cards.push(cardConfig);
