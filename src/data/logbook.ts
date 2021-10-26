@@ -54,7 +54,7 @@ export const getLogbookData = async (
   endDate: string,
   entityId?: string,
   entity_matches_only?: boolean
-): Promise<LogbookEntry[]> => {
+): Promise<LogbookEntry[]> =>
   addLogbookMessage(
     hass,
     await getLogbookDataCache(
@@ -65,7 +65,6 @@ export const getLogbookData = async (
       entity_matches_only
     )
   );
-};
 
 export const addLogbookMessage = (
   hass: HomeAssistant,
