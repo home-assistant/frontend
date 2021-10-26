@@ -2295,6 +2295,11 @@
             "allow_login": "Allow person to login"
           }
         },
+        "rfxtrx": {
+          "device": {
+            "id_string": "Identifier: {id_string}"
+          }
+        },
         "zone": {
           "caption": "Zones",
           "description": "Manage the zones you want to track people in",

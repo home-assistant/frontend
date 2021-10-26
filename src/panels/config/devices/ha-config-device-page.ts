@@ -677,7 +677,14 @@ export class HaConfigDevicePage extends LitElement {
       import(
         "./device-detail/integration-elements/rfxtrx/ha-device-actions-rfxtrx"
       );
+      import(
+        "./device-detail/integration-elements/rfxtrx/ha-device-info-rfxtrx"
+      );
       templates.push(html`
+        <ha-device-info-rfxtrx
+          .hass=${this.hass}
+          .device=${device}
+        ></ha-device-info-rfxtrx>
         <div class="card-actions" slot="actions">
           <ha-device-actions-rfxtrx
             .hass=${this.hass}
