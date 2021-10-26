@@ -117,7 +117,7 @@
         "arm_custom_bypass": "Custom bypass"
       },
       "area": {
-        "area_not_found": "Area not found!",
+        "area_not_found": "Area not found.",
         "no_entities": "No entities found in Area"
       },
       "automation": {
