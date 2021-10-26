@@ -2169,7 +2169,7 @@
           "entities": {
             "entities": "Entities",
             "control": "Controls",
-            "monitor": "Monitor",
+            "sensor": "Sensors",
             "diagnostic": "Diagnostic",
             "config": "Configuration",
             "add_entities_lovelace": "Add to Lovelace",

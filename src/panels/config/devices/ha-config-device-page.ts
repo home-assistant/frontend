@@ -122,13 +122,15 @@ export class HaConfigDevicePage extends LitElement {
         entry.entity_category
           ? entry.entity_category
           : ["sensor", "binary_sensor"].includes(computeDomain(entry.entity_id))
-          ? "monitor"
+          ? "sensor"
           : "control"
       ) as Record<
-        "control" | NonNullable<EntityRegistryEntry["entity_category"]>,
+        | "control"
+        | "sensor"
+        | NonNullable<EntityRegistryEntry["entity_category"]>,
         EntityRegistryStateEntry[]
       >;
-      for (const key of ["control", "monitor", "diagnostic", "config"]) {
+      for (const key of ["control", "sensor", "diagnostic", "config"]) {
         if (!(key in result)) {
           result[key] = [];
         }
@@ -357,7 +359,7 @@ export class HaConfigDevicePage extends LitElement {
               </ha-device-info-card>
           </div>
           <div class="column">
-            ${["control", "monitor", "config", "diagnostic"].map((category) =>
+            ${["control", "sensor", "config", "diagnostic"].map((category) =>
               // Make sure we render controls if no other cards will be rendered
               entitiesByCategory[category].length > 0 ||
               (entities.length === 0 && category === "control")
