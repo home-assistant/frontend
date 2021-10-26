@@ -9,15 +9,7 @@ import {
   unsafeCSS,
 } from "lit";
 import { customElement, property } from "lit/decorators";
-import { fireEvent } from "../common/dom/fire_event";
 import "./ha-chip";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "chip-clicked": { index: string };
-  }
-}
 
 export interface HaChipSetItem {
   label?: string;
@@ -38,7 +30,6 @@ export class HaChipSet extends LitElement {
               (item, idx) =>
                 html`
                   <ha-chip
-                    @click=${this._handleClick}
                     .index=${idx}
                     .label=${item.label}
                     .leadingIcon=${item.leadingIcon}
@@ -51,12 +42,6 @@ export class HaChipSet extends LitElement {
           : html`<slot></slot>`}
       </div>
     `;
-  }
-
-  private _handleClick(ev): void {
-    fireEvent(this, "chip-clicked", {
-      index: ev.currentTarget.index,
-    });
   }
 
   static get styles(): CSSResultGroup {

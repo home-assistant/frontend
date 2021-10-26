@@ -9,6 +9,15 @@ import {
   unsafeCSS,
 } from "lit";
 import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../common/dom/fire_event";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "chip-clicked": undefined;
+    "chip-clicked-trailing": undefined;
+  }
+}
 
 @customElement("ha-chip")
 export class HaChip extends LitElement {
@@ -22,7 +31,10 @@ export class HaChip extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="mdc-chip ${this.outlined ? "outlined" : ""}">
+      <div
+        class="mdc-chip ${this.outlined ? "outlined" : ""}"
+        @click=${this._handleClick}
+      >
         ${this.leadingIcon
           ? html`<span role="gridcell">
               <span role="button" tabindex="0" class="mdc-chip__primary-action"
@@ -35,7 +47,7 @@ export class HaChip extends LitElement {
           : ""}
         <div class="mdc-chip__ripple"></div>
         <span role="gridcell">
-          <span role="button" tabindex="0" class="mdc-chip__primary-action">
+          <span role="row" tabindex="0" class="mdc-chip__primary-action">
             <span class="mdc-chip__text">
               ${this.label || html`<slot></slot>`}
             </span>
@@ -45,6 +57,7 @@ export class HaChip extends LitElement {
           <span role="button" tabindex="-1" class="mdc-chip__primary-action">
             ${this.trailingIcon
               ? html`<ha-svg-icon
+                  @click=${this._handleTrailingClick}
                   class="mdc-chip__icon mdc-chip__icon--trailing"
                   .path=${this.trailingIcon}
                 >
@@ -54,6 +67,15 @@ export class HaChip extends LitElement {
         </span>
       </div>
     `;
+  }
+
+  private _handleClick(): void {
+    fireEvent(this, "chip-clicked");
+  }
+
+  private _handleTrailingClick(ev: Event): void {
+    ev.stopPropagation();
+    fireEvent(this, "chip-clicked-trailing");
   }
 
   static get styles(): CSSResultGroup {
