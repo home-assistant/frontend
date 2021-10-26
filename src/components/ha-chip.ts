@@ -93,7 +93,7 @@ export class HaChip extends LitElement {
       }
 
       .mdc-chip__icon.mdc-chip__icon--trailing,
-      slot[name="trailing-icon"]::slotted(:first-child) {
+      slot[name="trailing-icon"]::slotted(ha-svg-icon) {
         width: 18px;
         height: 18px;
         font-size: 18px;
@@ -105,7 +105,7 @@ export class HaChip extends LitElement {
         --mdc-icon-size: 12px;
       }
 
-      slot[name="trailing-icon"]::slotted(:first-child) {
+      slot[name="trailing-icon"]::slotted(ha-svg-icon) {
         margin-left: 4px;
       }
 
