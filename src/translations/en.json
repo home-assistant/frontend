@@ -633,8 +633,10 @@
         "edit": "Edit entity",
         "details": "Details",
         "history": "History",
+        "logbook": "Logbook",
         "last_changed": "Last changed",
         "last_updated": "Last updated",
+        "show_more": "Show more",
         "script": {
           "last_action": "Last action",
           "last_triggered": "Last triggered"

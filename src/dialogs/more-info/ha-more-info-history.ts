@@ -6,6 +6,7 @@ import "../../components/chart/state-history-charts";
 import { getRecentWithCache } from "../../data/cached-history";
 import { HistoryResult } from "../../data/history";
 import { HomeAssistant } from "../../types";
+import { closeDialog } from "../make-dialog-manager";
 
 @customElement("ha-more-info-history")
 export class MoreInfoHistory extends LitElement {
@@ -24,10 +25,18 @@ export class MoreInfoHistory extends LitElement {
       return html``;
     }
 
+    const href = "/history?entity_id=" + this.entityId;
+
     return html`${isComponentLoaded(this.hass, "history")
       ? html` <div class="header">
-            <div class="title">History</div>
-            <a href="/history/${this.entityId}"> Details </a>
+            <div class="title">
+              ${this.hass.localize("ui.dialogs.more_info_control.history")}
+            </div>
+            <a href=${href}
+              >${this.hass.localize(
+                "ui.dialogs.more_info_control.show_more"
+              )}</a
+            >
           </div>
           <state-history-charts
             up-to-now
@@ -36,6 +45,14 @@ export class MoreInfoHistory extends LitElement {
             .isLoadingData=${!this._stateHistory}
           ></state-history-charts>`
       : ""} `;
+  }
+
+  protected firstUpdated(): void {
+    this.addEventListener("click", (ev) => {
+      if ((ev.composedPath()[0] as HTMLElement).tagName === "A") {
+        setTimeout(() => closeDialog("ha-more-info-dialog"), 500);
+      }
+    });
   }
 
   protected updated(changedProps: PropertyValues): void {

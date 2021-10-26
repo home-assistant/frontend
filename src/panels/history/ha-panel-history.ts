@@ -12,6 +12,7 @@ import {
 } from "date-fns";
 import { css, html, LitElement, PropertyValues } from "lit";
 import { property, state } from "lit/decorators";
+import { extractSearchParam } from "../../common/url/search-params";
 import { computeRTL } from "../../common/util/compute_rtl";
 import "../../components/chart/state-history-charts";
 import "../../components/entity/ha-entity-picker";
@@ -139,8 +140,7 @@ class HaPanelHistory extends LitElement {
         [addDays(weekStart, -7), addDays(weekEnd, -7)],
     };
 
-    const routeSegments = this.route.path.split("/");
-    this._entityId = routeSegments.length > 1 ? routeSegments[1] : "";
+    this._entityId = extractSearchParam("entity_id") ?? "";
   }
 
   protected updated(changedProps: PropertyValues) {

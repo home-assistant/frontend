@@ -4,9 +4,9 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { throttle } from "../../common/util/throttle";
 import "../../components/ha-circular-progress";
-import { fetchUsers } from "../../data/user";
 import { getLogbookData, LogbookEntry } from "../../data/logbook";
 import { loadTraceContexts, TraceContexts } from "../../data/trace";
+import { fetchUsers } from "../../data/user";
 import "../../panels/logbook/ha-logbook";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
@@ -44,6 +44,8 @@ export class MoreInfoLogbook extends LitElement {
       return html``;
     }
 
+    const href = "/logbook?entity_id=" + this.entityId;
+
     return html`
       ${isComponentLoaded(this.hass, "logbook")
         ? this._error
@@ -62,8 +64,14 @@ export class MoreInfoLogbook extends LitElement {
           : this._logbookEntries.length
           ? html`
               <div class="header">
-                <div class="title">Logbook</div>
-                <a href="/logbook/${this.entityId}"> Details </a>
+                <div class="title">
+                  ${this.hass.localize("ui.dialogs.more_info_control.logbook")}
+                </div>
+                <a href=${href}
+                  >${this.hass.localize(
+                    "ui.dialogs.more_info_control.show_more"
+                  )}</a
+                >
               </div>
               <ha-logbook
                 narrow
