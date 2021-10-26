@@ -464,7 +464,7 @@ export class HaAutomationEditor extends KeyboardShortcutMixin(LitElement) {
       ) {
         return;
       }
-      // Wait for dialog to complate closing
+      // Wait for dialog to complete closing
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
     showAutomationEditor({
