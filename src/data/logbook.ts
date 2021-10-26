@@ -271,18 +271,18 @@ export const getLogbookMessage = (
         case "sound":
         case "vibration":
           if (isOn) {
-            return localize(
-              `${LOGBOOK_LOCALIZE_PATH}.detected_device_class`,
-              "device_class",
-              localize(`component.binary_sensor.device_class.${device_class}`)
-            );
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.detected_device_class`, {
+              device_class: localize(
+                `component.binary_sensor.device_class.${device_class}`
+              ),
+            });
           }
           if (isOff) {
-            return localize(
-              `${LOGBOOK_LOCALIZE_PATH}.cleared_device_class`,
-              "device_class",
-              localize(`component.binary_sensor.device_class.${device_class}`)
-            );
+            return localize(`${LOGBOOK_LOCALIZE_PATH}.cleared_device_class`, {
+              device_class: localize(
+                `component.binary_sensor.device_class.${device_class}`
+              ),
+            });
           }
           break;
 
