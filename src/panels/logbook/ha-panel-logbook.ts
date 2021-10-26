@@ -33,6 +33,7 @@ import "../../layouts/ha-app-layout";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import "./ha-logbook";
+import { extractSearchParam } from "../../common/url/search-params";
 
 @customElement("ha-panel-logbook")
 export class HaPanelLogbook extends LitElement {
@@ -158,6 +159,8 @@ export class HaPanelLogbook extends LitElement {
       [this.hass.localize("ui.components.date-range-picker.ranges.last_week")]:
         [addDays(weekStart, -7), addDays(weekEnd, -7)],
     };
+
+    this._entityId = extractSearchParam("entity_id") ?? "";
   }
 
   protected updated(changedProps: PropertyValues<this>) {
