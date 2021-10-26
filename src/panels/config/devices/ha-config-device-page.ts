@@ -195,6 +195,13 @@ export class HaConfigDevicePage extends LitElement {
       : undefined;
     const area = this._computeArea(this.areas, device);
 
+    const configurationUrlIsHomeAssistant =
+      device.configuration_url?.startsWith("homeassistant://") || false;
+
+    const configurationUrl = configurationUrlIsHomeAssistant
+      ? device.configuration_url!.replace("homeassistant://", "/")
+      : device.configuration_url;
+
     return html`
       <hass-tabs-subpage
         .hass=${this.hass}
@@ -316,13 +323,15 @@ export class HaConfigDevicePage extends LitElement {
                   : html``
               }
               ${
-                device.configuration_url
+                configurationUrl
                   ? html`
                       <div class="card-actions" slot="actions">
                         <a
-                          href=${device.configuration_url}
-                          target="_blank"
+                          href=${configurationUrl}
                           rel="noopener noreferrer"
+                          .target=${configurationUrlIsHomeAssistant
+                            ? "_self"
+                            : "_blank"}
                         >
                           <mwc-button>
                             ${this.hass.localize(
