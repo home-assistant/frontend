@@ -56,6 +56,15 @@ export class DemoHaChip extends LitElement {
           </div>
 
           <div class="standalone">
+            <span>Label property:</span>
+            <ha-chip label="Demo chip"></ha-chip>
+          </div>
+          <div class="standalone">
+            <span>Label property (outline):</span>
+            <ha-chip outline label="Demo chip"></ha-chip>
+          </div>
+
+          <div class="standalone">
             <span>With leadingIcon:</span>
             <ha-chip .leadingIcon=${mdiHomeAssistant}>Demo chip</ha-chip>
           </div>
