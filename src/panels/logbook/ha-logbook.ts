@@ -150,12 +150,12 @@ class HaLogbook extends LitElement {
                 html`
                   <state-badge
                     .hass=${this.hass}
-                    .stateObj=${stateObj}
                     .overrideIcon=${item.icon}
                     .overrideImage=${DOMAINS_WITH_DYNAMIC_PICTURE.has(domain)
                       ? ""
                       : stateObj?.attributes.entity_picture_local ||
                         stateObj?.attributes.entity_picture}
+                    .stateObj=${stateObj}
                   ></state-badge>
                 `
               : ""}
