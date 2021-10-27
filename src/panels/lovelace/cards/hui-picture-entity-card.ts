@@ -7,14 +7,12 @@ import {
   TemplateResult,
 } from "lit";
 import { customElement, property, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { ifDefined } from "lit/directives/if-defined";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/ha-card";
-import { UNAVAILABLE_STATES } from "../../../data/entity";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { actionHandler } from "../common/directives/action-handler-directive";
@@ -135,9 +133,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         </div>
       `;
     } else if (this._config.show_name) {
-      footer = html`<div class="footer">${name}</div>`;
+      footer = html`<div class="footer single">${name}</div>`;
     } else if (this._config.show_state) {
-      footer = html`<div class="footer state">${entityState}</div>`;
+      footer = html`<div class="footer single">${entityState}</div>`;
     }
 
     return html`
@@ -163,9 +161,6 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
               ? "0"
               : undefined
           )}
-          class=${classMap({
-            clickable: !UNAVAILABLE_STATES.includes(stateObj.state),
-          })}
         ></hui-image>
         ${footer}
       </ha-card>
@@ -182,7 +177,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         box-sizing: border-box;
       }
 
-      hui-image.clickable {
+      hui-image {
         cursor: pointer;
       }
 
@@ -212,8 +207,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
         justify-content: space-between;
       }
 
-      .state {
-        text-align: right;
+      .single {
+        text-align: center;
       }
     `;
   }
