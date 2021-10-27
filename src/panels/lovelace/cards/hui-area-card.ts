@@ -412,8 +412,6 @@ export class HuiAreaCard
         .name {
           color: white;
           font-size: 24px;
-          font-weight: 300;
-          letter-spacing: 0.175rem;
           position: absolute;
           transform: translate(0px, -50%);
           bottom: 3%;
