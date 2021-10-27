@@ -26,6 +26,7 @@ const getMeta = () => {
       path: svg.match(/ d="([^"]+)"/)[1],
       name: icon.name,
       tags: icon.tags,
+      aliases: icon.aliases,
     };
   });
 };
@@ -37,6 +38,7 @@ const addRemovedMeta = (meta) => {
     path: removeIcon.path,
     name: removeIcon.name,
     tags: [],
+    aliases: [],
   }));
   const combinedMeta = [...meta, ...removedMeta];
   return combinedMeta.sort((a, b) => a.name.localeCompare(b.name));
@@ -141,7 +143,15 @@ gulp.task("gen-icons-json", (done) => {
 
   fs.writeFileSync(
     path.resolve(OUTPUT_DIR, "iconList.json"),
-    JSON.stringify(orderMeta(meta).map((icon) => icon.name))
+    JSON.stringify(
+      orderMeta(meta).map((icon) => ({
+        name: icon.name,
+        keywords: [
+          ...icon.tags.map((t) => t.toLowerCase().replace(/\s\/\s/g, " ")),
+          ...icon.aliases,
+        ],
+      }))
+    )
   );
 
   done();
