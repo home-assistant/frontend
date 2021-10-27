@@ -30,10 +30,10 @@ const ENTITIES = [
   getEntity("light", "office", "on", {
     friendly_name: "Office Light",
   }),
-  getEntity("fan", "second_office", "on", {
+  getEntity("fan", "kitchen", "on", {
     friendly_name: "Second Office Fan",
   }),
-  getEntity("binary_sensor", "second_office_door", "on", {
+  getEntity("binary_sensor", "kitchen_door", "on", {
     friendly_name: "Office Door",
     device_class: "door",
   }),
@@ -46,7 +46,7 @@ const CONFIGS = [
     config: `
 - type: area
   area: bedroom
-  image: "https://blogmickey.com/wp-content/uploads/2019/01/Riviera-Resort-One-or-Two-Bedroom-Villa-Bedroom-16x9-1024x576.jpg"
+  image: "/images/bed.png"
     `,
   },
   {
@@ -54,7 +54,7 @@ const CONFIGS = [
     config: `
 - type: area
   area: living_room
-  image: "https://thirtynineframes.com/wp-content/uploads/2019/01/Youngs_Eames-16x9x1920.jpg"
+  image: "/images/living_room.png"
     `,
   },
   {
@@ -62,15 +62,15 @@ const CONFIGS = [
     config: `
 - type: area
   area: office
-  image: "https://www.boardandvellum.com/wp-content/uploads/2019/09/16x9-private_offices_vs_open_office_concepts-1242x699.jpg"
+  image: "/images/office.jpg"
     `,
   },
   {
-    heading: "Second Office",
+    heading: "Kitchen",
     config: `
 - type: area
-  area: second_office
-  image: "https://images.wallpaperscraft.com/image/single/office_work_interior_walls_80538_1600x900.jpg"
+  area: kitchen
+  image: "/images/kitchen.png"
     `,
   },
 ];
@@ -104,7 +104,7 @@ class DemoArea extends LitElement {
       },
       {
         name: "Second Office",
-        area_id: "second_office",
+        area_id: "kitchen",
       },
     ]);
     hass.mockWS("config/device_registry/list", () => []);
@@ -138,12 +138,12 @@ class DemoArea extends LitElement {
         entity_id: "sensor.office_humidity",
       },
       {
-        area_id: "second_office",
-        entity_id: "fan.second_office",
+        area_id: "kitchen",
+        entity_id: "fan.kitchen",
       },
       {
-        area_id: "second_office",
-        entity_id: "binary_sensor.second_office_door",
+        area_id: "kitchen",
+        entity_id: "binary_sensor.kitchen_door",
       },
     ]);
   }

@@ -257,34 +257,36 @@ export class HuiAreaCard
               `;
             })}
           </div>
-          <div
-            class="name ${this._config.navigation_path ? "navigate" : ""}"
-            @click=${this._handleNavigation}
-          >
-            ${area!.name}
-          </div>
-          <div class="buttons">
-            ${this._entitiesToggle.map((entity) => {
-              const stateObj = this.hass!.states[entity];
-              return html`
-                <ha-icon-button
-                  class=${classMap({
-                    off: STATES_OFF.includes(stateObj.state),
-                  })}
-                  .entity=${entity}
-                  .actionHandler=${actionHandler({
-                    hasHold: true,
-                  })}
-                  @action=${this._handleAction}
-                >
-                  <state-badge
-                    .hass=${this.hass}
-                    .stateObj=${stateObj}
-                    stateColor
-                  ></state-badge>
-                </ha-icon-button>
-              `;
-            })}
+          <div class="bottom">
+            <div
+              class="name ${this._config.navigation_path ? "navigate" : ""}"
+              @click=${this._handleNavigation}
+            >
+              ${area!.name}
+            </div>
+            <div class="buttons">
+              ${this._entitiesToggle.map((entity) => {
+                const stateObj = this.hass!.states[entity];
+                return html`
+                  <ha-icon-button
+                    class=${classMap({
+                      off: STATES_OFF.includes(stateObj.state),
+                    })}
+                    .entity=${entity}
+                    .actionHandler=${actionHandler({
+                      hasHold: true,
+                    })}
+                    @action=${this._handleAction}
+                  >
+                    <state-badge
+                      .hass=${this.hass}
+                      .stateObj=${stateObj}
+                      stateColor
+                    ></state-badge>
+                  </ha-icon-button>
+                `;
+              })}
+            </div>
           </div>
         </div>
       </ha-card>
@@ -400,6 +402,8 @@ export class HuiAreaCard
         }
 
         .container {
+          display: flex;
+          flex-direction: column;
           position: absolute;
           top: 0;
           bottom: 0;
@@ -408,19 +412,25 @@ export class HuiAreaCard
           background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
         }
 
+        .sensors {
+          color: white;
+          font-size: 18px;
+          flex: 1;
+          padding: 8px;
+          --mdc-icon-size: 28px;
+          cursor: pointer;
+        }
+
         .name {
           color: white;
           font-size: 24px;
-          position: absolute;
-          transform: translate(0px, -50%);
-          bottom: 8px;
-          left: 8px;
         }
 
-        .buttons {
-          position: absolute;
-          bottom: 8px;
-          right: 8px;
+        .bottom {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px;
         }
 
         .name.navigate {
@@ -437,16 +447,6 @@ export class HuiAreaCard
           border-radius: 50%;
           margin-left: 8px;
           --mdc-icon-button-size: 44px;
-        }
-
-        .sensors {
-          color: white;
-          font-size: 18px;
-          position: absolute;
-          top: 8px;
-          left: 8px;
-          --mdc-icon-size: 28px;
-          cursor: pointer;
         }
       `,
     ];
