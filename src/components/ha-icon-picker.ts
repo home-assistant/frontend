@@ -11,10 +11,16 @@ import { PolymerChangedEvent } from "../polymer-types";
 import "./ha-icon";
 import "./ha-icon-button";
 
-let mdiIconList: string[] = [];
+type IconItem = {
+  icon: string;
+  name: string;
+  aliases: string[];
+  tags: string[];
+};
+let iconItems: IconItem[] = [];
 
 // eslint-disable-next-line lit/prefer-static-styles
-const rowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
+const rowRenderer: ComboBoxLitRenderer<IconItem> = (item) => html`<style>
     paper-icon-item {
       padding: 0;
       margin: -8px;
@@ -37,8 +43,8 @@ const rowRenderer: ComboBoxLitRenderer<string> = (item) => html`<style>
 
   <ha-svg-icon .path=${mdiCheck}></ha-svg-icon>
   <paper-icon-item>
-    <ha-icon .icon=${item} slot="item-icon"></ha-icon>
-    <paper-item-body>${item}</paper-item-body>
+    <ha-icon .icon=${item.icon} slot="item-icon"></ha-icon>
+    <paper-item-body>${item.icon}</paper-item-body>
   </paper-icon-item>`;
 
 @customElement("ha-icon-picker")
@@ -66,7 +72,7 @@ export class HaIconPicker extends LitElement {
         item-label-path="icon"
         .value=${this._value}
         allow-custom-value
-        .filteredItems=${mdiIconList}
+        .filteredItems=${iconItems}
         ${comboBoxRenderer(rowRenderer)}
         @opened-changed=${this._openedChanged}
         @value-changed=${this._valueChanged}
@@ -105,10 +111,13 @@ export class HaIconPicker extends LitElement {
 
   private async _openedChanged(ev: PolymerChangedEvent<boolean>) {
     this._opened = ev.detail.value;
-    if (this._opened && !mdiIconList.length) {
+    if (this._opened && !iconItems.length) {
       const iconList = await import("../../build/mdi/iconList.json");
-      mdiIconList = iconList.default.map((icon) => `mdi:${icon}`);
-      (this.comboBox as any).filteredItems = mdiIconList;
+      iconItems = iconList.default.map((icon) => ({
+        ...icon,
+        icon: `mdi:${icon.name}`,
+      }));
+      (this.comboBox as any).filteredItems = iconItems;
     }
   }
 
@@ -133,16 +142,25 @@ export class HaIconPicker extends LitElement {
     const filterString = ev.detail.value.toLowerCase();
     const characterCount = filterString.length;
     if (characterCount >= 2) {
-      const filteredItems = mdiIconList.filter((icon) =>
-        icon.includes(filterString)
+      const filteredItems = iconItems.filter(
+        (item) =>
+          item.icon.includes(filterString) ||
+          item.tags.some((tag) => tag.includes(filterString)) ||
+          item.aliases.some((alias) => alias.includes(filterString))
       );
+
+      const getItemScore = (item: IconItem): number =>
+        item.icon.includes(filterString) ? 1 : 0;
+
+      filteredItems.sort((i1, i2) => getItemScore(i2) - getItemScore(i1));
+
       if (filteredItems.length > 0) {
         (this.comboBox as any).filteredItems = filteredItems;
       } else {
         (this.comboBox as any).filteredItems = [filterString];
       }
     } else {
-      (this.comboBox as any).filteredItems = mdiIconList;
+      (this.comboBox as any).filteredItems = iconItems;
     }
   }
 
