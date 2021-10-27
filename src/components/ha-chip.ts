@@ -112,7 +112,7 @@ export class HaChip extends LitElement {
       }
 
       .mdc-chip.outlined .mdc-chip__icon.mdc-chip__icon--leading {
-        margin-left: -16px !important;
+        margin-left: -13px !important;
       }
 
       .mdc-chip__icon.mdc-chip__icon--trailing,
