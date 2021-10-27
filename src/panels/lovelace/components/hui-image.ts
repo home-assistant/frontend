@@ -192,7 +192,7 @@ export class HuiImage extends LitElement {
             : undefined,
           backgroundImage:
             useRatio && this._loadedImageSrc
-              ? `url(${this._loadedImageSrc})`
+              ? `url("${this._loadedImageSrc}")`
               : undefined,
           filter:
             this._loadState === LoadState.Loaded || this.cameraView === "live"

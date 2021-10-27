@@ -74,6 +74,8 @@ export interface StatisticValue {
 export interface StatisticsMetaData {
   unit_of_measurement: string;
   statistic_id: string;
+  source: string;
+  name?: string | null;
 }
 
 export type StatisticsValidationResult =

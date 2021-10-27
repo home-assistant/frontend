@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import { genClientId } from "home-assistant-js-websocket";
 import {
   css,
   CSSResultGroup,
@@ -8,18 +9,18 @@ import {
   TemplateResult,
 } from "lit";
 import { property, state } from "lit/decorators";
+import "../components/ha-alert";
 import "../components/ha-checkbox";
+import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
 import "../components/ha-form/ha-form";
 import "../components/ha-formfield";
 import "../components/ha-markdown";
-import "../components/ha-alert";
 import { AuthProvider } from "../data/auth";
 import {
   DataEntryFlowStep,
   DataEntryFlowStepForm,
 } from "../data/data_entry_flow";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
-import { computeInitialHaFormData } from "../components/ha-form/compute-initial-ha-form-data";
 import "./ha-password-manager-polyfill";
 
 type State = "loading" | "error" | "step";
@@ -205,7 +206,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             .computeError=${this._computeErrorCallback(step)}
             @value-changed=${this._stepDataChanged}
           ></ha-form>
-          ${this.clientId === window.location.origin && step.step_id !== "mfa"
+          ${this.clientId === genClientId() && step.step_id !== "mfa"
             ? html`
                 <ha-formfield
                   class="store-token"

@@ -24,6 +24,7 @@ const BINARY_SENSOR_DEVICE_CLASS_COLOR_NOT_INVERTED = new Set([
   "plug",
   "power",
   "presence",
+  "running",
   "update",
 ]);
 
