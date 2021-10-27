@@ -132,8 +132,8 @@ export class HaIconPicker extends LitElement {
       if (!getIconList) return;
       const iconList = await getIconList();
       const customIconItems = iconList.map((icon) => ({
-        icon: `${iconsetName}:${icon}`,
-        keywords: [],
+        icon: `${iconsetName}:${icon.name}`,
+        keywords: icon.keywords ?? [],
       }));
       iconItems.push(...customIconItems);
       (this.comboBox as any).filteredItems = iconItems;
