@@ -118,7 +118,6 @@
       },
       "area": {
         "area_not_found": "Area not found.",
-        "no_entities": "No entities found in Area"
       },
       "automation": {
         "last_triggered": "Last triggered",
