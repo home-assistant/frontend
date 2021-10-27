@@ -140,16 +140,17 @@ export class HaIconPicker extends LitElement {
     const filterString = ev.detail.value.toLowerCase();
     const characterCount = filterString.length;
     if (characterCount >= 2) {
-      const filteredItems = iconItems.filter(
+      const filteredItems = iconItems.filter((item) =>
+        item.icon.includes(filterString)
+      );
+
+      const filteredItemsByTagsOrAliases = iconItems.filter(
         (item) =>
-          item.icon.includes(filterString) ||
+          !item.icon.includes(filterString) &&
           item.tagsAndAliases.some((t) => t.includes(filterString))
       );
 
-      const getItemScore = (item: IconItem): number =>
-        item.icon.includes(filterString) ? 1 : 0;
-
-      filteredItems.sort((i1, i2) => getItemScore(i2) - getItemScore(i1));
+      filteredItems.push(...filteredItemsByTagsOrAliases);
 
       if (filteredItems.length > 0) {
         (this.comboBox as any).filteredItems = filteredItems;
