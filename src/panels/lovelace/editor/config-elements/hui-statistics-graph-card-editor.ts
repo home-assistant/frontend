@@ -61,7 +61,7 @@ export class HuiStatisticsGraphCardEditor
     assert(config, cardConfigStruct);
     this._config = config;
     this._configEntities = config.entities
-      ? processConfigEntities(config.entities).map((cfg) => cfg.entity)
+      ? processConfigEntities(config.entities, false).map((cfg) => cfg.entity)
       : [];
   }
 
