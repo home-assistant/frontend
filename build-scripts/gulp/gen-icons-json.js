@@ -146,8 +146,10 @@ gulp.task("gen-icons-json", (done) => {
     JSON.stringify(
       orderMeta(meta).map((icon) => ({
         name: icon.name,
-        tags: icon.tags.map((t) => t.toLowerCase().replace(/\s\/\s/g, " ")),
-        aliases: icon.aliases,
+        keywords: [
+          ...icon.tags.map((t) => t.toLowerCase().replace(/\s\/\s/g, " ")),
+          ...icon.aliases,
+        ],
       }))
     )
   );
