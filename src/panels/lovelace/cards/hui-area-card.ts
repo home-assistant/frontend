@@ -19,8 +19,10 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { navigate } from "../../../common/navigate";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
+import "../../../components/entity/state-badge";
 import "../../../components/ha-card";
 import "../../../components/ha-icon-button";
+import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import {
   AREA_NON_TOGGLE_DOMAINS,
@@ -68,8 +70,6 @@ export class HuiAreaCard
 
   @state() private _config?: AreaCardConfig;
 
-  @state() private _areas: AreaRegistryEntry[] = [];
-
   @state() private _entities?: EntityRegistryEntry[];
 
   @state() private _devices?: DeviceRegistryEntry[];
@@ -78,13 +78,7 @@ export class HuiAreaCard
 
   @state() private _entitiesToggle?: string[];
 
-  private _getArea = memoizeOne(
-    (
-      areaId: string,
-      areas: AreaRegistryEntry[]
-    ): AreaRegistryEntry | undefined =>
-      areas.find((area) => area.area_id === areaId)
-  );
+  @state() private _area?: AreaRegistryEntry;
 
   private _memberships = memoizeOne(
     (
@@ -126,10 +120,53 @@ export class HuiAreaCard
     }
   );
 
+  private _refreshEntities = memoizeOne((entities) => {
+    this._entitiesDialog = [];
+    this._entitiesToggle = [];
+
+    if (entities.length === 0) {
+      return;
+    }
+
+    for (const entity of entities) {
+      const stateObj: HassEntity | undefined =
+        this.hass!.states[entity.entity_id];
+
+      if (!stateObj) {
+        continue;
+      }
+
+      const domain = computeDomain(entity.entity_id);
+
+      if (this._entitiesToggle!.length < 3 && DOMAINS_TOGGLE.has(domain)) {
+        this._entitiesToggle!.push(entity.entity_id);
+        continue;
+      }
+
+      if (
+        this._entitiesDialog!.length < 3 &&
+        AREA_NON_TOGGLE_DOMAINS.includes(domain) &&
+        stateObj.attributes.device_class &&
+        AREA_SENSOR_CLASSES.includes(stateObj.attributes.device_class)
+      ) {
+        this._entitiesDialog!.push(entity.entity_id);
+      }
+
+      if (
+        this._entitiesDialog!.length === 3 &&
+        this._entitiesToggle!.length === 3
+      ) {
+        break;
+      }
+    }
+
+    this.requestUpdate();
+  });
+
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeAreaRegistry(this.hass!.connection, (areas) => {
-        this._areas = areas;
+        this._area = areas.find((area) => area.area_id === this._config!.area);
       }),
       subscribeDeviceRegistry(this.hass!.connection, (devices) => {
         this._devices = devices;
@@ -210,9 +247,7 @@ export class HuiAreaCard
       return html``;
     }
 
-    const area = this._getArea(this._config.area, this._areas);
-
-    if (this._config.area && !area) {
+    if (this._config.area && !this._area) {
       return html`
         <hui-warning>
           ${this.hass.localize("ui.card.area.area_not_found")}
@@ -262,7 +297,7 @@ export class HuiAreaCard
               class="name ${this._config.navigation_path ? "navigate" : ""}"
               @click=${this._handleNavigation}
             >
-              ${area!.name}
+              ${this._area!.name}
             </div>
             <div class="buttons">
               ${this._entitiesToggle.map((entity) => {
@@ -293,64 +328,6 @@ export class HuiAreaCard
     `;
   }
 
-  public willUpdate(changedProps: PropertyValues) {
-    if (
-      !this.hass ||
-      !this._config?.area ||
-      !this._areas ||
-      !this._entities ||
-      !this._devices ||
-      (!changedProps.has("_entities") && !changedProps.has("_devices"))
-    ) {
-      return;
-    }
-
-    this._entitiesDialog = [];
-    this._entitiesToggle = [];
-
-    const { entities } = this._memberships(
-      this._config!.area,
-      this._devices!,
-      this._entities!
-    );
-
-    if (entities.length === 0) {
-      return;
-    }
-
-    for (const entity of entities) {
-      const stateObj: HassEntity | undefined =
-        this.hass!.states[entity.entity_id];
-
-      if (!stateObj) {
-        continue;
-      }
-
-      const domain = computeDomain(entity.entity_id);
-
-      if (this._entitiesToggle!.length < 3 && DOMAINS_TOGGLE.has(domain)) {
-        this._entitiesToggle!.push(entity.entity_id);
-        continue;
-      }
-
-      if (
-        this._entitiesDialog!.length < 3 &&
-        AREA_NON_TOGGLE_DOMAINS.includes(domain) &&
-        stateObj.attributes.device_class &&
-        AREA_SENSOR_CLASSES.includes(stateObj.attributes.device_class)
-      ) {
-        this._entitiesDialog!.push(entity.entity_id);
-      }
-
-      if (
-        this._entitiesDialog!.length === 3 &&
-        this._entitiesToggle!.length === 3
-      ) {
-        break;
-      }
-    }
-  }
-
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (!this._config || !this.hass) {
@@ -367,6 +344,18 @@ export class HuiAreaCard
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
+
+    if (!this._config?.area || !this._area) {
+      return;
+    }
+
+    const { entities } = this._memberships(
+      this._config!.area,
+      this._devices!,
+      this._entities!
+    );
+
+    this._refreshEntities(entities);
   }
 
   private _handleMoreInfo(ev) {
