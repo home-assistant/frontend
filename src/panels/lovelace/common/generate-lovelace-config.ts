@@ -31,7 +31,6 @@ const HIDE_DOMAIN = new Set([
   "device_tracker",
   "geo_location",
   "persistent_notification",
-  "scene",
   "script",
   "sun",
   "zone",
