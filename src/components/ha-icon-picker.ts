@@ -182,7 +182,9 @@ export class HaIconPicker extends LitElement {
       if (filteredItems.length > 0) {
         (this.comboBox as any).filteredItems = filteredItems;
       } else {
-        (this.comboBox as any).filteredItems = [filterString];
+        (this.comboBox as any).filteredItems = [
+          { icon: filterString, keywords: [] },
+        ];
       }
     } else {
       (this.comboBox as any).filteredItems = iconItems;
