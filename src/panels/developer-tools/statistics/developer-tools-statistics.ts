@@ -50,24 +50,30 @@ class HaPanelDevStatistics extends LitElement {
   private _columns = memoizeOne(
     (localize): DataTableColumnContainer => ({
       state: {
-        title: "Entity",
+        title: "Name",
         sortable: true,
         filterable: true,
         grows: true,
         template: (entityState, data: any) =>
           html`${entityState
             ? computeStateName(entityState)
-            : data.statistic_id}`,
+            : data.name || data.statistic_id}`,
       },
       statistic_id: {
         title: "Statistic id",
         sortable: true,
         filterable: true,
         hidden: this.narrow,
-        width: "30%",
+        width: "20%",
       },
       unit_of_measurement: {
         title: "Unit",
+        sortable: true,
+        filterable: true,
+        width: "10%",
+      },
+      source: {
+        title: "Source",
         sortable: true,
         filterable: true,
         width: "10%",
@@ -146,6 +152,7 @@ class HaPanelDevStatistics extends LitElement {
         this._data.push({
           statistic_id: statisticId,
           unit_of_measurement: "",
+          source: "",
           state: this.hass.states[statisticId],
           issues: issues[statisticId],
         });

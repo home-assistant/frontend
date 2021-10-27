@@ -103,7 +103,6 @@ export class DialogEnergyGridFlowSettings
           .label=${this.hass.localize(
             `ui.panel.config.energy.grid.flow_dialog.${this._params.direction}.energy_stat`
           )}
-          entities-only
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
 

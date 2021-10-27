@@ -106,7 +106,6 @@ export class DialogEnergyGasSettings
               ? "kWh"
               : "m³"
           })`}
-          entities-only
           @value-changed=${this._statisticChanged}
         ></ha-statistic-picker>
 
