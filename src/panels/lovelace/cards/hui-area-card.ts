@@ -394,7 +394,6 @@ export class HuiAreaCard
       css`
         ha-card {
           overflow: hidden;
-          height: 100%;
           position: relative;
           padding-bottom: 56.25%;
           background-size: cover;
