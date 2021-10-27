@@ -413,14 +413,14 @@ export class HuiAreaCard
           font-size: 24px;
           position: absolute;
           transform: translate(0px, -50%);
-          bottom: 3%;
-          left: 2%;
+          bottom: 8px;
+          left: 8px;
         }
 
         .buttons {
           position: absolute;
-          bottom: 4%;
-          right: 3%;
+          bottom: 8px;
+          right: 8px;
         }
 
         .name.navigate {
@@ -443,8 +443,8 @@ export class HuiAreaCard
           color: white;
           font-size: 18px;
           position: absolute;
-          top: 5%;
-          left: 2%;
+          top: 8px;
+          left: 8px;
           --mdc-icon-size: 28px;
           cursor: pointer;
         }
