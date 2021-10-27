@@ -25,10 +25,6 @@ import "../../../components/ha-icon-button";
 import "../../../components/ha-state-icon";
 import "../../../components/ha-svg-icon";
 import {
-  AREA_NON_TOGGLE_DOMAINS,
-  AREA_SENSOR_CLASSES,
-} from "../../../data/area";
-import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../../data/area_registry";
@@ -49,6 +45,16 @@ import { toggleEntity } from "../common/entity/toggle-entity";
 import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig } from "./types";
+
+const AREA_NON_TOGGLE_DOMAINS = ["sensor", "binary_sensor"];
+
+const AREA_SENSOR_CLASSES = [
+  "temperature",
+  "humidity",
+  "motion",
+  "door",
+  "aqi",
+];
 
 @customElement("hui-area-card")
 export class HuiAreaCard
