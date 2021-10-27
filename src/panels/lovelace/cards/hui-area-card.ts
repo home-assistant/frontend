@@ -369,7 +369,7 @@ export class HuiAreaCard
           bottom: 0;
           left: 0;
           right: 0;
-          background: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+          background-color: rgba(0, 0, 0, 0.4);
         }
 
         .sensors {
@@ -390,7 +390,7 @@ export class HuiAreaCard
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 8px;
+          padding: 8px 8px 8px 16px;
         }
 
         .name.navigate {
