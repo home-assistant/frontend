@@ -376,7 +376,7 @@ export class HuiAreaCard
           color: white;
           font-size: 18px;
           flex: 1;
-          padding: 8px;
+          padding: 16px;
           --mdc-icon-size: 28px;
           cursor: pointer;
         }
