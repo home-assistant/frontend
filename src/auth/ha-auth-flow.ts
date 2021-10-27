@@ -174,6 +174,17 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   }
 
   private _renderStep(step: DataEntryFlowStep): TemplateResult {
+    let showStoreToken = false;
+
+    if (this.clientId && step.type === "form" && step.step_id !== "mfa") {
+      try {
+        showStoreToken =
+          new URL(this.clientId).origin === window.location.origin;
+      } catch (_) {
+        // Ignore issues converting this.clientId to URL
+      }
+    }
+
     switch (step.type) {
       case "abort":
         return html`
@@ -205,7 +216,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             .computeError=${this._computeErrorCallback(step)}
             @value-changed=${this._stepDataChanged}
           ></ha-form>
-          ${this.clientId === window.location.origin && step.step_id !== "mfa"
+          ${showStoreToken
             ? html`
                 <ha-formfield
                   class="store-token"
