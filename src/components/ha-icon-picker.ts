@@ -13,7 +13,7 @@ import "./ha-icon-button";
 
 type IconItem = {
   icon: string;
-  tagsAndAliases: string[];
+  keywords: string[];
 };
 let iconItems: IconItem[] = [];
 
@@ -113,7 +113,7 @@ export class HaIconPicker extends LitElement {
       const iconList = await import("../../build/mdi/iconList.json");
       iconItems = iconList.default.map((icon) => ({
         icon: `mdi:${icon.name}`,
-        tagsAndAliases: [...icon.tags, ...icon.aliases],
+        keywords: [...icon.tags, ...icon.aliases],
       }));
       (this.comboBox as any).filteredItems = iconItems;
     }
@@ -144,13 +144,13 @@ export class HaIconPicker extends LitElement {
         item.icon.includes(filterString)
       );
 
-      const filteredItemsByTagsOrAliases = iconItems.filter(
+      const filteredItemsByKeywords = iconItems.filter(
         (item) =>
           !item.icon.includes(filterString) &&
-          item.tagsAndAliases.some((t) => t.includes(filterString))
+          item.keywords.some((k) => k.includes(filterString))
       );
 
-      filteredItems.push(...filteredItemsByTagsOrAliases);
+      filteredItems.push(...filteredItemsByKeywords);
 
       if (filteredItems.length > 0) {
         (this.comboBox as any).filteredItems = filteredItems;
