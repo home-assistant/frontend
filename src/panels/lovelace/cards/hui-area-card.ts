@@ -12,7 +12,6 @@ import { customElement, property, state } from "lit/decorators";
 import { classMap } from "lit/directives/class-map";
 import { styleMap } from "lit/directives/style-map";
 import memoizeOne from "memoize-one";
-import { DOMAINS_TOGGLE, STATES_OFF } from "../../../common/const";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -28,10 +27,7 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../../data/area_registry";
-import {
-  DeviceRegistryEntry,
-  subscribeDeviceRegistry,
-} from "../../../data/device_registry";
+import { subscribeDeviceRegistry } from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
@@ -46,15 +42,17 @@ import "../components/hui-warning";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { AreaCardConfig } from "./types";
 
-const AREA_NON_TOGGLE_DOMAINS = ["sensor", "binary_sensor"];
+const SENSOR_DOMAINS = ["sensor", "binary_sensor"];
 
-const AREA_SENSOR_CLASSES = [
+const SENSOR_DEVICE_CLASSES = [
   "temperature",
   "humidity",
   "motion",
   "door",
   "aqi",
 ];
+
+const TOGGLE_DOMAINS = new Set(["light", "fan", "switch"]);
 
 @customElement("hui-area-card")
 export class HuiAreaCard
@@ -72,110 +70,84 @@ export class HuiAreaCard
 
   @property({ attribute: false }) public hass!: HomeAssistant;
 
-  @property({ type: Array }) public areas!: AreaRegistryEntry[];
-
   @state() private _config?: AreaCardConfig;
 
   @state() private _entities?: EntityRegistryEntry[];
 
-  @state() private _devices?: DeviceRegistryEntry[];
+  @state() private _devicesInArea: Set<string> = new Set();
 
-  @state() private _entitiesDialog?: string[];
-
-  @state() private _entitiesToggle?: string[];
-
-  @state() private _area?: AreaRegistryEntry;
+  // null means area not found. undefined = loading.
+  @state() private _area?: AreaRegistryEntry | null;
 
   private _memberships = memoizeOne(
     (
       areaId: string,
-      registryDevices: DeviceRegistryEntry[],
-      registryEntities: EntityRegistryEntry[]
+      devicesInArea: Set<string>,
+      registryEntities: EntityRegistryEntry[],
+      states: HomeAssistant["states"]
     ) => {
-      const devices = new Map();
+      const entitiesInArea = registryEntities
+        .filter(
+          (entry) =>
+            !entry.entity_category &&
+            (entry.area_id
+              ? entry.area_id === areaId
+              : entry.device_id && devicesInArea.has(entry.device_id))
+        )
+        .map((entry) => entry.entity_id);
 
-      for (const device of registryDevices) {
-        if (device.area_id === areaId) {
-          devices.set(device.id, device);
-        }
-      }
+      const sensorEntities: HassEntity[] = [];
+      const entitiesToggle: HassEntity[] = [];
 
-      const entities: EntityRegistryEntry[] = [];
-
-      for (const entity of registryEntities) {
-        const domain = computeDomain(entity.entity_id);
-        if (
-          !DOMAINS_TOGGLE.has(domain) &&
-          !AREA_NON_TOGGLE_DOMAINS.includes(domain)
-        ) {
+      for (const entity of entitiesInArea) {
+        const domain = computeDomain(entity);
+        if (!TOGGLE_DOMAINS.has(domain) && !SENSOR_DOMAINS.includes(domain)) {
           continue;
         }
 
-        if (entity.area_id) {
-          if (entity.area_id === areaId) {
-            entities.push(entity);
-          }
-        } else if (devices.has(entity.device_id)) {
-          entities.push(entity);
+        const stateObj: HassEntity | undefined = states[entity];
+
+        if (!stateObj) {
+          continue;
+        }
+
+        if (entitiesToggle.length < 3 && TOGGLE_DOMAINS.has(domain)) {
+          entitiesToggle.push(stateObj);
+          continue;
+        }
+
+        if (
+          sensorEntities.length < 3 &&
+          SENSOR_DOMAINS.includes(domain) &&
+          stateObj.attributes.device_class &&
+          SENSOR_DEVICE_CLASSES.includes(stateObj.attributes.device_class)
+        ) {
+          sensorEntities.push(stateObj);
+        }
+
+        if (sensorEntities.length === 3 && entitiesToggle.length === 3) {
+          break;
         }
       }
 
-      return {
-        entities,
-      };
+      return { sensorEntities, entitiesToggle };
     }
   );
-
-  private _refreshEntities = memoizeOne((entities) => {
-    this._entitiesDialog = [];
-    this._entitiesToggle = [];
-
-    if (entities.length === 0) {
-      return;
-    }
-
-    for (const entity of entities) {
-      const stateObj: HassEntity | undefined =
-        this.hass!.states[entity.entity_id];
-
-      if (!stateObj) {
-        continue;
-      }
-
-      const domain = computeDomain(entity.entity_id);
-
-      if (this._entitiesToggle!.length < 3 && DOMAINS_TOGGLE.has(domain)) {
-        this._entitiesToggle!.push(entity.entity_id);
-        continue;
-      }
-
-      if (
-        this._entitiesDialog!.length < 3 &&
-        AREA_NON_TOGGLE_DOMAINS.includes(domain) &&
-        stateObj.attributes.device_class &&
-        AREA_SENSOR_CLASSES.includes(stateObj.attributes.device_class)
-      ) {
-        this._entitiesDialog!.push(entity.entity_id);
-      }
-
-      if (
-        this._entitiesDialog!.length === 3 &&
-        this._entitiesToggle!.length === 3
-      ) {
-        break;
-      }
-    }
-
-    this.requestUpdate();
-  });
 
   public hassSubscribe(): UnsubscribeFunc[] {
     return [
       subscribeAreaRegistry(this.hass!.connection, (areas) => {
-        this._area = areas.find((area) => area.area_id === this._config!.area);
+        this._area =
+          areas.find((area) => area.area_id === this._config!.area) || null;
       }),
       subscribeDeviceRegistry(this.hass!.connection, (devices) => {
-        this._devices = devices;
+        this._devicesInArea = new Set(
+          this._config
+            ? devices
+                .filter((device) => device.area_id === this._config!.area_id)
+                .map((device) => device.id)
+            : []
+        );
       }),
       subscribeEntityRegistry(this.hass!.connection, (entries) => {
         this._entities = entries;
@@ -184,7 +156,7 @@ export class HuiAreaCard
   }
 
   public getCardSize(): number {
-    return 5;
+    return 3;
   }
 
   public setConfig(config: AreaCardConfig): void {
@@ -196,14 +168,12 @@ export class HuiAreaCard
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config")) {
+    if (changedProps.has("_config") || !this._config) {
       return true;
     }
 
     if (
-      changedProps.has("_entitiesDialog") ||
-      changedProps.has("_entitiesToggle") ||
-      changedProps.has("_devices") ||
+      changedProps.has("_devicesInArea") ||
       changedProps.has("_area") ||
       changedProps.has("_entities")
     ) {
@@ -224,19 +194,26 @@ export class HuiAreaCard
       return true;
     }
 
-    if (this._entitiesDialog) {
-      for (const entity of this._entitiesDialog) {
-        if (oldHass!.states[entity] !== this.hass!.states[entity]) {
-          return true;
-        }
+    if (!this._devicesInArea || !this._entities) {
+      return false;
+    }
+
+    const { sensorEntities, entitiesToggle } = this._memberships(
+      this._config.area,
+      this._devicesInArea,
+      this._entities,
+      this.hass.states
+    );
+
+    for (const stateObj of sensorEntities) {
+      if (oldHass!.states[stateObj.entity_id] !== stateObj) {
+        return true;
       }
     }
 
-    if (this._entitiesToggle) {
-      for (const entity of this._entitiesToggle) {
-        if (oldHass!.states[entity] !== this.hass!.states[entity]) {
-          return true;
-        }
+    for (const stateObj of entitiesToggle) {
+      if (oldHass!.states[stateObj.entity_id] !== stateObj) {
+        return true;
       }
     }
 
@@ -247,13 +224,21 @@ export class HuiAreaCard
     if (
       !this._config ||
       !this.hass ||
-      !this._entitiesDialog ||
-      !this._entitiesToggle
+      this._area === undefined ||
+      !this._devicesInArea ||
+      !this._entities
     ) {
       return html``;
     }
 
-    if (this._config.area && !this._area) {
+    const { sensorEntities, entitiesToggle } = this._memberships(
+      this._config.area,
+      this._devicesInArea,
+      this._entities,
+      this.hass.states
+    );
+
+    if (this._area === null) {
       return html`
         <hui-warning>
           ${this.hass.localize("ui.card.area.area_not_found")}
@@ -261,31 +246,24 @@ export class HuiAreaCard
       `;
     }
 
-    if (
-      this._entitiesDialog.length === 0 &&
-      this._entitiesToggle.length === 0
-    ) {
-      return html`
-        <hui-warning>
-          ${this.hass.localize("ui.card.area.no_entities")}
-        </hui-warning>
-      `;
-    }
-
     return html`
       <ha-card
         style=${styleMap({
-          "background-image": `url(${this.hass.hassUrl(this._config.image)})`,
+          "background-image": `url(${this.hass.hassUrl(
+            this._config.image || this._area.picture
+          )})`,
         })}
       >
         <div class="container">
           <div class="sensors">
-            ${this._entitiesDialog.map((entity) => {
-              const stateObj = this.hass.states[entity];
-              return html`
-                <span .entity=${entity} @click=${this._handleMoreInfo}>
+            ${sensorEntities.map(
+              (stateObj) => html`
+                <span
+                  .entity=${stateObj.entity_id}
+                  @click=${this._handleMoreInfo}
+                >
                   <ha-state-icon .state=${stateObj}></ha-state-icon>
-                  ${computeDomain(entity) === "binary_sensor"
+                  ${computeDomain(stateObj.entity_id) === "binary_sensor"
                     ? ""
                     : html`
                         ${computeStateDisplay(
@@ -295,8 +273,8 @@ export class HuiAreaCard
                         )}
                       `}
                 </span>
-              `;
-            })}
+              `
+            )}
           </div>
           <div class="bottom">
             <div
@@ -306,14 +284,13 @@ export class HuiAreaCard
               ${this._area!.name}
             </div>
             <div class="buttons">
-              ${this._entitiesToggle.map((entity) => {
-                const stateObj = this.hass!.states[entity];
-                return html`
+              ${entitiesToggle.map(
+                (stateObj) => html`
                   <ha-icon-button
                     class=${classMap({
-                      off: STATES_OFF.includes(stateObj.state),
+                      off: stateObj.state === "off",
                     })}
-                    .entity=${entity}
+                    .entity=${stateObj.entity_id}
                     .actionHandler=${actionHandler({
                       hasHold: true,
                     })}
@@ -325,8 +302,8 @@ export class HuiAreaCard
                       stateColor
                     ></state-badge>
                   </ha-icon-button>
-                `;
-              })}
+                `
+              )}
             </div>
           </div>
         </div>
@@ -350,18 +327,6 @@ export class HuiAreaCard
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
-
-    if (!this._config?.area || !this._area) {
-      return;
-    }
-
-    const { entities } = this._memberships(
-      this._config!.area,
-      this._devices!,
-      this._entities!
-    );
-
-    this._refreshEntities(entities);
   }
 
   private _handleMoreInfo(ev) {
