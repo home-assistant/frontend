@@ -102,6 +102,7 @@ export class HaChip extends LitElement {
 
       .mdc-chip:not(.outlined) .mdc-chip__icon.mdc-chip__icon--leading {
         margin-left: -12px !important;
+        margin-right: -2px;
       }
 
       .mdc-chip.outlined ha-svg-icon,

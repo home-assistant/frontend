@@ -272,17 +272,10 @@ export class QuickBar extends LitElement {
         <span>
           <ha-chip
             .label=${item.categoryText}
-            hasIcon
+            .leadingIcon=${item.iconPath}
             class="command-category ${item.categoryKey}"
           >
-            ${item.iconPath
-              ? html`<ha-svg-icon
-                  .path=${item.iconPath}
-                  slot="icon"
-                ></ha-svg-icon>`
-              : ""}
-            ${item.categoryText}</ha-chip
-          >
+          </ha-chip>
         </span>
 
         <span class="command-text">${item.primaryText}</span>
@@ -623,7 +616,6 @@ export class QuickBar extends LitElement {
         }
 
         .command-category {
-          --ha-chip-icon-color: #585858;
           --ha-chip-text-color: #212121;
         }
 
