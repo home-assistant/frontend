@@ -1,4 +1,5 @@
 import { AuthData } from "home-assistant-js-websocket";
+import { extractSearchParam } from "../url/search-params";
 
 const storage = window.localStorage || {};
 
@@ -31,10 +32,7 @@ export function askWrite() {
 export function saveTokens(tokens: AuthData | null) {
   tokenCache.tokens = tokens;
 
-  if (
-    !tokenCache.writeEnabled &&
-    new URLSearchParams(window.location.search).get("storeToken") === "true"
-  ) {
+  if (!tokenCache.writeEnabled && extractSearchParam("storeToken") === "true") {
     tokenCache.writeEnabled = true;
   }
 
