@@ -106,17 +106,19 @@ export class HaChip extends LitElement {
       .mdc-chip:not(.outlined) .mdc-chip__icon.mdc-chip__icon--leading {
         margin-left: -12px !important;
         margin-right: -2px;
+        color: var(--ha-chip-icon-color, var(--text-primary-color));
       }
 
       .mdc-chip.outlined ha-svg-icon,
       slot[name="trailing-icon"]::slotted(ha-svg-icon) {
         border-radius: 50%;
-        background: var(--ha-chip-background-color, var(--primary-color));
-        color: var(--card-background-color);
+        background-color: var(--ha-chip-background-color, var(--primary-color));
+        color: var(--ha-chip-icon-color, var(--text-primary-color));
       }
 
       .mdc-chip.outlined .mdc-chip__icon.mdc-chip__icon--leading {
         margin-left: -13px !important;
+        color: var(--ha-chip-icon-color, var(--text-primary-color));
       }
 
       .mdc-chip__icon.mdc-chip__icon--trailing,
@@ -125,7 +127,7 @@ export class HaChip extends LitElement {
         height: 18px;
         font-size: 18px;
         padding: 2px;
-        color: var(--ha-chip-text-color, var(--text-primary-color));
+        color: var(--ha-chip-icon-color);
         margin-right: -8px;
         display: inline-flex;
         align-items: center;

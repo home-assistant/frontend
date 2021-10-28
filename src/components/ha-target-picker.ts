@@ -1,5 +1,3 @@
-// @ts-ignore
-import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import "@material/mwc-button/mwc-button";
 import {
   mdiClose,
@@ -14,13 +12,13 @@ import {
   HassServiceTarget,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import { css, CSSResultGroup, html, LitElement, unsafeCSS } from "lit";
+import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, query, state } from "lit/decorators";
-import { classMap } from "lit/directives/class-map";
 import { fireEvent } from "../common/dom/fire_event";
 import { ensureArray } from "../common/ensure-array";
 import { computeDomain } from "../common/entity/compute_domain";
 import { computeStateName } from "../common/entity/compute_state_name";
+import { stateIconPath } from "../common/entity/state_icon_path";
 import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
@@ -41,6 +39,7 @@ import type { HaDevicePickerDeviceFilterFunc } from "./device/ha-device-picker";
 import "./entity/ha-entity-picker";
 import type { HaEntityPickerEntityFilterFunc } from "./entity/ha-entity-picker";
 import "./ha-area-picker";
+import "./ha-chip-set";
 import "./ha-icon-button";
 import "./ha-svg-icon";
 
@@ -114,7 +113,7 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     if (!this._areas || !this._devices || !this._entities) {
       return html``;
     }
-    return html`<div class="mdc-chip-set items">
+    return html`<ha-chip-set>
         ${this.value?.area_id
           ? ensureArray(this.value.area_id).map((area_id) => {
               const area = this._areas![area_id];
@@ -150,70 +149,39 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
               );
             })
           : ""}
-      </div>
+      </ha-chip-set>
       ${this._renderPicker()}
-      <div class="mdc-chip-set">
-        <div
-          class="mdc-chip area_id add"
+      <ha-chip-set>
+        <ha-chip
+          class="area_id add"
           .type=${"area_id"}
           @click=${this._showPicker}
+          .leadingIcon=${mdiPlus}
+          .label=${this.hass.localize(
+            "ui.components.target-picker.add_area_id"
+          )}
         >
-          <div class="mdc-chip__ripple"></div>
-          <ha-svg-icon
-            class="mdc-chip__icon mdc-chip__icon--leading"
-            .path=${mdiPlus}
-          ></ha-svg-icon>
-          <span role="gridcell">
-            <span role="button" tabindex="0" class="mdc-chip__primary-action">
-              <span class="mdc-chip__text"
-                >${this.hass.localize(
-                  "ui.components.target-picker.add_area_id"
-                )}</span
-              >
-            </span>
-          </span>
-        </div>
-        <div
-          class="mdc-chip device_id add"
+        </ha-chip>
+        <ha-chip
+          class="device_id add"
           .type=${"device_id"}
           @click=${this._showPicker}
+          .leadingIcon=${mdiPlus}
+          .label=${this.hass.localize(
+            "ui.components.target-picker.add_device_id"
+          )}
         >
-          <div class="mdc-chip__ripple"></div>
-          <ha-svg-icon
-            class="mdc-chip__icon mdc-chip__icon--leading"
-            .path=${mdiPlus}
-          ></ha-svg-icon>
-          <span role="gridcell">
-            <span role="button" tabindex="0" class="mdc-chip__primary-action">
-              <span class="mdc-chip__text"
-                >${this.hass.localize(
-                  "ui.components.target-picker.add_device_id"
-                )}</span
-              >
-            </span>
-          </span>
-        </div>
-        <div
-          class="mdc-chip entity_id add"
+        </ha-chip>
+        <ha-chip
+          class="entity_id add"
           .type=${"entity_id"}
           @click=${this._showPicker}
-        >
-          <div class="mdc-chip__ripple"></div>
-          <ha-svg-icon
-            class="mdc-chip__icon mdc-chip__icon--leading"
-            .path=${mdiPlus}
-          ></ha-svg-icon>
-          <span role="gridcell">
-            <span role="button" tabindex="0" class="mdc-chip__primary-action">
-              <span class="mdc-chip__text"
-                >${this.hass.localize(
-                  "ui.components.target-picker.add_entity_id"
-                )}</span
-              >
-            </span>
-          </span>
-        </div>
-      </div>`;
+          .leadingIcon=${mdiPlus}
+          .label=${this.hass.localize(
+            "ui.components.target-picker.add_entity_id"
+          )}
+        ></ha-chip>
+      </ha-chip-set>`;
   }
 
   private async _showPicker(ev) {
@@ -233,69 +201,59 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
     iconPath?: string
   ) {
     return html`
-      <div
-        class="mdc-chip ${classMap({
-          [type]: true,
-        })}"
+      <ha-chip
+        class=${type}
+        .id=${id}
+        .leadingIcon=${iconPath ||
+        entityState?.attributes.icon ||
+        stateIconPath(entityState)}
+        .label=${name}
+        outlined
       >
-        ${iconPath
-          ? html`<ha-svg-icon
-              class="mdc-chip__icon mdc-chip__icon--leading"
-              .path=${iconPath}
-            ></ha-svg-icon>`
-          : ""}
-        ${entityState
-          ? html`<ha-state-icon
-              class="mdc-chip__icon mdc-chip__icon--leading"
-              .state=${entityState}
-            ></ha-state-icon>`
-          : ""}
-        <span role="gridcell">
-          <span role="button" tabindex="0" class="mdc-chip__primary-action">
-            <span class="mdc-chip__text">${name}</span>
+        <div slot="trailing-icon">
+          ${type === "entity_id"
+            ? ""
+            : html`
+                <span>
+                  <ha-icon-button
+                    class="expand-btn"
+                    tabindex="-1"
+                    role="button"
+                    .label=${this.hass.localize(
+                      "ui.components.target-picker.expand"
+                    )}
+                    .path=${mdiUnfoldMoreVertical}
+                    hideTitle
+                    .id=${id}
+                    .type=${type}
+                    @click=${this._handleExpand}
+                  ></ha-icon-button>
+                  <paper-tooltip class="expand" animation-delay="0"
+                    >${this.hass.localize(
+                      `ui.components.target-picker.expand_${type}`
+                    )}</paper-tooltip
+                  >
+                </span>
+              `}
+          <span>
+            <ha-icon-button
+              tabindex="-1"
+              role="button"
+              .label=${this.hass.localize("ui.components.target-picker.expand")}
+              .path=${mdiClose}
+              hideTitle
+              .id=${id}
+              .type=${type}
+              @click=${this._handleRemove}
+            ></ha-icon-button>
+            <paper-tooltip animation-delay="0"
+              >${this.hass.localize(
+                `ui.components.target-picker.remove_${type}`
+              )}</paper-tooltip
+            >
           </span>
-        </span>
-        ${type === "entity_id"
-          ? ""
-          : html` <span role="gridcell">
-              <ha-icon-button
-                class="expand-btn mdc-chip__icon mdc-chip__icon--trailing"
-                tabindex="-1"
-                role="button"
-                .label=${this.hass.localize(
-                  "ui.components.target-picker.expand"
-                )}
-                .path=${mdiUnfoldMoreVertical}
-                hideTooltip
-                .id=${id}
-                .type=${type}
-                @click=${this._handleExpand}
-              ></ha-icon-button>
-              <paper-tooltip class="expand" animation-delay="0"
-                >${this.hass.localize(
-                  `ui.components.target-picker.expand_${type}`
-                )}</paper-tooltip
-              >
-            </span>`}
-        <span role="gridcell">
-          <ha-icon-button
-            class="mdc-chip__icon mdc-chip__icon--trailing"
-            tabindex="-1"
-            role="button"
-            .label=${this.hass.localize("ui.components.target-picker.expand")}
-            .path=${mdiClose}
-            hideTooltip
-            .id=${id}
-            .type=${type}
-            @click=${this._handleRemove}
-          ></ha-icon-button>
-          <paper-tooltip animation-delay="0"
-            >${this.hass.localize(
-              `ui.components.target-picker.remove_${type}`
-            )}</paper-tooltip
-          >
-        </span>
-      </div>
+        </div>
+      </ha-chip>
     `;
   }
 
@@ -528,83 +486,38 @@ export class HaTargetPicker extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResultGroup {
     return css`
-      ${unsafeCSS(chipStyles)}
-      .mdc-chip {
-        color: var(--primary-text-color);
-      }
-      .items {
-        z-index: 2;
-      }
-      .mdc-chip-set {
-        padding: 4px 0;
-      }
-      .mdc-chip.add {
-        color: rgba(0, 0, 0, 0.87);
-      }
-      .mdc-chip:not(.add) {
-        cursor: default;
-      }
-      .mdc-chip ha-icon-button {
-        --mdc-icon-button-size: 24px;
-        display: flex;
-        align-items: center;
-        outline: none;
-      }
-      .mdc-chip ha-icon-button ha-svg-icon {
-        border-radius: 50%;
-        background: var(--secondary-text-color);
-      }
-      .mdc-chip__icon.mdc-chip__icon--trailing {
-        width: 16px;
-        height: 16px;
-        --mdc-icon-size: 14px;
-        color: var(--secondary-text-color);
-      }
-      .mdc-chip__icon--leading {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        --mdc-icon-size: 20px;
-        border-radius: 50%;
-        padding: 6px;
-        margin-left: -14px !important;
-      }
       .expand-btn {
         margin-right: 0;
       }
-      .mdc-chip.area_id:not(.add) {
-        border: 2px solid #fed6a4;
-        background: var(--card-background-color);
+      ha-chip {
+        --ha-chip-icon-color: var(--secondary-text-color);
+        --ha-chip-text-color: var(--primary-text-color);
       }
-      .mdc-chip.area_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.area_id.add {
-        background: #fed6a4;
-      }
-      .mdc-chip.device_id:not(.add) {
-        border: 2px solid #a8e1fb;
-        background: var(--card-background-color);
-      }
-      .mdc-chip.device_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.device_id.add {
-        background: #a8e1fb;
-      }
-      .mdc-chip.entity_id:not(.add) {
-        border: 2px solid #d2e7b9;
-        background: var(--card-background-color);
-      }
-      .mdc-chip.entity_id:not(.add) .mdc-chip__icon--leading,
-      .mdc-chip.entity_id.add {
-        background: #d2e7b9;
-      }
-      .mdc-chip:hover {
+      ha-chip:hover {
         z-index: 5;
+      }
+      ha-icon-button {
+        --mdc-icon-size: 18px;
+        --mdc-icon-button-size: 24px;
+        color: var(--secondary-text-color);
+        outline: none;
+      }
+      ha-chip > div {
+        margin-right: -8px;
+        display: inline-flex;
+        align-items: center;
+      }
+      ha-chip.area_id {
+        --ha-chip-background-color: #fed6a4;
+      }
+      ha-chip.device_id {
+        --ha-chip-background-color: #a8e1fb;
+      }
+      ha-chip.entity_id {
+        --ha-chip-background-color: #d2e7b9;
       }
       paper-tooltip.expand {
         min-width: 200px;
-      }
-      :host([disabled]) .mdc-chip {
-        opacity: var(--light-disabled-opacity);
-        pointer-events: none;
       }
     `;
   }
