@@ -5,14 +5,14 @@ export interface CustomIcon {
   viewBox?: string;
 }
 
-export interface CustomIconItem {
+export interface CustomIconListItem {
   name: string;
   keywords?: string[];
 }
 
 export interface CustomIconHelpers {
   getIcon: (name: string) => Promise<CustomIcon>;
-  getIconList?: () => Promise<CustomIconItem[]>;
+  getIconList?: () => Promise<CustomIconListItem[]>;
 }
 
 export interface CustomIconsWindow {

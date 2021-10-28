@@ -356,7 +356,7 @@ export class HaIcon extends LitElement {
 
   @state() private _path?: string;
 
-  @state() private _viewBox?;
+  @state() private _viewBox?: string;
 
   @state() private _legacy = false;
 
@@ -386,6 +386,7 @@ export class HaIcon extends LitElement {
     if (!this.icon) {
       return;
     }
+    const requestedIcon = this.icon;
     const [iconPrefix, origIconName] = this.icon.split(":", 2);
 
     let iconName = origIconName;
@@ -441,14 +442,16 @@ export class HaIcon extends LitElement {
     }
 
     if (databaseIcon) {
-      this._path = databaseIcon;
+      if (this.icon === requestedIcon) {
+        this._path = databaseIcon;
+      }
       cachedIcons[iconName] = databaseIcon;
       return;
     }
     const chunk = findIconChunk(iconName);
 
     if (chunk in chunks) {
-      this._setPath(chunks[chunk], iconName);
+      this._setPath(chunks[chunk], iconName, requestedIcon);
       return;
     }
 
@@ -456,7 +459,7 @@ export class HaIcon extends LitElement {
       response.json()
     );
     chunks[chunk] = iconPromise;
-    this._setPath(iconPromise, iconName);
+    this._setPath(iconPromise, iconName, requestedIcon);
     debouncedWriteCache();
   }
 
@@ -466,9 +469,15 @@ export class HaIcon extends LitElement {
     this._viewBox = icon.viewBox;
   }
 
-  private async _setPath(promise: Promise<Icons>, iconName: string) {
+  private async _setPath(
+    promise: Promise<Icons>,
+    iconName: string,
+    requestedIcon: string
+  ) {
     const iconPack = await promise;
-    this._path = iconPack[iconName];
+    if (this.icon === requestedIcon) {
+      this._path = iconPack[iconName];
+    }
     cachedIcons[iconName] = iconPack[iconName];
   }
 

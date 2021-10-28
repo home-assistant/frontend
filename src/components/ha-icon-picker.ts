@@ -126,20 +126,22 @@ export class HaIconPicker extends LitElement {
     }
   }
 
-  private async _loadCustomIconItems(iconsetName: string) {
+  private async _loadCustomIconItems(iconsetPrefix: string) {
     try {
-      const getIconList = customIcons[iconsetName].getIconList;
-      if (!getIconList) return;
+      const getIconList = customIcons[iconsetPrefix].getIconList;
+      if (typeof getIconList !== "function") {
+        return;
+      }
       const iconList = await getIconList();
       const customIconItems = iconList.map((icon) => ({
-        icon: `${iconsetName}:${icon.name}`,
+        icon: `${iconsetPrefix}:${icon.name}`,
         keywords: icon.keywords ?? [],
       }));
       iconItems.push(...customIconItems);
       (this.comboBox as any).filteredItems = iconItems;
     } catch (e) {
       // eslint-disable-next-line
-      console.warn(`Unable to load icon list for ${iconsetName} iconset`);
+      console.warn(`Unable to load icon list for ${iconsetPrefix} iconset`);
     }
   }
 
