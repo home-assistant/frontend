@@ -145,10 +145,14 @@ class HaWebRtcPlayer extends LitElement {
 
   static get styles(): CSSResultGroup {
     return css`
+      :host,
       video {
         display: block;
-        max-width: var(--video-max-width);
-        max-height: var(--video-max-height);
+      }
+
+      video {
+        width: 100%;
+        max-height: var(--video-max-height, calc(100vh - 97px));
       }
     `;
   }

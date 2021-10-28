@@ -161,13 +161,6 @@ class HaCameraStream extends LitElement {
       img {
         width: 100%;
       }
-
-      :host,
-      video {
-        /* Don't clip vertical video, leaving room for header */
-        --video-max-height: calc(100vh - 97px);
-        --video-max-width: 90vw;
-      }
     `;
   }
 }
