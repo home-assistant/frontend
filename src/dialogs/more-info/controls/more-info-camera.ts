@@ -20,6 +20,7 @@ import {
   updateCameraPrefs,
 } from "../../../data/camera";
 import type { HomeAssistant } from "../../../types";
+import "../../../components/ha-formfield";
 
 class MoreInfoCamera extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -54,12 +55,11 @@ class MoreInfoCamera extends LitElement {
       ></ha-camera-stream>
       ${this._cameraPrefs
         ? html`
-            <ha-formfield>
+            <ha-formfield label="Preload stream">
               <ha-checkbox
                 .checked=${this._cameraPrefs.preload_stream}
                 @change=${this._handleCheckboxChanged}
               >
-                Preload stream
               </ha-checkbox>
             </ha-formfield>
           `
@@ -123,12 +123,12 @@ class MoreInfoCamera extends LitElement {
         display: block;
         position: relative;
       }
-      ha-checkbox {
+      ha-formfield {
         position: absolute;
         top: 0;
         right: 0;
         background-color: var(--secondary-background-color);
-        padding: 5px;
+        padding-right: 16px;
         border-bottom-left-radius: 4px;
       }
     `;
