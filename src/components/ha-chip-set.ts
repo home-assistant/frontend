@@ -47,7 +47,7 @@ export class HaChipSet extends LitElement {
   static get styles(): CSSResultGroup {
     return css`
       ${unsafeCSS(chipStyles)}
-      .mdc-chip-set > * {
+      .mdc-chip-set > ha-chip, slot::slotted(ha-chip) {
         margin: 4px;
       }
     `;
