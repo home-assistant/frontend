@@ -229,6 +229,7 @@ class HaHLSPlayer extends LitElement {
 
       video {
         width: 100%;
+        max-height: var(--video-max-height, calc(100vh - 97px));
       }
     `;
   }
