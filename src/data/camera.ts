@@ -18,6 +18,7 @@ interface CameraEntityAttributes extends HassEntityAttributeBase {
   brand: string;
   motion_detection: boolean;
   frontend_stream_type: string;
+  stream_aspect_ratio: float;
 }
 
 export interface CameraEntity extends HassEntityBase {

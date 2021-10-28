@@ -21,6 +21,22 @@ import { HomeAssistant } from "../types";
 import "./ha-hls-player";
 import "./ha-web-rtc-player";
 
+const verticalVideoStyle = html`
+    <style>
+      :host {
+        --video-max-height: 87vh;
+      }
+    </style>
+`;
+
+const horizontalVideoStyle = html`
+    <style>
+      :host {
+        --video-max-width: 90vw;
+      }
+    </style>
+`;
+
 @customElement("ha-camera-stream")
 class HaCameraStream extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
@@ -85,7 +101,9 @@ class HaCameraStream extends LitElement {
     }
     if (this.stateObj.attributes.frontend_stream_type === STREAM_TYPE_HLS) {
       return this._url
-        ? html` <ha-hls-player
+        ? html`
+          ${this._videoStyle}
+          <ha-hls-player
             autoplay
             playsinline
             .allowExoPlayer=${this.allowExoPlayer}
@@ -97,16 +115,28 @@ class HaCameraStream extends LitElement {
         : html``;
     }
     if (this.stateObj.attributes.frontend_stream_type === STREAM_TYPE_WEB_RTC) {
-      return html` <ha-web-rtc-player
-        autoplay
-        playsinline
-        .muted=${this.muted}
-        .controls=${this.controls}
-        .hass=${this.hass}
-        .entityid=${this.stateObj.entity_id}
-      ></ha-web-rtc-player>`;
+      return html`
+        ${this._videoStyle}
+        <ha-web-rtc-player
+          autoplay
+          playsinline
+          .muted=${this.muted}
+          .controls=${this.controls}
+          .hass=${this.hass}
+          .entityid=${this.stateObj.entity_id}
+        ></ha-web-rtc-player>`;
     }
     return html``;
+  }
+
+  private get _videoStyle(): TemplateResult {
+    if (
+      this.stateObj!.attributes.stream_aspect_ratio !== undefined &&
+      this.stateObj!.attributes.stream_aspect_ratio < 1
+    ) {
+        return verticalVideoStyle;
+    }
+    return horizontalVideoStyle;
   }
 
   private get _shouldRenderMJPEG() {
