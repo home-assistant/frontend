@@ -206,7 +206,8 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             .computeError=${this._computeErrorCallback(step)}
             @value-changed=${this._stepDataChanged}
           ></ha-form>
-          ${this.clientId === genClientId() && step.step_id !== "mfa"
+          ${this.clientId === genClientId() &&
+          !["select_mfa_module", "mfa"].includes(step.step_id)
             ? html`
                 <ha-formfield
                   class="store-token"
