@@ -16,7 +16,7 @@ import {
   CameraPreferences,
   CAMERA_SUPPORT_STREAM,
   fetchCameraPrefs,
-  STREAM_TYPE_WEB_RTC,
+  STREAM_TYPE_HLS,
   updateCameraPrefs,
 } from "../../../data/camera";
 import type { HomeAssistant } from "../../../types";
