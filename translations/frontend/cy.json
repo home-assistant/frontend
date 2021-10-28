@@ -834,7 +834,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "spinner": "Chwilio am ddyfeisiau ZHA Zigbee ..."
+                        "spinner": "Chwilio am ddyfeisiau ZHA Zigbee…"
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Priodoleddau'r clwstwr a ddewiswyd",

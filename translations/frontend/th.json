@@ -210,7 +210,7 @@
                 }
             },
             "history_charts": {
-                "loading_history": "กำลังโหลดประวัติการทำงาน..",
+                "loading_history": "กำลังโหลดประวัติการทำงาน…",
                 "no_history_found": "ไม่พบประวัติการทำงาน"
             },
             "logbook": {
@@ -320,7 +320,7 @@
             "title": "การแจ้งเตือน"
         },
         "notification_toast": {
-            "connection_lost": "สูญเสียการเชื่อมต่อ ดำเนินการเชื่อมต่อใหม่...",
+            "connection_lost": "สูญเสียการเชื่อมต่อ ดำเนินการเชื่อมต่อใหม่…",
             "service_call_failed": "การเรียกบริการ {service} ล้มเหลว"
         },
         "panel": {
@@ -774,7 +774,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "spinner": "กำลังค้นหาอุปกรณ์ ZHA Zigbee ..."
+                        "spinner": "กำลังค้นหาอุปกรณ์ ZHA Zigbee …"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "การกำหนดค่าเสร็จสมบูรณ์",
@@ -795,7 +795,7 @@
                     },
                     "network_status": {
                         "network_started": "เริ่มเครือข่าย Z-Wave",
-                        "network_starting": "กําลังเริ่มเครือข่าย Z-Wave...",
+                        "network_starting": "กําลังเริ่มเครือข่าย Z-Wave…",
                         "network_starting_note": "อาจใช้เวลาสักครู่ขึ้นอยู่กับขนาดของเครือข่ายของคุณ",
                         "network_stopped": "หยุดเครือข่าย Z-Wave"
                     },
@@ -810,7 +810,7 @@
                         "add_node": "เพิ่มโหนด",
                         "cancel_command": "ยกเลิกคำสั่ง",
                         "remove_node": "เอาโหนดออก",
-                        "start_network": "กําลังเริ่มเครือข่าย Z-Wave...",
+                        "start_network": "กําลังเริ่มเครือข่าย Z-Wave…",
                         "stop_network": "หยุดการใช้งานเครือข่าย Z-Wave..."
                     }
                 },

@@ -82,6 +82,7 @@
             "armed_custom_bypass": "Armado",
             "armed_home": "Armado",
             "armed_night": "Armado",
+            "armed_vacation": "Alarme ligado",
             "arming": "A armar",
             "disarmed": "Desarm",
             "disarming": "Desarmar",
@@ -253,15 +254,23 @@
             "addons": "Add-ons",
             "could_not_create": "Não foi possível criar um backup",
             "create": "Criar",
+            "create_backup": "Criar cópia de segurança",
             "create_blocked_not_running": "Não é possível criar um backup agora porque o sistema está {state}.",
             "created": "Criado",
+            "delete_backup_confirm": "eliminar",
+            "delete_backup_title": "Eliminar cópia de segurança",
             "enter_password": "Por favor introduza uma palavra-passe.",
+            "failed_to_delete": "Falha ao eliminar",
             "folders": "Pastas",
+            "full_backup": "Cópia de segurança completa",
             "name": "Nome",
+            "partial_backup": "Cópia de segurança parcial",
             "password": "Palavra-passe",
             "password_protection": "Proteção por palavra-passe",
             "select_type": "Selecione o que restaurar",
-            "type": "Tipo"
+            "selected": "{number} selecionado",
+            "type": "Tipo",
+            "upload_backup": "Importar cópia de segurança"
         },
         "common": {
             "cancel": "Cancelar",
@@ -313,6 +322,20 @@
             "addons": "Add-ons"
         },
         "dialog": {
+            "datadisk_move": {
+                "cancel": "Cancelar",
+                "loading_devices": "Carregando dispositivos",
+                "move": "Mover",
+                "moving": "Movendo datadisk",
+                "moving_desc": "Reinicializando e movendo o datadisk. Por favor tenha paciencia",
+                "no_devices": "Nenhum dispositivo correspondente encontrado",
+                "title": "Deslocar datadisk"
+            },
+            "hardware": {
+                "attributes": "Atributos",
+                "search": "Procurar hardware",
+                "title": "Hardware"
+            },
             "network": {
                 "connected_to": "Conectado a {ssid}",
                 "dhcp": "",
@@ -353,6 +376,9 @@
                 "text": "Desejas reiniciar o add-on com as alterações?"
             },
             "update": {
+                "backup": "Cópia de segurança",
+                "create_backup": "Criar uma cópia de segurança de {name} antes de actualizar",
+                "creating_backup": "A criar cópia de segurança de {name}",
                 "updating": "A actualizar {name} para a versão {version}"
             }
         },
@@ -439,6 +465,7 @@
                 "unsupported_reason": {
                     "container": "Contentores conhecidos por causar problemas",
                     "content-trust": "A validação da confiança no conteúdo está desactivada",
+                    "content_trust": "A validação da confiança no conteúdo está desativada",
                     "dbus": "DBUS",
                     "docker_configuration": "Configuração do Docker",
                     "docker_version": "Versão Docker",
@@ -446,7 +473,9 @@
                     "lxc": "LXC",
                     "network_manager": "Gestor da rede",
                     "os": "Sistema operativo",
+                    "os_agent": "Agente do Sistema Operativo",
                     "privileged": "O supervisor não é privilegiado",
+                    "source_mods": "Modificações na fonte",
                     "systemd": "Systemd"
                 },
                 "unsupported_title": "Está a executar uma instalação não suportada",
@@ -731,7 +760,7 @@
             },
             "history_charts": {
                 "history_disabled": "Integração de histórico desativada",
-                "loading_history": "A carregar histórico de estados...",
+                "loading_history": "A carregar histórico de estados…",
                 "no_history_found": "Nenhum histórico de estado encontrado."
             },
             "logbook": {
@@ -872,6 +901,14 @@
                 "missing_entity": "Por que a minha entidade não está disponível?",
                 "no_statistics": "Não tem nenhuma estatística",
                 "statistic": "Estatística"
+            },
+            "statistics_charts": {
+                "statistic_types": {
+                    "max": "máximo",
+                    "mean": "média",
+                    "min": "mínimo",
+                    "sum": "soma"
+                }
             },
             "target-picker": {
                 "add_area_id": "Escolha a área",
@@ -1178,6 +1215,7 @@
                 "cluster_header": "Grupo",
                 "configuration_complete": "Reconfiguração do dispositivo concluída.",
                 "configuring_alt": "A configurar",
+                "heading": "Reconfigurar dispositivo",
                 "min_max_change": "min/max/alterar",
                 "reporting_header": "Relatórios",
                 "start_reconfiguration": "Iniciar reconfiguração"
@@ -1200,6 +1238,9 @@
                 "key_wrong_type": "O valor fornecido para \"{key}\" não é suportado pelo editor visual.  ({type_correct}) é suportado, mas recebemos ({type_wrong}).",
                 "no_template_editor_support": "Modelos não suportados no editor visual",
                 "no_type_provided": "Nenhum tipo fornecido."
+            },
+            "supervisor": {
+                "ask": "Pedido de ajuda"
             }
         },
         "login-form": {
@@ -1215,7 +1256,7 @@
             "title": "Notificações"
         },
         "notification_toast": {
-            "connection_lost": "Ligação perdida. A ligar de novo...",
+            "connection_lost": "Ligação perdida. A ligar de novo…",
             "dismiss": "Descartar",
             "service_call_failed": "Falha ao chamar o serviço {service}.",
             "started": "Home Assistant já iniciou",
@@ -1671,9 +1712,9 @@
                             "title": "Alexa"
                         },
                         "connected": "Ligado",
-                        "connecting": "A conectar...",
+                        "connecting": "A conectar…",
                         "connection_status": "Estado da ligação na cloud",
-                        "fetching_subscription": "A buscar assinatura...",
+                        "fetching_subscription": "A buscar assinatura…",
                         "google": {
                             "config_documentation": "Documentação de configuração",
                             "devices_pin": "Pin para os Dispositivos de Segurança",
@@ -1685,6 +1726,7 @@
                             "info": "Com a integração do Google Assistant para o Home Assistant Cloud, poderá controlar todos os seus dispositivos do Home Assistant por qualquer dispositivo com Google Assistant ativado.",
                             "info_state_reporting": "Se ativar o relatório de estado, o Home Assistant enviará todas as alterações de estado das entidades expostas à Google. Isso permite que consulte sempre os estados mais recentes na aplicação Google Home.",
                             "manage_entities": "Gerir Entidades",
+                            "not_configured_title": "O Google Assistente não está ativado",
                             "security_devices": "Dispositivos de segurança",
                             "sync_entities": "Sincronizar entidades com o Google",
                             "sync_entities_404_message": "Falha ao sincronizar suas entidades com o Google, peça ao Google 'Ok Google, sincronize os meus dispositivos' para sincronizar suas entidades.",
@@ -1844,7 +1886,8 @@
                 "common": {
                     "editor": {
                         "confirm_unsaved": "Existem alterações não guardadas. Tem a certeza de que quer sair?"
-                    }
+                    },
+                    "learn_more": "Saiba mais"
                 },
                 "core": {
                     "caption": "Geral",
@@ -1852,10 +1895,12 @@
                     "section": {
                         "core": {
                             "core_config": {
+                                "currency": "Moeda",
                                 "edit_requires_storage": "Editor desativado por causa da configuração existente em configuration.yaml.",
                                 "elevation": "Elevação",
                                 "elevation_meters": "metros",
                                 "external_url": "URL externo",
+                                "find_currency_value": "Encontre o seu valor",
                                 "imperial_example": "Fahrenheit, libras",
                                 "internal_url": "URL interno",
                                 "latitude": "Latitude",
@@ -1898,13 +1943,13 @@
                     "add_prompt": "Nenhum {name} foi adicionado a usar este dispositivo ainda. Podes adicionar um clicando no botão + acima.",
                     "automation": {
                         "actions": {
-                            "caption": "Quando alguma coisa é despoletada...",
+                            "caption": "Quando alguma coisa é despoletada…",
                             "no_actions": "Nenhuma ação",
                             "unknown_action": "Ação desconhecida"
                         },
                         "automations": "Automações",
                         "conditions": {
-                            "caption": "Só fazer alguma coisa se...",
+                            "caption": "Só fazer alguma coisa se…",
                             "no_conditions": "Sem condições",
                             "unknown_condition": "Condição desconhecida"
                         },
@@ -1984,23 +2029,96 @@
                     "update": "Atualizar"
                 },
                 "energy": {
+                    "battery": {
+                        "learn_more": "Mais informações sobre como começar.",
+                        "title": "Armazenamento doméstico em baterias"
+                    },
                     "caption": "Energia",
+                    "description": "Monitorizar a produção e o consumo de energia",
                     "device_consumption": {
                         "dialog": {
                             "selected_stat_intro": "Seleccione a entidade que representa a utilização de energia do dispositivo."
-                        }
+                        },
+                        "learn_more": "Mais informações sobre como começar.",
+                        "title": "Dispositivos individuais"
+                    },
+                    "gas": {
+                        "dialog": {
+                            "cost_entity_input": "Entidade com o preço actual por {unidade}",
+                            "cost_number": "Usar um preço estático",
+                            "cost_number_input": "Preço por m³",
+                            "cost_number_suffix": "{currency}/m³",
+                            "energy_stat": "Energia consumida (m³)",
+                            "header": "Configurar o consumo de gás",
+                            "paragraph": "O consumo de gás é o volume de gás que flui para a sua casa."
+                        },
+                        "learn_more": "Mais informações sobre como começar.",
+                        "sub": "Deixe o Home Assistant monitorizar a sua utilização de gás.",
+                        "title": "Consumo de Gás"
                     },
                     "grid": {
                         "flow_dialog": {
                             "from": {
+                                "cost_number": "Usar um preço estático",
                                 "cost_number_input": "Preço por kWh",
-                                "energy_stat": "Energia consumida (kWh)"
+                                "cost_number_suffix": "{currency}/kWh",
+                                "energy_stat": "Energia consumida (kWh)",
+                                "header": "Configurar o consumo da rede"
+                            },
+                            "to": {
+                                "cost_number": "Usar uma taxa estática",
+                                "cost_number_input": "Taxa por kWh",
+                                "cost_number_suffix": "{currency}/kWh",
+                                "energy_stat": "Energia devolvida à rede (kWh)"
                             }
-                        }
+                        },
+                        "learn_more": "Mais informações sobre como começar.",
+                        "title": "Rede elétrica"
                     },
                     "solar": {
+                        "learn_more": "Mais informações sobre como começar.",
+                        "stat_production": "Produção de energia solar",
                         "stat_return_to_grid": "Energia solar devolvida à rede",
                         "title": "Painéis Solares"
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_negative_state": {
+                                "description": "As seguintes entidades têm um estado negativo, enquanto um estado positivo é esperado:",
+                                "title": "A entidade tem um estado negativo"
+                            },
+                            "entity_not_defined": {
+                                "title": "Entidade não definida"
+                            },
+                            "entity_state_class_measurement_no_last_reset": {
+                                "title": "Último reset em falta"
+                            },
+                            "entity_state_non_numeric": {
+                                "description": "As seguintes entidades têm um estado que não pode ser analisado como um número:",
+                                "title": "Entidade tem estado não numérico"
+                            },
+                            "entity_unexpected_state_class": {
+                                "description": "As seguintes entidades não têm a classe estado esperada:"
+                            },
+                            "entity_unexpected_unit_energy": {
+                                "description": "As seguintes entidades não têm as unidades de medida esperadas: 'kWh' ou 'Wh':",
+                                "title": "Unidade de medida inesperada"
+                            },
+                            "entity_unexpected_unit_energy_price": {
+                                "description": "{moeda}",
+                                "title": "Unidade de medida inesperada"
+                            },
+                            "entity_unexpected_unit_gas": {
+                                "title": "Unidade de medida inesperada"
+                            },
+                            "entity_unexpected_unit_gas_price": {
+                                "description": "{moeda}",
+                                "title": "Unidade de medida inesperada"
+                            },
+                            "recorder_untracked": {
+                                "title": "Entidade não rastreada"
+                            }
+                        }
                     }
                 },
                 "entities": {
@@ -2028,6 +2146,7 @@
                         "header": "Entidades",
                         "headers": {
                             "area": "Área",
+                            "disabled_by": "Desativado por",
                             "entity_id": "ID da Entidade",
                             "integration": "Integração",
                             "name": "Nome",
@@ -2245,6 +2364,8 @@
                             "yaml": "ficheiro YAML"
                         },
                         "confirm_delete": "Tem a certeza que quer apagar este dashboard?",
+                        "confirm_delete_text": "Seu painel será excluído permanentemente.",
+                        "confirm_delete_title": "{titulo do ecrã}",
                         "default_dashboard": "Este é o painel de instrumentos padrão",
                         "detail": {
                             "create": "Criar",
@@ -2420,7 +2541,7 @@
                         "complete": "Atualização de Nó Completa",
                         "description": "Isto irá dizer ao OpenZWave para reinterpretar um nó e atualizar as classes de comando, capacidades e valores do nó.",
                         "node_status": "Estado do Nó",
-                        "refreshing_description": "A atualizar as informações do nó...",
+                        "refreshing_description": "A atualizar as informações do nó…",
                         "start_refresh_button": "Iniciar atualização",
                         "step": "Passo",
                         "title": "Atualizar as informações do nó",
@@ -2706,7 +2827,7 @@
                         "no_devices_found": "Nenhum dispositivo encontrado, verifique se eles estão no modo de emparelhamento e mantenha-os acordados enquanto a descoberta está em execução.",
                         "pairing_mode": "Verifique se seus dispositivos estão no modo de emparelhamento. Verifique as instruções do seu dispositivo sobre como fazer isso.",
                         "search_again": "Pesquisar Novamente",
-                        "spinner": "À procura de dispositivos ZHA Zigbee..."
+                        "spinner": "À procura de dispositivos ZHA Zigbee…"
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos do cluster selecionado",
@@ -2736,7 +2857,8 @@
                         "value": "Valor"
                     },
                     "configuration_page": {
-                        "shortcuts_title": "Atalhos"
+                        "shortcuts_title": "Atalhos",
+                        "update_button": "Atualizar configuração"
                     },
                     "device_pairing_card": {
                         "CONFIGURED": "Configuração Completa",
@@ -2929,6 +3051,7 @@
                         "home_id": "ID de Casa",
                         "network": "Rede",
                         "node_id": "ID de nó",
+                        "reconfigure_server": "Reconfigurar o servidor",
                         "remove_node": "Remover nó"
                     },
                     "dashboard": {
@@ -2951,7 +3074,7 @@
                     "logs": {
                         "log_level": "Nível de log",
                         "log_level_changed": "Nível de log alterado para: {level}",
-                        "subscribed_to_logs": "Inscrito em mensagens de log do Z-Wave JS...",
+                        "subscribed_to_logs": "Inscrito em mensagens de log do Z-Wave JS…",
                         "title": "Z-Wave JS Logs"
                     },
                     "navigation": {
@@ -2983,6 +3106,9 @@
                         "interview_failed": "A consulta do dispositivo falhou. Informações adicionais podem estar disponíveis nos logs.",
                         "start_reinterview": "Iniciar nova consulta"
                     },
+                    "remove_failed_node": {
+                        "remove_device": "Remover Dispositivo"
+                    },
                     "remove_node": {
                         "cancel_exclusion": "Cancelar Exclusão",
                         "controller_in_exclusion_mode": "O seu controlador Z-Wave está agora em modo de exclusão.",
@@ -3004,6 +3130,7 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "active_listeners": "Ouvintes activos",
                         "alert_event_type": "O tipo de evento é um campo obrigatório",
                         "available_events": "Eventos Disponíveis",
                         "count_listeners": " ({count} escutas)",
@@ -3054,6 +3181,20 @@
                         "state_attributes": "Atributos de estado (YAML, opcional)",
                         "title": "Estados"
                     },
+                    "statistics": {
+                        "entity": "Entidade",
+                        "fix_issue": {
+                            "fix": "Resolver problema",
+                            "units_changed": {
+                                "clear": "Excluir todos os dados estatísticos antigos para esta entidade",
+                                "fix": "Resolver problema",
+                                "title": "A unidade desta entidade foi alterada"
+                            }
+                        },
+                        "issue": "Problema",
+                        "no_issue": "Sem problema",
+                        "title": "Estatisticas"
+                    },
                     "templates": {
                         "all_listeners": "Este modelo ouve os seguintes eventos de mudança de estado:",
                         "description": "Os templates são processados pelo motor de templates Jinja2 com algumas extensões específicas do Home Assistant",
@@ -3075,6 +3216,7 @@
             "energy": {
                 "charts": {
                     "by_device": "Consumo por dispositivo",
+                    "solar": "Solar",
                     "stat_house_energy_meter": "Consumo total de energia"
                 },
                 "setup": {
@@ -3231,6 +3373,7 @@
                         "gauge": {
                             "description": "O cartão Manómetro é um cartão básico que permite visualizar dados de um sensor em forma de manómetro.",
                             "name": "Manómetro",
+                            "needle_gauge": "Exibido como medidor com ponteiro?",
                             "severity": {
                                 "define": "Definir gravidade?",
                                 "green": "Verde",
@@ -3243,6 +3386,7 @@
                             "attribute": "Atributo",
                             "camera_image": "Entidade de Câmera",
                             "camera_view": "Vista da Câmera",
+                            "days_to_show": "Dias para mostrar",
                             "double_tap_action": "Ação de toque duplo",
                             "entities": "Entidades",
                             "entity": "Entidade",
@@ -3425,6 +3569,9 @@
                         "tab_badges": "Crachás",
                         "tab_settings": "Configurações",
                         "tab_visibility": "Visibilidade",
+                        "types": {
+                            "sidebar": "Barra Lateral"
+                        },
                         "visibility": {
                             "select_users": "Selecione quais os utilizadores que devem ver esta visualização na navegação"
                         }
@@ -3729,8 +3876,10 @@
                     "addons": "Add-ons",
                     "description": "Em alternativa, pode restaurar a partir de um backup anterior.",
                     "folders": "Pastas",
+                    "full_backup": "Cópia de segurança completa",
                     "hide_log": "Ocultar log completo",
                     "in_progress": "Restauração em curso",
+                    "partial_backup": "Cópia de segurança parcial",
                     "password": "Palavra-passe",
                     "password_protection": "Proteção por palavra-passe",
                     "select_type": "Selecione o que restaurar",
@@ -3830,6 +3979,7 @@
                     "formats": {
                         "comma_decimal": "1,234,567.89",
                         "decimal_comma": "1.234.567,89",
+                        "none": "Nenhum",
                         "space_comma": "1 234 567,89"
                     },
                     "header": "Formatação numérica"
