@@ -36,7 +36,11 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
-    if ("valueMin" in this.schema && "valueMax" in this.schema) {
+    if (
+      this.schema.valueMin !== undefined &&
+      this.schema.valueMax !== undefined &&
+      this.schema.valueMax - this.schema.valueMin < 256
+    ) {
       return html`
         <div>
           ${this.label}
