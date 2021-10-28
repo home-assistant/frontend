@@ -277,7 +277,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "spinner": "Ricerca di dispositivi ZHA Zigbee ..."
+                        "spinner": "Ricerca di dispositivi ZHA Zigbee …"
                     }
                 },
                 "zwave": {
@@ -289,6 +289,7 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "active_listeners": "सक्रिय श्रोता",
                         "title": "घटनाओं"
                     },
                     "services": {
@@ -310,7 +311,7 @@
                         "title": "स्वागत है घर मै"
                     },
                     "starting": {
-                        "description": "होम असिस्टेंट शुरू हो रहा है, कृपया प्रतीक्षा करें ..."
+                        "description": "होम असिस्टेंट शुरू हो रहा है, कृपया प्रतीक्षा करें …"
                     }
                 },
                 "changed_toast": {

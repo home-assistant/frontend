@@ -25,7 +25,6 @@ const BINARY_SENSOR_DEVICE_CLASS_COLOR_NOT_INVERTED = new Set([
   "power",
   "presence",
   "running",
-  "update",
 ]);
 
 const STATIC_STATE_COLORS = new Set([

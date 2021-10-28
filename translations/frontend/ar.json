@@ -237,23 +237,30 @@
         },
         "backup": {
             "addons": "الإضافات",
-            "confirm_password": "تأكيد كلمة مرور اللقطة",
-            "could_not_create": "تعذر إنشاء لقطة",
+            "confirm_password": "تأكيد كلمة مرور النسخ الاحتياطي",
+            "could_not_create": "تعذر إنشاء النسخة الاحتياطية",
             "create": "إنشاء",
+            "create_backup": "انشاء نسخة احتياطية",
             "create_blocked_not_running": "إنشاء لقطة غير ممكن الآن لأن النظام في حالة {state}.",
             "created": "خلقت",
             "delete_backup_confirm": "حذف",
-            "delete_selected": "حذف اللقطات المحددة",
+            "delete_backup_text": "هل تريد أن تحذف {number} {number, plural,\n  one {backups}\n  other {backups}\n}?",
+            "delete_backup_title": "حذف نسخة احتياطية",
+            "delete_selected": "حذف النسخ الاحتياطية المحددة",
             "enter_password": "الرجاء إدخال كلمة المرور.",
             "failed_to_delete": "فشل الحذف",
             "folders": "المجلدات",
-            "name": "اسم اللقطة",
-            "password": "كلمة مرور اللقطة",
+            "full_backup": "نسخة احتياطية كاملة",
+            "name": "اسم النسخة الاحتياطية",
+            "no_backups": "ليس لديك أي نسخ احياطية حتى الآن.",
+            "partial_backup": "نسخة احتياطية جزئية",
+            "password": "كلمة مرور النسخ الاحتياطي",
             "password_protection": "حماية كلمة المرور",
             "passwords_not_matching": "كلمات المرور غير متطابقة",
             "select_type": "تحديد ما يجب استعادته",
             "selected": "{number} حدد",
-            "type": "نوع اللقطة"
+            "type": "نوع النسخة الاحتياطية",
+            "upload_backup": "تحميل نسخة احتياطية"
         },
         "common": {
             "cancel": "إلغاء",
@@ -264,6 +271,7 @@
             },
             "failed_to_restart_name": "فشل في إعادة تشغيل {name}",
             "failed_to_update_name": "فشل في تحديث {name}",
+            "menu": "القائمه",
             "newest_version": "أحدث إصدار",
             "no": "لا",
             "refresh": "تحديث",
@@ -350,6 +358,9 @@
                 "text": "هل تريد إعادة تشغيل الإضافة بالتغييرات التي قمت بها؟"
             },
             "update": {
+                "backup": "نسخة احتياطية",
+                "create_backup": "قم بإنشاء نسخة احتياطية من {name} قبل التحديث",
+                "creating_backup": "إنشاء نسخة احتياطية من {name}",
                 "updating": "تحديث {name} إلى الإصدار {version}"
             }
         },
@@ -363,6 +374,7 @@
             "not_supported": "لا يدعم مثيل Home Assistant إعادة التوجيه هذه. تحقق من {link} لعمليات إعادة التوجيه المدعومة والإصدار الذي تم تقديمه فيه."
         },
         "panel": {
+            "backups": "نسخ احتياطية",
             "dashboard": "لوحة المعلومات",
             "store": "متجر الوظائف الإضافية",
             "system": "النظام"
@@ -658,7 +670,7 @@
                     "text": "أدخل اسم المنطقة الجديدة.",
                     "title": "أضف منطقة جديدة"
                 },
-                "add_new": "اضف منطقة جديدة...",
+                "add_new": "اضف منطقة جديدة…",
                 "area": "المنطقة",
                 "clear": "مسح",
                 "no_areas": "ليس لديك أي مناطق",
@@ -685,6 +697,12 @@
             },
             "date-range-picker": {
                 "end_date": "تاريخ الإنتهاء",
+                "ranges": {
+                    "last_week": "الأسبوع الماضي",
+                    "this_week": "هذا الأسبوع",
+                    "today": "اليوم",
+                    "yesterday": "أمس"
+                },
                 "select": "اختر",
                 "start_date": "تاريخ البدء"
             },
@@ -710,7 +728,7 @@
             },
             "history_charts": {
                 "history_disabled": "تم تعطيل سجل التكامل",
-                "loading_history": "جارٍ تحميل سجل الحالات ...",
+                "loading_history": "جارٍ تحميل سجل الحالات…",
                 "no_history_found": "لم يتم العثور على سجل الحالات."
             },
             "logbook": {
@@ -814,6 +832,13 @@
             },
             "service-picker": {
                 "service": "خدمة"
+            },
+            "statistic-picker": {
+                "learn_more": "تعرف على المزيد حول الإحصائيات",
+                "missing_entity": "لماذا الكيان الخاص بي غير مدرج؟",
+                "no_match": "لم يتم العثور على إحصائيات مطابقة",
+                "no_statistics": "ليس لديك أي إحصائيات",
+                "statistic": "إحصائية"
             },
             "target-picker": {
                 "add_area_id": "اختر منطقة",
@@ -1152,7 +1177,7 @@
             "title": "الاشعارات"
         },
         "notification_toast": {
-            "connection_lost": "انقطع الاتصال. جاري إعادة الاتصال ...",
+            "connection_lost": "انقطع الاتصال. جاري إعادة الاتصال…",
             "integration_starting": "بدء {integration}، لن يتوفر كل شيء حتى يتم الانتهاء منه.",
             "service_call_failed": "فشل الاتصال بخدمة {service} .",
             "started": "Home Assistant بدأ!",
@@ -1543,15 +1568,15 @@
                         "import_introduction_link": "يمكنك استيراد مخططات المستخدمين الآخرين من Github و {community_link} . أدخل عنوان URL للمخطط أدناه.",
                         "importing": "تحميل المخطط ...",
                         "raw_blueprint": "محتوى المخطط",
-                        "save_btn": "استورد Blueprint ...",
-                        "saving": "جاري استيراد Blueprint ...",
+                        "save_btn": "استورد Blueprint…",
+                        "saving": "جاري استيراد Blueprint …",
                         "unsupported_blueprint": "هذا المخطط غير مدعوم",
                         "url": "عنوان URL للمخطط"
                     },
                     "caption": "المخططات",
                     "description": "إدارة المخططات",
                     "overview": {
-                        "add_blueprint": "استورد مخطط...",
+                        "add_blueprint": "استورد مخطط…",
                         "confirm_delete_header": "حذف هذا المخطط؟",
                         "confirm_delete_text": "هل أنت متأكد أنك تريد حذف هذا المخطط؟",
                         "delete_blueprint": "حذف المخطط",
@@ -1586,9 +1611,9 @@
                             "title": "Alexa"
                         },
                         "connected": "متصل",
-                        "connecting": "الاتصال...",
+                        "connecting": "الاتصال…",
                         "connection_status": "حالة الاتصال السحابي",
-                        "fetching_subscription": "جاري إحضار الاشتراك...",
+                        "fetching_subscription": "جاري إحضار الاشتراك…",
                         "google": {
                             "config_documentation": "وثائق التكوين",
                             "devices_pin": "رقم التعريف الشخصي لأجهزة الأمان",
@@ -1623,6 +1648,7 @@
                             "instance_will_be_available": "سيكون المثيل الخاص بك متاحا على",
                             "link_learn_how_it_works": "تعرف على كيفية عملها",
                             "not_connected": "غير متصل",
+                            "reconnecting": "جاري إعادة الاتصال…",
                             "remote_enabled": {
                                 "caption": "الاتصال تلقائيا",
                                 "description": "قم بتفعيل هذا الخيار للتأكد من أن Home Assistant الخاص بك يمكن الوصول إليه دائمًا عن بُعد."
@@ -1650,7 +1676,7 @@
                             "disable_hook_error_msg": "فشل تعطيل webhook:",
                             "info": "يمكن إعطاء أي شيء تم تكوينه ليتم تشغيله بواسطة webhook عنوان URL يمكن الوصول إليه بشكل عام للسماح لك بإرسال البيانات مرة أخرى إلى Home Assistant من أي مكان ، دون تعريض المثيل الخاص بك إلى الإنترنت.",
                             "link_learn_more": "تعرف على المزيد حول إنشاء عمليات اتمتة مدعومة بwebhook.",
-                            "loading": "جار التحميل...",
+                            "loading": "جار التحميل…",
                             "manage": "أدر",
                             "no_hooks_yet": "يبدو أنه ليس لديك webhook حتى الآن. ابدأ بتكوين ",
                             "no_hooks_yet2": "أو عن طريق إنشاء",
@@ -1763,7 +1789,8 @@
                 "common": {
                     "editor": {
                         "confirm_unsaved": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد أن تغادر ؟"
-                    }
+                    },
+                    "learn_more": "معرفة المزيد"
                 },
                 "core": {
                     "caption": "عام",
@@ -1808,13 +1835,13 @@
                     "add_prompt": "لم تتم إضافة {name} باستخدام هذا الجهاز حتى الآن. يمكنك إضافة واحدة عن طريق النقر فوق الزر + أعلاه.",
                     "automation": {
                         "actions": {
-                            "caption": "عندما يتم تشغيل شيء ما ...",
+                            "caption": "عندما يتم تشغيل شيء ما…",
                             "no_actions": "لا توجد إجراءات",
                             "unknown_action": "إجراء غير معروف"
                         },
                         "automations": "الأتمتة",
                         "conditions": {
-                            "caption": "افعل شيئًا فقط إذا ...",
+                            "caption": "افعل شيئًا فقط إذا…",
                             "no_conditions": "لا شروط",
                             "unknown_condition": "شروط غير معروفة"
                         },
@@ -1893,6 +1920,76 @@
                     "update": "تحديث",
                     "update_device_error": "فشل تحديث الجهاز"
                 },
+                "energy": {
+                    "battery": {
+                        "learn_more": "مزيد من المعلومات حول كيفية البدء.",
+                        "sub": "إذا كان لديك نظام بطارية، فيمكنك تكوينه لمراقبة مقدار الطاقة المخزنة والمستخدمة من بطاريتك."
+                    },
+                    "device_consumption": {
+                        "dialog": {
+                            "selected_stat_intro": "حدد الكيان الذي يمثل استخدام طاقة الجهاز."
+                        },
+                        "learn_more": "مزيد من المعلومات حول كيفية البدء.",
+                        "sub": "يسمح تتبع استخدام الطاقة للأجهزة الفردية لـ Home Assistant بتقسيم استخدامك للطاقة حسب الجهاز.",
+                        "title": "أجهزة فردية"
+                    },
+                    "gas": {
+                        "dialog": {
+                            "cost_entity": "استخدم كيانًا مع السعر الحالي",
+                            "cost_entity_input": "الكيان مع السعر الحالي",
+                            "cost_number": "استخدم سعرًا ثابتًا",
+                            "cost_number_input": "السعر لكل متر مكعب",
+                            "cost_stat_input": "كيان التكاليف الإجمالية",
+                            "header": "تكوين استهلاك الغاز"
+                        },
+                        "learn_more": "مزيد من المعلومات حول كيفية البدء.",
+                        "sub": "دع Home Assistant يراقب استخدامك للغاز.",
+                        "title": "استهلاك الغاز"
+                    },
+                    "grid": {
+                        "learn_more": "مزيد من المعلومات حول كيفية البدء."
+                    },
+                    "solar": {
+                        "learn_more": "مزيد من المعلومات حول كيفية البدء.",
+                        "sub": "دع Home Assistant يراقب الألواح الشمسية ويمنحك نظرة ثاقبة على أدائها.",
+                        "title": "الألواح الشمسية"
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_negative_state": {
+                                "description": "الكيانات التالية لها حالة سلبية بينما المتوقع أن تكون الحالة موجبة:",
+                                "title": "الكيان له حالة سلبية"
+                            },
+                            "entity_not_defined": {
+                                "description": "تحقق من التكامل أو التكوين الخاص بك الذي يوفر:",
+                                "title": "الكيان غير معرّف"
+                            },
+                            "entity_state_non_numeric": {
+                                "description": "الكيانات التالية لها حالة لا يمكن تحليلها كرقم:",
+                                "title": "الكيان له حالة غير رقمية"
+                            },
+                            "entity_unavailable": {
+                                "description": "حالة هذه الكيانات المكونة غير متاحة حاليًا:",
+                                "title": "الكيان غير متوفر"
+                            },
+                            "entity_unexpected_unit_energy": {
+                                "title": "وحدة قياس غير متوقعة"
+                            },
+                            "entity_unexpected_unit_energy_price": {
+                                "description": "الكيانات التالية لا تحتوي على وحدات القياس المتوقعة \" {currency} / kWh\" أو \" {currency} / Wh\":",
+                                "title": "وحدة قياس غير متوقعة"
+                            },
+                            "entity_unexpected_unit_gas": {
+                                "description": "لا تحتوي الكيانات التالية على وحدات القياس المتوقعة \"kWh\" أو \"m³\" أو \"ft³\":",
+                                "title": "وحدة قياس غير متوقعة"
+                            },
+                            "recorder_untracked": {
+                                "description": "تم تكوين المُسجل لاستبعاد هذه الكيانات المكونة:",
+                                "title": "الكيان غير متعقب"
+                            }
+                        }
+                    }
+                },
                 "entities": {
                     "caption": "الكيانات",
                     "description": "إدارة الكيانات المعروفة",
@@ -1913,6 +2010,7 @@
                         "header": "الكيانات",
                         "headers": {
                             "area": "المنطقة",
+                            "disabled_by": "معطل بواسطة",
                             "entity_id": "معرف الكيان",
                             "integration": "تكامل",
                             "name": "الاسم"
@@ -2267,7 +2365,7 @@
                         "complete": "اكتمل تحديث العقدة",
                         "description": "سيؤدي هذا إلى إخبار OpenZWave بإعادة إجراء مقابلة مع عقدة وتحديث فئات أوامر العقدة وقدراتها وقيمها.",
                         "node_status": "حالة العقدة",
-                        "refreshing_description": "جاري تحديث معلومات العقدة ...",
+                        "refreshing_description": "جاري تحديث معلومات العقدة…",
                         "start_refresh_button": "ابدأ التحديث",
                         "step": "خطوة",
                         "title": "تحديث معلومات العقدة",
@@ -2528,7 +2626,7 @@
                         "no_devices_found": "لم يتم العثور على أي أجهزة ، تأكد من أنها في وضع الاقتران واجعلها مستيقظة أثناء اكتشافها قيد التشغيل.",
                         "pairing_mode": "تأكد من أن أجهزتك في وضع الاقتران. تحقق من تعليمات جهازك حول كيفية القيام بذلك.",
                         "search_again": "ابحث مرة أخرى",
-                        "spinner": "البحث عن أجهزة ZHA Zigbee ..."
+                        "spinner": "البحث عن أجهزة ZHA Zigbee…"
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "سمات الكتلة المحددة",
@@ -2637,7 +2735,7 @@
                         "network_started": "بدء تشغيل شبكة Z-Wave",
                         "network_started_note_all_queried": "تم الاستعلام عن جميع العقد.",
                         "network_started_note_some_queried": "تم الاستعلام عن العقد المستيقظة. سيتم الاستعلام عن العقد النائمة عند التنبيه.",
-                        "network_starting": "جارٍ بدء تشغيل شبكة Z-Wave ...",
+                        "network_starting": "جارٍ بدء تشغيل شبكة Z-Wave …",
                         "network_starting_note": "قد يستغرق هذا بعض الوقت اعتمادا على حجم الشبكة.",
                         "network_stopped": "توقفت شبكة Z-Wave"
                     },
@@ -2760,7 +2858,7 @@
                     "logs": {
                         "log_level": "مستوى التسجيل في السجل",
                         "log_level_changed": "تم تغيير مستوى السجل إلى: {level}",
-                        "subscribed_to_logs": "اشترك في Z-Wave JS سجل الرسائل...",
+                        "subscribed_to_logs": "اشترك في Z-Wave JS سجل الرسائل…",
                         "title": "سجلات Z-Wave JS"
                     },
                     "navigation": {
@@ -2796,6 +2894,9 @@
                         "start_reinterview": "ابدأ إعادة المقابلة",
                         "title": "أعد إجراء مقابلة مع جهاز Z-Wave"
                     },
+                    "remove_failed_node": {
+                        "removal_failed": "لا يمكن إزالة الجهاز من شبكة Z-Wave الخاصة بك."
+                    },
                     "remove_node": {
                         "cancel_exclusion": "إلغاء الاستبعاد",
                         "follow_device_instructions": "اتبع الإرشادات المرفقة مع جهازك لبدء الاستبعاد على الجهاز.",
@@ -2814,6 +2915,7 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "active_listeners": "المستمعون النشطون",
                         "documentation": "وثائق الأحداث",
                         "event_fired": "تم تشغيل الحدث {name}",
                         "notification_event_fired": "الحدث {type} تم إطلاقه بنجاح!",
@@ -2888,7 +2990,7 @@
                         "reorder_items": "إعادة ترتيب العناصر"
                     },
                     "starting": {
-                        "description": "Home Assistant يبدأ، يرجى الانتظار..."
+                        "description": "Home Assistant يبدأ، يرجى الانتظار…"
                     }
                 },
                 "changed_toast": {
@@ -2977,6 +3079,7 @@
                             "attribute": "السمه",
                             "camera_image": "كيان الكاميرا",
                             "camera_view": "عرض الكاميرا",
+                            "days_to_show": "ايام العرض",
                             "double_tap_action": "تأثير النقر المزدوج",
                             "entities": "الكيانات",
                             "entity": "كيان",
@@ -3085,6 +3188,9 @@
                             "integration_not_loaded": "تتطلب هذه البطاقة إعداد تكامل \"shopping_list\".",
                             "name": "قائمة التسوق"
                         },
+                        "statistics-graph": {
+                            "name": "رسم بياني للإحصائيات"
+                        },
                         "thermostat": {
                             "description": "تتيح بطاقة الترموستات التحكم في كيان المناخ لديك. يسمح لك بتغيير درجة حرارة الكيان ووضعه.",
                             "name": "منظم التكييف"
@@ -3110,7 +3216,8 @@
                         "edit": "تعديل"
                     },
                     "edit_badges": {
-                        "panel_mode": "لن يتم عرض هذه الشارات لأن هذا العرض في \"وضع اللوحة\"."
+                        "panel_mode": "لن يتم عرض هذه الشارات لأن هذا العرض في \"وضع اللوحة\".",
+                        "view_no_badges": "لا يدعم نوع العرض الحالي الشارات."
                     },
                     "edit_card": {
                         "add": "إضافة بطاقة",
@@ -3143,6 +3250,11 @@
                         "move_right": "حرك العرض لليمين",
                         "tab_settings": "إعدادات",
                         "tab_visibility": "الرؤية",
+                        "type": "نوع العرض",
+                        "types": {
+                            "panel": "لوحة (1 بطاقة)",
+                            "sidebar": "الشريط الجانبي"
+                        },
                         "visibility": {
                             "select_users": "تحديد المستخدمين الذين يجب أن يروا طريقة العرض هذه في التنقل"
                         }
@@ -3421,12 +3533,14 @@
                 "next": "التالى",
                 "restore": {
                     "addons": "الإضافات",
-                    "confirm_password": "تأكيد كلمة مرور اللقطة",
+                    "confirm_password": "تأكيد كلمة مرور النسخ الاحتياطي",
                     "folders": "المجلدات",
-                    "password": "كلمة مرور اللقطة",
+                    "full_backup": "نسخة احتياطية كاملة",
+                    "partial_backup": "نسخة احتياطية جزئية",
+                    "password": "كلمة مرور النسخ الاحتياطي",
                     "password_protection": "حماية كلمة المرور",
                     "select_type": "تحديد ما يجب استعادته",
-                    "type": "نوع اللقطة"
+                    "type": "نوع النسخة الاحتياطية"
                 },
                 "user": {
                     "create_account": "إنشاء حساب",

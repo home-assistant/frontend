@@ -209,11 +209,14 @@
             "could_not_create": "Kunde inte skapa avbild",
             "create": "Skapa",
             "create_blocked_not_running": "Det är inte möjligt att skapa en avbild just nu när systemet är i {state} läge.",
+            "created": "Skapad",
+            "delete_selected": "Ta bort valda säkerhetskopior",
             "enter_password": "Vänligen ange ett lösenord.",
             "folders": "Mappar",
             "name": "Namn",
             "password": "Lösenord",
             "password_protection": "Lösenordsskydd",
+            "passwords_not_matching": "Lösenorden matchar inte",
             "select_type": "Välj vad som ska återställas",
             "type": "Typ"
         },
@@ -261,6 +264,9 @@
             "addons": "Installerade add-ons"
         },
         "dialog": {
+            "hardware": {
+                "title": "Hårdvara"
+            },
             "network": {
                 "connected_to": "Ansluten till {ssid}",
                 "dhcp": "DHCP",
@@ -305,6 +311,8 @@
         "my": {
             "error": "Ett okänt fel inträffade",
             "error_addon_not_found": "Tillägget hittades inte",
+            "error_addon_not_installed": "Det begärda tillägget är inte installerat. Installera det först",
+            "error_addon_not_started": "Det begärda tillägget körs inte. Starta det först",
             "faq_link": "Mitt Home Assistant FAQ",
             "not_supported": "Denna omdirigering stöds inte av din Home Assistant-instans. Kontrollera {link} för vilka omdirigeringar som stöds och i vilken version de introducerades."
         },
@@ -368,7 +376,8 @@
                 "unsupported_description": "Nedan är en lista med problem som hittats med din installation, klicka på länkarna för att lära dig hur du kan lösa problemen.",
                 "unsupported_reason": {
                     "container": "Behållare känd för att orsaka problem",
-                    "dbus": "DBUS"
+                    "dbus": "DBUS",
+                    "os": "Operativsystem"
                 },
                 "unsupported_title": "Du kör en installation som inte stöds",
                 "update_supervisor": "Uppdatera Supervisor",
@@ -591,12 +600,15 @@
                     "text": "Ange namnet på det nya området.",
                     "title": "Lägg till nytt område"
                 },
-                "add_new": "Lägg till nytt område ...",
+                "add_new": "Lägg till nytt område …",
                 "area": "Område",
                 "clear": "Rensa",
                 "no_areas": "Du har inga områden",
                 "no_match": "Inga matchande områden hittades",
                 "show_areas": "Visa områden"
+            },
+            "attributes": {
+                "expansion_header": "Attribut"
             },
             "blueprint-picker": {
                 "add_user": "Lägg till användare",
@@ -608,6 +620,7 @@
                 "today": "Idag"
             },
             "data-table": {
+                "clear": "Rensa",
                 "no-data": "Ingen data",
                 "search": "Sök"
             },
@@ -645,7 +658,7 @@
             },
             "history_charts": {
                 "history_disabled": "Integrationen Historik är inaktiverad",
-                "loading_history": "Laddar historik...",
+                "loading_history": "Laddar historik…",
                 "no_history_found": "Ingen historik hittad."
             },
             "logbook": {
@@ -773,7 +786,16 @@
             },
             "statistic-picker": {
                 "learn_more": "Lär dig mer om statistik",
-                "missing_entity": "Varför är min entity listad?"
+                "missing_entity": "Varför är min entitet inte listad?",
+                "statistic": "Statistisk"
+            },
+            "statistics_charts": {
+                "loading_statistics": "Läser in statistik …",
+                "no_statistics_found": "Ingen statistik hittades.",
+                "statistic_types": {
+                    "max": "max",
+                    "sum": "summa"
+                }
             },
             "target-picker": {
                 "add_area_id": "Välj område",
@@ -795,6 +817,7 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Nyupptäckta entiteter kommer ej läggas till automatiskt i Home Assistant om de är inaktiverade.",
                 "enable_new_entities_label": "Aktivera nyligen tillagda enheter.",
+                "restart_home_assistant": "Du måste starta om Home Assistant för att ändringarna ska träda i kraft.",
                 "title": "Systeminställningar för {integration}",
                 "update": "Uppdatera"
             },
@@ -1024,6 +1047,11 @@
                         "perform_action": "{action} Server",
                         "restart": "Starta om",
                         "stop": "Stopp"
+                    },
+                    "types": {
+                        "navigation": "Navigera",
+                        "reload": "Ladda om",
+                        "server_control": "Server"
                     }
                 },
                 "filter_placeholder": "Entitetsfilter"
@@ -1063,6 +1091,10 @@
                 "zha_device_card": {
                     "device_name_placeholder": "Ändra enhetsnamn"
                 }
+            },
+            "zha_reconfigure_device": {
+                "configuration_complete": "Enhetens omkonfigurering slutförd.",
+                "start_reconfiguration": "Påbörja omkonfiguration"
             }
         },
         "duration": {
@@ -1101,7 +1133,7 @@
             "title": "Notiser"
         },
         "notification_toast": {
-            "connection_lost": "Anslutning tappad. Ansluter igen...",
+            "connection_lost": "Anslutning tappad. Ansluter igen…",
             "dismiss": "Avfärda",
             "service_call_failed": "Misslyckades med att anropa tjänsten {service}.",
             "started": "Home Assistant har startat!",
@@ -1504,7 +1536,7 @@
                         "importing": "Laddar blueprint...",
                         "raw_blueprint": "Innehåll i blueprint",
                         "save_btn": "Importera blueprint",
-                        "saving": "Importerar blueprint...",
+                        "saving": "Importerar blueprint…",
                         "unsupported_blueprint": "Det här blueprint:et stöds ej",
                         "url": "Webbadressen till blueprint:et"
                     },
@@ -1544,8 +1576,9 @@
                             "title": ""
                         },
                         "connected": "Ansluten",
+                        "connecting": "Ansluter…",
                         "connection_status": "Status för molnanslutning",
-                        "fetching_subscription": "Hämtar prenumeration...",
+                        "fetching_subscription": "Hämtar prenumeration…",
                         "google": {
                             "config_documentation": "Dokumentation av Inställningar",
                             "devices_pin": "Säkerhetsenheter Pin",
@@ -1572,10 +1605,12 @@
                         "remote": {
                             "access_is_being_prepared": "Fjärråtkomst förbereds. Vi meddelar dig när det är klart.",
                             "certificate_info": "Certifikatinfo",
+                            "connected": "Ansluten",
                             "info": "Home Assistant Cloud ger en säker fjärranslutning till din instans när du är hemifrån.",
                             "instance_is_available": "Din instans är tillgänglig på",
                             "instance_will_be_available": "Din instans kommer att finnas tillgänglig på",
                             "link_learn_how_it_works": "Lär dig hur det fungerar",
+                            "not_connected": "Ej ansluten",
                             "reconnecting": "Återansluter",
                             "title": "Fjärrkontroll"
                         },
@@ -1600,7 +1635,7 @@
                             "disable_hook_error_msg": "Det gick inte att inaktivera webhook:",
                             "info": "Allt som är konfigurerat för att utlösas av en webhook kan ges en offentligt tillgänglig URL för att låta dig skicka tillbaka data till Home Assistant var som helst, utan att exponera din instans för internet.",
                             "link_learn_more": "Läs mer om hur du skapar webhook-drivna automatiseringar.",
-                            "loading": "Laddar...",
+                            "loading": "Laddar…",
                             "manage": "Hantera",
                             "no_hooks_yet": "Det verkar som du inte har några webhooks ännu. Kom igång genom att konfigurera en ",
                             "no_hooks_yet2": " eller genom att skapa en ",
@@ -1721,6 +1756,7 @@
                     "section": {
                         "core": {
                             "core_config": {
+                                "currency": "Valuta",
                                 "edit_requires_storage": "Redigeraren är inaktiverad eftersom konfigurationen lagras i configuration.yaml.",
                                 "elevation": "Höjd över havet",
                                 "elevation_meters": "meter",
@@ -1767,13 +1803,13 @@
                     "add_prompt": "Inga {name} har lagts till med hjälp av den här enheten ännu. Du kan lägga till genom att klicka på + knappen ovan.",
                     "automation": {
                         "actions": {
-                            "caption": "När något utlöses...",
+                            "caption": "När något utlöses…",
                             "no_actions": "Inga åtgärder",
                             "unknown_action": "Okänd åtgärd"
                         },
                         "automations": "Automatiseringar",
                         "conditions": {
-                            "caption": "Utför endast om...",
+                            "caption": "Utför endast om…",
                             "no_conditions": "Inga villkor",
                             "unknown_condition": "Okänt villkor"
                         },
@@ -1854,25 +1890,43 @@
                 "energy": {
                     "caption": "Energi",
                     "device_consumption": {
+                        "add_stat": "Välj enhet att spåra energi för",
                         "dialog": {
                             "selected_stat_intro": "Välj den enhet som representerar enhetens energianvändning."
                         },
                         "learn_more": "Mer information om hur du kommer igång.",
+                        "sub": "Genom att spåra energianvändningen för enskilda enheter kan Home Assistant bryta ner din energianvändning per enhet.",
                         "title": "Enskilda enheter"
+                    },
+                    "gas": {
+                        "dialog": {
+                            "cost_number": "Använd ett statiskt pris"
+                        }
                     },
                     "grid": {
                         "flow_dialog": {
+                            "from": {
+                                "cost_number": "Använd ett statiskt pris",
+                                "cost_number_input": "Pris per kWh",
+                                "header": "Konfigurera elnätsförbrukning",
+                                "no_cost": "Spåra inte kostnader",
+                                "paragraph": "Elnätsförbrukning är energin som strömmar från elnätet till ditt hem."
+                            },
                             "to": {
                                 "cost_para": "Får du tillbaka pengar när du lämnar tillbaka energi till elnätet?",
+                                "energy_stat": "Energi återförd till elnätet (kWh)",
+                                "header": "Konfigurera elnätsproduktion",
                                 "no_cost": "Jag får inte tillbaka pengar",
-                                "paragraph": "Nätproduktion är energin som strömmar från dina solpaneler till nätet."
+                                "paragraph": "Nätproduktion är energin som strömmar från dina solpaneler till elnätet."
                             }
                         },
                         "learn_more": "Mer information om hur du kommer igång.",
+                        "sub": "Konfigurera mängden energi du förbrukar från nätet och, om du producerar energi, ge tillbaka till nätet. Detta gör att Home Assistant kan spåra hela din energiförbrukning i hemmet.",
                         "title": "Elnät"
                     },
                     "solar": {
                         "learn_more": "Mer information om hur du kommer igång.",
+                        "stat_predicted_production": "Förutsägelse av din solenergiproduktion",
                         "stat_production": "Din solenergiproduktion",
                         "stat_return_to_grid": "Solenergi återförd till elnätet",
                         "sub": "Låt Home Assistant övervaka dina solpaneler och ge dig inblick i deras prestanda.",
@@ -2033,6 +2087,7 @@
                             "open_site": "Öppna webbplats"
                         },
                         "finish": "Slutför",
+                        "next": "Nästa",
                         "not_all_required_fields": "Alla obligatoriska fält har inte fyllts i.",
                         "pick_flow_step": {
                             "new_flow": "Nej, skapa en annan instans av {integration}",
@@ -2043,10 +2098,11 @@
                     "configure": "Konfigurera",
                     "configured": "Konfigurerad",
                     "confirm_new": "Vill du konfigurera {integration}?",
-                    "description": "Hantera integrationer med tjänster, enheter, ...",
+                    "description": "Hantera integrationer med tjänster, enheter, …",
                     "details": "Integrationsdetaljer",
                     "disable": {
                         "disabled_integrations": "{number} inaktiverad(e)",
+                        "show": "Visa",
                         "show_disabled": "Visa inaktiverade integrationer"
                     },
                     "discovered": "Upptäckt",
@@ -2281,7 +2337,7 @@
                         "complete": "Uppdatering av noden är klar",
                         "description": "Detta kommer att be OpenZWave att åter intervjua en nod och uppdatera nodens kommandoklasser, förmågor och värden.",
                         "node_status": "Nodstatus",
-                        "refreshing_description": "Uppdaterar information om noderna...",
+                        "refreshing_description": "Uppdaterar information om noderna…",
                         "start_refresh_button": "Starta uppdatering",
                         "step": "Steg",
                         "title": "Uppdatera information om noderna",
@@ -2363,6 +2419,7 @@
                         "add_scene": "Lägg till scenario",
                         "delete_confirm": "Är du säker på att du vill radera detta scenario?",
                         "delete_scene": "Ta bort scenario",
+                        "duplicate": "Duplicera",
                         "edit_scene": "Redigera scenario",
                         "header": "Scenarieredigerare",
                         "headers": {
@@ -2565,7 +2622,7 @@
                         "no_devices_found": "Inga enheter hittade, se till att dom är i parningsläge och håll dom aktiva medans sökning sker.",
                         "pairing_mode": "Se till att dina enheter är i parningsläge. Kontrollera instruktionerna för din enhet om hur du gör det.",
                         "search_again": "Sök Igen",
-                        "spinner": "Söker efter ZHA Zigbee-enheter ..."
+                        "spinner": "Söker efter ZHA Zigbee-enheter…"
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attribut för det valda klustret",
@@ -2784,7 +2841,8 @@
                         "home_id": "Hem ID",
                         "network": "Nätverk",
                         "node_id": "Nod ID",
-                        "remove_node": "Ta bort nod"
+                        "remove_node": "Ta bort nod",
+                        "source": "Källa"
                     },
                     "dashboard": {
                         "driver_version": "Drivrutinsversion",
@@ -2813,12 +2871,18 @@
                         "connecting": "Ansluter",
                         "unknown": "Okänd"
                     },
+                    "node_config": {
+                        "error_device_not_found": "Enheten hittades inte"
+                    },
                     "node_status": {
                         "alive": "Levande",
                         "asleep": "Sovande",
                         "awake": "Vaken",
                         "dead": "Död",
                         "unknown": "Okänd"
+                    },
+                    "remove_failed_node": {
+                        "remove_device": "Ta bort enhet"
                     },
                     "remove_node": {
                         "cancel_exclusion": "Avbryt exkludering",
@@ -2965,7 +3029,7 @@
                         "reorder_items": "Ändra ordning på objekt"
                     },
                     "starting": {
-                        "description": "Home Assistant startar, var god vänta..."
+                        "description": "Home Assistant startar, var god vänta…"
                     }
                 },
                 "changed_toast": {
@@ -3069,6 +3133,7 @@
                         "gauge": {
                             "description": "Mätarkortet är ett grundläggande kort som möjliggör visuell visning av sensordata.",
                             "name": "Mätare",
+                            "needle_gauge": "Visa som nålmätare?",
                             "severity": {
                                 "define": "Definiera allvarlighetsgrad?",
                                 "green": "Grön",
@@ -3081,6 +3146,7 @@
                             "attribute": "Attribut",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kamerauppdatering",
+                            "days_to_show": "Dagar att visa",
                             "double_tap_action": "Dubbeltrycksåtgärd",
                             "entities": "Entiteter",
                             "entity": "Entitet",
@@ -3193,6 +3259,10 @@
                             "description": "Shopping List-kortet gör att du kan lägga till, redigera, checka av och rensa objekt från din inköpslista.",
                             "integration_not_loaded": "Detta kort kräver att \"shopping_list\" -integrationen konfigureras.",
                             "name": "Inköpslista"
+                        },
+                        "statistics-graph": {
+                            "description": "Kortet Statistikgraf låter dig visa en graf över statistiken för var och en av de enheter som anges.",
+                            "name": "Statistikdiagram"
                         },
                         "thermostat": {
                             "description": "Termostatkortet kontrollerar din klimatenhet. Så att du kan ändra temperaturen och läge.",
@@ -3551,6 +3621,9 @@
                 }
             },
             "page-onboarding": {
+                "analytics": {
+                    "finish": "Nästa"
+                },
                 "core-config": {
                     "button_detect": "Upptäcka",
                     "finish": "Nästa",
@@ -3560,12 +3633,14 @@
                     "location_name": "Namn på din Home Assistant-installation",
                     "location_name_default": "Hem"
                 },
+                "finish": "Slutför",
                 "integration": {
                     "finish": "Slutför",
                     "intro": "Enheter och tjänster representeras i Home Assistant som integrationer. Du kan ställa in dem nu eller göra det senare från konfigurations-skärmen.",
                     "more_integrations": "Mer"
                 },
                 "intro": "Är du redo att väcka ditt hem, återta din integritet och gå med i en världsomspännande gemenskap av hemmafixare?",
+                "next": "Nästa",
                 "restore": {
                     "addons": "Tillägg",
                     "description": "Alternativt kan du återställa från en tidigare backup.",

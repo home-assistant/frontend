@@ -80,16 +80,14 @@ export class StateBadge extends LitElement {
 
     this._showIcon = true;
 
-    if (stateObj) {
+    if (stateObj && this.overrideImage === undefined) {
       // hide icon if we have entity picture
       if (
-        ((stateObj.attributes.entity_picture_local ||
+        (stateObj.attributes.entity_picture_local ||
           stateObj.attributes.entity_picture) &&
-          !this.overrideIcon) ||
-        this.overrideImage
+        !this.overrideIcon
       ) {
         let imageUrl =
-          this.overrideImage ||
           stateObj.attributes.entity_picture_local ||
           stateObj.attributes.entity_picture;
         if (this.hass) {
