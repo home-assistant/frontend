@@ -269,16 +269,15 @@ export class QuickBar extends LitElement {
         class="command-item"
         hasMeta
       >
-        <span>
+        <span class="command-entry">
           <ha-chip
             .label=${item.categoryText}
             .leadingIcon=${item.iconPath}
             class="command-category ${item.categoryKey}"
           >
           </ha-chip>
+          ${item.primaryText}
         </span>
-
-        <span class="command-text">${item.primaryText}</span>
       </mwc-list-item>
     `;
   }
@@ -600,6 +599,10 @@ export class QuickBar extends LitElement {
           }
         }
 
+        ha-chip {
+          margin-right: 8px;
+        }
+
         ha-icon.entity,
         ha-svg-icon.entity {
           margin-left: 20px;
@@ -631,8 +634,9 @@ export class QuickBar extends LitElement {
           --ha-chip-background-color: var(--warning-color);
         }
 
-        span.command-text {
-          margin-left: 8px;
+        span.command-entry {
+          display: flex;
+          align-items: center;
         }
 
         mwc-list-item {
