@@ -398,8 +398,8 @@ export class HaIcon extends LitElement {
     if (!MDI_PREFIXES.includes(iconPrefix)) {
       if (iconPrefix in customIcons) {
         const customIcon = customIcons[iconPrefix];
-        if (customIcon) {
-          this._setCustomPath(customIcon.getIcon(iconName));
+        if (customIcon && typeof customIcon.getIcon === "function") {
+          this._setCustomPath(customIcon.getIcon(iconName), requestedIcon);
         }
         return;
       }
@@ -463,8 +463,14 @@ export class HaIcon extends LitElement {
     debouncedWriteCache();
   }
 
-  private async _setCustomPath(promise: Promise<CustomIcon>) {
+  private async _setCustomPath(
+    promise: Promise<CustomIcon>,
+    requestedIcon: string
+  ) {
     const icon = await promise;
+    if (this.icon !== requestedIcon) {
+      return;
+    }
     this._path = icon.path;
     this._viewBox = icon.viewBox;
   }
