@@ -57,9 +57,9 @@ export abstract class HaDeviceAutomationCard<
       <div class="content">
         <ha-chip-set
           @chip-clicked=${this._handleAutomationClicked}
-          .items=${this.automations.map((automation) =>
-            this._localizeDeviceAutomation(this.hass, automation)
-          )}
+          .items=${this.automations.map((automation) => ({
+            label: this._localizeDeviceAutomation(this.hass, automation),
+          }))}
         >
         </ha-chip-set>
       </div>
