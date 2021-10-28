@@ -14,13 +14,15 @@ import { fireEvent } from "../common/dom/fire_event";
 declare global {
   // for fire event
   interface HASSDomEvents {
-    "chip-clicked": undefined;
-    "chip-clicked-trailing": undefined;
+    "chip-clicked": { index: number | undefined };
+    "chip-clicked-trailing": { index: number | undefined };
   }
 }
 
 @customElement("ha-chip")
 export class HaChip extends LitElement {
+  @property({ type: Number }) public index?: number;
+
   @property({ type: Boolean }) public outlined = false;
 
   @property() public label?: string;
@@ -70,12 +72,13 @@ export class HaChip extends LitElement {
   }
 
   private _handleClick(): void {
-    fireEvent(this, "chip-clicked");
+    fireEvent(this, "chip-clicked", { index: this.index });
   }
 
-  private _handleTrailingClick(ev: Event): void {
-    ev.stopPropagation();
-    fireEvent(this, "chip-clicked-trailing");
+  private _handleTrailingClick(): void {
+    fireEvent(this, "chip-clicked-trailing", {
+      index: this.index,
+    });
   }
 
   static get styles(): CSSResultGroup {
