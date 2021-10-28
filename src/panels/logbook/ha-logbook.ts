@@ -156,6 +156,7 @@ class HaLogbook extends LitElement {
                       : stateObj?.attributes.entity_picture_local ||
                         stateObj?.attributes.entity_picture}
                     .stateObj=${stateObj}
+                    .stateColor=${false}
                   ></state-badge>
                 `
               : ""}
