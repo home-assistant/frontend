@@ -117,7 +117,7 @@
                     "header": "Omrežje",
                     "host": "Gostitelj"
                 },
-                "no_configuration": "Ta dodatek ne izpostavlja konfiguracije, s katero bi se lahko ukvarjali...",
+                "no_configuration": "Ta dodatek ne izpostavlja konfiguracije, s katero bi se lahko ukvarjali…",
                 "options": {
                     "edit_in_ui": "Urejanje v uporabniškem vmesniku",
                     "edit_in_yaml": "Urejanje v storitvi YAML",
@@ -422,7 +422,7 @@
                 }
             },
             "history_charts": {
-                "loading_history": "Nalagam zgodovino stanj...",
+                "loading_history": "Nalagam zgodovino stanj …",
                 "no_history_found": "Ni najdene zgodovine stanj."
             },
             "logbook": {
@@ -461,10 +461,10 @@
                 "class": {
                     "album": "Album",
                     "app": "Aplikacija",
-                    "artist": "Umetnik",
+                    "artist": "Avtor",
                     "channel": "Kanal",
                     "composer": "Skladatelj",
-                    "contributing_artist": "Sodelujoči umetnik",
+                    "contributing_artist": "Soavtor",
                     "directory": "Knjižnica",
                     "episode": "Epizoda",
                     "game": "Igra",
@@ -781,7 +781,7 @@
                         "template": "Znova naloži entitete predlog",
                         "trend": "Znova naloži entitete trendov",
                         "universal": "Znova naloži entitete univerzalnega predvajalnika",
-                        "zone": "Znova naloži območja"
+                        "zone": "Območja"
                     },
                     "server_control": {
                         "perform_action": "{action} strežnik",
@@ -858,7 +858,7 @@
             "title": "Obvestila"
         },
         "notification_toast": {
-            "connection_lost": "Povezava prekinjena. Vnovično vzpostavljanje povezave...",
+            "connection_lost": "Povezava prekinjena. Vnovično vzpostavljanje povezave …",
             "dismiss": "Opusti",
             "service_call_failed": "Storitve ni bilo mogoče poklicati {service}.",
             "started": "Home Assistant se je zagnal!",
@@ -958,7 +958,8 @@
                                 },
                                 "event": {
                                     "event": "Dogodek:",
-                                    "label": "Požarni dogodek"
+                                    "label": "Požarni dogodek",
+                                    "service_data": "Podatki storitve"
                                 },
                                 "repeat": {
                                     "label": "Ponovite",
@@ -1124,7 +1125,8 @@
                                     "extra_fields": {
                                         "above": "Nad",
                                         "below": "Pod",
-                                        "for": "Trajanje"
+                                        "for": "Trajanje",
+                                        "zone": "Območje"
                                     },
                                     "label": "Naprava",
                                     "trigger": "Sprožilec"
@@ -1204,7 +1206,7 @@
                                     "entity": "Entitete z lokacijo",
                                     "event": "Dogodek:",
                                     "label": "Območje",
-                                    "leave": "Odidi",
+                                    "leave": "Odhod",
                                     "zone": "Območje"
                                 }
                             },
@@ -1260,7 +1262,7 @@
                         "importing": "Nalaganje načrta ...",
                         "raw_blueprint": "Vsebina načrta",
                         "save_btn": "Uvozi načrt",
-                        "saving": "Uvažanje načrta ...",
+                        "saving": "Uvažanje načrta …",
                         "unsupported_blueprint": "Ta načrt ni podprt",
                         "url": "URL načrta"
                     },
@@ -1300,9 +1302,9 @@
                             "title": "Alexa"
                         },
                         "connected": "Povezan",
-                        "connecting": "Povezovanje...",
+                        "connecting": "Povezovanje …",
                         "connection_status": "Stanje povezave v oblaku",
-                        "fetching_subscription": "Pridobivam naročnino...",
+                        "fetching_subscription": "Pridobivam naročnino…",
                         "google": {
                             "config_documentation": "Konfiguracijska dokumentacija",
                             "devices_pin": "Pin koda za varnostne naprave",
@@ -1468,7 +1470,7 @@
                 },
                 "core": {
                     "caption": "Splošno",
-                    "description": "Preverite vašo konfiguracijo in nadzorujte strežnik",
+                    "description": "Sistem enot, lokacija, časovni pas in drugi splošni parametri",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1520,13 +1522,13 @@
                     "add_prompt": "{name} še niso bile dodana za to napravo. Lahko jih dodaš s klikom na gumb + spodaj.",
                     "automation": {
                         "actions": {
-                            "caption": "Ko se nekaj sproži ...",
+                            "caption": "Ko se nekaj sproži …",
                             "no_actions": "Ni dejanj",
                             "unknown_action": "Neznano dejanje"
                         },
                         "automations": "Avtomatizacije",
                         "conditions": {
-                            "caption": "Naredite nekaj, samo če ...",
+                            "caption": "Naredite nekaj, samo če …",
                             "no_conditions": "Brez pogojev",
                             "unknown_condition": "Neznan pogoj"
                         },
@@ -1643,6 +1645,14 @@
                         "stat_production": "Vaša proizvodnja sončne energije",
                         "sub": "Dovolite da Home Assistant spremlja vaše sončne kolektorje in vam omogoči vpogled v njihovo delovanje.",
                         "title": "Sončni kolektorji"
+                    },
+                    "validation": {
+                        "issues": {
+                            "entity_unexpected_state_class_total_increasing": {
+                                "description": "Naslednje entitete nimajo pričakovanega razreda stanja 'total_increasing'",
+                                "title": "Nepričakovan razred stanja"
+                            }
+                        }
                     }
                 },
                 "entities": {
@@ -2018,7 +2028,7 @@
                         "complete": "Osveževanje vozlišča je končano",
                         "description": "To bo OpenZWave-u sporočilo, naj znova vzpostavi komunikacijo s vozliščem in posodobi njegove ukazne razrede, zmožnosti in vrednosti vozlišča.",
                         "node_status": "Stanje vozlišča",
-                        "refreshing_description": "Osveževanje informacij o vozlišču ...",
+                        "refreshing_description": "Osveževanje informacij o vozlišču …",
                         "start_refresh_button": "Začni osveževanje",
                         "step": "Korak",
                         "title": "Osveži podatke o vozlišču",
@@ -2303,7 +2313,7 @@
                         "no_devices_found": "Nobene naprave ni bilo mogoče najti, preverite, ali so v stanju pripravljenosti, in bodite budni, medtem ko odkritje teče.",
                         "pairing_mode": "Prepričajte se, da so vaše naprave v načinu združevanja. Preverite navodila svoje naprave, kako to storiti.",
                         "search_again": "Ponovno iskanje",
-                        "spinner": "Iskanje ZHA Zigbee naprav..."
+                        "spinner": "Iskanje ZHA Zigbee naprav …"
                     },
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributi izbrane gruče",
@@ -2383,7 +2393,7 @@
                 "zone": {
                     "add_zone": "Dodaj območje",
                     "caption": "Območja",
-                    "configured_in_yaml": "Območij, konfiguriranih prek config.yaml, ni mogoče urejati prek uporabniškega vmesnika.",
+                    "configured_in_yaml": "Območja, ki so konfigurirana preko config.yaml, ni mogoče urejati z uporabniškim vmesnikom.",
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati to območje?",
                     "create_zone": "Ustvari območje",
                     "description": "Upravljajte območja, v katerih želite slediti osebam.",
@@ -2397,17 +2407,17 @@
                         "name": "Ime",
                         "new_zone": "Novo območje",
                         "passive": "Pasivno",
-                        "passive_note": "Pasivna območja so skrita v uporabniškem vmesniku in jih ne uporabljamo za sledenje naprav. Koristna so, če jih želite uporabiti samo za avtomatizacijo.",
+                        "passive_note": "Pasivna območja so skrita v uporabniškem vmesniku in jih ne uporabljamo za sledenje napravam. Koristna so, če jih želite uporabiti samo za avtomatizacijo.",
                         "radius": "Polmer",
                         "required_error_msg": "To polje je obvezno",
-                        "update": "Posodobite"
+                        "update": "Posodobitev"
                     },
-                    "edit_home_zone": "Polmera območja \"doma\" še ni mogoče urejati na frontend-u. Če želite premakniti domače območje, povlecite oznako na zemljevid.",
+                    "edit_home_zone": "Polmera domačega območja še ni mogoče urejati v uporabniškem vmesniku. Če želite premakniti domače območje, povlecite oznako na zemljevidu.",
                     "edit_home_zone_narrow": "Polmera domačega območja še ni mogoče urejati iz frontend-a. Lokacijo lahko spremenite iz splošne konfiguracije.",
                     "go_to_core_config": "Pojdi na splošno konfiguracijo?",
                     "home_zone_core_config": "Lokacijo domačega območja je mogoče urejati na strani splošne konfiguracije. Polmera domačega območja še ni mogoče urejati iz frontend-a. Ali želite iti na splošno konfiguracijo?",
-                    "introduction": "Območja omogočajo določitev določenih regij. Ko je oseba znotraj tega območja, bo stanje prevzelo njegovo ime. Območja se lahko uporabljajo tudi kot sprožilec ali pogoj v avtomatizacijah.",
-                    "no_zones_created_yet": "Izgleda, da še niste ustvarili nobenih con."
+                    "introduction": "Območja omogočajo določitev določenih regij na Zemlji. Ko je oseba znotraj tega območja, bo stanje prevzelo ime območja. Območja se lahko uporabljajo tudi kot sprožilec ali pogoj pri avtomatizacijah.",
+                    "no_zones_created_yet": "Izgleda, da še niste ustvarili nobenih območji."
                 },
                 "zwave": {
                     "common": {
@@ -2427,7 +2437,7 @@
                         "network_started": "Z-Wave omrežje zagnano",
                         "network_started_note_all_queried": "Vsa vozlišča so bila poizvedena.",
                         "network_started_note_some_queried": "Budna vozlišča so bila poizvedana. Speča bodo, ko se zbudijo.",
-                        "network_starting": "Zaganjam Z-Wave Omrežje...",
+                        "network_starting": "Zaganjam Z-Wave Omrežje …",
                         "network_starting_note": "Odvisno od velikosti vašega omrežja, lahko to traja nekaj časa.",
                         "network_stopped": "Omrežje Z-Wave ustavljeno"
                     },
@@ -2678,7 +2688,7 @@
                         "reorder_items": "Prerazporedite elemente"
                     },
                     "starting": {
-                        "description": "Home Assistant se zaganja, prosimo počakajte ..."
+                        "description": "Home Assistant se zaganja, prosimo počakajte …"
                     }
                 },
                 "changed_toast": {
@@ -2686,6 +2696,7 @@
                 },
                 "components": {
                     "timestamp-display": {
+                        "invalid": "Neveljaven časovni žig",
                         "invalid_format": "Neveljavna oblika prikaza"
                     }
                 },
