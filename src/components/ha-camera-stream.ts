@@ -15,6 +15,7 @@ import {
   CAMERA_SUPPORT_STREAM,
   computeMJPEGStreamUrl,
   fetchStreamUrl,
+  STREAM_TYPE_HLS,
   STREAM_TYPE_WEB_RTC,
 } from "../data/camera";
 import { HomeAssistant } from "../types";
