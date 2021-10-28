@@ -86,7 +86,7 @@ class HaCameraStream extends LitElement {
     }
     if (this.stateObj.attributes.frontend_stream_type === STREAM_TYPE_HLS) {
       return this._url
-        ? html` <ha-hls-player
+        ? html`<ha-hls-player
             autoplay
             playsinline
             .allowExoPlayer=${this.allowExoPlayer}
@@ -98,7 +98,7 @@ class HaCameraStream extends LitElement {
         : html``;
     }
     if (this.stateObj.attributes.frontend_stream_type === STREAM_TYPE_WEB_RTC) {
-      return html` <ha-web-rtc-player
+      return html`<ha-web-rtc-player
         autoplay
         playsinline
         .muted=${this.muted}
