@@ -2,13 +2,16 @@ import "@material/mwc-button/mwc-button";
 import "@polymer/paper-input/paper-input";
 import type { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state } from "lit/decorators";
+import { customElement, property, state, query } from "lit/decorators";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../common/dom/fire_event";
 import type { LocalizeFunc } from "../common/translations/localize";
 import { createCurrencyListEl } from "../components/currency-datalist";
 import "../components/map/ha-locations-editor";
-import type { MarkerLocation } from "../components/map/ha-locations-editor";
+import type {
+  HaLocationsEditor,
+  MarkerLocation,
+} from "../components/map/ha-locations-editor";
 import { createTimezoneListEl } from "../components/timezone-datalist";
 import {
   ConfigUpdateValues,
@@ -45,6 +48,8 @@ class OnboardingCoreConfig extends LitElement {
   @state() private _currency?: ConfigUpdateValues["currency"];
 
   @state() private _timeZone?: string;
+
+  @query("ha-locations-editor", true) private map!: HaLocationsEditor;
 
   protected render(): TemplateResult {
     return html`
@@ -305,6 +310,7 @@ class OnboardingCoreConfig extends LitElement {
 
       if (values.latitude && values.longitude) {
         this._location = [Number(values.latitude), Number(values.longitude)];
+        this.map.autoFit = true;
       }
       if (values.elevation) {
         this._elevation = String(values.elevation);
