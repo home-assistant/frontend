@@ -90,6 +90,23 @@ export default class HaAutomationConditionRow extends LitElement {
               </mwc-list-item>
             </ha-button-menu>
           </div>
+          ${this._warnings
+            ? html`<ha-alert
+                alert-type="warning"
+                .title=${this.hass.localize(
+                  "ui.errors.config.editor_not_supported"
+                )}
+              >
+                ${this._warnings!.length > 0 && this._warnings![0] !== undefined
+                  ? html` <ul>
+                      ${this._warnings!.map(
+                        (warning) => html`<li>${warning}</li>`
+                      )}
+                    </ul>`
+                  : ""}
+                ${this.hass.localize("ui.errors.config.edit_in_yaml_supported")}
+              </ha-alert>`
+            : ""}
           <ha-automation-condition-editor
             @ui-mode-not-available=${this._handleUiModeNotAvailable}
             .yamlMode=${this._yamlMode}

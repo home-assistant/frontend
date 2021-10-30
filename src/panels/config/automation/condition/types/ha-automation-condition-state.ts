@@ -29,7 +29,11 @@ export class HaStateCondition extends LitElement implements ConditionElement {
       this._stateIsArray(this.condition)
     ) {
       if (this._stateIsArray(this.condition)) {
-        fireEvent(this, "ui-mode-not-available", Error(this.hass.localize("")));
+        fireEvent(
+          this,
+          "ui-mode-not-available",
+          Error(this.hass.localize("ui.errors.config.editor_not_supported"))
+        );
       }
       // We have to stop the update if state is an array.
       // Otherwise the state will be changed to a comma-separated string by the input element.
