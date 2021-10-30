@@ -5,6 +5,7 @@ import "@polymer/paper-item/paper-item";
 import { css, CSSResultGroup, html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { handleStructError } from "../../../../common/structs/handle-errors";
 import "../../../../components/ha-button-menu";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon-button";
@@ -51,6 +52,8 @@ export default class HaAutomationConditionRow extends LitElement {
 
   @state() private _yamlMode = false;
 
+  @state() private _warnings?: string[];
+
   protected render() {
     if (!this.condition) {
       return html``;
@@ -88,6 +91,7 @@ export default class HaAutomationConditionRow extends LitElement {
             </ha-button-menu>
           </div>
           <ha-automation-condition-editor
+            @ui-mode-not-available=${this._handleUiModeNotAvailable}
             .yamlMode=${this._yamlMode}
             .hass=${this.hass}
             .condition=${this.condition}
@@ -95,6 +99,15 @@ export default class HaAutomationConditionRow extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  private _handleUiModeNotAvailable(ev: CustomEvent) {
+    // Prevent possible parent action-row from switching to yamlMode
+    ev.stopPropagation();
+    this._warnings = handleStructError(this.hass, ev.detail).warnings;
+    if (!this._yamlMode) {
+      this._yamlMode = true;
+    }
   }
 
   private _handleAction(ev: CustomEvent<ActionDetail>) {
