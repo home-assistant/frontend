@@ -155,6 +155,7 @@ export default class HaAutomationConditionRow extends LitElement {
   }
 
   private _switchYamlMode() {
+    this._warnings = undefined;
     this._yamlMode = !this._yamlMode;
   }
 
