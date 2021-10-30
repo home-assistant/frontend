@@ -92,7 +92,7 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       ${this.badges.length > 0
         ? html` <div class="badges">${this.badges}</div>`
         : ""}
-      <div id="columns"></div>
+      <div id="columns" @update-layout=${this._handleUpdateLayout}></div>
       ${this.lovelace?.editMode
         ? html`
             <ha-fab
@@ -257,6 +257,10 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
         column.parentElement!.removeChild(column);
       }
     });
+
+    if (!this.lovelace!.editMode || this.isStrategy) {
+      columnElements.forEach(this._hideColumnIfAllChildrenAreHidden);
+    }
   }
 
   private _addCardToColumn(columnEl, index, editMode) {
@@ -273,6 +277,18 @@ export class MasonryView extends LitElement implements LovelaceViewElement {
       wrapper.appendChild(card);
       columnEl.appendChild(wrapper);
     }
+  }
+
+  private _hideColumnIfAllChildrenAreHidden(columnEl: HTMLDivElement) {
+    const childrenCards = [...columnEl.children] as LovelaceCard[];
+    columnEl.hidden = childrenCards.every(
+      (card) => card.hidden || card.style.getPropertyValue("display") === "none"
+    );
+  }
+
+  private _handleUpdateLayout(ev: Event) {
+    ev.stopPropagation();
+    this._createColumns();
   }
 
   private _updateColumns() {

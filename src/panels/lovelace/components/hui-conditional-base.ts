@@ -1,5 +1,6 @@
 import { PropertyValues, ReactiveElement } from "lit";
 import { customElement, property } from "lit/decorators";
+import { fireEvent } from "../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../types";
 import { ConditionalCardConfig } from "../cards/types";
 import {
@@ -8,6 +9,13 @@ import {
 } from "../common/validate-condition";
 import { ConditionalRowConfig, LovelaceRow } from "../entity-rows/types";
 import { LovelaceCard } from "../types";
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "update-layout": undefined;
+  }
+}
 
 @customElement("hui-conditional-base")
 export class HuiConditionalBase extends ReactiveElement {
@@ -53,6 +61,8 @@ export class HuiConditionalBase extends ReactiveElement {
       return;
     }
 
+    const oldVisibility = !this.hidden;
+
     this._element.editMode = this.editMode;
 
     const visible =
@@ -66,6 +76,10 @@ export class HuiConditionalBase extends ReactiveElement {
       if (!this._element.parentElement) {
         this.appendChild(this._element);
       }
+    }
+
+    if (visible !== oldVisibility) {
+      fireEvent(this, "update-layout");
     }
   }
 }
