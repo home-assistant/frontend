@@ -13,14 +13,16 @@ export const formatDateTime = (dateObj: Date, locale: FrontendLocaleData) =>
 
 const formatDateTimeMem = memoizeOne(
   (locale: FrontendLocaleData) =>
-    new Intl.DateTimeFormat(locale.language, {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: useAmPm(locale) ? "numeric" : "2-digit",
-      minute: "2-digit",
-      hour12: useAmPm(locale),
-    })
+    new Intl.DateTimeFormat(
+      locale.language + (useAmPm(locale) ? "-u-hc-h12" : "-u-hc-h23"),
+      {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: useAmPm(locale) ? "numeric" : "2-digit",
+        minute: "2-digit",
+      }
+    )
 );
 
 // August 9, 2021, 8:23:15 AM
@@ -31,15 +33,17 @@ export const formatDateTimeWithSeconds = (
 
 const formatDateTimeWithSecondsMem = memoizeOne(
   (locale: FrontendLocaleData) =>
-    new Intl.DateTimeFormat(locale.language, {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: useAmPm(locale) ? "numeric" : "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: useAmPm(locale),
-    })
+    new Intl.DateTimeFormat(
+      locale.language + (useAmPm(locale) ? "-u-hc-h12" : "-u-hc-h23"),
+      {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: useAmPm(locale) ? "numeric" : "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }
+    )
 );
 
 // 9/8/2021, 8:23 AM
@@ -50,12 +54,14 @@ export const formatDateTimeNumeric = (
 
 const formatDateTimeNumericMem = memoizeOne(
   (locale: FrontendLocaleData) =>
-    new Intl.DateTimeFormat(locale.language, {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: useAmPm(locale),
-    })
+    new Intl.DateTimeFormat(
+      locale.language + (useAmPm(locale) ? "-u-hc-h12" : "-u-hc-h23"),
+      {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit",
+      }
+    )
 );
