@@ -1,5 +1,5 @@
 import {
-  mdiLeaf,
+  mdiSprout,
   mdiThermometer,
   mdiWaterPercent,
   mdiWhiteBalanceSunny,
@@ -32,7 +32,7 @@ const SENSOR_ICONS = {
   moisture: mdiWaterPercent,
   temperature: mdiThermometer,
   brightness: mdiWhiteBalanceSunny,
-  conductivity: mdiLeaf,
+  conductivity: mdiSprout,
   battery: undefined,
 };
 
