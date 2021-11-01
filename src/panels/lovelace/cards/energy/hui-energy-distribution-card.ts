@@ -93,12 +93,20 @@ class HuiEnergyDistrubutionCard
       ) ?? 0;
 
     let gasUsage: number | null = null;
+    let gasConsumption: number | null = null;
     if (hasGas) {
       gasUsage =
         calculateStatisticsSumGrowth(
           this._data.stats,
           types.gas!.map((source) => source.stat_energy_from)
         ) ?? 0;
+
+      const gasUnits = getEnergyGasUnit(this.hass, prefs);
+      if (gasUnits === "kWh") {
+        // If consumption is in kWh, we can us it in the total
+        // distribution calculation.  Metric we can't.
+        gasConsumption = gasUsage;
+      }
     }
 
     let totalSolarProduction: number | null = null;
@@ -186,7 +194,10 @@ class HuiEnergyDistrubutionCard
 
     const totalHomeConsumption = Math.max(
       0,
-      gridConsumption + (solarConsumption || 0) + (batteryConsumption || 0)
+      gridConsumption +
+        (solarConsumption || 0) +
+        (batteryConsumption || 0) +
+        (gasConsumption || 0)
     );
 
     let homeSolarCircumference: number | undefined;
@@ -259,7 +270,8 @@ class HuiEnergyDistrubutionCard
       (solarToBattery || 0) +
       (batteryConsumption || 0) +
       (batteryFromGrid || 0) +
-      (batteryToGrid || 0);
+      (batteryToGrid || 0) +
+      (gasConsumption || 0);
 
     return html`
       <ha-card .header=${this._config.title}>

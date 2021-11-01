@@ -12,6 +12,7 @@ import {
   EnergyData,
   energySourcesByType,
   getEnergyDataCollection,
+  getEnergyGasUnit,
 } from "../../../../data/energy";
 import {
   calculateStatisticsSumGrowth,
@@ -117,9 +118,23 @@ class HuiEnergyCarbonGaugeCard
           types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
         ) || 0;
 
+      const hasGas = types.gas !== undefined;
+      let gasConsumption: number | null = null;
+      if (hasGas) {
+        const gasUnits = getEnergyGasUnit(this.hass, prefs);
+        if (gasUnits === "kWh") {
+          gasConsumption =
+            calculateStatisticsSumGrowth(
+              this._data.stats,
+              types.gas!.map((source) => source.stat_energy_from)
+            ) ?? 0;
+        }
+      }
+
       const totalEnergyConsumed =
         totalGridConsumption +
-        Math.max(0, totalSolarProduction - totalGridReturned);
+          Math.max(0, totalSolarProduction - totalGridReturned) +
+          gasConsumption || 0;
 
       value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
     }
