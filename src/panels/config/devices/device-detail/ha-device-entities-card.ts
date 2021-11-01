@@ -152,7 +152,14 @@ export class HaDeviceEntitiesCard extends LitElement {
           .path=${domainIcon(computeDomain(entry.entity_id))}
         ></ha-svg-icon>
         <paper-item-body>
-          <div class="name">${entry.stateName || entry.entity_id}</div>
+          <div class="name">
+            ${entry.stateName
+              ? stripPrefixFromEntityName(
+                  entry.stateName,
+                  `${this.deviceName} `.toLowerCase()
+                )
+              : entry.entity_id}
+          </div>
         </paper-item-body>
       </paper-icon-item>
     `;
