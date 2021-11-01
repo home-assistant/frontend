@@ -16,7 +16,6 @@ const fixedIcons = {
   configurator: "hass:cog",
   conversation: "hass:text-to-speech",
   counter: "hass:counter",
-  device_tracker: "hass:account",
   fan: "hass:fan",
   google_assistant: "hass:google-assistant",
   group: "hass:google-circles-communities",
@@ -87,6 +86,9 @@ export const domainIcon = (domain: string, state?: string): string => {
         default:
           return "hass:window-open";
       }
+
+    case "device_tracker":
+      return state && state === "home" ? "hass:lan-connect" : "hass:lan-disconnect";
 
     case "lock":
       return state && state === "unlocked" ? "hass:lock-open" : "hass:lock";
