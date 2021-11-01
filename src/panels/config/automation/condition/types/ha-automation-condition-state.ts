@@ -23,18 +23,16 @@ export class HaStateCondition extends LitElement implements ConditionElement {
     return { entity_id: "", state: "" };
   }
 
-  protected shouldUpdate(changedProperties: PropertyValues): boolean {
+  public willUpdate(changedProperties: PropertyValues): boolean {
     if (
       changedProperties.has("condition") &&
-      this._stateIsArray(this.condition)
+      Array.isArray(this.condition?.state)
     ) {
-      if (this._stateIsArray(this.condition)) {
-        fireEvent(
-          this,
-          "ui-mode-not-available",
-          Error(this.hass.localize("ui.errors.config.editor_not_supported"))
-        );
-      }
+      fireEvent(
+        this,
+        "ui-mode-not-available",
+        Error(this.hass.localize("ui.errors.config.no_state_array_support"))
+      );
       // We have to stop the update if state is an array.
       // Otherwise the state will be changed to a comma-separated string by the input element.
       return false;
@@ -86,10 +84,6 @@ export class HaStateCondition extends LitElement implements ConditionElement {
 
   private _valueChanged(ev: CustomEvent): void {
     handleChangeEvent(this, ev);
-  }
-
-  private _stateIsArray(condition: StateCondition): boolean {
-    return Array.isArray(condition?.state);
   }
 }
 
