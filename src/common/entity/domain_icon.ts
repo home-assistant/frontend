@@ -57,7 +57,8 @@ export const domainIcon = (
               return mdiDisconnect;
             default:
               return mdiAccount;
-      }
+           }
+        }
 
     case "humidifier":
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
