@@ -50,12 +50,7 @@ export const domainIcon = (
     case "device_tracker":
       switch (stateObj?.attributes.source_type) {
         case "router":
-          switch (compareState) {
-            case "home":
-              return mdiLanConnect;
-            case "not_home":
-              return mdiLanDisconnect;
-          }
+          return compareState === "home" ? mdiLanConnect : mdiLanDisconnect;
         default:
           return mdiAccount;
       }
