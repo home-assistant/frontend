@@ -1,4 +1,5 @@
 import {
+  mdiAccount,
   mdiAirHumidifierOff,
   mdiAirHumidifier,
   mdiLanConnect,
