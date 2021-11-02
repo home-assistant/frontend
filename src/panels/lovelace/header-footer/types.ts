@@ -6,10 +6,17 @@ export interface LovelaceHeaderFooterConfig {
 }
 
 export interface ButtonsHeaderFooterConfig extends LovelaceHeaderFooterConfig {
+  type: "buttons";
+  entities: Array<string | EntityConfig>;
+}
+
+export interface ChipsHeaderFooterConfig extends LovelaceHeaderFooterConfig {
+  type: "chips";
   entities: Array<string | EntityConfig>;
 }
 
 export interface GraphHeaderFooterConfig extends LovelaceHeaderFooterConfig {
+  type: "graph";
   entity: string;
   detail?: number;
   hours_to_show?: number;
@@ -20,6 +27,7 @@ export interface GraphHeaderFooterConfig extends LovelaceHeaderFooterConfig {
 }
 
 export interface PictureHeaderFooterConfig extends LovelaceHeaderFooterConfig {
+  type: "picture";
   image: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
