@@ -1,7 +1,7 @@
 import {
-  mdiEmoticonPoop,
+  mdiSprout,
   mdiThermometer,
-  mdiWater,
+  mdiWaterPercent,
   mdiWhiteBalanceSunny,
 } from "@mdi/js";
 import { HassEntity } from "home-assistant-js-websocket";
@@ -29,10 +29,10 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { PlantAttributeTarget, PlantStatusCardConfig } from "./types";
 
 const SENSOR_ICONS = {
-  moisture: mdiWater,
+  moisture: mdiWaterPercent,
   temperature: mdiThermometer,
   brightness: mdiWhiteBalanceSunny,
-  conductivity: mdiEmoticonPoop,
+  conductivity: mdiSprout,
   battery: undefined,
 };
 
