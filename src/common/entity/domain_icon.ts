@@ -52,9 +52,9 @@ export const domainIcon = (
         case "router":
           switch (compareState) {
             case "home":
-              return mdiConnect;
+              return mdiLanConnect;
             case "not_home":
-              return mdiDisconnect;
+              return mdiLanDisconnect;
             default:
               return mdiAccount;
           }
