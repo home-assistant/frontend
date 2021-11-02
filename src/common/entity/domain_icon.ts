@@ -48,13 +48,15 @@ export const domainIcon = (
       return coverIcon(compareState, stateObj);
 
     case "device_tracker":
-      switch (compareState) {
-        case "home":
-          return mdiLanConnect;
-        case "not_home":
-          return mdiLanDisconnect;
-        default:
-          return mdiAccount;
+      switch (stateObj?.attributes.source_type) {
+        case "router":
+          switch (state) {
+            case "home":
+              return mdiConnect;
+            case "not_home":
+              return mdiDisconnect;
+            default:
+              return mdiAccount;
       }
 
     case "humidifier":
