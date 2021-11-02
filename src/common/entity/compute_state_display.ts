@@ -116,6 +116,11 @@ export const computeStateDisplay = (
     return formatNumber(compareState, locale);
   }
 
+  // state of button is a timestamp
+  if (domain === "button") {
+    return formatDateTime(new Date(compareState), locale);
+  }
+
   return (
     // Return device class translation
     (stateObj.attributes.device_class &&
