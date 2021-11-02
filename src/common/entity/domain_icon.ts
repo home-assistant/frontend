@@ -50,15 +50,15 @@ export const domainIcon = (
     case "device_tracker":
       switch (stateObj?.attributes.source_type) {
         case "router":
-          switch (state) {
+          switch (compareState) {
             case "home":
               return mdiConnect;
             case "not_home":
               return mdiDisconnect;
             default:
               return mdiAccount;
-           }
-        }
+          }
+      }
 
     case "humidifier":
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
