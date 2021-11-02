@@ -118,25 +118,26 @@ class HuiEnergyCarbonGaugeCard
           types.grid![0].flow_to.map((flow) => flow.stat_energy_to)
         ) || 0;
 
+      const totalEnergyConsumed =
+        totalGridConsumption +
+        Math.max(0, totalSolarProduction - totalGridReturned);
+
+      value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
+
       const hasGas = types.gas !== undefined;
-      let gasConsumption: number | null = null;
       if (hasGas) {
         const gasUnits = getEnergyGasUnit(this.hass, prefs);
         if (gasUnits === "kWh") {
-          gasConsumption =
+          const gasConsumption =
             calculateStatisticsSumGrowth(
               this._data.stats,
               types.gas!.map((source) => source.stat_energy_from)
             ) ?? 0;
+          const totalEnergyWithGas = totalEnergyConsumed + gasConsumption;
+          const totalCarbonWithGas = highCarbonEnergy + gasConsumption;
+          value = round((1 - totalCarbonWithGas / totalEnergyWithGas) * 100);
         }
       }
-
-      const totalEnergyConsumed =
-        totalGridConsumption +
-          Math.max(0, totalSolarProduction - totalGridReturned) +
-          gasConsumption || 0;
-
-      value = round((1 - highCarbonEnergy / totalEnergyConsumed) * 100);
     }
 
     return html`
