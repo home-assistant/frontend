@@ -55,9 +55,9 @@ export const domainIcon = (
               return mdiLanConnect;
             case "not_home":
               return mdiLanDisconnect;
-            default:
-              return mdiAccount;
           }
+        default:
+          return mdiAccount;
       }
 
     case "humidifier":
