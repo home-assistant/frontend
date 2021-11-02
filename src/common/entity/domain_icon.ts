@@ -1,6 +1,8 @@
 import {
   mdiAirHumidifierOff,
   mdiAirHumidifier,
+  mdiLanConnect,
+  mdiLanDisconnect,
   mdiLockOpen,
   mdiLockAlert,
   mdiLockClock,
@@ -43,6 +45,16 @@ export const domainIcon = (
 
     case "cover":
       return coverIcon(compareState, stateObj);
+
+    case "device_tracker":
+      switch (compareState) {
+        case "home":
+          return mdiLanConnect;
+        case "not_home":
+          return mdiLanDisconnect;
+        default:
+          return mdiAccount;
+      }
 
     case "humidifier":
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
