@@ -212,6 +212,12 @@ class HuiEnergyDistrubutionCard
         CIRCLE_CIRCUMFERENCE * (batteryConsumption / totalHomeConsumption);
     }
 
+    let homeGasCircumference: number | undefined;
+    if (gasConsumption) {
+      homeGasCircumference =
+        CIRCLE_CIRCUMFERENCE * (gasConsumption / totalHomeConsumption);
+    }
+
     let lowCarbonEnergy: number | undefined;
 
     let homeLowCarbonCircumference: number | undefined;
@@ -259,6 +265,7 @@ class HuiEnergyDistrubutionCard
           CIRCLE_CIRCUMFERENCE -
           (homeSolarCircumference || 0) -
           (homeBatteryCircumference || 0) -
+          (homeGasCircumference || 0) -
           homeHighCarbonCircumference;
       }
     }
@@ -408,7 +415,8 @@ class HuiEnergyDistrubutionCard
                 })}
                 kWh
                 ${homeSolarCircumference !== undefined ||
-                homeLowCarbonCircumference !== undefined
+                homeLowCarbonCircumference !== undefined ||
+                homeGasCircumference !== undefined
                   ? html`<svg>
                       ${homeSolarCircumference !== undefined
                         ? svg`<circle
@@ -456,6 +464,25 @@ class HuiEnergyDistrubutionCard
                               homeLowCarbonCircumference -
                               (homeBatteryCircumference || 0) -
                               (homeSolarCircumference || 0)
+                            }"
+                            shape-rendering="geometricPrecision"
+                          />`
+                        : ""}
+                      ${homeGasCircumference !== undefined
+                        ? svg`<circle
+                            class="gas"
+                            cx="40"
+                            cy="40"
+                            r="38"
+                            stroke-dasharray="${homeGasCircumference} ${
+                            CIRCLE_CIRCUMFERENCE - homeGasCircumference
+                          }"
+                            stroke-dashoffset="-${
+                              CIRCLE_CIRCUMFERENCE -
+                              homeGasCircumference -
+                              (homeBatteryCircumference || 0) -
+                              (homeSolarCircumference || 0) -
+                              (homeLowCarbonCircumference || 0)
                             }"
                             shape-rendering="geometricPrecision"
                           />`
@@ -813,6 +840,7 @@ class HuiEnergyDistrubutionCard
       stroke: var(--energy-gas-color);
     }
     circle.gas {
+      stroke: var(--energy-gas-color);
       stroke-width: 4;
       fill: var(--energy-gas-color);
     }
