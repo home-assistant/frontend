@@ -57,7 +57,7 @@ export const domainIcon = (
       if (stateObj?.attributes.source_type === "bluetooth") {
         return compareState === "home" ? mdiBluetoothConnect : mdiBluetooth;
       }
-      return compareState === "home" ? mdiAccount : mdiAccountOff;
+      return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
 
     case "humidifier":
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
