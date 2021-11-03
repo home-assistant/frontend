@@ -96,6 +96,20 @@ describe("computeStateDisplay", () => {
     );
   });
 
+  it("Localizes and formats numeric sensor value with state_class", () => {
+    const stateObj: any = {
+      entity_id: "sensor.test",
+      state: "1234.5",
+      attributes: {
+        state_class: "measurement",
+      },
+    };
+    assert.strictEqual(
+      computeStateDisplay(localize, stateObj, localeData),
+      "1,234.5 m"
+    );
+  });
+
   it("Localizes unknown sensor value with units", () => {
     const altLocalize = (message, ...args) => {
       if (message === "state.sensor.unknown") {
