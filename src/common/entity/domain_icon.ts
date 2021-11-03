@@ -8,6 +8,8 @@ import {
   mdiCastConnected,
   mdiCast,
   mdiEmoticonDead,
+  mdiPowerPlug,
+  mdiPowerPlugOff,
   mdiSleep,
   mdiTimerSand,
   mdiToggleSwitch,
@@ -66,7 +68,13 @@ export const domainIcon = (
       return compareState === "playing" ? mdiCastConnected : mdiCast;
 
     case "switch":
-      return compareState === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
+      if (stateObj?.attributes.device_class === "outlet") {
+        return compareState === "on" ? mdiPowerPlug : mdiPowerPlugOff;
+      }
+      if (stateObj?.attributes.device_class === "switch") {
+        return compareState === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
+      }
+      default: mdiFlash;
 
     case "zwave":
       switch (compareState) {
