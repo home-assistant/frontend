@@ -79,10 +79,20 @@ export const domainIcon = (
 
     case "switch":
       if (stateObj?.attributes.device_class === "outlet") {
-        return compareState === "on" ? mdiPowerPlug : mdiPowerPlugOff;
+        switch (compareState) {
+          case "on": 
+            return mdiPowerPlug;
+          default:
+            return mdiPowerPlugOff;
+        }
       }
       if (stateObj?.attributes.device_class === "switch") {
-        return compareState === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
+        switch (compareState) {
+          case "on":
+            return mdiToggleSwitch;
+          default:
+            return mdiToggleSwitchOff;
+        }
       }
       return mdiFlash;
 
