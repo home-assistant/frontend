@@ -1,6 +1,7 @@
 import {
   mdiAirHumidifierOff,
   mdiAirHumidifier,
+  mdiFlash,
   mdiLockOpen,
   mdiLockAlert,
   mdiLockClock,
