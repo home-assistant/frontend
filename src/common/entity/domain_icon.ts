@@ -48,12 +48,10 @@ export const domainIcon = (
       return coverIcon(compareState, stateObj);
 
     case "device_tracker":
-      switch (stateObj?.attributes.source_type) {
-        case "router":
+      if (stateObj?.attributes.source_type === "router") {
           return compareState === "home" ? mdiLanConnect : mdiLanDisconnect;
-        default:
-          return mdiAccount;
       }
+      return mdiAccount;
 
     case "humidifier":
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
