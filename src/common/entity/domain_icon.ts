@@ -49,7 +49,7 @@ export const domainIcon = (
 
     case "device_tracker":
       if (stateObj?.attributes.source_type === "router") {
-          return compareState === "home" ? mdiLanConnect : mdiLanDisconnect;
+        return compareState === "home" ? mdiLanConnect : mdiLanDisconnect;
       }
       return mdiAccount;
 
