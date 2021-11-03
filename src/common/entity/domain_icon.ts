@@ -1,10 +1,10 @@
 import {
   mdiAccount,
-  mdiAccountOff,
+  mdiAccountArrowRight,
   mdiAirHumidifierOff,
   mdiAirHumidifier,
   mdiBluetooth,
-  mdiBluetoothOff,
+  mdiBluetoothConnect,
   mdiLanConnect,
   mdiLanDisconnect,
   mdiLockOpen,
