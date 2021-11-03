@@ -10,7 +10,8 @@ import { property, state } from "lit/decorators";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import "../../../components/ha-camera-stream";
-import { HaCheckbox } from "../../../components/ha-checkbox";
+import type { HaCheckbox } from "../../../components/ha-checkbox";
+import "../../../components/ha-checkbox";
 import {
   CameraEntity,
   CameraPreferences,
