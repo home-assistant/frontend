@@ -54,7 +54,7 @@ export const domainIcon = (
       if (stateObj?.attributes.source_type === "router") {
         return compareState === "home" ? mdiLanConnect : mdiLanDisconnect;
       }
-      if (stateObj?.attributes.source_type === "bluetooth") {
+      if (stateObj?.attributes.source_type in ["bluetooth","bluetooth_le"]) {
         return compareState === "home" ? mdiBluetoothConnect : mdiBluetooth;
       }
       return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
