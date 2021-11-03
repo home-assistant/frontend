@@ -74,7 +74,7 @@ export const domainIcon = (
       if (stateObj?.attributes.device_class === "switch") {
         return compareState === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
       }
-      default: mdiFlash;
+      return mdiFlash;
 
     case "zwave":
       switch (compareState) {
