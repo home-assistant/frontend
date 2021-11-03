@@ -93,7 +93,8 @@ export const domainIcon = (
             default:
               return mdiToggleSwitchOff;
           }
-        return mdiFlash;
+        default:
+          return mdiFlash;
       }
 
     case "zwave":
