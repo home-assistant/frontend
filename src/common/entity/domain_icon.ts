@@ -52,12 +52,12 @@ export const domainIcon = (
 
     case "device_tracker":
       if (stateObj?.attributes.source_type === "router") {
-        return compareState === "home" ? mdiLanConnect : mdiLanDisconnect;
+        return state === "home" ? mdiLanConnect : mdiLanDisconnect;
       }
       if (["bluetooth","bluetooth_le"].includes(stateObj?.attributes.source_type)) {
-        return compareState === "home" ? mdiBluetoothConnect : mdiBluetooth;
+        return state === "home" ? mdiBluetoothConnect : mdiBluetooth;
       }
-      return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
+      return state === "not_home" ? mdiAccountArrowRight : mdiAccount;
 
     case "humidifier":
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
