@@ -121,7 +121,13 @@ export class HaConfigDevicePage extends LitElement {
       const result = groupBy(entities, (entry) =>
         entry.entity_category
           ? entry.entity_category
-          : ["sensor", "binary_sensor"].includes(computeDomain(entry.entity_id))
+          : [
+              "sensor",
+              "binary_sensor",
+              "camera",
+              "device_tracker",
+              "weather",
+            ].includes(computeDomain(entry.entity_id))
           ? "sensor"
           : "control"
       ) as Record<

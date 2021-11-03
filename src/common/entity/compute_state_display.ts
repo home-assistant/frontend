@@ -4,7 +4,7 @@ import { FrontendLocaleData } from "../../data/translation";
 import { formatDate } from "../datetime/format_date";
 import { formatDateTime } from "../datetime/format_date_time";
 import { formatTime } from "../datetime/format_time";
-import { formatNumber } from "../number/format_number";
+import { formatNumber, isNumericState } from "../number/format_number";
 import { LocalizeFunc } from "../translations/localize";
 import { computeStateDomain } from "./compute_state_domain";
 
@@ -20,7 +20,8 @@ export const computeStateDisplay = (
     return localize(`state.default.${compareState}`);
   }
 
-  if (stateObj.attributes.unit_of_measurement) {
+  // Entities with a `unit_of_measurement` or `state_class` are numeric values and should use `formatNumber`
+  if (isNumericState(stateObj)) {
     if (stateObj.attributes.device_class === "monetary") {
       try {
         return formatNumber(compareState, locale, {
@@ -31,8 +32,10 @@ export const computeStateDisplay = (
         // fallback to default
       }
     }
-    return `${formatNumber(compareState, locale)} ${
+    return `${formatNumber(compareState, locale)}${
       stateObj.attributes.unit_of_measurement
+        ? " " + stateObj.attributes.unit_of_measurement
+        : ""
     }`;
   }
 
