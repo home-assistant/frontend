@@ -78,23 +78,23 @@ export const domainIcon = (
       return compareState === "playing" ? mdiCastConnected : mdiCast;
 
     case "switch":
-      if (stateObj?.attributes.device_class === "outlet") {
-        switch (compareState) {
-          case "on": 
-            return mdiPowerPlug;
-          default:
-            return mdiPowerPlugOff;
-        }
+      switch (stateObj?.attributes.device_class) {
+        case "outlet":
+          switch (state) {
+            case "on":
+              return mdiPowerPlug;
+            default:
+              return mdiPowerPlugOff;
+          }
+        case "switch":
+          switch (state) {
+            case "on":
+              return mdiToggleSwitch;
+            default:
+              return mdiToggleSwitchOff;
+          }
+        return mdiFlash;
       }
-      if (stateObj?.attributes.device_class === "switch") {
-        switch (compareState) {
-          case "on":
-            return mdiToggleSwitch;
-          default:
-            return mdiToggleSwitchOff;
-        }
-      }
-      return mdiFlash;
 
     case "zwave":
       switch (compareState) {
