@@ -1,6 +1,7 @@
 /** Constants to be used in the frontend. */
 
 import {
+  mdiAccount,
   mdiAirFilter,
   mdiAlert,
   mdiAngleAcute,
@@ -75,7 +76,6 @@ export const FIXED_DOMAIN_ICONS = {
   configurator: mdiCog,
   conversation: mdiTextToSpeech,
   counter: mdiCounter,
-  device_tracker: mdiAccount,
   fan: mdiFan,
   google_assistant: mdiGoogleAssistant,
   group: mdiGoogleCirclesCommunities,
