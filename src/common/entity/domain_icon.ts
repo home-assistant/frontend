@@ -10,6 +10,8 @@ import {
   mdiEmoticonDead,
   mdiSleep,
   mdiTimerSand,
+  mdiToggleSwitch,
+  mdiToggleSwitchOff,
   mdiZWave,
   mdiClock,
   mdiCalendar,
@@ -62,6 +64,9 @@ export const domainIcon = (
 
     case "media_player":
       return compareState === "playing" ? mdiCastConnected : mdiCast;
+
+    case "switch":
+      return compareState === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
 
     case "zwave":
       switch (compareState) {
