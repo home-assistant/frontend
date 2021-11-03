@@ -1,7 +1,6 @@
 /** Constants to be used in the frontend. */
 
 import {
-  mdiAccount,
   mdiAirFilter,
   mdiAlert,
   mdiAngleAcute,
