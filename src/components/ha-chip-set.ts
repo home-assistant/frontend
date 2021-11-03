@@ -16,6 +16,7 @@ export interface HaChipSetItem {
   leadingIcon?: string;
   trailingIcon?: string;
   outlined?: boolean;
+  active?: boolean;
 }
 
 @customElement("ha-chip-set")
@@ -31,6 +32,7 @@ export class HaChipSet extends LitElement {
                 html`
                   <ha-chip
                     .index=${idx}
+                    .active=${item.active || false}
                     .label=${item.label}
                     .leadingIcon=${item.leadingIcon}
                     .trailingIcon=${item.trailingIcon}

@@ -1,3 +1,4 @@
+import "./ha-circular-progress";
 import "./ha-svg-icon"; // @ts-ignore
 import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 import {
@@ -25,6 +26,8 @@ export class HaChip extends LitElement {
 
   @property({ type: Boolean }) public outlined = false;
 
+  @property({ type: Boolean }) public active = false;
+
   @property() public label?: string;
 
   @property() public leadingIcon?: string;
@@ -39,11 +42,15 @@ export class HaChip extends LitElement {
       >
         ${this.leadingIcon
           ? html`<span role="gridcell">
-              <span role="button" tabindex="0" class="mdc-chip__primary-action"
-                ><ha-svg-icon
-                  class="mdc-chip__icon mdc-chip__icon--leading"
-                  .path=${this.leadingIcon}
-                ></ha-svg-icon>
+              <span role="button" tabindex="0" class="mdc-chip__primary-action">
+                ${this.active
+                  ? html`<ha-circular-progress alt="active" size="tiny" active>
+                    </ha-circular-progress>`
+                  : html`<ha-svg-icon
+                      class="mdc-chip__icon mdc-chip__icon--leading"
+                      .path=${this.leadingIcon}
+                    >
+                    </ha-svg-icon>`}
               </span>
             </span>`
           : ""}
@@ -109,6 +116,26 @@ export class HaChip extends LitElement {
         color: var(--ha-chip-icon-color, var(--text-primary-color));
       }
 
+      ha-circular-progress {
+        --mdc-theme-primary: var(
+          --ha-chip-icon-color,
+          var(--text-primary-color)
+        );
+        padding: 8px;
+        margin-left: -12px !important;
+        margin-right: -2px;
+      }
+
+      .mdc-chip.outlined ha-circular-progress {
+        border-radius: 50%;
+        margin-right: 4px;
+        background-color: var(--ha-chip-background-color, var(--primary-color));
+        --mdc-theme-primary: var(
+          --ha-chip-icon-color,
+          var(--text-primary-color)
+        );
+      }
+
       .mdc-chip.outlined ha-svg-icon,
       slot[name="trailing-icon"]::slotted(ha-svg-icon) {
         border-radius: 50%;
@@ -127,7 +154,7 @@ export class HaChip extends LitElement {
         height: 18px;
         font-size: 18px;
         padding: 2px;
-        color: var(--ha-chip-icon-color);
+        color: var(--ha-chip-icon-color, var(--text-primary-color));
         margin-right: -8px;
         display: inline-flex;
         align-items: center;

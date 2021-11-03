@@ -20,6 +20,11 @@ const chips: HaChipSetItem[] = [
     leadingIcon: mdiHomeAssistant,
     label: "Demo chip",
   },
+  {
+    leadingIcon: mdiHomeAssistant,
+    label: "Demo chip",
+    active: true,
+  },
   {},
   {
     trailingIcon: mdiClose,
@@ -48,6 +53,8 @@ export class DemoHaChip extends LitElement {
 
   @state() standaloneIsOutlined = false;
 
+  @state() standaloneIsActive = false;
+
   protected render(): TemplateResult {
     return html`
       <div class="filters">
@@ -57,12 +64,16 @@ export class DemoHaChip extends LitElement {
         <ha-formfield label="Outline standalone chips">
           <ha-switch @change=${this._toggleOutline}></ha-switch>
         </ha-formfield>
+        <ha-formfield label="Activate standalone chips">
+          <ha-switch @change=${this._toggleActive}></ha-switch>
+        </ha-formfield>
       </div>
       <ha-card header="Standalone ha-chip demo">
         <div class="card-content">
           <div class="standalone">
             <span>Simple:</span>
             <ha-chip
+              .active=${this.standaloneIsActive}
               .outlined=${this.standaloneIsOutlined}
               ?disabled=${this.standaloneIsDisabled}
               >Demo chip</ha-chip
@@ -72,6 +83,7 @@ export class DemoHaChip extends LitElement {
           <div class="standalone">
             <span>Label property:</span>
             <ha-chip
+              .active=${this.standaloneIsActive}
               .outlined=${this.standaloneIsOutlined}
               ?disabled=${this.standaloneIsDisabled}
               label="Demo chip"
@@ -81,6 +93,7 @@ export class DemoHaChip extends LitElement {
           <div class="standalone">
             <span>With leadingIcon:</span>
             <ha-chip
+              .active=${this.standaloneIsActive}
               .leadingIcon=${mdiHomeAssistant}
               .outlined=${this.standaloneIsOutlined}
               ?disabled=${this.standaloneIsDisabled}
@@ -91,6 +104,7 @@ export class DemoHaChip extends LitElement {
           <div class="standalone">
             <span>With trailingIcon property:</span>
             <ha-chip
+              .active=${this.standaloneIsActive}
               .trailingIcon=${mdiHomeAssistant}
               .outlined=${this.standaloneIsOutlined}
               ?disabled=${this.standaloneIsDisabled}
@@ -101,6 +115,7 @@ export class DemoHaChip extends LitElement {
           <div class="standalone">
             <span>With trailing-icon slot:</span>
             <ha-chip
+              .active=${this.standaloneIsActive}
               .outlined=${this.standaloneIsOutlined}
               ?disabled=${this.standaloneIsDisabled}
             >
@@ -125,6 +140,10 @@ export class DemoHaChip extends LitElement {
         </div>
       </ha-card>
     `;
+  }
+
+  private _toggleActive() {
+    this.standaloneIsActive = !this.standaloneIsActive;
   }
 
   private _toggleDisable() {
