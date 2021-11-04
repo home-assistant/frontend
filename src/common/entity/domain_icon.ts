@@ -1,7 +1,10 @@
 import {
   mdiAccount,
+  mdiAccountArrowRight,
   mdiAirHumidifierOff,
   mdiAirHumidifier,
+  mdiBluetooth,
+  mdiBluetoothConnect,
   mdiLanConnect,
   mdiLanDisconnect,
   mdiLockOpen,
@@ -51,7 +54,12 @@ export const domainIcon = (
       if (stateObj?.attributes.source_type === "router") {
         return compareState === "home" ? mdiLanConnect : mdiLanDisconnect;
       }
-      return mdiAccount;
+      if (
+        ["bluetooth", "bluetooth_le"].includes(stateObj?.attributes.source_type)
+      ) {
+        return compareState === "home" ? mdiBluetoothConnect : mdiBluetooth;
+      }
+      return compareState === "not_home" ? mdiAccountArrowRight : mdiAccount;
 
     case "humidifier":
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
