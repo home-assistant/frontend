@@ -2,7 +2,7 @@ import "@material/mwc-select";
 import type { Select } from "@material/mwc-select";
 import "@material/mwc-list/mwc-list-item";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
-import { customElement, property, state, query } from "lit/decorators";
+import { customElement, property, query } from "lit/decorators";
 import { fireEvent } from "../../common/dom/fire_event";
 import "../ha-radio";
 import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./types";
@@ -19,8 +19,6 @@ export class HaFormSelect extends LitElement implements HaFormElement {
   @property() public label!: string;
 
   @property({ type: Boolean }) public disabled = false;
-
-  @state() private _opened = false;
 
   @query("mwc-select", true) private _input?: HTMLElement;
 
@@ -58,7 +56,6 @@ export class HaFormSelect extends LitElement implements HaFormElement {
         .label=${this.label}
         .value=${this.data}
         .disabled=${this.disabled}
-        .opened=${this._opened}
         @closed=${stopPropagation}
         @selected=${this._valueChanged}
       >
@@ -89,12 +86,6 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     fireEvent(this, "value-changed", {
       value,
     });
-  }
-
-  private _keyPressed(ev: KeyboardEvent) {
-    if (ev.key === "ArrowUp" || ev.key === "ArrowDown") {
-      this._opened = true;
-    }
   }
 
   static get styles(): CSSResultGroup {
