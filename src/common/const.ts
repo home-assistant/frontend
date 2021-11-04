@@ -50,7 +50,6 @@ import {
   mdiThermometer,
   mdiThermostat,
   mdiTimerOutline,
-  mdiToggleSwitchOutline,
   mdiVideo,
   mdiWaterPercent,
   mdiWeatherCloudy,
