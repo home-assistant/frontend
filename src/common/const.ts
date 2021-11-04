@@ -103,7 +103,6 @@ export const FIXED_DOMAIN_ICONS = {
   siren: mdiBullhorn,
   simple_alarm: mdiBell,
   sun: mdiWhiteBalanceSunny,
-  switch: mdiFlash,
   timer: mdiTimerOutline,
   updater: mdiCloudUpload,
   vacuum: mdiRobotVacuum,
