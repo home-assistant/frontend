@@ -3475,8 +3475,8 @@
                         "energy_distribution": {
                             "battery": "Bateria",
                             "gas": "Gaz",
-                            "grid": "Siatka",
-                            "home": "Strona główna",
+                            "grid": "Sieć energetyczna",
+                            "home": "Dom",
                             "non_fossil": "Niekopalne",
                             "solar": "Panele słoneczne"
                         },
