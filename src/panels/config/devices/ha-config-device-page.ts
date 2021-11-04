@@ -1,19 +1,20 @@
-import { mdiPencil, mdiPlusCircle, mdiOpenInNew } from "@mdi/js";
+import { mdiOpenInNew, mdiPencil, mdiPlusCircle } from "@mdi/js";
 import "@polymer/paper-tooltip/paper-tooltip";
 import { css, CSSResultGroup, html, LitElement, TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators";
 import { ifDefined } from "lit/directives/if-defined";
 import memoizeOne from "memoize-one";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stringCompare } from "../../../common/string/compare";
-import { groupBy } from "../../../common/util/group-by";
 import { slugify } from "../../../common/string/slugify";
+import { groupBy } from "../../../common/util/group-by";
 import "../../../components/entity/ha-battery-icon";
+import "../../../components/ha-alert";
 import "../../../components/ha-icon-button";
 import "../../../components/ha-icon-next";
-import "../../../components/ha-alert";
 import "../../../components/ha-svg-icon";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import {
@@ -52,7 +53,6 @@ import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
 } from "./device-registry-detail/show-dialog-device-registry-detail";
-import { computeDomain } from "../../../common/entity/compute_domain";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string | null;
@@ -407,41 +407,45 @@ export class HaConfigDevicePage extends LitElement {
                         ></ha-icon-button>
                       </h1>
                       ${this._related?.automation?.length
-                        ? this._related.automation.map((automation) => {
-                            const entityState = this.hass.states[automation];
-                            return entityState
-                              ? html`
-                                  <div>
-                                    <a
-                                      href=${ifDefined(
-                                        entityState.attributes.id
-                                          ? `/config/automation/edit/${entityState.attributes.id}`
-                                          : undefined
-                                      )}
-                                    >
-                                      <paper-item
-                                        .automation=${entityState}
-                                        .disabled=${!entityState.attributes.id}
+                        ? html`
+                            <div class="items">
+                              ${this._related.automation.map((automation) => {
+                                const entityState =
+                                  this.hass.states[automation];
+                                return entityState
+                                  ? html`<div>
+                                      <a
+                                        href=${ifDefined(
+                                          entityState.attributes.id
+                                            ? `/config/automation/edit/${entityState.attributes.id}`
+                                            : undefined
+                                        )}
                                       >
-                                        <paper-item-body>
-                                          ${computeStateName(entityState)}
-                                        </paper-item-body>
-                                        <ha-icon-next></ha-icon-next>
-                                      </paper-item>
-                                    </a>
-                                    ${!entityState.attributes.id
-                                      ? html`
-                                          <paper-tooltip animation-delay="0">
-                                            ${this.hass.localize(
-                                              "ui.panel.config.devices.cant_edit"
-                                            )}
-                                          </paper-tooltip>
-                                        `
-                                      : ""}
-                                  </div>
-                                `
-                              : "";
-                          })
+                                        <paper-item
+                                          .automation=${entityState}
+                                          .disabled=${!entityState.attributes
+                                            .id}
+                                        >
+                                          <paper-item-body>
+                                            ${computeStateName(entityState)}
+                                          </paper-item-body>
+                                          <ha-icon-next></ha-icon-next>
+                                        </paper-item>
+                                      </a>
+                                      ${!entityState.attributes.id
+                                        ? html`
+                                            <paper-tooltip animation-delay="0">
+                                              ${this.hass.localize(
+                                                "ui.panel.config.devices.cant_edit"
+                                              )}
+                                            </paper-tooltip>
+                                          `
+                                        : ""}
+                                    </div> `
+                                  : "";
+                              })}
+                            </div>
+                          `
                         : html`
                             <div class="card-content">
                               ${this.hass.localize(
@@ -479,43 +483,49 @@ export class HaConfigDevicePage extends LitElement {
                           .path=${mdiPlusCircle}
                         ></ha-icon-button>
                       </h1>
-
                       ${this._related?.scene?.length
-                        ? this._related.scene.map((scene) => {
-                            const entityState = this.hass.states[scene];
-                            return entityState
-                              ? html`
-                                  <div>
-                                    <a
-                                      href=${ifDefined(
-                                        entityState.attributes.id
-                                          ? `/config/scene/edit/${entityState.attributes.id}`
-                                          : undefined
-                                      )}
-                                    >
-                                      <paper-item
-                                        .scene=${entityState}
-                                        .disabled=${!entityState.attributes.id}
-                                      >
-                                        <paper-item-body>
-                                          ${computeStateName(entityState)}
-                                        </paper-item-body>
-                                        <ha-icon-next></ha-icon-next>
-                                      </paper-item>
-                                    </a>
-                                    ${!entityState.attributes.id
-                                      ? html`
-                                          <paper-tooltip animation-delay="0">
-                                            ${this.hass.localize(
-                                              "ui.panel.config.devices.cant_edit"
-                                            )}
-                                          </paper-tooltip>
-                                        `
-                                      : ""}
-                                  </div>
-                                `
-                              : "";
-                          })
+                        ? html`
+                            <div class="items">
+                              ${this._related.scene.map((scene) => {
+                                const entityState = this.hass.states[scene];
+                                return entityState
+                                  ? html`
+                                      <div>
+                                        <a
+                                          href=${ifDefined(
+                                            entityState.attributes.id
+                                              ? `/config/scene/edit/${entityState.attributes.id}`
+                                              : undefined
+                                          )}
+                                        >
+                                          <paper-item
+                                            .scene=${entityState}
+                                            .disabled=${!entityState.attributes
+                                              .id}
+                                          >
+                                            <paper-item-body>
+                                              ${computeStateName(entityState)}
+                                            </paper-item-body>
+                                            <ha-icon-next></ha-icon-next>
+                                          </paper-item>
+                                        </a>
+                                        ${!entityState.attributes.id
+                                          ? html`
+                                              <paper-tooltip
+                                                animation-delay="0"
+                                              >
+                                                ${this.hass.localize(
+                                                  "ui.panel.config.devices.cant_edit"
+                                                )}
+                                              </paper-tooltip>
+                                            `
+                                          : ""}
+                                      </div>
+                                    `
+                                  : "";
+                              })}
+                            </div>
+                          `
                         : html`
                             <div class="card-content">
                               ${this.hass.localize(
@@ -553,23 +563,27 @@ export class HaConfigDevicePage extends LitElement {
                           ></ha-icon-button>
                         </h1>
                         ${this._related?.script?.length
-                          ? this._related.script.map((script) => {
-                              const entityState = this.hass.states[script];
-                              return entityState
-                                ? html`
-                                    <a
-                                      href=${`/config/script/edit/${entityState.entity_id}`}
-                                    >
-                                      <paper-item .script=${script}>
-                                        <paper-item-body>
-                                          ${computeStateName(entityState)}
-                                        </paper-item-body>
-                                        <ha-icon-next></ha-icon-next>
-                                      </paper-item>
-                                    </a>
-                                  `
-                                : "";
-                            })
+                          ? html`
+                              <div class="items">
+                                ${this._related.script.map((script) => {
+                                  const entityState = this.hass.states[script];
+                                  return entityState
+                                    ? html`
+                                        <a
+                                          href=${`/config/script/edit/${entityState.entity_id}`}
+                                        >
+                                          <paper-item .script=${script}>
+                                            <paper-item-body>
+                                              ${computeStateName(entityState)}
+                                            </paper-item-body>
+                                            <ha-icon-next></ha-icon-next>
+                                          </paper-item>
+                                        </a>
+                                      `
+                                    : "";
+                                })}
+                              </div>
+                            `
                           : html`
                               <div class="card-content">
                                 ${this.hass.localize(
@@ -869,6 +883,7 @@ export class HaConfigDevicePage extends LitElement {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          padding-bottom: 12px;
         }
 
         .card-header ha-icon-button {
@@ -977,6 +992,10 @@ export class HaConfigDevicePage extends LitElement {
 
         ha-svg-icon[slot="trailingIcon"] {
           display: block;
+        }
+
+        .items {
+          padding-bottom: 16px;
         }
       `,
     ];

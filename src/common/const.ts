@@ -143,6 +143,7 @@ export const FIXED_DEVICE_CLASS_ICONS = {
 
 /** Domains that have a state card. */
 export const DOMAINS_WITH_CARD = [
+  "button",
   "climate",
   "cover",
   "configurator",
