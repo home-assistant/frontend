@@ -21,6 +21,8 @@ import {
   mdiTimerSand,
   mdiToggleSwitch,
   mdiToggleSwitchOff,
+  mdiToggleSwitchOffOutline,
+  mdiToggleSwitchOutline,
   mdiZWave,
   mdiClock,
   mdiCalendar,
@@ -68,6 +70,9 @@ export const domainIcon = (
 
     case "humidifier":
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
+
+    case "input_boolean":
+      return compareState === "on" ? mdiToggleSwitchOutline : mdiToggleSwitchOffOutline;
 
     case "lock":
       switch (compareState) {

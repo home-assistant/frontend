@@ -82,7 +82,6 @@ export const FIXED_DOMAIN_ICONS = {
   homeassistant: mdiHomeAssistant,
   homekit: mdiHomeAutomation,
   image_processing: mdiImageFilterFrames,
-  input_boolean: mdiToggleSwitchOutline,
   input_datetime: mdiCalendarClock,
   input_number: mdiRayVertex,
   input_select: mdiFormatListBulleted,
