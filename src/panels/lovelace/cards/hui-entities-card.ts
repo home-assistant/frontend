@@ -259,6 +259,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         margin-bottom: 0;
       }
 
+      #states > div > * {
+        overflow: clip visible;
+      }
+
       #states > div {
         position: relative;
       }
