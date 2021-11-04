@@ -82,12 +82,7 @@ export const domainIcon = (
         case "outlet":
           return state === "on" ? mdiPowerPlug : mdiPowerPlugOff;
         case "switch":
-          switch (state) {
-            case "on":
-              return mdiToggleSwitch;
-            default:
-              return mdiToggleSwitchOff;
-          }
+          return state === "on" ? mdiToggleSwitch : mdiToggleSwitchOff;
         default:
           return mdiFlash;
       }
