@@ -72,7 +72,9 @@ export const domainIcon = (
       return state && state === "off" ? mdiAirHumidifierOff : mdiAirHumidifier;
 
     case "input_boolean":
-      return compareState === "on" ? mdiToggleSwitchOutline : mdiToggleSwitchOffOutline;
+      return compareState === "on"
+        ? mdiToggleSwitchOutline
+        : mdiToggleSwitchOffOutline;
 
     case "lock":
       switch (compareState) {
