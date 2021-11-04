@@ -16,11 +16,9 @@ declare global {
   }
 }
 
-const MAX_FILE_SIZE = 1 * 1024 * 1024 * 1024; // 1GB
-
 @customElement("hassio-upload-backup")
 export class HassioUploadBackup extends LitElement {
-  public hass!: HomeAssistant;
+  public hass?: HomeAssistant;
 
   @state() public value: string | null = null;
 
@@ -42,20 +40,6 @@ export class HassioUploadBackup extends LitElement {
 
   private async _uploadFile(ev) {
     const file = ev.detail.files[0];
-
-    if (file.size > MAX_FILE_SIZE) {
-      showAlertDialog(this, {
-        title: "Backup file is too big",
-        text: html`The maximum allowed filesize is 1GB.<br />
-          <a
-            href="https://www.home-assistant.io/hassio/haos_common_tasks/#restoring-a-backup-on-a-new-install"
-            target="_blank"
-            >Have a look here on how to restore it.</a
-          >`,
-        confirmText: "ok",
-      });
-      return;
-    }
 
     if (!["application/x-tar"].includes(file.type)) {
       showAlertDialog(this, {
